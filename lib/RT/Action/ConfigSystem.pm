@@ -2,7 +2,11 @@ use strict;
 use warnings;
 
 package RT::Action::ConfigSystem;
-use base qw/RT::Action Jifty::Action/;
+
+use Moose;
+extends qw/RT::Action Jifty::Action/;
+with    qw/Jifty::Plugin::Multipage::Action/;
+
 use Scalar::Defer; 
 use Try::Tiny;
 use Data::Dumper;
@@ -27,7 +31,7 @@ sub arguments {
     return $self->{__cached_arguments} = $args;
 }
 
-sub meta {
+sub metadata {
     my $self = shift;
     return $self->{__cached_meta} if ( $self->{__cached_meta} );
     my $meta = {};
@@ -60,7 +64,7 @@ sub meta {
 sub arguments_by_sections {
     my $self = shift;
     my $args = $self->arguments;
-    my $meta = $self->meta;
+    my $meta = $self->metadata;
     my $return;
     for my $name ( keys %$args ) {
         $return->{$meta->{$name} && $meta->{$name}{section} ||

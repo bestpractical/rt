@@ -159,7 +159,7 @@ on qr{^/$} => run {
         Jifty->find_plugin('Jifty::Plugin::SetupWizard')
             or die "The SetupWizard plugin needs to be used with SetupMode";
 
-        show '/__jifty/admin/setupwizard';
+        redirect '/setup/';
     }
 
     # Make them log in first, otherwise they'll appear to be logged in

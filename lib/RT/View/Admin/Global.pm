@@ -138,7 +138,7 @@ template 'system' => page { title => _('Configure RT') } content {
     );
     $restart->order(2);
     my $args = $config->arguments_by_sections;
-    my $meta = $config->meta;
+    my $meta = $config->metadata;
 
     if ($section) {
         with( name => $moniker ), form {

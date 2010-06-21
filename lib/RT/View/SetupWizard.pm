@@ -50,6 +50,45 @@ use strict;
 
 package RT::View::SetupWizard;
 use Jifty::View::Declare -base;
+use base qw/ Jifty::Plugin::SetupWizard::View::Helpers /;
+
+template 'index.html' => page { title => 'RT Setup Wizard' } content {
+    h1 { _("RT Setup Wizard") };
+    h2 { _("Welcome to RT!") };
+
+    p {
+        _("Let's get your RT install setup and ready to go.  We'll step you through a few steps to configure the basics.");
+    };
+
+    my $config = new_action(
+        class   => 'RT::Action::ConfigSystem',
+        moniker => 'sysconfig'
+    );
+
+    form { $config->next_page_button( url => 'database', label => 'Start' ) };
+
+    p {
+        outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
+    };
+};
+
+template 'database' => page { title => 'RT Setup Wizard: Database' } content {
+    h1 { _("RT Setup Wizard") };
+    h2 { _("Database") };
+    
+    my $config = new_action(
+        class   => 'RT::Action::ConfigSystem',
+        moniker => 'sysconfig'
+    );
+
+    form { $config->next_page_button( url => 'web', label => 'Next step' ) };
+};
+
+# database
+# web - base url, port, more RT stuff
+# rt specific stuff
+# turn off SetupMode in finalize
+
 
 template 'basics' => sub {
     p { _("It is very important that you change the password to RT's root user. Leaving it as the default of 'password' is a serious security risk.") };
@@ -63,7 +102,7 @@ template 'basics' => sub {
     p { _("You may change basic information about your RT install.") };
 
     my $config = new_action( class => 'RT::Action::ConfigSystem' );
-    my $meta = $config->meta;
+    my $meta = $config->metadata;
     for my $field (
         qw/rtname time_zone comment_address correspond_address sendmail_path
         owner_email/
