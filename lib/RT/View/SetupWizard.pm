@@ -81,10 +81,12 @@ template 'database' => page { title => 'RT Setup Wizard: Database' } content {
         moniker => 'sysconfig'
     );
 
-    form { $config->next_page_button( url => 'web', label => 'Next step' ) };
+    form {
+        show 'database_widget';
+        $config->next_page_button( url => 'web', label => 'Next step' );
+    };
 };
 
-# database
 # web - base url, port, more RT stuff
 # rt specific stuff
 # turn off SetupMode in finalize
