@@ -88,10 +88,10 @@ if ($id) {
     }
 }
 
-if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => loc('Select'),
                         path => "Admin/CustomFields/",
                            };
+if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
   $tabs->{"B"} = { title => loc('Create'),
                         path => "Admin/CustomFields/Modify.html?Create=1",
                         separator => 1,

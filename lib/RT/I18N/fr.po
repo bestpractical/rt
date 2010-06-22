@@ -790,6 +790,10 @@ msgstr "AdminCcs"
 msgid "AdminCustomField"
 msgstr "GérerChampPersonnalisé"
 
+#: lib/RT/CustomField_Overlay.pm:115
+msgid "AdminCustomFieldValues"
+msgstr "GérerValeursDeChampPersonnalisé"
+
 #: lib/RT/Group_Overlay.pm:87
 msgid "AdminGroup"
 msgstr "GérerGroupes"
@@ -1783,6 +1787,10 @@ msgstr "Créer des tickets hors-ligne"
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "Create, delete and modify custom fields"
 msgstr "Ajouter, supprimer et modifier des champs personnalisés"
+
+#: lib/RT/CustomField_Overlay.pm:115
+msgid "Create, delete and modify custom fields values"
+msgstr "Ajouter, supprimer et modifier des valeurs de champs personnalisés"
 
 #: lib/RT/Queue_Overlay.pm:88
 msgid "Create, delete and modify queues"
