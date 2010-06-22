@@ -173,6 +173,12 @@ on qr{^/$} => run {
     show '/index.html';
 };
 
+# Canonicalize /setup to /setup/ so we can properly use relative links
+# XXX: This is a bit ugly
+before qr'^/setup$' => run {
+    redirect '/setup/';
+};
+
 on qr{^/Dashboards/(\d+)} => run {
     Jifty->web->request->argument( id => $1 );
     show('/Dashboards/Render.html');

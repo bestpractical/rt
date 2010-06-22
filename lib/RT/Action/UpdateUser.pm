@@ -34,6 +34,7 @@ sub arguments {
 
 sub take_action {
     my $self = shift;
+    warn "running UpdateUser!";
     $self->SUPER::take_action;
     $self->_update_custom_field_values;
     for my $field (qw/disabled privileged/) {
