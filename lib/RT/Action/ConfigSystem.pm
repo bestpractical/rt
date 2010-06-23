@@ -2,10 +2,7 @@ use strict;
 use warnings;
 
 package RT::Action::ConfigSystem;
-
-use Moose;
-extends qw/RT::Action Jifty::Action/;
-with    qw/Jifty::Plugin::Multipage::Action/;
+use base qw/RT::Action Jifty::Action/;
 
 use Scalar::Defer; 
 use Try::Tiny;

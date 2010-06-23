@@ -69,12 +69,11 @@ template 'index.html' => setup_page {
         _("Let's get your RT install setup and ready to go.  We'll step you through a few steps to configure the basics.");
     };
 
-    my $config = new_action(
-        class   => 'RT::Action::ConfigSystem',
-        moniker => 'sysconfig'
+    hyperlink(
+        url   => 'database',
+        label => 'Start',
+        as_button => 1
     );
-
-    $config->next_page_button( url => 'database', label => 'Start' );
 
     p {
         outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
@@ -84,24 +83,13 @@ template 'index.html' => setup_page {
 template 'database' => setup_page {
     h2 { _("Configure your database") };
     
-    my $config = new_action(
-        class   => 'RT::Action::ConfigSystem',
-        moniker => 'sysconfig'
-    );
-
     show 'database_widget';
-
-    $config->prev_page_button( url => 'index.html', label => 'Previous step' );
-    $config->next_page_button( url => 'root', label => 'Next step', submit => undef );
+    # need to reload config here too, before the next page!
+    show 'buttons', prev => 'index.html', next => 'root';
 };
 
 template 'root' => setup_page {
     h2 { _("Change the default root password") };
-
-    my $config = new_action(
-        class   => 'RT::Action::ConfigSystem',
-        moniker => 'sysconfig'
-    );
 
     p {
         _("It is very important that you change the password of RT's root user.  Leaving it as the default of 'password' is a serious security risk.");
@@ -110,21 +98,14 @@ template 'root' => setup_page {
     my $user = RT::Model::User->new;
     $user->load_by_cols(name => 'root');
 
-    my $action = $user->as_update_action;
+    my $action = $user->as_update_action( moniker => 'updateuser-root' );
     render_param( $action => 'password', ajax_validates => 0 );
     render_param(
         $action => 'password_confirm',
         label   => 'Confirm Password',
     );
-
-    $action->button;
-
-    $config->prev_page_button( url => 'database', label => 'Previous step' );
-    $config->next_page_button(
-        url     => 'ui',
-        submit  => $action,
-        label   => 'Next step',
-    );
+    
+    show 'buttons', prev => 'database', next => 'done';
 };
 
 # root password
@@ -150,6 +131,26 @@ template 'basics' => sub {
         };
         outs_raw( $config->form_field($field) );
     }
+};
+
+template 'done' => setup_page {
+    h2 { _("Setup complete!") };
+};
+
+private template 'buttons' => sub {
+    my $self = shift;
+    my %args = @_;
+
+    hyperlink(
+        url => $args{'prev'},
+        label => 'Previous step',
+        as_button => 1,
+    );
+
+    form_submit(
+        url     => $self->fragment_for($args{'next'}),
+        label   => 'Next step',
+    );
 };
 
 1;
