@@ -77,10 +77,18 @@ sub arguments_by_sections {
 sub take_action {
     my $self = shift;
 
+    my @updated;
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
             RT->config->set( $arg, $self->argument_value($arg) );
+            push @updated, $arg;
         }
+    }
+
+    if (@updated) {
+        my $list = join ", ", @updated;
+        $list =~ s/, (?!.*,)/, and /;
+        $self->result->message("Set the following system configuration options: $list");
     }
 
     return 1;
@@ -175,17 +183,6 @@ sub validate_disable_graphviz {
     };
 
     return 1;
-}
-
-=head2 report_success
-
-=cut
-
-sub report_success {
-    my $self = shift;
-
-    # Your success message here
-    $self->result->message(_('Updated system'));
 }
 
 1;
