@@ -49,9 +49,7 @@ framework:
         wait_seconds: 10
         nav_menu: 0
     - SetupWizard:
-        add_steps:
-          - template: basics
-            header: RT Basics
+        nodefault: 1
     - WyzzEditor: {}
   PubSub: 
     Backend: Memcached
