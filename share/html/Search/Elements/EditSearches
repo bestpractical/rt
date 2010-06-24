@@ -180,7 +180,11 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
-        $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+        my ($val, $msg) = $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+        unless ( $val ) {
+            push @results, $msg;
+            return @results;
+        }
     }
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
