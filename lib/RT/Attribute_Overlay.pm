@@ -73,7 +73,7 @@ our $ACL_MAP = {
 };
 
 # There are a number of attributes that users should be able to modify for themselves, such as saved searches
-#  we could do this with a different set of "modify" rights, but that gets very hacky very fast. this is even faster and even
+#  we could do this with a different set of "update" rights, but that gets very hacky very fast. this is even faster and even
 # hackier. we're hardcoding that a different set of rights are needed for attributes on oneself
 our $PERSONAL_ACL_MAP = { 
     SavedSearch => { create => 'ModifySelf',
@@ -393,7 +393,7 @@ sub _Value {
 
 sub _Set {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('modify')) {
+    unless ($self->CurrentUserHasRight('update')) {
 
         return (0,$self->loc('Permission Denied'));
     }
@@ -404,7 +404,7 @@ sub _Set {
 
 =head2 CurrentUserHasRight
 
-One of "display" "modify" "delete" or "create" and returns 1 if the user has that right for attributes of this name for this object.Returns undef otherwise.
+One of "display" "update" "delete" or "create" and returns 1 if the user has that right for attributes of this name for this object.Returns undef otherwise.
 
 =cut
 
