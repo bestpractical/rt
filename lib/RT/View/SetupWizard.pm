@@ -84,8 +84,10 @@ template 'database' => setup_page {
     h2 { _("Configure your database") };
     
     show 'database_widget';
-    # need to reload config here too, before the next page!
-    show 'buttons', prev => 'index.html', next => 'root';
+
+    # We need to restart here so that further changes to the DB get to the
+    # right place
+    show 'buttons', prev => 'index.html', next => 'root', restart => 1;
 };
 
 template 'root' => setup_page {
@@ -147,10 +149,25 @@ private template 'buttons' => sub {
         as_button => 1,
     );
 
-    form_submit(
-        url     => $self->fragment_for($args{'next'}),
-        label   => 'Next step',
-    );
+    if ( $args{'restart'} ) {
+        Jifty->log->debug("Restarting the server before next setup wizard step");
+        my $restart = new_action(
+            class     => 'Jifty::Plugin::Config::Action::Restart',
+            moniker   => 'restart-jifty',
+            order     => 90
+        );
+        render_param(
+            $restart      => 'url',
+            default_value => $self->fragment_for($args{'next'})
+        );
+        form_submit( label => 'Next step' );
+    }
+    else {
+        form_submit(
+            url     => $self->fragment_for($args{'next'}),
+            label   => 'Next step',
+        );
+    }
 };
 
 1;

@@ -72,6 +72,23 @@ A fully featured request tracker package
 
 =head2 INITIALIZATION
 
+=head2 start 
+
+Initializes and starts up RT.  This is called by Jifty internally and is the
+right place for startup logic.
+
+=head2 restart
+
+Called when restarting RT without shutting down.  Currently only used by the
+setup wizard.  This takes care of refreshing the L<RT::Model::Config> object we
+keep around.
+
+=cut
+
+sub restart {
+    RT->load_config;
+}
+
 =head2 load_config
 
 Load RT's config file.  First, the site configuration file
