@@ -797,8 +797,8 @@ sub SetFromConfig {
                 # RTIR's options is set in main site config or RTFM's
                 warn
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
-                    ." It's may be ok, but we want you to be aware."
-                    ." This option earlier has been set in $source{'File'} line $source{'Line'}."
+                    ." It may be ok, but we want you to be aware."
+                    ." This option has been set earlier in $source{'File'} line $source{'Line'}."
                 ;
             }
 
