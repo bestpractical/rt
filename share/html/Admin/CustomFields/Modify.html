@@ -199,6 +199,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         foreach my $attr qw(Name Description SortOrder Category) {
             my $param = join("-", $paramtag, $value->Id, $attr);
             next unless exists $ARGS{$param};
+            $ARGS{$param} =~ s/^\s+//;
+            $ARGS{$param} =~ s/\s+$//;
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
             my $mutator = "Set$attr";
@@ -210,8 +212,10 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Add any new values
     if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
         my ($id, $msg) = $CustomFieldObj->AddValue(
-            map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( Name Description SortOrder Category )
+            map { 
+                $ARGS{$paramtag."-new-$_"} =~ s/^\s+//;
+                $ARGS{$paramtag."-new-$_"} =~ s/\s+$//;
+                $_ => $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
         push (@results, $msg);
     }
