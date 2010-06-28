@@ -54,10 +54,6 @@
 
 <%INIT>
 my $tabs = {
-    a => {
-        title => loc('Dashboards'),
-        path  => 'Dashboards/index.html',
-    },
     b => {
         title => loc('Offline'),
         path  => 'Tools/Offline.html',
@@ -71,6 +67,16 @@ my $tabs = {
         path  => 'Tools/MyDay.html',
     },
 };
+
+my $can_see_dashboards = $session{CurrentUser}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)
+                       || RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
+
+if ($can_see_dashboards) {
+    $tabs->{a} = {
+        title => loc('Dashboards'),
+        path  => 'Dashboards/index.html',
+    };
+}
 
 $m->callback( %ARGS, tabs => $tabs );
 

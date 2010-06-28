@@ -54,11 +54,6 @@
 <%init>
 
 my $tabs = {
-    A => {
-        title       => loc('Dashboards'),
-        path        => '/Dashboards/index.html',
-        description => loc('Named, shared collection of portlets'),
-    },
     B => {
         title       => loc('Offline'),
         path        => '/Tools/Offline.html',
@@ -75,6 +70,17 @@ my $tabs = {
         description => loc('Easy updating of your open tickets'),
     },
 };
+
+my $can_see_dashboards = $session{CurrentUser}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)
+                       || RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
+
+if ($can_see_dashboards) {
+    $tabs->{A} = {
+        title       => loc('Dashboards'),
+        path        => '/Dashboards/index.html',
+        description => loc('Named, shared collection of portlets'),
+    };
+}
 
 $m->callback( %ARGS, tabs => $tabs );
 
