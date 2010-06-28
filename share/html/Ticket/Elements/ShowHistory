@@ -55,11 +55,8 @@ if ($ShowDisplayModes or $ShowTitle) {
                     ? loc('History')
                     : '&nbsp;';
 
-    my $titleright;
-
+    my $titleright = '';
     if ($ShowDisplayModes) {
-        $titleright = '';
-        
         my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
         my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
         my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
@@ -96,6 +93,7 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
     push (@{$trans_attachments->{$attachment->TransactionId}}, $attachment)
 }
 
+my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
     $m->callback(
@@ -106,31 +104,30 @@ while ( my $Transaction = $Transactions->Next ) {
     );
     next if $skip;
 
-    $i++;
-
     my $IsLastTransaction = 0;
     if ( RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} )){
         $IsLastTransaction = $Transactions->IsLast;
     } else {
-        $IsLastTransaction = 1 if ( $i == 1 );
+        $IsLastTransaction = 1 if $i == 1;
     }
 
     #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
-            %ARGS,
+        %ARGS,
+        Ticket               => $Ticket,
+        Transaction          => $Transaction,
+        ShowHeaders          => $ShowHeaders,
+        RowNum               => $i,
+        Attachments          => $trans_attachments->{$Transaction->id},
+        AttachmentContent    => $trans_content,
+        LastTransaction      => $IsLastTransaction
+    );
 
-              Ticket               => $Ticket,
-              Transaction          => $Transaction,
-              ShowHeaders          => $ShowHeaders,
-              RowNum               => $i,
-              Attachments          => $trans_attachments->{$Transaction->id},
-              AttachmentContent    => $trans_content,
-              LastTransaction      => $IsLastTransaction
- );
+    # manually flush the content buffer after each txn,
+    # so the user sees some update
+    $m->flush_buffer;
 
-# manually flush the content buffer after each txn, so the user sees
-# some update
-$m->flush_buffer(); 
+    $i++;
 }
 
 </%perl>
@@ -140,12 +137,9 @@ $m->flush_buffer();
 </div>
 % }
 <%INIT>
-
-my $i;
 $Transactions ||= $m->comp('/Ticket/Elements/FindTransactions',Ticket => $Ticket, Tickets => $Tickets || undef);
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
-
 </%INIT>
 <%ARGS>
 $URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
