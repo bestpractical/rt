@@ -55,6 +55,7 @@
 % $i++;
 % if ($reminder->RefersTo->First) {
 % my $ticket= $reminder->RefersTo->First->TargetObj;
+% if ( $ticket ) {
 <tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
@@ -62,7 +63,13 @@
 </blockquote>
 </td>
 </tr>
-% }}
+% }
+% else {
+    <div class="error"><div class="error">
+Couldn't find TargetObj for reminder <% $reminder->id %>.<br/>
+Maybe Organization config was changed? Please contact administrator.
+    </div></div>
+% }}}
 </table>
 </&>
 
