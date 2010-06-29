@@ -1320,6 +1320,7 @@ Set($PlainTextPre, 0);
 
 
 =item C<$PlainTextMono> 
+
 To display plaintext attachments,
 Set C<$PlainTextMono> to 1 to use monospaced font and preserve
 formatting, but unlike PlainTextPre, the text will wrap to fit into the
