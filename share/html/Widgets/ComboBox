@@ -59,7 +59,11 @@ my $z_index = 9999;
 <br style="display: none" /><span id="<% $Name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " size="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
-        <option value="<%$value%>"><% $value%></option>
+%     if (ref($value) eq 'HASH') {
+          <option value="<%$value->{name}%>"><% $value->{label}%></option>
+%     } else {
+          <option value="<%$value%>"><% $value%></option>
+%     }
 % }
 </select>
 </div>
