@@ -47,47 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
+# DON'T USE IT. it's here for backwards
 
-$attachments->Columns( qw(id Content ContentType TransactionId ContentEncoding));
-
-if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-    my $transactions = $attachments->NewAlias('Transactions');
-    $attachments->Join( ALIAS1 => 'main',
-                                           FIELD1 => 'TransactionId',
-                                           ALIAS2 => $transactions,
-                                           FIELD2 => 'id' );
-    
-    my $tickets = $attachments->NewAlias('Tickets');
-
-
-    $attachments->Join( ALIAS1 => $transactions,
-                        FIELD1 => 'ObjectId',
-                        ALIAS2 => $tickets,
-                        FIELD2 => 'id' );
-
-    $attachments->Limit( ALIAS => $transactions,
-                         FIELD => 'ObjectType',
-                        VALUE => 'RT::Ticket');
-
-
-    $attachments->Limit( ALIAS => $tickets,
-                         FIELD => 'EffectiveId',
-                         VALUE => $Ticket->id() );
-    # if the user may not see comments do not return them
-    unless ( $Ticket->CurrentUserHasRight('ShowTicketComments') ) {
-        $attachments->Limit( ALIAS    => $transactions, FIELD    => 'Type', OPERATOR => '!=', VALUE    => "Comment" );
-    }
-
-    $attachments->Limit ( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text/plain');
-    $attachments->Limit ( FIELD => 'ContentType', OPERATOR => 'STARTSWITH', VALUE => 'message/');
-    $attachments->Limit ( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text');
-    $attachments->Limit ( FIELD => 'Filename', OPERATOR => 'IS', VALUE => 'NULL')
-        if RT->Config->Get('SuppressInlineTextFiles', $Ticket->CurrentUser );
-}
-return ($attachments);
+return $Ticket->TextAttachments;
 </%INIT>
 <%ARGS>
 $Ticket => undef
 </%ARGS>
-
