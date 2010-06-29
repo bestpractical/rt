@@ -560,11 +560,7 @@ sub ContentAsMIME {
         OPERATOR => 'NOT STARTSWITH',
         VALUE => 'multipart/',
     );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
-    );
+    $attachments->LimitNotEmpty;
     while ( my $a = $attachments->Next ) {
         $entity->make_multipart unless $entity->is_multipart;
         $entity->add_part( $a->ContentAsMIME );
