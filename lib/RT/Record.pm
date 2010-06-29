@@ -1549,6 +1549,73 @@ sub Transactions {
     return $transactions;
 }
 
+=head2 Attachments
+
+Returns an L<RT::Attachments> object of all attachments on this record object
+(for all its L</Transactions>).
+
+By default Content and Headers of attachments are not fetched right away from
+database. Use C<WithContent> and C<WithHeaders> options to override this.
+
+=cut
+
+sub Attachments {
+    my $self = shift;
+    my %args = (
+        WithHeaders => 0,
+        WithContent => 0,
+        @_
+    );
+    my @columns = qw(
+        id TransactionId Parent MessageId
+        Subject Filename
+        ContentType ContentEncoding
+        Creator Created
+    );
+    push @columns, 'Headers' if $args{'WithHeaders'};
+    push @columns, 'Content' if $args{'WithContent'};
+
+    my $res = RT::Attachments->new( $self->CurrentUser );
+    $res->Columns( @columns );
+    my $txn_alias = $res->TransactionAlias;
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => ref($self),
+    );
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectId',
+        VALUE => $self->id,
+    );
+    return $res;
+}
+
+=head2 TextAttachments
+
+Returns an L<RT::Attachments> object of all attachments, like L<Attachments>,
+but only those that are text.
+
+By default Content and Headers are fetched. Use C<WithContent> and
+C<WithHeaders> options to override this.
+
+=cut
+
+sub TextAttachments {
+    my $self = shift;
+    my $res = $self->Attachments(
+        WithHeaders => 1,
+        WithContent => 1,
+        @_
+    );
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text/plain');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => 'STARTSWITH', VALUE => 'message/');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text');
+    $res->Limit( FIELD => 'Filename', OPERATOR => 'IS', VALUE => 'NULL')
+        if RT->Config->Get( 'SuppressInlineTextFiles', $self->CurrentUser );
+    return $res;
+}
+
 sub CustomFields {
     my $self = shift;
     my $cfs  = RT::CustomFields->new( $self->CurrentUser );
