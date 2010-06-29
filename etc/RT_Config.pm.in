@@ -1539,6 +1539,17 @@ Use this to set the default units for time entry to hours instead of minutes.
 
 Set($DefaultTimeUnitsToHours, 0);
 
+=item C<$HideCustomFieldValidator>
+
+Use this to hide the regular expression used to validate custom field values.
+This applies only to the custom field admin interface. The regular expression's
+first comment will be used as the label for that validator. For example, the
+validator C<(?#Digits)^[\d.]+$> will display as just C<Digits>.
+
+=cut
+
+Set($HideCustomFieldValidator, 0);
+
 =back
 
 =head1 L<Net::Server> (rt-server) Configuration
