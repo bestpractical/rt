@@ -1528,7 +1528,7 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all transactions on this record object
+Returns an L<RT::Transactions> object of all transactions on this record object
 
 =cut
 
@@ -1537,8 +1537,6 @@ sub Transactions {
 
     use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    #If the user has no rights, return an empty object
     $transactions->Limit(
         FIELD => 'ObjectId',
         VALUE => $self->id,
@@ -1548,10 +1546,8 @@ sub Transactions {
         VALUE => ref($self),
     );
 
-    return ($transactions);
+    return $transactions;
 }
-
-#
 
 sub CustomFields {
     my $self = shift;
