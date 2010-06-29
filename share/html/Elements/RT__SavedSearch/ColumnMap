@@ -71,11 +71,10 @@ my $COLUMN_MAP = {
         title     => '',
         attribute => 'ResultsURL',
         value     => sub { my $search = shift;
-                           return join('&', sort
-                            map { $m->interp->apply_escapes($_,'u') .
-                                  '=' .
-                                  $m->interp->apply_escapes($search->GetParameter($_),'u') }
-                            qw(Query Format Rows Order OrderBy)) },
+                            return $m->comp('/Elements/QueryString',
+                                            map { $_ => $search->GetParameter($_) }
+                                            qw(Query Format Rows Order OrderBy));
+                        },
     }
 };
 
