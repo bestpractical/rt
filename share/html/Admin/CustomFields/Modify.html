@@ -230,15 +230,6 @@ my @CFvalidations = (
 
 $m->callback(CallbackName => 'ValidationPatterns', Values => \@CFvalidations);
 
-if (RT->Config->Get('HideCustomFieldValidator')) {
-    for my $pattern (@CFvalidations) {
-        next if ref($pattern);
-        if (my ($name) = $pattern =~ /\(\?\#(\w+)\)/) {
-            $pattern = { name => $pattern, label => $name };
-        }
-    }
-}
-
 </%INIT>
 <%ARGS>
 $id => undef
