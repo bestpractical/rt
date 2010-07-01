@@ -1,13 +1,12 @@
 ---
 abstract: 'RT FM Extension'
-author: ~
 build_requires:
   ExtUtils::MakeMaker: 6.42
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.91'
-license: 'GPL version 2'
+generated_by: 'Module::Install version 1.00'
+license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -27,4 +26,6 @@ requires:
   Time::ParseDate: 0
   Tree::Simple: 0
   perl: 5.8.3
+resources:
+  license: http://opensource.org/licenses/gpl-license.php
 version: 2.4.HEAD
