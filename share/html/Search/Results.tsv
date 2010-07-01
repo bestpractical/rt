@@ -91,8 +91,9 @@ my @attrs = qw(
     Requestors->MemberEmailAddressesAsString
     Cc->MemberEmailAddressesAsString
     AdminCc->MemberEmailAddressesAsString
-    DueObj->ISO ToldObj->ISO CreatedObj->ISO
-    ResolvedObj->ISO LastUpdatedObj->ISO
+    CreatedObj->ISO
+    StartsObj->ISO StartedObj->ISO ResolvedObj->ISO DueObj->ISO 
+    ToldObj->ISO LastUpdatedObj->ISO
 );
 
 $r->content_type('application/vnd.ms-excel');
