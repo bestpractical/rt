@@ -70,7 +70,7 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search(
     $self->{SearchId} = $args->{'SavedSearchLoad'} ||
         $args->{'SavedChartSearchId'};
     $self->{CurrentSearch}{Object} = $search;
-    if ( $args->{'SaveSearchLoad'} ) {
+    if ( $args->{'SavedSearchLoad'} ) {
         for ( @{ $self->{SearchFields} } ) {
             $args->{$_} = $search->SubValue($_) 
         }
