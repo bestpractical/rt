@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
+
 <tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => '60', Default => $ARGS{UpdateCc} &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
