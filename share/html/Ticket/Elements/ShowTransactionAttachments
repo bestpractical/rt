@@ -125,6 +125,8 @@ elsif (!$ShowHeaders)  {
     push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
 }
 
+$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction);
+
 my $size_to_str = sub {
     my $size = shift;
     # show a download link
