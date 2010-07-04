@@ -138,6 +138,25 @@ push @{ $attachments{ $_->TransactionId } ||= [] }, $_
 my %attachment_content = map { $_->id => $_ }
     @{ $AttachmentContent->ItemsArrayRef };
 
+{
+    my %tmp = (
+        DisplayPath     => 'Display.html',
+        AttachmentPath  => 'Attachment',
+        UpdatePath      => 'Update.html',
+        ForwardPath     => 'Forward.html',
+        EmailRecordPath => 'ShowEmailRecord.html',
+        EncryptionPath  => 'GnuPG.html',
+    );
+
+    my $request_path = $m->request_path;
+    $request_path =~ s/[^\/]+$//;
+
+    while ( my ($arg, $path) = each %tmp ) {
+        next if defined $ARGS{ $arg };
+
+        $ARGS{ $arg } = $request_path . $path;
+    }
+}
 </%INIT>
 <%ARGS>
 $Object
