@@ -1563,6 +1563,50 @@ sub Transactions {
     return $transactions;
 }
 
+our %TRANSACTION_CLASSIFICATION = (
+    Create     => 'message',
+    Correspond => 'message',
+    Comment    => 'message',
+
+    AddWatcher => 'people',
+    DelWatcher => 'people',
+
+    Take       => 'people',
+    Untake     => 'people',
+    Force      => 'people',
+    Steal      => 'people',
+    Give       => 'people',
+
+    AddLink    => 'links',
+    DeleteLink => 'links',
+
+    Status     => 'basics',
+    Set        => {
+        __default => 'basics',
+        map( { $_ => 'dates' } qw(
+            Told Starts Started Due LastUpdated Created LastUpdated
+        ) ),
+        map( { $_ => 'people' } qw(
+            Owner Creator LastUpdatedBy
+        ) ),
+    },
+    __default => 'other',
+);
+
+sub ClassifyTransaction {
+    my $self = shift;
+    my $txn = shift;
+
+    my $type = $txn->Type;
+
+    my $res = $TRANSACTION_CLASSIFICATION{ $type };
+    return $res || $TRANSACTION_CLASSIFICATION{ '__default' }
+        unless ref $res;
+
+    return $res->{ $txn->Field } || $res->{'__default'}
+        || $TRANSACTION_CLASSIFICATION{ '__default' }; 
+}
+
 =head2 Attachments
 
 Returns an L<RT::Attachments> object of all attachments on this record object

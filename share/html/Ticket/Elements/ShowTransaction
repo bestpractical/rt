@@ -93,52 +93,13 @@ $ShowBody => 1
 $LastTransaction => 0
 $WarnUnsigned => undef
 </%ARGS>
-<%ONCE>
-
-my %class = (
-    Correspond => 'message',
-    Comment    => 'message',
-
-    AddWatcher => 'people',
-    DelWatcher => 'people',
-    Take       => 'people',
-    Untake     => 'people',
-    Force      => 'people',
-    Steal      => 'people',
-    Give       => 'people',
-
-    AddLink    => 'links',
-    DeleteLink => 'links',
-);
-
-</%ONCE>
 <%INIT>
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
-my $type_class = $class{ $type };
-if ( $type eq 'Create' && $Transaction->ObjectType eq 'RT::Ticket' ) {
-    $type_class = 'message';
-}
-
-unless ( $type_class ) {
-    if ( $field eq 'Owner' ) {
-        $type_class = 'people';
-    }
-    elsif ( $type =~ /^(Status|Set|Told)$/ ) {
-        if ( $field =~ /^(Told|Starts|Started|Due)$/ ) {
-            $type_class = 'dates';
-        }
-        else {
-            $type_class = 'basics';
-        }
-    }
-    else {
-        $type_class = 'other';
-    }
-}
+my $type_class  = $Ticket->ClassifyTransaction($Transaction);
 
 $m->callback(
     CallbackName => 'MassageTypeClass',
