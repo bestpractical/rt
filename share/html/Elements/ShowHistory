@@ -95,7 +95,7 @@ while ( my $Transaction = $Transactions->Next ) {
     }
 
     #Args is first because we're clobbering the "Attachments" parameter 
-    $m->comp( '/Ticket/Elements/ShowTransaction',
+    $m->comp( '/Elements/ShowTransaction',
         %ARGS,
 
         Ticket            => $Object,
