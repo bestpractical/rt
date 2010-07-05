@@ -1,0 +1,254 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<div class="<% join ' ', @classes %>">
+<div class="<% $record_type %>-transaction">
+  <div class="metadata">
+    <span class="type">
+      <a name="txn-<% $Transaction->id %>" \
+% if ( $DisplayPath ) {
+      href="<% $DisplayPath %>#txn-<% $Transaction->id %>" \
+% }
+      >#</a>
+% if ( $LastTransaction ) {
+      <a id="lasttrans" name="lasttrans"></a>
+% }
+    </span>
+% $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
+    <span class="date"><% $date |n %></span>
+    <span class="description">
+      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $desc %>
+% $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
+    </span>
+    <span class="time-taken"><% $time %></span>
+% if ( $actions ) {
+    <span class="actions"><% $actions |n %></span>
+% }
+  </div>
+
+  <div class="content">
+<%PERL>
+if ( $Transaction->CustomFieldValues->Count ) {
+    $m->comp('/Elements/ShowCustomFields', Object => $Transaction );
+}
+$m->comp(
+    '/Ticket/Elements/ShowTransactionAttachments',
+    %ARGS,
+    Parent => 0
+) if $ShowBody;
+</%PERL>
+  </div>
+
+</div>
+</div>
+
+<%ARGS>
+$Transaction
+$Object => $Transaction->Object
+
+$Attachments => undef
+$AttachmentContent => undef
+
+$ShowBody => 1
+$ShowActions => 1
+$RowNum => 1
+$LastTransaction => 0
+
+$DisplayPath => undef
+$AttachmentPath => undef
+$UpdatePath => undef
+$ForwardPath => undef
+$EncryptionPath => undef
+$EmailRecordPath => undef
+</%ARGS>
+
+<%ONCE>
+
+</%ONCE>
+<%INIT>
+my $record_type = $Object->RecordType;
+
+my @classes = (
+    $record_type . '-transaction',
+    $Object->ClassifyTransaction( $Transaction ),
+    ($RowNum % 2 ? 'odd' : 'even')
+);
+
+my $desc = $Transaction->BriefDescription;
+if ( $Object->id != $Transaction->ObjectId ) {
+    # merged objects
+    $desc = loc("[_1] #[_1]:", loc($record_type), $Transaction->ObjectId)
+        .' - '. $desc;
+}
+
+my $date = $Transaction->CreatedAsString;
+
+my $time = '';
+$time = loc('[quant,_1,min,min]', $Transaction->TimeTaken)
+    if $Transaction->TimeTaken;
+
+if ( $ShowBody && !$Attachments ) {
+    my $attachments = $Transaction->Attachments;
+    $attachments->Columns( qw(
+        Id TransactionId Parent MessageId
+        Subject Filename Headers 
+        ContentEncoding ContentType
+        Creator Created
+    ) );
+    $ARGS{'Attachments'} = $Attachments = $attachments->ItemsArrayRef;
+}
+
+my @actions = ();
+if ( $ShowActions ) {
+    my $txn_type = $Transaction->Type;
+    if ( $txn_type =~ /EmailRecord$/ ) {
+        push @actions, {
+            title  => loc('Show'),
+            target => '_blank',
+            path   => $EmailRecordPath
+                .'?id='. $Object->id
+                .'&Transaction='. $Transaction->id
+                .'&Attachment='. ( $Attachments->[0] && $Attachments->[0]->id ),
+        } if $EmailRecordPath;
+
+        $ShowBody = 0;
+    }
+
+    # If the transaction has anything attached to it at all
+    elsif ( @$Attachments ) {
+        my %has_right = map {
+            $_ => RT::ACE->CanonicalizeRightName( $_ . $record_type )
+        } qw(Modify CommentOn ReplyTo);
+
+        my $can_modify = $has_right{'Modify'}
+            && $Object->CurrentUserHasRight( $has_right{'Modify'} );
+
+        if ( $UpdatePath && $has_right{'ReplyTo'}
+            && ( $can_modify
+                || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
+            )
+        ) {
+            push @actions, {
+                title  => loc('Reply'),
+                path   => $UpdatePath
+                    .'?id='. $Object->id
+                    .'&QuoteTransaction='. $Transaction->id
+                    .'&Action=Respond'
+                ,
+            };
+        }
+        if ( $UpdatePath && $has_right{'CommentOn'}
+            && ( $can_modify
+                || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
+            )
+        ) {
+            push @actions, {
+                title  => loc('Comment'),
+                path   => $UpdatePath
+                    .'?id='. $Object->id
+                    .'&QuoteTransaction='. $Transaction->id
+                    .'&Action=Comment'
+                ,
+            };
+        }
+        if ( $ForwardPath && $Object->CurrentUserHasRight('ForwardMessage') ) {
+            push @actions, {
+                title  => loc('Forward'),
+                path   => $ForwardPath
+                    .'?id='. $Object->id
+                    .'&QuoteTransaction='. $Transaction->id
+                ,
+            };
+        }
+        if ( $EncryptionPath && $can_modify
+            && RT->Config->Get('GnuPG')->{'Enable'}
+            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+        ) {
+            push @actions, {
+                title  => loc('Encrypt/Decrypt'),
+                path   => $EncryptionPath
+                    .'?id='. $Transaction->id
+                    .'&QuoteTransaction='. $Transaction->id
+                ,
+            };
+        }
+    }
+}
+
+$m->callback(
+    %ARGS,
+    Transaction => $Transaction,
+    Object      => $Object,
+
+    Classes     => \@classes,
+    Actions     => \@actions,
+    Created     => \$date,
+    TimeTaken   => \$time,
+    Description => \$desc,
+);
+
+my $actions = '';
+if ( @actions ) {
+    my $i = $m->interp;
+
+    foreach my $a ( @actions ) {
+        $a = '<a'
+            .' href="'. $i->apply_escapes( $a->{'path'}, 'h' ) .'"'
+            . ($a->{'target'}
+                ? ' target="'. $i->apply_escapes( $a->{'target'}, 'h' ) .'"'
+                : ''
+            )
+            .'>'. $i->apply_escapes( $a->{'title'}, 'h' ) .'</a>'
+        ;
+    }
+    $actions = join '&nbsp;', map "[$_]", @actions;
+}
+
+# make date unbreakable
+$date = $m->interp->apply_escapes( $date, 'h' );
+$date =~ s/\s/&nbsp;/g;
+</%INIT>
