@@ -1297,6 +1297,16 @@ option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, '1');
 
+=item C<$DeferTransactionLoading>
+
+When set, defers loading ticket history until the user clicks a link.
+This should end up serving pages to users quicker, since generating
+all the HTML for transaction history can be slow for long tickets.
+
+=cut
+
+#Set($DeferTransactionLoading, '1');
+
 =item C<$ShowTransactionImages>
 
 By default, RT shows images attached to incoming (and outgoing) ticket updates

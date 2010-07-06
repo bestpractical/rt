@@ -68,14 +68,20 @@
 
 % $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
 
-<& /Ticket/Elements/ShowHistory , 
-      Ticket => $TicketObj, 
-      Tickets => $Tickets, 
-      Collapsed => $ARGS{'Collapsed'}, 
-      ShowHeaders => $ARGS{'ShowHeaders'},
-      Attachments => $attachments,
-      AttachmentContent => $attachment_content
-&> 
+% if (RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
+    <& /Ticket/Elements/ClickToShowHistory,
+        Ticket => $TicketObj,
+    &>
+% } else {
+    <& /Ticket/Elements/ShowHistory ,
+          Ticket => $TicketObj,
+          Tickets => $Tickets,
+          Collapsed => $ARGS{'Collapsed'},
+          ShowHeaders => $ARGS{'ShowHeaders'},
+          Attachments => $attachments,
+          AttachmentContent => $attachment_content
+    &>
+% }
 
 % $m->callback( %ARGS,
 %     Ticket       => $TicketObj,
