@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
 "PO-Revision-Date: 2010-04-17 08:10+0000\n"
 "Last-Translator: Bruno Cunha <brunoscunha@gmail.com>\n"
 "Language-Team: Portuguese (Portugal) <pt_PT@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264
@@ -96,10 +96,6 @@ msgstr "%1 %2 apagado"
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
 msgid "%1 %2 deleted."
 msgstr "%1 %2 apagado."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 renamed to %3."
-msgstr "%1 %2 renomeado para %3."
 
 #: share/html/Widgets/SavedSearch:129
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -949,10 +945,6 @@ msgstr "Informação básica"
 msgid "Be sure to save your changes"
 msgstr "Não se esqueça de gravar as suas alterações"
 
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Best Practical Solutions, LLC logo corporativo"
-
 #: etc/initialdata:192
 msgid "Blank"
 msgstr "Em Branco"
@@ -1013,10 +1005,6 @@ msgstr "Este grupo/utilizador pode visualizar esta queue"
 #: lib/RT/CustomField_Overlay.pm:410
 msgid "Can't add a custom field value without a name"
 msgstr "Não se pode adicionar um campo personalizado sem designação"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "Não foi encontrado uma colecção de classes para '%1'"
 
 #: share/html/Search/Elements/EditSearches:290
 msgid "Can't find a saved search to work with"
@@ -1168,10 +1156,6 @@ msgstr "Morada do comentário"
 msgid "Comment on tickets"
 msgstr "Comentar tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "CommentAddress"
-msgstr "MoradaComentários"
-
 #: lib/RT/Queue_Overlay.pm:109
 msgid "CommentOnTicket"
 msgstr "ComentarNaTarefa"
@@ -1230,10 +1214,6 @@ msgstr "Ficheiro de configuração %1 está trancado"
 msgid "Configuration"
 msgstr "Configuração"
 
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Confirmar"
-
 #: share/html/Install/DatabaseDetails.html:141
 msgid "Connection succeeded"
 msgstr "Ligação efectuada com sucesso"
@@ -1253,10 +1233,6 @@ msgstr "TipoConteudo"
 #: lib/RT/Installer.pm:175
 msgid "Correspond address"
 msgstr "Morada de correspondência"
-
-#: NOT FOUND IN SOURCE
-msgid "CorrespondAddress"
-msgstr "MoradaCorrespondência"
 
 #: etc/initialdata:261
 msgid "Correspondence"
@@ -2000,10 +1976,6 @@ msgstr "Predefinição: %1"
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Predefinição: %1/%2 alterado para %3 to %4"
-
-#: NOT FOUND IN SOURCE
-msgid "DefaultDueIn"
-msgstr "Predefiniçãoacabarem"
 
 #: lib/RT/Date.pm:113
 msgid "DefaultFormat"
@@ -2784,10 +2756,6 @@ msgstr "Atribuído a %1"
 #: share/html/Admin/Elements/Tabs:67 share/html/Admin/index.html:78 share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74
 msgid "Global"
 msgstr "Global"
-
-#: NOT FOUND IN SOURCE
-msgid "Global Custom Fields"
-msgstr "Campos Personalizados Globais"
 
 #: share/html/Admin/Global/CustomFields/index.html:61
 msgid "Global custom field configuration"

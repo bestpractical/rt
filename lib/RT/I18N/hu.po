@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2009-11-17 09:06+0000\n"
-"Last-Translator: Bert <Unknown>\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-06-11 02:15+0000\n"
+"Last-Translator: Harka Győző <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264
@@ -91,17 +91,17 @@ msgstr "%1 %2 törölve"
 #: share/html/Widgets/SavedSearch:139
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
 msgid "%1 %2 deleted."
-msgstr ""
+msgstr "%1 %2 törölve."
 
 #: share/html/Widgets/SavedSearch:129
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
-msgstr ""
+msgstr "%1 %2 mentve."
 
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 %2 frissítve."
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:66
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -152,7 +152,7 @@ msgstr ""
 #: bin/rt-crontool:355
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 - Add meg a használandó sablon(ok) nevét vagy azonosítóját"
 
 #: bin/rt-crontool:349
 #. ("--action")
@@ -197,7 +197,7 @@ msgstr "%1 értéke hozzáadva %2 höz"
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr ""
+msgstr "%1 adatbázis már létezik és az RT tábláit is tartalmazza, viszont az RT metaadatait nem. Későbbiekben az 'Adatbázis inicializálása' lépésben beillesztheti a metaadatokat. Ha ez elfogadható így akkor kattintson az 'Alapok személyreszabása' linkre lent az RT személyre szabásához."
 
 #: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
@@ -273,12 +273,12 @@ msgstr ""
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
 msgid "%1 doesn't exist."
-msgstr ""
+msgstr "%1 nem létezik."
 
 #: lib/RT/Transaction_Overlay.pm:624
 #. ($obj_type)
 msgid "%1 enabled"
-msgstr ""
+msgstr "%1 engedélyezve"
 
 #: etc/initialdata:553
 msgid "%1 highest priority tickets I own"
@@ -351,7 +351,7 @@ msgstr ""
 
 #: lib/RT/SharedSetting.pm:237
 msgid "%1 updated"
-msgstr ""
+msgstr "%1 frissítve"
 
 #: lib/RT/Action/ResolveMembers.pm:64
 #. (ref $self)
@@ -385,7 +385,7 @@ msgstr "%1: Nincs melléklet megadva!"
 #: lib/RT/Date.pm:616
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1:%2"
 
 #: lib/RT/Date.pm:613
 #. ($hour,$min,$sec)
@@ -461,11 +461,11 @@ msgstr "(nincs név)"
 
 #: share/html/Ticket/Create.html:106
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Másolat küldése a frissítésről a vesszővel elválasztott adminisztratív email címekre. A felsoroltak a továbbiakban is megkapják a probléma frissítéseinek másolatát.)"
 
 #: share/html/Ticket/Create.html:97
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Másolat küldése a frissítésről a vesszővel elválasztott email címekre. A felsoroltak a továbbiakban is megkapják a probléma frissítéseinek másolatát.)"
 
 #: share/html/Admin/Elements/EditScrip:99
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -489,7 +489,7 @@ msgstr "(Nincs név a listában)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
-msgstr ""
+msgstr "(nincs publikus kulcs!)"
 
 #: lib/RT/Transaction_Overlay.pm:647 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:100 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81
 msgid "(no value)"
@@ -510,7 +510,7 @@ msgstr ""
 
 #: share/html/Elements/RT__Ticket/ColumnMap:113
 msgid "(pending approval)"
-msgstr ""
+msgstr "(engedélyezésre vár)"
 
 #: share/html/Admin/Users/Modify.html:73
 msgid "(required)"
@@ -531,7 +531,7 @@ msgstr ""
 
 #: share/html/Elements/EditCustomFieldSelect:59
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:136
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -561,7 +561,7 @@ msgstr "Üres sablon"
 
 #: share/html/Admin/Users/Modify.html:364
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "Nincs jelszó beállítva, a felhasználó nem fog tudni belépni."
 
 #: lib/RT/ACE_Overlay.pm:171
 msgid "ACE not found"
@@ -618,7 +618,7 @@ msgstr "Adminisztratív tájékotatást kapó hozzáadása"
 
 #: share/html/Ticket/Elements/Bookmark:90
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Könyvjelző hozzáadása"
 
 #: share/html/Search/Bulk.html:99
 msgid "Add Cc"
@@ -772,7 +772,7 @@ msgstr "Adminisztratív tájékoztatást kap"
 
 #: lib/RT/Installer.pm:152
 msgid "Administrative password"
-msgstr ""
+msgstr "Adminisztrációs jelszó"
 
 #: share/html/Ticket/Elements/Tabs:284
 msgid "Advanced"
@@ -784,7 +784,7 @@ msgstr ""
 
 #: etc/initialdata:341 etc/upgrade/3.8.2/content:69
 msgid "All Approvals Passed"
-msgstr ""
+msgstr "Minden jóváhagyáson átesett."
 
 #: share/html/Admin/Queues/index.html:110
 msgid "All Queues"
@@ -869,7 +869,7 @@ msgstr "Az engedélyezõ megjegyzése: %1"
 
 #: lib/RT/Date.pm:91
 msgid "Apr"
-msgstr ""
+msgstr "Ápr"
 
 #: NOT FOUND IN SOURCE
 msgid "Apr."
@@ -930,7 +930,7 @@ msgstr ""
 
 #: lib/RT/Attributes_Overlay.pm:189
 msgid "Attribute Deleted"
-msgstr ""
+msgstr "Attribútum Törölve"
 
 #: lib/RT/Date.pm:95
 msgid "Aug"
@@ -1003,7 +1003,7 @@ msgstr "Könyvjelző"
 
 #: etc/initialdata:577 etc/upgrade/3.7.82/content:3
 msgid "Bookmarked Tickets"
-msgstr ""
+msgstr "Megjelölt problémák (könyvjelző)"
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
@@ -1036,7 +1036,7 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:174
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
-msgstr ""
+msgstr "A \"%1\" mentett keresés nem tölthető be"
 
 #: lib/RT/User_Overlay.pm:1612
 msgid "Can not modify system users"
@@ -1061,7 +1061,7 @@ msgstr "A problémát nem lehet önmagához kapcsolni!"
 #: share/html/Widgets/SavedSearch:132
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "%1 nem menthető"
 
 #: share/html/Search/Elements/EditSearches:294
 msgid "Can't save this search"
@@ -1073,7 +1073,7 @@ msgstr "Nem adhat meg egyszerre bázist és célt"
 
 #: share/html/Ticket/Create.html:341
 msgid "Cannot create tickets in a disabled queue."
-msgstr ""
+msgstr "Nem hozhatók létre problémák egy letiltott sorban."
 
 #: lib/RT/Interface/Web.pm:389
 #. ($msg)
@@ -1086,7 +1086,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
-msgstr ""
+msgstr "Kategória"
 
 #: lib/RT/CustomFieldValue_Overlay.pm:137
 msgid "Category unset"
@@ -1102,7 +1102,7 @@ msgstr ""
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:82
 msgid "Change"
-msgstr ""
+msgstr "Változtat"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
@@ -1114,7 +1114,7 @@ msgstr "Jelszó-változtatás"
 
 #: share/html/Elements/Submit:90
 msgid "Check All"
-msgstr ""
+msgstr "Mindent kijelöl"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
@@ -1206,7 +1206,7 @@ msgstr ""
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
-msgstr ""
+msgstr "Kommentek"
 
 #: lib/RT/Config.pm:243 share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
 msgid "Comments (Not sent to requestors)"
@@ -1268,7 +1268,7 @@ msgstr "Igazolás"
 
 #: share/html/Install/DatabaseDetails.html:141
 msgid "Connection succeeded"
-msgstr ""
+msgstr "Sikeres kapcsólódás"
 
 #: lib/RT/Tickets_Overlay.pm:126 share/html/Admin/Elements/ModifyTemplate:67 share/html/Elements/QuickCreate:70 share/html/Elements/SelectAttachmentField:50 share/html/Ticket/ModifyAll.html:136
 msgid "Content"
@@ -1525,17 +1525,17 @@ msgstr "%1 sor nem betölthetõ"
 #: share/html/Admin/Queues/Modify.html:160
 #. ($Name)
 msgid "Couldn't load queue '%1'"
-msgstr ""
+msgstr "Nem lehet betölteni a '%1' sort"
 
 #: share/html/Admin/Elements/EditScrip:140 share/html/Admin/Elements/EditScrip:184
 #. ($id)
 msgid "Couldn't load scrip #%1"
-msgstr ""
+msgstr "Nem lehet betölteni a #%1 scripet"
 
 #: share/html/Admin/Elements/EditTemplates:105
 #. ($id)
 msgid "Couldn't load template #%1"
-msgstr ""
+msgstr "Nem lehet betölteni a #%1 sablont"
 
 #: lib/RT/Action/CreateTickets.pm:453 share/html/SelfService/Display.html:157
 #. ($id)
@@ -1599,7 +1599,7 @@ msgstr ""
 
 #: lib/RT/Interface/Email.pm:670 lib/RT/Interface/Email.pm:732
 msgid "Couldn't send email"
-msgstr ""
+msgstr "Email küldés sikertelen"
 
 #: lib/RT/Ticket_Overlay.pm:549
 #. ($type, $msg)
@@ -1698,7 +1698,7 @@ msgstr "Hozzon létre problémákat ebben a sorban!"
 
 #: share/html/Tools/index.html:65
 msgid "Create tickets offline"
-msgstr ""
+msgstr "Problémák offline létrehozása"
 
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "Create, delete and modify custom fields"
@@ -1742,7 +1742,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "CreateTicket"
-msgstr ""
+msgstr "ProblémaLétrehozás"
 
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:917 lib/RT/Tickets_Overlay.pm:124 share/html/Admin/Elements/ShowKeyInfo:58 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50
 msgid "Created"
@@ -1750,7 +1750,7 @@ msgstr "Felvéve"
 
 #: share/html/Elements/ColumnMap:76
 msgid "Created By"
-msgstr ""
+msgstr "Létrehozta"
 
 #: share/html/Admin/CustomFields/Modify.html:165 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name())
@@ -1780,7 +1780,7 @@ msgstr "Létrehozó"
 
 #: share/html/Prefs/Other.html:73
 msgid "Cryptography"
-msgstr ""
+msgstr "Titkosítás"
 
 #: share/html/Elements/EditLinks:51 share/html/Ticket/Elements/BulkLinks:51
 msgid "Current Links"
@@ -1800,7 +1800,7 @@ msgstr "Jelenlegi jogok"
 
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
-msgstr ""
+msgstr "Jelenlegi keresés"
 
 #: share/html/Admin/Queues/People.html:64 share/html/Ticket/Elements/EditPeople:68
 msgid "Current watchers"
@@ -1862,7 +1862,7 @@ msgstr "[%1] egyéni mezõ nem található"
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
-msgstr ""
+msgstr "Egyéni mező '%1'"
 
 #: lib/RT/CustomField_Overlay.pm:1047
 msgid "Custom field is already applied to the object"
@@ -1891,7 +1891,7 @@ msgstr "Az egyéni mezõ értéke törölve"
 
 #: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:697 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
-msgstr ""
+msgstr "EgyéniMező"
 
 #: lib/RT/Tickets_Overlay.pm:138
 msgid "CustomFieldValue"
@@ -1899,7 +1899,7 @@ msgstr ""
 
 #: share/html/Prefs/MyRT.html:84 share/html/Prefs/Quicksearch.html:72 share/html/Prefs/Search.html:77
 msgid "Customize"
-msgstr ""
+msgstr "Testreszabás"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
@@ -1953,19 +1953,19 @@ msgstr ""
 
 #: lib/RT/Installer.pm:94
 msgid "Database name"
-msgstr ""
+msgstr "Adatbázis neve"
 
 #: lib/RT/Installer.pm:125
 msgid "Database password for RT"
-msgstr ""
+msgstr "RT adatbázis jelszava"
 
 #: lib/RT/Installer.pm:85
 msgid "Database port"
-msgstr ""
+msgstr "Adatbázis kiszolgáló portja"
 
 #: lib/RT/Installer.pm:58
 msgid "Database type"
-msgstr ""
+msgstr "Adatbázis típus"
 
 #: lib/RT/Installer.pm:118
 msgid "Database username for RT"
@@ -1973,7 +1973,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:337
 msgid "Date format"
-msgstr ""
+msgstr "Dátum formátum"
 
 #: lib/RT/Date.pm:657
 msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
@@ -1997,7 +1997,7 @@ msgstr "Idõpontok"
 
 #: lib/RT/Date.pm:99
 msgid "Dec"
-msgstr ""
+msgstr "Dec"
 
 #: NOT FOUND IN SOURCE
 msgid "Dec."
@@ -2009,7 +2009,7 @@ msgstr ""
 
 #: etc/initialdata:197
 msgid "Default Autoresponse template"
-msgstr ""
+msgstr "Automatikus válasz alapértelmezett sablonja"
 
 #: share/html/Tools/Offline.html:62
 msgid "Default Queue"
@@ -2037,7 +2037,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:140
 msgid "Default queue"
-msgstr ""
+msgstr "Alapértelmezett sor"
 
 #: etc/initialdata:228
 msgid "Default transaction template"
@@ -2046,7 +2046,7 @@ msgstr ""
 #: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
 msgid "Default: %1"
-msgstr ""
+msgstr "Alapértelmezett: %1"
 
 #: lib/RT/Transaction_Overlay.pm:675
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
@@ -2088,7 +2088,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:268
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "Nem sikerült törölni: %1"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
@@ -2129,7 +2129,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:266
 #. ($self->ObjectName)
 msgid "Deleted %1"
-msgstr ""
+msgstr "%1 törölve"
 
 #: share/html/Dashboards/index.html:83
 #. ($Deleted)
@@ -2214,11 +2214,11 @@ msgstr "Leírás"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
-msgstr ""
+msgstr "Irány"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:63 share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Disabled"
-msgstr ""
+msgstr "Letiltva"
 
 #: share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:120
 msgid "Display"
@@ -2262,15 +2262,15 @@ msgstr "Keresés indítása"
 
 #: lib/RT/Installer.pm:190
 msgid "Domain name"
-msgstr ""
+msgstr "Tartománynév"
 
 #: lib/RT/Installer.pm:191
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
-msgstr ""
+msgstr "Ne írd be hogy http://, csak úgy írd hogy 'localhost', vagy 'rt.example.com'"
 
 #: lib/RT/Config.pm:268
 msgid "Don't refresh home page."
-msgstr ""
+msgstr "Ne frissítse a kezdőlapot."
 
 #: lib/RT/Config.pm:224
 msgid "Don't refresh search results."
@@ -2319,7 +2319,7 @@ msgstr "Szerkesztés"
 
 #: share/html/Search/Bulk.html:189
 msgid "Edit Custom Fields"
-msgstr ""
+msgstr "Egyéni mezők szerkesztése"
 
 #: share/html/Admin/Elements/ObjectCustomFields:94 share/html/Admin/Queues/CustomFields.html:66 share/html/Admin/Users/CustomFields.html:66
 #. ($Object->Name)
@@ -2435,7 +2435,7 @@ msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "EmailAddress"
-msgstr ""
+msgstr "EmailCím"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:63 share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Enabled"
@@ -2623,7 +2623,7 @@ msgstr ""
 #: share/html/Install/DatabaseDetails.html:187
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
-msgstr ""
+msgstr "Nem sikerült csatlakozni az adatbázishoz: %1"
 
 #: lib/RT/SharedSetting.pm:200
 #. ($self->ObjectName)
@@ -2660,7 +2660,7 @@ msgstr ""
 
 #: sbin/rt-email-digest:166
 msgid "Failed to load template"
-msgstr ""
+msgstr "Nem sikerült betölteni a sablont"
 
 #: sbin/rt-email-digest:174
 msgid "Failed to parse template"
@@ -2684,7 +2684,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52
 msgid "FileName"
-msgstr ""
+msgstr "FájlNév"
 
 #: lib/RT/Tickets_Overlay.pm:128 share/html/Elements/SelectAttachmentField:52
 msgid "Filename"
@@ -2732,7 +2732,7 @@ msgstr "Végsõ prioritás"
 
 #: lib/RT/Ticket_Overlay.pm:912 lib/RT/Tickets_Overlay.pm:102 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:99
 msgid "FinalPriority"
-msgstr ""
+msgstr "VégsőPrioritás"
 
 #: share/html/Admin/Users/index.html:86
 msgid "Find all users whose"
@@ -2764,7 +2764,7 @@ msgstr ""
 
 #: lib/RT/StyleGuide.pod:749
 msgid "Foo!"
-msgstr ""
+msgstr "Bármi!"
 
 #: share/html/Search/Bulk.html:94
 msgid "Force change"
@@ -2776,7 +2776,7 @@ msgstr ""
 
 #: etc/initialdata:380 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:204 share/html/Ticket/Elements/Tabs:183
 msgid "Forward"
-msgstr ""
+msgstr "Átad"
 
 #: share/html/Ticket/Forward.html:79
 msgid "Forward Message"
@@ -2788,7 +2788,7 @@ msgstr "Üzenet továbbküldése és visszalépés"
 
 #: etc/initialdata:387 etc/upgrade/3.8.6/content:3
 msgid "Forward Ticket"
-msgstr ""
+msgstr "Probléma átadása"
 
 #: NOT FOUND IN SOURCE
 msgid "Forward message"
@@ -2827,7 +2827,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:108
 msgid "Fri"
-msgstr ""
+msgstr "Pén"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri."
@@ -2835,7 +2835,7 @@ msgstr "P"
 
 #: share/html/Dashboards/Subscription.html:113
 msgid "Friday"
-msgstr ""
+msgstr "Péntek"
 
 #: share/html/Ticket/Elements/ShowHistory:68 share/html/Ticket/Elements/ShowHistory:74
 msgid "Full headers"
@@ -2843,7 +2843,7 @@ msgstr "Teljes fejléc"
 
 #: lib/RT/Config.pm:169 lib/RT/Config.pm:216 lib/RT/Config.pm:235
 msgid "General"
-msgstr ""
+msgstr "Általános"
 
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
@@ -2920,7 +2920,7 @@ msgstr "Mutassa a problémát"
 
 #: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:326 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
-msgstr ""
+msgstr "Gráf"
 
 #: share/html/Search/Chart.html:89 share/html/Ticket/Graphs/Elements/EditGraphProperties:48
 msgid "Graph Properties"
@@ -3042,15 +3042,15 @@ msgstr "%1 felhasználó története"
 
 #: share/html/Elements/DashboardTabs:40
 msgid "Home"
-msgstr ""
+msgstr "Kezdőlap"
 
 #: lib/RT/Config.pm:265
 msgid "Home page refresh interval"
-msgstr ""
+msgstr "Kezdőlap frissítésének gyakorisága"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "HomePhone"
-msgstr ""
+msgstr "OtthoniTelefon"
 
 #: share/html/Elements/Tabs:68
 msgid "Homepage"
@@ -3180,11 +3180,11 @@ msgstr "Kezdõ prioritás"
 
 #: lib/RT/Ticket_Overlay.pm:911 lib/RT/Ticket_Overlay.pm:913 lib/RT/Tickets_Overlay.pm:101 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:99
 msgid "InitialPriority"
-msgstr ""
+msgstr "KezdőPrioritás"
 
 #: share/html/Install/Global.html:65 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
-msgstr ""
+msgstr "Adatbázis inicializálása"
 
 #: lib/RT/ScripAction_Overlay.pm:131
 msgid "Input error"
@@ -3198,7 +3198,7 @@ msgstr ""
 
 #: share/html/Install/Elements/Wrapper:51
 msgid "Install RT"
-msgstr ""
+msgstr "RT telepítése"
 
 #: lib/RT/Ticket_Overlay.pm:3327
 msgid "Internal Error"
@@ -3234,7 +3234,7 @@ msgstr "Érvénytelen dátum"
 
 #: lib/RT/CustomField_Overlay.pm:1130
 msgid "Invalid object"
-msgstr ""
+msgstr "Érvénytelen objektum"
 
 #: lib/RT/Ticket_Overlay.pm:389
 msgid "Invalid owner object"
@@ -3293,11 +3293,11 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:86
 msgid "Italic"
-msgstr ""
+msgstr "dőlt"
 
 #: lib/RT/Date.pm:88
 msgid "Jan"
-msgstr ""
+msgstr "Jan"
 
 #: NOT FOUND IN SOURCE
 msgid "Jan."
@@ -3309,7 +3309,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:94
 msgid "Jul"
-msgstr ""
+msgstr "Júl"
 
 #: NOT FOUND IN SOURCE
 msgid "Jul."
@@ -3321,7 +3321,7 @@ msgstr "Minden módosítása"
 
 #: lib/RT/Date.pm:93
 msgid "Jun"
-msgstr ""
+msgstr "Jún"
 
 #: NOT FOUND IN SOURCE
 msgid "Jun."
@@ -3329,7 +3329,7 @@ msgstr "jún."
 
 #: lib/RT/Installer.pm:78
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
-msgstr ""
+msgstr "Hagyd 'localhost'-on ha nem tudod mit írj ide. Hagyd üresen ha helyben, socketen keresztül csatlakozol."
 
 #: share/html/Admin/Users/Modify.html:96 share/html/Install/index.html:56 share/html/User/Prefs.html:78
 msgid "Language"
@@ -3357,11 +3357,11 @@ msgstr "Utoljára aktualizálva"
 
 #: share/html/Elements/ColumnMap:91
 msgid "Last Updated By"
-msgstr ""
+msgstr "Utoljára frissítette:"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
-msgstr ""
+msgstr "Utoljára frissítette"
 
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets_Overlay.pm:123 share/html/Search/Elements/BuildFormatString:99
 msgid "LastUpdated"
@@ -3394,7 +3394,7 @@ msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/ShowLegends:48
 msgid "Legends"
-msgstr ""
+msgstr "feliratok"
 
 #: lib/RT/Config.pm:288
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
@@ -3410,7 +3410,7 @@ msgstr "Felhasználónak több jog engedélyezése"
 
 #: share/html/Install/index.html:86
 msgid "Let's go!"
-msgstr ""
+msgstr "Hajrá!"
 
 #: share/html/Search/Elements/EditFormat:66
 msgid "Link"
@@ -3489,7 +3489,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:202
 msgid "Loaded perl modules"
-msgstr ""
+msgstr "Betöltött perl modulok"
 
 #: share/html/Search/Elements/EditSearches:169
 #. ($SavedSearch->{'Description'})
@@ -3502,7 +3502,7 @@ msgstr "Cím"
 
 #: lib/RT/Config.pm:333
 msgid "Locale"
-msgstr ""
+msgstr "Területi beállítások"
 
 #: lib/RT/Date.pm:122
 msgid "LocalizedDateTime"
@@ -3523,7 +3523,7 @@ msgstr "%1-ként van bejelentkezve"
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
-msgstr ""
+msgstr "Kijelentkezett"
 
 #: lib/RT/StyleGuide.pod:789 share/html/Elements/Login:101 share/html/Elements/Login:117 share/html/Elements/Login:85
 msgid "Login"
@@ -3620,7 +3620,7 @@ msgstr "Felhasználók és jelszavaik kezelése"
 
 #: lib/RT/Date.pm:90
 msgid "Mar"
-msgstr ""
+msgstr "Márc"
 
 #: NOT FOUND IN SOURCE
 msgid "Mar."
@@ -3644,7 +3644,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:92
 msgid "May"
-msgstr ""
+msgstr "Máj"
 
 #: NOT FOUND IN SOURCE
 msgid "May."
@@ -3771,11 +3771,11 @@ msgstr ""
 
 #: lib/RT/Installer.pm:146
 msgid "Minimum password length"
-msgstr ""
+msgstr "Jelszó minimális hossza"
 
 #: share/html/Elements/SelectTimeUnits:50
 msgid "Minutes"
-msgstr ""
+msgstr "perc"
 
 #: lib/RT/Record.pm:928
 msgid "Missing a primary key?: %1"
@@ -3787,7 +3787,7 @@ msgstr "Mobil"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "MobilePhone"
-msgstr ""
+msgstr "MobilSzám"
 
 #: lib/RT/Queue_Overlay.pm:90
 msgid "Modify Access Control List"
@@ -4247,7 +4247,7 @@ msgstr "Következõ oldal"
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
-msgstr ""
+msgstr "Becenév"
 
 #: share/html/Admin/Users/Modify.html:86 share/html/User/Prefs.html:74
 msgid "Nickname"
@@ -4292,7 +4292,7 @@ msgstr "RT-felhasználó nem található. Vegyew fel a kapcsolatot az RT-adminis
 
 #: share/html/Search/Elements/ResultsRSSView:125
 msgid "No Subject"
-msgstr ""
+msgstr "Nincs tárgy"
 
 #: share/html/Admin/Global/Template.html:99 share/html/Admin/Queues/Template.html:100
 msgid "No Template"
@@ -4570,7 +4570,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:98
 msgid "Nov"
-msgstr ""
+msgstr "Nov"
 
 #: NOT FOUND IN SOURCE
 msgid "Nov."
@@ -4578,7 +4578,7 @@ msgstr "nov."
 
 #: lib/RT/Config.pm:256
 msgid "Number of search results"
-msgstr ""
+msgstr "Találatok száma"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -4619,7 +4619,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:97
 msgid "Oct"
-msgstr ""
+msgstr "Okt"
 
 #: NOT FOUND IN SOURCE
 msgid "Oct."
@@ -4627,7 +4627,7 @@ msgstr "okt."
 
 #: share/html/Tools/Elements/Tabs:62 share/html/Tools/index.html:63
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: share/html/Tools/Offline.html:51
 msgid "Offline edits"
@@ -4767,7 +4767,7 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:685
 msgid "Outgoing email recorded"
-msgstr ""
+msgstr "Kimenő email naplózva"
 
 #: lib/RT/Config.pm:388
 msgid "Outgoing mail"
@@ -4826,7 +4826,7 @@ msgstr ""
 
 #: share/html/dhandler:48 share/html/dhandler:49
 msgid "Page not found"
-msgstr ""
+msgstr "Az oldal nem található"
 
 #: share/html/Admin/Users/Modify.html:186 share/html/User/Prefs.html:102
 msgid "Pager"
@@ -4912,7 +4912,7 @@ msgstr "Hozzáférés visszautasítva"
 
 #: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:101 share/html/Dashboards/Modify.html:98
 msgid "Permission denied"
-msgstr ""
+msgstr "Hozzáférés megtagadva"
 
 #: share/html/Dashboards/index.html:56
 msgid "Personal Dashboards"
@@ -4997,7 +4997,7 @@ msgstr "Elõzõ"
 
 #: share/html/Elements/CollectionListPaging:101
 msgid "Previous"
-msgstr ""
+msgstr "Előző"
 
 #: NOT FOUND IN SOURCE
 msgid "Previous Page"
@@ -5110,11 +5110,11 @@ msgstr "A sor létrehozva"
 
 #: lib/RT/Queue_Overlay.pm:425
 msgid "Queue disabled"
-msgstr ""
+msgstr "Sor letiltva"
 
 #: lib/RT/Queue_Overlay.pm:427
 msgid "Queue enabled"
-msgstr ""
+msgstr "Sor engedélyezve"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:80
 msgid "Queue id"
@@ -5142,7 +5142,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "QueueName"
-msgstr ""
+msgstr "SorNév"
 
 #: lib/RT/Tickets_Overlay.pm:137
 msgid "QueueWatcher"
@@ -5211,7 +5211,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:148
 msgid "RT Size"
-msgstr ""
+msgstr "RT mérete"
 
 #: lib/RT/Config.pm:251 lib/RT/Config.pm:260 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
 msgid "RT at a glance"
@@ -5469,7 +5469,7 @@ msgstr ""
 
 #: share/html/Tools/Elements/Tabs:66 share/html/Tools/Reports/index.html:48 share/html/Tools/Reports/index.html:49 share/html/Tools/index.html:68
 msgid "Reports"
-msgstr ""
+msgstr "Jelentések"
 
 #: lib/RT/ACE_Overlay.pm:100 lib/RT/Tickets_Overlay.pm:130
 msgid "Requestor"
@@ -5490,7 +5490,7 @@ msgstr "A problémát meg kell oldani"
 #: lib/RT/Attribute_Overlay.pm:149
 #. ('Object')
 msgid "Required parameter '%1' not specified"
-msgstr ""
+msgstr "A szükséges '%1' paraméter nincs megadva"
 
 #: share/html/Elements/Submit:101
 msgid "Reset"
@@ -5523,11 +5523,11 @@ msgstr "Megoldva"
 
 #: share/html/Tools/Reports/Elements/Tabs:57 share/html/Tools/Reports/index.html:58
 msgid "Resolved by owner"
-msgstr ""
+msgstr "Megoldottak tulajdonos szerint"
 
 #: share/html/Tools/Reports/Elements/Tabs:61 share/html/Tools/Reports/index.html:63
 msgid "Resolved in date range"
-msgstr ""
+msgstr "Megoldottak egy idő intervallumban"
 
 #: share/html/Tools/Reports/ResolvedByDates.html:54
 msgid "Resolved tickets in period, grouped by owner"
@@ -5535,7 +5535,7 @@ msgstr ""
 
 #: share/html/Tools/Reports/ResolvedByOwner.html:52
 msgid "Resolved tickets, grouped by owner"
-msgstr ""
+msgstr "Megoldott problémák, tulajdonos szerint"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "ResolvedRelative"
@@ -5543,7 +5543,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:71
 msgid "Respond"
-msgstr ""
+msgstr "Válasz"
 
 #: share/html/Elements/ListActions:49 share/html/Search/Elements/NewListActions:48
 msgid "Results"
@@ -5551,7 +5551,7 @@ msgstr "Változtatások eredménye"
 
 #: share/html/Ticket/GnuPG.html:59
 msgid "Return back to the ticket"
-msgstr ""
+msgstr "Vissza a problémához"
 
 #: share/html/Elements/EditPassword:19
 msgid "Retype Password"
@@ -5596,7 +5596,7 @@ msgstr "Jogok"
 #: lib/RT/Interface/Web.pm:1387
 #. ($object_type)
 msgid "Rights could not be granted for %1"
-msgstr ""
+msgstr "A jog nem kiadható %1 -nek"
 
 #: NOT FOUND IN SOURCE
 msgid "Rights could not be revoked for %1"
@@ -5608,11 +5608,11 @@ msgstr "Szerepek"
 
 #: share/html/Dashboards/Subscription.html:156
 msgid "Rows"
-msgstr ""
+msgstr "Sorok"
 
 #: share/html/Prefs/MyRT.html:76
 msgid "Rows per box"
-msgstr ""
+msgstr "listázott sorok száma"
 
 #: share/html/Search/Elements/DisplayOptions:90
 msgid "Rows per page"
@@ -5624,11 +5624,11 @@ msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
-msgstr ""
+msgstr "Az SQLite egy olyan adatbázis, aminek nincs szüksége szerverre, vagy bármiféle konfigurációra. Az RT fejlesztői teszteléshez, fehlesztéshez ajánlják, de nem igazán ajánlott egy komolyabb RT szerverhez."
 
 #: lib/RT/Date.pm:109
 msgid "Sat"
-msgstr ""
+msgstr "Szo"
 
 #: NOT FOUND IN SOURCE
 msgid "Sat."
@@ -5636,7 +5636,7 @@ msgstr "Szo"
 
 #: share/html/Dashboards/Subscription.html:114
 msgid "Saturday"
-msgstr ""
+msgstr "szombat"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Ticket/Elements/ShowSummary:95 share/html/Ticket/Reminders.html:63 share/html/Widgets/SelectionBox:233
 msgid "Save"
@@ -5652,7 +5652,7 @@ msgstr "Beállítások mentése"
 
 #: share/html/Search/Elements/EditSearches:65
 msgid "Save as New"
-msgstr ""
+msgstr "Mentés újként"
 
 #: NOT FOUND IN SOURCE
 msgid "Save changes"
@@ -5666,7 +5666,7 @@ msgstr ""
 #: share/html/Elements/ShowSearch:72
 #. ($SavedSearch)
 msgid "Saved Search %1 not found"
-msgstr ""
+msgstr "A %1 mentett keresés nem található"
 
 #: share/html/Search/Chart.html:98
 msgid "Saved charts"
@@ -5712,7 +5712,7 @@ msgstr "Keresés"
 
 #: share/html/Prefs/SearchOptions.html:48 share/html/Prefs/SearchOptions.html:51
 msgid "Search Preferences"
-msgstr ""
+msgstr "Keresési beállítások"
 
 #: share/html/Approvals/Elements/PendingMyApproval:61
 msgid "Search for approvals"
@@ -5720,7 +5720,7 @@ msgstr "Engedélyezések keresése"
 
 #: share/html/Search/Simple.html:77
 msgid "Search for tickets"
-msgstr ""
+msgstr "Problémák keresése"
 
 #: share/html/Search/Simple.html:59
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
@@ -5728,7 +5728,7 @@ msgstr ""
 
 #: share/html/User/Elements/Tabs:73
 msgid "Search options"
-msgstr ""
+msgstr "Keresési beállítások"
 
 #: share/html/Search/Chart.html:73
 #. ($PrimaryGroupByLabel)
@@ -5741,7 +5741,7 @@ msgstr ""
 
 #: share/html/Search/Simple.html:61
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
+msgstr "A problémák teljes szövegében sokáig tarthat a keresés, de ha szükséges, a <b>fulltext:<i>kifejezés</i> begépelésével a teljes problémában és előzményeiben is lehet keresni."
 
 #: share/html/User/Prefs.html:180
 msgid "Secret authentication token"
@@ -5753,7 +5753,7 @@ msgstr "Biztonság:"
 
 #: share/html/Elements/ShowCustomFields:111
 msgid "See also:"
-msgstr ""
+msgstr "Lásd még:"
 
 #: lib/RT/Queue_Overlay.pm:92
 msgid "See custom field values"
@@ -5801,7 +5801,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/CustomFieldTabs:93 share/html/Admin/Elements/GroupTabs:77 share/html/Admin/Elements/QueueTabs:97 share/html/Admin/Elements/UserTabs:83 share/html/Admin/Global/Scrip.html:61 share/html/Admin/Global/Scrips.html:59 share/html/Admin/Global/Template.html:77 share/html/Admin/Global/Templates.html:59 share/html/Dashboards/Elements/Tabs:93
 msgid "Select"
-msgstr ""
+msgstr "Kiválaszt"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
@@ -5817,11 +5817,11 @@ msgstr "Válasszon csoportot!"
 
 #: share/html/Admin/Queues/index.html:56
 msgid "Select a queue"
-msgstr ""
+msgstr "Válasszon sort"
 
 #: share/html/SelfService/CreateTicketInQueue.html:50
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "Válassza ki az új probléma sorát"
 
 #: share/html/Admin/Users/index.html:48 share/html/Admin/Users/index.html:51 share/html/Admin/Users/index.html:54
 msgid "Select a user"
@@ -5829,7 +5829,7 @@ msgstr "Válasszon felhasználót!"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
-msgstr ""
+msgstr "más nyelv kiválasztása"
 
 #: NOT FOUND IN SOURCE
 msgid "Select custom field"
@@ -5897,7 +5897,7 @@ msgstr "Válasszon felhasználót"
 
 #: share/html/Admin/Elements/EditCustomFields:55
 msgid "Selected Custom Fields"
-msgstr "Kiválasztott egy egyéni mezõk"
+msgstr "Kiválasztott egyéni mezők"
 
 #: lib/RT/Crypt/GnuPG.pm:2022
 msgid "Selected key either is not trusted or doesn't exist anymore."
@@ -5913,7 +5913,7 @@ msgstr ""
 
 #: lib/RT/Interface/Email.pm:733
 msgid "Send email successfully"
-msgstr ""
+msgstr "Email küldése sikeres"
 
 #: NOT FOUND IN SOURCE
 msgid "Send mail to all watchers"
@@ -5933,7 +5933,7 @@ msgstr ""
 
 #: etc/initialdata:67
 msgid "Send mail to requestors and Ccs"
-msgstr ""
+msgstr "Email küldése a beküldőknek és a Cc-knek"
 
 #: etc/initialdata:62
 msgid "Send mail to requestors and Ccs as a comment"
@@ -5941,7 +5941,7 @@ msgstr ""
 
 #: etc/initialdata:33
 msgid "Sends a message to the requestors"
-msgstr ""
+msgstr "üzenet küldése a beküldőknek"
 
 #: etc/initialdata:80 etc/initialdata:84
 msgid "Sends mail to explicitly listed Ccs and Bccs"
@@ -5965,7 +5965,7 @@ msgstr ""
 
 #: etc/initialdata:37 etc/initialdata:41
 msgid "Sends mail to the owner"
-msgstr ""
+msgstr "Email küldése a tulajdonosnak"
 
 #: lib/RT/Date.pm:96
 msgid "Sep"
@@ -6082,12 +6082,12 @@ msgstr ""
 
 #: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:305
 msgid "Shredder"
-msgstr ""
+msgstr "adatok törlése"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:58
 #. ($m->interp->apply_escapes( $Path ))
 msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr ""
+msgstr "Az adatok törléséhez az adatbázisból kell egy könyvtár ahova a dump fájlok kerülnek. Ellenőrizd hogy létezik-e a <span class=\"file-path\">%1</span> és írható-e a webszerver által."
 
 #: share/html/Dashboards/Queries.html:184
 msgid "Sidebar"
@@ -6135,7 +6135,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:152 share/html/Search/Elements/EditFormat:76
 msgid "Size"
-msgstr ""
+msgstr "Méret"
 
 #: share/html/Elements/PersonalQuickbar:5
 msgid "Skip Menu"
@@ -6155,7 +6155,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Objects.html:113
 msgid "Something wrong. Contact system administrator"
-msgstr ""
+msgstr "Valami hiba történt. Lépj kapcsolatba a rendszergazdával!"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:53 share/html/Admin/Elements/EditCustomFieldValues:57
 msgid "Sort"
@@ -6207,7 +6207,7 @@ msgstr "Státusz"
 
 #: etc/initialdata:285
 msgid "Status Change"
-msgstr ""
+msgstr "Státusz vátoztatás"
 
 #: lib/RT/Transaction_Overlay.pm:640
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
@@ -6278,7 +6278,7 @@ msgstr "Mentés"
 
 #: share/html/Dashboards/Subscription.html:180
 msgid "Subscribe"
-msgstr ""
+msgstr "Feliratkozás"
 
 #: share/html/Dashboards/Subscription.html:279
 #. ($DashboardObj->Name)
@@ -6300,7 +6300,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:83 share/html/Dashboards/Subscription.html:91
 msgid "Subscription"
-msgstr ""
+msgstr "Feliratkozás"
 
 #: share/html/Dashboards/Subscription.html:270
 #. ($msg)
@@ -6321,7 +6321,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:103
 msgid "Sun"
-msgstr ""
+msgstr "Vas"
 
 #: NOT FOUND IN SOURCE
 msgid "Sun."
@@ -6329,11 +6329,11 @@ msgstr "V"
 
 #: share/html/Dashboards/Subscription.html:115
 msgid "Sunday"
-msgstr ""
+msgstr "Vasárnap"
 
 #: lib/RT/System.pm:79
 msgid "SuperUser"
-msgstr ""
+msgstr "RendszerAdmin"
 
 #: lib/RT/Config.pm:378
 msgid "Suspended"
@@ -6353,7 +6353,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:224 share/html/Elements/SelectTimezone:71
 msgid "System Default"
-msgstr ""
+msgstr "Alapértelmezett"
 
 #: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1387 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
@@ -6362,7 +6362,7 @@ msgstr "Rendszerhiba"
 #: lib/RT/Transaction_Overlay.pm:234 lib/RT/Transaction_Overlay.pm:240
 #. ($msg)
 msgid "System Error: %1"
-msgstr ""
+msgstr "Rendszerhiba: %1"
 
 #: share/html/Admin/Tools/index.html:49
 msgid "System Tools"
@@ -6394,7 +6394,7 @@ msgstr ""
 
 #: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:211
 msgid "Take"
-msgstr "Atvesz"
+msgstr "Átvesz"
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "Take tickets"
@@ -6424,12 +6424,12 @@ msgstr "Sablon #%1"
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
 msgid "Template #%1 deleted"
-msgstr ""
+msgstr "A #%1 sablon törölve"
 
 #: lib/RT/Scrip_Overlay.pm:144
 #. ($args{'Template'})
 msgid "Template '%1' not found"
-msgstr ""
+msgstr "A '%1' sablon nem található"
 
 #: NOT FOUND IN SOURCE
 msgid "Template deleted"
@@ -6437,7 +6437,7 @@ msgstr "Sablon törölve"
 
 #: lib/RT/Template_Overlay.pm:383
 msgid "Template is empty"
-msgstr ""
+msgstr "A sablon üres"
 
 #: lib/RT/Scrip_Overlay.pm:140
 msgid "Template is mandatory argument"
@@ -6453,7 +6453,7 @@ msgstr "Sablon beolvasva"
 
 #: lib/RT/Template_Overlay.pm:426
 msgid "Template parsing error"
-msgstr ""
+msgstr "Hiba a sablonban"
 
 #: share/html/Admin/Elements/QueueTabs:72 share/html/Admin/Elements/SystemTabs:59 share/html/Admin/Global/index.html:60
 msgid "Templates"
@@ -6481,7 +6481,7 @@ msgstr "Ez ugyanaz az érték"
 
 #: lib/RT/ACE_Overlay.pm:295 lib/RT/ACE_Overlay.pm:394
 msgid "That principal already has that right"
-msgstr "A felhasználónak/csoportnak mát van ilyen joga"
+msgstr "A felhasználónak/csoportnak már van ilyen joga"
 
 #: lib/RT/Queue_Overlay.pm:843
 #. ($args{'Type'})
@@ -6509,7 +6509,7 @@ msgstr "Ez a sor nem létezik"
 
 #: lib/RT/Ticket_Overlay.pm:2999
 msgid "That ticket has unresolved dependencies"
-msgstr ""
+msgstr "A problémának megoldatlan függőségei vannak"
 
 #: lib/RT/Action/CreateTickets.pm:483 lib/RT/Ticket_Overlay.pm:2816
 msgid "That user already owns that ticket"
@@ -6541,7 +6541,7 @@ msgstr "a felhasználóhoz nem tartozhatnak problémák ebbõl a sorból"
 
 #: lib/RT/Link_Overlay.pm:224
 msgid "That's not a numerical id"
-msgstr ""
+msgstr "nem numerikus azonosító"
 
 #: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:178 share/html/Ticket/Elements/ShowSummary:53
 msgid "The Basics"
@@ -6561,11 +6561,15 @@ msgstr ""
 
 #: lib/RT/Installer.pm:79
 msgid "The domain name of your database server (like 'db.example.com')."
-msgstr ""
+msgstr "Az adatbázis szerver domain neve (pl. 'db.pelda.hu')."
 
 #: bin/rt-crontool:379
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+msgstr "A következő parancs megkeres minden aktív problémát a 'general' sorban aminek 99-es a prioritása és nem nyúltak hozzá 4 órája:"
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
@@ -6605,11 +6609,11 @@ msgstr ""
 
 #: share/html/dhandler:50
 msgid "The page you requested could not be found"
-msgstr ""
+msgstr "A kért oldal nem található"
 
 #: lib/RT/ACE_Overlay.pm:100
 msgid "The requestor of a ticket"
-msgstr ""
+msgstr "Egy probléma beküldője"
 
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
@@ -6622,7 +6626,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:174
 msgid "Theme"
-msgstr ""
+msgstr "Téma"
 
 #: lib/RT/Crypt/GnuPG.pm:2049
 msgid "There are several keys suitable for encryption."
@@ -6676,7 +6680,7 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:340
 msgid "This transaction appears to have no content"
-msgstr "Diese Transaktion scheint keinen Inhalt zu haben"
+msgstr "A tranzakció nem tartalmaz semmit"
 
 #: share/html/Ticket/Elements/ShowRequestor:85
 #. ($rows)
@@ -6685,7 +6689,7 @@ msgstr "A felhasználó által felvetett %1 legsürgõsebb probléma"
 
 #: lib/RT/Date.pm:107
 msgid "Thu"
-msgstr ""
+msgstr "Csüt"
 
 #: NOT FOUND IN SOURCE
 msgid "Thu."
@@ -6693,7 +6697,7 @@ msgstr "Cs"
 
 #: share/html/Dashboards/Subscription.html:112
 msgid "Thursday"
-msgstr ""
+msgstr "Csütörtök"
 
 #: lib/RT/Record.pm:908 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52
 msgid "Ticket"
@@ -6712,7 +6716,7 @@ msgstr ""
 #: share/html/Ticket/Elements/ShowTransaction:147
 #. ($Transaction->Ticket)
 msgid "Ticket #%1:"
-msgstr ""
+msgstr "Probléma #%1:"
 
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -6768,11 +6772,11 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:494 lib/RT/Ticket_Overlay.pm:507 lib/RT/Ticket_Overlay.pm:518 lib/RT/Ticket_Overlay.pm:680
 msgid "Ticket could not be created due to an internal error"
-msgstr ""
+msgstr "A probléma belső hiba miatt nem hozható létre"
 
 #: share/html/Ticket/Create.html:258
 msgid "Ticket could not be loaded"
-msgstr ""
+msgstr "A problémát nem sikerült betölteni"
 
 #: lib/RT/Config.pm:281
 msgid "Ticket display"
@@ -6863,7 +6867,7 @@ msgstr "Ráfordított munkaidõ"
 
 #: lib/RT/Installer.pm:210 lib/RT/Installer.pm:235 share/html/User/Prefs.html:82
 msgid "Timezone"
-msgstr ""
+msgstr "Időzóna"
 
 #: share/html/Search/Elements/EditFormat:75
 msgid "Title"
@@ -6929,7 +6933,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:105
 msgid "Tue"
-msgstr ""
+msgstr "Kedd"
 
 #: NOT FOUND IN SOURCE
 msgid "Tue."
@@ -6937,7 +6941,7 @@ msgstr "K"
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Tuesday"
-msgstr ""
+msgstr "Kedd"
 
 #: lib/RT/Ticket_Overlay.pm:916 lib/RT/Tickets_Overlay.pm:1979 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
@@ -6959,11 +6963,11 @@ msgstr ""
 
 #: lib/RT/ScripCondition_Overlay.pm:126
 msgid "Unimplemented"
-msgstr ""
+msgstr "Nincs megvalósítva"
 
 #: share/html/Admin/Users/Modify.html:91
 msgid "Unix login"
-msgstr ""
+msgstr "Unix usernév"
 
 #: lib/RT/Crypt/GnuPG.pm:2219 lib/RT/Crypt/GnuPG.pm:2224
 msgid "Unknown (no trust value assigned)"
@@ -7054,7 +7058,7 @@ msgstr "A kiválasztott problémák frissítése"
 
 #: share/html/Ticket/ModifyAll.html:87
 msgid "Update ticket"
-msgstr ""
+msgstr "Probléma frissítése"
 
 #: share/html/SelfService/Update.html:117 share/html/SelfService/Update.html:49
 #. ($Ticket->id)
@@ -7117,7 +7121,7 @@ msgstr "Módosítások feltöltése"
 
 #: sbin/rt-email-digest:88
 msgid "Usage: "
-msgstr ""
+msgstr "Használat: "
 
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
@@ -7190,15 +7194,15 @@ msgstr "Felhasználó által definiált csoport"
 
 #: lib/RT/User_Overlay.pm:1216
 msgid "User disabled"
-msgstr ""
+msgstr "Felhasználó letiltva"
 
 #: lib/RT/User_Overlay.pm:1218
 msgid "User enabled"
-msgstr ""
+msgstr "Felhasználó engedélyezett"
 
 #: share/html/Admin/Users/GnuPG.html:61
 msgid "User has empty email address"
-msgstr ""
+msgstr "A felhasználónak nincs megadva e-mail címe"
 
 #: lib/RT/User_Overlay.pm:489 lib/RT/User_Overlay.pm:509
 msgid "User loaded"
@@ -7239,7 +7243,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:85
 msgid "Validation"
-msgstr ""
+msgstr "Ellenőrzés"
 
 #: share/html/Admin/Tools/Configuration.html:123 share/html/Admin/Tools/Configuration.html:65
 msgid "Value"
@@ -7255,11 +7259,11 @@ msgstr ""
 
 #: share/html/Tools/index.html:70
 msgid "Various RT reports"
-msgstr ""
+msgstr "RT jelentések"
 
 #: share/html/Admin/Tools/Configuration.html:206
 msgid "Version"
-msgstr ""
+msgstr "Verzió"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
@@ -7327,7 +7331,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:106
 msgid "Wed"
-msgstr ""
+msgstr "Sze"
 
 #: NOT FOUND IN SOURCE
 msgid "Wed."
@@ -7335,7 +7339,7 @@ msgstr "Sze"
 
 #: share/html/Dashboards/Subscription.html:111
 msgid "Wednesday"
-msgstr ""
+msgstr "Szerda"
 
 #: lib/RT/Config.pm:377
 msgid "Weekly digest"
@@ -7561,7 +7565,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:316
 msgid "add <pre> tag around plain text attachments"
-msgstr ""
+msgstr "<pre> elem hozzáadása a szöveges csatolások köré"
 
 #: share/html/Elements/SelectDateRelation:59
 msgid "after"
@@ -7694,11 +7698,11 @@ msgstr "hiba: nincs mit törölni"
 
 #: share/html/Search/Elements/EditQuery:102 share/html/Search/Elements/EditQuery:129 share/html/Search/Elements/EditQuery:150
 msgid "error: nothing to move"
-msgstr ""
+msgstr "hiba: nincs mit áthelyezni"
 
 #: share/html/Search/Elements/EditQuery:208
 msgid "error: nothing to toggle"
-msgstr ""
+msgstr "hiba: nincs mit választani"
 
 #: share/html/Dashboards/Subscription.html:117
 msgid "every"
@@ -7824,7 +7828,7 @@ msgstr "nem egyenlõ"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:83
 msgid "nothing"
-msgstr ""
+msgstr "semmi"
 
 #: share/html/Admin/Tools/Shredder/index.html:161
 msgid "objects were successfuly removed"
@@ -7840,7 +7844,7 @@ msgstr "napon"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "one"
-msgstr ""
+msgstr "egy"
 
 #: lib/RT/Queue_Overlay.pm:79 share/html/SelfService/Elements/MyRequests:76
 msgid "open"
@@ -7848,11 +7852,11 @@ msgstr "Nyitott"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 msgid "open/close"
-msgstr ""
+msgstr "nyit/zár"
 
 #: share/html/Widgets/Form/Select:77
 msgid "other..."
-msgstr ""
+msgstr "más..."
 
 #: lib/RT/Group_Overlay.pm:164
 #. ($self->Name, $user->Name)
@@ -7945,7 +7949,7 @@ msgstr "probléma #%1 %2"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
 msgid "top to bottom"
-msgstr ""
+msgstr "fentről lefelé"
 
 #: lib/RT/Crypt/GnuPG.pm:2246
 msgid "ultimate"
@@ -7958,7 +7962,7 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "korlátlan"
 
 #: lib/RT/Group_Overlay.pm:156
 #. ($user->Object->Name)
@@ -7967,7 +7971,7 @@ msgstr "felhasználó %1"
 
 #: lib/RT/Config.pm:164
 msgid "verbose"
-msgstr ""
+msgstr "részletes"
 
 #: share/html/Dashboards/Subscription.html:107
 msgid "weekly"

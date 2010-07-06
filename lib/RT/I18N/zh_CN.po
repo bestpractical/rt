@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2010-03-05 19:31+0000\n"
-"Last-Translator: charles <Unknown>\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-06-04 12:30+0000\n"
+"Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -4047,7 +4047,7 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:128 share/html/Elements/SelectAttachmentField:52
 msgid "Filename"
-msgstr "档名"
+msgstr "文件名"
 
 #: share/html/Admin/Tools/Shredder/Elements/PluginArguments:52
 msgid "Fill arguments"
@@ -10645,7 +10645,7 @@ msgstr "早于"
 
 #: share/html/Admin/Global/MyRT.html:91
 msgid "body"
-msgstr "主体"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -11064,11 +11064,11 @@ msgstr "样式：%1"
 
 #: share/html/Admin/Global/MyRT.html:92
 msgid "summary"
-msgstr "摘要"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
-msgstr "摘要行数"
+msgstr "加总列"
 
 #: lib/RT/Group_Overlay.pm:167
 #. ($self->Type)

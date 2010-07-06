@@ -4,14 +4,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2010-04-26 13:56+0000\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-05-18 08:36+0000\n"
 "Last-Translator: Karl Ove Hufthammer <karl@huftis.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:13+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264
@@ -106,7 +106,7 @@ msgstr "%1 %2 lagret"
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 «%2» oppdatert"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:66
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -306,22 +306,22 @@ msgstr "%1 er et verktøy, ment for å bli kjørt via cron, som sender alle avvi
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr ""
+msgstr "%1 er en adresse RT tar imot e-post på. Hvis du la henne til som en «%2», ville det oppstå en e-postløkke."
 
 #: lib/RT/Queue_Overlay.pm:970
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 er ikke lenger en %2 for denne køen."
+msgstr "%1 er ikke lenger en %2 for denne køen"
 
 #: lib/RT/Ticket_Overlay.pm:1286
 #. ($principal->Object->Name,                         $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 er ikke lenger en %2 for denne saken."
+msgstr "%1 er ikke lenger en %2 for denne saken"
 
 #: lib/RT/Record.pm:1809
 #. ($TransactionObj->OldValue, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
-msgstr "%1 er ikke lenger en gyldig verdi for fleksifeltet %2"
+msgstr "Fleksifeltet %2 har ikke lenger verdien %1"
 
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
@@ -471,7 +471,7 @@ msgstr "(Sender en kopi av oppdateringen til valgte e-postadresser (en kommadelt
 
 #: share/html/Admin/Elements/EditScrip:99
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
-msgstr "(Bruk disse feltene når du velger «tilpasset» for en betingelse eller en handling.)"
+msgstr "(Bruk disse feltene når du velger «Tilpasset» for en betingelse eller en handling.)"
 
 #: share/html/Ticket/Elements/EditWatchers:63 share/html/Ticket/Elements/ShowUserEntry:50
 msgid "(Will not be sent email)"
@@ -559,7 +559,7 @@ msgstr "En tom mal"
 
 #: share/html/Admin/Users/Modify.html:364
 msgid "A password was not set, so user won't be able to login."
-msgstr "Et passord var ikke oppgitt, så brukeren kan ikke logge inn."
+msgstr "Et passord var ikke oppgitt, så brukeren kan ikke logge inn"
 
 #: lib/RT/ACE_Overlay.pm:171
 msgid "ACE not found"
@@ -669,12 +669,12 @@ msgstr "Legg til, fjern eller endre fleksifeltverdier for objekt"
 #: lib/RT/Queue_Overlay.pm:853
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
-msgstr "La til primærobjekt som en %1 for denne køen"
+msgstr "%1 lagt til for køen"
 
 #: lib/RT/Ticket_Overlay.pm:1158
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
-msgstr "La til primærobjekt som en %1 for denne saken"
+msgstr "%1 lagt til for saken"
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
@@ -779,7 +779,7 @@ msgstr "Alle køer"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "All queues matching search criteria"
-msgstr ""
+msgstr "Alle køer i samsvar med søkekriteriene"
 
 #: lib/RT/Attachment_Overlay.pm:648
 msgid "Already encrypted"
@@ -791,7 +791,7 @@ msgstr "Og/eller"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
-msgstr ""
+msgstr "Tildelt"
 
 #: share/html/Admin/CustomFields/Modify.html:79 share/html/Admin/Elements/CustomFieldTabs:85
 msgid "Applies to"
@@ -799,7 +799,7 @@ msgstr "Gjelder"
 
 #: share/html/Admin/CustomFields/Objects.html:61
 msgid "Applies to all objects"
-msgstr ""
+msgstr "Gjelder alle objektene"
 
 #: share/html/Search/Edit.html:72
 msgid "Apply"
@@ -807,7 +807,7 @@ msgstr "Bruk"
 
 #: share/html/Admin/CustomFields/Objects.html:65
 msgid "Apply globally"
-msgstr ""
+msgstr "Bruk globalt"
 
 #: share/html/Search/Edit.html:72
 msgid "Apply your changes"
@@ -1001,7 +1001,7 @@ msgstr "FF"
 #: share/html/Search/Elements/EditSearches:174
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
-msgstr ""
+msgstr "Klarte ikke hente det lagrede søket «%1»"
 
 #: lib/RT/User_Overlay.pm:1612
 msgid "Can not modify system users"
@@ -1063,7 +1063,7 @@ msgstr "Kategori ikke valgt"
 
 #: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:93 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:70
 msgid "Cc"
-msgstr "Kopi til"
+msgstr "Kopimottaker"
 
 #: lib/RT/Graph/Tickets.pm:158
 msgid "Ccs"
@@ -1075,7 +1075,7 @@ msgstr "Endre"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
-msgstr ""
+msgstr "Endre godkjenningssak til status «åpen»"
 
 #: share/html/SelfService/Prefs.html:53
 msgid "Change password"
@@ -1241,7 +1241,7 @@ msgstr "Koblet til"
 
 #: lib/RT/Tickets_Overlay.pm:126 share/html/Admin/Elements/ModifyTemplate:67 share/html/Elements/QuickCreate:70 share/html/Elements/SelectAttachmentField:50 share/html/Ticket/ModifyAll.html:136
 msgid "Content"
-msgstr "Innhold"
+msgstr "Melding"
 
 #: share/html/Elements/SelectAttachmentField:51
 msgid "Content-Type"
@@ -1367,7 +1367,7 @@ msgstr "Klarte ikke legge medlem til gruppa"
 
 #: lib/RT/CustomField_Overlay.pm:1052
 msgid "Couldn't apply custom field to an object as it's global already"
-msgstr ""
+msgstr "Klarte ikke tildele fleksifelt til objekt, siden det alt er globalt"
 
 #: lib/RT/Record.pm:1749 lib/RT/Record.pm:1801
 #. ($msg)
@@ -1418,7 +1418,7 @@ msgstr "Klarte ikke laste fleksifelt %1"
 #: share/html/Admin/Elements/EditCustomFields:136 share/html/Admin/Elements/EditCustomFields:146
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr ""
+msgstr "Klarte ikke laste fleksifelt %1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:104
 #. ($id)
@@ -1497,7 +1497,7 @@ msgstr "Klarte ikke laste mal %1"
 #: lib/RT/Action/CreateTickets.pm:453 share/html/SelfService/Display.html:157
 #. ($id)
 msgid "Couldn't load ticket '%1'"
-msgstr "Klarte ikke laste saken «%1»"
+msgstr "Klarte ikke hente saken «%1»"
 
 #: share/html/Ticket/Forward.html:92 share/html/Ticket/GnuPG.html:75
 #. ($QuoteTransaction)
@@ -1788,7 +1788,7 @@ msgstr "Selvvalgt betingelse"
 #. ($MoveCustomFieldUp)
 #. ($MoveCustomFieldDown)
 msgid "Custom field #%1 is not applied to this object"
-msgstr ""
+msgstr "Fleksifelt %1 blir ikke brukt på dette objektet"
 
 #: lib/RT/Tickets_Overlay.pm:2683
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
@@ -1823,7 +1823,7 @@ msgstr "Fleksifeltet «%1»"
 
 #: lib/RT/CustomField_Overlay.pm:1047
 msgid "Custom field is already applied to the object"
-msgstr ""
+msgstr "Fleksifeltet er alt brukt på dette objektet"
 
 #: lib/RT/CustomField_Overlay.pm:1268
 #. ($args{'Content'}, $self->Name)
@@ -1930,7 +1930,7 @@ msgstr "Datoformat"
 
 #: lib/RT/Date.pm:657
 msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
-msgstr ""
+msgstr "«DateTime» støtter ikke «format_cldr». Du må oppgradere for å kunne bruke denne funksjonen."
 
 #: lib/RT/Date.pm:655
 msgid "DateTime module missing"
@@ -1938,7 +1938,7 @@ msgstr "Mangler modulen «DateTime»"
 
 #: lib/RT/Date.pm:672
 msgid "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
-msgstr ""
+msgstr "«DateTime» støtter ikke «date_format_full». Du må oppgradere for å kunne bruke denne funksjonen."
 
 #: lib/RT/Date.pm:656
 msgid "DateTime::Locale module missing"
@@ -2400,7 +2400,7 @@ msgstr "Aktive køer"
 
 #: share/html/Admin/Queues/index.html:101
 msgid "Enabled queues matching search criteria"
-msgstr ""
+msgstr "Virksomme køer i samsvar med søkekriteriene"
 
 #: share/html/Admin/Elements/EditCustomField:138 share/html/User/Groups/Modify.html:140
 #. (loc_fuzzy($msg))
@@ -2546,7 +2546,7 @@ msgstr "UtvidetStatus"
 
 #: lib/RT/User_Overlay.pm:1099
 msgid "External authentication enabled."
-msgstr ""
+msgstr "Ekstern autentisering slått på"
 
 #: share/html/Admin/Users/Modify.html:101
 msgid "Extra info"
@@ -2780,7 +2780,7 @@ msgstr "Kom i gang"
 #: lib/RT/Transaction_Overlay.pm:743
 #. ($New->Name)
 msgid "Given to %1"
-msgstr "Gitt til %1"
+msgstr "Tildelt %1"
 
 #: share/html/Admin/Elements/Tabs:67 share/html/Admin/index.html:78 share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74
 msgid "Global"
@@ -2810,7 +2810,7 @@ msgstr "GnuPG"
 
 #: lib/RT/Attachment_Overlay.pm:684 lib/RT/Attachment_Overlay.pm:719
 msgid "GnuPG error. Contact with administrator"
-msgstr "GnuPG-feil. Ta kontakt med systemansvarlig."
+msgstr "GnuPG-feil. Ta kontakt med systemadministratoren."
 
 #: lib/RT/Attachment_Overlay.pm:639 lib/RT/Attachment_Overlay.pm:701
 msgid "GnuPG integration is disabled"
@@ -3080,7 +3080,7 @@ msgstr "Varsle brukeren om at utforminga han/hun bruker er fjernet"
 
 #: etc/initialdata:431 etc/upgrade/3.7.10/content:40
 msgid "Inform user that a message he sent has invalid GnuPG data"
-msgstr "Varsle brukeren om at meldingen han/hun sendte har ugyldige GnuPG-data"
+msgstr "Varsle brukeren om at meldinga han/hun sendte har ugyldige GnuPG-data"
 
 #: etc/initialdata:397 etc/upgrade/3.7.10/content:6
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
@@ -3420,7 +3420,7 @@ msgstr "Logg inn"
 #: share/html/Elements/Logo:51
 #. ())
 msgid "LogoAltText"
-msgstr ""
+msgstr "LogoAltTekst"
 
 #: share/html/Elements/Logout:48 share/html/NoAuth/Logout.html:48
 msgid "Logout"
@@ -3516,11 +3516,11 @@ msgstr "Merket alle meldingene som leste"
 
 #: share/html/Admin/Tools/Configuration.html:183
 msgid "Mason template search order"
-msgstr ""
+msgstr "Malrekkefølge for Mason"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:82
 msgid "MaxValues"
-msgstr ""
+msgstr "MaksVerdier"
 
 #: lib/RT/Config.pm:286
 msgid "Maximum inline message length"
@@ -3635,7 +3635,7 @@ msgstr "Bredde på meldingsfelt"
 
 #: lib/RT/Ticket_Overlay.pm:2198
 msgid "Message could not be recorded"
-msgstr "Klarte ikke lagre meldingen"
+msgstr "Klarte ikke lagre meldinga"
 
 #: sbin/rt-email-digest:291
 msgid "Message for user"
@@ -3936,7 +3936,7 @@ msgstr "EndreSak"
 
 #: share/html/Admin/Tools/Configuration.html:205
 msgid "Module"
-msgstr ""
+msgstr "Modul"
 
 #: lib/RT/Date.pm:104
 msgid "Mon"
@@ -4177,7 +4177,7 @@ msgstr "Ingen beskrivelse av %1"
 
 #: share/html/SelfService/Error.html:69
 msgid "No details"
-msgstr ""
+msgstr "Ingen detaljer"
 
 #: lib/RT/Users_Overlay.pm:182
 msgid "No group specified"
@@ -4430,7 +4430,7 @@ msgstr "ELLER"
 
 #: share/html/Admin/Tools/Configuration.html:151
 msgid "Object"
-msgstr ""
+msgstr "Objekt"
 
 #: lib/RT/Record.pm:308
 msgid "Object could not be created"
@@ -4574,7 +4574,7 @@ msgstr "Åpne saker ved svar"
 
 #: share/html/Admin/Tools/Configuration.html:64
 msgid "Option"
-msgstr ""
+msgstr "Valg"
 
 #: share/html/Prefs/MyRT.html:74
 msgid "Options"
@@ -4607,7 +4607,7 @@ msgstr "Utgående e-post registrert"
 
 #: lib/RT/Config.pm:388
 msgid "Outgoing mail"
-msgstr ""
+msgstr "Utgående e-post"
 
 #: share/html/Admin/Queues/Modify.html:87
 msgid "Over time, priority moves toward"
@@ -4686,7 +4686,7 @@ msgstr "Passord endret"
 
 #: lib/RT/User_Overlay.pm:948
 msgid "Password has not been set."
-msgstr ""
+msgstr "Passordet er ikke registrert"
 
 #: lib/RT/User_Overlay.pm:150 lib/RT/User_Overlay.pm:974
 #. (RT->Config->Get('MinimumPasswordLength'))
@@ -4695,7 +4695,7 @@ msgstr "Passordet må være minst %1 tegn langt"
 
 #: lib/RT/User_Overlay.pm:981
 msgid "Password set"
-msgstr "Passord valgt"
+msgstr "Passord registrert"
 
 #: share/html/SelfService/Prefs.html:76 share/html/User/Prefs.html:256
 #. ($msg)
@@ -4740,7 +4740,7 @@ msgstr "Perl-oppsett"
 
 #: share/html/Admin/Tools/Configuration.html:191
 msgid "Perl library search order"
-msgstr ""
+msgstr "Søkerekkefølge for Perl-bibliotek"
 
 #: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:636 lib/RT/Attachment_Overlay.pm:637 lib/RT/Attachment_Overlay.pm:698 lib/RT/Attachment_Overlay.pm:699 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1043 lib/RT/CustomField_Overlay.pm:1089 lib/RT/CustomField_Overlay.pm:1133 lib/RT/CustomField_Overlay.pm:1249 lib/RT/CustomField_Overlay.pm:1390 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:218 lib/RT/CustomField_Overlay.pm:405 lib/RT/CustomField_Overlay.pm:434 lib/RT/CustomField_Overlay.pm:740 lib/RT/Group_Overlay.pm:1137 lib/RT/Group_Overlay.pm:1141 lib/RT/Group_Overlay.pm:1150 lib/RT/Group_Overlay.pm:1260 lib/RT/Group_Overlay.pm:1264 lib/RT/Group_Overlay.pm:1270 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:578 lib/RT/Group_Overlay.pm:586 lib/RT/Group_Overlay.pm:684 lib/RT/Group_Overlay.pm:688 lib/RT/Group_Overlay.pm:694 lib/RT/Group_Overlay.pm:939 lib/RT/Group_Overlay.pm:943 lib/RT/Group_Overlay.pm:956 lib/RT/Queue_Overlay.pm:1161 lib/RT/Queue_Overlay.pm:154 lib/RT/Queue_Overlay.pm:172 lib/RT/Queue_Overlay.pm:510 lib/RT/Queue_Overlay.pm:536 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:773 lib/RT/Queue_Overlay.pm:926 lib/RT/Queue_Overlay.pm:935 lib/RT/Queue_Overlay.pm:948 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:510 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1225 lib/RT/Ticket_Overlay.pm:1235 lib/RT/Ticket_Overlay.pm:1249 lib/RT/Ticket_Overlay.pm:1345 lib/RT/Ticket_Overlay.pm:1703 lib/RT/Ticket_Overlay.pm:1857 lib/RT/Ticket_Overlay.pm:2041 lib/RT/Ticket_Overlay.pm:2091 lib/RT/Ticket_Overlay.pm:2287 lib/RT/Ticket_Overlay.pm:2300 lib/RT/Ticket_Overlay.pm:2381 lib/RT/Ticket_Overlay.pm:2394 lib/RT/Ticket_Overlay.pm:2495 lib/RT/Ticket_Overlay.pm:2509 lib/RT/Ticket_Overlay.pm:2770 lib/RT/Ticket_Overlay.pm:2781 lib/RT/Ticket_Overlay.pm:2787 lib/RT/Ticket_Overlay.pm:2990 lib/RT/Ticket_Overlay.pm:2994 lib/RT/Ticket_Overlay.pm:3131 lib/RT/Ticket_Overlay.pm:3321 lib/RT/Transaction_Overlay.pm:585 lib/RT/Transaction_Overlay.pm:609 lib/RT/User_Overlay.pm:1201 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1615 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
@@ -4768,11 +4768,11 @@ msgstr "Kontroller adressen, og prøv så på nytt."
 
 #: lib/RT/User_Overlay.pm:938
 msgid "Please enter your current password correctly."
-msgstr ""
+msgstr "Skriv inn ditt nåværende passord riktig"
 
 #: lib/RT/User_Overlay.pm:941
 msgid "Please enter your current password."
-msgstr ""
+msgstr "Skriv inn ditt nåværende passord"
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
@@ -4789,18 +4789,18 @@ msgstr "Innstillinger"
 #: share/html/Admin/Users/MyRT.html:124
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2."
-msgstr "Innstillinger %1 for brukeren %2."
+msgstr "Innstillinger %1 for brukeren %2"
 
 #: share/html/Prefs/MyRT.html:149 share/html/Prefs/MyRT.html:94
 #. (loc('summary rows'))
 #. ($pane)
 msgid "Preferences saved for %1."
-msgstr "Innstillinger lagret for %1."
+msgstr "Innstillinger lagret for %1"
 
 #: share/html/Admin/Users/MyRT.html:83
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr "Innstillinger lagret for brukeren %1."
+msgstr "Innstillinger lagret for brukeren %1"
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:104 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
 msgid "Preferences saved."
@@ -4838,7 +4838,7 @@ msgstr "Send meldingssammendragene til standard ut i stedet for via e-post. Diss
 
 #: sbin/rt-email-digest:98
 msgid "Print this message"
-msgstr "Vis denne meldingen"
+msgstr "Vis denne meldinga"
 
 #: lib/RT/Tickets_Overlay.pm:103 lib/RT/Tickets_Overlay.pm:2064 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:182 share/html/Ticket/Elements/EditBasics:102 share/html/Ticket/Elements/ShowBasics:76
 msgid "Priority"
@@ -5024,7 +5024,7 @@ msgstr "RT-oppsett"
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "RT Configuration"
-msgstr ""
+msgstr "RT-oppsett"
 
 #: share/html/Elements/Error:69 share/html/SelfService/Error.html:64
 msgid "RT Error"
@@ -5037,10 +5037,6 @@ msgstr "RT-selvbetjening"
 #: share/html/Admin/Tools/Configuration.html:148
 msgid "RT Size"
 msgstr "RT-størrelse"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Variables"
-msgstr "RT-variabler"
 
 #: lib/RT/Config.pm:251 lib/RT/Config.pm:260 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
 msgid "RT at a glance"
@@ -5065,7 +5061,7 @@ msgstr "RT kan gjøre feltverdiene til fleksifeltet til lenker til en nettside."
 
 #: share/html/Admin/Tools/Configuration.html:119
 msgid "RT core variables"
-msgstr ""
+msgstr "RT-kjernevariabler"
 
 #: lib/RT/Interface/Web/Session.pm:275
 msgid "RT couldn't store your session."
@@ -5102,7 +5098,7 @@ msgstr "RT vil automatisk bytte ut <tt>__id__</tt> og <tt>__CustomField__</tt> m
 
 #: lib/RT/Installer.pm:140
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
-msgstr "RT vil bruke denne koden for å identifisere installasjonen, og se etter den i emnefeltet i e-postmeldinger for å finne ut hvilken sak meldingen gjelder. Du bør sette verdien lik nettdomenet ditt. Eksempel: eksempel.no"
+msgstr "RT vil bruke denne koden for å identifisere installasjonen, og se etter den i emnefeltet i e-postmeldinger for å finne ut hvilken sak meldinga gjelder. Du bør sette verdien lik nettdomenet ditt. Eksempel: eksempel.no"
 
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
@@ -5116,7 +5112,7 @@ msgstr "RT / Admin / Rediger gruppa %1"
 #: share/html/Admin/Queues/Modify.html:201
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
-msgstr ""
+msgstr "«RTAddressRegexp»-valget i oppsettet er ikke i samsvar med «%1»"
 
 #: share/html/Admin/Users/Modify.html:81 share/html/User/Prefs.html:71
 msgid "Real Name"
@@ -5635,7 +5631,7 @@ msgstr "Velg kø"
 
 #: share/html/SelfService/CreateTicketInQueue.html:50
 msgid "Select a queue for your new ticket"
-msgstr "Vel kø for den nye saken"
+msgstr "Velg kø for den nye saken"
 
 #: share/html/Admin/Users/index.html:48 share/html/Admin/Users/index.html:51 share/html/Admin/Users/index.html:54
 msgid "Select a user"
@@ -5767,7 +5763,7 @@ msgstr "Innstillinger"
 
 #: lib/RT/Config.pm:389
 msgid "Should RT send you mail for ticket updates you make?"
-msgstr ""
+msgstr "Skal RT sende deg e-post med dine egne saksoppdateringer?"
 
 #: share/html/Ticket/Elements/ShowTransaction:170
 msgid "Show"
@@ -5836,7 +5832,7 @@ msgstr "VisOppsettfane"
 
 #: lib/RT/Queue_Overlay.pm:103
 msgid "ShowOutgoingEmail"
-msgstr "VisUtgåandeEpost"
+msgstr "VisUtgåendeEpost"
 
 #: lib/RT/Group_Overlay.pm:94
 msgid "ShowSavedSearches"
@@ -5933,7 +5929,7 @@ msgstr "Merk at noen nettlesere bare kan laste inn innhold fra samme domene som 
 
 #: share/html/Admin/CustomFields/Objects.html:113
 msgid "Something wrong. Contact system administrator"
-msgstr ""
+msgstr "Noko er galt. Ta kontakt med systemadministratoren."
 
 #: share/html/Admin/Elements/AddCustomFieldValue:53 share/html/Admin/Elements/EditCustomFieldValues:57
 msgid "Sort"
@@ -5945,7 +5941,7 @@ msgstr "Sortering"
 
 #: share/html/Admin/Tools/Configuration.html:207 share/html/Admin/Tools/Configuration.html:66
 msgid "Source"
-msgstr ""
+msgstr "Kilde"
 
 #: sbin/rt-email-digest:94
 msgid "Specify whether this is a daily or weekly run."
@@ -6002,7 +5998,7 @@ msgstr "Stjel saker"
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "StealTicket"
-msgstr "StjelSak"
+msgstr "StjeleSak"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (3, 7)
@@ -6043,7 +6039,7 @@ msgstr "Emnet endret til %1"
 
 #: share/html/Elements/RT__Queue/ColumnMap:76
 msgid "SubjectTag"
-msgstr ""
+msgstr "Emnekode"
 
 #: lib/RT/Queue_Overlay.pm:578
 #. ((defined $value && length $value)? $value : $self->loc("(no value)"))
@@ -6223,7 +6219,7 @@ msgstr "Tekstfila blir ikke vist, da denne visingen er slått av i innstillingen
 
 #: lib/RT/Record.pm:919
 msgid "That is already the current value"
-msgstr "Dette er den gamle verdien"
+msgstr "Verdien ble ikke endret"
 
 #: lib/RT/CustomField_Overlay.pm:443
 msgid "That is not a value for this custom field"
@@ -6328,11 +6324,11 @@ msgstr "Denne kommandoen finner alle aktive saker i køen «general», og setter
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
-msgstr "Disse spørringene er slettet, og blir fjernet fra utforminga når panelet blir oppdatert."
+msgstr "Disse spørringene er slettet, og blir fjernet fra utforminga når panelet blir oppdatert"
 
 #: share/html/Dashboards/Elements/HiddenSearches:74
 msgid "The following queries may not be visible to all users who can see this dashboard."
-msgstr "Disse spørringene er kanskje ikke synlige for alle brukerne som kan se utforminga."
+msgstr "Disse spørringene er kanskje ikke synlige for alle brukerne som kan se utforminga"
 
 #: lib/RT/Crypt/GnuPG.pm:2196
 msgid "The key has been disabled"
@@ -6377,7 +6373,7 @@ msgstr "Innstillingene du har valgt er lagret i %1."
 
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
-msgstr "Systemet kan ikke signere utgående e-poster. Dette tyder vanligvis på at passfrasen er feil, eller at GPG Agent ikke kjører. Meld fra til systemansvarlig med en gang. Problemadressene er:"
+msgstr "Systemet kan ikke signere utgående e-poster. Dette tyder vanligvis på at passfrasen er feil, eller at GPG Agent ikke kjører. Meld fra til systemadministratoren med en gang. Problemadressene er:"
 
 #: lib/RT/Config.pm:174
 msgid "Theme"
@@ -6427,7 +6423,7 @@ msgstr "Grunnen kan være at mappa «%1» ikke er skrivbar, eller at en database
 
 #: share/html/Ticket/Elements/PreviewScrips:58
 msgid "This message will be sent to..."
-msgstr "Denne meldingen blir sendt til …"
+msgstr "Denne meldinga blir sendt til …"
 
 #: bin/rt-crontool:370
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
@@ -6457,7 +6453,7 @@ msgstr "Sak"
 #: share/html/Ticket/ModifyAll.html:48 share/html/Ticket/ModifyAll.html:52
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "Sak %1 jumbo-oppdatering: %2"
+msgstr "Sak %1 storoppdatering: %2"
 
 #: share/html/Ticket/Graphs/index.html:113
 #. ($id)
@@ -6467,7 +6463,7 @@ msgstr "Koblingsdiagram for sak %1"
 #: share/html/Ticket/Elements/ShowTransaction:147
 #. ($Transaction->Ticket)
 msgid "Ticket #%1:"
-msgstr ""
+msgstr "Sak %1:"
 
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -6895,7 +6891,7 @@ msgstr "Bruker (opprettet – utløper)"
 
 #: etc/initialdata:170 etc/initialdata:87
 msgid "User Defined"
-msgstr "Brukerdefinert"
+msgstr "Tilpasset"
 
 #: share/html/Admin/Elements/EditScrip:96
 msgid "User Defined conditions and actions"
@@ -6978,7 +6974,7 @@ msgstr "Formatkontroll"
 
 #: share/html/Admin/Tools/Configuration.html:123 share/html/Admin/Tools/Configuration.html:65
 msgid "Value"
-msgstr ""
+msgstr "Verdi"
 
 #: share/html/Admin/CustomFields/Modify.html:130 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
@@ -6986,7 +6982,7 @@ msgstr "Verdier"
 
 #: share/html/Admin/Tools/Configuration.html:122
 msgid "Variable"
-msgstr ""
+msgstr "Variabel"
 
 #: share/html/Tools/index.html:70
 msgid "Various RT reports"
@@ -6994,7 +6990,7 @@ msgstr "Forskjellige RT-rapporter"
 
 #: share/html/Admin/Tools/Configuration.html:206
 msgid "Version"
-msgstr ""
+msgstr "Versjon"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
@@ -7022,7 +7018,7 @@ msgstr "Visuelt skrivefelt"
 
 #: share/html/Ticket/Elements/ShowGnuPGStatus:170
 msgid "Warning! This is NOT signed!"
-msgstr "Advarsel: Meldingen er ikke signert."
+msgstr "Advarsel: Meldinga er ikke signert."
 
 #: share/html/Dashboards/Subscription.html:266
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
@@ -7195,7 +7191,7 @@ msgstr "Du er ikke en godkjent bruker"
 #: share/html/Ticket/Elements/ShowUpdateStatus:51
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
-msgstr "Du kan <a href=\"%1\">hoppe til den første uleste meldingen</a>, eller <a href=\"%2\">hoppe til den første uleste meldingen og merke alle meldingene som leste</a>."
+msgstr "Du kan <a href=\"%1\">hoppe til den første uleste meldinga</a>, eller <a href=\"%2\">hoppe til den første uleste meldinga og merke alle meldingene som leste</a>."
 
 #: share/html/Prefs/Search.html:58
 msgid "You can also edit the predefined search itself"
@@ -7203,7 +7199,7 @@ msgstr "Du kan også redigere søket"
 
 #: lib/RT/User_Overlay.pm:932
 msgid "You can not set password."
-msgstr ""
+msgstr "Du kan ikke velge passord"
 
 #: lib/RT/Ticket_Overlay.pm:2802
 msgid "You can only reassign tickets that you own or that are unowned"
@@ -7244,7 +7240,7 @@ msgstr "Du blir tatt til innloggingssiden. Du kan da logge inn med brukernavnet 
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
-msgstr "Du bør velge databasesystemet som du eller systemansvarlig kjenner best."
+msgstr "Du bør velge databasesystemet som du eller systemadministratoren kjenner best."
 
 #: share/html/Install/index.html:79
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
@@ -7256,11 +7252,11 @@ msgstr "Velkommen tilbake"
 
 #: share/html/Elements/EditPassword:8
 msgid "Your current password"
-msgstr ""
+msgstr "Ditt nåværende passord"
 
 #: lib/RT/User_Overlay.pm:1108
 msgid "Your password is not set."
-msgstr ""
+msgstr "Passordet er ikke registrert"
 
 #: lib/RT/Interface/Web.pm:431
 msgid "Your username or password is incorrect"
@@ -7272,11 +7268,11 @@ msgstr "Postnummer"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:166
 msgid "[Down]"
-msgstr ""
+msgstr "[Ned]"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:163
 msgid "[Up]"
-msgstr ""
+msgstr "[Opp]"
 
 #: share/html/Search/Elements/DisplayOptions:62
 msgid "[none]"
@@ -7321,15 +7317,15 @@ msgstr "bunn til topp"
 
 #: share/html/Admin/CustomFields/Objects.html:68
 msgid "check this box to apply this Custom Field to all objects."
-msgstr ""
+msgstr "Kryss av her for å bruke fleksifeltet på alle objektene."
 
 #: share/html/Admin/CustomFields/Objects.html:63
 msgid "check this box to remove this Custom Field from all objects and be able to choose specific objects."
-msgstr ""
+msgstr "Kryss av her for å fjerne fleksifeltet fra alle objektene, slik at du kan bruke det på enkeltobjekt."
 
 #: share/html/Ticket/Elements/UpdateCc:53 share/html/Ticket/Elements/UpdateCc:68
 msgid "check to add"
-msgstr ""
+msgstr "kryss av for å legge til"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:57
 msgid "click to check/uncheck all objects at once"
@@ -7546,7 +7542,7 @@ msgstr "på dag"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "one"
-msgstr ""
+msgstr "én"
 
 #: lib/RT/Queue_Overlay.pm:79 share/html/SelfService/Elements/MyRequests:76
 msgid "open"
@@ -7664,7 +7660,7 @@ msgstr "ubeskrevet gruppe %1"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "ubegrenset"
 
 #: lib/RT/Group_Overlay.pm:156
 #. ($user->Object->Name)

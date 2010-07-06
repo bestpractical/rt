@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2010-04-21 16:46+0000\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-04-27 02:53+0000\n"
 "Last-Translator: ruz <ruz@bestpractical.com>\n"
 "Language-Team: Koptev Oleg <koptev.oleg@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: RUSSIAN FEDERATION\n"
 "X-Poedit-Language: Russian\n"
@@ -139,7 +139,7 @@ msgstr ""
 #: bin/rt-crontool:364
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Подстроить опцию конфига LogToScreen"
 
 #: bin/rt-crontool:339 bin/rt-crontool:346 bin/rt-crontool:352
 #. ("--search-arg", "--search")
@@ -165,7 +165,7 @@ msgstr "%1 - Выберите, какую передачу Вы хотите у�
 #: bin/rt-crontool:355
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 - Укажите имя или илентификатор шаблона, который вы хотите использовать"
 
 #: bin/rt-crontool:349
 #. ("--action")
@@ -190,7 +190,7 @@ msgstr "%1 - Укажите модуль поиска, который вы хо�
 #: share/html/Dashboards/index.html:70
 #. ($group)
 msgid "%1 DashBoards"
-msgstr ""
+msgstr "Информационные панели %1"
 
 #: share/html/Elements/Footer:59
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2009', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -247,7 +247,7 @@ msgstr "%1 изменена с %2 на %3"
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 #. ($m->scomp('SelectChartType', Name => 'ChartStyle'), $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "%1 chart by %2"
-msgstr ""
+msgstr "график %1 группированный по"
 
 #: share/html/Search/Elements/EditSearches:200
 #. ($SavedSearch->{'Object'}->Description)
@@ -257,7 +257,7 @@ msgstr "Копия %1"
 #: share/html/Admin/Tools/Configuration.html:80
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 core config"
-msgstr ""
+msgstr "основной конфиг '%1'"
 
 #: lib/RT/Record.pm:918
 msgid "%1 could not be set to %2."
@@ -346,7 +346,7 @@ msgstr "%1 объектов"
 #: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr ""
+msgstr "локальный конфиг '%1'"
 
 #: lib/RT/SharedSetting.pm:240
 #. (ucfirst($self->ObjectName), $msg)
@@ -394,7 +394,7 @@ msgstr "%1: без вложений"
 #: lib/RT/Date.pm:616
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1:%2"
 
 #: lib/RT/Date.pm:613
 #. ($hour,$min,$sec)
@@ -540,11 +540,11 @@ msgstr "--"
 
 #: bin/rt-crontool:136
 msgid "--template-id is deprecated argument and can not be used with --template"
-msgstr ""
+msgstr "--template-id устаревший аргумент и его нельзя использовать совместно с --template"
 
 #: bin/rt-crontool:131
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
+msgstr "значение аргумента --transaction может быть только 'first', 'last' или 'all'"
 
 #: share/html/Elements/CreateTicket:49
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
@@ -718,7 +718,7 @@ msgstr "Общие настройки"
 
 #: lib/RT/System.pm:81
 msgid "AdminAllPersonalGroups"
-msgstr ""
+msgstr "АдминистрироватьВсеПерсональныеГруппы"
 
 #: lib/RT/Tickets_Overlay.pm:144
 msgid "AdminCCGroup"
@@ -1005,7 +1005,7 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
+msgstr "ДП"
 
 #: share/html/Search/Elements/EditSearches:174
 #. ($ARGS{'SavedSearchLoad'})
@@ -1060,7 +1060,7 @@ msgstr "Невозможно создать пользователя: %1"
 
 #: share/html/Admin/CustomFields/Modify.html:111
 msgid "Categories are based on"
-msgstr ""
+msgstr "Категории на основе"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
@@ -1100,7 +1100,7 @@ msgstr "Проверить подключение к базе данных"
 
 #: share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check Database Credentials"
-msgstr ""
+msgstr "Проверьте информацию о БД"
 
 #: share/html/Search/Bulk.html:159 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
 msgid "Check box to delete"
@@ -1120,7 +1120,7 @@ msgstr "Потомки"
 
 #: share/html/Install/DatabaseDetails.html:89 share/html/Install/DatabaseType.html:48
 msgid "Choose Database Engine"
-msgstr ""
+msgstr "Выберите СУБД"
 
 #: NOT FOUND IN SOURCE
 msgid "Choose a database engine"
@@ -1524,7 +1524,7 @@ msgstr "Ошибка загрузки транзакции #%1"
 
 #: share/html/User/Prefs.html:208
 msgid "Couldn't load user"
-msgstr ""
+msgstr "Не получилось найти запись пользователя"
 
 #: share/html/Admin/Users/GnuPG.html:92 share/html/User/Prefs.html:204
 #. ($id)
@@ -1534,7 +1534,7 @@ msgstr "Ошибка загрузки пользователя #%1"
 #: share/html/User/Prefs.html:202
 #. ($id, $Name)
 msgid "Couldn't load user #%1 or user '%2'"
-msgstr ""
+msgstr "Не получилось загрузить запись пользователя №%1 или с именем '%2'"
 
 #: share/html/User/Prefs.html:206
 #. ($Name)
@@ -1746,7 +1746,7 @@ msgstr "Создана:"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "CreatedRelative"
-msgstr ""
+msgstr "СозданаОтносительно"
 
 #: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:96 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
@@ -1963,7 +1963,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:655
 msgid "DateTime module missing"
-msgstr ""
+msgstr "perl модуль DateTime не установлен"
 
 #: lib/RT/Date.pm:672
 msgid "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
@@ -1971,7 +1971,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:656
 msgid "DateTime::Locale module missing"
-msgstr ""
+msgstr "perl модуль DateTime::Locale не установлен"
 
 #: share/html/SelfService/Display.html:65 share/html/Ticket/Create.html:210 share/html/Ticket/Elements/ShowSummary:101 share/html/Ticket/Elements/Tabs:134 share/html/Ticket/ModifyAll.html:68
 msgid "Dates"
@@ -2037,7 +2037,7 @@ msgstr "Умолчание: %1/%2 изменено с %3 на %4"
 
 #: lib/RT/Date.pm:113
 msgid "DefaultFormat"
-msgstr ""
+msgstr "ФорматПоУмолчанию"
 
 #: share/html/User/Delegation.html:48 share/html/User/Delegation.html:51
 msgid "Delegate rights"
@@ -2120,7 +2120,7 @@ msgstr "Удалена информационная панель %1"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
-msgstr ""
+msgstr "Удаленные запросы"
 
 #: share/html/Search/Elements/EditSearches:192
 msgid "Deleted saved search"
@@ -2244,11 +2244,11 @@ msgstr "Не используйте http://, только типа 'localhost', 
 
 #: lib/RT/Config.pm:268
 msgid "Don't refresh home page."
-msgstr ""
+msgstr "Не обновлять домашнюю страницу"
 
 #: lib/RT/Config.pm:224
 msgid "Don't refresh search results."
-msgstr ""
+msgstr "Не обновлять результаты поиска"
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
@@ -3347,7 +3347,7 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:169
 #. ($session{'CurrentUser'}->UserObj->EmailAddress)
 msgid "Leave blank to send to your current email address (%1)"
-msgstr ""
+msgstr "Оставьте пустым для получения на ваш текущий адрес почты (%1)"
 
 #: lib/RT/Installer.pm:88
 msgid "Leave empty to use the default value for your database"
@@ -3355,7 +3355,7 @@ msgstr "Оставьте пустым для использования знач
 
 #: lib/RT/Installer.pm:101
 msgid "Leave this alone to use the default dba username for your database type"
-msgstr ""
+msgstr "Оставьте поле пустым для того чтобы использовать имя администратора по умолчанию для данного типа СУБД"
 
 #: share/html/Ticket/Elements/ShowBasics:71
 msgid "Left"
@@ -3684,11 +3684,11 @@ msgstr "Сообщение"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:166 share/html/Ticket/Elements/ShowTransactionAttachments:229
 msgid "Message body is not shown because sender requested not to inline it."
-msgstr ""
+msgstr "Содержимое сообщения не показано, согласно предпочтениям отправителя"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:249
 msgid "Message body not shown because it is not plain text."
-msgstr ""
+msgstr "Содержимое сообщения не показано, потому что это не текст"
 
 #: NOT FOUND IN SOURCE
 msgid "Message body not shown because it is too large or is not plain text."
@@ -3696,7 +3696,7 @@ msgstr "Тело сообщения не показано потому, что �
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:162
 msgid "Message body not shown because it is too large."
-msgstr ""
+msgstr "Содержимое сообщения не показано, потому что оно слишком длинное"
 
 #: lib/RT/Config.pm:212
 msgid "Message box height"
@@ -3801,7 +3801,7 @@ msgstr "Изменить ассоциированные объекты для %1
 
 #: lib/RT/Queue_Overlay.pm:93
 msgid "Modify custom field values"
-msgstr ""
+msgstr "Менять значения дополнительного поля"
 
 #: lib/RT/Group_Overlay.pm:99
 msgid "Modify dashboards for this group"
@@ -4021,11 +4021,11 @@ msgstr "Понедельник"
 
 #: share/html/Dashboards/Subscription.html:103
 msgid "Monday through Friday"
-msgstr ""
+msgstr "С понедельника по пятницу"
 
 #: share/html/Elements/DashboardTabs:46
 msgid "More"
-msgstr ""
+msgstr "Дополнительно"
 
 #: share/html/Ticket/Elements/ShowRequestor:75
 #. ($name)

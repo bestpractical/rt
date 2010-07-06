@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2010-03-24 17:35+0000\n"
-"Last-Translator: Torsten Brumm <tbrumm@mac.com>\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-06-30 13:17+0000\n"
+"Last-Translator: Christian Loos <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:13+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -156,7 +156,7 @@ msgstr "%1 (Tag %2) bei %3"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (von Ansicht %2)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 (on %2) at %3"
@@ -165,7 +165,7 @@ msgstr "%1 (von %2) bei %3"
 #: bin/rt-crontool:364
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - LogToScreen Konfigurationsoption anpassen"
 
 #: bin/rt-crontool:339 bin/rt-crontool:346 bin/rt-crontool:352
 #. ("--search-arg", "--search")
@@ -191,7 +191,7 @@ msgstr "%1 - Möchtest Du die 'erste', 'letzte' oder 'alle' Transaktionen nutzen
 #: bin/rt-crontool:355
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 - Bestimmen Sie den Namen oder die ID der Vorlage die Sie benutzen wollen"
 
 #: bin/rt-crontool:349
 #. ("--action")
@@ -240,12 +240,12 @@ msgstr "%1 als Wert für %2 hinzugefügt"
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr ""
+msgstr "%1 besteht bereits und hat RT Tabellen aber keine RT Metadaten. 'Initialize Database' kann später diese Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundlagen anpassen' und fahren mit der Anpassung des RT fort."
 
 #: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
-msgstr ""
+msgstr "%1 besteht bereits und hat RT Tabellen aber keine RT Metadaten. 'Initialize Database' kann später diese Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundlagen anpassen' und fahren mit der Anpassung des RT fort."
 
 #: lib/RT/Link_Overlay.pm:134 lib/RT/Link_Overlay.pm:142
 #. ($args{'Base'})
@@ -256,7 +256,7 @@ msgstr "%1 konnte nicht in der Datenbank gefunden werden obwohl es ein lokales O
 #: share/html/Install/DatabaseDetails.html:166
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
-msgstr ""
+msgstr "%1 scheint vollständig initialisiert zu sein. Wir brauchen keine weiteren Tabellen oder Metadata einzufügen aber Du kannst mit der Konfiguration durch klicken auf 'Grundlagen anpassen' fortfahren."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 at %2"
@@ -388,7 +388,7 @@ msgstr "%1 Rechte"
 #: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr "%1 Seitenkonfiguration"
+msgstr "Site-Konfiguration"
 
 #: lib/RT/SharedSetting.pm:240
 #. (ucfirst($self->ObjectName), $msg)
@@ -602,7 +602,7 @@ msgstr "-"
 
 #: bin/rt-crontool:136
 msgid "--template-id is deprecated argument and can not be used with --template"
-msgstr ""
+msgstr "--template-id ist ein veraltetes Argument und kann nicht zusammen mit --template genutzt werden"
 
 #: bin/rt-crontool:131
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
@@ -823,7 +823,7 @@ msgstr "Admin/Globale Einstellungen"
 
 #: lib/RT/System.pm:81
 msgid "AdminAllPersonalGroups"
-msgstr ""
+msgstr "AdminAllPersonalGroups"
 
 #: lib/RT/Tickets_Overlay.pm:144
 msgid "AdminCCGroup"
@@ -1151,7 +1151,7 @@ msgstr "Kalender"
 #: share/html/Search/Elements/EditSearches:174
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
-msgstr ""
+msgstr "Kann gespeicherte Suche \"%1\" nicht laden"
 
 #: lib/RT/User_Overlay.pm:1612
 msgid "Can not modify system users"
@@ -1245,7 +1245,7 @@ msgstr "Datenbank-Anmeldeinformationen überprüfen"
 
 #: share/html/Search/Bulk.html:159 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
 msgid "Check box to delete"
-msgstr "Zum Löschen anwählen"
+msgstr "Auswahl wird gelöscht"
 
 #: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
@@ -1608,7 +1608,7 @@ msgstr "Konnte benutzerdefiniertes Feld #%1 nicht laden"
 #: share/html/Admin/Elements/EditCustomFields:136 share/html/Admin/Elements/EditCustomFields:146
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr ""
+msgstr "Konnte Benutzerdefiniertes Feld #%1 nicht laden"
 
 #: share/html/Admin/CustomFields/GroupRights.html:104
 #. ($id)
@@ -2042,7 +2042,7 @@ msgstr "BenutzerdefiniertesFeld"
 
 #: lib/RT/Tickets_Overlay.pm:138
 msgid "CustomFieldValue"
-msgstr ""
+msgstr "CustomFieldValue"
 
 #: share/html/Prefs/MyRT.html:84 share/html/Prefs/Quicksearch.html:72 share/html/Prefs/Search.html:77
 msgid "Customize"
@@ -2338,7 +2338,7 @@ msgstr "Wird vorausgesetzt von"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:116 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
-msgstr ""
+msgstr "DependedOnBy"
 
 #: lib/RT/Transaction_Overlay.pm:777
 #. ($value)
@@ -2574,7 +2574,7 @@ msgstr "Bearbeite Mitgliedschaft der persönlichen Gruppe %1"
 
 #: lib/RT/Tickets_Overlay.pm:99 share/html/Elements/RT__Ticket/ColumnMap:148
 msgid "EffectiveId"
-msgstr ""
+msgstr "EffectiveId"
 
 #: lib/RT/Record.pm:1300 lib/RT/Record.pm:1381 lib/RT/Ticket_Overlay.pm:2280 lib/RT/Ticket_Overlay.pm:2375
 msgid "Either base or target must be specified"
@@ -2653,7 +2653,7 @@ msgstr "Verschlüsseln"
 
 #: share/html/Admin/Queues/Modify.html:114
 msgid "Encrypt by default"
-msgstr "Verschlüsseln als Standard"
+msgstr "Standardmässig verschlüsseln"
 
 #: share/html/Ticket/Elements/ShowTransaction:214
 msgid "Encrypt/Decrypt"
@@ -3306,7 +3306,7 @@ msgstr "Wenn Sie etwas aktualisiert haben, denken Sie daran hier zu speichern"
 #: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
-msgstr ""
+msgstr "Wenn Deine bevorzugte Datenbank nicht in dem Dropdown Menü aufgeführt ist, konnte RT keinen <i>Datenbank Treiber</i> lokal finden. Das Problem kann gelöst werden indem von %1 entweder DBD::MySQL, DBD::Oracle oder DBD::Pg installiert wird."
 
 #: lib/RT/Record.pm:921
 msgid "Illegal value for %1"
@@ -3628,7 +3628,7 @@ msgstr "Diesem Benutzer RT-Zugriff gewähren"
 
 #: share/html/Admin/Users/Modify.html:115
 msgid "Let this user be granted rights"
-msgstr "Diesem Benutzer Rechte zuweisen lassen"
+msgstr "Diesem Benutzer Rechte zuweisen"
 
 #: share/html/Install/index.html:86
 msgid "Let's go!"
@@ -4372,7 +4372,7 @@ msgstr "Benutzername ist bereits in Gebrauch"
 
 #: share/html/Tools/index.html:60
 msgid "Named, shared collection of portlets"
-msgstr ""
+msgstr "Benannte, gemeinsame Sammlung von Portlets"
 
 #: NOT FOUND IN SOURCE
 msgid "Named, shared collection of saved searches"
@@ -5112,7 +5112,7 @@ msgstr "Passwort"
 
 #: share/html/NoAuth/Reminder.html:48
 msgid "Password Reminder"
-msgstr "Passworterinnerung"
+msgstr "Passwort Erinnerung"
 
 #: lib/RT/Transaction_Overlay.pm:855 lib/RT/User_Overlay.pm:982
 msgid "Password changed"
@@ -5692,7 +5692,7 @@ msgstr "Erinnerung '%1' hinzugefügt"
 #: lib/RT/Transaction_Overlay.pm:901
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
-msgstr "Wiedervorlage '%1' abgeschlossen"
+msgstr "Erinnerung '%1' erledigt"
 
 #: lib/RT/Transaction_Overlay.pm:894
 #. ($ticket->Subject)
@@ -8255,7 +8255,7 @@ msgstr "Zeige Konfigurationsmenü"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "site config"
-msgstr "Seitenkonfiguration"
+msgstr "Site-Konfiguration"
 
 #: NOT FOUND IN SOURCE
 msgid "spreadsheet"
