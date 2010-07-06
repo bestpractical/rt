@@ -72,6 +72,7 @@ if ($SavedSearch) {
         $m->out(loc("Saved Search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
         return;
     }
+    $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
