@@ -306,10 +306,19 @@ our %META = (
             Description => 'Show oldest history first',    #loc
         },
     },
-    ShowUnreadMessageNotifications => { 
+    DeferTransactionLoading => {
         Section         => 'Ticket display',
         Overridable     => 1,
         SortOrder       => 3,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Hide ticket history by default',    #loc
+        },
+    },
+    ShowUnreadMessageNotifications => { 
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 4,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Notify me of unread messages',    #loc
@@ -319,7 +328,7 @@ our %META = (
     PlainTextPre => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 4,
+        SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'add <pre> tag around plain text attachments', #loc
