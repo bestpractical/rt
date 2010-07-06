@@ -1180,49 +1180,17 @@ sub ProcessUpdateMessage {
             : ( $args{ARGSRef}->{'AttachTickets'} ) );
     }
 
-    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
-    my $cc  = $args{ARGSRef}->{'UpdateCc'};
-
     my %message_args = (
-        CcMessageTo  => $cc,
-        BccMessageTo => $bcc,
         Sign         => $args{ARGSRef}->{'Sign'},
         Encrypt      => $args{ARGSRef}->{'Encrypt'},
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
 
-    my @temp_squelch;
-    foreach my $type (qw(Cc AdminCc)) {
-        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{$type} );
-            push @temp_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
-            push @temp_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
-        }
-    }
-    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{Requestor} );
-            push @temp_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
-    }
-
-    if (@temp_squelch) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
-    }
-
-    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
-        foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
-
-            my $var   = ucfirst($1) . 'MessageTo';
-            my $value = $2;
-            if ( $message_args{$var} ) {
-                $message_args{$var} .= ", $value";
-            } else {
-                $message_args{$var} = $value;
-            }
-        }
-    }
+    _ProcessUpdateMessageRecipients(
+        MessageArgs => \%message_args,
+        %args,
+    );
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
@@ -1238,6 +1206,55 @@ sub ProcessUpdateMessage {
             loc("Update type was neither correspondence nor comment.") . " " . loc("Update not recorded.") );
     }
     return @results;
+}
+
+sub _ProcessUpdateMessageRecipients {
+    my %args = (
+        ARGSRef           => undef,
+        TicketObj         => undef,
+        MessageArgs       => undef,
+        @_,
+    );
+
+    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
+    my $cc  = $args{ARGSRef}->{'UpdateCc'};
+
+    my $message_args = $args{MessageArgs};
+
+    $message_args->{CcMessageTo} = $cc;
+    $message_args->{BccMessageTo} = $bcc;
+
+    my @temp_squelch;
+    foreach my $type (qw(Cc AdminCc)) {
+        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
+            push @temp_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
+            push @temp_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
+        }
+    }
+    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
+            push @temp_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
+    }
+
+    if (@temp_squelch) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
+    }
+
+    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+        foreach my $key ( keys %{ $args{ARGSRef} } ) {
+            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
+
+            my $var   = ucfirst($1) . 'MessageTo';
+            my $value = $2;
+            if ( $message_args->{$var} ) {
+                $message_args->{$var} .= ", $value";
+            } else {
+                $message_args->{$var} = $value;
+            }
+        }
+    }
 }
 
 # }}}
