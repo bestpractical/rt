@@ -46,7 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div id="deferred_ticket_history">
-    <a href="<% $url %>" onclick="ahah('<% $url |n %>', 'deferred_ticket_history'); return false;" >Show ticket history</a>
+    <& /Widgets/TitleBoxStart, title => 'History' &>
+        <a href="<% $url %>" onclick="ahah('<% $url |n %>', 'deferred_ticket_history'); return false;" >Show ticket history</a>
+    <& /Widgets/TitleBoxEnd &>
 </div>
 <%ARGS>
 $Ticket
