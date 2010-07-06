@@ -394,6 +394,34 @@ sub ContentLength {
     return $len;
 }
 
+=head2 FriendlyContentLength
+
+Returns L</ContentLength> in bytes, kilobytes, or megabytes as most
+appropriate.  The size is suffixed with C<M>, C<k>, and C<b> and the returned
+string is localized.
+
+Returns the empty string if the L</ContentLength> is 0 or undefined.
+
+=cut
+
+sub FriendlyContentLength {
+    my $self = shift;
+    my $size = $self->ContentLength;
+    return '' unless $size;
+
+    my $res = '';
+    if ( $size > 1024*1024 ) {
+        $res = $self->loc( "[_1]M", int( $size / 1024 / 102.4 ) / 10 );
+    }
+    elsif ( $size > 1024 ) {
+        $res = $self->loc( "[_1]k", int( $size / 102.4 ) / 10 );
+    }
+    else {
+        $res = $self->loc( "[_1]b", $size );
+    }
+    return $res;
+}
+
 =head2 Quote
 
 =cut

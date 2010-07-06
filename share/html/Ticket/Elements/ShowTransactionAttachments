@@ -59,9 +59,8 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
               DisplayHeaders => \@DisplayHeaders,
             );
 
-    my $size = $message->ContentLength;
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
-    if ( $size ) {
+    if ( $message->ContentLength ) {
 </%PERL>
 <div class="downloadattachment">
 <a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>"><&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
@@ -70,7 +69,7 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
 % }
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Ticket => $Ticket, Transaction => $Transaction, Attachment => $message);
 <br />
-<span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
+<span class="downloadcontenttype"><% $message->ContentType %> <% $message->FriendlyContentLength %></span>
 </div>
 %   }
 %# If there is sub-messages, open a dedicated div
@@ -124,21 +123,6 @@ elsif (!$ShowHeaders)  {
 }
 
 $m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction);
-
-my $size_to_str = sub {
-    my $size = shift;
-    # show a download link
-    if ( $size > 1024*1024 ) {
-        $size = loc( "[_1]m", int( $size / 1024 / 102.4 ) / 10 );
-    }
-    elsif ( $size > 1024 ) {
-        $size = loc( "[_1]k", int( $size / 102.4 ) / 10 );
-    }
-    else {
-        $size = loc( "[_1]b", $size );
-    }
-    return $size;
-};
 
 my $render_attachment = sub {
     my $message = shift;
