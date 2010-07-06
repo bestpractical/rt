@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS );
+% $m->callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS, args => \%ARGS );
 <& /Elements/Tabs, 
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
-    current_toptab => $current_toptab,
+    current_toptab => $ARGS{current_toptab} || 'Search/Build.html',
     Title => $Title &> 
 <%INIT>
 my $tabs = {};
-my $current_toptab = "Search/Build.html", my $searchtabs = {};
+my $searchtabs = {};
 my $actions;
 
 if ($Ticket) {
