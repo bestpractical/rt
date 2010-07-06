@@ -96,16 +96,10 @@ $m->comp(
 $Ticket => undef
 $Transaction => undef
 $ShowHeaders => 0
-$Collapsed => undef
 $DownloadableHeaders => 1
-$ShowTitleBarCommands => 1
-$RowNum => 1
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
-$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => {}
-$ShowBody => 1
 $Parent => 0
 $ParentObj => undef
 $WarnUnsigned => 0
