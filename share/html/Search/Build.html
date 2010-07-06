@@ -282,7 +282,7 @@ my ( $AvailableColumns, $CurrentFormat );
 # if we're asked to save the current search, save it
 push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
-# {{{ Push the updates into the session so we don't loose 'em
+# {{{ Push the updates into the session so we don't lose 'em
 
 $session{'CurrentSearchHash'} = {
     %query,
