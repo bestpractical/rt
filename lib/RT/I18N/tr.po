@@ -4,14 +4,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2009-05-07 20:45+0000\n"
-"Last-Translator: Kevin Falcone <Unknown>\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-05-18 11:20+0000\n"
+"Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:13+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -36,7 +36,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/ShowDashboards:77 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:49 share/html/Ticket/Display.html:54
 #. ($TicketObj->Id, $TicketObj->Subject)
@@ -44,32 +44,32 @@ msgstr ""
 #. ($ticket->Id, $ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "#%1: %2"
-msgstr ""
+msgstr "#%1: %2"
 
 #: lib/RT/URI/fsck_com_rt.pm:231
 #. ($self->ObjectType, $self->Object->Id)
 msgid "%1 #%2"
-msgstr ""
+msgstr "%1 #%2"
 
 #: lib/RT/Date.pm:369
 #. ($s, $time_unit)
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: lib/RT/Tickets_Overlay.pm:1769
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr ""
+msgstr "%1 %2 %3"
 
 #: lib/RT/Date.pm:609
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
-msgstr ""
+msgstr "%1 %2 %3 %4"
 
 #: lib/RT/Date.pm:624
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr ""
+msgstr "%1 %2 %3 %4:%5 %6"
 
 #: lib/RT/Date.pm:621
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -104,17 +104,17 @@ msgstr "%1 %2 silindi"
 #: share/html/Widgets/SavedSearch:139
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
 msgid "%1 %2 deleted."
-msgstr ""
+msgstr "%1 %2 silindi."
 
 #: share/html/Widgets/SavedSearch:129
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
-msgstr ""
+msgstr "%1 %2 kaydedildi."
 
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 %2 güncellendi."
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:66
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -376,7 +376,7 @@ msgstr ""
 
 #: lib/RT/SharedSetting.pm:237
 msgid "%1 updated"
-msgstr ""
+msgstr "%1 güncellendi"
 
 #: lib/RT/Action/ResolveMembers.pm:64
 #. (ref $self)
@@ -410,23 +410,23 @@ msgstr "%1: herhangi bir eklenti belirtilmedi"
 #: lib/RT/Date.pm:616
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1:%2"
 
 #: lib/RT/Date.pm:613
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr ""
+msgstr "%1:%2:%3"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:134 share/html/Ticket/Elements/ShowTransactionAttachments:140
 #. (int( $size / 1024 / 102.4 ) / 10)
 #. ($size)
 msgid "%1b"
-msgstr ""
+msgstr "%1b"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:137
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr ""
+msgstr "%1k"
 
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
@@ -568,7 +568,7 @@ msgstr "(yyyy/aa/gg)"
 
 #: share/html/Elements/EditCustomFieldSelect:59
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:136
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -659,7 +659,7 @@ msgstr "Yöneticiye karbon kopya ekle"
 
 #: share/html/Ticket/Elements/Bookmark:90
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Yer İmi Ekle"
 
 #: share/html/Search/Bulk.html:99
 msgid "Add Cc"
@@ -707,11 +707,11 @@ msgstr "Yeni gözcüler ekle"
 
 #: share/html/Search/Build.html:89
 msgid "Add these terms"
-msgstr ""
+msgstr "Bu terimleri ekle"
 
 #: share/html/Search/Build.html:90
 msgid "Add these terms and Search"
-msgstr ""
+msgstr "Bu terimleri ekle ve Ara"
 
 #: NOT FOUND IN SOURCE
 msgid "Add these terms to your search"
@@ -737,7 +737,7 @@ msgstr "Bu bilet için, asıl, %1 olarak eklendi"
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
-msgstr ""
+msgstr "Adres"
 
 #: share/html/Admin/Users/Modify.html:134 share/html/Elements/RT__User/ColumnMap:106 share/html/User/Prefs.html:125
 msgid "Address1"
@@ -845,7 +845,7 @@ msgstr "Ve/Veya"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
-msgstr ""
+msgstr "Uygulandı"
 
 #: share/html/Admin/CustomFields/Modify.html:79 share/html/Admin/Elements/CustomFieldTabs:85
 msgid "Applies to"
@@ -910,7 +910,7 @@ msgstr "Onaylayanın notları: %1"
 
 #: lib/RT/Date.pm:91
 msgid "Apr"
-msgstr ""
+msgstr "Nis"
 
 #: NOT FOUND IN SOURCE
 msgid "Apr."
@@ -975,7 +975,7 @@ msgstr "Öznitelik Silindi"
 
 #: lib/RT/Date.pm:95
 msgid "Aug"
-msgstr ""
+msgstr "Ağu"
 
 #: NOT FOUND IN SOURCE
 msgid "Aug."
@@ -1036,7 +1036,7 @@ msgstr "Kalın"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "Bookmark"
-msgstr ""
+msgstr "Yer İmi"
 
 #: NOT FOUND IN SOURCE
 msgid "Bookmarkable link"
@@ -1143,7 +1143,7 @@ msgstr ""
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:82
 msgid "Change"
-msgstr ""
+msgstr "Değiştir"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
@@ -1191,7 +1191,7 @@ msgstr "Şehir"
 
 #: share/html/Tools/MyDay.html:73 share/html/Widgets/SelectionBox:221
 msgid "Clear"
-msgstr ""
+msgstr "Temizle"
 
 #: share/html/Elements/Submit:92
 msgid "Clear All"
@@ -1251,7 +1251,7 @@ msgstr ""
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
-msgstr ""
+msgstr "Açıklamalar"
 
 #: lib/RT/Config.pm:252 share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
 msgid "Comments (Not sent to requestors)"
@@ -1469,7 +1469,7 @@ msgstr "Bir hareket oluşturulamıyor: %1"
 
 #: lib/RT/CustomField_Overlay.pm:1175
 msgid "Couldn't create record"
-msgstr ""
+msgstr "Kayıt oluşturulamadı"
 
 #: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
@@ -1599,12 +1599,12 @@ msgstr ""
 
 #: share/html/User/Prefs.html:208
 msgid "Couldn't load user"
-msgstr ""
+msgstr "Kullanıcı yüklenemedi"
 
 #: share/html/Admin/Users/GnuPG.html:92 share/html/User/Prefs.html:204
 #. ($id)
 msgid "Couldn't load user #%1"
-msgstr ""
+msgstr "Kullanıcı yüklenemedi #%1"
 
 #: share/html/User/Prefs.html:202
 #. ($id, $Name)
@@ -1614,7 +1614,7 @@ msgstr ""
 #: share/html/User/Prefs.html:206
 #. ($Name)
 msgid "Couldn't load user '%1'"
-msgstr ""
+msgstr "Kullanıcı yüklenemedi '%1'"
 
 #: lib/RT/Ticket_Overlay.pm:1053
 #. ($args{'Email'})
@@ -1994,7 +1994,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:94
 msgid "Database name"
-msgstr ""
+msgstr "Veritabanı adı"
 
 #: lib/RT/Installer.pm:125
 msgid "Database password for RT"
@@ -2006,7 +2006,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:58
 msgid "Database type"
-msgstr ""
+msgstr "Veritabanı türü"
 
 #: lib/RT/Installer.pm:118
 msgid "Database username for RT"
@@ -2014,7 +2014,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:355
 msgid "Date format"
-msgstr ""
+msgstr "Tarih biçimi"
 
 #: lib/RT/Date.pm:657
 msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
@@ -2038,7 +2038,7 @@ msgstr "Tarihler"
 
 #: lib/RT/Date.pm:99
 msgid "Dec"
-msgstr ""
+msgstr "Ara"
 
 #: NOT FOUND IN SOURCE
 msgid "Dec."
@@ -2087,7 +2087,7 @@ msgstr "Varsayılan hareket şablonu"
 #: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
 msgid "Default: %1"
-msgstr ""
+msgstr "Varsayılan: %1"
 
 #: lib/RT/Transaction_Overlay.pm:679
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
@@ -2120,7 +2120,7 @@ msgstr "Sil"
 
 #: share/html/Admin/Elements/EditTemplates:72
 msgid "Delete Template"
-msgstr ""
+msgstr "Şablonu Sil"
 
 #: lib/RT/Group_Overlay.pm:100
 msgid "Delete dashboards for this group"
@@ -2149,7 +2149,7 @@ msgstr "Biletleri sil"
 
 #: share/html/Search/Bulk.html:194
 msgid "Delete values"
-msgstr ""
+msgstr "Değerleri sil"
 
 #: lib/RT/Dashboard.pm:83
 msgid "DeleteDashboard"
@@ -2170,7 +2170,7 @@ msgstr "BiletSil"
 #: lib/RT/SharedSetting.pm:266
 #. ($self->ObjectName)
 msgid "Deleted %1"
-msgstr ""
+msgstr "%1 silindi"
 
 #: share/html/Dashboards/index.html:83
 #. ($Deleted)
@@ -2259,7 +2259,7 @@ msgstr "Tanım"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
-msgstr ""
+msgstr "Yön"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:63 share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Disabled"
@@ -2303,7 +2303,7 @@ msgstr "Hiçbirşeyi ve herşeyi yapın"
 
 #: lib/RT/Installer.pm:190
 msgid "Domain name"
-msgstr ""
+msgstr "Alan adı"
 
 #: lib/RT/Installer.pm:191
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
@@ -2348,7 +2348,7 @@ msgstr ""
 #: share/html/Install/Initialize.html:126 share/html/Install/Initialize.html:89
 #. ($msg)
 msgid "ERROR: %1"
-msgstr ""
+msgstr "HATA: %1"
 
 #: share/html/Tools/index.html:70
 msgid "Easy updating of your open tickets"
@@ -2712,7 +2712,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:89
 msgid "Feb"
-msgstr ""
+msgstr "Şub"
 
 #: NOT FOUND IN SOURCE
 msgid "Feb."
@@ -2863,7 +2863,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:108
 msgid "Fri"
-msgstr ""
+msgstr "Cum"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri."
@@ -2871,7 +2871,7 @@ msgstr "Cum."
 
 #: share/html/Dashboards/Subscription.html:113
 msgid "Friday"
-msgstr ""
+msgstr "Cuma"
 
 #: share/html/Ticket/Elements/ShowHistory:68 share/html/Ticket/Elements/ShowHistory:74
 msgid "Full headers"
@@ -2879,7 +2879,7 @@ msgstr "Tüm Başlıklar"
 
 #: lib/RT/Config.pm:178 lib/RT/Config.pm:225 lib/RT/Config.pm:244
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
@@ -2918,7 +2918,7 @@ msgstr "Küresel şablon: %1"
 
 #: share/html/Admin/Elements/UserTabs:76
 msgid "GnuPG"
-msgstr ""
+msgstr "GnuPG"
 
 #: lib/RT/Attachment_Overlay.pm:684 lib/RT/Attachment_Overlay.pm:719
 msgid "GnuPG error. Contact with administrator"
@@ -2956,11 +2956,11 @@ msgstr "Bilete git"
 
 #: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:326 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
-msgstr ""
+msgstr "Grafik"
 
 #: share/html/Search/Chart.html:89 share/html/Ticket/Graphs/Elements/EditGraphProperties:48
 msgid "Graph Properties"
-msgstr ""
+msgstr "Grafik Özellikleri"
 
 #: share/html/Search/Elements/Chart:98
 msgid "Graphical charts are not available."
@@ -3098,7 +3098,7 @@ msgstr "Ev Sayfası"
 
 #: share/html/Dashboards/Subscription.html:141
 msgid "Hour"
-msgstr ""
+msgstr "Saat"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -3115,7 +3115,7 @@ msgstr "Kayboldum"
 
 #: lib/RT/Date.pm:114
 msgid "ISO"
-msgstr ""
+msgstr "ISO"
 
 #: lib/RT/Tickets_Overlay.pm:2040 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -3282,7 +3282,7 @@ msgstr "Geçersiz veri"
 
 #: lib/RT/CustomField_Overlay.pm:1129
 msgid "Invalid object"
-msgstr ""
+msgstr "Geçersiz nesne"
 
 #: lib/RT/Ticket_Overlay.pm:389
 msgid "Invalid owner object"
@@ -3345,7 +3345,7 @@ msgstr "Eğik"
 
 #: lib/RT/Date.pm:88
 msgid "Jan"
-msgstr ""
+msgstr "Oca"
 
 #: NOT FOUND IN SOURCE
 msgid "Jan."
@@ -3357,7 +3357,7 @@ msgstr "Bu gruba katılın veya ayrılın"
 
 #: lib/RT/Date.pm:94
 msgid "Jul"
-msgstr ""
+msgstr "Tem"
 
 #: NOT FOUND IN SOURCE
 msgid "Jul."
@@ -3369,7 +3369,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:93
 msgid "Jun"
-msgstr ""
+msgstr "Haz"
 
 #: NOT FOUND IN SOURCE
 msgid "Jun."
@@ -3458,7 +3458,7 @@ msgstr "Bu kullanıcının yetkiye sahip olmasına izin ver"
 
 #: share/html/Install/index.html:86
 msgid "Let's go!"
-msgstr ""
+msgstr "Hadi gidelim!"
 
 #: share/html/Search/Elements/EditFormat:66
 msgid "Link"
@@ -3588,7 +3588,7 @@ msgstr "Arama türü eşleşmedi"
 
 #: lib/RT/Config.pm:386 lib/RT/Config.pm:401
 msgid "Mail"
-msgstr ""
+msgstr "Posta"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
@@ -3664,7 +3664,7 @@ msgstr "Kullanıcıları ve parolaları yönetin"
 
 #: lib/RT/Date.pm:90
 msgid "Mar"
-msgstr ""
+msgstr "Mar"
 
 #: NOT FOUND IN SOURCE
 msgid "Mar."
@@ -3688,7 +3688,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:92
 msgid "May"
-msgstr ""
+msgstr "May"
 
 #: NOT FOUND IN SOURCE
 msgid "May."
@@ -3696,7 +3696,7 @@ msgstr "May."
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
-msgstr ""
+msgstr "Üye"
 
 #: lib/RT/Transaction_Overlay.pm:794
 #. ($value)
@@ -4108,11 +4108,11 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:205
 msgid "Module"
-msgstr ""
+msgstr "Modül"
 
 #: lib/RT/Date.pm:104
 msgid "Mon"
-msgstr ""
+msgstr "Pts"
 
 #: NOT FOUND IN SOURCE
 msgid "Mon."
@@ -4120,15 +4120,15 @@ msgstr "Pzt."
 
 #: share/html/Dashboards/Subscription.html:109
 msgid "Monday"
-msgstr ""
+msgstr "Pazartesi"
 
 #: share/html/Dashboards/Subscription.html:103
 msgid "Monday through Friday"
-msgstr ""
+msgstr "Pazartesiden Cumaya"
 
 #: share/html/Elements/DashboardTabs:46
 msgid "More"
-msgstr ""
+msgstr "Daha fazla"
 
 #: share/html/Ticket/Elements/ShowRequestor:75
 #. ($name)
@@ -4174,7 +4174,7 @@ msgstr "Benim kaydedilmiş aramalarım"
 
 #: lib/RT/Installer.pm:66
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "NEWLINE"
@@ -4198,7 +4198,7 @@ msgstr "Asla"
 
 #: share/html/Admin/Global/Scrip.html:65 share/html/Admin/Global/Scrips.html:62 share/html/Admin/Global/Template.html:80 share/html/Admin/Global/Templates.html:62 share/html/Dashboards/Elements/Tabs:102 share/html/Elements/RT__Ticket/ColumnMap:251
 msgid "New"
-msgstr ""
+msgstr "Yeni"
 
 #: share/html/Elements/EditLinks:118 share/html/Ticket/Elements/BulkLinks:122
 msgid "New Links"
@@ -4231,7 +4231,7 @@ msgstr "Yeni grup"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:246 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
-msgstr ""
+msgstr "Yeni mesajlar"
 
 #: share/html/Elements/EditPassword:14
 msgid "New password"
@@ -4291,7 +4291,7 @@ msgstr "Sonraki Sayfa"
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
-msgstr ""
+msgstr "Rumuz"
 
 #: share/html/Admin/Users/Modify.html:86 share/html/User/Prefs.html:74
 msgid "Nickname"
@@ -4365,7 +4365,7 @@ msgstr "%1 için herhangi bir tanım yok"
 
 #: share/html/SelfService/Error.html:69
 msgid "No details"
-msgstr ""
+msgstr "Detay yok"
 
 #: lib/RT/Users_Overlay.pm:182
 msgid "No group specified"
@@ -4466,7 +4466,7 @@ msgstr "İşlenecek bir arama bulunamadı"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:101
 msgid "No subject"
-msgstr "Başlık yok"
+msgstr "Konu yok"
 
 #: lib/RT/User_Overlay.pm:1755
 msgid "No such key or it's not suitable for signing"
@@ -4510,7 +4510,7 @@ msgstr "Atanmadı"
 
 #: lib/RT/CustomField_Overlay.pm:356
 msgid "Not found"
-msgstr ""
+msgstr "Bulunamadı"
 
 #: share/html/Elements/PersonalQuickbar:12
 msgid "Not logged in."
@@ -4630,7 +4630,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:98
 msgid "Nov"
-msgstr ""
+msgstr "Kas"
 
 #: NOT FOUND IN SOURCE
 msgid "Nov."
@@ -4638,7 +4638,7 @@ msgstr "Kas."
 
 #: lib/RT/Config.pm:265
 msgid "Number of search results"
-msgstr ""
+msgstr "Arama sonuçlarının sayısı"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -4646,7 +4646,7 @@ msgstr "VEYA"
 
 #: share/html/Admin/Tools/Configuration.html:151
 msgid "Object"
-msgstr ""
+msgstr "Nesne"
 
 #: lib/RT/Record.pm:308
 msgid "Object could not be created"
@@ -4679,7 +4679,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:97
 msgid "Oct"
-msgstr ""
+msgstr "Eki"
 
 #: NOT FOUND IN SOURCE
 msgid "Oct."
@@ -4778,7 +4778,7 @@ msgstr "Biletleri Aç"
 
 #: share/html/Elements/MakeClicky:58
 msgid "Open URL"
-msgstr ""
+msgstr "URL Aç"
 
 #: share/html/Ticket/Elements/Tabs:202
 msgid "Open it"
@@ -4794,7 +4794,7 @@ msgstr "Cevap geldiğinde biletleri aç"
 
 #: share/html/Admin/Tools/Configuration.html:64
 msgid "Option"
-msgstr ""
+msgstr "Seçenek"
 
 #: share/html/Prefs/MyRT.html:74
 msgid "Options"
@@ -4802,7 +4802,7 @@ msgstr "Seçenekler"
 
 #: lib/RT/Installer.pm:69
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
 #: share/html/Search/Elements/DisplayOptions:56
 msgid "Order by"
@@ -4870,7 +4870,7 @@ msgstr ""
 
 #: share/html/Elements/CollectionListPaging:63
 msgid "Page"
-msgstr ""
+msgstr "Sayfa"
 
 #: NOT FOUND IN SOURCE
 msgid "Page %1 of %2"
@@ -4882,7 +4882,7 @@ msgstr ""
 
 #: share/html/dhandler:48 share/html/dhandler:49
 msgid "Page not found"
-msgstr ""
+msgstr "Sayfa bulunamadı"
 
 #: share/html/Admin/Users/Modify.html:186 share/html/User/Prefs.html:102
 msgid "Pager"
@@ -5012,7 +5012,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:67
 msgid "PostgreSQL"
-msgstr ""
+msgstr "PostgreSQL"
 
 #: share/html/Elements/PersonalQuickbar:9 share/html/Elements/Tabs:91 share/html/SelfService/Elements/Tabs:98 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48 share/html/User/Prefs.html:51
 msgid "Preferences"
@@ -5040,7 +5040,7 @@ msgstr ""
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:104 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
 msgid "Preferences saved."
-msgstr ""
+msgstr "Tercihler kaydedildi."
 
 #: share/html/Prefs/Other.html:89
 #. (loc_fuzzy($msg))
@@ -5078,7 +5078,7 @@ msgstr ""
 
 #: sbin/rt-email-digest:98
 msgid "Print this message"
-msgstr ""
+msgstr "Bu mesajı yazdır"
 
 #: lib/RT/Tickets_Overlay.pm:103 lib/RT/Tickets_Overlay.pm:2064 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:182 share/html/Ticket/Elements/EditBasics:102 share/html/Ticket/Elements/ShowBasics:76
 msgid "Priority"
@@ -5090,7 +5090,7 @@ msgstr "Öncelik başlangıcı:"
 
 #: share/html/Dashboards/Modify.html:70
 msgid "Privacy"
-msgstr ""
+msgstr "Gizlilik"
 
 #: share/html/Search/Elements/EditSearches:52
 msgid "Privacy:"
@@ -5128,11 +5128,11 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:72
 msgid "Queries"
-msgstr ""
+msgstr "Sorgular"
 
 #: share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Search/Edit.html:66
 msgid "Query"
-msgstr ""
+msgstr "Sorgu"
 
 #: share/html/Search/Build.html:121
 msgid "Query Builder"
@@ -5234,15 +5234,15 @@ msgstr "Hızlı bilet oluşturumu"
 
 #: lib/RT/Date.pm:117
 msgid "RFC2616"
-msgstr ""
+msgstr "RFC2616"
 
 #: lib/RT/Date.pm:116
 msgid "RFC2822"
-msgstr ""
+msgstr "RFC2822"
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #: lib/RT/StyleGuide.pod:788
 #. ($RT::VERSION, RT->Config->Get('rtname'))
@@ -5363,11 +5363,11 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:166
 msgid "Recipient"
-msgstr ""
+msgstr "Alıcı"
 
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
-msgstr ""
+msgstr "Tüm güncellemeleri kaydet"
 
 #: share/html/Elements/RT__Group/ColumnMap:69
 msgid "Recursive member"
@@ -5411,7 +5411,7 @@ msgstr ""
 
 #: share/html/Elements/RefreshHomepage:48
 msgid "Refresh"
-msgstr ""
+msgstr "Yenile"
 
 #: lib/RT/Config.pm:280
 msgid "Refresh home page every 10 minutes."
@@ -5427,39 +5427,39 @@ msgstr ""
 
 #: lib/RT/Config.pm:281
 msgid "Refresh home page every 20 minutes."
-msgstr ""
+msgstr "Anasayfayı her 20 dakikada bir yenile."
 
 #: lib/RT/Config.pm:279
 msgid "Refresh home page every 5 minutes."
-msgstr ""
+msgstr "Anasayfayı her 5 dakikada bir yenile."
 
 #: lib/RT/Config.pm:282
 msgid "Refresh home page every 60 minutes."
-msgstr ""
+msgstr "Anasayfayı her 60 dakikada bir yenile."
 
 #: lib/RT/Config.pm:236
 msgid "Refresh search results every 10 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 10 dakikada bir yenile."
 
 #: lib/RT/Config.pm:239
 msgid "Refresh search results every 120 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 120 dakikada bir yenile."
 
 #: lib/RT/Config.pm:234
 msgid "Refresh search results every 2 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 2 dakikada bir yenile."
 
 #: lib/RT/Config.pm:237
 msgid "Refresh search results every 20 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 20 dakikada bir yenile."
 
 #: lib/RT/Config.pm:235
 msgid "Refresh search results every 5 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 5 dakikada bir yenile."
 
 #: lib/RT/Config.pm:238
 msgid "Refresh search results every 60 minutes."
-msgstr ""
+msgstr "Arama sonuçlarını her 60 dakikada bir yenile."
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
@@ -5505,7 +5505,7 @@ msgstr "Yönetici Kk Kaldır"
 
 #: share/html/Ticket/Elements/Bookmark:88
 msgid "Remove Bookmark"
-msgstr ""
+msgstr "Yer İmini Kaldır"
 
 #: share/html/Search/Bulk.html:101
 msgid "Remove Cc"
@@ -5688,7 +5688,7 @@ msgstr "Sayfa başına satır"
 
 #: lib/RT/Installer.pm:68
 msgid "SQLite"
-msgstr ""
+msgstr "SQLite"
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -5696,7 +5696,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:109
 msgid "Sat"
-msgstr ""
+msgstr "Cts"
 
 #: NOT FOUND IN SOURCE
 msgid "Sat."
@@ -5704,7 +5704,7 @@ msgstr "Cmt."
 
 #: share/html/Dashboards/Subscription.html:114
 msgid "Saturday"
-msgstr ""
+msgstr "Cumartesi"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Ticket/Elements/ShowSummary:95 share/html/Ticket/Reminders.html:63 share/html/Widgets/SelectionBox:233
 msgid "Save"
@@ -5720,7 +5720,7 @@ msgstr "Tercihleri Kaydet"
 
 #: share/html/Search/Elements/EditSearches:65
 msgid "Save as New"
-msgstr ""
+msgstr "Yeni olarak Kaydet"
 
 #: NOT FOUND IN SOURCE
 msgid "Save changes"
@@ -5889,11 +5889,11 @@ msgstr "KuyruğuGör"
 
 #: share/html/Admin/Elements/CustomFieldTabs:92 share/html/Admin/Elements/GroupTabs:77 share/html/Admin/Elements/QueueTabs:97 share/html/Admin/Elements/UserTabs:83 share/html/Admin/Global/Scrip.html:61 share/html/Admin/Global/Scrips.html:59 share/html/Admin/Global/Template.html:77 share/html/Admin/Global/Templates.html:59 share/html/Dashboards/Elements/Tabs:93
 msgid "Select"
-msgstr ""
+msgstr "Seç"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
-msgstr ""
+msgstr "Veritabanı Türünü Seçin"
 
 #: share/html/Admin/CustomFields/index.html:97
 msgid "Select a Custom Field"
@@ -5917,7 +5917,7 @@ msgstr "Bir kullanıcı seçin"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
-msgstr ""
+msgstr "Başka bir dil seçin"
 
 #: NOT FOUND IN SOURCE
 msgid "Select custom field"
@@ -6053,7 +6053,7 @@ msgstr "Sahibe posta gönderir"
 
 #: lib/RT/Date.pm:96
 msgid "Sep"
-msgstr ""
+msgstr "Eyl"
 
 #: NOT FOUND IN SOURCE
 msgid "Sep."
@@ -6061,7 +6061,7 @@ msgstr "Eki."
 
 #: share/html/Prefs/Other.html:82 share/html/User/Elements/Tabs:57
 msgid "Settings"
-msgstr ""
+msgstr "Ayarlar"
 
 #: lib/RT/Config.pm:407
 msgid "Should RT send you mail for ticket updates you make?"
@@ -6211,7 +6211,7 @@ msgstr "Tekil"
 
 #: lib/RT/Installer.pm:139
 msgid "Site name"
-msgstr ""
+msgstr "Site adı"
 
 #: share/html/Admin/Tools/Configuration.html:152 share/html/Search/Elements/EditFormat:76
 msgid "Size"
@@ -6247,7 +6247,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:207 share/html/Admin/Tools/Configuration.html:66
 msgid "Source"
-msgstr ""
+msgstr "Kaynak"
 
 #: sbin/rt-email-digest:94
 msgid "Specify whether this is a daily or weekly run."
@@ -6358,7 +6358,7 @@ msgstr "Gönder"
 
 #: share/html/Dashboards/Subscription.html:180
 msgid "Subscribe"
-msgstr ""
+msgstr "Abone ol"
 
 #: share/html/Dashboards/Subscription.html:279
 #. ($DashboardObj->Name)
@@ -6380,7 +6380,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:83 share/html/Dashboards/Subscription.html:91
 msgid "Subscription"
-msgstr ""
+msgstr "Abonelik"
 
 #: share/html/Dashboards/Subscription.html:270
 #. ($msg)
@@ -6401,7 +6401,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:103
 msgid "Sun"
-msgstr ""
+msgstr "Pzr"
 
 #: NOT FOUND IN SOURCE
 msgid "Sun."
@@ -6409,7 +6409,7 @@ msgstr "Paz."
 
 #: share/html/Dashboards/Subscription.html:115
 msgid "Sunday"
-msgstr ""
+msgstr "Pazar"
 
 #: lib/RT/System.pm:79
 msgid "SuperUser"
@@ -6508,7 +6508,7 @@ msgstr "Şablon #%1"
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
 msgid "Template #%1 deleted"
-msgstr ""
+msgstr "Şablon #%1 silindi"
 
 #: lib/RT/Scrip_Overlay.pm:144
 #. ($args{'Template'})
@@ -6521,7 +6521,7 @@ msgstr "Şablon silindi"
 
 #: lib/RT/Template_Overlay.pm:383
 msgid "Template is empty"
-msgstr ""
+msgstr "Şablon boş"
 
 #: lib/RT/Scrip_Overlay.pm:140
 msgid "Template is mandatory argument"
@@ -6706,7 +6706,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:183
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: lib/RT/Crypt/GnuPG.pm:2049
 msgid "There are several keys suitable for encryption."
@@ -6769,7 +6769,7 @@ msgstr "Bu kullanıcının %1 en yüksek öneme sahip biletleri"
 
 #: lib/RT/Date.pm:107
 msgid "Thu"
-msgstr ""
+msgstr "Prş"
 
 #: NOT FOUND IN SOURCE
 msgid "Thu."
@@ -6777,11 +6777,11 @@ msgstr "Per."
 
 #: share/html/Dashboards/Subscription.html:112
 msgid "Thursday"
-msgstr ""
+msgstr "Perşembe"
 
 #: lib/RT/Record.pm:908 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52
 msgid "Ticket"
-msgstr ""
+msgstr "Bilet"
 
 #: share/html/Ticket/ModifyAll.html:48 share/html/Ticket/ModifyAll.html:52
 #. ($Ticket->Id, $Ticket->Subject)
@@ -6836,7 +6836,7 @@ msgstr "Bilet Çözümlendi"
 
 #: share/html/Elements/CollectionList:192 share/html/Elements/TicketList:64
 msgid "Ticket Search"
-msgstr ""
+msgstr "Bilet Arama"
 
 #: lib/RT/CustomField_Overlay.pm:1317 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
 msgid "Ticket Transactions"
@@ -7013,7 +7013,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:105
 msgid "Tue"
-msgstr ""
+msgstr "Sal"
 
 #: NOT FOUND IN SOURCE
 msgid "Tue."
@@ -7021,7 +7021,7 @@ msgstr "Sal."
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Tuesday"
-msgstr ""
+msgstr "Salı"
 
 #: lib/RT/Ticket_Overlay.pm:916 lib/RT/Tickets_Overlay.pm:1979 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
@@ -7070,11 +7070,11 @@ msgstr "Bilinmeyen alan: $key"
 #: lib/RT/Interface/Web/QueryBuilder/Tree.pm:267
 #. ($key)
 msgid "Unknown field: %1"
-msgstr ""
+msgstr "Bilinmeyen alan: %1"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"
-msgstr ""
+msgstr "Limitsiz"
 
 #: share/html/Elements/SelectResultsPerPage:60
 msgid "Unlimited"
@@ -7197,7 +7197,7 @@ msgstr "Değişikliklerinizi yükleyin"
 
 #: sbin/rt-email-digest:88
 msgid "Usage: "
-msgstr ""
+msgstr "Kullanımı: "
 
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
@@ -7227,7 +7227,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:909 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
-msgstr ""
+msgstr "Kullanıcı"
 
 #: lib/RT/Ticket_Overlay.pm:403
 #. ($args{'Owner'})
@@ -7323,7 +7323,7 @@ msgstr "Geçerlilik"
 
 #: share/html/Admin/Tools/Configuration.html:123 share/html/Admin/Tools/Configuration.html:65
 msgid "Value"
-msgstr ""
+msgstr "Değer"
 
 #: share/html/Admin/CustomFields/Modify.html:130 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
@@ -7339,7 +7339,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:206
 msgid "Version"
-msgstr ""
+msgstr "Sürüm"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
@@ -7355,7 +7355,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:115
 msgid "W3CDTF"
-msgstr ""
+msgstr "W3CDTF"
 
 #: lib/RT/Config.pm:203
 msgid "WYSIWYG composer height"
@@ -7367,7 +7367,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowGnuPGStatus:170
 msgid "Warning! This is NOT signed!"
-msgstr ""
+msgstr "Uyarı! Bu İMZALANMADI!"
 
 #: share/html/Dashboards/Subscription.html:266
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
@@ -7383,7 +7383,7 @@ msgstr "YöneticiKkOlarakGözle"
 
 #: lib/RT/Tickets_Overlay.pm:134
 msgid "Watcher"
-msgstr ""
+msgstr "İzleyici"
 
 #: lib/RT/Tickets_Overlay.pm:145
 msgid "WatcherGroup"
@@ -7407,7 +7407,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:106
 msgid "Wed"
-msgstr ""
+msgstr "Çrş"
 
 #: NOT FOUND IN SOURCE
 msgid "Wed."
@@ -7415,7 +7415,7 @@ msgstr "Çar."
 
 #: share/html/Dashboards/Subscription.html:111
 msgid "Wednesday"
-msgstr ""
+msgstr "Çarşamba"
 
 #: lib/RT/Config.pm:395
 msgid "Weekly digest"
@@ -7423,7 +7423,7 @@ msgstr ""
 
 #: share/html/Install/index.html:48
 msgid "Welcome to RT!"
-msgstr ""
+msgstr "RT'ye Hoşgeldiniz!"
 
 #: share/html/Tools/MyDay.html:77
 msgid "What I did today"
@@ -7431,7 +7431,7 @@ msgstr "Bugün ne yaptım"
 
 #: share/html/Install/index.html:67
 msgid "What is RT?"
-msgstr ""
+msgstr "RT Nedir?"
 
 #: lib/RT/Installer.pm:161
 msgid "When RT can't handle an email message, where should it be forwarded?"
@@ -7535,7 +7535,7 @@ msgstr "Çalışıldı"
 
 #: share/html/Widgets/Form/Boolean:77
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: lib/RT/Ticket_Overlay.pm:2925
 msgid "You already own this ticket"

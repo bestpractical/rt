@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-08 20:18+0000\n"
-"PO-Revision-Date: 2010-02-25 21:19+0000\n"
-"Last-Translator: Fernando Leal <Unknown>\n"
+"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"PO-Revision-Date: 2010-06-28 15:41+0000\n"
+"Last-Translator: ignacio <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-06 14:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264
@@ -109,7 +109,7 @@ msgstr "%1 %2 guardado."
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 %2  actualizado"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:66
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -1012,7 +1012,7 @@ msgstr "Todas las colas"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "All queues matching search criteria"
-msgstr ""
+msgstr "Todas las colas se emparejan con el critero de busqueda"
 
 #: lib/RT/Attachment_Overlay.pm:648
 msgid "Already encrypted"
@@ -1028,7 +1028,7 @@ msgstr "Y/O"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
-msgstr ""
+msgstr "Aplicado"
 
 #: share/html/Admin/CustomFields/Modify.html:79 share/html/Admin/Elements/CustomFieldTabs:85
 msgid "Applies to"
@@ -1036,7 +1036,7 @@ msgstr "Aplica a"
 
 #: share/html/Admin/CustomFields/Objects.html:61
 msgid "Applies to all objects"
-msgstr ""
+msgstr "Aplica a todos los objetos"
 
 #: share/html/Search/Edit.html:72
 msgid "Apply"
@@ -1044,7 +1044,7 @@ msgstr "Aplicar"
 
 #: share/html/Admin/CustomFields/Objects.html:65
 msgid "Apply globally"
-msgstr ""
+msgstr "Aplicar globalmente"
 
 #: share/html/Search/Edit.html:72
 msgid "Apply your changes"
@@ -1304,7 +1304,7 @@ msgstr "CF"
 #: share/html/Search/Elements/EditSearches:174
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
-msgstr ""
+msgstr "no puede cargar la busqueda salvada \"%1\""
 
 #: lib/RT/User_Overlay.pm:1612
 msgid "Can not modify system users"
@@ -1382,7 +1382,7 @@ msgstr "Cambiar"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
-msgstr ""
+msgstr "Cambiar el ticket de aprobación para abrir el estatus"
 
 #: share/html/SelfService/Prefs.html:53
 msgid "Change password"
@@ -1608,7 +1608,7 @@ msgstr "Copiar"
 
 #: lib/RT/Installer.pm:175
 msgid "Correspond address"
-msgstr ""
+msgstr "Direccion de correspondencia"
 
 #: etc/initialdata:261
 msgid "Correspondence"
@@ -1770,7 +1770,7 @@ msgstr "No se pudo agregar el miembro al grupo"
 
 #: lib/RT/CustomField_Overlay.pm:1051
 msgid "Couldn't apply custom field to an object as it's global already"
-msgstr ""
+msgstr "no puede aplicar campos personalizados a un objecto que ya es global"
 
 #: lib/RT/Record.pm:1749 lib/RT/Record.pm:1801
 #. ($msg)
@@ -1837,7 +1837,7 @@ msgstr "No fue posible cargar el campo personalizado  #%1"
 #: share/html/Admin/Elements/EditCustomFields:136 share/html/Admin/Elements/EditCustomFields:146
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr ""
+msgstr "no puedes cargar CustomField #%1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:104
 #. ($id)
@@ -1960,7 +1960,7 @@ msgstr "No fue posible cargar al usuario  #%1"
 #: share/html/User/Prefs.html:202
 #. ($id, $Name)
 msgid "Couldn't load user #%1 or user '%2'"
-msgstr ""
+msgstr "no puedes cargar usuario #%1 or usuario '%2'"
 
 #: share/html/User/Prefs.html:206
 #. ($Name)
@@ -2318,7 +2318,7 @@ msgstr "Campo personalizable borrado"
 
 #: lib/RT/CustomField_Overlay.pm:1046
 msgid "Custom field is already applied to the object"
-msgstr ""
+msgstr "Campos personales ya se aplicaron al objeto"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field not found"
@@ -2441,7 +2441,7 @@ msgstr "Formato de fecha"
 
 #: lib/RT/Date.pm:657
 msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
-msgstr ""
+msgstr "DateTime no soporta format_cldr, tu debes actualizar para usar esta caracteristica"
 
 #: lib/RT/Date.pm:655
 msgid "DateTime module missing"
@@ -2449,7 +2449,7 @@ msgstr "Falta el módulo de fecha y hora"
 
 #: lib/RT/Date.pm:672
 msgid "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
-msgstr ""
+msgstr "DateTime::Locale no soporta date_format_full, tu debes actualizar para usar esta caracteristica"
 
 #: lib/RT/Date.pm:656
 msgid "DateTime::Locale module missing"
@@ -2527,7 +2527,7 @@ msgstr "Por omisión: %1/%2 ha cambiado de %3 a %4"
 
 #: lib/RT/Date.pm:113
 msgid "DefaultFormat"
-msgstr ""
+msgstr "Formatopredefinido"
 
 #: share/html/User/Delegation.html:48 share/html/User/Delegation.html:51
 msgid "Delegate rights"
@@ -2650,7 +2650,7 @@ msgstr "Dependen de este pedido"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:116 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
-msgstr ""
+msgstr "DependeDePor"
 
 #: NOT FOUND IN SOURCE
 msgid "Dependencies: \\n"
@@ -2686,7 +2686,7 @@ msgstr "Depende de"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:112 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependsOn"
-msgstr "DependsOn"
+msgstr "DependeDe"
 
 #: share/html/Search/Elements/DisplayOptions:83
 msgid "Desc"
@@ -2766,11 +2766,11 @@ msgstr ""
 
 #: lib/RT/Config.pm:277
 msgid "Don't refresh home page."
-msgstr ""
+msgstr "No actualizar la pagina principal."
 
 #: lib/RT/Config.pm:233
 msgid "Don't refresh search results."
-msgstr ""
+msgstr "No actualizar los resultados de la busqueda."
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
@@ -3157,7 +3157,7 @@ msgstr "Situación extendida"
 
 #: lib/RT/User_Overlay.pm:1099
 msgid "External authentication enabled."
-msgstr ""
+msgstr "Autenticación externa habilitada"
 
 #: NOT FOUND IN SOURCE
 msgid "ExternalAuthId"
@@ -3182,7 +3182,7 @@ msgstr "Extraer etiquetas del tema de una transacción y añadirlas al tema del 
 #: share/html/Install/DatabaseDetails.html:187
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
-msgstr ""
+msgstr "Falló al conectar a la base de datos: %1"
 
 #: lib/RT/SharedSetting.pm:200
 #. ($self->ObjectName)
@@ -3204,7 +3204,7 @@ msgstr "Problema para encontrar el pseudogrupo de usuarios 'Unprivileged'"
 #: lib/RT/SharedSetting.pm:117
 #. ($self->ObjectName, $id)
 msgid "Failed to load %1 %2"
-msgstr ""
+msgstr "Falló al cargar %1 %2"
 
 #: lib/RT/SharedSetting.pm:141
 #. ($self->ObjectName, $id, $msg)
@@ -3629,7 +3629,7 @@ msgstr "Grupos a los que este usuario pertenece"
 
 #: lib/RT/Tickets_Overlay.pm:114
 msgid "HasMember"
-msgstr ""
+msgstr "TieneMiembros"
 
 #: etc/initialdata:388 etc/upgrade/3.8.6/content:4
 msgid "Heading of a forwarded Ticket"
@@ -4394,7 +4394,7 @@ msgstr "Miembro de"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:111 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "MemberOf"
-msgstr "MemberOf"
+msgstr "MiembroDe"
 
 #: lib/RT/Graph/Tickets.pm:160 share/html/Admin/Elements/GroupTabs:65 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138 share/html/User/Elements/GroupTabs:65
 msgid "Members"
@@ -5811,11 +5811,11 @@ msgstr "Por favor, verifique la URL e intente nuevamente."
 
 #: lib/RT/User_Overlay.pm:938
 msgid "Please enter your current password correctly."
-msgstr ""
+msgstr "Por favor introduce tu contraseña actual correctamente"
 
 #: lib/RT/User_Overlay.pm:941
 msgid "Please enter your current password."
-msgstr ""
+msgstr "Por favor introduce tu contraseña actual"
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
@@ -6314,7 +6314,7 @@ msgstr "Referenciado por"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:117 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "ReferredToBy"
-msgstr ""
+msgstr "MencionadosEnEl"
 
 #: share/html/Elements/EditLinks:153 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:98 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94
 msgid "Refers to"
@@ -6322,7 +6322,7 @@ msgstr "Hace referencia a"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:113 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "RefersTo"
-msgstr "RefersTo"
+msgstr "SeRefiereA"
 
 #: NOT FOUND IN SOURCE
 msgid "Refine"
@@ -8844,7 +8844,7 @@ msgstr "Su administrador del RT ha desconfigurado el alias de correo que invoca 
 
 #: share/html/Elements/EditPassword:8
 msgid "Your current password"
-msgstr ""
+msgstr "Tu contraseña actual"
 
 #: lib/RT/User_Overlay.pm:1108
 msgid "Your password is not set."
