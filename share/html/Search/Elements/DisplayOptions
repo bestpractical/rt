@@ -61,10 +61,12 @@
 % if ($o > 0) {
 <option value=""><&|/l&>~[none~]</&></option>
 % }
+% # %fields maps display name to SQL column/function
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
-<option value="<%$field%>"
-% if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
+%    my $fieldval = $fields{$field};
+<option value="<%$fieldval%>"
+% if (defined $OrderBy[$o] and $fieldval eq $OrderBy[$o]) {
 selected="selected"
 % }
 ><% loc($field) %></option>
@@ -102,18 +104,27 @@ selected="selected"
 
 <%INIT>
 my $tickets = new RT::Tickets($session{'CurrentUser'});
-my %fields = %{$tickets->FIELDS};
-map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/ || delete $fields{$_} } keys %fields;
-delete $fields{'EffectiveId'};
-$fields{'Owner'} = 1;
-$fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
+my %FIELDS = %{$tickets->FIELDS};
+my %fields;
+
+for my $field (keys %FIELDS) {
+    next if $field eq 'EffectiveId';
+    next unless $FIELDS{$field}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/;
+    $fields{$field} = $field;
+}
+
+$fields{'Owner'} = 'Owner';
+$fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress'
+    for qw(Requestor Cc AdminCc);
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
-$fields{$_}=1 for @cfs;
+$fields{$_} = $_ for @cfs;
 
 # Add PAW sort
-$fields{'Custom.Ownership'} = 1;
+$fields{'Custom.Ownership'} = 'Custom.Ownership';
+
+$m->callback(CallbackName => 'MassageSortFields', Fields => \%fields );
 
 my @Order = split /\|/, $Order;
 my @OrderBy = split /\|/, $OrderBy;
