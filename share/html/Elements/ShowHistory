@@ -67,7 +67,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
         }
     }
 </%perl>
-<div class="history">
+<div class="history <% lc $record_type %>">
 <& /Widgets/TitleBoxStart,
     title => $ShowTitle ? loc('History') : '&nbsp;',
     titleright_raw => $titleright,
@@ -157,6 +157,8 @@ my %attachment_content = map { $_->id => $_ }
         $ARGS{ $arg } = $request_path . $path;
     }
 }
+
+my $record_type = $Object->RecordType;
 </%INIT>
 <%ARGS>
 $Object
