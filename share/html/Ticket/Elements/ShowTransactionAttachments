@@ -234,19 +234,14 @@ my $render_attachment = sub {
             return;
         }
 
-        my $filename =  length $name ? $name : loc('(untitled)');
-        $m->out('<img'
-              . ' alt="'
-              . $filename
-              . '"' 
-              . ' title="'
-              . $filename
-              . '"' 
-              . ' src="'
-              . $AttachPath . '/'
-              . $Transaction->Id . '/'
-              . $message->Id
-              . '/" />' );
+        my $filename = length $name ? $name : loc('(untitled)');
+        my $efilename = $m->interp->apply_escapes( $filename, 'h' );
+        $m->out(
+            qq{<img alt="$efilename" title="$efilename"}
+            . ' src="'. $AttachPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
+                . $m->interp->apply_escapes( $filename, 'u', 'h' )
+            . '" />'
+        );
     }
     elsif ( $message->ContentLength && $message->ContentLength > 0 ) {
         $m->out( '<p>' .
