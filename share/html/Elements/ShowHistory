@@ -74,7 +74,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 &>
 % }
 
-<div id="ticket-history">
+<div id="<% lc $record_type %>-<% $Object->id %>-history">
 <%perl>
 my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
