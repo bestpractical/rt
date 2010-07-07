@@ -53,7 +53,7 @@
 % else {
 <select name="<%$Name%>" <% ($Multiple) ? 'multiple="multiple"' : '' %> <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
 %     if ($ShowNullOption) {
-  <option value="">-</option>
+  <option value=""><% $DefaultLabel %></option>
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
   <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>"\
@@ -75,6 +75,7 @@ $ShowAllQueues => 1
 $Name => undef
 $Verbose => undef
 $NamedValues => 0
+$DefaultLabel => "-"
 $Default => 0
 $Lite => 0
 $OnChange => undef
