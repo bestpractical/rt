@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<div class="history <% lc $record_type %>">
 <%perl>
 if ( $ShowDisplayModes or $ShowTitle ) {
     my $titleright = '';
@@ -67,7 +68,6 @@ if ( $ShowDisplayModes or $ShowTitle ) {
         }
     }
 </%perl>
-<div class="history <% lc $record_type %>">
 <& /Widgets/TitleBoxStart,
     title => $ShowTitle ? loc('History') : '&nbsp;',
     titleright_raw => $titleright,
@@ -118,8 +118,8 @@ while ( my $Transaction = $Transactions->Next ) {
 </div>
 % if ($ShowDisplayModes or $ShowTitle) {
 <& /Widgets/TitleBoxEnd &>
-</div>
 % }
+</div>
 <%INIT>
 my $Transactions = $Object->Transactions;
 
