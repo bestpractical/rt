@@ -104,12 +104,12 @@ selected="selected"
 
 <%INIT>
 my $tickets = new RT::Tickets($session{'CurrentUser'});
-my %FIELDS = %{$tickets->FIELDS};
+my %FieldDescriptions = %{$tickets->FIELDS};
 my %fields;
 
-for my $field (keys %FIELDS) {
+for my $field (keys %FieldDescriptions) {
     next if $field eq 'EffectiveId';
-    next unless $FIELDS{$field}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/;
+    next unless $FieldDescriptions{$field}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/;
     $fields{$field} = $field;
 }
 
