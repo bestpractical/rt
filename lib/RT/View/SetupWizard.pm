@@ -85,9 +85,11 @@ template 'database' => setup_page {
     
     show 'database_widget';
 
-    # We need to restart here so that further changes to the DB get to the
-    # right place
-    show 'buttons', prev => 'index.html', next => 'root', restart => 1;
+    p {{ class is 'warning' };
+        _("RT may ask you, after saving the database settings, to login again as root with the default password.");
+    };
+
+    show 'buttons', prev => 'index.html', next => 'root';
 };
 
 template 'root' => setup_page {
