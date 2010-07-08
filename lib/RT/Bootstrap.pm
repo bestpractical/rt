@@ -54,8 +54,9 @@ use base qw/Jifty::Bootstrap/;
 sub run {
     my $self = shift;
 
+    my ($good, $msg) = $self->insert_initial_data();
+    die "Trouble inserting system data! $msg\n" if not $good;
 
-    $self->insert_initial_data();
     $self->insert_data( RT->etc_path . "/initialdata" );
 }
 
@@ -179,6 +180,8 @@ sub insert_initial_data {
         my ( $val, $msg ) = $group->create_role( object => RT->system, type => $name);
         return ( $val, $msg ) unless $val;
     }
+
+    return 1;
 }
 
 =head2 insert_data
@@ -204,8 +207,19 @@ sub insert_data {
         %Config
     );
 
-    require $datafile
-      || die "Couldn't find initial data for import\n" . $@;
+    # Parse the actual initialdata file.  We use "do" here rather than
+    # "require" because we might be bootstrapping more than once in a running
+    # instance for the setup wizard.
+    my $done = do $datafile;
+
+    unless ( defined $done ) {
+        die "Couldn't find initial data for import ($datafile): $!\n" if $!;
+        die "Couldn't parse initial data for import ($datafile): $@\n";
+    }
+
+    warn "Possible problem importing initial data ($datafile): "
+        ."A true value wasn't returned.\n"
+        if not $done;
 
     for my $name ( sort keys %Config ) {
         my $config = RT::Model::Config->new( current_user => RT->system );
@@ -238,14 +252,14 @@ sub insert_data {
                     } elsif ( !ref $_ ) {
                         $parent->load_user_defined($_);
                     } else {
-                        print "(Error: wrong format of member_of field."
+                        warn  "(Error: wrong format of member_of field."
                             . " Should be name of user defined group or"
                             . " hash reference with 'column => value' pairs."
                             . " Use array reference to add to multiple groups)";
                         next;
                     }
                     unless ( $parent->id ) {
-                        print "(Error: couldn't load group to add member)";
+                        warn "(Error: couldn't load group to add member)";
                         next;
                     }
                     my ( $return, $msg ) = $parent->add_member( $new_entry->id );
@@ -264,7 +278,7 @@ sub insert_data {
         foreach my $item (@Users) {
             my $new_entry = RT::Model::User->new( current_user => RT->system_user );
             my ( $return, $msg ) = $new_entry->create(%$item);
-            print "(Error: $msg)" unless $return;
+            warn "(Error: $msg)" unless $return;
 
             #print $return. ".";
         }
@@ -475,7 +489,7 @@ sub insert_data {
         #print "Running final actions...\n";
         for (@Final) {
             eval { $_->(); };
-            print "(Error: $@)\n" if $@;
+            warn "(Error: $@)\n" if $@;
         }
     }
 
