@@ -112,6 +112,8 @@ if ( defined($UserString) && length $UserString ) {
             CASESENSITIVE => 0,
         ); 
     }
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Users/Modify.html?id=".$users->First->id)
+          if $users->Count == 1;
 }
 else {
     $caption = loc("Privileged users");
