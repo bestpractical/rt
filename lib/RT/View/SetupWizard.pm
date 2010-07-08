@@ -109,7 +109,7 @@ template 'root' => setup_page {
         label   => 'Confirm Password',
     );
     
-    show 'buttons', prev => 'database', next => 'done';
+    show 'buttons', prev => 'database', next => 'organization';
 };
 
 # root password
@@ -117,6 +117,27 @@ template 'root' => setup_page {
 # web (base url, port, + rt stuff?)
 # email
 # turn off SetupMode in finish
+
+template 'organization' => setup_page {
+    h2 { _("Organization basics") };
+
+    p { _("Now tell RT just the very basics about your organization.") };
+
+    my $config = new_action( class => 'RT::Action::ConfigSystem' );
+    my $meta = $config->metadata;
+
+    render_param( $config => 'rtname' );
+    p {
+        outs_raw( $meta->{'rtname'}{'doc'} )
+    } if $meta->{'rtname'};
+
+    render_param( $config => 'time_zone' );
+    p {
+        outs_raw( $meta->{'time_zone'}{'doc'} )
+    } if $meta->{'time_zone'};
+    
+    show 'buttons', prev => 'root', next => 'done';
+};
 
 template 'basics' => sub {
 
