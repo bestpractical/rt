@@ -65,6 +65,7 @@ package RT::SharedSetting;
 use strict;
 use warnings;
 use RT::Attribute;
+use Scalar::Util 'blessed';
 use base qw/RT::Base/;
 
 =head1 METHODS
@@ -371,6 +372,11 @@ sub CurrentUserCanDelete { 1 }
 sub _GetObject {
     my $self = shift;
     my $privacy = shift;
+
+    # short circuit: if they pass the object we want anyway, just return it
+    if (blessed($privacy) && $privacy->isa('RT::Record')) {
+        return $privacy;
+    }
 
     my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
 
