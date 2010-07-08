@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test nodata => 1, tests => 6;
+use RT::Test nodata => 1, tests => 7;
 
 use_ok('RT::I18N');
 
@@ -54,6 +54,17 @@ diag q{newline and encoded file name} if $ENV{TEST_VERBOSE};
         RT::I18N::DecodeMIMEWordsToUTF8($str),
         qq{application/vnd.ms-powerpoint;\tname="Main presentation.ppt"},
         "right decoding"
+    );
+}
+
+diag q{rfc2231} if $ENV{TEST_VERBOSE};
+{
+    my $str =
+"filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74 filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
+    is(
+        RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8' ),
+        'filename=tést.txt filename=tést.txt',
+        'right decodig'
     );
 }
 

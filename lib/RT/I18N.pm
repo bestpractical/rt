@@ -332,8 +332,8 @@ sub DecodeMIMEWordsToEncoding {
     my $enc = shift;
 
     @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
-    return ($str) unless (@_);
 
+    if ( @_ ) {
     # add everything that hasn't matched to the end of the latest
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
     $_[-1] .= substr($str, pos $str);
@@ -388,6 +388,34 @@ sub DecodeMIMEWordsToEncoding {
 
 	$str .= $prefix . $enc_str . $trailing;
     }
+    }
+
+# handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, see also rfc 2231
+    @_ = $str =~ m/(.*?\*=)([^']*?)'([^']*?)'(\S+)(.*?)(?=(?:\*=|$))/gcs;
+    if (@_) {
+        $str = '';
+        while (@_) {
+            my ( $prefix, $charset, $language, $enc_str, $trailing ) =
+              ( shift, shift, shift, shift, shift );
+            $prefix =~ s/\*=$/=/; # remove the *
+            $enc_str =~ s/%(\w{2})/chr hex $1/eg;
+            unless ( $charset eq $enc ) {
+                my $orig_str = $enc_str;
+                eval {
+                    Encode::from_to( $enc_str, $charset, $enc,
+                        Encode::FB_CROAK );
+                };
+                if ($@) {
+                    $enc_str = $orig_str;
+                    $charset = _GuessCharset($enc_str);
+                    Encode::from_to( $enc_str, $charset, $enc );
+                }
+            }
+            $enc_str = qq{"$enc_str"}
+              if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+            $str .= $prefix . $enc_str . $trailing;
+        }
+     }
 
     # We might have \n without trailing whitespace, which will result in
     # invalid headers.
