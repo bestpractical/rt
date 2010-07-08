@@ -53,7 +53,7 @@ sub take_action {
 
 sub report_success {
     my $self = shift;
-    $self->result->message("Updated user ", $self->record->name);
+    $self->result->message("Updated user " . $self->record->name);
 }
 
 1;
