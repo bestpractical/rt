@@ -107,6 +107,7 @@
 
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
+% $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
     <&| /Widgets/TitleBox, title => loc('Links'),
         title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id,
         class => 'ticket-info-links',
