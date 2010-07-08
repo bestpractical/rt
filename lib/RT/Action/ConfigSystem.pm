@@ -20,7 +20,11 @@ sub arguments {
         $args->{ $config->name } = {
             default_value => defer {
                 local $Data::Dumper::Terse = 1;
-                Dumper $value,
+                my $dump = Dumper($value);
+                # De-quote simple strings
+                $dump =~ s/^\s*['"]//;
+                $dump =~ s/['"]\s*$//;
+                return $dump;
             },
             ref $value ? ( render_as => 'textarea' ) : (),
         };
@@ -100,6 +104,12 @@ sub _canonicalize_arguments {
         if ( $self->has_argument($arg) ) {
             my $value = $self->argument_value( $arg );
             next unless defined $value;
+
+            unless ( $value =~ /^\s*['"\{\[]/ ) {
+                # quotify again
+                $value = "'$value'";
+            }
+
             my $eval = eval $value;
             if ( $@ ) {
                 return $self->validation_error(
