@@ -34,8 +34,9 @@ margin-right:auto;margin-left:auto;
 }
 
 #login-box .form_field .hints {
- position: absolute;
- left: 12em;
+ position: relative;
+ left: 7.5em;
  font-size: 0.8em;
+ top: 0.2em;
 }
 
