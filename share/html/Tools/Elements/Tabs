@@ -69,9 +69,9 @@ my $tabs = {
 };
 
 my $can_see_dashboards = $session{CurrentUser}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)
-                       || RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects
-                       || RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects( Create => 1 )
-                       || RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects( Modify => 1 );
+                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading
+                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForCreating
+                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForModifying;
 
 if ($can_see_dashboards) {
     $tabs->{a} = {

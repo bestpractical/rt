@@ -53,7 +53,7 @@ $flatten => 0
 <%init>
 # Returns a hash of dashboards associated with @Objects
 if (!defined($Objects)) {
-    @$Objects = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
+    @$Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
 }
 
 for my $object (@$Objects) {
@@ -77,5 +77,3 @@ if ($flatten) {
 
 return $dashboards;
 </%init>
-
-

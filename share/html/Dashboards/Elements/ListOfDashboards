@@ -2,7 +2,7 @@
 # put the list of dashboards into the navigation
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem => 1);
+my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
 my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @dashboards = (

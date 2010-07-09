@@ -93,7 +93,8 @@ $Create = 1 if !$id;
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @privacies = $Dashboard->_PrivacyObjects(($Create ? 'Create' : 'Modify') => 1);
+my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
+my @privacies = $Dashboard->$method;
 
 Abort(loc("Permission denied")) if @privacies == 0;
 

@@ -128,7 +128,9 @@ sub Type {
 
 ### Internal methods
 
-# _PrivacyObjects: returns a list of objects that can be used to load saved searches from.
+# _PrivacyObjects: returns a list of objects that can be used to load, create,
+# etc. saved searches from. You probably want to use the wrapper methods like
+# ObjectsForLoading, ObjectsForCreating, etc.
 
 sub _PrivacyObjects {
     my $self        = shift;

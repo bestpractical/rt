@@ -230,44 +230,24 @@ sub PossibleHiddenSearches {
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
-# dashboards from. If the Modify parameter is true, then check modify rights.
-# If the Create parameter is true, then check create rights. Otherwise, check
-# read rights.
+# dashboards from. You probably want to use the wrapper methods like
+# ObjectsForLoading, ObjectsForCreating, etc.
 
 sub _PrivacyObjects {
     my $self = shift;
-    my %args = @_;
 
-    my $CurrentUser = $self->CurrentUser;
     my @objects;
 
-    my $prefix = $args{Modify} ? "Modify"
-               : $args{Create} ? "Create"
-                               : "See";
-
-    push @objects, $CurrentUser->UserObj
-        if $self->CurrentUser->HasRight(
-            Right  => "${prefix}OwnDashboard",
-            Object => $RT::System,
-        );
+    my $CurrentUser = $self->CurrentUser;
+    push @objects, $CurrentUser->UserObj;
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->Id,
                          Recursively => 1 );
+    push @objects, @{ $groups->ItemsArrayRef };
 
-    push @objects, grep {
-        $self->CurrentUser->HasRight(
-            Right  => "${prefix}GroupDashboard",
-            Object => $_,
-        )
-    } @{ $groups->ItemsArrayRef };
-
-    push @objects, RT::System->new($CurrentUser)
-        if $CurrentUser->HasRight(
-            Right  => "${prefix}Dashboard",
-            Object => $RT::System,
-        );
+    push @objects, RT::System->new($CurrentUser);
 
     return @objects;
 }

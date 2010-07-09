@@ -456,6 +456,42 @@ sub _build_privacy {
          : undef;
 }
 
+=head2 ObjectsForLoading
+
+Returns a list of objects that can be used to load this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForLoading {
+    my $self = shift;
+    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects;
+}
+
+=head2 ObjectsForCreating
+
+Returns a list of objects that can be used to create this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForCreating {
+    my $self = shift;
+    return grep { $self->CurrentUserCanCreate($_) } $self->_PrivacyObjects;
+}
+
+=head2 ObjectsForModifying
+
+Returns a list of objects that can be used to modify this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForModifying {
+    my $self = shift;
+    return grep { $self->CurrentUserCanModify($_) } $self->_PrivacyObjects;
+}
+
 eval "require RT::SharedSetting_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm});
 eval "require RT::SharedSetting_Local";

@@ -95,7 +95,7 @@ else {
     };
 
     my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
-    my @objects = $dashboard->_PrivacyObjects(Create => 1);
+    my @objects = $dashboard->ObjectsForCreating;
 
     if (@objects) {
         $subtabs->{"b_Create"} = {
