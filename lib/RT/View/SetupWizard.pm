@@ -62,6 +62,16 @@ sub setup_page (&) {
     };
 }
 
+sub steps {
+    return qw(
+        index.html
+        database
+        root
+        organization
+        done
+    );
+}
+
 template 'index.html' => setup_page {
     h2 { _("Welcome to RT!") };
 
@@ -69,11 +79,7 @@ template 'index.html' => setup_page {
         _("Let's get your RT install setup and ready to go.  We'll step you through a few steps to configure the basics.");
     };
 
-    hyperlink(
-        url   => 'database',
-        label => 'Start',
-        as_button => 1
-    );
+    show 'buttons', for => 'index.html';
 
     p {
         outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
@@ -89,7 +95,7 @@ template 'database' => setup_page {
         _("RT may ask you, after saving the database settings, to login again as root with the default password.");
     };
 
-    show 'buttons', prev => 'index.html', next => 'root';
+    show 'buttons', for => 'database';
 };
 
 template 'root' => setup_page {
@@ -109,7 +115,7 @@ template 'root' => setup_page {
         label   => 'Confirm Password',
     );
     
-    show 'buttons', prev => 'database', next => 'organization';
+    show 'buttons', for => 'root';
 };
 
 # root password
@@ -136,7 +142,7 @@ template 'organization' => setup_page {
         outs_raw( $meta->{'time_zone'}{'doc'} )
     } if $meta->{'time_zone'};
     
-    show 'buttons', prev => 'root', next => 'done';
+    show 'buttons', for => 'organization';
 };
 
 template 'basics' => sub {
@@ -160,37 +166,6 @@ template 'basics' => sub {
 
 template 'done' => setup_page {
     h2 { _("Setup complete!") };
-};
-
-private template 'buttons' => sub {
-    my $self = shift;
-    my %args = @_;
-
-    hyperlink(
-        url => $args{'prev'},
-        label => 'Previous step',
-        as_button => 1,
-    );
-
-    if ( $args{'restart'} ) {
-        Jifty->log->debug("Restarting the server before next setup wizard step");
-        my $restart = new_action(
-            class     => 'Jifty::Plugin::Config::Action::Restart',
-            moniker   => 'restart-jifty',
-            order     => 90
-        );
-        render_param(
-            $restart      => 'url',
-            default_value => $self->fragment_for($args{'next'})
-        );
-        form_submit( label => 'Next step' );
-    }
-    else {
-        form_submit(
-            url     => $self->fragment_for($args{'next'}),
-            label   => 'Next step',
-        );
-    }
 };
 
 1;
