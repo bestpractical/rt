@@ -13,10 +13,21 @@ sub arguments {
     return $self->{__cached_arguments} if ( $self->{__cached_arguments} );
     my $args = {};
 
+    # Translate from config name to a friendly label
+    my %labels = (
+        rtname      => 'RT Name',
+        time_zone   => 'Timezone',
+    );
+
     my $configs = RT::Model::ConfigCollection->new;
     $configs->unlimit;
     while ( my $config = $configs->next ) {
         my $value = RT->config->get( $config->name );
+        my $label = ucfirst $config->name;
+        $label =~ tr/_/ /;
+
+        $label = $labels{$config->name} if $labels{$config->name};
+
         $args->{ $config->name } = {
             default_value => defer {
                 local $Data::Dumper::Terse = 1;
@@ -26,6 +37,7 @@ sub arguments {
                 $dump =~ s/['"]\s*$//;
                 return $dump;
             },
+            label => $label,
             ref $value ? ( render_as => 'textarea' ) : (),
         };
 

@@ -6,12 +6,12 @@ package RT::Config;
 
 =item C<rtname>
 
-C<rtname> is the string that RT will look for in mail messages to
+C<rtname> is the string that RT will look for in email subjects to
 figure out what ticket a new piece of mail belongs to.
 
-Your domain name is recommended, so as not to pollute the namespace.
-once you start using a given tag, you should probably never change it.
-(otherwise, mail for existing tickets won't get put in the right place)
+Your domain name is recommended so as not to pollute the namespace.
+Once you start using a given tag, you should probably never change it.
+(Otherwise mail for existing tickets won't get put in the right place.)
 
 Default: C<"example.com">
 
@@ -54,10 +54,13 @@ Default: C<"5">
 
 =item C<time_zone>
 
-C<time_zone> is used to convert times entered by users into GMT and back again
+Set the default timezone you want RT to use for displaying dates and times.
+Individual users are able to choose their own timezone in their preferences.
+
+=for man
 It should be set to a time zone recognized by L<DateTime::TimeZone>.
 
-Default: C<'America/New_York'>
+Default: C<"America/New_York">
 
 =back
 

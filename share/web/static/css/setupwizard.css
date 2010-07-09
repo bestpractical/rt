@@ -1,0 +1,17 @@
+.config-field .form_field .label {
+    width: 12em;
+    font-weight: bold;
+    font-size: 1em;
+    line-height: 1.6em;
+}
+
+.config-field .doc {
+    display: block;
+    width: 50%;
+    margin-left: 12.7em;
+}
+
+.config-field .doc p:first-child {
+    padding-top: 0;
+    margin-top: 0;
+}

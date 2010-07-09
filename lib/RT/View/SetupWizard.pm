@@ -132,15 +132,29 @@ template 'organization' => setup_page {
     my $config = new_action( class => 'RT::Action::ConfigSystem' );
     my $meta = $config->metadata;
 
-    render_param( $config => 'rtname' );
-    p {
-        outs_raw( $meta->{'rtname'}{'doc'} )
-    } if $meta->{'rtname'};
+    my $selector = 'jQuery(this).parent().parent().find(".doc")';
 
-    render_param( $config => 'time_zone' );
-    p {
-        outs_raw( $meta->{'time_zone'}{'doc'} )
-    } if $meta->{'time_zone'};
+    for my $field (qw( rtname organization time_zone )) {
+        div {{ class is 'config-field' };
+            render_param(
+                $config => $field,
+                onfocus => "$selector.slideDown();",
+                onblur  => "$selector.slideUp();",
+            );
+            div {{ class is 'doc' };
+                outs_raw( $meta->{$field}{'doc'} )
+            } if $meta->{$field} and defined $meta->{$field}{'doc'};
+        };
+    }
+
+    script {
+        outs_raw(<<'JSEND');
+jQuery(function() {
+    jQuery('.config-field .doc').hide();
+    jQuery('.config-field .widget')[0].focus();
+});
+JSEND
+    };
     
     show 'buttons', for => 'organization';
 };

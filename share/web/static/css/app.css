@@ -12,6 +12,7 @@
 @import "tools.css";
 @import "admin.css";
 @import "misc.css";
+@import "setupwizard.css";
 @import "yui/calendar/calendar.css";
 
 @import "rulebuilder.css";
