@@ -28,6 +28,14 @@ sub arguments {
             },
             ref $value ? ( render_as => 'textarea' ) : (),
         };
+
+        if ( $config->name eq 'time_zone' ) {
+            # Populate with offsets and TZs
+            $args->{$config->name}{'valid_values'} = lazy {
+                RT::Model::Config->formatted_timezones();
+            };
+            $args->{$config->name}{'render_as'} = 'Select';
+        }
     }
     return $self->{__cached_arguments} = $args;
 }

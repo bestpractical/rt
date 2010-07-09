@@ -50,6 +50,8 @@ use strict;
 package RT::Model::Config;
 use base qw/RT::Record/;
 use FreezeThaw qw/cmpStr/;
+use DateTime;
+use DateTime::TimeZone;
 
 sub table {'Configs'}
 
@@ -137,6 +139,39 @@ sub create {
 
 sub _empty_string {
     return '[empty string]';
+}
+
+=head2 formatted_timezones
+
+Returns a listref of hashrefs with display set to "offset from gmt timezone"
+but value to the normal "timezone".  This way we show "-0500 America/New York"
+but still work with the "America/New York" timezone we expect to be saved in the DB.
+
+=cut
+
+sub formatted_timezones {
+    my @positive;
+    my @negative;
+    for my $tz ( DateTime::TimeZone->all_names ) {
+        my $now = DateTime->now( time_zone => $tz );
+        my $offset = $now->strftime("%z");
+        my $zone_data = { offset => $offset, name => $tz };
+        if ($offset =~ /^-/) {
+            push @negative, $zone_data;
+        } else {
+            push @positive, $zone_data;
+        }
+    }
+
+    @negative = sort { $b->{offset} cmp $a->{offset} ||
+                       $a->{name} cmp $b->{name} } @negative;
+    @positive = sort { $a->{offset} cmp $b->{offset} ||
+                       $a->{name} cmp $b->{name} } @positive;;
+
+    return [ map { { display => "$_->{offset} $_->{name}",
+                    value => $_->{name}
+                  }
+               } (@negative,@positive)];
 }
 
 1;
