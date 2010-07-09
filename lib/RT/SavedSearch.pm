@@ -126,6 +126,69 @@ sub Type {
     return $self->{'Type'};
 }
 
+# ACLs
+
+sub _CurrentUserCan {
+    my $self    = shift;
+    my $privacy = shift || $self->Privacy;
+    my %args    = @_;
+
+    if (!defined($privacy)) {
+        $RT::Logger->debug("No privacy provided to $self->_CurrentUserCan");
+        return 0;
+    }
+
+    my $object = $self->_GetObject($privacy);
+    return 0 unless $object;
+
+    my $level;
+
+    # users are mildly special-cased, since we actually have to check that
+    # the user is operating on himself
+    if ($object->isa('RT::User')) {
+        return 0 unless $object->Id == $self->CurrentUser->Id;
+    }
+
+    my $right = $args{FullRight}
+             || join('', $args{Right}, 'SavedSearch');
+
+    # all rights, except group rights, are global
+    $object = $RT::System unless $object->isa('RT::Group');
+
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $object,
+    );
+}
+
+sub CurrentUserCanSee {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'Load');
+}
+
+sub CurrentUserCanCreate {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'Create');
+}
+
+sub CurrentUserCanModify {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, FullRight => 'EditSavedSearches');
+}
+
+sub CurrentUserCanDelete {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, FullRight => 'EditSavedSearches');
+}
+
 ### Internal methods
 
 # _PrivacyObjects: returns a list of objects that can be used to load, create,
