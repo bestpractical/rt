@@ -61,6 +61,7 @@ my @tabs = sort keys %$toptabs;
 
      my $current = $current_toptab || '';
      my $path    = $toptabs->{$tab}->{'path'} || "";
+     my $target  = $toptabs->{$tab}->{'target'} || "";
      
      $path    =~ s#/index.html$##gi;
      $current =~ s#/index.html$##gi;
@@ -98,6 +99,7 @@ my @tabs = sort keys %$toptabs;
     <% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
     <a href="<% $url %>"
       <% $class->{a} && qq[ class="$class->{a}"] |n %>
+      <% $target && qq[ target="$target"] |n %>
       <% !$level && " accesskey='".$accesskey++."'" |n %>>
     <% $toptabs->{$tab}->{'title'}%></a>
 
