@@ -133,6 +133,7 @@ div#ticket-history div.content {
  min-height: 2.5em;
  /* To avoid overlapping of "downloadattachment" by messagebody */
  clear: left;
+ word-wrap: break-word;
 }
 
 .ticket-transaction .messagebody img {
