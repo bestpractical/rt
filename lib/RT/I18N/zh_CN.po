@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-27 03:03+0000\n"
-"PO-Revision-Date: 2010-06-04 12:30+0000\n"
-"Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
+"POT-Creation-Date: 2009-10-08 20:18+0000\n"
+"PO-Revision-Date: 2010-03-05 19:31+0000\n"
+"Last-Translator: charles <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-06 14:01+0000\n"
+"X-Launchpad-Export-Date: 2010-04-26 21:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -69,7 +69,7 @@ msgstr "%*(%1) 件限期完成的申请单"
 msgid "%*(%1,unresolved ticket)"
 msgstr "%*(%1) 件尚未解决的申请单"
 
-#: lib/RT/URI/fsck_com_rt.pm:219
+#: lib/RT/URI/fsck_com_rt.pm:231
 #. ($self->ObjectType, $self->Object->Id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
@@ -99,7 +99,7 @@ msgstr "%1 %2 %3 %4:%5 %6"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
-#: lib/RT/Record.pm:1717 lib/RT/Transaction_Overlay.pm:706 lib/RT/Transaction_Overlay.pm:749
+#: lib/RT/Record.pm:1717 lib/RT/Transaction_Overlay.pm:704 lib/RT/Transaction_Overlay.pm:747
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -111,13 +111,13 @@ msgstr "%2 已新增为 %1"
 msgid "%1 %2 ago"
 msgstr "%1 %2 之前"
 
-#: lib/RT/Record.pm:1724 lib/RT/Transaction_Overlay.pm:713
+#: lib/RT/Record.pm:1724 lib/RT/Transaction_Overlay.pm:711
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 已从 %2 改为 %3"
 
-#: lib/RT/Record.pm:1721 lib/RT/Transaction_Overlay.pm:709 lib/RT/Transaction_Overlay.pm:755
+#: lib/RT/Record.pm:1721 lib/RT/Transaction_Overlay.pm:707 lib/RT/Transaction_Overlay.pm:753
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -179,19 +179,19 @@ msgstr "%1 (from pane %2)"
 msgid "%1 - %2 shown"
 msgstr "显示第 %1 - %2 笔"
 
-#: bin/rt-crontool:364
+#: bin/rt-crontool:363
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
 msgstr "%1 - 调整LogToScreen 配置选项"
 
-#: bin/rt-crontool:339 bin/rt-crontool:346 bin/rt-crontool:352
+#: bin/rt-crontool:338 bin/rt-crontool:345 bin/rt-crontool:351
 #. ("--search-arg", "--search")
 #. ("--condition-arg", "--condition")
 #. ("--action-arg", "--action")
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - 传递给 %2 的一个参数"
 
-#: bin/rt-crontool:366
+#: bin/rt-crontool:365
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - 将更新状态输出到 STDOUT"
@@ -204,32 +204,32 @@ msgstr "%1 - 指定欲使用的模板编号"
 msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
 msgstr "%1 - 指定欲使用的更动为 'first' (第一项) 或 'last' (最后一项)"
 
-#: bin/rt-crontool:358
+#: bin/rt-crontool:357
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - 指定你要使用第一个('first')，最后一个('last')还是所有('all') transactions"
 
-#: bin/rt-crontool:355
+#: bin/rt-crontool:354
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - 指定您想在模板中使用的名字或者id"
 
-#: bin/rt-crontool:349
+#: bin/rt-crontool:348
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - 指定欲使用的动作模块"
 
-#: bin/rt-crontool:361
+#: bin/rt-crontool:360
 #. ("--transaction-type")
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - 指定你要使用由逗号(,)分隔的transactions 类型列表"
 
-#: bin/rt-crontool:343
+#: bin/rt-crontool:342
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - 指定欲使用的条件模块"
 
-#: bin/rt-crontool:336
+#: bin/rt-crontool:335
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - 指定欲使用的查询模块"
@@ -295,13 +295,13 @@ msgstr "%1 看来是个本地对象，却不在数据库里"
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 看来已经完全初始化了。我们不需要再建立任何的数据库表或者加入存metadata，点击下面的'配置基本'链接可以继续配置RT."
 
-#: lib/RT/Transaction_Overlay.pm:592 share/html/Ticket/Elements/ShowDates:80
+#: lib/RT/Transaction_Overlay.pm:593 share/html/Ticket/Elements/ShowDates:80
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:654 lib/RT/Transaction_Overlay.pm:844 lib/RT/Transaction_Overlay.pm:849 lib/RT/Transaction_Overlay.pm:863 lib/RT/Transaction_Overlay.pm:872 lib/RT/Transaction_Overlay.pm:877
+#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:655 lib/RT/Transaction_Overlay.pm:842 lib/RT/Transaction_Overlay.pm:847 lib/RT/Transaction_Overlay.pm:861 lib/RT/Transaction_Overlay.pm:870 lib/RT/Transaction_Overlay.pm:875
 #. ($self->loc( $args{'Field'} ),            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
@@ -316,7 +316,7 @@ msgstr "%1 的值从 %2 改为 %3"
 msgid "%1 chart by %2"
 msgstr "%1 由 %2 记录"
 
-#: share/html/Search/Elements/EditSearches:200
+#: share/html/Search/Elements/EditSearches:196
 #. ($SavedSearch->{'Object'}->Description)
 msgid "%1 copy"
 msgstr "%1 复制"
@@ -339,17 +339,17 @@ msgstr "%1 无法初始更新 (%2)\\n"
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 无法将现况设成已解决。RT 数据库内容可能不一致。"
 
-#: lib/RT/Transaction_Overlay.pm:621
+#: lib/RT/Transaction_Overlay.pm:622
 #. ($obj_type)
 msgid "%1 created"
 msgstr "已建立 %1"
 
-#: lib/RT/Transaction_Overlay.pm:632
+#: lib/RT/Transaction_Overlay.pm:633
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "已删除 %1"
 
-#: lib/RT/Transaction_Overlay.pm:627
+#: lib/RT/Transaction_Overlay.pm:628
 #. ($obj_type)
 msgid "%1 disabled"
 msgstr "%1 禁用"
@@ -359,7 +359,7 @@ msgstr "%1 禁用"
 msgid "%1 doesn't exist."
 msgstr "%1 不存在."
 
-#: lib/RT/Transaction_Overlay.pm:624
+#: lib/RT/Transaction_Overlay.pm:625
 #. ($obj_type)
 msgid "%1 enabled"
 msgstr "%1 启用"
@@ -380,7 +380,7 @@ msgstr "前 %1 份送出的申请单..."
 msgid "%1 highest priority tickets pending my approval..."
 msgstr "前 %1 份待签核申请单..."
 
-#: bin/rt-crontool:331
+#: bin/rt-crontool:330
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 是从外部排程程序(如 cron)来对申请单进行操作的工具。"
@@ -430,7 +430,7 @@ msgstr "前 %1 份待认领的申请单"
 msgid "%1 not shown"
 msgstr "没有显示 %1"
 
-#: lib/RT/CustomField_Overlay.pm:867
+#: lib/RT/CustomField_Overlay.pm:866
 msgid "%1 objects"
 msgstr "%1 对象"
 
@@ -486,11 +486,11 @@ msgstr "%1 会解决在已解决群组里成员的申请单。"
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申请单依赖于某个链接，或是某个链接的成员，它将会被延宕。"
 
-#: lib/RT/CustomField_Overlay.pm:868
+#: lib/RT/CustomField_Overlay.pm:867
 msgid "%1's %2 objects"
 msgstr "%1 内的 %2 对象"
 
-#: lib/RT/CustomField_Overlay.pm:869
+#: lib/RT/CustomField_Overlay.pm:868
 msgid "%1's %2's %3 objects"
 msgstr "%1 内的 %2 的 %3 对象"
 
@@ -505,7 +505,7 @@ msgstr "%1的表盘"
 msgid "%1's saved searches"
 msgstr "%1 的预存查询"
 
-#: lib/RT/Transaction_Overlay.pm:513
+#: lib/RT/Transaction_Overlay.pm:510
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1：未指定附件"
@@ -520,12 +520,8 @@ msgstr "%1:%2"
 msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
-#: share/html/Ticket/Elements/ShowTransactionAttachments:132
+#: share/html/Ticket/Elements/ShowTransactionAttachments:132 share/html/Ticket/Elements/ShowTransactionAttachments:138
 #. (int( $size / 1024 / 102.4 ) / 10)
-msgid "%1M"
-msgstr ""
-
-#: share/html/Ticket/Elements/ShowTransactionAttachments:138
 #. ($size)
 msgid "%1b"
 msgstr "%1 字节"
@@ -699,7 +695,7 @@ msgstr "(没有公钥!)"
 msgid "(no subject)"
 msgstr "(没有主题)"
 
-#: lib/RT/Transaction_Overlay.pm:647 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:100 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81
+#: lib/RT/Transaction_Overlay.pm:648 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:100 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81
 msgid "(no value)"
 msgstr "(无)"
 
@@ -761,7 +757,7 @@ msgstr "★"
 msgid "-"
 msgstr "-"
 
-#: bin/rt-crontool:136
+#: bin/rt-crontool:135
 msgid "--template-id is deprecated argument and can not be used with --template"
 msgstr "--template-id 是可忽视参数并且不能和 --template 一起使用"
 
@@ -769,7 +765,7 @@ msgstr "--template-id 是可忽视参数并且不能和 --template 一起使用"
 msgid "--transaction argument could be only 'first' or 'last'"
 msgstr "--transaction 的值仅能为 'first' 或 'last'"
 
-#: bin/rt-crontool:131
+#: bin/rt-crontool:130
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "--transaction 参数 只能是 'first'，'last' 或者'all'"
 
@@ -888,7 +884,7 @@ msgstr "没有找到Action '%1'"
 msgid "Action committed."
 msgstr "动作执行完毕"
 
-#: bin/rt-crontool:231
+#: bin/rt-crontool:230
 msgid "Action committed.\\n"
 msgstr "动作执行完毕。\\n"
 
@@ -896,7 +892,7 @@ msgstr "动作执行完毕。\\n"
 msgid "Action is mandatory argument"
 msgstr "动作为必填字段"
 
-#: bin/rt-crontool:227
+#: bin/rt-crontool:226
 msgid "Action prepared..."
 msgstr "动作准备完毕..."
 
@@ -1008,7 +1004,7 @@ msgstr "将这些条件加进查询内"
 msgid "Add values"
 msgstr "新增值"
 
-#: lib/RT/CustomField_Overlay.pm:116
+#: lib/RT/CustomField_Overlay.pm:115
 msgid "Add, delete and modify custom field values for objects"
 msgstr "新增、删除及修改对象的自订字段值"
 
@@ -1121,10 +1117,6 @@ msgstr "管理员回复"
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "AdminCustomField"
 msgstr "管理自订字段"
-
-#: lib/RT/CustomField_Overlay.pm:115
-msgid "AdminCustomFieldValues"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "AdminCustomFields"
@@ -1246,7 +1238,7 @@ msgstr ""
 msgid "Allowance Request"
 msgstr "福利补助申请"
 
-#: lib/RT/Attachment_Overlay.pm:648
+#: lib/RT/Attachment_Overlay.pm:646
 msgid "Already encrypted"
 msgstr "已经加密"
 
@@ -1428,7 +1420,7 @@ msgstr "附件"
 msgid "Attachment '%1' could not be loaded"
 msgstr "无法加载附件 '%1'"
 
-#: lib/RT/Transaction_Overlay.pm:521
+#: lib/RT/Transaction_Overlay.pm:518
 msgid "Attachment created"
 msgstr "附件新增完毕"
 
@@ -1440,11 +1432,11 @@ msgstr "附件档名"
 msgid "Attachments"
 msgstr "附件"
 
-#: lib/RT/Attachment_Overlay.pm:641
+#: lib/RT/Attachment_Overlay.pm:639
 msgid "Attachments encryption is disabled"
 msgstr "附件加密被禁用"
 
-#: lib/RT/Attributes_Overlay.pm:189
+#: lib/RT/Attributes_Overlay.pm:180
 msgid "Attribute Deleted"
 msgstr "已删除该属性"
 
@@ -1650,7 +1642,7 @@ msgstr "无法更改系统使用者"
 msgid "Can this principal see this queue"
 msgstr "该单位是否能查阅此表单"
 
-#: lib/RT/CustomField_Overlay.pm:410
+#: lib/RT/CustomField_Overlay.pm:409
 msgid "Can't add a custom field value without a name"
 msgstr "不能新增没有名称的自订字段值"
 
@@ -1658,7 +1650,7 @@ msgstr "不能新增没有名称的自订字段值"
 msgid "Can't find a collection class for '%1'"
 msgstr "找不到‘%1’的集合类别"
 
-#: share/html/Search/Elements/EditSearches:290
+#: share/html/Search/Elements/EditSearches:286
 msgid "Can't find a saved search to work with"
 msgstr "找不到预存查询"
 
@@ -1675,7 +1667,7 @@ msgstr "不能整合进已整合过的申请单。这个错误不该发生。"
 msgid "Can't save %1"
 msgstr "无法储存 %1"
 
-#: share/html/Search/Elements/EditSearches:294
+#: share/html/Search/Elements/EditSearches:290
 msgid "Can't save this search"
 msgstr "无法储存此项查询"
 
@@ -1691,7 +1683,7 @@ msgstr "取消"
 msgid "Cannot create tickets in a disabled queue."
 msgstr "不能在一个禁用的队列中创建标签"
 
-#: lib/RT/Interface/Web.pm:389
+#: lib/RT/Interface/Web.pm:383
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "无法新增使用者：%1"
@@ -1912,7 +1904,7 @@ msgstr "对 %1 的评论"
 msgid "Comments about this user"
 msgstr "使用者描述"
 
-#: lib/RT/Transaction_Overlay.pm:693
+#: lib/RT/Transaction_Overlay.pm:691
 msgid "Comments added"
 msgstr "新增评论完毕"
 
@@ -1949,7 +1941,7 @@ msgstr "条件 '%1' 没有找到"
 msgid "Condition is mandatory argument"
 msgstr "条件是必填字段"
 
-#: bin/rt-crontool:211
+#: bin/rt-crontool:210
 msgid "Condition matches..."
 msgstr "符合条件..."
 
@@ -2038,7 +2030,7 @@ msgstr "回复"
 msgid "Correspondence Address"
 msgstr "申请单回复地址"
 
-#: lib/RT/Transaction_Overlay.pm:689
+#: lib/RT/Transaction_Overlay.pm:687
 msgid "Correspondence added"
 msgstr "新增申请单回复"
 
@@ -2196,11 +2188,11 @@ msgstr "无法设定使用者信息"
 msgid "Couldn't add attachment"
 msgstr "无法新增附件"
 
-#: lib/RT/Group_Overlay.pm:1020
+#: lib/RT/Group_Overlay.pm:1019
 msgid "Couldn't add member to group"
 msgstr "无法新增成员至群组"
 
-#: lib/RT/CustomField_Overlay.pm:1052
+#: lib/RT/CustomField_Overlay.pm:1051
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr ""
 
@@ -2210,7 +2202,7 @@ msgstr ""
 msgid "Couldn't create a transaction: %1"
 msgstr "无法新增更动报告"
 
-#: lib/RT/CustomField_Overlay.pm:1176
+#: lib/RT/CustomField_Overlay.pm:1175
 msgid "Couldn't create record"
 msgstr "不能创建记录"
 
@@ -2231,15 +2223,15 @@ msgstr "找不到群组\\n"
 msgid "Couldn't find row"
 msgstr "找不到此列数据"
 
-#: bin/rt-crontool:182
+#: bin/rt-crontool:181
 msgid "Couldn't find suitable transaction, skipping"
 msgstr "不能找到合适的业务，跳过"
 
-#: lib/RT/Group_Overlay.pm:994
+#: lib/RT/Group_Overlay.pm:993
 msgid "Couldn't find that principal"
 msgstr "找不到该单位"
 
-#: lib/RT/CustomField_Overlay.pm:440
+#: lib/RT/CustomField_Overlay.pm:439
 msgid "Couldn't find that value"
 msgstr "找不到该值"
 
@@ -2369,7 +2361,7 @@ msgstr "不能加载模板 #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名使用者(%1)"
 
-#: lib/RT/Action/CreateTickets.pm:453 share/html/SelfService/Display.html:157
+#: lib/RT/Action/CreateTickets.pm:452 share/html/SelfService/Display.html:157
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
@@ -2404,12 +2396,12 @@ msgstr "不能加载用户 '%1'"
 msgid "Couldn't parse address from '%1' string"
 msgstr "不能从 '%1' 字符串解析地址"
 
-#: lib/RT/Attachment_Overlay.pm:724
+#: lib/RT/Attachment_Overlay.pm:722
 #. ($msg)
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "不能用解密的数据替换内容： %1"
 
-#: lib/RT/Attachment_Overlay.pm:689
+#: lib/RT/Attachment_Overlay.pm:687
 #. ($msg)
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "不能用加密的数据替换内容： %1"
@@ -2429,7 +2421,7 @@ msgstr "不能解析基点 '%1' 到一个URI"
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "不能解析目标 '%1'  到一个URI"
 
-#: lib/RT/Interface/Email.pm:670 lib/RT/Interface/Email.pm:732
+#: lib/RT/Interface/Email.pm:656 lib/RT/Interface/Email.pm:718
 msgid "Couldn't send email"
 msgstr "不能发送email"
 
@@ -2450,7 +2442,7 @@ msgstr "不能撤消私有值"
 msgid "Country"
 msgstr "国家"
 
-#: share/html/Admin/CustomFields/Modify.html:137 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/CustomFieldTabs:98 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:147 share/html/Admin/Elements/GroupTabs:79 share/html/Admin/Elements/QueueTabs:100 share/html/Admin/Elements/UserTabs:86 share/html/Admin/Global/Template.html:89 share/html/Admin/Groups/Modify.html:95 share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Template.html:90 share/html/Admin/Users/Modify.html:229 share/html/Dashboards/Modify.html:76 share/html/Elements/QuickCreate:73 share/html/Elements/ShowLinks:108 share/html/Elements/ShowLinks:50 share/html/Elements/ShowLinks:80 share/html/Elements/ShowLinks:90 share/html/Elements/ShowLinks:94 share/html/Elements/ShowLinks:98 share/html/Ticket/Create.html:169 share/html/Ticket/Create.html:246
+#: share/html/Admin/CustomFields/Modify.html:137 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/CustomFieldTabs:95 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:147 share/html/Admin/Elements/GroupTabs:79 share/html/Admin/Elements/QueueTabs:100 share/html/Admin/Elements/UserTabs:86 share/html/Admin/Global/Template.html:89 share/html/Admin/Groups/Modify.html:95 share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Template.html:90 share/html/Admin/Users/Modify.html:229 share/html/Dashboards/Modify.html:76 share/html/Elements/QuickCreate:73 share/html/Elements/ShowLinks:108 share/html/Elements/ShowLinks:50 share/html/Elements/ShowLinks:80 share/html/Elements/ShowLinks:90 share/html/Elements/ShowLinks:94 share/html/Elements/ShowLinks:98 share/html/Ticket/Create.html:169 share/html/Ticket/Create.html:246
 msgid "Create"
 msgstr "新增"
 
@@ -2599,10 +2591,6 @@ msgstr "创建离线标签"
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "Create, delete and modify custom fields"
 msgstr "新增、删除及更改自订字段"
-
-#: lib/RT/CustomField_Overlay.pm:115
-msgid "Create, delete and modify custom fields values"
-msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:88
 msgid "Create, delete and modify queues"
@@ -2816,7 +2804,7 @@ msgstr "自订字段‘%1’"
 msgid "Custom field deleted"
 msgstr "自订字段已删除"
 
-#: lib/RT/CustomField_Overlay.pm:1047
+#: lib/RT/CustomField_Overlay.pm:1046
 msgid "Custom field is already applied to the object"
 msgstr ""
 
@@ -2824,7 +2812,7 @@ msgstr ""
 msgid "Custom field not found"
 msgstr "找不到自订字段"
 
-#: lib/RT/CustomField_Overlay.pm:1268
+#: lib/RT/CustomField_Overlay.pm:1267
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "无法从自订字段 %2 中找到 %1 这个字段值"
@@ -2833,15 +2821,15 @@ msgstr "无法从自订字段 %2 中找到 %1 这个字段值"
 msgid "Custom field value changed from %1 to %2"
 msgstr "自订字段值从 %1 改为 %2"
 
-#: lib/RT/CustomField_Overlay.pm:448
+#: lib/RT/CustomField_Overlay.pm:447
 msgid "Custom field value could not be deleted"
 msgstr "无法删除自订字段值"
 
-#: lib/RT/CustomField_Overlay.pm:1280
+#: lib/RT/CustomField_Overlay.pm:1279
 msgid "Custom field value could not be found"
 msgstr "找不到自订字段值"
 
-#: lib/RT/CustomField_Overlay.pm:1282 lib/RT/CustomField_Overlay.pm:450
+#: lib/RT/CustomField_Overlay.pm:1281 lib/RT/CustomField_Overlay.pm:449
 msgid "Custom field value deleted"
 msgstr "自订字段值删除成功"
 
@@ -2849,7 +2837,7 @@ msgstr "自订字段值删除成功"
 msgid "Custom.Ownership"
 msgstr "自订: 承办状态"
 
-#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:697 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:695 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "自订字段"
 
@@ -3040,7 +3028,7 @@ msgstr "预设更动模板"
 msgid "Default: %1"
 msgstr "默认值：%1"
 
-#: lib/RT/Transaction_Overlay.pm:675
+#: lib/RT/Transaction_Overlay.pm:673
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "预设：%1/%2 已自 %3 改为 %4"
@@ -3196,7 +3184,7 @@ msgstr "已删除的仪表盘 %1"
 msgid "Deleted queries"
 msgstr "已删除的队列"
 
-#: share/html/Search/Elements/EditSearches:192
+#: share/html/Search/Elements/EditSearches:188
 msgid "Deleted saved search"
 msgstr "已删除的保存的搜索"
 
@@ -3272,22 +3260,22 @@ msgstr "可接续处理"
 msgid "Dependencies: \\n"
 msgstr "附属性：\\n"
 
-#: lib/RT/Transaction_Overlay.pm:777
+#: lib/RT/Transaction_Overlay.pm:775
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "已加入可接续处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:817
+#: lib/RT/Transaction_Overlay.pm:815
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "已移除可接续处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:774
+#: lib/RT/Transaction_Overlay.pm:772
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "已加入需先处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:814
+#: lib/RT/Transaction_Overlay.pm:812
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "已移除需先处理的申请单 %1"
@@ -3867,7 +3855,7 @@ msgstr ""
 msgid "Error: public key"
 msgstr ""
 
-#: bin/rt-crontool:389
+#: bin/rt-crontool:388
 msgid "Escalate tickets"
 msgstr "调整申请单优先等级"
 
@@ -3895,7 +3883,7 @@ msgstr ""
 msgid "Examine tickets resolved in a queue, grouped by owner"
 msgstr ""
 
-#: bin/rt-crontool:375
+#: bin/rt-crontool:374
 msgid "Example:"
 msgstr "范例："
 
@@ -3987,7 +3975,7 @@ msgstr ""
 msgid "Failed to load %1 %2: %3"
 msgstr ""
 
-#: bin/rt-crontool:308
+#: bin/rt-crontool:307
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
 msgstr "无法加载模块 %1。(%2)"
@@ -4047,7 +4035,7 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:128 share/html/Elements/SelectAttachmentField:52
 msgid "Filename"
-msgstr "文件名"
+msgstr "档名"
 
 #: share/html/Admin/Tools/Shredder/Elements/PluginArguments:52
 msgid "Fill arguments"
@@ -4320,7 +4308,7 @@ msgstr ""
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "取得目前使用者的 pgp 签章\\n"
 
-#: lib/RT/Transaction_Overlay.pm:743
+#: lib/RT/Transaction_Overlay.pm:741
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "交予 %1"
@@ -4375,11 +4363,11 @@ msgstr "全域签核"
 msgid "GnuPG"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:684 lib/RT/Attachment_Overlay.pm:719
+#: lib/RT/Attachment_Overlay.pm:682 lib/RT/Attachment_Overlay.pm:717
 msgid "GnuPG error. Contact with administrator"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:639 lib/RT/Attachment_Overlay.pm:701
+#: lib/RT/Attachment_Overlay.pm:637 lib/RT/Attachment_Overlay.pm:699
 msgid "GnuPG integration is disabled"
 msgstr ""
 
@@ -4481,7 +4469,7 @@ msgstr "群组设定"
 msgid "Group Status"
 msgstr "群组状态"
 
-#: lib/RT/Group_Overlay.pm:1000
+#: lib/RT/Group_Overlay.pm:999
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
 msgstr "群组内已有此成员: %1"
@@ -4503,19 +4491,19 @@ msgstr "群组新增完毕"
 msgid "Group created: %1"
 msgstr "群组 %1 新增完毕"
 
-#: lib/RT/Group_Overlay.pm:735
+#: lib/RT/Group_Overlay.pm:734
 msgid "Group disabled"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:737
+#: lib/RT/Group_Overlay.pm:736
 msgid "Group enabled"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1175
+#: lib/RT/Group_Overlay.pm:1174
 msgid "Group has no such member"
 msgstr "群组没有这个成员"
 
-#: lib/RT/Group_Overlay.pm:980 lib/RT/Queue_Overlay.pm:838 lib/RT/Queue_Overlay.pm:913 lib/RT/Ticket_Overlay.pm:1133 lib/RT/Ticket_Overlay.pm:1213
+#: lib/RT/Group_Overlay.pm:979 lib/RT/Queue_Overlay.pm:838 lib/RT/Queue_Overlay.pm:913 lib/RT/Ticket_Overlay.pm:1133 lib/RT/Ticket_Overlay.pm:1213
 msgid "Group not found"
 msgstr "找不到群组"
 
@@ -4551,11 +4539,11 @@ msgstr "群组之"
 msgid "Group:"
 msgstr "群组："
 
-#: lib/RT/CustomField_Overlay.pm:1320 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:67 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:90 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
+#: lib/RT/CustomField_Overlay.pm:1319 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:67 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:90 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
 msgstr "群组"
 
-#: lib/RT/Group_Overlay.pm:1006
+#: lib/RT/Group_Overlay.pm:1005
 msgid "Groups can't be members of their members"
 msgstr "不能将群组设为群组内成员"
 
@@ -4716,7 +4704,7 @@ msgstr "若没有指定申请者，则以此使用者作为申请者"
 msgid "If no queue is specified, create tickets in this queue."
 msgstr "申请单若没有指定表单，则将它新增在此表单内"
 
-#: bin/rt-crontool:371
+#: bin/rt-crontool:370
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "如果此工具程序为 setgid，恶意的本地端用户即能由此取得 RT 的管理员权限。"
 
@@ -4829,7 +4817,7 @@ msgstr ""
 msgid "Input error"
 msgstr "输入错误"
 
-#: lib/RT/CustomField_Overlay.pm:1137 lib/RT/CustomField_Overlay.pm:1273 share/html/Elements/ValidateCustomFields:87
+#: lib/RT/CustomField_Overlay.pm:1136 lib/RT/CustomField_Overlay.pm:1272 share/html/Elements/ValidateCustomFields:87
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
@@ -4863,7 +4851,7 @@ msgstr ""
 msgid "Invalid %1: it should be a number"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:626
+#: lib/RT/Group_Overlay.pm:625
 msgid "Invalid Group Type"
 msgstr "错误的群组类别"
 
@@ -4879,7 +4867,7 @@ msgstr "错误的类型"
 msgid "Invalid data"
 msgstr "错误的数据"
 
-#: lib/RT/CustomField_Overlay.pm:1130
+#: lib/RT/CustomField_Overlay.pm:1129
 msgid "Invalid object"
 msgstr ""
 
@@ -4891,7 +4879,7 @@ msgstr ""
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "错误的承办人。改为预设承办人‘nobody’。"
 
-#: lib/RT/CustomField_Overlay.pm:225 lib/RT/CustomField_Overlay.pm:626
+#: lib/RT/CustomField_Overlay.pm:224 lib/RT/CustomField_Overlay.pm:625
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "不合理的样式：%1"
@@ -4926,7 +4914,7 @@ msgstr "错误的自订字段值"
 msgid "Invalid value for status"
 msgstr "错误的状态值"
 
-#: lib/RT/Attachment_Overlay.pm:711
+#: lib/RT/Attachment_Overlay.pm:709
 msgid "Is not encrypted"
 msgstr ""
 
@@ -4934,15 +4922,15 @@ msgstr ""
 msgid "IssueStatement"
 msgstr "送出陈述"
 
-#: bin/rt-crontool:372
+#: bin/rt-crontool:371
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "请绝对不要让未具权限的使用者执行此工具程序。"
 
-#: bin/rt-crontool:373
+#: bin/rt-crontool:372
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "建议您新增一个隶属于正确群组的低权限系统使用者，并以该身份执行此工具程序。"
 
-#: bin/rt-crontool:333
+#: bin/rt-crontool:332
 msgid "It takes several arguments:"
 msgstr "它接受下列参数："
 
@@ -5281,7 +5269,7 @@ msgstr "注销"
 msgid "Long-term contractor"
 msgstr "长期契约员工"
 
-#: lib/RT/CustomField_Overlay.pm:1039
+#: lib/RT/CustomField_Overlay.pm:1038
 msgid "Lookup type mismatch"
 msgstr "对应的类别不符"
 
@@ -5417,26 +5405,26 @@ msgstr "05"
 msgid "Member"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:790
+#: lib/RT/Transaction_Overlay.pm:788
 #. ($value)
 msgid "Member %1 added"
 msgstr "成员 %1 新增完毕"
 
-#: lib/RT/Transaction_Overlay.pm:830
+#: lib/RT/Transaction_Overlay.pm:828
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "成员 %1 删除完毕"
 
-#: lib/RT/Group_Overlay.pm:1017
+#: lib/RT/Group_Overlay.pm:1016
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
 msgstr "新增成员完毕: %1"
 
-#: lib/RT/Group_Overlay.pm:1182
+#: lib/RT/Group_Overlay.pm:1181
 msgid "Member deleted"
 msgstr "成员已删除"
 
-#: lib/RT/Group_Overlay.pm:1186
+#: lib/RT/Group_Overlay.pm:1185
 msgid "Member not deleted"
 msgstr "成员未删除"
 
@@ -5456,12 +5444,12 @@ msgstr "隶属于"
 msgid "Members"
 msgstr "成员"
 
-#: lib/RT/Transaction_Overlay.pm:787
+#: lib/RT/Transaction_Overlay.pm:785
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "所属群组 %1 加入完毕"
 
-#: lib/RT/Transaction_Overlay.pm:827
+#: lib/RT/Transaction_Overlay.pm:825
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "所属群组 %1 移除完毕"
@@ -5491,7 +5479,7 @@ msgstr "整合失败。无法设定 Status"
 msgid "Merge into"
 msgstr "整合进"
 
-#: lib/RT/Transaction_Overlay.pm:793
+#: lib/RT/Transaction_Overlay.pm:791
 #. ($value)
 msgid "Merged into %1"
 msgstr "已整合进 %1"
@@ -5845,7 +5833,7 @@ msgstr "更改适用于所有表单的流程"
 msgid "ModifyACL"
 msgstr "更改权限清单"
 
-#: lib/RT/CustomField_Overlay.pm:116 lib/RT/Queue_Overlay.pm:93
+#: lib/RT/CustomField_Overlay.pm:115 lib/RT/Queue_Overlay.pm:93
 msgid "ModifyCustomField"
 msgstr "更改自订字段"
 
@@ -6177,7 +6165,7 @@ msgstr "没有查询"
 msgid "No Queue defined"
 msgstr "尚未定义表单"
 
-#: bin/rt-crontool:123
+#: bin/rt-crontool:122
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "找不到 RT 使用者。请向 RT 管理员查询。\\n"
 
@@ -6242,7 +6230,7 @@ msgstr "未指定群组"
 msgid "No groups matching search criteria found."
 msgstr "找不到符合查询条件的群组。"
 
-#: lib/RT/Attachment_Overlay.pm:670
+#: lib/RT/Attachment_Overlay.pm:668
 msgid "No key suitable for encryption"
 msgstr ""
 
@@ -6254,11 +6242,11 @@ msgstr ""
 msgid "No message attached"
 msgstr "没有附上讯息"
 
-#: lib/RT/CustomField_Overlay.pm:323
+#: lib/RT/CustomField_Overlay.pm:322
 msgid "No name provided"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:650
+#: lib/RT/Attachment_Overlay.pm:648
 msgid "No need to encrypt"
 msgstr ""
 
@@ -6283,7 +6271,7 @@ msgstr "没有新增使用者的权限"
 msgid "No permission to display that ticket"
 msgstr "没有显示该申请单的权限"
 
-#: share/html/Search/Elements/EditSearches:242
+#: share/html/Search/Elements/EditSearches:238
 msgid "No permission to save system-wide searches"
 msgstr "没有储存全域预存查询的权限"
 
@@ -6351,7 +6339,7 @@ msgstr "未指定申请单编号"
 msgid "No tickets found."
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:589 lib/RT/Transaction_Overlay.pm:615
+#: lib/RT/Transaction_Overlay.pm:590 lib/RT/Transaction_Overlay.pm:616
 msgid "No transaction type specified"
 msgstr "未指定更动报告类别"
 
@@ -6399,7 +6387,7 @@ msgstr "未设定"
 msgid "Not configured to fetch the content from a %1 in %2"
 msgstr "未设定成从 %2 内撷取 %1"
 
-#: lib/RT/CustomField_Overlay.pm:357
+#: lib/RT/CustomField_Overlay.pm:356
 msgid "Not found"
 msgstr ""
 
@@ -6588,7 +6576,7 @@ msgstr "对象删除完毕"
 msgid "Object of type %1 cannot take custom fields"
 msgstr "自订字段不适用于类别为 %1 的对象"
 
-#: lib/RT/CustomField_Overlay.pm:1085
+#: lib/RT/CustomField_Overlay.pm:1084
 msgid "Object type mismatch"
 msgstr "对象类别不符"
 
@@ -6628,7 +6616,7 @@ msgstr "离线编辑"
 msgid "Offline upload"
 msgstr "离线上载"
 
-#: lib/RT/Transaction_Overlay.pm:362
+#: lib/RT/Transaction_Overlay.pm:360
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
 msgid "On %1, %2 wrote:"
 msgstr "在 %1 时，%2 写到："
@@ -6796,11 +6784,11 @@ msgstr "其它e-mail帐号 (仅e-mail通知;多笔帐号请用逗号','区隔)"
 msgid "Out of range"
 msgstr "期限外"
 
-#: lib/RT/Transaction_Overlay.pm:681
+#: lib/RT/Transaction_Overlay.pm:679
 msgid "Outgoing email about a comment recorded"
 msgstr "已纪录发送的评论邮件"
 
-#: lib/RT/Transaction_Overlay.pm:685
+#: lib/RT/Transaction_Overlay.pm:683
 msgid "Outgoing email recorded"
 msgstr "已纪录发送的邮件"
 
@@ -6854,7 +6842,7 @@ msgstr "承办人已从 %1 改为 %2"
 msgid "Owner could not be set."
 msgstr "无法设定承办人。"
 
-#: lib/RT/Transaction_Overlay.pm:731
+#: lib/RT/Transaction_Overlay.pm:729
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "强制将承办人从 %1 改为 %2"
@@ -6919,7 +6907,7 @@ msgstr "口令"
 msgid "Password Reminder"
 msgstr "口令提示"
 
-#: lib/RT/Transaction_Overlay.pm:855 lib/RT/User_Overlay.pm:982
+#: lib/RT/Transaction_Overlay.pm:853 lib/RT/User_Overlay.pm:982
 msgid "Password changed"
 msgstr "口令更改完毕"
 
@@ -6993,7 +6981,7 @@ msgstr "Perl 设定"
 msgid "Perl library search order"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:636 lib/RT/Attachment_Overlay.pm:637 lib/RT/Attachment_Overlay.pm:698 lib/RT/Attachment_Overlay.pm:699 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1043 lib/RT/CustomField_Overlay.pm:1089 lib/RT/CustomField_Overlay.pm:1133 lib/RT/CustomField_Overlay.pm:1249 lib/RT/CustomField_Overlay.pm:1390 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:218 lib/RT/CustomField_Overlay.pm:405 lib/RT/CustomField_Overlay.pm:434 lib/RT/CustomField_Overlay.pm:740 lib/RT/Group_Overlay.pm:1137 lib/RT/Group_Overlay.pm:1141 lib/RT/Group_Overlay.pm:1150 lib/RT/Group_Overlay.pm:1260 lib/RT/Group_Overlay.pm:1264 lib/RT/Group_Overlay.pm:1270 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:578 lib/RT/Group_Overlay.pm:586 lib/RT/Group_Overlay.pm:684 lib/RT/Group_Overlay.pm:688 lib/RT/Group_Overlay.pm:694 lib/RT/Group_Overlay.pm:939 lib/RT/Group_Overlay.pm:943 lib/RT/Group_Overlay.pm:956 lib/RT/Queue_Overlay.pm:1161 lib/RT/Queue_Overlay.pm:154 lib/RT/Queue_Overlay.pm:172 lib/RT/Queue_Overlay.pm:510 lib/RT/Queue_Overlay.pm:536 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:773 lib/RT/Queue_Overlay.pm:926 lib/RT/Queue_Overlay.pm:935 lib/RT/Queue_Overlay.pm:948 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:510 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1225 lib/RT/Ticket_Overlay.pm:1235 lib/RT/Ticket_Overlay.pm:1249 lib/RT/Ticket_Overlay.pm:1345 lib/RT/Ticket_Overlay.pm:1703 lib/RT/Ticket_Overlay.pm:1857 lib/RT/Ticket_Overlay.pm:2041 lib/RT/Ticket_Overlay.pm:2091 lib/RT/Ticket_Overlay.pm:2287 lib/RT/Ticket_Overlay.pm:2300 lib/RT/Ticket_Overlay.pm:2381 lib/RT/Ticket_Overlay.pm:2394 lib/RT/Ticket_Overlay.pm:2495 lib/RT/Ticket_Overlay.pm:2509 lib/RT/Ticket_Overlay.pm:2770 lib/RT/Ticket_Overlay.pm:2781 lib/RT/Ticket_Overlay.pm:2787 lib/RT/Ticket_Overlay.pm:2990 lib/RT/Ticket_Overlay.pm:2994 lib/RT/Ticket_Overlay.pm:3131 lib/RT/Ticket_Overlay.pm:3321 lib/RT/Transaction_Overlay.pm:585 lib/RT/Transaction_Overlay.pm:609 lib/RT/User_Overlay.pm:1201 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1615 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
+#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:634 lib/RT/Attachment_Overlay.pm:635 lib/RT/Attachment_Overlay.pm:696 lib/RT/Attachment_Overlay.pm:697 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1042 lib/RT/CustomField_Overlay.pm:1088 lib/RT/CustomField_Overlay.pm:1132 lib/RT/CustomField_Overlay.pm:1248 lib/RT/CustomField_Overlay.pm:1389 lib/RT/CustomField_Overlay.pm:189 lib/RT/CustomField_Overlay.pm:206 lib/RT/CustomField_Overlay.pm:217 lib/RT/CustomField_Overlay.pm:404 lib/RT/CustomField_Overlay.pm:433 lib/RT/CustomField_Overlay.pm:739 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1140 lib/RT/Group_Overlay.pm:1149 lib/RT/Group_Overlay.pm:1259 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1269 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:577 lib/RT/Group_Overlay.pm:585 lib/RT/Group_Overlay.pm:683 lib/RT/Group_Overlay.pm:687 lib/RT/Group_Overlay.pm:693 lib/RT/Group_Overlay.pm:938 lib/RT/Group_Overlay.pm:942 lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:1161 lib/RT/Queue_Overlay.pm:154 lib/RT/Queue_Overlay.pm:172 lib/RT/Queue_Overlay.pm:510 lib/RT/Queue_Overlay.pm:536 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:773 lib/RT/Queue_Overlay.pm:926 lib/RT/Queue_Overlay.pm:935 lib/RT/Queue_Overlay.pm:948 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:510 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1225 lib/RT/Ticket_Overlay.pm:1235 lib/RT/Ticket_Overlay.pm:1249 lib/RT/Ticket_Overlay.pm:1345 lib/RT/Ticket_Overlay.pm:1703 lib/RT/Ticket_Overlay.pm:1857 lib/RT/Ticket_Overlay.pm:2041 lib/RT/Ticket_Overlay.pm:2091 lib/RT/Ticket_Overlay.pm:2287 lib/RT/Ticket_Overlay.pm:2300 lib/RT/Ticket_Overlay.pm:2381 lib/RT/Ticket_Overlay.pm:2394 lib/RT/Ticket_Overlay.pm:2495 lib/RT/Ticket_Overlay.pm:2509 lib/RT/Ticket_Overlay.pm:2770 lib/RT/Ticket_Overlay.pm:2781 lib/RT/Ticket_Overlay.pm:2787 lib/RT/Ticket_Overlay.pm:2990 lib/RT/Ticket_Overlay.pm:2994 lib/RT/Ticket_Overlay.pm:3131 lib/RT/Ticket_Overlay.pm:3321 lib/RT/Transaction_Overlay.pm:586 lib/RT/Transaction_Overlay.pm:610 lib/RT/User_Overlay.pm:1201 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1615 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
 msgstr "权限不足"
 
@@ -7259,7 +7247,7 @@ msgstr "隐私设定："
 msgid "Private Key"
 msgstr ""
 
-#: lib/RT/Handle.pm:640 share/html/Admin/Users/Modify.html:115
+#: lib/RT/Handle.pm:640
 msgid "Privileged"
 msgstr "内部成员"
 
@@ -7276,7 +7264,7 @@ msgstr "内部成员"
 msgid "Process Status"
 msgstr "处理状态"
 
-#: bin/rt-crontool:185
+#: bin/rt-crontool:184
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
 
@@ -7407,7 +7395,7 @@ msgstr ""
 msgid "Queue is not specified."
 msgstr "未指定表单。"
 
-#: lib/RT/CustomField_Overlay.pm:215 share/html/SelfService/Display.html:125
+#: lib/RT/CustomField_Overlay.pm:214 share/html/SelfService/Display.html:125
 msgid "Queue not found"
 msgstr "找不到表单"
 
@@ -7704,22 +7692,22 @@ msgstr ""
 msgid "Recursive member"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:784
+#: lib/RT/Transaction_Overlay.pm:782
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "已加入 %1 为参考本申请单"
 
-#: lib/RT/Transaction_Overlay.pm:824
+#: lib/RT/Transaction_Overlay.pm:822
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "已移除 %1 为参考本申请单"
 
-#: lib/RT/Transaction_Overlay.pm:781
+#: lib/RT/Transaction_Overlay.pm:779
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "已加入参考申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:821
+#: lib/RT/Transaction_Overlay.pm:819
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "已移除参考申请单 %1"
@@ -7805,17 +7793,17 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分钟更新页面"
 
-#: lib/RT/Transaction_Overlay.pm:888
+#: lib/RT/Transaction_Overlay.pm:886
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "已建立提醒项目‘%1’"
 
-#: lib/RT/Transaction_Overlay.pm:901
+#: lib/RT/Transaction_Overlay.pm:899
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "已完成提醒项目‘%1’"
 
-#: lib/RT/Transaction_Overlay.pm:894
+#: lib/RT/Transaction_Overlay.pm:892
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "已重新开启提醒项目‘%1’"
@@ -8056,7 +8044,7 @@ msgstr "权限撤消完毕"
 msgid "Rights"
 msgstr "权限及代理人"
 
-#: lib/RT/Interface/Web.pm:1387
+#: lib/RT/Interface/Web.pm:1381
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "无法将权限赋予 %1"
@@ -8290,7 +8278,7 @@ msgstr "二阶主管员工"
 msgid "Secret authentication token"
 msgstr ""
 
-#: bin/rt-crontool:369
+#: bin/rt-crontool:368
 msgid "Security:"
 msgstr "安全性："
 
@@ -8342,7 +8330,7 @@ msgstr ""
 msgid "SeeQueue"
 msgstr "查阅表单"
 
-#: share/html/Admin/Elements/CustomFieldTabs:93 share/html/Admin/Elements/GroupTabs:77 share/html/Admin/Elements/QueueTabs:97 share/html/Admin/Elements/UserTabs:83 share/html/Admin/Global/Scrip.html:61 share/html/Admin/Global/Scrips.html:59 share/html/Admin/Global/Template.html:77 share/html/Admin/Global/Templates.html:59 share/html/Dashboards/Elements/Tabs:93
+#: share/html/Admin/Elements/CustomFieldTabs:92 share/html/Admin/Elements/GroupTabs:77 share/html/Admin/Elements/QueueTabs:97 share/html/Admin/Elements/UserTabs:83 share/html/Admin/Global/Scrip.html:61 share/html/Admin/Global/Scrips.html:59 share/html/Admin/Global/Template.html:77 share/html/Admin/Global/Templates.html:59 share/html/Dashboards/Elements/Tabs:93
 msgid "Select"
 msgstr "选择"
 
@@ -8482,7 +8470,7 @@ msgstr "选取的项目已更改。请储存您的更动"
 msgid "Self Service"
 msgstr "自助服务"
 
-#: lib/RT/Interface/Email.pm:733
+#: lib/RT/Interface/Email.pm:719
 msgid "Send email successfully"
 msgstr ""
 
@@ -8840,7 +8828,7 @@ msgstr "状态"
 msgid "Status Change"
 msgstr "状态改变"
 
-#: lib/RT/Transaction_Overlay.pm:640
+#: lib/RT/Transaction_Overlay.pm:641
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
 msgstr "状态从 %1 改为 %2"
@@ -8872,7 +8860,7 @@ msgstr "强制承办申请单"
 msgid "Step %1 of %2"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:737
+#: lib/RT/Transaction_Overlay.pm:735
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "承办人从 %1 强制更换"
@@ -8897,7 +8885,7 @@ msgstr "主题"
 msgid "Subject Tag"
 msgstr ""
 
-#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:759
+#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:757
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "标题已改为 %1"
@@ -8954,11 +8942,11 @@ msgstr ""
 msgid "Succeeded"
 msgstr "设定成功"
 
-#: lib/RT/Attachment_Overlay.pm:726
+#: lib/RT/Attachment_Overlay.pm:724
 msgid "Successfuly decrypted data"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:691
+#: lib/RT/Attachment_Overlay.pm:689
 msgid "Successfuly encrypted data"
 msgstr ""
 
@@ -9014,7 +9002,7 @@ msgstr ""
 msgid "System Defined"
 msgstr "系统定义"
 
-#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1387 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1381 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "系统错误"
 
@@ -9038,10 +9026,6 @@ msgstr "系统权限"
 #: share/html/Admin/Tools/index.html:49
 msgid "System Tools"
 msgstr "系统工具"
-
-#: lib/RT/Transaction_Overlay.pm:658
-msgid "System error"
-msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:413
 msgid "System error. Right not delegated."
@@ -9091,7 +9075,7 @@ msgstr "自行承办申请单"
 msgid "TakeTicket"
 msgstr "自行承办申请单"
 
-#: lib/RT/Transaction_Overlay.pm:722
+#: lib/RT/Transaction_Overlay.pm:720
 msgid "Taken"
 msgstr "已受理"
 
@@ -9186,7 +9170,7 @@ msgstr ""
 msgid "That is already the current value"
 msgstr "已经是目前字段的值"
 
-#: lib/RT/CustomField_Overlay.pm:443
+#: lib/RT/CustomField_Overlay.pm:442
 msgid "That is not a value for this custom field"
 msgstr "这不是该自订字段的值"
 
@@ -9230,7 +9214,7 @@ msgstr "这份申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "使用者已具有该项权限"
 
-#: lib/RT/Action/CreateTickets.pm:483 lib/RT/Ticket_Overlay.pm:2816
+#: lib/RT/Action/CreateTickets.pm:482 lib/RT/Ticket_Overlay.pm:2816
 msgid "That user already owns that ticket"
 msgstr "该使用者已经承办这份申请单"
 
@@ -9290,7 +9274,7 @@ msgstr "评论已被纪录"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr ""
 
-#: bin/rt-crontool:379
+#: bin/rt-crontool:378
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
@@ -9392,7 +9376,7 @@ msgstr ""
 msgid "Third-"
 msgstr "三"
 
-#: lib/RT/CustomField_Overlay.pm:1094
+#: lib/RT/CustomField_Overlay.pm:1093
 msgid "This custom field does not apply to that object"
 msgstr "此自订字段不适用于该对象"
 
@@ -9413,11 +9397,11 @@ msgstr "此讯息会寄给..."
 msgid "This ticket %1 %2 (%3)\\n"
 msgstr "申请单 %1 %2 (%3)\\n"
 
-#: bin/rt-crontool:370
+#: bin/rt-crontool:369
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "此工具程序会让使用者经由 RT 执行任意命令。"
 
-#: lib/RT/Transaction_Overlay.pm:340
+#: lib/RT/Transaction_Overlay.pm:338
 msgid "This transaction appears to have no content"
 msgstr "此项更动报告没有内容"
 
@@ -9474,7 +9458,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:502 lib/RT/Action/CreateTickets.pm:514
+#: lib/RT/Action/CreateTickets.pm:1123 lib/RT/Action/CreateTickets.pm:1132 lib/RT/Action/CreateTickets.pm:378 lib/RT/Action/CreateTickets.pm:501 lib/RT/Action/CreateTickets.pm:513
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -9525,11 +9509,11 @@ msgstr "表单运行期限"
 msgid "Ticket Resolved"
 msgstr "申请单已解决"
 
-#: share/html/Elements/CollectionList:192 share/html/Elements/TicketList:64
+#: share/html/Elements/CollectionList:182 share/html/Elements/TicketList:64
 msgid "Ticket Search"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1318 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
+#: lib/RT/CustomField_Overlay.pm:1317 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
 msgid "Ticket Transactions"
 msgstr "申请单的更动"
 
@@ -9602,7 +9586,7 @@ msgstr "申请单视察员"
 msgid "TicketSQL search module"
 msgstr "TicketSQL 查询模块"
 
-#: lib/RT/CustomField_Overlay.pm:1317 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:151 share/html/Search/Elements/Chart:107
+#: lib/RT/CustomField_Overlay.pm:1316 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:151 share/html/Search/Elements/Chart:107
 msgid "Tickets"
 msgstr "申请单"
 
@@ -9733,7 +9717,7 @@ msgstr "页"
 msgid "Transaction"
 msgstr "更动"
 
-#: lib/RT/Transaction_Overlay.pm:882
+#: lib/RT/Transaction_Overlay.pm:880
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "清除更动报告 %1"
@@ -9766,7 +9750,7 @@ msgstr "新增更动时"
 msgid "TransactionDate"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:947
+#: lib/RT/Transaction_Overlay.pm:945
 msgid "Transactions are immutable"
 msgstr "不可更改更动报告"
 
@@ -9798,12 +9782,12 @@ msgstr ""
 msgid "Type"
 msgstr "类别"
 
-#: lib/RT/CustomField_Overlay.pm:810
+#: lib/RT/CustomField_Overlay.pm:809
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr ""
 
-#: share/html/Search/Elements/EditSearches:266
+#: share/html/Search/Elements/EditSearches:262
 msgid "Unable to determine object type or id"
 msgstr ""
 
@@ -9832,7 +9816,7 @@ msgstr ""
 msgid "Unknown (this value is new to the system)"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:308 lib/RT/Record.pm:804
+#: lib/RT/Attachment_Overlay.pm:306 lib/RT/Record.pm:804
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -9871,7 +9855,7 @@ msgstr "未选取的对象"
 msgid "Unset private key"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:718
+#: lib/RT/Transaction_Overlay.pm:716
 msgid "Untaken"
 msgstr "未被受理"
 
@@ -9927,7 +9911,7 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:523 lib/RT/Interface/Web.pm:1238
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:1232
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
@@ -9957,7 +9941,7 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:1238
+#: lib/RT/Action/CreateTickets.pm:520 lib/RT/Interface/Web.pm:1232
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 
@@ -9965,11 +9949,11 @@ msgstr "更新的内容并非申请单回复也不是评论"
 msgid "UpdateStatus"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1393 lib/RT/Ticket_Overlay.pm:919 lib/RT/Tickets_Overlay.pm:141 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
+#: lib/RT/CustomField_Overlay.pm:1392 lib/RT/Ticket_Overlay.pm:919 lib/RT/Tickets_Overlay.pm:141 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
 msgid "Updated"
 msgstr "已更新"
 
-#: share/html/Search/Elements/EditSearches:268
+#: share/html/Search/Elements/EditSearches:264
 #. ($desc)
 msgid "Updated saved search \"%1\""
 msgstr ""
@@ -10097,7 +10081,7 @@ msgstr "使用者设定"
 msgid "User Shift"
 msgstr "员工班别"
 
-#: lib/RT/Interface/Web.pm:1762
+#: lib/RT/Interface/Web.pm:1756
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "使用者试图在 %2 对象 #%3 的自订字段 %1 上执行未知的更新操作"
@@ -10171,7 +10155,7 @@ msgstr "帐号"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1319 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
+#: lib/RT/CustomField_Overlay.pm:1318 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
 msgstr "使用者"
 
@@ -10179,7 +10163,7 @@ msgstr "使用者"
 msgid "Users matching search criteria"
 msgstr "符合查询条件的使用者"
 
-#: bin/rt-crontool:177
+#: bin/rt-crontool:176
 #. ($txn->id)
 msgid "Using transaction #%1..."
 msgstr "使用更动 #%1..."
@@ -10464,12 +10448,12 @@ msgstr ""
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:402 lib/RT/Interface/Web.pm:409
+#: lib/RT/Interface/Web.pm:396 lib/RT/Interface/Web.pm:403
 msgid "You are not an authorized user"
 msgstr "您不是被授权的使用者"
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:51
-#. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
+#. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1".  "#txn-".$txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
 msgstr ""
 
@@ -10578,7 +10562,7 @@ msgstr "您的申请单已被 %1 驳回。"
 msgid "Your request was rejected."
 msgstr "您的申请单已被驳回。"
 
-#: lib/RT/Interface/Web.pm:431
+#: lib/RT/Interface/Web.pm:425
 msgid "Your username or password is incorrect"
 msgstr "您的帐号或口令有误"
 
@@ -10645,7 +10629,7 @@ msgstr "早于"
 
 #: share/html/Admin/Global/MyRT.html:91
 msgid "body"
-msgstr ""
+msgstr "主体"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -11064,11 +11048,11 @@ msgstr "样式：%1"
 
 #: share/html/Admin/Global/MyRT.html:92
 msgid "summary"
-msgstr ""
+msgstr "摘要"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
-msgstr "加总列"
+msgstr "摘要行数"
 
 #: lib/RT/Group_Overlay.pm:167
 #. ($self->Type)
