@@ -354,7 +354,7 @@ our %META = (
             my $value = $self->Get('RTAddressRegexp');
             return if $value;
 
-            $RT::Logger->error(
+            $RT::Logger->debug(
                 'The RTAddressRegexp option is not set in the config.'
                 .' Not setting this option results in additional SQL queries to'
                 .' check whether each address belongs to RT or not.'
