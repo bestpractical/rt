@@ -1,0 +1,5 @@
+<&|/l&>RTFM Article searches cannot be displayed inline, you can view the results</&>
+<a href="<%$RT::WebPath%>/RTFM/Article/Search.html<%$QueryString%>"><&|/l&>here</&></a>
+<%INIT>
+my $QueryString = "?".$m->comp('/Elements/QueryString', %{$ARGS{args}});
+</%INIT>
