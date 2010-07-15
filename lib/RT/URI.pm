@@ -144,7 +144,10 @@ sub FromURI {
     $self->_GetResolver($scheme);
     
     unless ($self->Resolver->ParseURI($uri)) {
-        $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
+        $RT::Logger->warning( "Resolver "
+              . ref( $self->Resolver )
+              . " could not parse $uri, maybe Organization config was changed?"
+        );
         $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
     	return (undef);
     }

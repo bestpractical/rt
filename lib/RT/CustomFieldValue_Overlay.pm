@@ -79,7 +79,7 @@ sub Create {
     unless ( $cf->id ) {
         return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));
     }
-    unless ( $cf->CurrentUserHasRight('AdminCustomField') ) {
+    unless ( $cf->CurrentUserHasRight('AdminCustomField') || $cf->CurrentUserHasRight('AdminCustomFieldValues') ) {
         return (0, $self->loc('Permission Denied'));
     }
 

@@ -69,21 +69,21 @@
 # 
 # 
 # END LICENSE BLOCK
-package RT::URI::t;
-
-use RT::Ticket;
-use RT::URI::base;
 
 use strict;
+use warnings;
+
+package RT::URI::t;
 use base 'RT::URI::fsck_com_rt';
 
-my $scheme = "t";
+=head1 NAME
+
+RT::URI::t - aliad for RT::URI::fsck_com_rt that supports 't:12345' URIs
 
 =head2 ParseURI URI
 
 When handed an t: URI, figures out if it is an RT ticket.  This is an
 alternate short form of specifying a full ticket URI.
-
 
 =cut
 
@@ -91,26 +91,11 @@ sub ParseURI {
     my $self = shift;
     my $uri = shift;
 
-    # "t:<articlenum>"
     # Pass this off to fsck_com_rt, which is equipped to deal with
     # tickets after stripping off the t: prefix.
 
-    if ($uri =~ /^$scheme:(\d+)/) {
-	return $self->SUPER::ParseURI($1);
-    } else {
-	$self->{'uri'} = $uri;
-	return undef;
-    }
-}
-
-=head2 Scheme
-
-Return the URI scheme 
-
-=cut
-
-sub Scheme {
-  return $scheme;
+    $uri =~ s/^t://;
+    return $self->SUPER::ParseURI($uri);
 }
 
 1;

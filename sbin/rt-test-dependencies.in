@@ -227,7 +227,7 @@ Email::Address
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
-File::Temp 0.18
+File::Temp 0.19
 Text::Quoted 2.02
 Tree::Simple 1.04
 UNIVERSAL::require

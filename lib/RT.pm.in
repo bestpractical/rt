@@ -391,13 +391,20 @@ sub CheckPerlRequirements {
         die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
     }
 
-    local ($@);
-    eval { 
-        my $x = ''; 
-        my $y = \$x;
-        require Scalar::Util; Scalar::Util::weaken($y);
-    };
-    if ($@) {
+    # use $error here so the following "die" can still affect the global $@
+    my $error;
+    {
+        local $@;
+        eval {
+            my $x = '';
+            my $y = \$x;
+            require Scalar::Util;
+            Scalar::Util::weaken($y);
+        };
+        $error = $@;
+    }
+
+    if ($error) {
         die <<"EOF";
 
 RT requires the Scalar::Util module be built with support for  the 'weaken'

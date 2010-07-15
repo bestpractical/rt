@@ -372,7 +372,7 @@ our %META = (
             my $value = $self->Get('RTAddressRegexp');
             return if $value;
 
-            $RT::Logger->error(
+            $RT::Logger->debug(
                 'The RTAddressRegexp option is not set in the config.'
                 .' Not setting this option results in additional SQL queries to'
                 .' check whether each address belongs to RT or not.'
@@ -815,8 +815,8 @@ sub SetFromConfig {
                 # RTIR's options is set in main site config or RTFM's
                 warn
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
-                    ." It's may be ok, but we want you to be aware."
-                    ." This option earlier has been set in $source{'File'} line $source{'Line'}."
+                    ." It may be ok, but we want you to be aware."
+                    ." This option has been set earlier in $source{'File'} line $source{'Line'}."
                 ;
             }
 

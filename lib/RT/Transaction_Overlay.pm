@@ -176,7 +176,7 @@ sub Create {
        # Entry point of the rule system
        my $ticket = RT::Ticket->new($RT::SystemUser);
        $ticket->Load($args{'ObjectId'});
-       my $rules = RT::Ruleset->FindAllRules(
+       my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             TicketObj   => $ticket,
@@ -208,6 +208,22 @@ Scrips do not get persisted to the database with transactions.
 sub Scrips {
     my $self = shift;
     return($self->{'scrips'});
+}
+
+
+=head2 Rules
+
+Returns the array of Rule objects for this transaction.
+This routine is only useful on a freshly created transaction object.
+Rules do not get persisted to the database with transactions.
+
+
+=cut
+
+
+sub Rules {
+    my $self = shift;
+    return($self->{'rules'});
 }
 
 
@@ -560,11 +576,7 @@ sub ContentAsMIME {
         OPERATOR => 'NOT STARTSWITH',
         VALUE => 'multipart/',
     );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
-    );
+    $attachments->LimitNotEmpty;
     while ( my $a = $attachments->Next ) {
         $entity->make_multipart unless $entity->is_multipart;
         $entity->add_part( $a->ContentAsMIME );

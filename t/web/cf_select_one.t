@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 41;
+use RT::Test tests => 46;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -31,9 +31,9 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
 
-diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
+diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF" if $ENV{'TEST_VERBOSE'};
 {
-    foreach my $value(qw(qwe ASD 0)) {
+    foreach my $value(qw(qwe ASD 0), 'foo ') {
         $m->submit_form(
             form_name => "ModifyCustomField",
             fields => {
@@ -42,6 +42,10 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
             button => 'Update',
         );
         $m->content_like( qr/Object created/, 'added a value to the CF' ); # or diag $m->content;
+        my $v = $value;
+        $v =~ s/^\s+$//;
+        $v =~ s/\s+$//;
+        $m->content_like( qr/value="$v"/, 'the added value is right' );
     }
 }
 

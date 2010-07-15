@@ -112,6 +112,7 @@ RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                    
 our $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
     AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
+    AdminCustomFieldValues    => 'Create, delete and modify custom fields values',        # loc_pair
     ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
 };
 
@@ -400,7 +401,7 @@ sub AddValue {
     my $self = shift;
     my %args = @_;
 
-    unless ($self->CurrentUserHasRight('AdminCustomField')) {
+    unless ($self->CurrentUserHasRight('AdminCustomField') || $self->CurrentUserHasRight('AdminCustomFieldValues')) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -429,7 +430,7 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
     my $self = shift;
     my $id = shift;
-    unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomField') || $self->CurrentUserHasRight('AdminCustomFieldValues') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
