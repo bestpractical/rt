@@ -63,7 +63,7 @@
       <td valign="top">
           <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $UserObj->id %>">
               <& /Elements/ShowUser, User => $UserObj &>
-          </a></li>
+          </a>
       </td>
     <td><& /Admin/Elements/SelectRights,
         PrincipalId => $Member->MemberObj->Id,
