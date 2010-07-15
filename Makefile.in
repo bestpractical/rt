@@ -163,7 +163,8 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 
 
 
-SYSTEM_BINARIES		=	rt-dump-database \
+SYSTEM_BINARIES		=	rt-attributes-viewer \
+				rt-dump-database \
 				rt-setup-database \
 				rt-email-digest \
 				rt-email-dashboards \
