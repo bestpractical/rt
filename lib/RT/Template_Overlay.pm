@@ -118,7 +118,7 @@ sub _Value {
 
 }
 
-=head2 Load <identifer>
+=head2 Load <identifier>
 
 Load a template, either by number or by name.
 
