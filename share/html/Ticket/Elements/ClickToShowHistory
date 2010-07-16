@@ -55,5 +55,5 @@ $Ticket
 </%ARGS>
 <%INIT>
 my $id = $Ticket->id;
-my $url = RT->Config->Get('WebPath') ."/Helpers/TicketHistory.html?id=". $id;
+my $url = RT->Config->Get('WebPath') ."/Helpers/TicketHistory?id=". $id;
 </%INIT>
