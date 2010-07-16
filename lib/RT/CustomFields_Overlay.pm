@@ -189,6 +189,41 @@ sub LimitToNotApplied {
     );
 }
 
+=head2 LimitToApplied
+
+Limits collection to custom fields to listed objects or any corespondingly. Use
+zero to mean global.
+
+=cut
+
+sub LimitToApplied {
+    my $self = shift;
+    my @ids = @_;
+
+    my $ocfs_alias = $self->_OCFAlias( New => 1, Left => 1 );
+    if ( @ids ) {
+        # XXX: we need different EA in join clause, but DBIx::SB
+        # doesn't support them, use IN (X) instead
+        my $dbh = $self->_Handle->dbh;
+        $self->Limit(
+            LEFTJOIN   => $ocfs_alias,
+            ALIAS      => $ocfs_alias,
+            FIELD      => 'ObjectId',
+            OPERATOR   => 'IN',
+            QUOTEVALUE => 0,
+            VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
+        );
+    }
+
+    $self->Limit(
+        ENTRYAGGREGATOR => 'AND',
+        ALIAS    => $ocfs_alias,
+        FIELD    => 'id',
+        OPERATOR => 'IS NOT',
+        VALUE    => 'NULL',
+    );
+}
+
 =head2 LimitToGlobalOrQueue QUEUEID
 
 DEPRECATED since CFs are applicable not only to tickets these days.
