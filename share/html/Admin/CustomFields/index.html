@@ -84,6 +84,8 @@
 <&|/l&>Include disabled custom fields in listing.</&>
 <br />
 
+% $m->callback(CallbackName => 'BeforeSubmit');
+
 <input type="submit" value="<% loc('Go!') %>" />
 </form>
 
@@ -106,6 +108,8 @@ my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
 $CustomFields->FindAllRows if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
+
+$m->callback(CallbackName => 'MassageCustomFields', CustomFields => $CustomFields);
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
 
