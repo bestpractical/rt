@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 22;
+use RT::FM::Test tests => 21;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
@@ -25,9 +25,7 @@ ok($ret, "Test class created");
 
 my ($url, $m) = RT::Test->started_ok;
 isa_ok($m, 'Test::WWW::Mechanize');
-ok(1, "Connecting to $url"); 
-$m->get( "$url?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok($m->login, 'logged in');
 $m->follow_link_ok( { text => 'Configuration' } );
 $m->title_is(q/RT Administration/, 'admin screen');
 $m->follow_link_ok( { text => 'Custom Fields' } );

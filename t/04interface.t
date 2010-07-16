@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 56;
+use RT::FM::Test tests => 55;
 
 use RT::CustomField;
 use RT::EmailParser;
@@ -162,9 +162,7 @@ ok($ret, "Test ticket for articles created: $msg");
 #### Right.  That's our data.  Now begin the real testing.
 
 isa_ok($m, 'Test::WWW::Mechanize');
-ok(1, "Connecting to ".$url);
-$m->get( $url."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok($m->login, 'logged in');
 $m->follow_link_ok({text => 'RTFM'}, 'UI -> RTFM');
 $m->content_contains($article3->Name);
 $m->follow_link_ok( {text => $article3->Name}, 'RTFM -> '. $article3->Name );

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 25;
+use RT::FM::Test tests => 24;
 
 use RT::CustomField;
 use RT::Queue;
@@ -106,9 +106,7 @@ ok($ret, "article 3 created");
 ok($ret, "article 4 created");
 
 isa_ok($m, 'Test::WWW::Mechanize');
-ok(1, "Connecting to ".$url);
-$m->get( $url."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok($m->login, 'logged in');
 $m->follow_link_ok({text => 'RTFM'}, 'UI -> RTFM');
 $m->follow_link_ok( {text => 'Articles'}, 'RTFM -> Articles');
 $m->follow_link_ok( {text => 'in class '.$class->Name}, 'Articles in class '.$class->Name);
