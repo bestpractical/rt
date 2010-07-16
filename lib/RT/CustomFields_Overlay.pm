@@ -330,9 +330,9 @@ sub Next {
     return $CF;
 }
 
-=head2 Next
+=head2 NewItem
 
-Overrides <RT::SearchBuilder/Next> to make sure </ContextObject>
+Overrides <RT::SearchBuilder/NewItem> to make sure </ContextObject>
 is inherited.
 
 =cut
