@@ -58,7 +58,7 @@
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Description</&></th>
 % if ($CustomField->Type ne 'Combobox') {
-<th><&|/l&>Category</&></th>
+<th class="categoryheader"><&|/l&>Category</&></th>
 % }
 </tr>
 
@@ -74,13 +74,13 @@
 %   if ( $Categories ) {
 % my $selected = $value->Category;
 % $selected = '' unless defined $selected;
-<select name="<% $paramtag %>-Category" size="1">
+<select class="editcategory" name="<% $paramtag %>-Category" size="1">
 <option value=""<% $selected eq '' ? q[ selected="selected"] : "" |n%>><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
 <option value="<% $Value->Name %>"<% $selected eq $Value->Name ? q[ selected="selected"] : "" |n%>><% $Value->Name %></option>
 % }
 %   } else {
-<input type="text" size="10" name="<% $paramtag %>-Category" value="<% $value->Category || '' %>" />
+<input type="text" size="10" class="editcategory" name="<% $paramtag %>-Category" value="<% $value->Category || '' %>" />
 %   }
 </td>
 % }
