@@ -46,17 +46,10 @@ $m->title_is(qq/Created CustomField img$$/, 'admin-cf created');
 $m->follow_link( text => 'Applies to' );
 $m->title_is(qq/Modify associated objects for img$$/, 'pick cf screenadmin screen');
 $m->form_number(3);
-# Sort by numeric IDs in names
-my @names = map  { $_->[1] }
-            sort { $a->[0] <=> $b->[0] }
-            map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
-            grep { $_ }
-            map  $_->name, $m->current_form->inputs;
-my $tcf = pop(@names);
-$m->field( $tcf => 1 );         # Associate the new CF with this queue
-$m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
-$m->submit;
 
+my $tcf = (grep { /AddCustomField-/ } map { $_->name } $m->current_form->inputs )[0];
+$m->tick( $tcf, 0 );         # Associate the new CF with this queue
+$m->click('UpdateObjs');
 $m->content_like( qr/Object created/, 'TCF added to the queue' );
 $m->follow_link( text => 'RTFM');
 $m->follow_link( text => 'Articles');
