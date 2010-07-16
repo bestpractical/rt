@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test qw(no_plan);
+use RT::FM::Test;
 
 use RT;
 ok(RT::LoadConfig);
