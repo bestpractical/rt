@@ -153,15 +153,7 @@ sub LimitToGlobalOrObjectId {
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
 }
 
-=head2 LimitToNotApplied
-
-Takes either list of object ids or nothing. Limits collection
-to custom fields to listed objects or any corespondingly. Use
-zero to mean global.
-
-=cut
-
-sub LimitToNotApplied {
+sub _LimitToOCFs {
     my $self = shift;
     my @ids = @_;
 
@@ -179,6 +171,23 @@ sub LimitToNotApplied {
             VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
         );
     }
+
+    return $ocfs_alias;
+}
+
+=head2 LimitToNotApplied
+
+Takes either list of object ids or nothing. Limits collection
+to custom fields to listed objects or any corespondingly. Use
+zero to mean global.
+
+=cut
+
+sub LimitToNotApplied {
+    my $self = shift;
+    my @ids = @_;
+
+    my $ocfs_alias = $self->_LimitToOCFs(@ids);
 
     $self->Limit(
         ENTRYAGGREGATOR => 'AND',
@@ -200,20 +209,7 @@ sub LimitToApplied {
     my $self = shift;
     my @ids = @_;
 
-    my $ocfs_alias = $self->_OCFAlias( New => 1, Left => 1 );
-    if ( @ids ) {
-        # XXX: we need different EA in join clause, but DBIx::SB
-        # doesn't support them, use IN (X) instead
-        my $dbh = $self->_Handle->dbh;
-        $self->Limit(
-            LEFTJOIN   => $ocfs_alias,
-            ALIAS      => $ocfs_alias,
-            FIELD      => 'ObjectId',
-            OPERATOR   => 'IN',
-            QUOTEVALUE => 0,
-            VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
-        );
-    }
+    my $ocfs_alias = $self->_LimitToOCFs(@ids);
 
     $self->Limit(
         ENTRYAGGREGATOR => 'AND',
