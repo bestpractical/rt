@@ -124,6 +124,8 @@
 <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 
+% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj);
+
 </table>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
