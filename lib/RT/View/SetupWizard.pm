@@ -55,9 +55,10 @@ use base qw/ Jifty::Plugin::SetupWizard::View::Helpers /;
 sub setup_page (&) {
     my ($code) = @_;
     page { title => "RT Setup Wizard" } content {
+        my $self = shift;
         h1 { _("RT Setup Wizard") };
         form {
-            $code->();
+            $code->($self);
         };
     };
 }
@@ -179,7 +180,32 @@ template 'basics' => sub {
 };
 
 template 'done' => setup_page {
+    my $self = shift;
+
     h2 { _("Setup complete!") };
+
+    p {
+        _(<<'EOT');
+You probably want to turn off Setup Mode now and go see your new RT.  You'll
+want to review the config generated for you in etc/site_config.yml and restart
+RT.  Now would also be a good time to setup your mail server to hand off mail
+to RT.
+EOT
+    };
+
+    form_next_page( url => '/' );
+
+    my $action = $self->config_field(
+        field      => 'SetupMode',
+        context    => '/framework',
+        message    => 'Setup Mode is now turned off.',
+        value_args => {
+            render_as       => 'Hidden',
+            default_value   => 0,
+        },
+    );
+
+    form_submit( label => 'Turn off Setup Mode and go to RT' );
 };
 
 1;
