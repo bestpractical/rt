@@ -60,6 +60,7 @@ sub setup_page (&) {
         form {
             $code->($self);
         };
+        show '_config_javascript';
     };
 }
 
@@ -119,12 +120,6 @@ template 'root' => setup_page {
     show 'buttons', for => 'root';
 };
 
-# root password
-# rtname, timezone
-# web (base url, port, + rt stuff?)
-# email
-# turn off SetupMode in finish
-
 template 'organization' => setup_page {
     h2 { _("Organization basics") };
 
@@ -133,32 +128,20 @@ template 'organization' => setup_page {
     my $config = new_action( class => 'RT::Action::ConfigSystem' );
     my $meta = $config->metadata;
 
-    my $this = 'jQuery(this).parent().parent().find(".doc")';
-
     for my $field (qw( rtname organization time_zone )) {
         div {{ class is 'config-field' };
-            render_param(
-                $config => $field,
-                # Slide up everything else and slide down this doc
-                onfocus => "jQuery('.config-field .doc').not($this).slideUp(); $this.slideDown();",
-            );
+            render_param( $config => $field );
             div {{ class is 'doc' };
                 outs_raw( $meta->{$field}{'doc'} )
             } if $meta->{$field} and defined $meta->{$field}{'doc'};
         };
     }
 
-    script {
-        outs_raw(<<'JSEND');
-jQuery(function() {
-    jQuery('.config-field .doc').hide();
-    jQuery('.config-field .widget')[0].focus();
-});
-JSEND
-    };
-    
     show 'buttons', for => 'organization';
 };
+
+# web (base url, port, + rt stuff?)
+# email
 
 template 'basics' => sub {
 
@@ -206,6 +189,26 @@ EOT
     );
 
     form_submit( label => 'Turn off Setup Mode and go to RT' );
+};
+
+private template '_config_javascript' => sub {
+    script {
+        outs_raw(<<'JSEND');
+jQuery(function() {
+    jQuery('.config-field .widget').focus(
+        function(){
+            var thisdoc = jQuery(this).parent().parent().find(".doc");
+
+            // Slide up everything else and slide down this doc
+            jQuery('.config-field .doc').not(thisdoc).slideUp();
+            thisdoc.slideDown();
+        }
+    );
+    jQuery('.config-field .doc').hide();
+    jQuery('.config-field .widget')[0].focus();
+});
+JSEND
+    };
 };
 
 1;
