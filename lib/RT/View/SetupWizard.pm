@@ -132,14 +132,14 @@ template 'organization' => setup_page {
     my $config = new_action( class => 'RT::Action::ConfigSystem' );
     my $meta = $config->metadata;
 
-    my $selector = 'jQuery(this).parent().parent().find(".doc")';
+    my $this = 'jQuery(this).parent().parent().find(".doc")';
 
     for my $field (qw( rtname organization time_zone )) {
         div {{ class is 'config-field' };
             render_param(
                 $config => $field,
-                onfocus => "$selector.slideDown();",
-                onblur  => "$selector.slideUp();",
+                # Slide up everything else and slide down this doc
+                onfocus => "jQuery('.config-field .doc').not($this).slideUp(); $this.slideDown();",
             );
             div {{ class is 'doc' };
                 outs_raw( $meta->{$field}{'doc'} )
