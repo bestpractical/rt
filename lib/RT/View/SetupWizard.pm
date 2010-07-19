@@ -57,8 +57,10 @@ sub setup_page (&) {
     page { title => "RT Setup Wizard" } content {
         my $self = shift;
         h1 { _("RT Setup Wizard") };
-        form {
-            $code->($self);
+        div {{ id is 'setupwizard' };
+            form {
+                $code->($self);
+            };
         };
         show '_config_javascript';
     };
@@ -93,11 +95,11 @@ template 'index.html' => setup_page {
 template 'database' => setup_page {
     h2 { _("Configure your database") };
     
-    show 'database_widget';
-
     p {{ class is 'warning' };
         _("RT may ask you, after saving the database settings, to login again as root with the default password.");
     };
+
+    show 'database_widget';
 
     show 'buttons', for => 'database';
 };

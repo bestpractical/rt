@@ -1,17 +1,46 @@
-.config-field .form_field .label {
+#setupwizard .config-field .form_field .label {
     width: 12em;
     font-weight: bold;
     font-size: 1em;
     line-height: 1.6em;
 }
 
-.config-field .doc {
+#setupwizard .config-field .doc {
     display: block;
     width: 50%;
     margin-left: 12.7em;
 }
 
-.config-field .doc p:first-child {
+#setupwizard .config-field .doc p:first-child {
     padding-top: 0;
     margin-top: 0;
+}
+
+#setupwizard .test-db-connectivity {
+    margin-left: 16%;
+}
+
+#setupwizard .button-line {
+    position: relative;
+    width: 45em;
+    height: 2.5em;
+    margin-top: 2em;
+    padding-top: 0.5em;
+    border-top: 1px solid #ccc;
+}
+
+#setupwizard .button-line .prev-button {
+    position: absolute;
+    left: 1em;
+}
+
+#setupwizard .button-line .next-button {
+    position: absolute;
+    right: 1em;
+}
+
+#setupwizard .submit_button {
+    display: inline;
+    margin: 0;
+    padding: 0;
 }
