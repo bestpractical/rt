@@ -69,7 +69,10 @@ sub TemplateTest {
     is($t->Content, $args{Content}, "content");
     is($t->Type, $args{Type}, "template type");
 
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
+    my ($ok, $msg) = $t->Parse(
+        TicketObj      => $ticket,
+        TransactionObj => $ticket->Transactions->First,
+    );
     ok($ok, $msg);
     is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
 }
