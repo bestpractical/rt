@@ -70,6 +70,8 @@ sub steps {
         database
         root
         organization
+        email
+        web
         done
     );
 }
@@ -121,45 +123,34 @@ template 'root' => setup_page {
 };
 
 template 'organization' => setup_page {
-    h2 { _("Organization basics") };
+    h2 { _("Tell RT about your organization") };
 
     p { _("Now tell RT just the very basics about your organization.") };
 
-    my $config = new_action( class => 'RT::Action::ConfigSystem' );
-    my $meta = $config->metadata;
-
-    for my $field (qw( rtname organization time_zone )) {
-        div {{ class is 'config-field' };
-            render_param( $config => $field );
-            div {{ class is 'doc' };
-                outs_raw( $meta->{$field}{'doc'} )
-            } if $meta->{$field} and defined $meta->{$field}{'doc'};
-        };
-    }
-
+    show 'rt_config_fields' => qw( rtname organization time_zone );
     show 'buttons', for => 'organization';
 };
 
-# web (base url, port, + rt stuff?)
-# email
+template 'email' => setup_page {
+    h2 { _("Configure the email setup") };
 
-template 'basics' => sub {
+    p { _("One of the main ways to interact with RT is via email.  Setup the basics now.") };
 
-    p { _("You may change basic information about your RT install.") };
+    # XXX TODO: We should do a mail_command handler like the db chooser and then
+    # show smtp/sendmail/etc specific options
+    show 'rt_config_fields' => qw( owner_email correspond_address comment_address );
+    show 'buttons', for => 'email';
+};
 
-    my $config = new_action( class => 'RT::Action::ConfigSystem' );
-    my $meta = $config->metadata;
-    for my $field (
-        qw/rtname time_zone comment_address correspond_address sendmail_path
-        owner_email/
-      )
-    {
-        div {
-            attr { class => 'hints' };
-            outs_raw( $meta->{$field} && $meta->{$field}{doc} );
-        };
-        outs_raw( $config->form_field($field) );
-    }
+template 'web' => setup_page {
+    h2 { _("Configure the web setup") };
+
+    p { _("RT needs to know a little bit about how you have it setup on your webserver.") };
+
+    # XXX TODO: How can we set the jifty BaseUrl and Port without respawning
+    # the current server
+    show 'rt_config_fields' => qw( web_path logo_url );
+    show 'buttons', for => 'web';
 };
 
 template 'done' => setup_page {
@@ -189,6 +180,22 @@ EOT
     );
 
     form_submit( label => 'Turn off Setup Mode and go to RT' );
+};
+
+private template 'rt_config_fields' => sub {
+    my $self = shift;
+
+    my $config = new_action( class => 'RT::Action::ConfigSystem' );
+    my $meta = $config->metadata;
+
+    for my $field ( @_ ) {
+        div {{ class is 'config-field' };
+            render_param( $config => $field );
+            div {{ class is 'doc' };
+                outs_raw( $meta->{$field}{'doc'} )
+            } if $meta->{$field} and defined $meta->{$field}{'doc'};
+        };
+    }
 };
 
 private template '_config_javascript' => sub {
