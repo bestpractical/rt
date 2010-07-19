@@ -6,136 +6,72 @@ use RT::Test tests => 37;
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
     Subject   => "template testing",
-    Queue     => 'General',
-    Requestor => ['dom@example.com'],
+    Queue     => "General",
+    Requestor => ["dom\@example.com"],
 );
-ok($id, 'Created ticket');
+ok($id, "Created ticket");
 
-# no interpolation
-{
+TemplateTest(
+    Type    => "Full",
+    Content => "\ntest",
+    Output  => "test",
+);
+
+TemplateTest(
+    Type    => "Full",
+    Content => "\ntest { 5 * 5 }",
+    Output  => "test 25",
+);
+
+TemplateTest(
+    Type    => "Full",
+    Content => "\ntest { \$Requestor }",
+    Output  => "test dom\@example.com",
+);
+
+TemplateTest(
+    Type    => "Simple",
+    Content => "\ntest",
+    Output  => "test",
+);
+
+TemplateTest(
+    Type    => "Simple",
+    Content => "\ntest { 5 * 5 }",
+    Output  => "test { 5 * 5 }",
+);
+
+TemplateTest(
+    Type    => "Simple",
+    Content => "\ntest { \$Requestor }",
+    Output  => "test dom\@example.com",
+);
+
+my $counter = 0;
+sub TemplateTest {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my %args = (
+        Name => "Test-" . ++$counter,
+        Type => "Full",
+        @_,
+    );
+
     my $t = RT::Template->new($RT::SystemUser);
     $t->Create(
-        Name => "Foo",
-        Content => "\ntest",
+        Name    => $args{Name},
+        Type    => $args{Type},
+        Content => $args{Content},
     );
+
     ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Full");
-    }
+    is($t->Name, $args{Name}, "template name");
+    is($t->Content, $args{Content}, "content");
+    is($t->Type, $args{Type}, "template type");
 
     my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
     ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, "test");
-}
-
-# code interpolation
-{
-    my $t = RT::Template->new($RT::SystemUser);
-    $t->Create(
-        Name => "Foo",
-        Content => "\ntest { 5 * 5 }",
-    );
-    ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest { 5 * 5 }");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Full");
-    }
-
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
-    ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, "test 25");
-}
-
-# variable interpolation
-{
-    my $t = RT::Template->new($RT::SystemUser);
-    $t->Create(
-        Name => "Foo",
-        Content => "\ntest { \$Requestor }",
-    );
-    ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest { \$Requestor }");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Full");
-    }
-
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
-    ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, "test dom\@example.com");
-}
-
-# no interpolation
-{
-    my $t = RT::Template->new($RT::SystemUser);
-    $t->Create(
-        Name    => "Foo",
-        Content => "\ntest",
-        Type    => "Simple",
-    );
-    ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Simple");
-    }
-
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
-    ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, "test");
-}
-
-# code interpolation
-{
-    my $t = RT::Template->new($RT::SystemUser);
-    $t->Create(
-        Name => "Foo",
-        Content => "\ntest { 5 * 5 }",
-        Type => "Simple",
-    );
-    ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest { 5 * 5 }");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Simple");
-    }
-
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
-    ok($ok, $msg);
-
-    TODO: {
-        local $TODO = "simple templates not yet implemented";
-        is($t->MIMEObj->stringify_body, "test { 5 * 5 }");
-    }
-}
-
-# variable interpolation
-{
-    my $t = RT::Template->new($RT::SystemUser);
-    $t->Create(
-        Name => "Foo",
-        Content => "\ntest { \$Requestor }",
-        Type => "Simple",
-    );
-    ok($t->id, "Created template");
-    is($t->Name, "Foo");
-    is($t->Content, "\ntest { \$Requestor }");
-    TODO: {
-        local $TODO = "template types not settled";
-        is($t->Type, "Simple");
-    }
-
-    my ($ok, $msg) = $t->Parse(TicketObj => $ticket);
-    ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, "test dom\@example.com");
+    is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
 }
 
 1;
