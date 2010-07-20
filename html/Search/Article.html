@@ -47,5 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 
 <%init>
-RT::Interface::Web::Redirect(RT->Config->Get('WebURL').  'RTFM/Article/Search.html?' . $m->comp( '/Elements/QueryString', %ARGS, Load => 'Load' ) );
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL').
+        'RTFM/Article/Search.html?' . $m->comp( '/Elements/QueryString',
+            %ARGS, Load => 'Load', CurrentSearch => $ARGS{LoadSavedSearch} ) );
 </%init>
