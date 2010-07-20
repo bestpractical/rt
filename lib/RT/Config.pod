@@ -523,7 +523,8 @@ Default: C<"">
 
 =item C<logo_url>
 
-C<logo_url> points to the URL of the RT logo displayed in the web UI
+C<logo_url> should be set to the URL of the logo you want displayed on the web
+interface.  You may need to modify RT's styles yourself to make it visible.
 
 Default: C<"/static/images/bplogo.gif">
 

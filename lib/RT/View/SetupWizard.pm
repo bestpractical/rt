@@ -63,7 +63,8 @@ sub setup_page (&) {
                     $code->($self);
 
                     if ( my $current = $self->intuit_current_step ) {
-                        show 'buttons', for => $current;
+                        show 'buttons', for => $current
+                            unless $current eq 'done';
                     }
                 }
                 div {{ class is 'column right thinnest' };
@@ -81,10 +82,10 @@ sub steps {
         [ start         => _('Start') ],
         [ database      => _('Configure your database') ],
         [ root          => _('Change the default root password') ],
-        [ organization  => _('Tell RT about your organization') ],
-        [ email         => _('Configure email') ],
-        [ web           => _('Configure the web interface') ],
-        [ done          => _('Finish setup') ],
+        [ organization  => _('About your organization') ],
+        [ email         => _('Sending and receiving email') ],
+        [ web           => _('Web interface') ],
+        [ done          => _('Turn off Setup Mode') ],
     );
 }
 
@@ -92,10 +93,10 @@ template 'start' => setup_page {
     h2 { _("Welcome to RT!") };
 
     p {
-        _("Let's get your new RT setup and ready to go.  We'll go through a few steps to configure the basics.");
+        _("Let's get your new RT setup!  We'll go through a few steps to configure the basics you'll need to get you up and running.");
     };
     
-    p {
+    p {{ class is 'note activation' };
         outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
     };
 };
@@ -103,10 +104,21 @@ template 'start' => setup_page {
 template 'database' => setup_page {
     show title => 'database';
     
+    p {
+        _(<<'EOT');
+RT needs to know where to store all your tickets, users, and other essential
+information.  SQLite is fine for testing, but for production you really want to
+use MySQL, Postgres, or Oracle.  As long as the database user you specify has the
+necessary permissions, RT will take care of creating the schemas, tables, and
+indexes it needs.  You may want to create a new database user for RT, but if
+you don't know how to do that, ask your database administrator.
+EOT
+    };
+    
     show 'database_widget';
 
     p {{ class is 'note' };
-        _("RT may ask you, after saving the database settings, to login again as root with the default password.");
+        _("After setting up the database, RT may ask you to login again as root with the default password.");
     };
 };
 
@@ -139,7 +151,12 @@ template 'organization' => setup_page {
 template 'email' => setup_page {
     show title => 'email';
 
-    p { _("One of the main ways to interact with RT is via email.  Setup the basics now.") };
+    p {
+        _(<<'EOT');
+Email is one of the central parts of RT, and it needs to know about the
+addresses for it and who to send errors to.
+EOT
+    };
 
     # XXX TODO: We should do a mail_command handler like the db chooser and then
     # show smtp/sendmail/etc specific options
@@ -159,15 +176,20 @@ template 'web' => setup_page {
 template 'done' => setup_page {
     my $self = shift;
 
-    h2 { _("Setup complete!") };
+    h2 { _("All the basics are configured!") };
 
     p {
         _(<<'EOT');
-You probably want to turn off Setup Mode now and go see your new RT.  You'll
-want to review the config generated for you in etc/site_config.yml and restart
-RT.  Now would also be a good time to setup your mail server to hand off mail
-to RT.
+To change part of any step, go back to it using the list on the right.  You
+probably want to turn off Setup Mode now and go see your new RT.  After kicking
+the tires a little, you'll want to:
 EOT
+    };
+
+    ol {{ class is 'whatsnext' };
+        li { _("Review the config generated for you in etc/site_config.yml") }
+        li { _("If you haven't already, setup RT to run under your web server using Plack, FastCGI, or mod_perl") }
+        li { _("Configure your mail server to hand off email to RT's mailgate") }
     };
 
     form_next_page( url => '/' );
@@ -182,7 +204,10 @@ EOT
         },
     );
 
-    form_submit( label => 'Turn off Setup Mode and go to RT' );
+    form_submit(
+        label => 'Turn off Setup Mode and go to RT',
+        class => 'finish'
+    );
 };
 
 private template 'title' => sub {

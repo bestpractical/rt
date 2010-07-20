@@ -77,7 +77,16 @@
     color: black;
 }
 
+#setupwizard .activation {
+    font-size: 0.9em;
+}
+
 /* RT specific config fields with doc */
+
+#setupwizard input.argument-password,
+#setupwizard input.argument-password_confirm {
+    width: 18em;
+}
 
 #setupwizard .config-field .form_field .label {
     width: 12em;
@@ -141,3 +150,8 @@
     padding: 0;
 }
 
+#setupwizard input.finish {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
