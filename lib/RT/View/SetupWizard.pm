@@ -61,6 +61,10 @@ sub setup_page (&) {
             form {
                 div {{ class is 'column left widest' };
                     $code->($self);
+
+                    if ( my $current = $self->intuit_current_step ) {
+                        show 'buttons', for => $current;
+                    }
                 }
                 div {{ class is 'column right thinnest' };
                     show 'steps';
@@ -94,20 +98,16 @@ template 'start' => setup_page {
     p {
         outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
     };
-
-    show 'buttons', for => 'index.html';
 };
 
 template 'database' => setup_page {
     show title => 'database';
     
-    p {{ class is 'warning' };
-        _("RT may ask you, after saving the database settings, to login again as root with the default password.");
-    };
-
     show 'database_widget';
 
-    show 'buttons', for => 'database';
+    p {{ class is 'note' };
+        _("RT may ask you, after saving the database settings, to login again as root with the default password.");
+    };
 };
 
 template 'root' => setup_page {
@@ -126,8 +126,6 @@ template 'root' => setup_page {
         $action => 'password_confirm',
         label   => 'Confirm Password',
     );
-    
-    show 'buttons', for => 'root';
 };
 
 template 'organization' => setup_page {
@@ -136,7 +134,6 @@ template 'organization' => setup_page {
     p { _("Now tell RT just the very basics about your organization.") };
 
     show 'rt_config_fields' => qw( rtname organization time_zone );
-    show 'buttons', for => 'organization';
 };
 
 template 'email' => setup_page {
@@ -147,7 +144,6 @@ template 'email' => setup_page {
     # XXX TODO: We should do a mail_command handler like the db chooser and then
     # show smtp/sendmail/etc specific options
     show 'rt_config_fields' => qw( owner_email correspond_address comment_address );
-    show 'buttons', for => 'email';
 };
 
 template 'web' => setup_page {
@@ -158,7 +154,6 @@ template 'web' => setup_page {
     # XXX TODO: How can we set the jifty BaseUrl and Port without respawning
     # the current server
     show 'rt_config_fields' => qw( web_path logo_url );
-    show 'buttons', for => 'web';
 };
 
 template 'done' => setup_page {

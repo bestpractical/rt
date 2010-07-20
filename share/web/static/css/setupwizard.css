@@ -58,6 +58,25 @@
     font-weight: bold;
 }
 
+/* DB config */
+
+#setupwizard .test-connectivity-result {
+    margin-left: 16%;
+}
+
+#setupwizard .note, #setupwizard .test-db-connectivity-drivers {
+    background: #ff9;
+    color: black;
+    border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    padding: 0.5em 1em;
+}
+
+#setupwizard .warning {
+    color: black;
+}
+
 /* RT specific config fields with doc */
 
 #setupwizard .config-field .form_field .label {
@@ -86,7 +105,7 @@
 }
 
 #setupwizard .button-line {
-    position: relative;
+    display: block;
     width: 100%;
     height: 2.5em;
     margin-top: 2em;
@@ -94,14 +113,26 @@
     border-top: 1px solid #ccc;
 }
 
+#setupwizard .button-line input {
+    margin-left: 0;
+}
+
 #setupwizard .button-line .prev-button {
-    position: absolute;
-    left: 1em;
+    clear: none;
+    float: left;
+    margin-left: 1em;
 }
 
 #setupwizard .button-line .next-button {
-    position: absolute;
-    right: 1em;
+    clear: none;
+    float: right;
+    margin-right: 1em;
+}
+
+#setupwizard .button-line .save-button {
+    clear: none;
+    float: right;
+    margin-right: 1em;
 }
 
 #setupwizard .submit_button {
