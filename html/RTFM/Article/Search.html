@@ -76,7 +76,16 @@
 <& /Elements/ListActions, actions => \@results &>
 <div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
 
-<& Elements/ShowSearchResults, query => \%filtered, articles => $articles &>
+% if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+<h2><&|/l&>Search results</&></h2>
+<& /Elements/CollectionList, %ARGS, 
+    Collection => $articles, 
+    AllowSorting => 1,
+    Class => 'RT::FM::ArticleCollection',
+    Format => $format,
+    GenericQueryArgs => { %filtered, Format => $format, },
+    &>
+% }
 
 <br />
 <br />
@@ -99,6 +108,14 @@
 use RT::SavedSearch;
 my @results;
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $format = q{
+    '<a href="/RTFM/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/RTFM/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__ClassName__',
+    '__CreatedRelative__',
+    '__LastUpdatedRelative__',
+    '__Summary__',
+    '__Topics__', };
 
 # {{{ Quicksearch logic
 
