@@ -45,20 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/CollectionList, %ARGS, 
-    Collection => $articles, 
-    Class => 'RT::FM::ArticleCollection',
-    Format => q{
-    '<a href="/RTFM/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
-    '<a href="/RTFM/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    '__ClassName__',
-    '__CreatedRelative__',
-    '__LastUpdatedRelative__',
-    '__Summary__',
-    '__Topics__', }
-    &>
-<%INIT>
-my $QueryString = "?".$m->comp('/Elements/QueryString', %{$ARGS{args}});
-my $articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
-$articles->Search( %{$ARGS{args}} );
-</%INIT>
+<%init>
+if ( $OriginalSearch->{SearchType} eq 'Article' && $OriginalSearch->{args} 
+    && ref $OriginalSearch->{args} eq 'HASH' ) {
+    %$OriginalSearch = ( %$OriginalSearch, %{$OriginalSearch->{args}} );
+    delete $OriginalSearch->{args};
+
+    $OriginalSearch->{LoadSavedSearch} ||= $ARGS{SavedSearch};
+}
+
+</%init>
+
+<%args>
+$OriginalSearch => undef
+</%args>
