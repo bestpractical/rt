@@ -438,11 +438,21 @@ sub start {
     *Jifty::Plugin::Halo::is_proscribed = sub { 1 };
     RT->init();
 
-    Jifty->web->add_javascript(
-        qw( joose.js titlebox-state.js util.js ahah.js list.js 
-            jquery.createdomnodes.js jquery.menu.js combobox.js  cascaded.js rulebuilder.js
-      )
-    );
+    Jifty->web->add_javascript(qw(
+        joose.js
+        titlebox-state.js
+        util.js
+        ahah.js
+        list.js 
+        jquery.createdomnodes.js
+        jquery.menu.js
+        combobox.js
+        cascaded.js
+        rulebuilder.js
+    ));
+
+    Jifty->web->add_javascript('setupwizard.js')
+        if Jifty->config->framework('SetupMode');
 
     Jifty::Web->add_trigger(
         name      => 'after_include_javascript',

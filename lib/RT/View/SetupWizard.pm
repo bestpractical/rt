@@ -50,7 +50,7 @@ use strict;
 
 package RT::View::SetupWizard;
 use Jifty::View::Declare -base;
-use base qw/ Jifty::Plugin::SetupWizard::View::Helpers /;
+use base qw/ RT::View::SetupWizard::Helpers /;
 
 sub setup_page (&) {
     my ($code) = @_;
@@ -73,19 +73,19 @@ sub setup_page (&) {
             };
             hr {{ class is 'clear' }};
         };
-        show '_config_javascript';
     };
 }
 
 sub steps {
     return (
-        [ start         => _('Start') ],
-        [ database      => _('Configure your database') ],
-        [ root          => _('Change the default root password') ],
-        [ organization  => _('About your organization') ],
-        [ email         => _('Sending and receiving email') ],
-        [ web           => _('Web interface') ],
-        [ done          => _('Turn off Setup Mode') ],
+        [ start             => _('Start') ],
+        [ database          => _('Configure your database') ],
+        [ root              => _('Change the default root password') ],
+        [ organization      => _('About your organization') ],
+        [ email_addresses   => _('Email addresses') ],
+        [ sending_email     => _('Sending email') ],
+        [ web               => _('Web interface') ],
+        [ done              => _('Turn off Setup Mode') ],
     );
 }
 
@@ -141,15 +141,17 @@ template 'root' => setup_page {
 };
 
 template 'organization' => setup_page {
+    my $self = shift;
     show title => 'organization';
 
     p { _("Now tell RT just the very basics about your organization.") };
 
-    show 'rt_config_fields' => qw( rtname organization time_zone );
+    $self->rt_config_field( field => [qw( rtname organization time_zone )] );
 };
 
-template 'email' => setup_page {
-    show title => 'email';
+template 'email_addresses' => setup_page {
+    my $self = shift;
+    show title => 'email_addresses';
 
     p {
         _(<<'EOT');
@@ -158,19 +160,32 @@ addresses for it and who to send errors to.
 EOT
     };
 
-    # XXX TODO: We should do a mail_command handler like the db chooser and then
-    # show smtp/sendmail/etc specific options
-    show 'rt_config_fields' => qw( owner_email correspond_address comment_address );
+    $self->rt_config_field( field => [qw( owner_email correspond_address comment_address )] );
+};
+
+template 'sending_email' => setup_page {
+    my $self = shift;
+    show title => 'sending_email';
+
+    p {
+        _(<<'EOT');
+RT needs to know how to send email out from your server.  There are four
+standard mailers you can use, each with their own configuration.
+EOT
+    };
+
+    show 'mail_widget';
 };
 
 template 'web' => setup_page {
+    my $self = shift;
     show title => 'web';
 
     p { _("RT needs to know a little bit about how you have it setup on your webserver.") };
 
     # XXX TODO: How can we set the jifty BaseUrl and Port without respawning
     # the current server
-    show 'rt_config_fields' => qw( web_path logo_url );
+    $self->rt_config_field( field => [qw( web_path logo_url )] );
 };
 
 template 'done' => setup_page {
@@ -245,42 +260,6 @@ sub intuit_current_step {
 
     return $self->step_for($template)->[0] ? $template : undef;
 }
-
-private template 'rt_config_fields' => sub {
-    my $self = shift;
-
-    my $config = new_action( class => 'RT::Action::ConfigSystem' );
-    my $meta = $config->metadata;
-
-    for my $field ( @_ ) {
-        div {{ class is 'config-field' };
-            render_param( $config => $field );
-            div {{ class is 'doc' };
-                outs_raw( $meta->{$field}{'doc'} )
-            } if $meta->{$field} and defined $meta->{$field}{'doc'};
-        };
-    }
-};
-
-private template '_config_javascript' => sub {
-    script {
-        outs_raw(<<'JSEND');
-jQuery(function() {
-    jQuery('.config-field .widget').focus(
-        function(){
-            var thisdoc = jQuery(this).parent().parent().find(".doc");
-
-            // Slide up everything else and slide down this doc
-            jQuery('.config-field .doc').not(thisdoc).slideUp();
-            thisdoc.slideDown();
-        }
-    );
-    jQuery('.config-field .doc').hide();
-    jQuery('.config-field .widget')[0].focus();
-});
-JSEND
-    };
-};
 
 1;
 

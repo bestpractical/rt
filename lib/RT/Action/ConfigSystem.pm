@@ -48,6 +48,16 @@ sub arguments {
             };
             $args->{$config->name}{'render_as'} = 'Select';
         }
+        elsif ( $config->name eq 'mail_command' ) {
+            # Populate with the standards, but anything is valid (kinda)
+            $args->{$config->name}{'available_values'} = [
+                { display => 'Sendmail pipe',   value => 'sendmailpipe' },
+                { display => 'Sendmail',        value => 'sendmail' },
+                { display => 'SMTP',            value => 'smtp' },
+                { display => 'qmail',           value => 'qmail' },
+            ];
+            $args->{$config->name}{'render_as'} = 'Select';
+        }
     }
     return $self->{__cached_arguments} = $args;
 }

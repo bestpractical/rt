@@ -246,7 +246,7 @@ doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
 or 'qmail'.
 
 Note that you should remove the '-t' from C<sendmail_arguments>
-if you use 'sendmail' rather than 'sendmailpipe'
+if you use 'sendmail' rather than 'sendmailpipe'.
 
 Default: C<'sendmailpipe'>
 
@@ -255,18 +255,18 @@ Default: C<'sendmailpipe'>
 =head1 Sendmail
 
 These options only take effect if C<mail_command> is 'sendmail' or
-'sendmailpipe'
+'sendmailpipe'.
 
 =over 4
 
 =item C<sendmail_arguments> 
 
-C<sendmail_arguments> defines what flags to pass to C<sendmail_path>
-If you picked 'sendmailpipe', you MUST add a -t flag to C<sendmail_arguments>
-These options are good for most sendmail wrappers and workalikes
+C<sendmail_arguments> defines what flags to pass to C<sendmail_path>.
+If you picked 'sendmailpipe', you MUST add a C<-t> flag to C<sendmail_arguments>
+The default is good for most sendmail wrappers and workalikes.
 
-These arguments are good for sendmail brand sendmail 8 and newer
-C<default: C<"-oi -t -ODeliveryMode=b -OErrorMode=m">>
+These arguments are good for Sendmail-brand sendmail version 8 or newer
+C<default: C<"-oi -t -ODeliveryMode=b -OErrorMode=m">>.
 
 Default: C<"-oi -t">
 
@@ -276,7 +276,7 @@ Default: C<"-oi -t">
 C<sendmail_bounce_arguments> defines what flags to pass to C<sendmail>
 assuming RT needs to send an error (ie. bounce).
 
-Default: C<'-f "<>"'>
+Default: C<< '-f "<>"' >>
 
 =item C<sendmail_path>
 
