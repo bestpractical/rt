@@ -298,14 +298,14 @@ These options only take effect if C<mail_command> is 'smtp'
 
 C<smtp_server> should be set to the hostname of the SMTP server to use
 
-Default: C<undef>
+Default: C<''>
 
 =item C<smtp_from>
 
 C<smtp_from> should be set to the 'From' address to use, if not the
 email's 'From'
 
-Default: C<undef>
+Default: C<''>
 
 =item C<smtp_debug> 
 

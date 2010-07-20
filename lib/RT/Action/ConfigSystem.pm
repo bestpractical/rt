@@ -17,6 +17,8 @@ sub arguments {
     my %labels = (
         rtname      => 'RT Name',
         time_zone   => 'Timezone',
+        smtp_server => 'SMTP server',
+        smtp_from   => 'SMTP "From:"',
     );
 
     my $configs = RT::Model::ConfigCollection->new;
