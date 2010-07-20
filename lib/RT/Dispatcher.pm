@@ -173,10 +173,9 @@ on qr{^/$} => run {
     show '/index.html';
 };
 
-# Canonicalize /setup to /setup/ so we can properly use relative links
-# XXX: This is a bit ugly
-before qr'^/setup$' => run {
-    redirect '/setup/';
+# Redirect /setup and /setup/ to /setup/start
+before qr'^/setup/?$' => run {
+    redirect '/setup/start';
 };
 
 on qr{^/Dashboards/(\d+)} => run {

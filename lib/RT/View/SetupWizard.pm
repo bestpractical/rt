@@ -59,41 +59,47 @@ sub setup_page (&) {
         h1 { _("RT Setup Wizard") };
         div {{ id is 'setupwizard' };
             form {
-                $code->($self);
+                div {{ class is 'column left widest' };
+                    $code->($self);
+                }
+                div {{ class is 'column right thinnest' };
+                    show 'steps';
+                }
             };
+            hr {{ class is 'clear' }};
         };
         show '_config_javascript';
     };
 }
 
 sub steps {
-    return qw(
-        index.html
-        database
-        root
-        organization
-        email
-        web
-        done
+    return (
+        [ start         => _('Start') ],
+        [ database      => _('Configure your database') ],
+        [ root          => _('Change the default root password') ],
+        [ organization  => _('Tell RT about your organization') ],
+        [ email         => _('Configure email') ],
+        [ web           => _('Configure the web interface') ],
+        [ done          => _('Finish setup') ],
     );
 }
 
-template 'index.html' => setup_page {
+template 'start' => setup_page {
     h2 { _("Welcome to RT!") };
 
     p {
-        _("Let's get your RT install setup and ready to go.  We'll step you through a few steps to configure the basics.");
+        _("Let's get your new RT setup and ready to go.  We'll go through a few steps to configure the basics.");
     };
-
-    show 'buttons', for => 'index.html';
-
+    
     p {
         outs_raw _("This setup wizard was activated by the presence of <tt>SetupMode: 1</tt> in one of your configuration files. If you are seeing this erroneously, you may restore normal operation by adjusting the <tt>etc/site_config.yml</tt> file to have <tt>SetupMode: 0</tt> set under <tt>framework</tt>.");
     };
+
+    show 'buttons', for => 'index.html';
 };
 
 template 'database' => setup_page {
-    h2 { _("Configure your database") };
+    show title => 'database';
     
     p {{ class is 'warning' };
         _("RT may ask you, after saving the database settings, to login again as root with the default password.");
@@ -105,7 +111,7 @@ template 'database' => setup_page {
 };
 
 template 'root' => setup_page {
-    h2 { _("Change the default root password") };
+    show title => 'root';
 
     p {
         _("It is very important that you change the password of RT's root user.  Leaving it as the default of 'password' is a serious security risk.");
@@ -125,7 +131,7 @@ template 'root' => setup_page {
 };
 
 template 'organization' => setup_page {
-    h2 { _("Tell RT about your organization") };
+    show title => 'organization';
 
     p { _("Now tell RT just the very basics about your organization.") };
 
@@ -134,7 +140,7 @@ template 'organization' => setup_page {
 };
 
 template 'email' => setup_page {
-    h2 { _("Configure the email setup") };
+    show title => 'email';
 
     p { _("One of the main ways to interact with RT is via email.  Setup the basics now.") };
 
@@ -145,7 +151,7 @@ template 'email' => setup_page {
 };
 
 template 'web' => setup_page {
-    h2 { _("Configure the web setup") };
+    show title => 'web';
 
     p { _("RT needs to know a little bit about how you have it setup on your webserver.") };
 
@@ -183,6 +189,42 @@ EOT
 
     form_submit( label => 'Turn off Setup Mode and go to RT' );
 };
+
+private template 'title' => sub {
+    my ($self, $step) = @_;
+    h2 { $self->step_title($step) };
+};
+
+private template 'steps' => sub {
+    my $self = shift;
+    my $current = $self->intuit_current_step(@_);
+
+    h2 { _("Steps to Configure RT") };
+
+    ol {{ class is 'steps' };
+        for my $step ( $self->steps ) {
+            li {{ $current eq $step->[0] ? ( class is 'current' ) : () };
+                hyperlink(
+                    url     => $step->[0],
+                    label   => $step->[1],
+                );
+            };
+        }
+    };
+};
+
+sub intuit_current_step {
+    my $self = shift;
+    my %args = @_;
+
+    if ( defined $args{'for'} and length $args{'for'} ) {
+        return $args{'for'};
+    }
+
+    my $template = lc((split '/', Jifty->web->request->path)[-1]);
+
+    return $self->step_for($template)->[0] ? $template : undef;
+}
 
 private template 'rt_config_fields' => sub {
     my $self = shift;

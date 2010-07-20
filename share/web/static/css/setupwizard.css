@@ -1,3 +1,65 @@
+/* Layout */
+
+#setupwizard .column {
+    width: 49%;
+    margin: 0;
+    padding: 0;
+}
+
+#setupwizard .column > h1:first-child,
+#setupwizard .column > h2:first-child,
+#setupwizard .column > h3:first-child,
+#setupwizard .column > p:first-child
+{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#setupwizard .right {
+    float: right;
+    clear: right;
+}
+
+#setupwizard .left {
+    float: left;
+    clear: left;
+}
+
+#setupwizard .widest { width: 73%; }
+#setupwizard .thinnest { width: 25%; }
+
+#setupwizard hr.clear {
+    display: block;
+    clear: both;
+    visibility: hidden;
+    height: 1px !important;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+/* Step list */
+
+#setupwizard .steps {
+    font-size: 1.2em;
+}
+
+#setupwizard .steps li {
+    line-height: 1em;
+    padding-bottom: 0.75em;
+}
+
+#setupwizard .steps li a {
+    color: black;
+}
+
+#setupwizard .steps li.current, #setupwizard .steps li.current a {
+    color: #06c;
+    font-weight: bold;
+}
+
+/* RT specific config fields with doc */
+
 #setupwizard .config-field .form_field .label {
     width: 12em;
     font-weight: bold;
@@ -16,13 +78,16 @@
     margin-top: 0;
 }
 
+
+/* Buttons! */
+
 #setupwizard .test-db-connectivity {
     margin-left: 16%;
 }
 
 #setupwizard .button-line {
     position: relative;
-    width: 45em;
+    width: 100%;
     height: 2.5em;
     margin-top: 2em;
     padding-top: 0.5em;
@@ -44,3 +109,4 @@
     margin: 0;
     padding: 0;
 }
+
