@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 95;
+use RT::Test tests => 99;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -60,6 +60,26 @@ TemplateTest(
     FullOutput   => "test Nobody",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
+
+# Make sure changing the template's type works
+my $template = RT::Template->new($RT::SystemUser);
+$template->Create(
+    Name    => "type chameleon",
+    Type    => "Full",
+    Content => "\ntest { 10 * 7 }",
+);
+ok($id = $template->id, "Created template");
+$template->Parse;
+is($template->MIMEObj->stringify_body, "test 70", "Full output");
+
+$template = RT::Template->new($RT::SystemUser);
+$template->Load($id);
+is($template->Name, "type chameleon");
+
+$template->SetType('Simple');
+$template->Parse;
+is($template->MIMEObj->stringify_body, "test { 10 * 7 }", "Simple output");
+
 
 my $counter = 0;
 sub IndividualTemplateTest {
