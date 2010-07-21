@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 48;
+use RT::Test tests => 83;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -31,9 +31,27 @@ TemplateTest(
 );
 
 TemplateTest(
+    Content      => "\ntest { \$Ticket->Subject }",
+    FullOutput   => "test template testing",
+    SimpleOutput => "test template testing",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$Nonexistent }",
+    FullOutput   => "test ",
+    SimpleOutput => "test { \$Nonexistent }",
+);
+
+TemplateTest(
     Content      => "\ntest { \$Ticket->Nonexistent }",
     FullOutput   => undef,
     SimpleOutput => "test { \$Ticket->Nonexistent }",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$Nonexistent->Nonexistent }",
+    FullOutput   => undef,
+    SimpleOutput => "test { \$Nonexistent->Nonexistent }",
 );
 
 my $counter = 0;
@@ -53,9 +71,9 @@ sub IndividualTemplateTest {
         Content => $args{Content},
     );
 
-    ok($t->id, "Created template");
-    is($t->Name, $args{Name}, "template name");
-    is($t->Content, $args{Content}, "content");
+    ok($t->id, "Created $args{Type} template");
+    is($t->Name, $args{Name}, "$args{Type} template name");
+    is($t->Content, $args{Content}, "$args{Type} content");
     is($t->Type, $args{Type}, "template type");
 
     my ($ok, $msg) = $t->Parse(
@@ -64,7 +82,7 @@ sub IndividualTemplateTest {
     );
     if (defined $args{Output}) {
         ok($ok, $msg);
-        is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
+        is($t->MIMEObj->stringify_body, $args{Output}, "$args{Type} template's output");
     }
     else {
         ok(!$ok, "expected failure: $msg");
