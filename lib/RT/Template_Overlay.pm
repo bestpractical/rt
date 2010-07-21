@@ -388,10 +388,6 @@ sub _ParseContent {
     # We need to untaint the content of the template, since we'll be working
     # with it
     $content =~ s/^(.*)$/$1/;
-    my $template = Text::Template->new(
-        TYPE   => 'STRING',
-        SOURCE => $content
-    );
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
@@ -412,21 +408,58 @@ sub _ParseContent {
         $args{ $key } = \$val;
     }
 
+    if ($self->Type eq 'Full') {
+        return $self->_ParseContentFull(
+            Content      => $content,
+            TemplateArgs => \%args,
+        );
+    }
+    else {
+        return $self->_ParseContentSimple(
+            Content      => $content,
+            TemplateArgs => \%args,
+        );
+    }
+}
 
+# uses Text::Template for Full templates
+sub _ParseContentFull {
+    my $self = shift;
+    my %args = (
+        Content      => undef,
+        TemplateArgs => {},
+        @_,
+    );
+
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $args{Content},
+    );
     my $is_broken = 0;
     my $retval = $template->fill_in(
-        HASH => \%args,
+        HASH => $args{TemplateArgs},
         BROKEN => sub {
             my (%args) = @_;
             $RT::Logger->error("Template parsing error: $args{error}")
                 unless $args{error} =~ /^Died at /; # ignore intentional die()
             $is_broken++;
             return undef;
-        }, 
+        },
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
     return ($retval);
+}
+
+sub _ParseContentSimple {
+    my $self = shift;
+    my %args = (
+        Content      => undef,
+        TemplateArgs => {},
+        @_,
+    );
+
+    return $args{Content};
 }
 
 sub _DowngradeFromHTML {
