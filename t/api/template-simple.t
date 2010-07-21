@@ -11,44 +11,27 @@ my ($id, $msg) = $ticket->Create(
 );
 ok($id, "Created ticket");
 
+
 TemplateTest(
-    Type    => "Full",
-    Content => "\ntest",
-    Output  => "test",
+    Content      => "\ntest",
+    FullOutput   => "test",
+    SimpleOutput => "test",
 );
 
 TemplateTest(
-    Type    => "Full",
-    Content => "\ntest { 5 * 5 }",
-    Output  => "test 25",
+    Content      => "\ntest { 5 * 5 }",
+    FullOutput   => "test 25",
+    SimpleOutput => "test { 5 * 5 }",
 );
 
 TemplateTest(
-    Type    => "Full",
-    Content => "\ntest { \$Requestor }",
-    Output  => "test dom\@example.com",
-);
-
-TemplateTest(
-    Type    => "Simple",
-    Content => "\ntest",
-    Output  => "test",
-);
-
-TemplateTest(
-    Type    => "Simple",
-    Content => "\ntest { 5 * 5 }",
-    Output  => "test { 5 * 5 }",
-);
-
-TemplateTest(
-    Type    => "Simple",
-    Content => "\ntest { \$Requestor }",
-    Output  => "test dom\@example.com",
+    Content      => "\ntest { \$Requestor }",
+    FullOutput   => "test dom\@example.com",
+    SimpleOutput => "test dom\@example.com",
 );
 
 my $counter = 0;
-sub TemplateTest {
+sub IndividualTemplateTest {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my %args = (
@@ -75,6 +58,19 @@ sub TemplateTest {
     );
     ok($ok, $msg);
     is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
+}
+
+sub TemplateTest {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my %args = @_;
+
+    for my $type ('Full', 'Simple') {
+        IndividualTemplateTest(
+            %args,
+            Type   => $type,
+            Output => $args{$type . 'Output'},
+        );
+    }
 }
 
 1;
