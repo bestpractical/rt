@@ -402,13 +402,6 @@ sub _ParseContent {
         $args{'loc'} = sub { $self->loc(@_) };
     }
 
-    foreach my $key ( keys %args ) {
-        next unless ref $args{ $key };
-        next if ref $args{ $key } =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
-        my $val = $args{ $key };
-        $args{ $key } = \$val;
-    }
-
     if ($self->Type eq 'Full') {
         return $self->_ParseContentFull(
             Content      => $content,
@@ -431,6 +424,13 @@ sub _ParseContentFull {
         TemplateArgs => {},
         @_,
     );
+
+    foreach my $key ( keys %{ $args{TemplateArgs} } ) {
+        my $val = $args{TemplateArgs}{ $key };
+        next unless ref $val;
+        next if ref $val =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        $args{TemplateArgs}{ $key } = \$val;
+    }
 
     my $template = Text::Template->new(
         TYPE   => 'STRING',
