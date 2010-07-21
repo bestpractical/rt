@@ -57,7 +57,7 @@ use base qw(RT::Action);
 =head1 DESCRIPTION
 
 Opens a ticket unless it's allready open, but only unless transaction
-L<RT::Transaction/IsInbound is inbound>.
+L<RT::Transaction/IsInbound> is inbound.
 
 Doesn't open a ticket if message's head has field C<RT-Control> with
 C<no-autoopen> substring.
