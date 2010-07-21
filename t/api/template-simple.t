@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 37;
+use RT::Test tests => 48;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -30,6 +30,12 @@ TemplateTest(
     SimpleOutput => "test dom\@example.com",
 );
 
+TemplateTest(
+    Content      => "\ntest { \$Ticket->Nonexistent }",
+    FullOutput   => undef,
+    SimpleOutput => "test { \$Ticket->Nonexistent }",
+);
+
 my $counter = 0;
 sub IndividualTemplateTest {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
@@ -56,8 +62,13 @@ sub IndividualTemplateTest {
         TicketObj      => $ticket,
         TransactionObj => $ticket->Transactions->First,
     );
-    ok($ok, $msg);
-    is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
+    if (defined $args{Output}) {
+        ok($ok, $msg);
+        is($t->MIMEObj->stringify_body, $args{Output}, "template's output");
+    }
+    else {
+        ok(!$ok, "expected failure: $msg");
+    }
 }
 
 sub TemplateTest {
