@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 83;
+use RT::Test tests => 95;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -52,6 +52,13 @@ TemplateTest(
     Content      => "\ntest { \$Nonexistent->Nonexistent }",
     FullOutput   => undef,
     SimpleOutput => "test { \$Nonexistent->Nonexistent }",
+);
+
+# Simple templates only let you go one level down for now..
+TemplateTest(
+    Content      => "\ntest { \$Ticket->OwnerObj->Name }",
+    FullOutput   => "test Nobody",
+    SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
 
 my $counter = 0;
