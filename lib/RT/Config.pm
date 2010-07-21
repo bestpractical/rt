@@ -939,6 +939,87 @@ sub Options {
     return @res;
 }
 
+=head2 AddOption( Name => '', Section => '', ... )
+
+=cut
+
+sub AddOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => 0,
+        SortOrder       => undef,
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {},
+        @_
+    );
+
+    unless ( $args{Name} ) {
+        $RT::Logger->error("Need Name to add a new config");
+        return;
+    }
+
+    unless ( $args{Section} ) {
+        $RT::Logger->error("Need Section to add a new config option");
+        return;
+    }
+
+    $META{ delete $args{Name} } = \%args;
+}
+
+=head2 DeleteOption( Name => '' )
+
+=cut
+
+sub DeleteOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        @_
+        );
+    if ( $args{Name} ) {
+        delete $META{$args{Name}};
+    }
+    else {
+        $RT::Logger->error("Need Name to remove a config option");
+        return;
+    }
+}
+
+=head2 UpdateOption( Name => '' ), Section => '', ... )
+
+=cut
+
+sub UpdateOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => undef,
+        SortOrder       => undef,
+        Widget          => undef,
+        WidgetArguments => undef,
+        @_
+    );
+
+    unless ( $args{Name} ) {
+        $RT::Logger->error("Need Name to update a new config");
+        return;
+    }
+
+    unless ( exists $META{ $args{Name} } ) {
+        $RT::Logger->error("Config $args{Name} doesn't exist");
+        return;
+    }
+
+    for my $type (qw/Section Overridable SortOrder Widget WidgetArguments/) {
+        next unless defined $args{$type};
+        $META{ $args{Name} }{$type} = $args{$type};
+    }
+    return 1;
+}
+
 eval "require RT::Config_Vendor";
 if ($@ && $@ !~ qr{^Can't locate RT/Config_Vendor.pm}) {
     die $@;
