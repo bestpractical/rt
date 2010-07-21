@@ -81,7 +81,7 @@ sub _Accessible {
         id            => 'read',
         Name          => 'read/write',
         Description   => 'read/write',
-        Type          => 'read/write',    #Type is one of Action or Message
+        Type          => 'read/write',    #Type is one of Full or Simple
         Content       => 'read/write',
         Queue         => 'read/write',
         Creator       => 'read/auto',
@@ -205,7 +205,7 @@ sub Create {
         Content     => undef,
         Queue       => 0,
         Description => '[no description]',
-        Type        => 'Action', #By default, template are 'Action' templates
+        Type        => 'Full',
         Name        => undef,
         @_
     );
