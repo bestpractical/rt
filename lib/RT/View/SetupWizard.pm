@@ -220,9 +220,6 @@ template 'web' => setup_page {
     $self->rt_config_field( field => [qw( web_path logo_url )] );
 };
 
-# XXX TODO: step for checking and turning off Admin, Devel, and Setup modes?
-# LogLevel?
-
 template 'done' => setup_page {
     my $self = shift;
 
@@ -238,22 +235,25 @@ EOT
 
     ol {{ class is 'whatsnext' };
         li { _("Review the config generated for you in etc/site_config.yml") }
-        li { _("If you haven't already, setup RT to run under your web server using Plack, FastCGI, or mod_perl") }
+        li { _("If you haven't already, setup your web server to run RT using Plack, FastCGI, or mod_perl") }
         li { _("Configure your mail server to hand off email to RT's mailgate") }
     };
 
     form_next_page( url => '/' );
 
-    my $action = $self->config_field(
-        field      => 'SetupMode',
-        context    => '/framework',
-        message    => 'Setup Mode is now turned off.',
-        value_args => {
-            render_as       => 'Hidden',
-            default_value   => 0,
-        },
-    );
-
+    # Turn off all the junk we don't want for production
+    for my $mode (qw( Setup Devel Admin )) {
+        $self->config_field(
+            field      => $mode."Mode",
+            context    => '/framework',
+            message    => "$mode Mode is now turned off.",
+            value_args => {
+                render_as       => 'Hidden',
+                default_value   => 0,
+            },
+        );
+    }
+    
     form_submit(
         label => 'Turn off Setup Mode and go to RT',
         class => 'finish'
