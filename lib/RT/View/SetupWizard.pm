@@ -52,10 +52,17 @@ package RT::View::SetupWizard;
 use Jifty::View::Declare -base;
 use base qw/ RT::View::SetupWizard::Helpers /;
 
+use URI;
+
 sub setup_page (&) {
     my ($code) = @_;
     page { title => "RT Setup Wizard" } content {
         my $self = shift;
+        script {{
+            src  is URI->new(Jifty->web->url( path => '/static/js/setupwizard.js' ))->path,
+            type is 'text/javascript'
+        }};
+
         h1 { _("RT Setup Wizard") };
         div {{ id is 'setupwizard' };
             form {
@@ -185,8 +192,36 @@ template 'web' => setup_page {
 
     # XXX TODO: How can we set the jifty BaseUrl and Port without respawning
     # the current server
+
+    div {{ class is 'reveal-hints' };
+        $self->config_field(
+            field       => 'BaseURL',
+            context     => '/framework/Web',
+            message     => "Set RT's base URL",
+            value_args  => {
+                label   => _("Base URL"),
+                hints   => "The base scheme (e.g. http://) and host for your RT",
+            },
+        );
+    };
+
+    div {{ class is 'reveal-hints' };
+        $self->config_field(
+            field       => 'Port',
+            context     => '/framework/Web',
+            message     => "Set RT's default port",
+            value_args  => {
+                label   => _("Port"),
+                hints   => "Almost always port 80, the default for HTTP",
+            },
+        );
+    };
+
     $self->rt_config_field( field => [qw( web_path logo_url )] );
 };
+
+# XXX TODO: step for checking and turning off Admin, Devel, and Setup modes?
+# LogLevel?
 
 template 'done' => setup_page {
     my $self = shift;

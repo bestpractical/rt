@@ -88,19 +88,23 @@
     width: 18em;
 }
 
-#setupwizard .config-field .form_field .label {
+#setupwizard .form_field .label,
+#setupwizard .form_field label {
     width: 12em;
     font-weight: bold;
     font-size: 1em;
     line-height: 1.6em;
 }
 
-#setupwizard .config-field .doc {
+#setupwizard .form_field .hints {
+    float: none;
     display: block;
     margin-left: 12.7em;
+    font-size: 1em;
+    color: black;
 }
 
-#setupwizard .config-field .doc p:first-child {
+#setupwizard .form_field .hints p:first-child {
     padding-top: 0;
     margin-top: 0;
 }

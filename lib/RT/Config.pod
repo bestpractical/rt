@@ -511,11 +511,10 @@ Default: C<'concise'>
 
 =item C<web_path>
 
-If you're putting the web ui somewhere other than at the root of
-your server, you should set C<web_path> to the path you'll be 
-serving RT at.
+If RT's web interface is installed somewhere other than at the root of your web
+server, you should set C<web_path> to the path where RT is located.
 
-C<web_path> requires a leading / but no trailing /.
+C<web_path> requires a leading / (forward slash) but no trailing /.
 
 In most cases, you should leave C<web_path> set to '' (an empty value).
 

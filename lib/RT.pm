@@ -451,9 +451,6 @@ sub start {
         rulebuilder.js
     ));
 
-    Jifty->web->add_javascript('setupwizard.js')
-        if Jifty->config->framework('SetupMode');
-
     Jifty::Web->add_trigger(
         name      => 'after_include_javascript',
         callback  => sub {

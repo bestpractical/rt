@@ -95,7 +95,7 @@ private template 'mail_widget' => sub {
 
     $self->rt_config_field(
         field       => 'mail_command',
-        doc_class   => 'static-doc',
+        static_doc  => 1,
         value_args  => {
             onchange => [$onchange]
         }
@@ -157,7 +157,7 @@ sub rt_config_field {
     my %args = (
         field       => [],
         value_args  => {},
-        doc_class   => '',
+        static_doc  => 0,
         @_
     );
 
@@ -167,12 +167,17 @@ sub rt_config_field {
     $args{'field'} = [ $args{'field'} ]
         if not ref $args{'field'};
 
+    my $class = $args{'static_doc'} ? 'static-hints' : 'reveal-hints';
+
     for my $field ( @{$args{'field'}} ) {
-        div {{ class is 'config-field' };
-            render_param( $config => $field, %{ $args{'value_args'} } );
-            div {{ class is join(' ', 'doc', $args{'doc_class'}) };
-                outs_raw( $meta->{$field}{'doc'} )
-            } if $meta->{$field} and defined $meta->{$field}{'doc'};
+        div {{ class is $class };
+            my %params = %{$args{'value_args'}};
+
+            $params{'hints'} = $meta->{$field}{'doc'}
+                if not defined $params{'hints'}
+                   and $meta->{$field} and defined $meta->{$field}{'doc'};
+
+            render_param( $config => $field, %params );
         };
     }
 

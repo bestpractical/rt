@@ -1,21 +1,21 @@
 Behaviour.register({
-    ".config-field .widget": function(e) {
+    "#setupwizard .reveal-hints .form_field .widget": function(e) {
         jQuery(e).focus(
             function(){
-                var thisdoc = jQuery(this).parent().parent().find(".doc");
+                var thisdoc = jQuery(this).parent().find(".hints");
 
                 // Slide up everything else and slide down this doc
-                jQuery('.config-field .doc').not(thisdoc).not(".static-doc").slideUp();
-                thisdoc.not(".static-doc").slideDown();
+                jQuery('#setupwizard .reveal-hints .form_field .hints').not(thisdoc).slideUp();
+                thisdoc.slideDown();
             }
         );
     },
-    ".config-field .doc": function(e) {
-        jQuery(e).not(".static-doc").hide();
+    "#setupwizard .reveal-hints .form_field .hints": function(e) {
+        jQuery(e).hide();
     }
 });
 
 jQuery(function() {
-    jQuery('.config-field .widget')[0].focus();
+    jQuery('#setupwizard .form_field .widget')[0].focus();
 });
 
