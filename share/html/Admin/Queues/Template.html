@@ -63,8 +63,12 @@
 
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
-<& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
-$TemplateObj->Description, Content => $TemplateObj->Content &> 
+<& /Admin/Elements/ModifyTemplate,
+    Name        => $TemplateObj->Name,
+    Description => $TemplateObj->Description,
+    Content     => $TemplateObj->Content,
+    Type        => $TemplateObj->Type
+&>
 <& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
 </form>
 

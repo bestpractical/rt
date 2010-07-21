@@ -63,6 +63,15 @@
 </td>
 </tr>
 <tr>
+<td align="right">
+<&|/l&>Type</&>:
+</td>
+<td>
+<input type="radio" name="Type" value="Full" <% $Type eq "Full" ? 'checked="checked"' : "" %>><&|/l&>Full</&></input><br />
+<input type="radio" name="Type" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" %>><&|/l&>Simple</&></input><br />
+</td>
+</tr>
+<tr>
 <td align="right" valign="top">
 <&|/l&>Content</&>:<br />
 </td>
@@ -81,4 +90,5 @@
 $Name => undef
 $Description => undef
 $Content => undef
+$Type => undef
 </%ARGS>
