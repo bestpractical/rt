@@ -459,7 +459,62 @@ sub _ParseContentSimple {
         @_,
     );
 
-    return $args{Content};
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $args{Content},
+    );
+    $template->compile;
+
+    # copied from Text::Template::fill_in and refactored to be simple variable
+    # interpolation
+    my $fi_r = '';
+    foreach my $fi_item (@{$template->{SOURCE}}) {
+        my ($fi_type, $fi_text, $fi_lineno) = @$fi_item;
+        if ($fi_type eq 'TEXT') {
+            $fi_r .= $fi_text;
+        } elsif ($fi_type eq 'PROG') {
+            my $fi_res;
+            my $interpolated;
+
+            my $original_fi_text = $fi_text;
+
+            # strip surrounding whitespace for simpler regexes
+            $fi_text =~ s/^\s+//;
+            $fi_text =~ s/\s+$//;
+
+            # if the codeblock is a simple $Variable lookup, use the value from
+            # the TemplateArgs hash...
+            if (my ($var) = $fi_text =~ /^\$(\w+)$/) {
+                if (exists $args{TemplateArgs}{$var}) {
+                    $fi_res = $args{TemplateArgs}{$var};
+                    $interpolated = 1;
+                }
+            }
+            # otherwise if it looks like a method call...
+            # XXX: this should be locked down otherwise you could say
+            # $TicketObj->Steal or something similarly ugly
+            elsif (my ($obj, $method) = $fi_text =~ /^\$(\w+)->(\w+)$/) {
+                if (exists $args{TemplateArgs}{$obj}) {
+                    $fi_res = $args{TemplateArgs}{$obj}->$method;
+                    $interpolated = 1;
+                }
+            }
+
+            # if there was no substitution then just reinsert the codeblock
+            if (!$interpolated) {
+                $fi_res = "{$original_fi_text}";
+            }
+
+            # If the value of the filled-in text really was undef,
+            # change it to an explicit empty string to avoid undefined
+            # value warnings later.
+            $fi_res = '' unless defined $fi_res;
+
+            $fi_r .= $fi_res;
+        }
+    }
+
+    return $fi_r;
 }
 
 sub _DowngradeFromHTML {
