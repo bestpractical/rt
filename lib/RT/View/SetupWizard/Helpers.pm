@@ -63,7 +63,9 @@ use base qw/ Jifty::Plugin::SetupWizard::View::Helpers /;
 
 =head2 mail_widget
 
-Provides a mail configuration widget for RT's setup wizard.
+Provides a mail configuration widget for RT's setup wizard.  NOTE: this
+configures RT's, not Jifty's, mailer.  Jifty's mail infrastructure is unused by
+RT4 at the moment.
 
 Much of it is based on the database config widget provided by Jifty's
 SetupWizard plugin.
