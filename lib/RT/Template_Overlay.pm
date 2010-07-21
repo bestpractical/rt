@@ -231,6 +231,7 @@ sub Create {
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
         Name        => $args{'Name'},
+        Type        => $args{'Type'},
     );
 
     return ($result);
