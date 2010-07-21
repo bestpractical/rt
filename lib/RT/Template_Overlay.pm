@@ -494,7 +494,7 @@ sub _ParseContentSimple {
             # XXX: this should be locked down otherwise you could say
             # $TicketObj->Steal or something similarly ugly
             elsif (my ($obj, $method) = $fi_text =~ /^\$(\w+)->(\w+)$/) {
-                if (exists $args{TemplateArgs}{$obj}) {
+                if (exists $args{TemplateArgs}{$obj} && $args{TemplateArgs}{$obj}->can($method)) {
                     $fi_res = $args{TemplateArgs}{$obj}->$method;
                     $interpolated = 1;
                 }
