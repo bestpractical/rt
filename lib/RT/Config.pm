@@ -1003,19 +1003,21 @@ sub UpdateOption {
         @_
     );
 
-    unless ( $args{Name} ) {
+    my $name = delete $args{Name};
+
+    unless ( $name ) {
         $RT::Logger->error("Need Name to update a new config");
         return;
     }
 
-    unless ( exists $META{ $args{Name} } ) {
-        $RT::Logger->error("Config $args{Name} doesn't exist");
+    unless ( exists $META{$name} ) {
+        $RT::Logger->error("Config $name doesn't exist");
         return;
     }
 
-    for my $type (qw/Section Overridable SortOrder Widget WidgetArguments/) {
+    for my $type ( keys %args ) {
         next unless defined $args{$type};
-        $META{ $args{Name} }{$type} = $args{$type};
+        $META{$name}{$type} = $args{$type};
     }
     return 1;
 }
