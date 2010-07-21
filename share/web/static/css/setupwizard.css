@@ -61,7 +61,7 @@
 /* DB config */
 
 #setupwizard .test-connectivity-result {
-    margin-left: 16%;
+    margin-left: 12.7em;
 }
 
 #setupwizard .note, #setupwizard .test-db-connectivity-drivers {
@@ -113,7 +113,7 @@
 /* Buttons! */
 
 #setupwizard .test-db-connectivity {
-    margin-left: 16%;
+    margin-left: 12.7em;
 }
 
 #setupwizard .button-line {
