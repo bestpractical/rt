@@ -1737,6 +1737,9 @@ sub _ProcessObjectCustomFieldUpdates {
                 $values_hash{$val} = 1 if $val;
             }
 
+            # For Date Cfs, @values is empty when there is no changes (no datas in form input)
+            return @results if ( $cf->Type eq 'Date' && ! @values );
+
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {
                 next if $values_hash{ $cf_value->id };

@@ -97,6 +97,11 @@ our %FieldTypes = (
         'Enter one value with autocompletion',            # loc
         'Enter up to [_1] values with autocompletion',    # loc
     ],
+    Date => [
+        'Select multiple dates',	# loc
+        'Select date',			# loc
+        'Select up to [_1] dates',	# loc
+    ],
 );
 
 
@@ -830,7 +835,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|Combobox|Date)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 SetLookupType
@@ -1160,6 +1165,15 @@ sub AddValueForObject {
             $extra_item->Delete;
             $extra_values--;
         }
+    }
+    # For date, we need to store Content as ISO date
+    if ($self->Type eq 'Date') {
+        my $DateObj = new RT::Date( $self->CurrentUser );
+        $DateObj->Set(
+            Format => 'unknown',
+            Value  => $args{'Content'},
+        );
+        $args{'Content'} = $DateObj->ISO;
     }
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my $val    = $newval->Create(
