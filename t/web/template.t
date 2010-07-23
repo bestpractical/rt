@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 26;
+use RT::Test tests => 11;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -30,12 +30,12 @@ $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Simple');
+is($m->value('Type'), 'Simple', 'updated type to simple');
 
 $m->field(Type => 'Full');
 $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Full');
+is($m->value('Type'), 'Full', 'updated type back to full');
 
