@@ -113,7 +113,7 @@ if ($TemplateObj->Id()) {
   $Queue = $TemplateObj->Queue;
   $QueueObj = $TemplateObj->QueueObj;
 
-  my @attribs = qw( Description Content Queue Name);
+  my @attribs = qw( Description Content Queue Name Type );
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
