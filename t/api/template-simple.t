@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 99;
+use RT::Test tests => 107;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -60,6 +60,15 @@ TemplateTest(
     FullOutput   => "test Nobody",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
+
+# should this be forbidden or not?
+is($ticket->Status, 'new', "test setup");
+TemplateTest(
+    Content      => "\ntest { \$Ticket->Resolve }",
+    SkipFull     => 1,
+    SimpleOutput => "test { \$Ticket->Resolve }",
+);
+is($ticket->Status, 'new', "simple templates can't call ->Resolve");
 
 # Make sure changing the template's type works
 my $template = RT::Template->new($RT::SystemUser);
@@ -121,6 +130,8 @@ sub TemplateTest {
     my %args = @_;
 
     for my $type ('Full', 'Simple') {
+        next if $args{"Skip$type"};
+
         IndividualTemplateTest(
             %args,
             Type   => $type,
