@@ -566,4 +566,45 @@ sub CurrentUserHasQueueRight {
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
 }
 
+=head2 SetType
+
+If setting Type to Full, require the FullTemplates right on the queue.
+
+=cut
+
+sub SetType {
+    my $self    = shift;
+    my $NewType = shift;
+
+    if ($NewType eq 'Full' && !$self->CurrentUser->HasRight(Right => 'FullTemplates', Object => $self->QueueObj) ) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
+
+    return $self->_Set( Field => 'Type', Value => $NewType );
+}
+
+=head2 SetQueue
+
+When changing the queue, make sure the current user has FullTemplates on the
+new queue if the type is Full.
+
+Templates can't change Queue in the UI (yet?).
+
+=cut
+
+sub SetQueue {
+    my $self     = shift;
+    my $NewQueue = shift;
+
+    my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
+    $NewQueueObj->Load($NewQueue);
+
+    if ( $self->Type eq 'Full' && !$self->CurrentUser->HasRight(Right => 'FullTemplates', Object => $NewQueueObj) ) {
+        return ( undef, $self->loc('Permission Denied. You do not have FullTemplate on the new queue.') );
+    }
+
+    return $self->_Set( Field => 'Queue', Value => $NewQueueObj->id );
+}
+
+
 1;
