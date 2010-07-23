@@ -94,6 +94,7 @@ our $RIGHTS = {
     AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
     ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
     ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+    FullTemplates       => 'Modify templates with unlimited code execution', # loc_pair
 
     ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
     ShowScrips   => 'Display Scrips for this queue',                  # loc_pair

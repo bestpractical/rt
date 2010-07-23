@@ -215,6 +215,9 @@ sub Create {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
+        if ( $args{Type} eq 'Full' && !$self->CurrentUser->HasRight(Right => 'FullTemplates', Object => $RT::System) ) {
+            return ( undef, $self->loc('Permission Denied') );
+        }
         $args{'Queue'} = 0;
     }
     else {
@@ -222,6 +225,9 @@ sub Create {
         $QueueObj->Load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
     
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
+            return ( undef, $self->loc('Permission Denied') );
+        }
+        if ( $args{Type} eq 'Full' && !$QueueObj->CurrentUserHasRight('FullTemplates') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = $QueueObj->Id;
