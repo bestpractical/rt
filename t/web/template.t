@@ -2,11 +2,21 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test tests => 17;
 
-my ($baseurl, $m) = RT::Test->started_ok;
+my $user_a = RT::Test->load_or_create_user(
+    Name => 'user_a', Password => 'password',
+);
+ok $user_a && $user_a->id, 'loaded or created user';
 
-ok $m->login, 'logged in';
+RT::Test->started_ok;
+
+ok( RT::Test->set_rights(
+    { Principal => $user_a, Right => [qw(ShowConfigTab ShowTemplate ModifyTemplate)] },
+), 'set rights');
+
+my $m = RT::Test::Web->new;
+ok $m->login('user_a', 'password'), 'logged in as user A';
 
 # get to the templates screen
 $m->follow_link( text => 'Configuration' );
@@ -37,5 +47,17 @@ $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Full', 'updated type back to full');
+is($m->value('Type'), 'Simple', 'need the FullTemplates right to update Type to Full');
+$m->content_contains('Permission Denied');
+
+ok( RT::Test->add_rights(
+    { Principal => $user_a, Right => [qw(FullTemplates)] },
+), 'add FullTemplates rights');
+
+$m->field(Type => 'Full');
+$m->submit;
+
+$m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
+$m->form_name('ModifyTemplate');
+is($m->value('Type'), 'Full', 'now that we have FullTemplates we can update Type to Full');
 
