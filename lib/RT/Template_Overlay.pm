@@ -576,7 +576,7 @@ sub SetType {
     my $self    = shift;
     my $NewType = shift;
 
-    if ($NewType eq 'Full' && !$self->CurrentUser->HasRight(Right => 'FullTemplates', Object => $self->QueueObj) ) {
+    if ($NewType eq 'Full' && !$self->CurrentUserHasQueueRight('FullTemplates')) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -599,7 +599,7 @@ sub SetQueue {
     my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
     $NewQueueObj->Load($NewQueue);
 
-    if ( $self->Type eq 'Full' && !$self->CurrentUser->HasRight(Right => 'FullTemplates', Object => $NewQueueObj) ) {
+    if ( $self->Type eq 'Full' && !$NewQueueObj->CurrentUserHasRight('FullTemplates') ) {
         return ( undef, $self->loc('Permission Denied. You do not have FullTemplate on the new queue.') );
     }
 
