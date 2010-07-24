@@ -74,7 +74,9 @@
 % if ( ( $DisplayedYear == $today[5] + 1900 ) && ( $DisplayedMonth == $today[4] + 1 ) && ( $day == $today[3] ) ) {
 %     $class = 'today';
 % }
-        <a <% $class && 'class="'.$class.'"' |n%> href="#" onclick="updateParentField('<% $field %>','<% $datestr %>'); return false;"><% $day %></a>
+%# we use escaped field here is because it may contain single quotes, which happens in cf date
+% my $escaped_field = $field; $escaped_field =~ s/'/\\'/g;
+        <a <% $class && 'class="'.$class.'"' |n%> href="#" onclick="updateParentField('<% $escaped_field |n %>','<% $datestr %>'); return false;"><% $day %></a>
 %         } else {
         &nbsp;
 %         }

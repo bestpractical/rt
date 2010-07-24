@@ -45,8 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+%# we use escaped_name here is because it may contain single quotes, which happens in cf date
 <script type="text/javascript"><!--
-    onLoadHook('createCalendarLink("<% $Name %>");');
+    onLoadHook('createCalendarLink("<% $escaped_name |n %>");');
 --></script>
 <input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
 <%init>
@@ -63,6 +65,9 @@ $Value = $Value || $Default;
 unless ($Name) {
 	$Name = $menu_prefix. "_Date";
 }
+
+my $escaped_name = $Name;
+$escaped_name =~ s/'/\\'/g;
 </%init>
 
 <%args>
