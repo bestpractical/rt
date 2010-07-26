@@ -1,16 +1,25 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 161;
+use RT::Test tests => 167;
 
-my $cf = RT::CustomField->new($RT::SystemUser);
-$cf->Create(
+my $queue = RT::Queue->new($RT::SystemUser);
+$queue->Load("General");
+
+my $ticket_cf = RT::CustomField->new($RT::SystemUser);
+$ticket_cf->Create(
     Name        => 'Department',
     Queue       => '0',
-    SortOrder   => '1',
-    Description => 'A testing custom field',
     Type        => 'FreeformSingle',
 );
+
+my $txn_cf = RT::CustomField->new($RT::SystemUser);
+$txn_cf->Create(
+    Name        => 'Category',
+    LookupType  => RT::Transaction->CustomFieldLookupType,
+    Type        => 'FreeformSingle',
+);
+$txn_cf->AddToObject($queue);
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -18,8 +27,9 @@ my ($id, $msg) = $ticket->Create(
     Queue     => "General",
     Owner     => 'root@localhost',
     Requestor => ["dom\@example.com"],
+    "CustomField-" . $txn_cf->id => "Special",
 );
-ok($id, "Created ticket");
+ok($id, "Created ticket: $msg");
 my $txn = $ticket->Transactions->First;
 
 $ticket->AddCustomFieldValue(
@@ -99,6 +109,11 @@ SimpleTemplateTest(
 SimpleTemplateTest(
     Content => "\ntest { \$TransactionType }",
     Output  => "test Create",
+);
+
+SimpleTemplateTest(
+    Content => "\ntest { \$TransactionCFCategory }",
+    Output  => "test Special",
 );
 
 SimpleTemplateTest(
