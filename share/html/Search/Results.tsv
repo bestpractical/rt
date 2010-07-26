@@ -92,7 +92,7 @@ my @attrs = qw(
     Cc->MemberEmailAddressesAsString
     AdminCc->MemberEmailAddressesAsString
     DueObj->ISO ToldObj->ISO CreatedObj->ISO
-    ResolvedObj->ISO LastUpdatedObj->ISO
+    ResolvedObj->ISO LastUpdatedObj->ISO LastUpdatedByObj->Name
 );
 
 $r->content_type('application/vnd.ms-excel');
