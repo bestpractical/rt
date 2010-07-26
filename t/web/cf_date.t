@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
-RT->Config->Set( 'Timezone' => 'US/Eastern' );
+use RT::Test tests => 46;
+RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
+
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 my $root = RT::User->new( $RT::SystemUser );
@@ -67,9 +68,9 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
     $m->submit_form(
         form_name => "TicketCreate",
         fields    => {
-            Subject                                       => 'test 2010-05-04 08:00:00',
+            Subject                                       => 'test 2010-05-04 13:00:01',
             Content                                       => 'test',
-            "Object-RT::Ticket--CustomField-$cfid-Values" => '2010-05-04 08:00:00',
+            "Object-RT::Ticket--CustomField-$cfid-Values" => '2010-05-04 13:00:01',
         },
     );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/,
@@ -79,17 +80,17 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
     $ticket->Load($id);
     is(
         $ticket->CustomFieldValues($cfid)->First->Content,
-        '2010-05-04 12:00:00',
+        '2010-05-04 17:00:01',
         'date in db is in UTC'
     );
 
     $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
-    $m->content_like(qr/Tue May 04 08:00:00 2010/, 'has cf date value on the page');
+    $m->content_like(qr/Tue May 04 13:00:01 2010/, 'has cf date value on the page');
 
-    $root->SetTimezone( 'Asia/Shanghai' ); # +08:00
+    $root->SetTimezone( 'Asia/Shanghai' );
     # interesting that $m->reload doesn't work
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Tue May 04 20:00:00 2010/, 'cf date value respects user timezone');
+    $m->content_like(qr/Wed May 05 01:00:01 2010/, 'cf date value respects user timezone');
 
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -98,9 +99,9 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
     $m->submit_form(
         form_name => "TicketCreate",
         fields    => {
-            Subject                                       => 'test 2010-05-06 08:00:00',
+            Subject                                       => 'test 2010-05-06 07:00:01',
             Content                                       => 'test',
-            "Object-RT::Ticket--CustomField-$cfid-Values" => '2010-05-06 08:00:00',
+            "Object-RT::Ticket--CustomField-$cfid-Values" => '2010-05-06 07:00:01',
         },
     );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/,
@@ -109,20 +110,117 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
     $ticket->Load($id);
     is(
         $ticket->CustomFieldValues($cfid)->First->Content,
-        '2010-05-06 00:00:00',
+        '2010-05-05 23:00:01',
         'date in db is in UTC'
     );
 
     $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
-    $m->content_like(qr/Thu May 06 08:00:00 2010/, 'cf date input respects user timezone');
-    $root->SetTimezone( 'US/Eastern' ); # back to -04:00
+    $m->content_like(qr/Thu May 06 07:00:01 2010/, 'cf date input respects user timezone');
+    $root->SetTimezone( 'EST5EDT' ); # back to -04:00
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Wed May 05 20:00:00 2010/, 'cf date value respects user timezone');
+    $m->content_like(qr/Wed May 05 19:00:01 2010/, 'cf date value respects user timezone');
 }
 
 
-
 diag 'check invalid inputs' if $ENV{'TEST_VERBOSE'};
+
+diag 'check search build page' if $ENV{'TEST_VERBOSE'};
+{
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+
+    # make sure there are at least 2 Calendar links
+    $m->content_like( qr/createCalendar.*createCalendar/s,
+        'have at least 2 Calendar links' );
+    $m->form_number(3);
+    my ($cf_op) =
+      $m->find_all_inputs( type => 'option', name_regex => qr/test cf date/ );
+    is_deeply(
+        [ $cf_op->possible_values ],
+        [ '<', '=', '>' ],
+        'right oprators'
+    );
+
+    my ($cf_field) =
+      $m->find_all_inputs( type => 'text', name_regex => qr/test cf date/ );
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '=',
+            $cf_field->name => '2010-05-04'
+        },
+        button => 'DoSearch',
+    );
+
+    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+    $m->content_contains( '2010-05-04',     'got the right ticket' );
+    $m->content_lacks( '2010-05-06', 'did not get the wrong ticket' );
+
+    my $shanghai = RT::Test->load_or_create_user(
+        Name     => 'shanghai',
+        Password => 'password',
+        Timezone => 'Asia/Shanghai',
+    );
+    ok( $shanghai->PrincipalObj->GrantRight(
+        Right  => 'SuperUser',
+        Object => $RT::System,
+    ));
+    $m->login( 'shanghai', 'password' );
+
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_number(3);
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '=',
+            $cf_field->name => '2010-05-05'
+        },
+        button => 'DoSearch',
+    );
+    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_number(3);
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '<',
+            $cf_field->name => '2010-05-06'
+        },
+        button => 'DoSearch',
+    );
+    $m->content_contains( 'Found 2 ticket', 'Found 2 ticket' );
+
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_number(3);
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '>',
+            $cf_field->name => '2010-05-03',
+        },
+        button => 'DoSearch',
+    );
+    $m->content_contains( 'Found 2 tickets', 'Found 2 tickets' );
+
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_number(3);
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '=',
+            $cf_field->name => '2010-05-04 16:00:01',
+        },
+        button => 'DoSearch',
+    );
+    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_number(3);
+    $m->submit_form(
+        fields => {
+            $cf_op->name    => '=',
+            $cf_field->name => '2010-05-05 01:00:01',
+        },
+        button => 'DoSearch',
+    );
+    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+}
+
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -143,24 +241,3 @@ diag 'check invalid inputs' if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
     $m->content_unlike(qr/foodate/, 'invalid dates not set');
 }
-
-diag 'check search build page' if $ENV{'TEST_VERBOSE'};
-$m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-
-# make sure there are at least 2 Calendar links
-$m->content_like( qr/createCalendar.*createCalendar/s, 'have at least 2 Calendar links' );
-$m->form_number(3);
-my ( $cf_op ) = $m->find_all_inputs( type => 'option', name_regex => qr/test cf date/ );
-is_deeply( [$cf_op->possible_values], [ '<', '=', '>' ], 'right oprators' ) ;
-
-my ( $cf_field ) = $m->find_all_inputs( type => 'text', name_regex => qr/test cf date/ );
-$m->submit_form(
-    fields => {
-        $cf_op->name    => '=',
-        $cf_field->name => '2010-05-04'
-    },
-    button => 'DoSearch',
-);
-$m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
-$m->content_contains( '2010-05-04',     'got the right ticket' );
-$m->content_lacks( '2010-05-06', 'did not get the wrong ticket' );
