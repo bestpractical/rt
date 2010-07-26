@@ -524,8 +524,21 @@ sub _MassageSimpleTemplateArgs {
     my $template_args = $args{TemplateArgs};
 
     if (my $ticket = $template_args->{Ticket}) {
-        for my $column (qw/Subject/) {
+        for my $column (qw/Subject Queue/) {
             $template_args->{"Ticket".$column} = $ticket->$column;
+        }
+
+        $template_args->{"TicketQueueId"}   = $ticket->Queue;
+        $template_args->{"TicketQueueName"} = $ticket->QueueObj->Name;
+
+        $template_args->{"TicketOwnerId"}    = $ticket->Owner;
+        $template_args->{"TicketOwnerName"}  = $ticket->OwnerObj->Name;
+        $template_args->{"TicketOwnerEmailAddress"} = $ticket->OwnerObj->EmailAddress;
+    }
+
+    if (my $txn = $template_args->{Transaction}) {
+        for my $column (qw//) {
+            $template_args->{"Transaction".$column} = $txn->$column;
         }
     }
 }

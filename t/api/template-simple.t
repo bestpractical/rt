@@ -1,12 +1,13 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 107;
+use RT::Test tests => 167;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
     Subject   => "template testing",
     Queue     => "General",
+    Owner     => 'root@localhost',
     Requestor => ["dom\@example.com"],
 );
 ok($id, "Created ticket");
@@ -37,6 +38,36 @@ TemplateTest(
 );
 
 TemplateTest(
+    Content      => "\ntest { \$TicketQueueId }",
+    FullOutput   => "test ",
+    SimpleOutput => "test 1",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$TicketQueueName }",
+    FullOutput   => "test ",
+    SimpleOutput => "test General",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$TicketOwnerId }",
+    FullOutput   => "test ",
+    SimpleOutput => "test 12",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$TicketOwnerName }",
+    FullOutput   => "test ",
+    SimpleOutput => "test root",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$TicketOwnerEmailAddress }",
+    FullOutput   => "test ",
+    SimpleOutput => "test root\@localhost",
+);
+
+TemplateTest(
     Content      => "\ntest { \$Nonexistent }",
     FullOutput   => "test ",
     SimpleOutput => "test { \$Nonexistent }",
@@ -56,7 +87,7 @@ TemplateTest(
 
 TemplateTest(
     Content      => "\ntest { \$Ticket->OwnerObj->Name }",
-    FullOutput   => "test Nobody",
+    FullOutput   => "test root",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
 
