@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 203;
+use RT::Test tests => 155;
 
 my $cf = RT::CustomField->new($RT::SystemUser);
 $cf->Create(
@@ -50,58 +50,49 @@ TemplateTest(
     SimpleOutput => "test template testing",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketQueueId }",
-    FullOutput   => "test ",
-    SimpleOutput => "test 1",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketQueueId }",
+    Output  => "test 1",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketQueueName }",
-    FullOutput   => "test ",
-    SimpleOutput => "test General",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketQueueName }",
+    Output  => "test General",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketOwnerId }",
-    FullOutput   => "test ",
-    SimpleOutput => "test 12",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketOwnerId }",
+    Output  => "test 12",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketOwnerName }",
-    FullOutput   => "test ",
-    SimpleOutput => "test root",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketOwnerName }",
+    Output  => "test root",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketOwnerEmailAddress }",
-    FullOutput   => "test ",
-    SimpleOutput => "test root\@localhost",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketOwnerEmailAddress }",
+    Output  => "test root\@localhost",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketStatus }",
-    FullOutput   => "test ",
-    SimpleOutput => "test new",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketStatus }",
+    Output  => "test new",
 );
 
-TemplateTest(
-    Content      => "\ntest #{ \$TicketId }",
-    FullOutput   => "test #",
-    SimpleOutput => "test #" . $ticket->id,
+SimpleTemplateTest(
+    Content => "\ntest #{ \$TicketId }",
+    Output  => "test #" . $ticket->id,
 );
 
-TemplateTest(
-    Content      => "\ntest { \$TicketCFDepartment }",
-    FullOutput   => "test ",
-    SimpleOutput => "test Coolio",
+SimpleTemplateTest(
+    Content => "\ntest { \$TicketCFDepartment }",
+    Output  => "test Coolio",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$Nonexistent }",
-    FullOutput   => "test ",
-    SimpleOutput => "test { \$Nonexistent }",
+SimpleTemplateTest(
+    Content => "\ntest { \$Nonexistent }",
+    Output  => "test { \$Nonexistent }",
 );
 
 TemplateTest(
@@ -123,10 +114,9 @@ TemplateTest(
 );
 
 is($ticket->Status, 'new', "test setup");
-TemplateTest(
-    Content      => "\ntest { \$Ticket->Resolve }",
-    SkipFull     => 1,
-    SimpleOutput => "test { \$Ticket->Resolve }",
+SimpleTemplateTest(
+    Content => "\ntest { \$Ticket->Resolve }",
+    Output  => "test { \$Ticket->Resolve }",
 );
 is($ticket->Status, 'new', "simple templates can't call ->Resolve");
 
@@ -198,6 +188,16 @@ sub TemplateTest {
             Output => $args{$type . 'Output'},
         );
     }
+}
+
+sub SimpleTemplateTest {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my %args = @_;
+
+    IndividualTemplateTest(
+        %args,
+        Type => 'Simple',
+    );
 }
 
 1;
