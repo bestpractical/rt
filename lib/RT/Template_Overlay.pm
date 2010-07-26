@@ -539,12 +539,16 @@ sub _MassageSimpleTemplateArgs {
         while (my $cf = $cfs->Next) {
             $template_args->{"TicketCF" . $cf->Name} = $ticket->CustomFieldValuesAsString($cf->Name);
         }
-
     }
 
     if (my $txn = $template_args->{Transaction}) {
-        for my $column (qw//) {
+        for my $column (qw/Id TimeTaken Type Field OldValue NewValue Data Content Subject Description BriefDescription/) {
             $template_args->{"Transaction".$column} = $txn->$column;
+        }
+
+        my $cfs = $txn->CustomFields;
+        while (my $cf = $cfs->Next) {
+            $template_args->{"TransactionCF" . $cf->Name} = $txn->CustomFieldValuesAsString($cf->Name);
         }
     }
 }

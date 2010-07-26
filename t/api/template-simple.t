@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 155;
+use RT::Test tests => 161;
 
 my $cf = RT::CustomField->new($RT::SystemUser);
 $cf->Create(
@@ -20,6 +20,7 @@ my ($id, $msg) = $ticket->Create(
     Requestor => ["dom\@example.com"],
 );
 ok($id, "Created ticket");
+my $txn = $ticket->Transactions->First;
 
 $ticket->AddCustomFieldValue(
     Field => 'Department',
@@ -88,6 +89,16 @@ SimpleTemplateTest(
 SimpleTemplateTest(
     Content => "\ntest { \$TicketCFDepartment }",
     Output  => "test Coolio",
+);
+
+SimpleTemplateTest(
+    Content => "\ntest #{ \$TransactionId }",
+    Output  => "test #" . $txn->id,
+);
+
+SimpleTemplateTest(
+    Content => "\ntest { \$TransactionType }",
+    Output  => "test Create",
 );
 
 SimpleTemplateTest(
@@ -164,7 +175,7 @@ sub IndividualTemplateTest {
 
     my ($ok, $msg) = $t->Parse(
         TicketObj      => $ticket,
-        TransactionObj => $ticket->Transactions->First,
+        TransactionObj => $txn,
     );
     if (defined $args{Output}) {
         ok($ok, $msg);
