@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 167;
+use RT::Test tests => 175;
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Load("General");
@@ -117,6 +117,11 @@ SimpleTemplateTest(
 );
 
 SimpleTemplateTest(
+    Content => "\ntest { \$TicketDelete }",
+    Output  => "test { \$TicketDelete }",
+);
+
+SimpleTemplateTest(
     Content => "\ntest { \$Nonexistent }",
     Output  => "test { \$Nonexistent }",
 );
@@ -165,6 +170,13 @@ $template->SetType('Simple');
 $template->Parse;
 is($template->MIMEObj->stringify_body, "test { 10 * 7 }", "Simple output");
 
+$template = RT::Template->new($RT::SystemUser);
+$template->Load($id);
+is($template->Name, "type chameleon");
+
+$template->SetType('Full');
+$template->Parse;
+is($template->MIMEObj->stringify_body, "test 70", "Full output");
 
 my $counter = 0;
 sub IndividualTemplateTest {
