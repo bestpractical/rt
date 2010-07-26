@@ -481,8 +481,6 @@ sub _ParseContentSimple {
             $fi_r .= $fi_text;
         } elsif ($fi_type eq 'PROG') {
             my $fi_res;
-            my $interpolated;
-
             my $original_fi_text = $fi_text;
 
             # strip surrounding whitespace for simpler regexes
@@ -494,21 +492,11 @@ sub _ParseContentSimple {
             if (my ($var) = $fi_text =~ /^\$(\w+)$/) {
                 if (exists $args{TemplateArgs}{$var}) {
                     $fi_res = $args{TemplateArgs}{$var};
-                    $interpolated = 1;
-                }
-            }
-            # otherwise if it looks like a method call...
-            # XXX: this should be locked down otherwise you could say
-            # $TicketObj->Steal or something similarly ugly
-            elsif (my ($obj, $method) = $fi_text =~ /^\$(\w+)->(\w+)$/) {
-                if (blessed($args{TemplateArgs}{$obj}) && $args{TemplateArgs}{$obj}->can($method)) {
-                    $fi_res = $args{TemplateArgs}{$obj}->$method;
-                    $interpolated = 1;
                 }
             }
 
             # if there was no substitution then just reinsert the codeblock
-            if (!$interpolated) {
+            if (!defined $fi_res) {
                 $fi_res = "{$original_fi_text}";
             }
 
