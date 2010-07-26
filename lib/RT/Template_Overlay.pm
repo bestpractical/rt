@@ -466,6 +466,8 @@ sub _ParseContentSimple {
         @_,
     );
 
+    $self->_MassageSimpleTemplateArgs(%args);
+
     my $template = Text::Template->new(
         TYPE   => 'STRING',
         SOURCE => $args{Content},
@@ -510,6 +512,22 @@ sub _ParseContentSimple {
     }
 
     return $fi_r;
+}
+
+sub _MassageSimpleTemplateArgs {
+    my $self = shift;
+    my %args = (
+        TemplateArgs => {},
+        @_,
+    );
+
+    my $template_args = $args{TemplateArgs};
+
+    if (my $ticket = $template_args->{Ticket}) {
+        for my $column (qw/Subject/) {
+            $template_args->{"Ticket".$column} = $ticket->$column;
+        }
+    }
 }
 
 sub _DowngradeFromHTML {

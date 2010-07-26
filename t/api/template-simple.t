@@ -31,8 +31,8 @@ TemplateTest(
 );
 
 TemplateTest(
-    Content      => "\ntest { \$Ticket->Subject }",
-    FullOutput   => "test template testing",
+    Content      => "\ntest { \$TicketSubject }",
+    FullOutput   => "test ",
     SimpleOutput => "test template testing",
 );
 
@@ -54,14 +54,12 @@ TemplateTest(
     SimpleOutput => "test { \$Nonexistent->Nonexistent }",
 );
 
-# Simple templates only let you go one level down for now..
 TemplateTest(
     Content      => "\ntest { \$Ticket->OwnerObj->Name }",
     FullOutput   => "test Nobody",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
 
-# should this be forbidden or not?
 is($ticket->Status, 'new', "test setup");
 TemplateTest(
     Content      => "\ntest { \$Ticket->Resolve }",
