@@ -534,6 +534,12 @@ sub _MassageSimpleTemplateArgs {
         $template_args->{"TicketOwnerId"}    = $ticket->Owner;
         $template_args->{"TicketOwnerName"}  = $ticket->OwnerObj->Name;
         $template_args->{"TicketOwnerEmailAddress"} = $ticket->OwnerObj->EmailAddress;
+
+        my $cfs = $ticket->CustomFields;
+        while (my $cf = $cfs->Next) {
+            $template_args->{"TicketCF" . $cf->Name} = $ticket->CustomFieldValuesAsString($cf->Name);
+        }
+
     }
 
     if (my $txn = $template_args->{Transaction}) {

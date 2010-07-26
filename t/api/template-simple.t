@@ -1,7 +1,16 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 191;
+use RT::Test tests => 203;
+
+my $cf = RT::CustomField->new($RT::SystemUser);
+$cf->Create(
+    Name        => 'Department',
+    Queue       => '0',
+    SortOrder   => '1',
+    Description => 'A testing custom field',
+    Type        => 'FreeformSingle',
+);
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -12,6 +21,10 @@ my ($id, $msg) = $ticket->Create(
 );
 ok($id, "Created ticket");
 
+$ticket->AddCustomFieldValue(
+    Field => 'Department',
+    Value => 'Coolio',
+);
 
 TemplateTest(
     Content      => "\ntest",
@@ -79,6 +92,11 @@ TemplateTest(
     SimpleOutput => "test #" . $ticket->id,
 );
 
+TemplateTest(
+    Content      => "\ntest { \$TicketCFDepartment }",
+    FullOutput   => "test ",
+    SimpleOutput => "test Coolio",
+);
 
 TemplateTest(
     Content      => "\ntest { \$Nonexistent }",
