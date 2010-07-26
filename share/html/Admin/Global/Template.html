@@ -116,6 +116,9 @@ if ($TemplateObj->Id()) {
   		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id(),
 			};
   push @results, @aresults;
+
+  my ($ok, $msg) = $TemplateObj->CompileCheck;
+  push @results, $msg if !$ok;
 }
 
 </%INIT>
