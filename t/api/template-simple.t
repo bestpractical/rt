@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 167;
+use RT::Test tests => 191;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(
@@ -66,6 +66,19 @@ TemplateTest(
     FullOutput   => "test ",
     SimpleOutput => "test root\@localhost",
 );
+
+TemplateTest(
+    Content      => "\ntest { \$TicketStatus }",
+    FullOutput   => "test ",
+    SimpleOutput => "test new",
+);
+
+TemplateTest(
+    Content      => "\ntest #{ \$TicketId }",
+    FullOutput   => "test #",
+    SimpleOutput => "test #" . $ticket->id,
+);
+
 
 TemplateTest(
     Content      => "\ntest { \$Nonexistent }",
