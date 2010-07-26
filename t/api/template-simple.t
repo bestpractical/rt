@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 175;
+use RT::Test tests => 186;
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Load("General");
@@ -142,6 +142,12 @@ TemplateTest(
     Content      => "\ntest { \$Ticket->OwnerObj->Name }",
     FullOutput   => "test root",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
+);
+
+TemplateTest(
+    Content      => "\ntest { *!( }",
+    FullOutput   => undef,
+    SimpleOutput => "test { *!( }",
 );
 
 is($ticket->Status, 'new', "test setup");
