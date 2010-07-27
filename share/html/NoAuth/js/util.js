@@ -189,36 +189,6 @@ function doOnLoad(handler) {
     Event.observe(window, 'load', handler);
 }
 
-/* calendar functions */
-
-function openCalWindow(field) {
-    var objWindow = window.open('<%RT->Config->Get('WebPath')%>/Helpers/CalPopup.html?field='+field, 
-                                'RT_Calendar', 
-                                'height=235,width=285,scrollbars=1');
-    objWindow.focus();
-}
-
-function createCalendarLink(input) {
-    var e = $(input);
-    if (e) {
-        var link = document.createElement('a');
-        link.setAttribute('href', '#');
-        $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
-        //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
-
-        var text = document.createTextNode('<% loc("Calendar") %>');
-        link.appendChild(text);
-
-        var space = document.createTextNode(' ');
-        
-        e.parentNode.insertBefore(link, e.nextSibling);
-        e.parentNode.insertBefore(space, e.nextSibling);
-
-        return true;
-    }
-    return false;
-}
-
 /* other utils */
 
 function focusElementById(id) {
