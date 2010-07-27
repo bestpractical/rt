@@ -84,11 +84,13 @@
 
 <%INIT>
 
+$Type = 'Full' if !$Type;
+
 </%INIT>
 
 <%ARGS>
-$Name => undef
-$Description => undef
-$Content => undef
-$Type => undef
+$Name => ''
+$Description => ''
+$Content => ''
+$Type => 'Full'
 </%ARGS>
