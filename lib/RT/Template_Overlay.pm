@@ -662,7 +662,10 @@ sub CompileCheck {
         my ($fi_type, $fi_text, $fi_lineno) = @$fi_item;
         next unless $fi_type eq 'PROG';
 
-        eval "sub { $fi_text }";
+        do {
+            no strict 'vars';
+            eval "sub { $fi_text }";
+        };
         next if !$@;
 
         my $error = $@;
