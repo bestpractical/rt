@@ -46,11 +46,56 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
+$Format => undef
 $Query => ''
 $OrderBy => 'id'
 $Order => 'ASC'
+$PreserveNewLines => 0
 </%ARGS>
 <%INIT>
+
+$r->content_type('application/vnd.ms-excel');
+
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
+
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+my @columns;
+
+sub col_entry {
+    my $col = shift;
+    return {
+        header => loc($col->{title} || $col->{attribute}),
+        map    => $m->comp(
+            "/Elements/ColumnMap",
+            Name  => $col->{attribute},
+            Attr  => 'value'
+        ),
+    }
+}
+
+if ($PreserveNewLines) {
+    my $col = [];
+    push @columns, $col;
+    for (@Format) {
+        if ($_->{title} eq 'NEWLINE') {
+            $col = [];
+            push @columns, $col;
+        }
+        else {
+            push @$col, col_entry($_);
+        }
+    }
+}
+else {
+    push @columns, [map { $_->{attribute}
+                          ? col_entry($_)
+                          : () } @Format];
+}
+
+for (@columns) {
+    $m->out(join("\t", map { $_->{header} } @$_)."\n");
+}
 
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $Tickets->FromSQL( $Query );
@@ -67,97 +112,12 @@ else {
     $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
-my %cf_id_to_name;
-my %cf_name_to_pos;
-{
-    my $cfs = RT::SQL::PossibleCustomFields(
-        Query => $Query, CurrentUser => $session{'CurrentUser'},
-    );
-    while ( my $cf = $cfs->Next ) {
-        my $name = $cf->Name;
-        $cf_id_to_name{ $cf->id } = $name;
-        next if $cf_name_to_pos{ $name };
-
-        $cf_name_to_pos{ $name } = 
-            (sort { $b <=> $a } values %cf_name_to_pos)[0] + 1;
+my $ii = 0;
+while (my $row = $Tickets->Next) {
+    for (@columns) {
+        $m->out(join("\t", map { ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++]) } @$_)."\n");
     }
 }
-
-my @attrs = qw(
-    id QueueObj->Name Subject Status
-    TimeEstimated TimeWorked TimeLeft
-    Priority FinalPriority
-    OwnerObj->Name 
-    Requestors->MemberEmailAddressesAsString
-    Cc->MemberEmailAddressesAsString
-    AdminCc->MemberEmailAddressesAsString
-    CreatedObj->ISO
-    StartsObj->ISO StartedObj->ISO ResolvedObj->ISO DueObj->ISO 
-    ToldObj->ISO LastUpdatedObj->ISO
-);
-
-$r->content_type('application/vnd.ms-excel');
-{
-    my @header;
-    foreach my $attr (@attrs) {
-        my $label = $attr;
-        $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
-        $label =~ s'-\>MemberEmailAddressesAsString''g;
-        push @header, $label;
-    }
-
-    $_ += @header - 1 foreach values %cf_name_to_pos;
-
-    foreach my $name ( sort { $cf_name_to_pos{$a} <=> $cf_name_to_pos{$b} } keys %cf_name_to_pos ) {
-        push @header, "CF-". $name;
-    }
-    $m->out(join("\t", @header));
-    $m->out("\n");
-    $m->flush_buffer;
-}
-
-my $i = 0;
-while ( my $Ticket = $Tickets->Next()) {
-    my @row;
-    foreach my $attr (@attrs) {
-        my $value;
-        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
-            $value = '';
-        } else {
-            my $method = '$Ticket->'.$attr.'()';
-            $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
-            $value = eval $method;
-            if ($@) {die "Failed to find $attr - ". $@}; 
-        }
-        push @row, $value;
-    }
-
-    my $values = $Ticket->CustomFieldValues;
-    $values->OrderByCols; # don't sort them
-    while (my $value = $values->Next) {
-        my $pos = $cf_name_to_pos{ $cf_id_to_name{ $value->CustomField } };
-        next unless $pos;
-
-        $row[$pos] = '' unless defined $row[$pos];
-        $row[$pos] .= ', ' if $row[$pos];
-        $row[$pos] .= $value->Content;
-    }
-
-    # remove tabs from all field values, they screw up the tsv
-    for (@row) {
-        $_ = '' unless defined;
-        $_ =~ s/(?:\n|\r)//g;
-        $_ =~ s{\t}{    }g;
-    }
-
-    $m->out(join("\t",@row));
-    $m->out("\n");
-
-    unless (++$i%10) {
-        $i = 0;
-        $m->flush_buffer;
-    }
-}
-
 $m->abort();
+
 </%INIT>
