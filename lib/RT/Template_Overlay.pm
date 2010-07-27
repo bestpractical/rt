@@ -648,7 +648,7 @@ Returns an (ok, message) pair.
 sub CompileCheck {
     my $self = shift;
 
-    return (1, "Template does not include Perl code")
+    return (1, $self->loc("Template does not include Perl code"))
         unless $self->Type eq 'Full';
 
     my $template = Text::Template->new(
@@ -674,7 +674,7 @@ sub CompileCheck {
         return (0, $self->loc("Couldn't compile template codeblock '[_1]': [_2]", $fi_text, $error));
     }
 
-    return (1, "Template compiles");
+    return (1, $self->loc("Template compiles"));
 }
 
 1;
