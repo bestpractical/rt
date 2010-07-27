@@ -651,9 +651,12 @@ sub CompileCheck {
     return (1, $self->loc("Template does not include Perl code"))
         unless $self->Type eq 'Full';
 
+    my $content = $self->Content;
+    $content = '' if !defined($content);
+
     my $template = Text::Template->new(
         TYPE   => 'STRING',
-        SOURCE => $self->Content,
+        SOURCE => $content,
     );
     $template->compile;
 
