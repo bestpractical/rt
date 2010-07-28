@@ -24,7 +24,7 @@
     },
     sub {
         use strict;
-        $RT::Logger->debug('Adding FullTemplates right to principals that currently have ModifyTemplate');
+        $RT::Logger->debug('Adding ModifyPerlTemplates right to principals that currently have ModifyTemplate');
 
         my $acl = RT::ACL->new($RT::SystemUser);
         $acl->Limit(
@@ -38,12 +38,12 @@
             my $principal = $ace->PrincipalObj;
 
             my ($ok, $msg) = $principal->GrantRight(
-                Right => 'FullTemplates',
+                Right => 'ModifyPerlTemplates',
                 Object => $object,
             );
 
             if (!$ok) {
-                $RT::Logger->warn("Unable to grant FullTemplates on principal " . $principal->id . ": $msg");
+                $RT::Logger->warn("Unable to grant ModifyPerlTemplates on principal " . $principal->id . ": $msg");
             }
         }
     },

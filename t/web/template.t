@@ -47,17 +47,17 @@ $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Simple', 'need the FullTemplates right to update Type to Full');
+is($m->value('Type'), 'Simple', 'need the ModifyPerlTemplates right to update Type to Full');
 $m->content_contains('Permission Denied');
 
 ok( RT::Test->add_rights(
-    { Principal => $user_a, Right => [qw(FullTemplates)] },
-), 'add FullTemplates rights');
+    { Principal => $user_a, Right => [qw(ModifyPerlTemplates)] },
+), 'add ModifyPerlTemplates rights');
 
 $m->field(Type => 'Full');
 $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Full', 'now that we have FullTemplates we can update Type to Full');
+is($m->value('Type'), 'Full', 'now that we have ModifyPerlTemplates we can update Type to Full');
 
