@@ -1521,6 +1521,8 @@ sub ProcessTicketBasics {
     my $TicketObj = $args{'TicketObj'};
     my $ARGSRef   = $args{'ARGSRef'};
 
+    my $OrigOwner = $TicketObj->Owner;
+
     # {{{ Set basic fields
     my @attribs = qw(
         Subject
@@ -1553,7 +1555,7 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $TicketObj->Owner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
