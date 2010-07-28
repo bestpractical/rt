@@ -22,5 +22,30 @@
             }
         }
     },
+    sub {
+        use strict;
+        $RT::Logger->debug('Adding FullTemplates right to principals that currently have ModifyTemplate');
+
+        my $acl = RT::ACL->new($RT::SystemUser);
+        $acl->Limit(
+            FIELD           => 'RightName',
+            OPERATOR        => '=',
+            VALUE           => 'ModifyTemplate',
+        );
+
+        while (my $ace = $acl->Next) {
+            my $object = $ace->Object;
+            my $principal = $ace->PrincipalObj;
+
+            my ($ok, $msg) = $principal->GrantRight(
+                Right => 'FullTemplates',
+                Object => $object,
+            );
+
+            if (!$ok) {
+                $RT::Logger->warn("Unable to grant FullTemplates on principal " . $principal->id . ": $msg");
+            }
+        }
+    },
 );
 
