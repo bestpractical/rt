@@ -108,7 +108,7 @@
 </div></td></tr>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<tr><td class="label"><&|/l&>Categories are based on</&></td><td>
+<tr class="categoriesbasedon"><td class="label"><&|/l&>Categories are based on</&></td><td>
 <& /Admin/Elements/SelectCustomField,
     Name => "BasedOn",
     LookupType => $CustomFieldObj->LookupType,
