@@ -39,25 +39,25 @@ $ticket->AddCustomFieldValue(
 
 TemplateTest(
     Content      => "\ntest",
-    FullOutput   => "test",
+    PerlOutput   => "test",
     SimpleOutput => "test",
 );
 
 TemplateTest(
     Content      => "\ntest { 5 * 5 }",
-    FullOutput   => "test 25",
+    PerlOutput   => "test 25",
     SimpleOutput => "test { 5 * 5 }",
 );
 
 TemplateTest(
     Content      => "\ntest { \$Requestor }",
-    FullOutput   => "test dom\@example.com",
+    PerlOutput   => "test dom\@example.com",
     SimpleOutput => "test dom\@example.com",
 );
 
 TemplateTest(
     Content      => "\ntest { \$TicketSubject }",
-    FullOutput   => "test ",
+    PerlOutput   => "test ",
     SimpleOutput => "test template testing",
 );
 
@@ -128,25 +128,25 @@ SimpleTemplateTest(
 
 TemplateTest(
     Content      => "\ntest { \$Ticket->Nonexistent }",
-    FullOutput   => undef,
+    PerlOutput   => undef,
     SimpleOutput => "test { \$Ticket->Nonexistent }",
 );
 
 TemplateTest(
     Content      => "\ntest { \$Nonexistent->Nonexistent }",
-    FullOutput   => undef,
+    PerlOutput   => undef,
     SimpleOutput => "test { \$Nonexistent->Nonexistent }",
 );
 
 TemplateTest(
     Content      => "\ntest { \$Ticket->OwnerObj->Name }",
-    FullOutput   => "test root",
+    PerlOutput   => "test root",
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
 
 TemplateTest(
     Content      => "\ntest { *!( }",
-    FullOutput   => undef,
+    PerlOutput   => undef,
     SimpleOutput => "test { *!( }",
 );
 
@@ -161,12 +161,12 @@ is($ticket->Status, 'new', "simple templates can't call ->Resolve");
 my $template = RT::Template->new($RT::SystemUser);
 $template->Create(
     Name    => "type chameleon",
-    Type    => "Full",
+    Type    => "Perl",
     Content => "\ntest { 10 * 7 }",
 );
 ok($id = $template->id, "Created template");
 $template->Parse;
-is($template->MIMEObj->stringify_body, "test 70", "Full output");
+is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 
 $template = RT::Template->new($RT::SystemUser);
 $template->Load($id);
@@ -180,9 +180,9 @@ $template = RT::Template->new($RT::SystemUser);
 $template->Load($id);
 is($template->Name, "type chameleon");
 
-$template->SetType('Full');
+$template->SetType('Perl');
 $template->Parse;
-is($template->MIMEObj->stringify_body, "test 70", "Full output");
+is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 
 my $counter = 0;
 sub IndividualTemplateTest {
@@ -190,7 +190,7 @@ sub IndividualTemplateTest {
 
     my %args = (
         Name => "Test-" . ++$counter,
-        Type => "Full",
+        Type => "Perl",
         @_,
     );
 
@@ -223,7 +223,7 @@ sub TemplateTest {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my %args = @_;
 
-    for my $type ('Full', 'Simple') {
+    for my $type ('Perl', 'Simple') {
         next if $args{"Skip$type"};
 
         IndividualTemplateTest(

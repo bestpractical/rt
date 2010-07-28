@@ -33,7 +33,7 @@ $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 
 # now try changing Type back and forth
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Full');
+is($m->value('Type'), 'Perl');
 
 $m->field(Type => 'Simple');
 $m->submit;
@@ -42,22 +42,22 @@ $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
 is($m->value('Type'), 'Simple', 'updated type to simple');
 
-$m->field(Type => 'Full');
+$m->field(Type => 'Perl');
 $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Simple', 'need the ModifyPerlTemplates right to update Type to Full');
+is($m->value('Type'), 'Simple', 'need the ModifyPerlTemplates right to update Type to Perl');
 $m->content_contains('Permission Denied');
 
 ok( RT::Test->add_rights(
     { Principal => $user_a, Right => [qw(ModifyPerlTemplates)] },
 ), 'add ModifyPerlTemplates rights');
 
-$m->field(Type => 'Full');
+$m->field(Type => 'Perl');
 $m->submit;
 
 $m->title_is(q{Modify template Resolved}, 'modifying the Resolved template');
 $m->form_name('ModifyTemplate');
-is($m->value('Type'), 'Full', 'now that we have ModifyPerlTemplates we can update Type to Full');
+is($m->value('Type'), 'Perl', 'now that we have ModifyPerlTemplates we can update Type to Perl');
 

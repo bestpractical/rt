@@ -82,7 +82,7 @@ sub _Accessible {
         id            => 'read',
         Name          => 'read/write',
         Description   => 'read/write',
-        Type          => 'read/write',    #Type is one of Full or Simple
+        Type          => 'read/write',    #Type is one of Perl or Simple
         Content       => 'read/write',
         Queue         => 'read/write',
         Creator       => 'read/auto',
@@ -206,7 +206,7 @@ sub Create {
         Content     => undef,
         Queue       => 0,
         Description => '[no description]',
-        Type        => 'Full',
+        Type        => 'Perl',
         Name        => undef,
         @_
     );
@@ -215,7 +215,7 @@ sub Create {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        if ( $args{Type} eq 'Full' && !$self->CurrentUser->HasRight(Right => 'ModifyPerlTemplates', Object => $RT::System) ) {
+        if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ModifyPerlTemplates', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = 0;
@@ -227,7 +227,7 @@ sub Create {
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        if ( $args{Type} eq 'Full' && !$QueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
+        if ( $args{Type} eq 'Perl' && !$QueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = $QueueObj->Id;
@@ -408,8 +408,8 @@ sub _ParseContent {
         $args{'loc'} = sub { $self->loc(@_) };
     }
 
-    if ($self->Type eq 'Full') {
-        return $self->_ParseContentFull(
+    if ($self->Type eq 'Perl') {
+        return $self->_ParseContentPerl(
             Content      => $content,
             TemplateArgs => \%args,
         );
@@ -422,8 +422,8 @@ sub _ParseContent {
     }
 }
 
-# uses Text::Template for Full templates
-sub _ParseContentFull {
+# uses Text::Template for Perl templates
+sub _ParseContentPerl {
     my $self = shift;
     my %args = (
         Content      => undef,
@@ -597,7 +597,7 @@ sub CurrentUserHasQueueRight {
 
 =head2 SetType
 
-If setting Type to Full, require the ModifyPerlTemplates right on the queue.
+If setting Type to Perl, require the ModifyPerlTemplates right on the queue.
 
 =cut
 
@@ -605,7 +605,7 @@ sub SetType {
     my $self    = shift;
     my $NewType = shift;
 
-    if ($NewType eq 'Full' && !$self->CurrentUserHasQueueRight('ModifyPerlTemplates')) {
+    if ($NewType eq 'Perl' && !$self->CurrentUserHasQueueRight('ModifyPerlTemplates')) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -615,7 +615,7 @@ sub SetType {
 =head2 SetQueue
 
 When changing the queue, make sure the current user has ModifyPerlTemplates on the
-new queue if the type is Full.
+new queue if the type is Perl.
 
 Templates can't change Queue in the UI (yet?).
 
@@ -628,7 +628,7 @@ sub SetQueue {
     my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
     $NewQueueObj->Load($NewQueue);
 
-    if ( $self->Type eq 'Full' && !$NewQueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
+    if ( $self->Type eq 'Perl' && !$NewQueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
         return ( undef, $self->loc('Permission Denied. You do not have ModifyPerlTemplates on the new queue.') );
     }
 
@@ -637,7 +637,7 @@ sub SetQueue {
 
 =head2 CompileCheck
 
-If the template's Type is Full, then compile check all the codeblocks to see if
+If the template's Type is Perl, then compile check all the codeblocks to see if
 they are syntactically valid. We eval them in a codeblock to avoid actually
 executing the code.
 
@@ -649,7 +649,7 @@ sub CompileCheck {
     my $self = shift;
 
     return (1, $self->loc("Template does not include Perl code"))
-        unless $self->Type eq 'Full';
+        unless $self->Type eq 'Perl';
 
     my $content = $self->Content;
     $content = '' if !defined($content);

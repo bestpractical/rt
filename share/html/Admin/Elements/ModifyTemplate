@@ -67,7 +67,7 @@
 <&|/l&>Type</&>:
 </td>
 <td>
-<input type="radio" name="Type" value="Full" <% $Type eq "Full" ? 'checked="checked"' : "" |n %>><&|/l&>Full</&></input><br />
+<input type="radio" name="Type" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>><&|/l&>Perl</&></input><br />
 <input type="radio" name="Type" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>><&|/l&>Simple</&></input><br />
 </td>
 </tr>
@@ -84,7 +84,7 @@
 
 <%INIT>
 
-$Type = 'Full' if !$Type;
+$Type = 'Perl' if !$Type;
 
 </%INIT>
 
@@ -92,5 +92,5 @@ $Type = 'Full' if !$Type;
 $Name => ''
 $Description => ''
 $Content => ''
-$Type => 'Full'
+$Type => 'Perl'
 </%ARGS>
