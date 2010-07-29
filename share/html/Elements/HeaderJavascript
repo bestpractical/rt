@@ -54,6 +54,7 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery_noconflict.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.autocomplete-min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery-ui-1.7.3.custom.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.timepickr.js"></script>
 <script type="text/javascript">
