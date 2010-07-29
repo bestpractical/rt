@@ -81,20 +81,22 @@ function switchVisibility(id1, id2) {
 /* Classes */
 
 function addClass(id, value) {
-    jQuery('#'+id).addClass(value);
+    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+    e.addClass(value);
 }
 
 function delClass(id, value) {
-    jQuery('#'+id).removeClass(value);
+    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+    e.removeClass(value);
 }
 
 /* Rollups */
 
 function rollup(id) {
-    var e   = jQuery('#'+id);
-    var e2  = e.parentNode;
+    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+    var e2  = e.parent();
     
-    if (e.className.match(/\bhidden\b/)) {
+    if (e.hasClass('hidden')) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
