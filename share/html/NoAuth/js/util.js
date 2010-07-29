@@ -202,3 +202,8 @@ function checkboxToInput(target,checkbox,val){
     }
 }
 
+// ahah for back compatibility as plugins may still use it
+function ahah( url, id ) {
+    jQuery('#'+id).load(url);
+}
+
