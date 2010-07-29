@@ -49,8 +49,8 @@
 <div class="edit-custom-fields">
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
-
-  <div class="edit-custom-field">
+% my $Type = $CustomField->Type || 'Unknown';
+  <div class="edit-custom-field cftype-<% $Type %>">
     <div class="cflabel">
       <span class="name"><% loc($CustomField->Name) %></span><br />
       <span class="type"><% $CustomField->FriendlyType %></span>
