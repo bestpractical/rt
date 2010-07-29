@@ -98,3 +98,17 @@ hr.clear {
     border: none;
     font-size: 1px;
 }
+
+
+/* Custom fields */
+
+.cflabel {
+    float: left;
+}
+
+.edit-custom-field {
+    width: 48%;
+    float: left;
+    margin: 0.5em;
+}
+
