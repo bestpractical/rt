@@ -45,27 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-/* $(...)
-    Returns DOM node or array of nodes (if more then one argument passed).
-    If argument is node object allready then do nothing.
-    // Stolen from Prototype
-*/
-function $() {
-    var elements = new Array();
-
-    for (var i = 0; i < arguments.length; i++) {
-        var element = arguments[i];
-        if (typeof element == 'string')
-            element = document.getElementById(element);
-
-        if (arguments.length == 1)
-            return element;
-
-        elements.push(element);
-    }
-
-    return elements;
-}
 
 /* Visibility */
 
@@ -74,12 +53,14 @@ function hide(id) { addClass( id, 'hidden' ) }
 
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
-    var e = $(id);
+    var e = jQuery('#' + id);
 
-    if ( e.className.match( /\bhidden\b/ ) )
-        show(e);
-    else
-        hide(e);
+    if ( e.hasClass('hidden') ) {
+        e.removeClass('hidden');
+    }
+    else {
+        e.addClass('hidden');
+    }
 
     return false;
 }
@@ -100,21 +81,17 @@ function switchVisibility(id1, id2) {
 /* Classes */
 
 function addClass(id, value) {
-    var e = $(id);
-    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
-        return;
-    e.className += e.className? ' '+value : value;
+    jQuery('#'+id).addClass(value);
 }
 
 function delClass(id, value) {
-    var e = $(id);
-    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
+    jQuery('#'+id).removeClass(value);
 }
 
 /* Rollups */
 
 function rollup(id) {
-    var e   = $(id);
+    var e   = jQuery('#'+id);
     var e2  = e.parentNode;
     
     if (e.className.match(/\bhidden\b/)) {
@@ -141,66 +118,11 @@ function set_rollup_state(e,e2,state) {
     }
 }
 
-
-/* onload handlers */
-/* New code should be using doOnLoad which makes use of prototype
-   instead. See HeaderJavascript.  It works better than clobbering
-   window.onload.  Left around in case other code is using them */
-
-var onLoadStack     = new Array();
-var onLoadLastStack = new Array();
-var onLoadExecuted  = 0;
-
-function onLoadHook(commandStr) {
-    if(typeof(commandStr) == "string") {
-        onLoadStack[ onLoadStack.length ] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-// some things *really* need to be done after everything else
-function onLoadLastHook(commandStr) {
-    if(typeof(commandStr) == "string"){
-        onLoadLastStack[onLoadLastStack.length] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-function doOnLoadHooks() {
-    if(onLoadExecuted) return;
-
-    var i;
-    for ( i in onLoadStack ) { 
-        eval( onLoadStack[i] );
-    }
-    for ( i in onLoadLastStack ) { 
-        eval( onLoadLastStack[i] );
-    }
-    onLoadExecuted = 1;
-}
-
-window.onload = doOnLoadHooks;
-
-/* new onLoad code */
-
-function doOnLoad(handler) {
-    Event.observe(window, 'load', handler);
-}
-
 /* other utils */
 
 function focusElementById(id) {
-    var e = $(id);
+    var e = jQuery('#'+id);
     if (e) e.focus();
-}
-
-function updateParentField(field, value) {
-    if (window.opener) {
-        window.opener.$(field).value = value;
-        window.close();
-    }
 }
 
 function setCheckbox(form, name, val) {
@@ -217,71 +139,64 @@ function setCheckbox(form, name, val) {
 
 function walkChildNodes(parent, callback)
 {
-	if( !parent || !parent.childNodes ) return;
-	var list = parent.childNodes;
-	for( var i = 0; i < list.length; i++ ) {
-		callback( list[i] );
-	}
+    if( !parent || !parent.childNodes ) return;
+    var list = parent.childNodes;
+    for( var i = 0; i < list.length; i++ ) {
+        callback( list[i] );
+    }
 }
 
 function walkChildElements(parent, callback)
 {
-	walkChildNodes( parent, function(node) {
-		if( node.nodeType != 1 ) return;
-		return callback( node );
-	} );
+    walkChildNodes( parent, function(node) {
+        if( node.nodeType != 1 ) return;
+        return callback( node );
+    } );
 }
 
 /* shredder things */
 
 function showShredderPluginTab( plugin )
 {
-	var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
-	var root = $('shredder-plugin-tabs');
-	walkChildElements( root, function(node) {
-		if( node.id == plugin_tab_id ) {
-			show( node );
-		} else {
-			hide( node );
-		}
-	} );
-	if( plugin ) {
-		show('shredder-submit-button');
-	} else {
-		hide('shredder-submit-button');
-	}
+    var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
+    var root = jQuery('#shredder-plugin-tabs');
+    
+    root.children(':not(.hidden)').addClass('hidden');
+    root.children('#' + plugin_tab_id).removeClass('hidden');
+
+    if( plugin ) {
+        show('shredder-submit-button');
+    } else {
+        hide('shredder-submit-button');
+    }
 }
 
 function checkAllObjects()
 {
-	var check = $('shredder-select-all-objects-checkbox').checked;
-	var elements = $('shredder-search-form').elements;
-	for( var i = 0; i < elements.length; i++ ) {
-		if( elements[i].name != 'WipeoutObject' ) {
-			continue;
-		}
-		if( elements[i].type != 'checkbox' ) {
-			continue;
-		}
-		if( check ) {
-			elements[i].checked = true;
-		} else {
-			elements[i].checked = false;
-		}
-	}
+    var check = jQuery('#shredder-select-all-objects-checkbox').attr('checked');
+    var elements = jQuery('#shredder-search-form :checkbox[name=WipeoutObject]');
+
+    if( check ) {
+        elements.attr('checked', true);
+    } else {
+        elements.attr('checked', false);
+    }
 }
 
 function checkboxToInput(target,checkbox,val){    
-    var tar=$(target);
-    var box = $(checkbox);
-    if(box.checked){
-        if (tar.value==''){
-            tar.value=val;
-        }else{
-            tar.value=val+', '+tar.value;        }
-    }else{
-        tar.value=tar.value.replace(val+', ','');
-        tar.value=tar.value.replace(val,'');
+    var tar = jQuery('#'+target);
+    var box = jQuery('#' + checkbox);
+    if(box.attr('checked')){
+        if (tar.val()==''){
+            tar.val(val);
+        }
+        else{
+            tar.val( val+', '+ tar.val() );        
+        }
+    }
+    else{
+        tar.val(tar.val().replace(val+', ',''));
+        tar.val(tar.val().replace(val,''));
     }
 }
 

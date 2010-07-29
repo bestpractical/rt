@@ -56,9 +56,6 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery_noconflict.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery-ui-1.7.3.custom.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.timepickr.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
-
 <script type="text/javascript">
 	jQuery(function() {
 		jQuery(".ui-datepicker").datepicker( {
@@ -92,14 +89,15 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
-    doOnLoad(loadTitleBoxStates);
+	jQuery( loadTitleBoxStates );
 % if ( $focus ) {
-    doOnLoad(function () { focusElementById('<% $focus %>') });
+    jQuery(function () { focusElementById('<% $focus %>') });
 % }
 
 % if ( $onload ) {
-    doOnLoad(<% $onload |n %>);
+    jQuery( <% $onload |n %> );
 % }
+
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
     function ReplaceAllTextareas() {
         var sAgent = navigator.userAgent.toLowerCase();
@@ -150,6 +148,6 @@ $onload => undef
             }
         }
     }
-    doOnLoad(ReplaceAllTextareas);
+    jQuery(ReplaceAllTextareas);
 % }
 --></script>
