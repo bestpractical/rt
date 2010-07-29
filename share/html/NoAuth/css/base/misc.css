@@ -90,7 +90,11 @@ html[xmlns] .clearfix { /* O */
     visibility: hidden;
 }
 
-.titlebox .titlebox-content hr.clear {
+hr.clear {
     visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1px;
 }
-
