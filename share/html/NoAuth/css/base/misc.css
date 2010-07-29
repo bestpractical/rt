@@ -112,3 +112,6 @@ hr.clear {
     margin: 0.5em;
 }
 
+.cflabel .name { font-weight: bold; }
+.cflabel .type { font-style: italic; }
+

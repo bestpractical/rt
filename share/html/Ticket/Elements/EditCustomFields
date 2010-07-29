@@ -52,8 +52,8 @@
 
   <div class="edit-custom-field">
     <div class="cflabel">
-      <b><% loc($CustomField->Name) %></b><br />
-      <i><% $CustomField->FriendlyType %></i>
+      <span class="name"><% loc($CustomField->Name) %></span><br />
+      <span class="type"><% $CustomField->FriendlyType %></span>
     </div>
     <div class="entry">
 % my $default = $m->notes('Field-' . $CustomField->Id);
