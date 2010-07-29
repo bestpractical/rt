@@ -476,9 +476,13 @@ sub CurrentUserHasQueueRight {
 
 sub CurrentUserCanRead {
     my $self =shift;
-    return $self->QueueObj->Id
-        ? $self->CurrentUserHasQueueRight('ShowTemplate')
-        : $self->CurrentUser->HasRight( Right =>'ShowGlobalTemplates', Object => $RT::System );
+
+    return 1 if $self->CurrentUserHasQueueRight('ShowTemplate');
+
+    return $self->CurrentUser->HasRight( Right =>'ShowGlobalTemplates', Object => $RT::System )
+        if !$self->QueueObj->Id;
+
+    return;
 }
 
 
