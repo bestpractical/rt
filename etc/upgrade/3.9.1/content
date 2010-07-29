@@ -25,7 +25,7 @@
     },
     sub {
         use strict;
-        $RT::Logger->debug('Adding ModifyPerlTemplate right to principals that currently have ModifyTemplate');
+        $RT::Logger->debug('Adding ExecutePerl right to principals that currently have ModifyTemplate');
 
         my $acl = RT::ACL->new($RT::SystemUser);
         $acl->Limit(
@@ -35,16 +35,15 @@
         );
 
         while (my $ace = $acl->Next) {
-            my $object = $ace->Object;
             my $principal = $ace->PrincipalObj;
 
             my ($ok, $msg) = $principal->GrantRight(
-                Right => 'ModifyPerlTemplate',
-                Object => $object,
+                Right  => 'ExecutePerl',
+                Object => $RT::SystemUser,
             );
 
             if (!$ok) {
-                $RT::Logger->warn("Unable to grant ModifyPerlTemplate on principal " . $principal->id . ": $msg");
+                $RT::Logger->warn("Unable to grant ExecutePerl on principal " . $principal->id . ": $msg");
             }
         }
     },
