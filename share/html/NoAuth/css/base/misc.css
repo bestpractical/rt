@@ -104,6 +104,7 @@ hr.clear {
 
 .cflabel {
     float: left;
+    padding-right: 0.5em;
 }
 
 .edit-custom-field {
