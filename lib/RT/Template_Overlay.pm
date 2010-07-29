@@ -215,7 +215,7 @@ sub Create {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ModifyPerlTemplates', Object => $RT::System) ) {
+        if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ModifyPerlTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = 0;
@@ -227,7 +227,7 @@ sub Create {
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        if ( $args{Type} eq 'Perl' && !$QueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
+        if ( $args{Type} eq 'Perl' && !$QueueObj->CurrentUserHasRight('ModifyPerlTemplate') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
         $args{'Queue'} = $QueueObj->Id;
@@ -597,7 +597,7 @@ sub CurrentUserHasQueueRight {
 
 =head2 SetType
 
-If setting Type to Perl, require the ModifyPerlTemplates right on the queue.
+If setting Type to Perl, require the ModifyPerlTemplate right on the queue.
 
 =cut
 
@@ -605,7 +605,7 @@ sub SetType {
     my $self    = shift;
     my $NewType = shift;
 
-    if ($NewType eq 'Perl' && !$self->CurrentUserHasQueueRight('ModifyPerlTemplates')) {
+    if ($NewType eq 'Perl' && !$self->CurrentUserHasQueueRight('ModifyPerlTemplate')) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -614,7 +614,7 @@ sub SetType {
 
 =head2 SetQueue
 
-When changing the queue, make sure the current user has ModifyPerlTemplates on the
+When changing the queue, make sure the current user has ModifyPerlTemplate on the
 new queue if the type is Perl.
 
 Templates can't change Queue in the UI (yet?).
@@ -628,8 +628,8 @@ sub SetQueue {
     my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
     $NewQueueObj->Load($NewQueue);
 
-    if ( $self->Type eq 'Perl' && !$NewQueueObj->CurrentUserHasRight('ModifyPerlTemplates') ) {
-        return ( undef, $self->loc('Permission Denied. You do not have ModifyPerlTemplates on the new queue.') );
+    if ( $self->Type eq 'Perl' && !$NewQueueObj->CurrentUserHasRight('ModifyPerlTemplate') ) {
+        return ( undef, $self->loc('Permission Denied. You do not have ModifyPerlTemplate on the new queue.') );
     }
 
     return $self->_Set( Field => 'Queue', Value => $NewQueueObj->id );
