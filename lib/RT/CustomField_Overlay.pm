@@ -99,6 +99,14 @@ our %FieldTypes = (
     ],
 );
 
+our %RenderTypes = (
+    Select => [
+        # Default is the first one
+        'Select box',   # loc
+        'Dropdown',     # loc
+    ],
+);
+
 
 our %FRIENDLY_OBJECT_TYPES =  ();
 
@@ -488,6 +496,22 @@ sub Types {
 
 # }}}
 
+=head2 HasRenderTypes
+
+Returns a boolean value indicating whether the L</RenderTypes> and
+L</RenderType> methods make sense for this custom field.
+
+Currently true only for type C<Select>.
+
+=cut
+
+sub HasRenderTypes {
+    my $self = shift;
+    my $type = @_? shift : $self->Type;
+    return undef unless $type;
+    return defined $RenderTypes{$type};
+}
+
 # {{{ IsSelectionType
 
 =head2 IsSelectionType 
@@ -831,6 +855,66 @@ Returns an array of all possible composite values for custom fields.
 sub TypeComposites {
     my $self = shift;
     return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+}
+
+=head2 RenderType
+
+Returns the type of form widget to render for this custom field.  Currently
+this only affects fields which return true for L</HasRenderTypes>. 
+
+=cut
+
+sub RenderType {
+    my $self = shift;
+    return '' unless $self->HasRenderTypes;
+
+    my $type = $self->FirstAttribute( 'RenderType' );
+    $type = $type->Content if $type;
+    return $type || $self->DefaultRenderType;
+}
+
+=head2 SetRenderType TYPE
+
+Sets this custom field's render type.
+
+=cut
+
+sub SetRenderType {
+    my ($self, $type) = @_;
+    return unless $self->HasRenderTypes;
+
+    if ( not defined $type ) {
+        return $self->DeleteAttribute( 'RenderType' );
+    }
+    return $self->SetAttribute( Name => 'RenderType', Content => $type );
+}
+
+=head2 DefaultRenderType [TYPE]
+
+Returns the default render type for this custom field's type or the TYPE
+specified as an argument.
+
+=cut
+
+sub DefaultRenderType {
+    my $self = shift;
+    my $type = @_ ? shift : $self->Type;
+    return unless $type and $self->HasRenderTypes($type);
+    return $RenderTypes{$type}->[0];
+}
+
+=head2 RenderTypes [TYPE]
+
+Returns the valid render types for this custom field's type or the TYPE
+specified as an argument.
+
+=cut
+
+sub RenderTypes {
+    my $self = shift;
+    my $type = @_ ? shift : $self->Type;
+    return unless $type and $self->HasRenderTypes($type);
+    return @{$RenderTypes{$type}};
 }
 
 =head2 SetLookupType

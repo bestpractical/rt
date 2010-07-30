@@ -70,6 +70,18 @@
         Default => $CustomFieldObj->TypeComposite, &>
 </td></tr>
 
+% if ( $CustomFieldObj->Id and $CustomFieldObj->HasRenderTypes ) {
+<tr>
+  <td class="label"><&|/l&>Render Type</&></td>
+  <td>
+    <& /Admin/Elements/SelectCustomFieldRenderType,
+        Name    => "RenderType",
+        Type    => $CustomFieldObj->Type,
+        Default => $CustomFieldObj->RenderType, &>
+  </td>
+</tr>
+% }
+
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
@@ -185,6 +197,24 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     );
     $CustomFieldObj->SetValuesClass( $ValuesClass );
 
+    # Set the render type if we have it, but unset it if the new type doesn't
+    # support render types
+    my ($cftype) = split /-/, $TypeComposite;
+    if ( $CustomFieldObj->HasRenderTypes($cftype) ) {
+        my $original = $CustomFieldObj->RenderType;
+
+        if ( defined $RenderType and $RenderType ne $original ) {
+            # It's changed!  Let's update it.
+            $CustomFieldObj->SetRenderType( $RenderType );
+            push @results, loc("[_1] changed from '[_2]' to '[_3]'",
+                                loc("Render Type"), $original, $RenderType );
+        }
+    }
+    else {
+        # Delete it if we no longer support render types
+        $CustomFieldObj->SetRenderType( undef );
+    }
+
     $CustomFieldObj->SetBasedOn( $BasedOn );
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
@@ -249,6 +279,7 @@ $Name => undef
 $SetEnabled => undef
 $Enabled => 0
 $ValuesClass => 'RT::CustomFieldValues'
+$RenderType => undef
 $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef

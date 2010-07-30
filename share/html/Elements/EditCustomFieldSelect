@@ -91,6 +91,7 @@ doOnLoad(  function () {
 %       $m->out($out);
       </select>
 % }
+
 <select
   name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
 % if ( $Rows && ( $Multiple || !@category ) ) {
@@ -100,6 +101,14 @@ doOnLoad(  function () {
 <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 % $m->out($out);
 </select>
+<%init>
+# Handle render types
+$RenderType ||= $CustomField->RenderType;
+if ( $RenderType eq 'Dropdown' ) {
+    # Turn it into a dropdown
+    $Rows = 0;
+}
+</%init>
 <%ARGS>
 $Object => undef
 $CustomField => undef
@@ -109,6 +118,7 @@ $Values => undef
 $Multiple => 0
 $Rows => undef
 $HideCategory => 0
+$RenderType => undef
 </%ARGS>
 
 <%METHOD options>
