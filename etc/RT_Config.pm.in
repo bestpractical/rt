@@ -1805,6 +1805,21 @@ C<Set(@Plugins, (qw(Extension::QuickDelete RT::FM)));>
 
 Set(@Plugins, ());
 
+=item C<$JSMinPath>
+
+Path to jsmin binary.
+You can go to http://www.crockford.com/javascript/jsmin.html to get one.
+
+If specified, it'll be used to minify javascript files.
+If fails, RT will then try module L<JavaScript::Minifier>.
+If that still fails, RT will simply concatenate js files.
+
+Example:
+
+C<Set($JSMinPath, '/path/to/jsmin');>
+
+=cut
+
 =back
 
 =head1 Development Configuration

@@ -55,9 +55,21 @@ my $path;
 if ( $arg =~ m{squished\.js$} ) {
     $path = $m->current_comp->dir_path;
     unless ( $content ) {
-        my $no_minify;
-        eval { require JavaScript::Minifier; };
-        $no_minify = 1 if $@;
+        my $has_jsmin;
+        my $jsmin = RT->Config->Get( 'JSMinPath' );
+
+        if ( $jsmin && -x $jsmin ) {
+            $has_jsmin = 1;
+        }
+
+        my $has_jsmin_module;
+        eval { require JavaScript::Minifier };
+        if ($@) {
+            $RT::Logger->debug("can't load JavaScript::Minifier: $@");
+        }
+        else {
+            $has_jsmin_module = 1;
+        }
 
         require File::Spec;
         my @js =
@@ -65,12 +77,27 @@ if ( $arg =~ m{squished\.js$} ) {
 
         for my $js (@js) {
             my $file = File::Spec->catfile( $path, $js );
-            if ( $no_minify ) {
-                $content .= $m->scomp( $file );
+            my $input = $m->scomp($file);
+
+            if ( $has_jsmin ) {
+                my ( $output, $error );
+                require IPC::Run;
+                IPC::Run::run [ $jsmin ], \$input, \$output, \$error, IPC::Run::timeout(10);
+                if ( $error ) {
+                    $RT::Logger->warning( "failed to jsmin $file: $error" );
+                }
+                else {
+                    $content .= $output;
+                    next;
+                }
             }
-            else {
-                $content .= JavaScript::Minifier::minify( input => $m->scomp($file));
+
+            if ( $has_jsmin_module ) {
+                $content .= JavaScript::Minifier::minify( input => $input );
+                next;
             }
+
+            $content .= $input;
         }
     }
 
