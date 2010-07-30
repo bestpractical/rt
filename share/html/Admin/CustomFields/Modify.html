@@ -75,9 +75,9 @@
   <td class="label"><&|/l&>Render Type</&></td>
   <td>
     <& /Admin/Elements/SelectCustomFieldRenderType,
-        Name    => "RenderType",
-        Type    => $CustomFieldObj->Type,
-        Default => $CustomFieldObj->RenderType, &>
+        Name            => "RenderType",
+        TypeComposite   => $CustomFieldObj->TypeComposite,
+        Default         => $CustomFieldObj->RenderType, &>
   </td>
 </tr>
 % }
@@ -199,15 +199,19 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     # Set the render type if we have it, but unset it if the new type doesn't
     # support render types
-    my ($cftype) = split /-/, $TypeComposite;
-    if ( $CustomFieldObj->HasRenderTypes($cftype) ) {
+    if ( $CustomFieldObj->HasRenderTypes($TypeComposite) ) {
         my $original = $CustomFieldObj->RenderType;
 
         if ( defined $RenderType and $RenderType ne $original ) {
             # It's changed!  Let's update it.
-            $CustomFieldObj->SetRenderType( $RenderType );
-            push @results, loc("[_1] changed from '[_2]' to '[_3]'",
-                                loc("Render Type"), $original, $RenderType );
+            my ($good, $msg) = $CustomFieldObj->SetRenderType( $RenderType );
+
+            if ( $good ) {
+                $msg = loc("[_1] changed from '[_2]' to '[_3]'",
+                            loc("Render Type"), $original, $RenderType );
+            }
+
+            push @results, $msg;
         }
     }
     else {

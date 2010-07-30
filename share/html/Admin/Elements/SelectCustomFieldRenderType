@@ -46,16 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-%for my $option ($cf->RenderTypes($Type)) {
+%for my $option ($cf->RenderTypes($TypeComposite)) {
 <option value="<%$option%>"<%$option eq $Default && qq[ selected="selected"] |n%>><% $option %></option>
 %}
 </select>
 <%INIT>
 my $cf = RT::CustomField->new($session{'CurrentUser'});
-$Default ||= $cf->DefaultRenderType($Type);
+$Default ||= $cf->DefaultRenderType($TypeComposite);
 </%INIT>
 <%ARGS>
 $Default => undef
-$Type => 'Select'
+$TypeComposite => 'Select-0'
 $Name => 'RenderType'
 </%ARGS>

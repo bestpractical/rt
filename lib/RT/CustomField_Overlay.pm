@@ -100,12 +100,18 @@ our %FieldTypes = (
 );
 
 our %RenderTypes = (
-    Select => [
-        # Default is the first one
-        'Select box',   # loc
-        'Dropdown',     # loc
-        'List',         # loc
-    ],
+    Select => {
+        multiple => [
+            # Default is the first one
+            'Select box',   # loc
+            'List',         # loc
+        ],
+        single => [
+            'Select box',   # loc
+            'Dropdown',     # loc
+            'List',         # loc
+        ]
+    },
 );
 
 
@@ -497,7 +503,7 @@ sub Types {
 
 # }}}
 
-=head2 HasRenderTypes
+=head2 HasRenderTypes [TYPE_COMPOSITE]
 
 Returns a boolean value indicating whether the L</RenderTypes> and
 L</RenderType> methods make sense for this custom field.
@@ -508,9 +514,9 @@ Currently true only for type C<Select>.
 
 sub HasRenderTypes {
     my $self = shift;
-    my $type = @_? shift : $self->Type;
+    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
     return undef unless $type;
-    return defined $RenderTypes{$type};
+    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' };
 }
 
 # {{{ IsSelectionType
@@ -828,6 +834,12 @@ sub SetTypeComposite {
         my ($status, $msg) = $self->SetMaxValues( $max_values );
         return ($status, $msg) unless $status;
     }
+    my $render = $self->RenderType;
+    if ( $render and not grep { $_ eq $render } $self->RenderTypes ) {
+        # We switched types and our render type is no longer valid, so unset it
+        # and use the default
+        $self->SetRenderType( undef );
+    }
     return 1, $self->loc(
         "Type changed from '[_1]' to '[_2]'",
         $self->FriendlyTypeComposite( $old ),
@@ -887,35 +899,43 @@ sub SetRenderType {
     if ( not defined $type ) {
         return $self->DeleteAttribute( 'RenderType' );
     }
+
+    if ( not grep { $_ eq $type } $self->RenderTypes ) {
+        return (0, $self->loc("Invalid Render Type for custom field of type [_1]",
+                                $self->FriendlyType));
+    }
+
     return $self->SetAttribute( Name => 'RenderType', Content => $type );
 }
 
-=head2 DefaultRenderType [TYPE]
+=head2 DefaultRenderType [TYPE COMPOSITE]
 
 Returns the default render type for this custom field's type or the TYPE
-specified as an argument.
+COMPOSITE specified as an argument.
 
 =cut
 
 sub DefaultRenderType {
     my $self = shift;
-    my $type = @_ ? shift : $self->Type;
-    return unless $type and $self->HasRenderTypes($type);
-    return $RenderTypes{$type}->[0];
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }[0];
 }
 
-=head2 RenderTypes [TYPE]
+=head2 RenderTypes [TYPE COMPOSITE]
 
 Returns the valid render types for this custom field's type or the TYPE
-specified as an argument.
+COMPOSITE specified as an argument.
 
 =cut
 
 sub RenderTypes {
     my $self = shift;
-    my $type = @_ ? shift : $self->Type;
-    return unless $type and $self->HasRenderTypes($type);
-    return @{$RenderTypes{$type}};
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return @{$RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }};
 }
 
 =head2 SetLookupType
