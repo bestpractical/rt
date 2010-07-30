@@ -106,6 +106,14 @@ sub Create {
         @_
     );
 
+    if (length($args{CustomPrepareCode}) || length($args{CustomCommitCode}) || length($args{CustomIsApplicableCode})) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                               Right  => 'ExecutePerl' ) )
+        {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
                                                Right  => 'ModifyScrips' ) )
@@ -503,12 +511,28 @@ sub Commit {
 # does an acl check and then passes off the call
 sub _Set {
     my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_,
+    );
 
     unless ( $self->CurrentUserHasRight('ModifyScrips') ) {
         $RT::Logger->debug(
                  "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
         return ( 0, $self->loc('Permission Denied') );
     }
+
+
+    if (length($args{Value})) {
+        if ($args{Field} eq 'CustomIsApplicableCode' || $args{Field} eq 'CustomPrepareCode' || $args{Field} eq 'CustomCommitCode') {
+            unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                                   Right  => 'ExecutePerl' ) )
+                return ( 0, $self->loc('Permission Denied') );
+            }
+        }
+    }
+
     return $self->__Set(@_);
 }
 
