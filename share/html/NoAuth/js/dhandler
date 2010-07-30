@@ -62,18 +62,11 @@ if ( $arg =~ m{squished\.js$} ) {
             $has_jsmin = 1;
         }
 
-        my $has_jsmin_module;
-        eval { require JavaScript::Minifier };
-        if ($@) {
-            $RT::Logger->debug("can't load JavaScript::Minifier: $@");
-        }
-        else {
-            $has_jsmin_module = 1;
-        }
-
         require File::Spec;
         my @js =
           qw/jquery-1.4.2.min.js jquery_noconflict.js jquery.autocomplete-min.js jquery-ui-1.7.3.custom.min.js jquery.timepickr.js titlebox-state.js util.js/;
+
+        my $has_jsmin_module;
 
         for my $js (@js) {
             my $file = File::Spec->catfile( $path, $js );
@@ -102,7 +95,18 @@ if ( $arg =~ m{squished\.js$} ) {
                 }
             }
 
-            if ( $has_jsmin_module ) {
+            unless ( defined $has_jsmin_module ) {
+                eval { require JavaScript::Minifier };
+                if ($@) {
+                    $RT::Logger->debug("can't load JavaScript::Minifier: $@");
+                    $has_jsmin_module = 0;    # don't try again
+                }
+                else {
+                    $has_jsmin_module = 1;
+                }
+            }
+
+            if ($has_jsmin_module) {
                 $content .= JavaScript::Minifier::minify( input => $input );
                 next;
             }
