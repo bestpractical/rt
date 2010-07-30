@@ -221,7 +221,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     }
 
     my ($good, $msg) = $CustomFieldObj->SetBasedOn( $BasedOn );
-    push @results, $msg;
+    push @results, $msg unless $good or $msg =~ /No entry found/;
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
