@@ -108,7 +108,7 @@ sub Create {
 
     if (length($args{CustomPrepareCode}) || length($args{CustomCommitCode}) || length($args{CustomIsApplicableCode})) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
-                                               Right  => 'ExecutePerl' ) )
+                                               Right  => 'ExecuteCode' ) )
         {
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -527,7 +527,7 @@ sub _Set {
     if (length($args{Value})) {
         if ($args{Field} eq 'CustomIsApplicableCode' || $args{Field} eq 'CustomPrepareCode' || $args{Field} eq 'CustomCommitCode') {
             unless ( $self->CurrentUser->HasRight( Object => $RT::System,
-                                                   Right  => 'ExecutePerl' ) ) {
+                                                   Right  => 'ExecuteCode' ) ) {
                 return ( 0, $self->loc('Permission Denied') );
             }
         }

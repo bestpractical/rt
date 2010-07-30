@@ -25,7 +25,7 @@
     },
     sub {
         use strict;
-        $RT::Logger->debug('Adding ExecutePerl right to principals that currently have ModifyTemplate');
+        $RT::Logger->debug('Adding ExecuteCode right to principals that currently have ModifyTemplate');
 
         my $acl = RT::ACL->new($RT::SystemUser);
         $acl->Limit(
@@ -38,12 +38,12 @@
             my $principal = $ace->PrincipalObj;
 
             my ($ok, $msg) = $principal->GrantRight(
-                Right  => 'ExecutePerl',
+                Right  => 'ExecuteCode',
                 Object => $RT::SystemUser,
             );
 
             if (!$ok) {
-                $RT::Logger->warn("Unable to grant ExecutePerl on principal " . $principal->id . ": $msg");
+                $RT::Logger->warn("Unable to grant ExecuteCode on principal " . $principal->id . ": $msg");
             }
         }
     },

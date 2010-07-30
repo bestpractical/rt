@@ -211,7 +211,7 @@ sub Create {
         @_
     );
 
-    if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecutePerl', Object => $RT::System) ) {
+    if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System) ) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -595,7 +595,7 @@ sub CurrentUserHasQueueRight {
 
 =head2 SetType
 
-If setting Type to Perl, require the ExecutePerl right.
+If setting Type to Perl, require the ExecuteCode right.
 
 =cut
 
@@ -603,7 +603,7 @@ sub SetType {
     my $self    = shift;
     my $NewType = shift;
 
-    if ($NewType eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecutePerl', Object => $RT::System)) {
+    if ($NewType eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
