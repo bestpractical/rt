@@ -104,6 +104,7 @@ our %RenderTypes = (
         # Default is the first one
         'Select box',   # loc
         'Dropdown',     # loc
+        'List',         # loc
     ],
 );
 
