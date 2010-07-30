@@ -79,12 +79,22 @@ if ( $arg =~ m{squished\.js$} ) {
             my $file = File::Spec->catfile( $path, $js );
             my $input = $m->scomp($file);
 
-            if ( $has_jsmin ) {
+            if ($has_jsmin) {
                 my ( $output, $error );
+
+                my $stdout = IO::Handle->new;
+                $stdout->fdopen( 1, 'w' );
+                local *STDOUT = $stdout;
+
+                my $stderr = IO::Handle->new;
+                $stderr->fdopen( 2, 'w' );
+                local *STDERR = $stderr;
+
+                local $SIG{'CHLD'} = 'DEFAULT';
                 require IPC::Run;
-                IPC::Run::run [ $jsmin ], \$input, \$output, \$error, IPC::Run::timeout(10);
-                if ( $error ) {
-                    $RT::Logger->warning( "failed to jsmin $file: $error" );
+                IPC::Run::run( [$jsmin], \$input, \$output, \$error );
+                if ( $? >> 8 ) {
+                    $RT::Logger->warning("failed to jsmin $file: $error ");
                 }
                 else {
                     $content .= $output;
