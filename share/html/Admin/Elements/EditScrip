@@ -149,6 +149,9 @@ unless ( $id ) {
 
 my $min_lines = 10;
 
+my ($ok, $msg) = $scrip->CompileCheck;
+push @actions, $msg if !$ok;
+
 </%init>
 
 <%ARGS>
