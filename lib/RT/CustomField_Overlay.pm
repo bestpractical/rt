@@ -905,6 +905,11 @@ sub SetRenderType {
                                 $self->FriendlyType));
     }
 
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->BasedOnObj->id and $type =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
+
     return $self->SetAttribute( Name => 'RenderType', Content => $type );
 }
 
@@ -1521,6 +1526,11 @@ sub SetBasedOn {
 
     return (0, "Permission denied")
         unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
+
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->RenderType =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
 
     return $self->AddAttribute(
         Name => "BasedOn",

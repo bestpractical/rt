@@ -46,16 +46,25 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-%for my $option ($cf->RenderTypes($TypeComposite)) {
+%for my $option (@types) {
 <option value="<%$option%>"<%$option eq $Default && qq[ selected="selected"] |n%>><% $option %></option>
 %}
 </select>
 <%INIT>
 my $cf = RT::CustomField->new($session{'CurrentUser'});
 $Default ||= $cf->DefaultRenderType($TypeComposite);
+
+my @types = $cf->RenderTypes($TypeComposite);
+
+# XXX: We currently don't support cascaded select CFs when
+# rendering as a list, so don't offer it for now.
+if ( $BasedOn ) {
+    @types = grep { not /List/ } @types;
+}
 </%INIT>
 <%ARGS>
 $Default => undef
 $TypeComposite => 'Select-0'
 $Name => 'RenderType'
+$BasedOn => 0
 </%ARGS>

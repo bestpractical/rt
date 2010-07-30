@@ -77,7 +77,8 @@
     <& /Admin/Elements/SelectCustomFieldRenderType,
         Name            => "RenderType",
         TypeComposite   => $CustomFieldObj->TypeComposite,
-        Default         => $CustomFieldObj->RenderType, &>
+        Default         => $CustomFieldObj->RenderType, 
+        BasedOn         => $CustomFieldObj->BasedOnObj->id, &>
   </td>
 </tr>
 % }
@@ -219,7 +220,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         $CustomFieldObj->SetRenderType( undef );
     }
 
-    $CustomFieldObj->SetBasedOn( $BasedOn );
+    my ($good, $msg) = $CustomFieldObj->SetBasedOn( $BasedOn );
+    push @results, $msg;
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
