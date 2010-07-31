@@ -55,66 +55,52 @@ my $path;
 if ( $arg =~ m{squished\.js$} ) {
     $path = $m->current_comp->dir_path;
     unless ( $content ) {
-        my $has_jsmin;
-        my $jsmin = RT->Config->Get( 'JSMinPath' );
-
-        if ( $jsmin && -x $jsmin ) {
-            $has_jsmin = 1;
-        }
-
         require File::Spec;
         my @js =
           qw/jquery-1.4.2.min.js jquery_noconflict.js jquery.autocomplete-min.js jquery-ui-1.7.3.custom.min.js jquery.timepickr.js titlebox-state.js util.js/;
 
-        my $has_jsmin_module;
-
         for my $js (@js) {
             my $file = File::Spec->catfile( $path, $js );
             my $input = $m->scomp($file);
-
-            if ($has_jsmin) {
-                my ( $output, $error );
-
-                my $stdout = IO::Handle->new;
-                $stdout->fdopen( 1, 'w' );
-                local *STDOUT = $stdout;
-
-                my $stderr = IO::Handle->new;
-                $stderr->fdopen( 2, 'w' );
-                local *STDERR = $stderr;
-
-                local $SIG{'CHLD'} = 'DEFAULT';
-                require IPC::Run;
-                IPC::Run::run( [$jsmin], \$input, \$output, \$error );
-                if ( $? >> 8 ) {
-                    $RT::Logger->warning("failed to jsmin $file: $error ");
-                }
-                else {
-                    $content .= $output;
-                    next;
-                }
-            }
-
-            unless ( defined $has_jsmin_module ) {
-                eval { require JavaScript::Minifier };
-                if ($@) {
-                    $RT::Logger->debug("can't load JavaScript::Minifier: $@");
-                    $has_jsmin_module = 0;    # don't try again
-                }
-                else {
-                    $has_jsmin_module = 1;
-                }
-            }
-
-            if ($has_jsmin_module) {
-                $content .= JavaScript::Minifier::minify( input => $input );
-                next;
-            }
-
             $content .= $input;
         }
-    }
 
+        my $minified;
+        my $jsmin = RT->Config->Get( 'JSMinPath' );
+        if ( $jsmin && -x $jsmin ) {
+            my $input = $content;
+            my ( $output, $error );
+
+            my $stdout = IO::Handle->new;
+            $stdout->fdopen( 1, 'w' );
+            local *STDOUT = $stdout;
+
+            my $stderr = IO::Handle->new;
+            $stderr->fdopen( 2, 'w' );
+            local *STDERR = $stderr;
+
+            local $SIG{'CHLD'} = 'DEFAULT';
+            require IPC::Run;
+            IPC::Run::run( [$jsmin], \$input, \$output, \$error );
+            if ( $? >> 8 ) {
+                $RT::Logger->warning("failed to jsmin: $error ");
+            }
+            else {
+                $content = $output;
+                $minified = 1;
+            }
+        }
+
+        unless ($minified) {
+            eval { require JavaScript::Minifier };
+            if ($@) {
+                $RT::Logger->debug("can't load JavaScript::Minifier: $@");
+            }
+            else {
+                $content = JavaScript::Minifier::minify( input => $content );
+            }
+        }
+    }
     $m->out( $content );
 }
 else {
