@@ -56,10 +56,8 @@ if ( $arg =~ m{squished\.js$} ) {
     $path = $m->current_comp->dir_path;
     unless ( $content ) {
         require File::Spec;
-        my @js =
-          qw/jquery-1.4.2.min.js jquery_noconflict.js jquery.autocomplete-min.js jquery-ui-1.7.3.custom.min.js jquery.timepickr.js titlebox-state.js util.js/;
 
-        for my $js (@js) {
+        for my $js ( RT->Config->Get('JSFilesInHead') ) {
             my $file = File::Spec->catfile( $path, $js );
             my $input = $m->scomp($file);
             $content .= $input;
