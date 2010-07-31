@@ -82,6 +82,7 @@
     Default => $ARGS{UpdateTimeWorked}||'',
     InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
 &>
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 </td></tr>
 % my $skip;
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
