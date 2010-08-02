@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'Begin');
 
+@import "../base/main.css";
+
 @import "yui-fonts.css";
 @import "base.css";
 

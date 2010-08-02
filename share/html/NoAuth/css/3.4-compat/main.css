@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'Begin');
 
+@import "../base/main.css";
+
 %# Import the 3.5 styles we want to build off of...
 @import "../3.5-default/logo.css";
 @import "../3.5-default/misc.css";
