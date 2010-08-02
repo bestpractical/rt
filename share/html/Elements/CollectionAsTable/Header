@@ -105,6 +105,10 @@ foreach my $col ( @Format ) {
             Attr  => 'title',
         );
         $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
+
+        # in case title is not defined in ColumnMap 
+        # the following regex changes $attr like from "ReferredToBy" to "Referred To By"
+        $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
     } else {
         $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     }
