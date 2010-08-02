@@ -53,7 +53,7 @@ $onload => undef
 % if ( RT->Config->Get('DevelMode' ) ) {
 % for my $jsfile ( RT->Config->Get('JSFilesInHead') ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
-% }
+% } }
 % else {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/squished.js"></script>
 % }
