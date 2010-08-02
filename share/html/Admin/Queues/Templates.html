@@ -67,10 +67,10 @@ if ($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
 }
 my $subtabs = {
-	 A => { title => loc('Select template'),
+	 A => { title => loc('Select'),
 	     	path => "Admin/Queues/Templates.html?id=".$id,
 		   },
-	 B => { title => loc('New template'),
+	 B => { title => loc('Create'),
 	     	path => "Admin/Queues/Template.html?Create=1&Queue=".$id,
 		   }
 	      };

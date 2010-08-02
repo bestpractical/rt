@@ -72,10 +72,10 @@ if ($QueueObj->id) {
 }
 
 my $subtabs = {
-	 A => { title => loc('Select scrip'),
+	 A => { title => loc('Select'),
 	     	path => "Admin/Queues/Scrips.html?id=".$id,
 			   },
-	 B => { title => loc('New scrip'),
+	 B => { title => loc('Create'),
 	     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$id,
             separator => 1,
 			   }
