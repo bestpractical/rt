@@ -81,6 +81,7 @@ sub safe_run_child (&) {
         1;
     } or do {
         if ( $our_pid == $$ ) {
+            $RT::Logger->error( $@ );
             $dbh->{'InactiveDestroy'} = 0 if $dbh;
             $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
         }
