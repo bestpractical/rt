@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,9 @@
 <script type="text/javascript"><!--
     onLoadHook('createCalendarLink("<% $Name %>");');
 --></script>
+% $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput' );
 <input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+% $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput' );
 <%init>
 unless ((defined $Default) or 
 	($current <= 0)) {

@@ -20,7 +20,7 @@ my $sid;
     $m->follow_link_ok( { text => 'Queues' } );
     $m->follow_link_ok( { text => $queue->Name } );
     $m->follow_link_ok( { text => 'Scrips' } );
-    $m->follow_link_ok( { text => 'New scrip' } );
+    $m->follow_link_ok( { url_regex => qr'Scrip.html\?create=1' } );
     $m->form_number(3);
     $m->field('Scrip-new-Description' => 'test');
     $m->select('Scrip-new-ScripCondition' => 'On Transaction');

@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -61,6 +61,9 @@
 
 <p><&|/l&>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>.</&></p>
 <p><&|/l&>RT will look for anything else you enter in ticket subjects.</&></p>
+
+% my $status_str = join ', ', map { loc($_) } RT->Config->Get('ActiveStatus');
+<p><&|/l, $status_str&>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the <a href="<%RT->Config->Get('WebPath')%>/Search/Build.html">search builder interface</a>.</&></p>
 
 <br />
 <br />

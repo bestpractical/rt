@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 # 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -937,6 +937,89 @@ sub Options {
         @res = sort { $a cmp $b } @res;
     }
     return @res;
+}
+
+=head2 AddOption( Name => '', Section => '', ... )
+
+=cut
+
+sub AddOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => 0,
+        SortOrder       => undef,
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {},
+        @_
+    );
+
+    unless ( $args{Name} ) {
+        $RT::Logger->error("Need Name to add a new config");
+        return;
+    }
+
+    unless ( $args{Section} ) {
+        $RT::Logger->error("Need Section to add a new config option");
+        return;
+    }
+
+    $META{ delete $args{Name} } = \%args;
+}
+
+=head2 DeleteOption( Name => '' )
+
+=cut
+
+sub DeleteOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        @_
+        );
+    if ( $args{Name} ) {
+        delete $META{$args{Name}};
+    }
+    else {
+        $RT::Logger->error("Need Name to remove a config option");
+        return;
+    }
+}
+
+=head2 UpdateOption( Name => '' ), Section => '', ... )
+
+=cut
+
+sub UpdateOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => undef,
+        SortOrder       => undef,
+        Widget          => undef,
+        WidgetArguments => undef,
+        @_
+    );
+
+    my $name = delete $args{Name};
+
+    unless ( $name ) {
+        $RT::Logger->error("Need Name to update a new config");
+        return;
+    }
+
+    unless ( exists $META{$name} ) {
+        $RT::Logger->error("Config $name doesn't exist");
+        return;
+    }
+
+    for my $type ( keys %args ) {
+        next unless defined $args{$type};
+        $META{$name}{$type} = $args{$type};
+    }
+    return 1;
 }
 
 eval "require RT::Config_Vendor";

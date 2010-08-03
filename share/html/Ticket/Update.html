@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -82,6 +82,7 @@
     Default => $ARGS{UpdateTimeWorked}||'',
     InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
 &>
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 </td></tr>
 % my $skip;
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );

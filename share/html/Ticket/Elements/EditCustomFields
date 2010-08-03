@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,19 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeCustomFields' );
-<table>
-% my $i = 0;
+<div class="edit-custom-fields">
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
-% $i++;
-% if ( $i % 2 ) {
-<tr>
-% }
-    <td class="cflabel">
-      <b><% loc($CustomField->Name) %></b><br />
-      <i><% $CustomField->FriendlyType %></i>
-    </td>
-    <td class="entry">
+% my $Type = $CustomField->Type || 'Unknown';
+  <div class="edit-custom-field cftype-<% $Type %>">
+    <div class="cflabel">
+      <span class="name"><% loc($CustomField->Name) %></span><br />
+      <span class="type"><% $CustomField->FriendlyType %></span>
+    </div>
+    <div class="entry">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField, 
@@ -72,20 +69,11 @@
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
 %  }
-    </td>
-
-% unless ( $i % 2 ) {
-</tr>
+    </div>
+  </div>
 % }
 
-% }
-
-%# close row if required
-% if ( $i % 2 ) {
-</tr>
-% }
-
-</table>
+</div>
 % $m->callback( %ARGS, CallbackName => 'AfterCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 <%INIT>
 my $CustomFields;

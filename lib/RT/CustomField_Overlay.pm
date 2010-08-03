@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 # 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -97,6 +97,21 @@ our %FieldTypes = (
         'Enter one value with autocompletion',            # loc
         'Enter up to [_1] values with autocompletion',    # loc
     ],
+);
+
+our %RenderTypes = (
+    Select => {
+        multiple => [
+            # Default is the first one
+            'Select box',   # loc
+            'List',         # loc
+        ],
+        single => [
+            'Select box',   # loc
+            'Dropdown',     # loc
+            'List',         # loc
+        ]
+    },
 );
 
 
@@ -488,6 +503,22 @@ sub Types {
 
 # }}}
 
+=head2 HasRenderTypes [TYPE_COMPOSITE]
+
+Returns a boolean value indicating whether the L</RenderTypes> and
+L</RenderType> methods make sense for this custom field.
+
+Currently true only for type C<Select>.
+
+=cut
+
+sub HasRenderTypes {
+    my $self = shift;
+    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
+    return undef unless $type;
+    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' };
+}
+
 # {{{ IsSelectionType
 
 =head2 IsSelectionType 
@@ -803,6 +834,12 @@ sub SetTypeComposite {
         my ($status, $msg) = $self->SetMaxValues( $max_values );
         return ($status, $msg) unless $status;
     }
+    my $render = $self->RenderType;
+    if ( $render and not grep { $_ eq $render } $self->RenderTypes ) {
+        # We switched types and our render type is no longer valid, so unset it
+        # and use the default
+        $self->SetRenderType( undef );
+    }
     return 1, $self->loc(
         "Type changed from '[_1]' to '[_2]'",
         $self->FriendlyTypeComposite( $old ),
@@ -831,6 +868,79 @@ Returns an array of all possible composite values for custom fields.
 sub TypeComposites {
     my $self = shift;
     return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+}
+
+=head2 RenderType
+
+Returns the type of form widget to render for this custom field.  Currently
+this only affects fields which return true for L</HasRenderTypes>. 
+
+=cut
+
+sub RenderType {
+    my $self = shift;
+    return '' unless $self->HasRenderTypes;
+
+    my $type = $self->FirstAttribute( 'RenderType' );
+    $type = $type->Content if $type;
+    return $type || $self->DefaultRenderType;
+}
+
+=head2 SetRenderType TYPE
+
+Sets this custom field's render type.
+
+=cut
+
+sub SetRenderType {
+    my ($self, $type) = @_;
+    return unless $self->HasRenderTypes;
+
+    if ( not defined $type ) {
+        return $self->DeleteAttribute( 'RenderType' );
+    }
+
+    if ( not grep { $_ eq $type } $self->RenderTypes ) {
+        return (0, $self->loc("Invalid Render Type for custom field of type [_1]",
+                                $self->FriendlyType));
+    }
+
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->BasedOnObj->id and $type =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
+
+    return $self->SetAttribute( Name => 'RenderType', Content => $type );
+}
+
+=head2 DefaultRenderType [TYPE COMPOSITE]
+
+Returns the default render type for this custom field's type or the TYPE
+COMPOSITE specified as an argument.
+
+=cut
+
+sub DefaultRenderType {
+    my $self = shift;
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }[0];
+}
+
+=head2 RenderTypes [TYPE COMPOSITE]
+
+Returns the valid render types for this custom field's type or the TYPE
+COMPOSITE specified as an argument.
+
+=cut
+
+sub RenderTypes {
+    my $self = shift;
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return @{$RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }};
 }
 
 =head2 SetLookupType
@@ -1416,6 +1526,11 @@ sub SetBasedOn {
 
     return (0, "Permission denied")
         unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
+
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->RenderType =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
 
     return $self->AddAttribute(
         Name => "BasedOn",

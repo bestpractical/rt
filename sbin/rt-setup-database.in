@@ -3,7 +3,7 @@
 # 
 # COPYRIGHT:
 # 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -96,7 +96,7 @@ GetOptions(
     'action=s',
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
-    'datafile=s', 'datadir=s'
+    'datafile=s', 'datadir=s', 'skip-create'
 );
 
 unless ( $args{'action'} ) {
@@ -124,7 +124,11 @@ foreach ( @actions ) {
 # convert init to multiple actions
 my $init = 0;
 if ( $actions[0] eq 'init' ) {
-    @actions = qw(create schema acl coredata insert);
+    if ($args{'skip-create'}) {
+        @actions = qw(schema coredata insert);
+    } else {
+        @actions = qw(create schema acl coredata insert);
+    }
     $init = 1;
 }
 
@@ -152,14 +156,19 @@ if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
 my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
-if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
-    $dba_pass = get_dba_password();
-    chomp $dba_pass if defined($dba_pass);
+if ($args{'skip-create'}) {
+    $dba_user = $db_user;
+    $dba_pass = $db_pass;
+} else {
+    if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
+        $dba_pass = get_dba_password();
+        chomp $dba_pass if defined($dba_pass);
+    }
 }
 
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
-    ."User:\t$db_user\nDBA:\t$dba_user\n";
+    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
 
 foreach my $action ( @actions ) {
     no strict 'refs';
@@ -465,6 +474,9 @@ Several actions can be combined using comma separated list.
 --dba                           dba's username
 --dba-password                  dba's password
 --prompt-for-dba-password       Ask for the database administrator's password interactively
+--skip-create                   for 'init': skip creating the database and the
+                                user account, so we don't need administrator
+                                privileges
 
 
 EOF

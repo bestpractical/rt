@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('RT/Admin/Edit the group [_1]', $Group->Name) &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/GroupTabs, GroupObj => $Group, 
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
-    Title => "RT/Admin/Edit the group ". $Group->Name &>
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/Members.html" method="post">
@@ -116,6 +116,8 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 my $Group = new RT::Group($session{'CurrentUser'});
 $Group->Load($id) || Abort(loc('Could not load group'));
 
+my $title = loc("Modify the group [_1]", $Group->Name);
+
 my (%UsersSeen, %GroupsSeen);
 $GroupsSeen{ $Group->id } = 1; # can't be a member of ourself
 
@@ -147,6 +149,7 @@ foreach my $member (grep $_, @AddMembersUsers, @AddMembersGroups) {
     my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
     push (@results, $msg);
 }
+
 
 </%INIT>
 

@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -91,6 +91,22 @@ doOnLoad(  function () {
 %       $m->out($out);
       </select>
 % }
+
+% if ( $RenderType eq 'List' ) {
+<fieldset>
+%   if ( $checktype eq 'radio' ) {
+  <input type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+  <label for="<% $name %>-none"><&|/l&>(no value)</&><label><br />
+%   }
+%   my $CFVs = $CustomField->Values;
+%   while ( my $value = $CFVs->Next ) {
+%     my $content = $value->Name;
+%     my $labelid = "$name-". $value->id;
+  <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
+  <label for="<% $labelid %>"><% $content %><label><br />
+%   }
+</fieldset>
+% } else {
 <select
   name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
 % if ( $Rows && ( $Multiple || !@category ) ) {
@@ -100,15 +116,40 @@ doOnLoad(  function () {
 <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 % $m->out($out);
 </select>
+% }
+<%init>
+# Handle render types
+$RenderType ||= $CustomField->RenderType;
+if ( $RenderType eq 'Dropdown' ) {
+    # Turn it into a dropdown
+    $Rows = 0;
+}
+
+# The following is for rendering checkboxes / radio buttons only
+my ($checktype, $name);
+if ( $MaxValues == 1 ) {
+    ($checktype, $name) = ('radio', $NamePrefix . $CustomField->Id . '-Value');
+} else {
+    ($checktype, $name) = ('checkbox', $NamePrefix . $CustomField->Id . '-Values');
+}
+
+@Default = grep defined && length, @Default;
+if ( !@Default && $Values ) {
+    @Default = map $_->Content, @{ $Values->ItemsArrayRef };
+}
+my %default = map {lc $_ => 1} @Default;
+</%init>
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
-$Default => undef
+@Default => ()
 $Values => undef
 $Multiple => 0
 $Rows => undef
 $HideCategory => 0
+$RenderType => undef
+$MaxValues
 </%ARGS>
 
 <%METHOD options>
