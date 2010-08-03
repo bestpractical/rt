@@ -207,3 +207,8 @@ function ahah( url, id ) {
     jQuery('#'+id).load(url);
 }
 
+// only for back compatibility, please JQuery() instead
+function doOnLoad( js ) {
+    jQuery(js);
+}
+
