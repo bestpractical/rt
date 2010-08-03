@@ -78,8 +78,8 @@ if ( $arg =~ m{squished\.js$} ) {
             local *STDERR = $stderr;
 
             local $SIG{'CHLD'} = 'DEFAULT';
-            require IPC::Run;
-            IPC::Run::run( [$jsmin], \$input, \$output, \$error );
+            require IPC::Run3;
+            IPC::Run3::run3( [$jsmin], \$input, \$output, \$error );
             if ( $? >> 8 ) {
                 $RT::Logger->warning("failed to jsmin: $error ");
             }
