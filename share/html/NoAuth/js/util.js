@@ -79,21 +79,22 @@ function switchVisibility(id1, id2) {
 }
 
 /* Classes */
+function jQueryWrap( id ) {
+    return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+}
 
 function addClass(id, value) {
-    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
-    e.addClass(value);
+    jQueryWrap(id).addClass(value);
 }
 
 function delClass(id, value) {
-    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
-    e.removeClass(value);
+    jQueryWrap(id).removeClass(value);
 }
 
 /* Rollups */
 
 function rollup(id) {
-    var e = typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+    var e = jQueryWrap(id);
     var e2  = e.parent();
     
     if (e.hasClass('hidden')) {
