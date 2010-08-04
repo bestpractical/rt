@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 46;
+use RT::Test tests => 44;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -62,8 +62,6 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
         fields => { Queue => 'General' },
     );
     $m->content_like(qr/Select datetime/, 'has cf field');
-    # Calendar link is added via js, so can't test it as link
-    $m->content_like(qr/Calendar/, 'has Calendar');
 
     $m->submit_form(
         form_name => "TicketCreate",
@@ -126,9 +124,6 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
 
-    # make sure there are at least 2 Calendar links
-    $m->content_like( qr/createCalendar.*createCalendar/s,
-        'have at least 2 Calendar links' );
     $m->form_number(3);
     my ($cf_op) =
       $m->find_all_inputs( type => 'option', name_regex => qr/test cf datetime/ );
