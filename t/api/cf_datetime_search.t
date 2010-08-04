@@ -7,17 +7,17 @@ use RT::Test tests => 14;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my $q = RT::Queue->new($RT::SystemUser);
-ok( $q->Create( Name => 'DateCFTest' . $$ ), 'create queue' );
+ok( $q->Create( Name => 'DateTimeCFTest' . $$ ), 'create queue' );
 
 my $cf = RT::CustomField->new($RT::SystemUser);
 ok(
     $cf->Create(
-        Name       => 'date-' . $$,
-        Type       => 'Date',
+        Name       => 'datetime-' . $$,
+        Type       => 'DateTime',
         MaxValues  => 1,
         LookupType => RT::Ticket->CustomFieldLookupType,
     ),
-    'create cf date'
+    'create cf datetime'
 );
 ok( $cf->AddToObject($q), 'date cf apply to queue' );
 
@@ -75,7 +75,7 @@ is(
         VALUE       => '2010-05-05',
     );
 
-    is( $tickets->Count, 0, 'did not find the ticket with wrong date: 2010-05-05' );
+    is( $tickets->Count, 0, 'did not find the ticket with wrong datetime: 2010-05-05' );
 }
 
 my $tickets = RT::Tickets->new( $RT::SystemUser );
@@ -113,7 +113,7 @@ while( my $ticket  = $tickets->Next ) {
         OPERATOR    => '=',
         VALUE       => '2010-06-22',
     );
-    is( $tickets->Count, 1, 'found the ticket with rough date: 2010-06-22' );
+    is( $tickets->Count, 1, 'found the ticket with rough datetime: 2010-06-22' );
 
     $tickets->UnLimit;
     $tickets->LimitCustomField(

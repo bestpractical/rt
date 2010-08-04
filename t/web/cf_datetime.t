@@ -11,7 +11,7 @@ ok $m->login, 'logged in as root';
 my $root = RT::User->new( $RT::SystemUser );
 ok( $root->Load('root'), 'load root user' );
 
-my $cf_name = 'test cf date';
+my $cf_name = 'test cf datetime';
 
 my $cfid;
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
@@ -25,7 +25,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         form_name => "ModifyCustomField",
         fields => {
             Name          => $cf_name,
-            TypeComposite => 'Date-1',
+            TypeComposite => 'DateTime-1',
             LookupType    => 'RT::Queue-RT::Ticket',
         },
     );
@@ -61,7 +61,7 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
         form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
-    $m->content_like(qr/Select date/, 'has cf field');
+    $m->content_like(qr/Select datetime/, 'has cf field');
     # Calendar link is added via js, so can't test it as link
     $m->content_like(qr/Calendar/, 'has Calendar');
 
@@ -84,13 +84,13 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
         'date in db is in UTC'
     );
 
-    $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
-    $m->content_like(qr/Tue May 04 13:00:01 2010/, 'has cf date value on the page');
+    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
+    $m->content_like(qr/Tue May 04 13:00:01 2010/, 'has cf datetime value on the page');
 
     $root->SetTimezone( 'Asia/Shanghai' );
     # interesting that $m->reload doesn't work
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Wed May 05 01:00:01 2010/, 'cf date value respects user timezone');
+    $m->content_like(qr/Wed May 05 01:00:01 2010/, 'cf datetime value respects user timezone');
 
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -114,11 +114,11 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
         'date in db is in UTC'
     );
 
-    $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
-    $m->content_like(qr/Thu May 06 07:00:01 2010/, 'cf date input respects user timezone');
+    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
+    $m->content_like(qr/Thu May 06 07:00:01 2010/, 'cf datetime input respects user timezone');
     $root->SetTimezone( 'EST5EDT' ); # back to -04:00
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Wed May 05 19:00:01 2010/, 'cf date value respects user timezone');
+    $m->content_like(qr/Wed May 05 19:00:01 2010/, 'cf datetime value respects user timezone');
 }
 
 
@@ -133,7 +133,7 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
         'have at least 2 Calendar links' );
     $m->form_number(3);
     my ($cf_op) =
-      $m->find_all_inputs( type => 'option', name_regex => qr/test cf date/ );
+      $m->find_all_inputs( type => 'option', name_regex => qr/test cf datetime/ );
     is_deeply(
         [ $cf_op->possible_values ],
         [ '<', '=', '>' ],
@@ -141,7 +141,7 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
     );
 
     my ($cf_field) =
-      $m->find_all_inputs( type => 'text', name_regex => qr/test cf date/ );
+      $m->find_all_inputs( type => 'text', name_regex => qr/test cf datetime/ );
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -238,6 +238,6 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
-    $m->content_like(qr/test cf date:/, 'has no cf date field on the page');
+    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
     $m->content_unlike(qr/foodate/, 'invalid dates not set');
 }
