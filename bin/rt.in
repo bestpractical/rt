@@ -1415,7 +1415,7 @@ sub config_from_file {
         }
 
         # Still nothing? We'll fall back to some likely defaults.
-        for ("$HOME/$rc", "/etc/rt.conf") {
+        for ("$HOME/$rc", "@LOCAL_ETC_PATH@/rt.conf", "/etc/rt.conf") {
             return parse_config_file($_) if (-r $_);
         }
     }
@@ -1826,7 +1826,8 @@ Text:
     The program looks for configuration directives in a file named .rtrc
     (or $RTCONFIG; see below) in the current directory, and then in more
     distant ancestors, until it reaches /. If no suitable configuration
-    files are found, it will also check for ~/.rtrc and /etc/rt.conf.
+    files are found, it will also check for ~/.rtrc, @LOCAL_ETC_PATH@/rt.conf
+    and /etc/rt.conf.
 
     Configuration directives:
 
