@@ -31,11 +31,7 @@ ok(
     'create ticket with cf set to 2010-05-04'
 );
 
-is(
-    $ticket->CustomFieldValues->First->Content,
-    '2010-05-04',
-    'date in db is'
-);
+is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
 {
 
@@ -107,7 +103,6 @@ is(
     is( $tickets->Count, 0, 'did not find the ticket with > 2010-05-05' );
 }
 
-
 $ticket = RT::Ticket->new($RT::SystemUser);
 
 ok(
@@ -119,9 +114,6 @@ ok(
     'create ticket with cf set to 2010-05-04 12:34:56'
 );
 
-is(
-    $ticket->CustomFieldValues->First->Content,
-    '2010-05-04',
-    'date in db only has date'
-);
+is( $ticket->CustomFieldValues->First->Content,
+    '2010-05-04', 'date in db only has date' );
 
