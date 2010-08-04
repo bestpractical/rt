@@ -495,9 +495,10 @@ Several actions can be combined using comma separated list.
 --skip-create                   for 'init': skip creating the database and the
                                 user account, so we don't need administrator
                                 privileges
---root-password-file            for 'init' and 'insert': rather than using the
-                                default password, take the initial root password
-                                from this file
+--root-password-file            for 'init' and 'insert': rather than using the default 
+                                administrative password for RT's "root" user, use
+                                the password in this file.
+
 EOF
 
 }
