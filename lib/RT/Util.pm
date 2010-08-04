@@ -80,12 +80,15 @@ sub safe_run_child (&) {
         }
         1;
     } or do {
+        my $err = $@;
         if ( $our_pid == $$ ) {
-            $RT::Logger->error( $@ );
+            $RT::Logger->error( $err );
             $dbh->{'InactiveDestroy'} = 0 if $dbh;
             $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
         }
-        die $@;
+        $err = "Error just happened, please contact administrator:\n" . $err;
+        $err =~ s/^Stack:.*$//ms;
+        die $err;
     };
     return $want? (@res) : $res[0];
 }
