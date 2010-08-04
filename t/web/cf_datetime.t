@@ -122,8 +122,6 @@ diag 'check valid inputs with various timezones in ticket create page' if $ENV{'
 }
 
 
-diag 'check invalid inputs' if $ENV{'TEST_VERBOSE'};
-
 diag 'check search build page' if $ENV{'TEST_VERBOSE'};
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
@@ -220,6 +218,8 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
     );
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 }
+
+diag 'check invalid inputs' if $ENV{'TEST_VERBOSE'};
 
 {
     $m->submit_form(
