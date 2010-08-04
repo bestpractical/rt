@@ -96,13 +96,30 @@ GetOptions(
     'action=s',
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
-    'datafile=s', 'datadir=s', 'skip-create'
+    'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s'
 );
 
 unless ( $args{'action'} ) {
     help();
     exit(-1);
 }
+
+# get customized root password
+my $root_password;
+if ( $args{'root-password-file'} ) {
+    open my $fh, '<', $args{'root-password-file'}
+      or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
+    $root_password = <$fh>;
+    chomp $root_password;
+    my $min_length = RT->Config->Get('MinimumPasswordLength');
+    if ($min_length) {
+        die
+"password needs to be at least $min_length long, please check file '$args{'root-password-file'}'"
+          if length $root_password < $min_length;
+    }
+    close $fh;
+}
+
 
 # check and setup @actions
 my @actions = grep $_, split /,/, $args{'action'};
@@ -250,7 +267,8 @@ sub action_insert {
     my $file = $args{'datafile'};
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
-    return $RT::Handle->InsertData( $file );
+
+    return $RT::Handle->InsertData( $file, $root_password );
 }
 
 sub action_upgrade {
@@ -477,8 +495,9 @@ Several actions can be combined using comma separated list.
 --skip-create                   for 'init': skip creating the database and the
                                 user account, so we don't need administrator
                                 privileges
-
-
+--root-password-file            for 'init' and 'insert': rather than using the
+                                default password, take the initial root password
+                                from this file
 EOF
 
 }
