@@ -121,28 +121,8 @@
 </td>
 </tr>
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
-<tr>
-% if (exists $session{'Attachments'}) {
-<td class="label">
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
-<td class="label">
-<&|/l&>Attach file</&>:
-</td>
-<td class="value" colspan="5">
-<input type="file" name="Attach" />
-<input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-</td>
-</tr>
+
+<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td colspan="5">

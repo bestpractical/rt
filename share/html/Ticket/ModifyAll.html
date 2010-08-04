@@ -115,23 +115,9 @@
 </td></tr>
 %    } # end if while
 % } # end of if
-% if (exists $session{'Attachments'}) {
-<tr><td><&|/l&>Attached file</&>:</td>
-<td>
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-% } # end of if
 
-  <tr>
-    <td class="label"><&|/l&>Attach</&>:</td>
-    <td class="entry"><input name="Attach" type="file" />
-    <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-    <input type="hidden" class="hidden" name="UpdateAttach" value="1" /></td>
-  </tr>
+<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
+
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
     <td class="entry">
