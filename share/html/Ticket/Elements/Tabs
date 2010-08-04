@@ -115,6 +115,8 @@ if ($Ticket) {
         current_subtab => $current_subtab
     };
 
+    my %can = ( ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'), );
+
     my $ticket_page_tabs = {
         _A => {
             title => loc('Display'),
@@ -125,29 +127,30 @@ if ($Ticket) {
             title => loc('History'),
             path  => "Ticket/History.html?id=" . $id,
         },
-        _B => {
+    };
+
+    if ($can{ModifyTicket}) {
+        $ticket_page_tabs->{_B} = {
             title => loc('Basics'),
             path  => "Ticket/Modify.html?id=" . $id,
-        },
-
-        _C => {
+        };
+        $ticket_page_tabs->{_C} = {
             title => loc('Dates'),
             path  => "Ticket/ModifyDates.html?id=" . $id,
-        },
-        _D => {
+        };
+        $ticket_page_tabs->{_D} = {
             title => loc('People'),
             path  => "Ticket/ModifyPeople.html?id=" . $id,
-        },
-        _E => {
+        };
+        $ticket_page_tabs->{_E} = {
             title => loc('Links'),
             path  => "Ticket/ModifyLinks.html?id=" . $id,
-        },
-        _X => {
+        };
+        $ticket_page_tabs->{_X} = {
             title => loc('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id,
-        },
-
-    };
+        };
+    }
 
     if ( RT->Config->Get('EnableReminders') ) {
         $ticket_page_tabs->{_F} = {
@@ -166,8 +169,6 @@ if ($Ticket) {
     }
     $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
     $current_tab = "Ticket/Display.html?id=" . $id;
-
-    my %can = ( ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'), );
 
     if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('ReplyToTicket') )
     {
