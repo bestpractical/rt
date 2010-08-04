@@ -1428,8 +1428,9 @@ sub _CustomFieldLimit {
             $cf->Load($field);
 
             # need special treatment for Date
-            if ( $cf->Type eq 'Date' ) {
-                if ( $op eq '=' ) {
+            if ( $cf->Type =~ /^Date(Time)?$/ ) {
+                my $is_datetime = $1 ? 1 : 0;
+                if ( $is_datetime && $op eq '=' ) {
 
                # if we're specifying =, that means we want everything on a
                # particular single day.  in the database, we need to check for >

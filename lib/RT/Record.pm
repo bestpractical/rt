@@ -1714,8 +1714,9 @@ sub _AddCustomFieldValue {
 
         my $new_content = $new_value->Content;
 
-        # For date, we need to display them in "human" format in result message
-        if ($cf->Type eq 'Date') {
+        # For datetime, we need to display them in "human" format in result message
+        #XXX TODO how about date without time?
+        if ($cf->Type eq 'DateTime') {
             my $DateObj = new RT::Date( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'ISO',
@@ -1821,8 +1822,8 @@ sub DeleteCustomFieldValue {
     }
 
     my $old_value = $TransactionObj->OldValue;
-    # For date, we need to display them in "human" format in result message
-    if ( $cf->Type eq 'Date' ) {
+    # For datetime, we need to display them in "human" format in result message
+    if ( $cf->Type eq 'DateTime' ) {
         my $DateObj = new RT::Date( $self->CurrentUser );
         $DateObj->Set(
             Format => 'ISO',

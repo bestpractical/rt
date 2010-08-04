@@ -80,7 +80,7 @@ while ( my $CustomField = $CustomFields->Next ) {
     $line{'Field'} = $CustomField->Name;
 
     # Op
-    if ($CustomField->Type eq 'Date') {
+    if ($CustomField->Type =~ /^Date(Time)?$/ ) {
         $line{'Op'} = {
             Type => 'component',
             Path => '/Elements/SelectDateRelation',
@@ -99,11 +99,12 @@ while ( my $CustomField = $CustomFields->Next ) {
     }
 
     # Value
-    if ($CustomField->Type eq 'Date') {
+    if ($CustomField->Type =~ /^Date(Time)?$/) {
+        my $is_datetime = $1 ? 1 : 0;
         $line{'Value'} = {
             Type => 'component',
             Path => '/Elements/SelectDate',
-            Arguments => {},
+            Arguments => { $is_datetime ? ( ShowTime => 0 ) : (), },
         };
     } else {
         $line{'Value'} = {
