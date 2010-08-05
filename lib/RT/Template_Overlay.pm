@@ -470,7 +470,8 @@ sub _ParseContentSimple {
         TYPE   => 'STRING',
         SOURCE => $args{Content},
     );
-    $template->compile;
+    my ($ok) = $template->compile;
+    return ( undef, $self->loc('Template parsing error') ) if !$ok;
 
     # copied from Text::Template::fill_in and refactored to be simple variable
     # interpolation

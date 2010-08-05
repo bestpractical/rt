@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 186;
+use RT::Test tests => 196;
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Load("General");
@@ -148,6 +148,12 @@ TemplateTest(
     Content      => "\ntest { *!( }",
     PerlOutput   => undef,
     SimpleOutput => "test { *!( }",
+);
+
+TemplateTest(
+    Content      => "\ntest { \$rtname ",
+    PerlOutput   => undef,
+    SimpleOutput => undef,
 );
 
 is($ticket->Status, 'new', "test setup");
