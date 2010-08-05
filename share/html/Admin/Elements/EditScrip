@@ -88,12 +88,12 @@
 </table>
 </&>
 
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& /Elements/Submit,
     Label => $SubmitLabel,
     Reset => 1,
 &><br />
 
-% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
 <table>
 <tr><td colspan="2">
