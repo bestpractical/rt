@@ -725,6 +725,7 @@ Load some sort of data into the database, takes path to a file.
 sub InsertData {
     my $self     = shift;
     my $datafile = shift;
+    my $root_password = shift;
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
@@ -794,6 +795,9 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
+            if ( $item->{'Name'} eq 'root' && $root_password ) {
+                $item->{'Password'} = $root_password;
+            }
             my $new_entry = new RT::User( $RT::SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {

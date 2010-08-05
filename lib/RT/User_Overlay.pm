@@ -283,6 +283,12 @@ sub SetPrivileged {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    $self->_SetPrivileged($val);
+}
+
+sub _SetPrivileged {
+    my $self = shift;
+    my $val = shift;
     my $priv = RT::Group->new($self->CurrentUser);
     $priv->LoadSystemInternalGroup('Privileged');
     unless ($priv->Id) {

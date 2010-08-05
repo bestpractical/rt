@@ -45,41 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback(CallbackName => 'Begin');
 
-#body.calpopup {
-    margin-left: 1em;
-    margin-top: 1em;
-} 
+@import "misc.css";
+@import "ticket-update.css";
 
-#body.calpopup a.today {
-    font-size: 1em;
-    font-weight: bold;
-}
+% $m->callback(CallbackName => 'End');
 
-#body.calpopup a {
-    font-size: 0.8em;
-}
-
-.calendar {
-    text-align: center;
-    margin: 0 0 0 0;
-}
-
-.calendar td, .calendar th { padding: 0.1em 0.1em 0.1em 0.1em; }
-
-.calendar caption .month {
-    padding: 0 0.25em 0 0.25em;
-    font-size: 1.5em;
-}
-
-.comment { 
- padding-left: 0.5em;
- color: #999;
-
-}
-
-#comp-Ticket-ShowEmailRecord #body {
-    margin-left: 1em;
-    margin-top: 1em;
-    overflow: auto;
-} 

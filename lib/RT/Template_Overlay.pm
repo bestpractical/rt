@@ -112,7 +112,7 @@ if the user passes an ACL check, otherwise returns undef.
 sub _Value {
     my $self  = shift;
 
-    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+    unless ( $self->CurrentUserCanRead() ) {
         return undef;
     }
     return $self->__Value( @_ );
@@ -381,7 +381,7 @@ sub _ParseContent {
         @_
     );
 
-    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+    unless ( $self->CurrentUserCanRead() ) {
         return (undef, $self->loc("Permission Denied"));
     }
 
@@ -656,6 +656,21 @@ sub CompileCheck {
     }
 
     return (1, $self->loc("Template compiles"));
+}
+
+=head2 CurrentUserCanRead
+
+=cut
+
+sub CurrentUserCanRead {
+    my $self =shift;
+
+    return 1 if $self->CurrentUserHasQueueRight('ShowTemplate');
+
+    return $self->CurrentUser->HasRight( Right =>'ShowGlobalTemplates', Object => $RT::System )
+        if !$self->QueueObj->Id;
+
+    return;
 }
 
 1;

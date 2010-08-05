@@ -93,7 +93,7 @@ doOnLoad(  function () {
 % }
 
 % if ( $RenderType eq 'List' ) {
-<fieldset>
+<fieldset class="cfedit">
 %   if ( $checktype eq 'radio' ) {
   <input type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
   <label for="<% $name %>-none"><&|/l&>(no value)</&><label><br />

@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'Begin');
 
+@import "../base/main.css";
+
 @import "misc.css";
 @import "login.css";
 @import "logo.css";

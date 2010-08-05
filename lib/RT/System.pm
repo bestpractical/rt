@@ -87,6 +87,7 @@ our $RIGHTS = {
       "Delegate specific rights which have been granted to you.",     # loc_pair
     ShowConfigTab => "show Configuration tab",     # loc_pair
     ShowApprovalsTab => "show Approvals tab",     # loc_pair
+    ShowGlobalTemplates => "show global templates",     # loc_pair
     LoadSavedSearch => "allow loading of saved searches",     # loc_pair
     CreateSavedSearch => "allow creation of saved searches",      # loc_pair
     ExecuteCode => "allow writing Perl code in templates, scrips, etc", # loc_pair

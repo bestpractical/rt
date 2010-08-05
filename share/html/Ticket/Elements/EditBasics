@@ -45,86 +45,88 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-      <td class="label"><&|/l&>Subject</&>:</td>
-      <td class="value"><input name="Subject" value="<%$TicketObj->Subject|h%>" size="50" /></td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Status</&>:</td>
-      <td class="value"><%$SelectStatus|n%></td>
-    </tr>
-  <tr>
-      <td class="label"><&|/l&>Queue</&>:</td>
-      <td class="value"><%$SelectQueue|n%></td>
-    </tr>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-      <td class="value"><& /Elements/SelectOwner,
-          Name         => 'Owner',
-          QueueObj     => $TicketObj->QueueObj,
-          TicketObj    => $TicketObj,
-          Default      => $TicketObj->OwnerObj->Id,
-          DefaultValue => 0,
-      &></td>
-  </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Time Estimated</&>:</td>
-      <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeEstimated',
-            Default => $TicketObj->TimeEstimated,
-        &>
-      </td>
-    </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeWorked',
-            Default => $TicketObj->TimeWorked,
-        &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Left</&>:</td>
-    <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeLeft',
-            Default => $TicketObj->TimeLeft,
-        &>
-      </td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Priority</&>:</td>
-      <td class="value"><& /Elements/SelectPriority,
-          Default => $TicketObj->Priority,
-      &></td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Final Priority</&>:</td>
-      <td class="value"><& /Elements/SelectPriority,
-          Name => "FinalPriority",
-          Default => $TicketObj->FinalPriority,
-      &></td>
-    </tr>
-
-
-
-% $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
-</table>
-
-<%INIT>
-#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->Id, ShowNullOption => 0);
-
-</%INIT>
 <%ARGS>
-
 $TicketObj => undef
 </%ARGS>
+<%INIT>
+my @fields = (
+    {   name => 'Subject',
+        html => '<input name="Subject" value="'.$m->interp->apply_escapes( $TicketObj->Subject, 'h' ).'" size="50" />',
+    },
+    {   name => 'Status',
+        comp => '/Elements/SelectStatus',
+        args => {
+            Name => 'Status',
+            DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+        },
+    },
+    {   name => 'Queue',
+        comp => '/Elements/SelectQueue',
+        args => {
+            Name => 'Queue',
+            Default => $TicketObj->QueueObj->Id,
+            ShowNullOption => 0,
+        }
+    },
+    {   name => 'Owner',
+        comp => '/Elements/SelectOwner',
+        args => {
+            Name => 'Owner',
+            QueueObj => $TicketObj->QueueObj,
+            TicketObj => $TicketObj,
+            Default => $TicketObj->OwnerObj->Id,
+            DefaultValue => 0,
+        }
+    },
+    # Time Estimated, Worked, and Left
+    (
+        map {
+            (my $field = $_) =~ s/ //g;
+            {
+                name => $_,
+                comp => '/Elements/EditTimeValue',
+                args => {
+                    Name => $field,
+                    Default => $TicketObj->$field,
+                }
+            }
+        } ('Time Estimated', 'Time Worked', 'Time Left')
+    ),
+    # Priority and Final Priority
+    (
+        map {
+            (my $field = $_) =~ s/ //g;
+            {
+                name => $_,
+                comp => '/Elements/SelectPriority',
+                args => {
+                    Name => $field,
+                    Default => $TicketObj->$field,
+                }
+            }
+        } ('Priority', 'Final Priority')
+    ),
+);
+
+$m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
+
+# Process the field list, skipping if html is provided and running the
+# components otherwise
+for my $field (@fields) {
+    next if defined $field->{'html'};
+    if ( $field->{'comp'} ) {
+        $field->{'html'} = $m->scomp($field->{'comp'}, %{$field->{'args'} || {}});
+    }
+}
+</%INIT>
+
+<table>
+% for my $field (@fields) {
+  <tr>
+    <td class="label"><&|/l&><% $field->{'name'} %></&>:</td>
+    <td class="value"><% $field->{'html'} |n %></td>
+  </tr>
+% }
+% $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
+</table>
+
