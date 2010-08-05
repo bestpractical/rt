@@ -611,6 +611,23 @@ sub SetType {
     return $self->_Set( Field => 'Type', Value => $NewType );
 }
 
+=head2 SetContent
+
+If setting Content, require the ExecuteCode right.
+
+=cut
+
+sub SetContent {
+    my $self    = shift;
+    my $content = shift;
+
+    if ($self->Type eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
+
+    return $self->_Set( Field => 'Content', Value => $content );
+}
+
 =head2 CompileCheck
 
 If the template's Type is Perl, then compile check all the codeblocks to see if
