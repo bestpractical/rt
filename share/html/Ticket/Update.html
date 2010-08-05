@@ -84,36 +84,38 @@
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
 </td></tr>
 
-<tr>
-  <td class="label"><&|/l&>Status</&>:</td>
-  <td class="value">
-    <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
-  </td>
-</tr>
-
-<tr>
-  <td class="label"><&|/l&>Owner</&>:</td>
-  <td class="value">
-    <& /Elements/SelectOwner,
-        Name         => "Owner",
-        TicketObj    => $TicketObj,
-        QueueObj     => $TicketObj->QueueObj,
-        DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
-        Default      => $ARGS{'Owner'}
-        &>
-  </td>
-</tr>
-
-<tr>
-  <td class="label"><&|/l&>Worked</&>:</td>
-  <td class="value">
-    <& /Elements/EditTimeValue,
-        Name => 'UpdateTimeWorked',
-        Default => $ARGS{UpdateTimeWorked}||'',
-        InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
-        &>
-  </td>
-</tr>
+<& /Ticket/Elements/EditBasics,
+    TicketObj => $TicketObj,
+    InTable   => 1,
+    fields    => [
+        {   name => 'Status',
+            comp => '/Elements/SelectStatus',
+            args => {
+                Name => 'Status',
+                DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)),
+                Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus),
+            },
+        },
+        {   name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name         => "Owner",
+                TicketObj    => $TicketObj,
+                QueueObj     => $TicketObj->QueueObj,
+                DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
+                Default      => $ARGS{'Owner'}
+            }
+        },
+        {   name => 'Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name => 'UpdateTimeWorked',
+                Default => $ARGS{UpdateTimeWorked}||'',
+                InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
+            }
+        },
+    ]
+&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 
@@ -163,7 +165,7 @@
   <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
-  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients') &>
+  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips' &>
     <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
   </&>
 % }
