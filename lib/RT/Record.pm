@@ -853,8 +853,9 @@ sub Update {
 
     my $attributes = $args{'AttributesRef'};
     my $ARGSRef    = $args{'ARGSRef'};
-    my @results;
+    my %new_values;
 
+    # gather all new values
     foreach my $attribute (@$attributes) {
         my $value;
         if ( defined $ARGSRef->{$attribute} ) {
@@ -875,7 +876,6 @@ sub Update {
 
         $value =~ s/\r\n/\n/gs;
 
-
         # If Queue is 'General', we want to resolve the queue name for
         # the object.
 
@@ -894,6 +894,29 @@ sub Update {
             next if ($value || 0) eq $self->$attribute();
         };
 
+        $new_values{$attribute} = $value;
+    }
+
+    return $self->_UpdateAttributes(
+        Attributes => $attributes,
+        NewValues  => \%new_values,
+    );
+}
+
+sub _UpdateAttributes {
+    my $self = shift;
+    my %args = (
+        Attributes => [],
+        NewValues  => {},
+        @_,
+    );
+
+    my @results;
+
+    foreach my $attribute (@{ $args{Attributes} }) {
+        next if !exists($args{NewValues}{$attribute});
+
+        my $value = $args{NewValues}{$attribute};
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
