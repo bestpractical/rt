@@ -611,21 +611,23 @@ sub SetType {
     return $self->_Set( Field => 'Type', Value => $NewType );
 }
 
-=head2 SetContent
+sub _UpdateAttributes {
+    my $self = shift;
+    my %args = (
+        NewValues => {},
+        @_,
+    );
 
-If setting Content, require the ExecuteCode right.
+    my $type = $args{NewValues}{Type} || $self->Type;
 
-=cut
-
-sub SetContent {
-    my $self    = shift;
-    my $content = shift;
-
-    if ($self->Type eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
-        return ( undef, $self->loc('Permission Denied') );
+    # forbid updating content when the (possibly new) value of Type is Perl
+    if ($type eq 'Perl' && exists $args{NewValues}{Content}) {
+        if (!$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+            return $self->loc('Permission Denied');
+        }
     }
 
-    return $self->_Set( Field => 'Content', Value => $content );
+    return $self->SUPER::_UpdateAttributes(%args);
 }
 
 =head2 CompileCheck
