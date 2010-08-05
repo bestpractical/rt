@@ -48,6 +48,7 @@
 % $m->callback(CallbackName => 'Begin');
 
 @import "misc.css";
+@import "ticket-update.css";
 
 % $m->callback(CallbackName => 'End');
 

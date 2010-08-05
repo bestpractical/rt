@@ -102,22 +102,23 @@ hr.clear {
 
 /* Custom fields */
 
-.cflabel {
-    float: left;
-    padding-right: 0.5em;
-}
-
 .edit-custom-field {
     width: 48%;
     float: left;
     margin: 0.5em;
 }
 
+.edit-custom-field .cflabel {
+    float: left;
+    padding-right: 0.5em;
+}
+
 .cflabel .name { font-weight: bold; }
 .cflabel .type { font-style: italic; }
 
-.edit-custom-field .entry fieldset {
+fieldset.cfedit {
     border: none;
     padding: 0;
     margin: 0;
 }
+
