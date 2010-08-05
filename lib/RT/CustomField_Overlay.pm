@@ -1172,27 +1172,27 @@ sub AddValueForObject {
         }
     }
     # For date, we need to store Content as ISO date
-    if ($self->Type =~ /^Date(Time)?$/) {
-        my $is_datetime = $1 ? 1 : 0; 
+    if ( $self->Type eq 'DateTime' ) {
         my $DateObj = new RT::Date( $self->CurrentUser );
-        if ($is_datetime) {
-            $DateObj->Set(
-                Format => 'unknown',
-                Value  => $args{'Content'},
-            );
-            $args{'Content'} = $DateObj->ISO;
-        }
-        else {
-            # in case user input date with time, let's omit it by setting timezone 
-            # to utc so "hour" won't affect "day"
-            $DateObj->Set(
-                Format => 'unknown',
-                Value  => $args{'Content'},
-                Timezone => 'UTC',
-            );
-            $args{'Content'} = $DateObj->Date( Timezone => 'UTC' );
-        }
+        $DateObj->Set(
+            Format => 'unknown',
+            Value  => $args{'Content'},
+        );
+        $args{'Content'} = $DateObj->ISO;
     }
+    elsif ( $self->Type eq 'Date' ) {
+
+        # in case user input date with time, let's omit it by setting timezone
+        # to utc so "hour" won't affect "day"
+        my $DateObj = new RT::Date( $self->CurrentUser );
+        $DateObj->Set(
+            Format   => 'unknown',
+            Value    => $args{'Content'},
+            Timezone => 'UTC',
+        );
+        $args{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+    }
+
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my $val    = $newval->Create(
         ObjectType   => ref($obj),
