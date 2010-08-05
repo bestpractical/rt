@@ -47,66 +47,70 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $TicketObj => undef
+@fields => ()
+$InTable => 0
 </%ARGS>
 <%INIT>
-my @fields = (
-    {   name => 'Subject',
-        html => '<input name="Subject" value="'.$m->interp->apply_escapes( $TicketObj->Subject, 'h' ).'" size="50" />',
-    },
-    {   name => 'Status',
-        comp => '/Elements/SelectStatus',
-        args => {
-            Name => 'Status',
-            DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+unless ( @fields ) {
+    @fields = (
+        {   name => 'Subject',
+            html => '<input name="Subject" value="'.$m->interp->apply_escapes( $TicketObj->Subject, 'h' ).'" size="50" />',
         },
-    },
-    {   name => 'Queue',
-        comp => '/Elements/SelectQueue',
-        args => {
-            Name => 'Queue',
-            Default => $TicketObj->QueueObj->Id,
-            ShowNullOption => 0,
-        }
-    },
-    {   name => 'Owner',
-        comp => '/Elements/SelectOwner',
-        args => {
-            Name => 'Owner',
-            QueueObj => $TicketObj->QueueObj,
-            TicketObj => $TicketObj,
-            Default => $TicketObj->OwnerObj->Id,
-            DefaultValue => 0,
-        }
-    },
-    # Time Estimated, Worked, and Left
-    (
-        map {
-            (my $field = $_) =~ s/ //g;
-            {
-                name => $_,
-                comp => '/Elements/EditTimeValue',
-                args => {
-                    Name => $field,
-                    Default => $TicketObj->$field,
-                }
+        {   name => 'Status',
+            comp => '/Elements/SelectStatus',
+            args => {
+                Name => 'Status',
+                DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+            },
+        },
+        {   name => 'Queue',
+            comp => '/Elements/SelectQueue',
+            args => {
+                Name => 'Queue',
+                Default => $TicketObj->QueueObj->Id,
+                ShowNullOption => 0,
             }
-        } ('Time Estimated', 'Time Worked', 'Time Left')
-    ),
-    # Priority and Final Priority
-    (
-        map {
-            (my $field = $_) =~ s/ //g;
-            {
-                name => $_,
-                comp => '/Elements/SelectPriority',
-                args => {
-                    Name => $field,
-                    Default => $TicketObj->$field,
-                }
+        },
+        {   name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name => 'Owner',
+                QueueObj => $TicketObj->QueueObj,
+                TicketObj => $TicketObj,
+                Default => $TicketObj->OwnerObj->Id,
+                DefaultValue => 0,
             }
-        } ('Priority', 'Final Priority')
-    ),
-);
+        },
+        # Time Estimated, Worked, and Left
+        (
+            map {
+                (my $field = $_) =~ s/ //g;
+                {
+                    name => $_,
+                    comp => '/Elements/EditTimeValue',
+                    args => {
+                        Name => $field,
+                        Default => $TicketObj->$field,
+                    }
+                }
+            } ('Time Estimated', 'Time Worked', 'Time Left')
+        ),
+        # Priority and Final Priority
+        (
+            map {
+                (my $field = $_) =~ s/ //g;
+                {
+                    name => $_,
+                    comp => '/Elements/SelectPriority',
+                    args => {
+                        Name => $field,
+                        Default => $TicketObj->$field,
+                    }
+                }
+            } ('Priority', 'Final Priority')
+        ),
+    );
+}
 
 $m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
 
@@ -120,7 +124,9 @@ for my $field (@fields) {
 }
 </%INIT>
 
+% unless ($InTable) {
 <table>
+% }
 % for my $field (@fields) {
   <tr>
     <td class="label"><&|/l&><% $field->{'name'} %></&>:</td>
@@ -128,5 +134,7 @@ for my $field (@fields) {
   </tr>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
+% unless ($InTable) {
 </table>
+% }
 
