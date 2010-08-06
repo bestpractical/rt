@@ -52,34 +52,66 @@
     current_toptab => "Ticket/Create.html", 
     Title => $title,
     actions => $actions &>
+    
 <& /Elements/ListActions, actions => \@results &>
+
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
-<input type="hidden" class="hidden" name="id" value="new" />
+  <input type="hidden" class="hidden" name="id" value="new" />
+  
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+
 % if ($gnupg_widget) {
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+  <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
+
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
-<&| /Widgets/TitleBox, title => $title &>
-<table border="0" cellpadding="0" cellspacing="0">
-<tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
-<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Name %>" />
-</td>
-<td class="label"><&|/l&>Status</&>:
-</td>
-<td class="value">
-<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0, SkipDeleted => 1 &>
-</td>
-<td class="label">
-<&|/l&>Owner</&>:
-</td>
-<td class="value">
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
-</td>
+
+<div id="ticket-create-metadata">
+  <&| /Widgets/TitleBox, title => loc("Ticket") &>
+    <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Name %>" />
+    <table border="0">
+    <& /Ticket/Elements/EditBasics,
+        InTable => 1,
+        fields  => [
+            {   name => 'Queue',
+                comp => '/Ticket/Elements/ShowQueue',
+                args => {
+                    QueueObj => $QueueObj,
+                },
+            },
+            {   name => 'Status',
+                comp => '/Elements/SelectStatus',
+                args => {
+                    Name            => "Status",
+                    Default         => $ARGS{Status} || 'new',
+                    DefaultValue    => 0,
+                    SkipDeleted     => 1,
+                },
+            },
+            {   name => 'Owner',
+                comp => '/Elements/SelectOwner',
+                args => {
+                    Name            => "Owner",
+                    Default         => $ARGS{Owner} || $RT::Nobody->Id,
+                    DefaultValue    => 0,
+                    QueueObj        => $QueueObj,
+                },
+            }
+        ]
+        &>
+
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
-</tr>
+
+      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
+      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
+    </table>
+  </&>
+</div>
+
+<div id="ticket-create-message">
+  <&| /Widgets/TitleBox, title => $title, class => 'messagedetails' &>
+<table border="0" cellpadding="0" cellspacing="0">
 <tr>
 <td class="label">
 <&|/l&>Requestors</&>:
@@ -92,20 +124,34 @@
 <td class="label">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, Name => 'Cc', Size => '40', Default => $ARGS{Cc} &></td>
-<td class="comment" colspan="2"><i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
-</td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'Cc', Size => '40', Default => $ARGS{Cc} &></td>
 </tr>
+
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&>
+    </font></i>
+  </td>
+</tr>
+
 <tr>
 <td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} &></td>
-<td class="comment" colspan="2"><i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
-</td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} &></td>
 </tr>
+
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&>
+    </font></i>
+  </td>
+</tr>
+
 <tr>
 <td class="label">
 <&|/l&>Subject</&>:
@@ -115,14 +161,6 @@
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </td>
 </tr>
-<tr>
-<td colspan="6">
-<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
-</td>
-</tr>
-<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
-
-<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td colspan="5">
@@ -144,9 +182,12 @@
 <br />
 </td>
 </tr>
-</table>
-</&>
-<& /Elements/Submit, Label => loc("Create")&>
+
+        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+      </table>
+    </&>
+    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+  </div>
 </div>
 
 <div id="Ticket-Create-details">

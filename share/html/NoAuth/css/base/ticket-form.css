@@ -1,0 +1,37 @@
+#comp-Ticket-Update #body {
+    padding-top: 3em;
+}
+
+#ticket-create-message .button[name="AddMoreAttach"],
+#ticket-update-message .button[name="AddMoreAttach"] {
+    float: right;
+}
+
+#ticket-create-metadata .cflabel .name,
+#ticket-update-metadata .cflabel .name {
+    font-weight: normal;
+}
+
+#ticket-create-message .messagedetails,
+#ticket-update-message .messagedetails {
+    margin-bottom: 0.5em;
+}
+
+#ticket-create-message #SubmitTicket,
+#ticket-update-message #SubmitTicket {
+    padding-bottom: 2em;
+}
+
+#ticket-create-metadata,
+#ticket-update-metadata {
+    float: right;
+    width: 40%;
+    clear: right;
+}
+
+#ticket-create-message,
+#ticket-update-message {
+    float: left;
+    width: 58%;
+    clear: left;
+}

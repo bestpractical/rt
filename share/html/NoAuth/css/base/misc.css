@@ -102,13 +102,14 @@ hr.clear {
 
 /* Custom fields */
 
-.edit-custom-field {
+/* Only apply these when we're not rendering in a table, hence the leading div. */
+div.edit-custom-field {
     width: 48%;
     float: left;
     margin: 0.5em;
 }
 
-.edit-custom-field .cflabel {
+div.edit-custom-field .cflabel {
     float: left;
     padding-right: 0.5em;
 }

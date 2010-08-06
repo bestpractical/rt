@@ -50,12 +50,12 @@
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
 % my $Type = $CustomField->Type || 'Unknown';
-  <div class="edit-custom-field cftype-<% $Type %>">
-    <div class="cflabel">
+  <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
+    <<% $CELL %> class="cflabel">
       <span class="name"><% loc($CustomField->Name) %></span><br />
       <span class="type"><% $CustomField->FriendlyType %></span>
-    </div>
-    <div class="entry">
+    </<% $CELL %>>
+    <<% $CELL %> class="entry">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField, 
@@ -69,8 +69,8 @@
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
 %  }
-    </div>
-  </div>
+    </<% $CELL %>>
+  </<% $FIELD %>>
 % }
 
 </div>
@@ -88,6 +88,9 @@ if ($TicketObj && !$OnCreate) {
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
+my $FIELD = $AsTable ? 'tr' : 'div';
+my $CELL  = $AsTable ? 'td' : 'div';
+
 </%INIT>
 <%ARGS>
 $NamePrefix => ''
@@ -95,4 +98,5 @@ $TicketObj => undef
 $QueueObj => undef
 $OnCreate => undef
 $DefaultsFromTopArguments => 1
+$AsTable => 0
 </%ARGS>

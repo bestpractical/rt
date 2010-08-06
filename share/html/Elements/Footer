@@ -46,6 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# End of div#body from /Elements/PageLayout
+  <hr class="clear" />
 </div>
 % $m->callback( %ARGS );
 <div id="footer">
