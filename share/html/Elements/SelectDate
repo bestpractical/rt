@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="text" class="ui-datepicker" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+<input type="text" class="ui-datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
 <%init>
 unless ((defined $Default) or 
 	($current <= 0)) {
