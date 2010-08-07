@@ -17,6 +17,11 @@
     margin-bottom: 0.5em;
 }
 
+#ticket-create-message .messagedetails input[type="text"],
+#ticket-update-message .messagedetails input[type="text"] {
+    width: 90%;
+}
+
 #ticket-create-message #SubmitTicket,
 #ticket-update-message #SubmitTicket {
     padding-bottom: 2em;
