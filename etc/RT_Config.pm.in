@@ -995,25 +995,39 @@ ticked displays
 
 Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
 
+=item C<$UseSideBySideLayout>
+
+Should the ticket create and update forms use a more space efficient two column
+layout
+
+Default: yes
+
+=cut
+
+Set($UseSideBySideLayout, 1);
+
 =item C<$MessageBoxWidth>, C<$MessageBoxHeight>
 
 For message boxes, set the entry box width, height and what type of
 wrapping to use.  These options can be overridden by users in their
 preferences.
 
-Default width: 72, height: 15
+Default width: undef, height: 15
+
+When the width is set to undef, no column count is specified and the message
+box will take up 100% of the available width.
 
 These settings only apply to the non-RichText message box.
 See below for Rich Text settings.
 
 =cut
 
-Set($MessageBoxWidth, 72);
+Set($MessageBoxWidth, undef);
 Set($MessageBoxHeight, 15);
 
 =item C<$MessageBoxWrap>
 
-Default wrapping: "HARD"  (choices "SOFT", "HARD")
+Default wrapping: "SOFT"  (choices "SOFT", "HARD")
 
 Wrapping is disabled when using MessageBoxRichText because
 of a bad interaction between IE and wrapping with the Rich
@@ -1021,7 +1035,7 @@ Text Editor.
 
 =cut
 
-Set($MessageBoxWrap, "HARD");
+Set($MessageBoxWrap, "SOFT");
 
 =item C<$MessageBoxRichText>
 

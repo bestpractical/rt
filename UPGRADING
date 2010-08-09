@@ -26,6 +26,14 @@ record run the following script:
 
     perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
 
+The default for $MessageBoxWrap is now SOFT and $MessageBoxWidth is now unset
+by default.  This means the message box will expand to fill all the available
+width.  $MessageBoxWrap is also overridable by the user now.  These changes
+accommodate the new default two column layout for ticket create and update
+pages.  You may turn this layout off by setting $UseSideBySideLayout to 0.  To
+retain the original behavior, set $MessageBoxWrap to HARD and $MessageBoxWidth
+to 72.
+
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
 RT's ChartFont option has been changed from a string to a hash which

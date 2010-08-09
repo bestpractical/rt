@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
+<textarea class="messagebox" <% $cols |n %> rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
@@ -70,13 +70,19 @@ if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
     $wrap_type = qq(wrap="$Wrap");
 }
 
+# If there's no cols specified, we want to set the width to 100%
+my $cols = 'style="width: 100%"';
+if ( defined $Width and length $Width ) {
+    $cols = qq(cols="$Width");
+}
+
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
 $Name             => 'Content'
 $Default          => ''
-$Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} ) || 72
+$Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} )
 $Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
-$Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
+$Wrap             => RT->Config->Get('MessageBoxWrap', $session{'CurrentUser'} ) || 'SOFT'
 $IncludeSignature => RT->Config->Get('MessageBoxIncludeSignature');
 </%ARGS>
