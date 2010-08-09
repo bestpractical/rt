@@ -997,8 +997,9 @@ Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
 
 =item C<$UseSideBySideLayout>
 
-Should the ticket create and update forms use a more space efficient two column
-layout
+Should the ticket create and update forms use a more space efficient
+two column layout.  This layout may not work in narrow browsers if you
+set a MessageBoxWidth (below).
 
 Default: yes
 
