@@ -1015,8 +1015,10 @@ preferences.
 
 Default width: undef, height: 15
 
-When the width is set to undef, no column count is specified and the message
-box will take up 100% of the available width.
+When the width is set to undef, no column count is specified and the
+message box will take up 100% of the available width.  Combining this
+with HARD messagebox wrapping (below) is not recommended, as it will
+lead to inconsistent width in transactions between browsers.
 
 These settings only apply to the non-RichText message box.
 See below for Rich Text settings.
