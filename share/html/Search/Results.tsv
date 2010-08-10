@@ -114,8 +114,15 @@ else {
 
 my $ii = 0;
 while (my $row = $Tickets->Next) {
-    for (@columns) {
-        $m->out(join("\t", map { ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++]) } @$_)."\n");
+    for my $col (@columns) {
+        my @x = @$col;
+        $m->out(join("\t", map {
+            my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);
+            # remove tabs from all field values, they screw up the tsv
+            $val = '' unless defined $val;
+            $val =~ s/(?:\n|\r)//g; $val =~ s{\t}{    }g;
+            $val;
+        } @$col)."\n");
     }
 }
 $m->abort();
