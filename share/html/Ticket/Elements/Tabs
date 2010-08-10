@@ -115,7 +115,10 @@ if ($Ticket) {
         current_subtab => $current_subtab
     };
 
-    my %can = ( ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'), );
+    my %can = (
+        ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'),
+        ModifyCustomField => $Ticket->CurrentUserHasRight('ModifyCustomField'),
+    );
 
     my $ticket_page_tabs = {
         _A => {
@@ -129,11 +132,14 @@ if ($Ticket) {
         },
     };
 
-    if ($can{ModifyTicket}) {
+    if ($can{ModifyTicket} || $can{ModifyCustomField}) {
         $ticket_page_tabs->{_B} = {
             title => loc('Basics'),
             path  => "Ticket/Modify.html?id=" . $id,
         };
+    }
+
+    if ($can{ModifyTicket}) {
         $ticket_page_tabs->{_C} = {
             title => loc('Dates'),
             path  => "Ticket/ModifyDates.html?id=" . $id,
@@ -146,6 +152,9 @@ if ($Ticket) {
             title => loc('Links'),
             path  => "Ticket/ModifyLinks.html?id=" . $id,
         };
+    }
+
+    if ($can{ModifyTicket} || $can{ModifyCustomField}) {
         $ticket_page_tabs->{_X} = {
             title => loc('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id,
