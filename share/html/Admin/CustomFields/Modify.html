@@ -131,7 +131,7 @@
 </td></tr>
 % }
 
-% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj);
+% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
@@ -139,7 +139,7 @@
 <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 
-% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj);
+% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 </table>
 
