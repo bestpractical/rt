@@ -51,7 +51,7 @@
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
 
     <&| /Widgets/TitleBox, title => loc('The Basics'),
-        ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
+        (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-basics',
     &>
         <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
@@ -59,7 +59,7 @@
 
 % if ($Ticket->CustomFields->First) {
     <&| /Widgets/TitleBox, title => loc('Custom Fields'),
-        ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
+        (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-cfs',
     &>
         <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
@@ -127,4 +127,5 @@ $Attachments => undef
 </%ARGS>
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
+my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 </%INIT>
