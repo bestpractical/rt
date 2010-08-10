@@ -120,6 +120,10 @@ if ($Ticket) {
         ModifyCustomField => $Ticket->CurrentUserHasRight('ModifyCustomField'),
     );
 
+    $can{_ModifyOwner} = $Ticket->CurrentUserHasRight('OwnTicket')
+                      || $Ticket->CurrentUserHasRight('TakeTicket')
+                      || $Ticket->CurrentUserHasRight('StealTicket');
+
     my $ticket_page_tabs = {
         _A => {
             title => loc('Display'),
@@ -139,14 +143,17 @@ if ($Ticket) {
         };
     }
 
+    if ($can{ModifyTicket} || $can{_ModifyOwner}) {
+        $ticket_page_tabs->{_D} = {
+            title => loc('People'),
+            path  => "Ticket/ModifyPeople.html?id=" . $id,
+        };
+    }
+
     if ($can{ModifyTicket}) {
         $ticket_page_tabs->{_C} = {
             title => loc('Dates'),
             path  => "Ticket/ModifyDates.html?id=" . $id,
-        };
-        $ticket_page_tabs->{_D} = {
-            title => loc('People'),
-            path  => "Ticket/ModifyPeople.html?id=" . $id,
         };
         $ticket_page_tabs->{_E} = {
             title => loc('Links'),
@@ -154,7 +161,7 @@ if ($Ticket) {
         };
     }
 
-    if ($can{ModifyTicket} || $can{ModifyCustomField}) {
+    if ($can{ModifyTicket} || $can{ModifyCustomField} || $can{_ModifyOwner}) {
         $ticket_page_tabs->{_X} = {
             title => loc('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id,
