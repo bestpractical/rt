@@ -62,6 +62,8 @@ my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Disp
 
 my @columns;
 
+my $should_loc = { map { $_ => 1 } qw(Status) };
+
 my $col_entry = sub {
     my $col = shift;
     return {
@@ -71,6 +73,7 @@ my $col_entry = sub {
             Name  => $col->{attribute},
             Attr  => 'value'
         ),
+        should_loc => $should_loc->{$col->{attribute}},
     }
 };
 
@@ -117,6 +120,7 @@ while (my $row = $Tickets->Next) {
     for my $col (@columns) {
         $m->out(join("\t", map {
             my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);
+            $val = loc($val) if $_->{should_loc};
             # remove tabs from all field values, they screw up the tsv
             $val = '' unless defined $val;
             $val =~ s/(?:\n|\r)//g; $val =~ s{\t}{    }g;
