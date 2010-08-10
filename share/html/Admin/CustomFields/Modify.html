@@ -160,7 +160,7 @@ my ($title, @results, $Disabled);
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 my $current_tab = 'Admin/CustomFields/Modify.html';
 
-$m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS);
+$m->callback(CallbackName => 'Initial', Pattern => \$Pattern);
 
 unless ( $id ) {
     $title = loc("Create a CustomField");
