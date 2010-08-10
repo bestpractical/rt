@@ -2516,6 +2516,18 @@ sub MergeInto {
 
     $RT::Handle->BeginTransaction();
 
+    $self->_MergeInto( $MergeInto );
+
+    $RT::Handle->Commit();
+
+    return ( 1, $self->loc("Merge Successful") );
+}
+
+sub _MergeInto {
+    my $self      = shift;
+    my $MergeInto = shift;
+
+
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
     # by trying to do a separate database query for merge info everytime 
@@ -2649,9 +2661,6 @@ sub MergeInto {
     $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->Id());
 
     $MergeInto->_SetLastUpdated;    
-
-    $RT::Handle->Commit();
-    return ( 1, $self->loc("Merge Successful") );
 }
 
 =head2 Merged
