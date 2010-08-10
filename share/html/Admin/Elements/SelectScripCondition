@@ -59,9 +59,19 @@
 
 <%INIT>
 my $ScripConditions = RT::ScripConditions->new($session{'CurrentUser'});
-$ScripConditions->UnLimit;
-$ScripConditions->OrderBy(FIELD => 'Name');
 
+# hide user-defined if the user can't execute code
+if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
+    $ScripConditions->UnLimit;
+} else {
+    $ScripConditions->Limit(
+        FIELD    => 'ExecModule',
+        OPERATOR => '!=',
+        VALUE    => 'UserDefined',
+    );
+}
+
+$ScripConditions->OrderBy(FIELD => 'Name');
 
 </%INIT>
 <%ARGS>
