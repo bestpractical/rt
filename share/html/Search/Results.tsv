@@ -62,7 +62,7 @@ my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Disp
 
 my @columns;
 
-sub col_entry {
+my $col_entry = sub {
     my $col = shift;
     return {
         header => loc($col->{title} || $col->{attribute}),
@@ -72,7 +72,7 @@ sub col_entry {
             Attr  => 'value'
         ),
     }
-}
+};
 
 if ($PreserveNewLines) {
     my $col = [];
@@ -83,13 +83,13 @@ if ($PreserveNewLines) {
             push @columns, $col;
         }
         else {
-            push @$col, col_entry($_);
+            push @$col, $col_entry->($_);
         }
     }
 }
 else {
     push @columns, [map { $_->{attribute}
-                          ? col_entry($_)
+                          ? $col_entry->($_)
                           : () } @Format];
 }
 
@@ -115,7 +115,6 @@ else {
 my $ii = 0;
 while (my $row = $Tickets->Next) {
     for my $col (@columns) {
-        my @x = @$col;
         $m->out(join("\t", map {
             my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);
             # remove tabs from all field values, they screw up the tsv
