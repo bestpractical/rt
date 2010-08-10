@@ -1,3 +1,7 @@
+.ticket-info-basics input[name="Subject"] {
+    width: 20em;
+}
+
 #ticket-create-metadata .cflabel .name,
 #ticket-update-metadata .cflabel .name {
     font-weight: normal;

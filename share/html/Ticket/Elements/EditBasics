@@ -49,25 +49,27 @@
 $TicketObj => undef
 @fields => ()
 $InTable => 0
+%defaults => ()
 </%ARGS>
 <%INIT>
 unless ( @fields ) {
     @fields = (
         {   name => 'Subject',
-            html => '<input name="Subject" value="'.$m->interp->apply_escapes( $TicketObj->Subject, 'h' ).'" size="50" />',
+            html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
         },
         {   name => 'Status',
             comp => '/Elements/SelectStatus',
             args => {
                 Name => 'Status',
                 DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+                Default => $defaults{'Status'} || undef,
             },
         },
         {   name => 'Queue',
             comp => '/Elements/SelectQueue',
             args => {
                 Name => 'Queue',
-                Default => $TicketObj->QueueObj->Id,
+                Default => $defaults{'Queue'} || $TicketObj->QueueObj->Id,
                 ShowNullOption => 0,
             }
         },
@@ -77,7 +79,7 @@ unless ( @fields ) {
                 Name => 'Owner',
                 QueueObj => $TicketObj->QueueObj,
                 TicketObj => $TicketObj,
-                Default => $TicketObj->OwnerObj->Id,
+                Default => $defaults{'Owner'} || $TicketObj->OwnerObj->Id,
                 DefaultValue => 0,
             }
         },
@@ -90,7 +92,7 @@ unless ( @fields ) {
                     comp => '/Elements/EditTimeValue',
                     args => {
                         Name => $field,
-                        Default => $TicketObj->$field,
+                        Default => $defaults{$field} || $TicketObj->$field,
                     }
                 }
             } ('Time Estimated', 'Time Worked', 'Time Left')
@@ -104,7 +106,7 @@ unless ( @fields ) {
                     comp => '/Elements/SelectPriority',
                     args => {
                         Name => $field,
-                        Default => $TicketObj->$field,
+                        Default => $defaults{$field} || $TicketObj->$field,
                     }
                 }
             } ('Priority', 'Final Priority')
