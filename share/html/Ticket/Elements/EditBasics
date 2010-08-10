@@ -130,7 +130,7 @@ for my $field (@fields) {
 <table>
 % }
 % for my $field (@fields) {
-  <tr>
+  <tr class="<% lc $field->{'name'} %>">
     <td class="label"><&|/l&><% $field->{'name'} %></&>:</td>
     <td class="value"><% $field->{'html'} |n %></td>
   </tr>
