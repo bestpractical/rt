@@ -173,6 +173,13 @@ if ( $QueueObj->Id ) {
             qw(Sign Encrypt Disabled);
     }
 
+    $m->callback(
+        CallbackName => 'BeforeUpdate',
+        Queue => $QueueObj,
+        AttributesRef => \@attribs,
+        ARGSRef => \%ARGS,
+    );
+
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object => $QueueObj, 
