@@ -49,22 +49,60 @@
 $focus => undef
 $onload => undef
 </%args>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
+
+% if ( RT->Config->Get('DevelMode' ) ) {
+% for my $jsfile ( RT->Config->Get('JSFilesInHead') ) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
+% } }
+% else {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/squished.js"></script>
+% }
+
+<script type="text/javascript">
+	jQuery(function() {
+		jQuery(".ui-datepicker:not(.withtime)").datepicker( {
+            dateFormat: 'yy-mm-dd',
+            constrainInput: false, 
+        } );
+
+		jQuery(".ui-datepicker.withtime").datepicker( {
+            dateFormat: 'yy-mm-dd',
+            constrainInput: false, 
+            onSelect: function( dateText, inst ) { 
+                // trigger timepicker to get time
+                var button = document.createElement('input');
+                button.setAttribute('type',  'button');
+                jQuery(button).width('5em');
+                jQuery(button).insertAfter(this);
+                jQuery(button).timepickr({val: '00:00'});
+                var date_input = this;
+
+                jQuery(button).blur( function() {
+                    var time = jQuery(button).val();
+                    if ( ! time.match(/\d\d:\d\d/) ) {
+                        time = '00:00';
+                    }
+                    jQuery(date_input).val(  dateText + ' ' + time + ':00' );
+                    jQuery(button).remove();
+                } );
+
+                jQuery(button).focus();
+            }
+        } );
+	});
+</script>
+
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
-    doOnLoad(loadTitleBoxStates);
+	jQuery( loadTitleBoxStates );
 % if ( $focus ) {
-    doOnLoad(function () { focusElementById('<% $focus %>') });
+    jQuery(function () { focusElementById('<% $focus %>') });
 % }
 
 % if ( $onload ) {
-    doOnLoad(<% $onload |n %>);
+    jQuery( <% $onload |n %> );
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
@@ -117,6 +155,6 @@ $onload => undef
             }
         }
     }
-    doOnLoad(ReplaceAllTextareas);
+    jQuery(ReplaceAllTextareas);
 % }
 --></script>

@@ -46,6 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
+<<<<<<< HEAD
 #body.calpopup {
     margin-left: 1em;
     margin-top: 1em;
@@ -71,6 +72,9 @@
     padding: 0 0.25em 0 0.25em;
     font-size: 1.5em;
 }
+=======
+@import "../base/misc.css";
+>>>>>>> no-prototype
 
 .comment { 
  padding-left: 0.5em;

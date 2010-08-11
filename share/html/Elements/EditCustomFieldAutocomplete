@@ -46,22 +46,25 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea>
 <script type="text/javascript">
-new Ajax.Autocompleter(
-    "<% $name %>-Values",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    { tokens: [ '\n' ] }
+var id = '<% $name . '-Values' %>';
+id = id.replace(/:/g,'\\:');
+jQuery('#'+id).autocomplete( {
+    serviceUrl: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
+    delimiter: "\n",
+    params: { '<% $name . '-Values' %>': '' },
+}
 );
 % } else {
-<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/>
 <script type="text/javascript">
-new Ajax.Autocompleter(
-    "<% $name %>-Value",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    {}
+var id = '<% $name . '-Value' %>';
+id = id.replace(/:/g,'\\:');
+jQuery('#'+id).autocomplete( {
+    serviceUrl: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
+    params: { '<% $name . '-Value' %>': '' },
+}
 );
 % }
 </script>

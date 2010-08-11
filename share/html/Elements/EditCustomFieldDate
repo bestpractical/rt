@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#  
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,45 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% my $name = $NamePrefix.$CustomField->Id.'-Values';
+<& /Elements/SelectDate, Name => "$name", current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0)%>)
 
-<% JSON::to_json( $result ) |n %>
-% $m->abort;
 <%INIT>
-my ($CustomField, $Value);
-$Value = $ARGS{query};
-for my $k ( keys %ARGS ) {
-    next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
-    $CustomField = $1;
-    last;
-}
-
-$m->abort unless $CustomField;
-my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
-my $values = $CustomFieldObj->Values;
-
-$values->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
-);
-
-$values->Limit(
-    ENTRYAGGREGATOR => 'OR',
-    FIELD           => 'Description',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
-);
-
-my @suggestions;
-while( my $value = $values->Next ) {
-    push @suggestions, $value->Name;
-}
-my $result = {
-    query => $Value,
-    suggestions => \@suggestions,
-};
-require JSON;
+my $DateObj = new RT::Date ( $session{'CurrentUser'} );
+$DateObj->Set( Format => 'unknown', Value => $Default );
 </%INIT>
+<%ARGS>
+$Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Default => undef
+$Values => undef
+$MaxValues => 1
+</%ARGS>
