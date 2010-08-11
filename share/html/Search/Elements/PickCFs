@@ -78,20 +78,42 @@ while ( my $CustomField = $CustomFields->Next ) {
     my %line;
     $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
     $line{'Field'} = $CustomField->Name;
-    $line{'Op'} = {
-        Type => 'component',
-        Path => '/Elements/SelectCustomFieldOperator',
-        Arguments => { True => loc("is"),
-                       False => loc("isn't"),
-                       TrueVal=> '=',
-                       FalseVal => '!=',
-                     },
-    };
-    $line{'Value'} = {
-        Type => 'component',
-        Path => '/Elements/SelectCustomFieldValue',
-        Arguments => { CustomField => $CustomField },
-    };
+
+    # Op
+    if ($CustomField->Type =~ /^Date(Time)?$/ ) {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectDateRelation',
+            Arguments => {},
+        };
+    } else {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectCustomFieldOperator',
+            Arguments => { True => loc("is"),
+                           False => loc("isn't"),
+                           TrueVal=> '=',
+                           FalseVal => '!=',
+                         },
+        };
+    }
+
+    # Value
+    if ($CustomField->Type =~ /^Date(Time)?$/) {
+        my $is_datetime = $1 ? 1 : 0;
+        $line{'Value'} = {
+            Type => 'component',
+            Path => '/Elements/SelectDate',
+            Arguments => { $is_datetime ? ( ShowTime => 0 ) : (), },
+        };
+    } else {
+        $line{'Value'} = {
+            Type => 'component',
+            Path => '/Elements/SelectCustomFieldValue',
+            Arguments => { CustomField => $CustomField },
+        };
+    }
+
     push @lines, \%line;
 }
 

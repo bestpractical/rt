@@ -253,6 +253,9 @@ XML::RSS 1.05
 Text::WikiFormat 0.76
 CSS::Squish 0.06
 Devel::StackTrace 1.19
+JSON
+JavaScript::Minifier
+IPC::Run3
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
@@ -294,7 +297,6 @@ Test::HTTP::Server::Simple::StashWarnings 0.02
 Log::Dispatch::Perl
 Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
-IPC::Run3
 Test::MockTime
 HTTP::Server::Simple::Mason 0.13
 Log::Dispatch::Perl

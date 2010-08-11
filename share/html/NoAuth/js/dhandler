@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,45 +45,64 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<%ONCE>
+my $content = '';
+</%ONCE>
 
-<% JSON::to_json( $result ) |n %>
-% $m->abort;
 <%INIT>
-my ($CustomField, $Value);
-$Value = $ARGS{query};
-for my $k ( keys %ARGS ) {
-    next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
-    $CustomField = $1;
-    last;
+my $arg = $m->dhandler_arg;
+my $path;
+if ( $arg =~ m{squished\.js$} ) {
+    $path = $m->current_comp->dir_path;
+    unless ( $content ) {
+        require File::Spec;
+
+        for my $js ( RT->Config->Get('JSFilesInHead') ) {
+            my $file = File::Spec->catfile( $path, $js );
+            my $input = $m->scomp($file);
+            $content .= $input;
+        }
+
+        my $minified;
+        my $jsmin = RT->Config->Get( 'JSMinPath' );
+        if ( $jsmin && -x $jsmin ) {
+            my $input = $content;
+            my ( $output, $error );
+
+            my $stdout = IO::Handle->new;
+            $stdout->fdopen( 1, 'w' );
+            local *STDOUT = $stdout;
+
+            my $stderr = IO::Handle->new;
+            $stderr->fdopen( 2, 'w' );
+            local *STDERR = $stderr;
+
+            local $SIG{'CHLD'} = 'DEFAULT';
+            require IPC::Run3;
+            IPC::Run3::run3( [$jsmin], \$input, \$output, \$error );
+            if ( $? >> 8 ) {
+                $RT::Logger->warning("failed to jsmin: $error ");
+            }
+            else {
+                $content = $output;
+                $minified = 1;
+            }
+        }
+
+        unless ($minified) {
+            eval { require JavaScript::Minifier };
+            if ($@) {
+                $RT::Logger->debug("can't load JavaScript::Minifier: $@");
+            }
+            else {
+                $content = JavaScript::Minifier::minify( input => $content );
+            }
+        }
+    }
+    $m->out( $content );
+}
+else {
+    return $m->decline;
 }
 
-$m->abort unless $CustomField;
-my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
-my $values = $CustomFieldObj->Values;
-
-$values->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
-);
-
-$values->Limit(
-    ENTRYAGGREGATOR => 'OR',
-    FIELD           => 'Description',
-    OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
-);
-
-my @suggestions;
-while( my $value = $values->Next ) {
-    push @suggestions, $value->Name;
-}
-my $result = {
-    query => $Value,
-    suggestions => \@suggestions,
-};
-require JSON;
 </%INIT>
