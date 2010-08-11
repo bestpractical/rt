@@ -144,12 +144,6 @@ if ( $self->{'Encrypt'} ) {
 
     if ( $Operation eq 'Update' ) {
         # skip any email addresses that we won't be sending mail to
-        my %squelch = $m->comp(
-            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
-            %$self,
-            TicketObj => $TicketObj
-        );
-
         @recipients = $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipients',
             %$self, TicketObj => $TicketObj
