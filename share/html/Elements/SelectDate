@@ -45,7 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="text" class="ui-datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+<script type="text/javascript"><!--
+    onLoadHook('createCalendarLink("<% $Name %>");');
+--></script>
+% $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput' );
+<input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+% $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput' );
 <%init>
 unless ((defined $Default) or 
 	($current <= 0)) {
@@ -60,9 +65,6 @@ $Value = $Value || $Default;
 unless ($Name) {
 	$Name = $menu_prefix. "_Date";
 }
-
-my $escaped_name = $Name;
-$escaped_name =~ s/'/\\'/g;
 </%init>
 
 <%args>

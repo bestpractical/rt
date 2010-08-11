@@ -84,11 +84,11 @@
 
 #pick-criteria td.value input,
 #pick-criteria td.value select {
- width: 11em;
+ width: 10em;
 }
 
 #pick-criteria td.value #ValueOfDate {
- width: 11em;
+ width: 6em;
 }
 
 

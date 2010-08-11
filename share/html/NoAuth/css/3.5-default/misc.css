@@ -53,6 +53,22 @@ body {
     background-color: white;
 }
 
+#body.calpopup {
+    margin-left: 2em;
+}
+
+.calendar {
+    text-align: center;
+    margin: 2em 0 0 0;
+}
+
+.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
+
+.calendar caption .month {
+    padding: 0 1em 0 1em;
+    font-size: 1.5em;
+}
+
 .evenline { background-color: white; }
 .oddline { background-color: #ddd; }
 

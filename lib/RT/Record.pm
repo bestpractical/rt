@@ -1736,26 +1736,6 @@ sub _AddCustomFieldValue {
         }
 
         my $new_content = $new_value->Content;
-
-        # For datetime, we need to display them in "human" format in result message
-        #XXX TODO how about date without time?
-        if ($cf->Type eq 'DateTime') {
-            my $DateObj = new RT::Date( $self->CurrentUser );
-            $DateObj->Set(
-                Format => 'ISO',
-                Value  => $new_content,
-            );
-            $new_content = $DateObj->AsString;
-
-            if ( defined $old_content && length $old_content ) {
-                $DateObj->Set(
-                    Format => 'ISO',
-                    Value  => $old_content,
-                );
-                $old_content = $DateObj->AsString;
-            }
-        }
-
         unless ( defined $old_content && length $old_content ) {
             return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
@@ -1844,21 +1824,11 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
     }
 
-    my $old_value = $TransactionObj->OldValue;
-    # For datetime, we need to display them in "human" format in result message
-    if ( $cf->Type eq 'DateTime' ) {
-        my $DateObj = new RT::Date( $self->CurrentUser );
-        $DateObj->Set(
-            Format => 'ISO',
-            Value  => $old_value,
-        );
-        $old_value = $DateObj->AsString;
-    }
     return (
         $TransactionId,
         $self->loc(
             "[_1] is no longer a value for custom field [_2]",
-            $old_value, $cf->Name
+            $TransactionObj->OldValue, $cf->Name
         )
     );
 }
