@@ -97,6 +97,16 @@ our %FieldTypes = (
         'Enter one value with autocompletion',            # loc
         'Enter up to [_1] values with autocompletion',    # loc
     ],
+    Date => [
+        'Select multiple dates',	# loc
+        'Select date',			# loc
+        'Select up to [_1] dates',	# loc
+    ],
+    DateTime => [
+        'Select multiple datetimes',	# loc
+        'Select datetime',			# loc
+        'Select up to [_1] datetimes',	# loc
+    ],
 );
 
 
@@ -830,7 +840,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 SetLookupType
@@ -1161,6 +1171,28 @@ sub AddValueForObject {
             $extra_values--;
         }
     }
+    # For date, we need to store Content as ISO date
+    if ( $self->Type eq 'DateTime' ) {
+        my $DateObj = new RT::Date( $self->CurrentUser );
+        $DateObj->Set(
+            Format => 'unknown',
+            Value  => $args{'Content'},
+        );
+        $args{'Content'} = $DateObj->ISO;
+    }
+    elsif ( $self->Type eq 'Date' ) {
+
+        # in case user input date with time, let's omit it by setting timezone
+        # to utc so "hour" won't affect "day"
+        my $DateObj = new RT::Date( $self->CurrentUser );
+        $DateObj->Set(
+            Format   => 'unknown',
+            Value    => $args{'Content'},
+            Timezone => 'UTC',
+        );
+        $args{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+    }
+
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my $val    = $newval->Create(
         ObjectType   => ref($obj),
