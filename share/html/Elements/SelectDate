@@ -60,9 +60,6 @@ $Value = $Value || $Default;
 unless ($Name) {
 	$Name = $menu_prefix. "_Date";
 }
-
-my $escaped_name = $Name;
-$escaped_name =~ s/'/\\'/g;
 </%init>
 
 <%args>
