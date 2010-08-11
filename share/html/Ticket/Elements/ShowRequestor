@@ -100,6 +100,5 @@ while ( my $requestor = $people->Next ) {
 % }
 <%ARGS>
 $Ticket=>undef
-$DisplayPath => "/Ticket/Display.html"
 $conditions => []
 </%ARGS>
