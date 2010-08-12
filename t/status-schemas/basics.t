@@ -4,8 +4,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-require 't/status-schemas/utils.pl';
-use Test::More tests => 49;
+BEGIN {require  't/status-schemas/utils.pl'};
 
 my $general = RT::Test->load_or_create_queue(
     Name => 'General',
@@ -36,6 +35,7 @@ diag "check status input on create";
 {
     $m->goto_create_ticket( $general );
 
+    diag $m->uri;
     my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input('Status'), 'found status selector';
 
@@ -44,7 +44,9 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        $valid = 0 unless $general->status_schema->is_valid($_);
+        next if $general->status_schema->is_valid($_);
+        $valid = 0;
+        diag("$_ doesn't appear to be a valid status, but it was in the form");
     }
     ok $valid, 'all statuses in the form are valid';
 }
@@ -67,13 +69,13 @@ diag "new ->(open it)-> open";
         ok scalar @links, 'found links';
         my $found = 1;
         foreach my $t ('Open It', 'Resolve', 'Reject', 'Delete') {
-            $found = 0 unless grep $_->text eq $t, @links;
+            $found = 0 unless grep {($_->text ||'') eq $t} @links;
         }
         ok $found, 'found all transitions';
 
         $found = 0;
         foreach my $t ('Stall', 'Re-open', 'Undelete') {
-            $found = 1 if grep $_->text eq $t, @links;
+            $found = 1 if grep {($_->text||'') eq $t} @links;
         }
         ok !$found, 'no unwanted transitions';
     }
@@ -96,13 +98,13 @@ diag "open ->(stall)-> stalled";
         ok scalar @links, 'found links';
         my $found = 1;
         foreach my $t ('Stall', 'Resolve', 'Reject') {
-            $found = 0 unless grep $_->text eq $t, @links;
+            $found = 0 unless grep { ($_->text ||'') eq $t} @links;
         }
         ok $found, 'found all transitions';
 
         $found = 0;
         foreach my $t ('Open It', 'Delete', 'Re-open', 'Undelete') {
-            $found = 1 if grep $_->text eq $t, @links;
+            $found = 1 if grep { ($_->text ||'') eq $t} @links;
         }
         ok !$found, 'no unwanted transitions';
     }
@@ -125,13 +127,13 @@ diag "stall ->(open it)-> open";
         ok scalar @links, 'found links';
         my $found = 1;
         foreach my $t ('Open It') {
-            $found = 0 unless grep $_->text eq $t, @links;
+            $found = 0 unless grep {($_->text ||'')eq $t} @links;
         }
         ok $found, 'found all transitions';
 
         $found = 0;
         foreach my $t ('Delete', 'Re-open', 'Undelete', 'Stall', 'Resolve', 'Reject') {
-            $found = 1 if grep $_->text eq $t, @links;
+            $found = 1 if grep { ($_->text ||'') eq $t} @links;
         }
         ok !$found, 'no unwanted transitions';
     }
