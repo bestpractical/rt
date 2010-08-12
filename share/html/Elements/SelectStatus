@@ -4,8 +4,7 @@
 %}
 %foreach my $status (@status) {
 %next if ($SkipDeleted && $status eq 'deleted');
-<option value="<%$status%>"<% (defined $Default && $status eq $Default) && qq[ selected="selected"] |n %>><%loc($status)%></o
-ption>
+<option value="<%$status%>"<% (defined $Default && $status eq $Default) && qq[ selected="selected"] |n %>><%loc($status)%></option>
 % }
 </select>
 <%INIT>
