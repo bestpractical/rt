@@ -46,12 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-my $has_right_adminusers = $session{'CurrentUser'}->HasRight(
-    Object => $RT::System, Right => 'AdminUsers'
-);
-$has_right_adminusers &&= $session{'CurrentUser'}->HasRight(
-    Object => $RT::System, Right => 'ShowConfigTab'
-);
 my $people = $Ticket->Requestors->UserMembersObj;
 while ( my $requestor = $people->Next ) {
     next if !$show_privileged && $requestor->Privileged;
@@ -83,6 +77,13 @@ while ( my $requestor = $people->Next ) {
 
 % }
 <%INIT>
+my $has_right_adminusers = $session{'CurrentUser'}->HasRight(
+    Object => $RT::System, Right => 'AdminUsers'
+);
+$has_right_adminusers &&= $session{'CurrentUser'}->HasRight(
+    Object => $RT::System, Right => 'ShowConfigTab'
+);
+
 my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
 </%INIT>
 <%ARGS>
