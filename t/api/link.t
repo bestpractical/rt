@@ -26,7 +26,7 @@ my ($pid, undef, $msg) = $parent->Create(
 ok $pid, 'created a ticket #'. $pid or diag "error: $msg";
 
 my $child = RT::Ticket->new($RT::SystemUser);
-my ($cid, undef, $msg) = $child->Create(
+((my $cid), undef, $msg) = $child->Create(
     Queue   => $queue->id,
     Subject => 'child',
 );
