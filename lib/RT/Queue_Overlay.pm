@@ -109,11 +109,13 @@ our $RIGHTS = {
     CommentOnTicket => 'Comment on tickets',                          # loc_pair
     OwnTicket       => 'Own tickets',                                 # loc_pair
     ModifyTicket    => 'Modify tickets',                              # loc_pair
+    ModifyTicketStatus    => 'Modify ticket status',                              # loc_pair
     DeleteTicket    => 'Delete tickets',                              # loc_pair
+    RejectTicket    => 'Reject tickets',                              # loc_pair
     TakeTicket      => 'Take tickets',                                # loc_pair
     StealTicket     => 'Steal tickets',                               # loc_pair
 
-    ForwardMessage  => 'Forward messages to third person(s)',         # loc_pair
+    ForwardMessage  => 'Forward messages outside of RT',         # loc_pair
 
 };
 

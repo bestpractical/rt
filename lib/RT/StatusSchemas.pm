@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-no warnings 'redefine';
 
 package RT::StatusSchemas;
 

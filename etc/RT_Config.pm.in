@@ -1752,19 +1752,51 @@ Set($ApprovalRejectionNotes, 1);
 
 =head1 Miscellaneous Configuration
 
-=over 4
-
-=item C<@ActiveStatus>, C<@InactiveStatus>
-
-You can define new statuses and even reorder existing statuses here.
-WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
-will break horribly. The statuses you add must be no longer than
-10 characters.
-
 =cut
 
-Set(@ActiveStatus, qw(new open stalled));
-Set(@InactiveStatus, qw(resolved rejected deleted));
+    Set( %StatusSchemaMeta,
+        default => {
+            initial  => ['new'],
+            active   => ['open', 'stalled'],
+            inactive => ['resolved', 'rejected', 'deleted'],
+
+            transitions => {
+                # from   => [ to list ],
+                new      => [qw(open resolved rejected deleted)],
+                open     => [qw(stalled resolved rejected deleted)],
+                stalled  => [qw(open)],
+                resolved => [qw(open)],
+                rejected => [qw(open)],
+                deleted  => [qw(open)],
+            },
+            rights  => {
+                '* -> deleted'  => 'DeleteTicket',
+                '* -> rejected' => 'RejectTicket',
+                '* -> *'        => 'ModifyTicketStatus',
+            },
+            actions => {
+                # 'from -> to'    => [action text, Respond/Comment/hide/''],
+                'new -> open'     => ['Open It', 'Respond'],
+                'new -> resolved' => ['Resolve', 'Comment'],
+                'new -> rejected' => ['Reject',  'Respond'],
+                'new -> deleted'  => ['Delete',  ''],
+
+                'open -> stalled'  => ['Stall',   'Comment'],
+                'open -> resolved' => ['Resolve', 'Comment'],
+                'open -> rejected' => ['Reject',  'Respond'],
+                'open -> deleted'  => ['Delete',  'hide'],
+
+                'stalled -> open'  => ['Open It',  ''],
+                'resolved -> open' => ['Re-open',  'Comment'],
+                'rejected -> open' => ['Re-open',  'Comment'],
+                'deleted -> open'  => ['Undelete', ''],
+            },
+        },
+    );
+
+
+
+
 
 =item C<$LinkTransactionsRun1Scrip>
 

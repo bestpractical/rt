@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-require 't/utils.pl';
+require 't/status-schemas/utils.pl';
 use Test::More tests => 49;
 
 my $general = RT::Test->load_or_create_queue(

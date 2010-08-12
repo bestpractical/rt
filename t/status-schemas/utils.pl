@@ -3,14 +3,10 @@
 use strict;
 use warnings;
 
-### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 my $config;
 BEGIN {
 $config = <<END;
-Set(\@Plugins, 'RT::Extension::StatusSchemas');
-
 Set(\%StatusSchemaMeta,
     default => {
         initial  => ['new'],
