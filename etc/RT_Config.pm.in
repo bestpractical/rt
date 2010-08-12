@@ -862,6 +862,15 @@ EmailAddress.
 
 Set($UsernameFormat, 'concise');
 
+=item C<$ShowMoreAboutPrivilegedUsers>
+
+This determines if the 'More about Requestor' box on Ticket/Display.html is
+shown for Privileged Users.
+
+=cut
+
+Set($ShowMoreAboutPrivilegedUsers, 0);
+
 =item C<$WebDomain>
 
 Domain name of the RT server, eg 'www.example.com'. It should not contain
