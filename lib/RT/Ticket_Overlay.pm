@@ -2203,6 +2203,89 @@ sub _RecordNote {
 
 # }}}
 
+=head2 DryRun
+
+Builds a MIME object from the given C<UpdateSubject> and
+C<UpdateContent>, then calls L</Comment> or L</Correspond> with
+C<< DryRun => 1 >>, and returns the transaction so produced.
+
+=cut
+
+sub DryRun {
+    my $self = shift;
+    my %args = @_;
+    my $action;
+    if ($args{'UpdateType'} || $args{Action} =~ /^respon(d|se)$/i ) {
+        $action = 'Correspond';
+    } else {
+        $action = 'Comment';
+    }
+
+    my $Message = MIME::Entity->build(
+        Type    => 'text/plain',
+        Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
+        Charset => 'UTF-8',
+        Data    => $args{'UpdateContent'} || "",
+    );
+
+    my ( $Transaction, $Description, $Object ) = $self->$action(
+        CcMessageTo  => $args{'UpdateCc'},
+        BccMessageTo => $args{'UpdateBcc'},
+        MIMEObj      => $Message,
+        TimeTaken    => $args{'UpdateTimeWorked'},
+        DryRun       => 1,
+    );
+    unless ( $Transaction ) {
+        $RT::Logger->error("Couldn't fire '$action' action: $Description");
+    }
+
+    return $Object;
+}
+
+=head2 DryRunCreate
+
+Prepares a MIME mesage with the given C<Subject>, C<Cc>, and
+C<Content>, then calls L</Create> with C<< DryRun => 1 >> and returns
+the resulting L<RT::Transaction>.
+
+=cut
+
+sub DryRunCreate {
+    my $self = shift;
+    my %args = @_;
+    my $Message = MIME::Entity->build(
+        Type    => 'text/plain',
+        Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
+        (defined $args{'Cc'} ?
+             ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
+        Charset => 'UTF-8',
+        Data    => $args{'Content'} || "",
+    );
+
+    my ( $Transaction, $Object, $Description ) = $self->Create(
+        Type            => $args{'Type'} || 'ticket',
+        Queue           => $args{'Queue'},
+        Owner           => $args{'Owner'},
+        Requestor       => $args{'Requestors'},
+        Cc              => $args{'Cc'},
+        AdminCc         => $args{'AdminCc'},
+        InitialPriority => $args{'InitialPriority'},
+        FinalPriority   => $args{'FinalPriority'},
+        TimeLeft        => $args{'TimeLeft'},
+        TimeEstimated   => $args{'TimeEstimated'},
+        TimeWorked      => $args{'TimeWorked'},
+        Subject         => $args{'Subject'},
+        Status          => $args{'Status'},
+        MIMEObj         => $Message,
+        DryRun          => 1,
+    );
+    unless ( $Transaction ) {
+        $RT::Logger->error("Couldn't fire Create action: $Description");
+    }
+
+    return $Object;
+}
+
 # }}}
 
 # {{{ sub _Links 

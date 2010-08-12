@@ -143,17 +143,11 @@ if ( $self->{'Encrypt'} ) {
     my @recipients;
 
     if ( $Operation eq 'Update' ) {
-        # skip any email addresses that we won't be sending mail to
-        @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipients',
-            %$self, TicketObj => $TicketObj
-        );
+        @recipients = $TicketObj->DryRun(%$self)->Recipients;
     }
     elsif ( $Operation eq 'Create' ) {
-        @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-            %$self,
-        );
+        $TicketObj = RT::Ticket->new( $session{'CurrentUser'} );
+        @recipients = $TicketObj->DryRunCreate(%$self)->Recipients;
     }
     else {
         $RT::Logger->crit('Incorrect operation: '. $Operation );
