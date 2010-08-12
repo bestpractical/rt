@@ -23,7 +23,7 @@ jQuery(function() {
         };
 
         if (inputName.match(acceptsMultiple)) {
-            options.source = options.source . "?delim=,";
+            options.source = options.source + "?delim=,";
 
             options.focus = function () {
                 // prevent value inserted on focus
@@ -38,7 +38,6 @@ jQuery(function() {
                 return false;
             }
         }
-
         jQuery(input).autocomplete(options);
     }
 });
