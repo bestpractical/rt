@@ -50,8 +50,7 @@
 % $m->abort;
 <%ARGS>
 $return => ''
-$term => ''
-$query => undef
+$term => undef
 </%ARGS>
 <%INIT>
 require JSON;
@@ -61,8 +60,8 @@ $return = 'EmailAddress'
     unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
 
 $m->abort unless defined $return
-             and defined $query
-             and length $query;
+             and defined $term
+             and length $term;
 
 my $CurrentUser = $session{'CurrentUser'};
 
@@ -79,7 +78,7 @@ for (@fields) {
     $users->Limit(
         FIELD           => $_,
         OPERATOR        => 'LIKE',
-        VALUE           => $query,
+        VALUE           => $term,
         ENTRYAGGREGATOR => 'OR',
         SUBCLAUSE       => 'autocomplete',
     );
@@ -90,9 +89,6 @@ my @suggestions;
 while ( my $user = $users->Next ) {
     next if $user->id == $RT::SystemUser->id
          or $user->id == $RT::Nobody->id;
-
-    # we need to filter by ourselves to use jqueryui's autocomplete
-    next unless $user->$return =~ /$term/i;
 
     my $formatted = $m->scomp('/Elements/ShowUser', User => $user);
     $formatted =~ s/\n//g;
