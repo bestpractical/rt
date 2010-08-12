@@ -71,7 +71,7 @@ jQuery('#'+id).autocomplete( {
 }
 );
 % } else {
-<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/>
+<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default || '' %>"/>
 <script type="text/javascript">
 var id = '<% $name . '-Value' %>';
 id = id.replace(/:/g,'\\:');
