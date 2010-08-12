@@ -1572,7 +1572,10 @@ Set($DefaultTimeUnitsToHours, 0);
 =item C<$UserAutocompleteFields>
 
 Specifies which fields of L<RT::User> to match against when autocompleting
-users.
+users.  Not all User fields are publically accessible and hence won't work for
+autocomplete unless you override their accessibility using a local overlay or a
+plugin.  Out of the box the following fields are public: Name, EmailAddress,
+RealName, NickName, and Organization.
 
 Default: C<< Set( $UserAutocompleteFields, [qw(EmailAddress Name RealName)] ) >>
 
