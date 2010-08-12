@@ -68,14 +68,16 @@ while ( my $requestor = $people->Next ) {
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
 
-<span class="label"><&|/l&>Comments about this user</&>:</span><br />
-<b class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
+<span class="label commentsaboutuser"><&|/l&>Comments about this user</&>:</span><br />
+<b class="value commentsaboutuser"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
 
 <& ShowRequestorTickets, Requestor => $requestor, Ticket => $Ticket, conditions => $conditions &>
 
+<span class="moreaboutusergroups">
 <&|/l&>Groups this user belongs to</&>:<br />
 
 <& /Elements/ShowMemberships, UserObj => $requestor &>
+</span>
 
 </&>
 
