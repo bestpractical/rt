@@ -61,6 +61,12 @@ if ($Ticket) {
 
     my $id = $Ticket->id();
 
+my $current = $Ticket->Status;
+my $schema = $Ticket->QueueObj->status_schema;
+my %has;
+my $i = 1;
+
+
     if ( defined $session{'tickets'} ) {
 
         # we have to update session data if we get new ItemMap
@@ -203,58 +209,69 @@ if ($Ticket) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        if ( $Ticket->Status ne 'resolved' ) {
-            $actions->{'G'} = {
-                path =>
-                    "Ticket/Update.html?Action="
-                    . RT->Config->Get('ResolveDefaultUpdateType', $session{'CurrentUser'})
-                    . "&DefaultStatus=resolved&id="
-                    . $id,
-                title => loc('Resolve')
+        foreach my $next ( $schema->transitions($current) ) {
+            my $action = $schema->transition_action( $current => $next );
+            next if $action eq 'hide';
+
+            my $check = $schema->check_right( $current => $next );
+            $has{$check} = $Ticket->CurrentUserHasRight($check)
+                unless exists $has{$check};
+            next unless $has{$check};
+
+            my $path = 'Ticket/';
+            if ($action) {
+                $path .= "Update.html?"
+                    . $m->comp(
+                    '/Elements/QueryString',
+                    Action        => $action,
+                    DefaultStatus => $next,
+                    id            => $id
+                    );
+            } else {
+                $path .= "Display.html?"
+                    . $m->comp(
+                    '/Elements/QueryString',
+                    Status => $next,
+                    id     => $id
+                    );
+            }
+            $actions->{ 'G' . $i++ } = {
+                path  => $path,
+                title => loc( $schema->transition_label( $current => $next ) ),
             };
         }
-        if ( $Ticket->Status ne 'open' ) {
-            $actions->{'A'} = {
-                path  => "Ticket/Display.html?Status=open&id=" . $id,
-                title => loc('Open it')
+        if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
+            if ( $Ticket->OwnerObj->Id == $RT::Nobody->id ) {
+                $actions->{'B'} = {
+                    path  => "Ticket/Display.html?Action=Take&id=" . $id,
+                    title => loc('Take'),
+                    }
+                    if $can{'ModifyTicket'}
+                        or $Ticket->CurrentUserHasRight('TakeTicket');
+            } elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
+                $actions->{'C'} = {
+                    path  => "Ticket/Display.html?Action=Steal&id=" . $id,
+                    title => loc('Steal'),
+                    }
+                    if $can{'ModifyTicket'}
+                        or $Ticket->CurrentUserHasRight('StealTicket');
+            }
+        }
+
+        if (   $can{'ModifyTicket'}
+            or $Ticket->CurrentUserHasRight('CommentOnTicket') )
+        {
+            $actions->{'E'} = {
+                title => loc('Comment'),
+                path  => "Ticket/Update.html?Action=Comment&id=" . $id,
             };
         }
+
+        $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ), };
+
     }
 
-    if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-        if ( $Ticket->OwnerObj->Id == $RT::Nobody->id ) {
-            $actions->{'B'} = {
-                path  => "Ticket/Display.html?Action=Take&id=" . $id,
-                title => loc('Take'),
-                }
-                if $can{'ModifyTicket'}
-                    or $Ticket->CurrentUserHasRight('TakeTicket');
-        } elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-            $actions->{'C'} = {
-                path  => "Ticket/Display.html?Action=Steal&id=" . $id,
-                title => loc('Steal'),
-                }
-                if $can{'ModifyTicket'}
-                    or $Ticket->CurrentUserHasRight('StealTicket');
-        }
-    }
-
-    if (   $can{'ModifyTicket'}
-        or $Ticket->CurrentUserHasRight('CommentOnTicket') )
-    {
-        $actions->{'E'} = {
-            title => loc('Comment'),
-            path  => "Ticket/Update.html?Action=Comment&id=" . $id,
-        };
-    }
-
-    $actions->{'_ZZ'}
-        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ),
-        };
-
-}
-
-if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
+if ( (  defined $actions->{B} || defined $actions->{C} )
     && (   defined $actions->{E}
         || defined $actions->{F}
         || defined $actions->{G} ) )
@@ -262,8 +279,15 @@ if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
 
     if    ( defined $actions->{C} ) { $actions->{C}->{separator} = 1 }
     elsif ( defined $actions->{B} ) { $actions->{B}->{separator} = 1 }
-    elsif ( defined $actions->{A} ) { $actions->{A}->{separator} = 1 }
 }
+
+$actions->{'G' . 1}{pre_separator} = 1;
+
+# Separator between the last status and the next set of actions
+$actions->{'G' . ($i-1)}{separator} = 1;
+
+
+
 
 my $args = '';
 my $has_query = '';
