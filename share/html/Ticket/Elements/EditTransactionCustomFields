@@ -60,7 +60,7 @@
     NamePrefix => $NamePrefix
 &>
 </td>
-</td></tr>
+</tr>
 % }
 % }
 % $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
