@@ -51,6 +51,7 @@
 <%ARGS>
 $return => ''
 $term => undef
+$delim => undef
 </%ARGS>
 <%INIT>
 require JSON;
@@ -62,6 +63,18 @@ $return = 'EmailAddress'
 $m->abort unless defined $return
              and defined $term
              and length $term;
+
+# Use our delimeter if we have one
+if ( defined $delim and length $delim ) {
+    if ( $delim eq ',' ) {
+        $delim = qr/,\s*/;
+    } else {
+        $delim = qr/\Q$delim\E/;
+    }
+
+    # If the field handles multiple values, pop the last one off
+    $term = (split $delim, $term)[-1] if $term =~ $delim;
+}
 
 my $CurrentUser = $session{'CurrentUser'};
 
