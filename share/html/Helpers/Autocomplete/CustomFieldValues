@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<% JSON::to_json( $result ) |n %>
+<% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%INIT>
 my ($CustomField, $Value);
@@ -78,12 +78,22 @@ $values->Limit(
 );
 
 my @suggestions;
+
+# in case it accepts multiple values
+my $last_input = (split /\n/, $ARGS{term} || '')[-1];
+
 while( my $value = $values->Next ) {
-    push @suggestions, $value->Name;
+    # we need to filter by ourselves to use jqueryui's autocomplete
+    next unless $value->Name =~ /$last_input/i;
+
+    push @suggestions,
+      {
+        value => $value->Name,
+        label => $value->Description
+        ? $value->Name . ' (' . $value->Description . ')'
+        : $value->Name,
+      };
 }
-my $result = {
-    query => $Value,
-    suggestions => \@suggestions,
-};
+
 require JSON;
 </%INIT>

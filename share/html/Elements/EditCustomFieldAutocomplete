@@ -46,14 +46,28 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea>
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
+
 <script type="text/javascript">
 var id = '<% $name . '-Values' %>';
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    serviceUrl: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    delimiter: "\n",
-    params: { '<% $name . '-Values' %>': '' },
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Values' %>",
+    focus: function () {
+        // prevent value inserted on focus
+        return false;
+    },
+    select: function(event, ui) {
+        var terms = this.value.split(/\n/);
+        // remove the current input
+        terms.pop();
+        // add the selected item
+        terms.push( ui.item.value );
+        // add placeholder to get the comma-and-space at the end
+        terms.push("");
+        this.value = terms.join("\n");
+        return false;
+    }
 }
 );
 % } else {
@@ -62,8 +76,7 @@ jQuery('#'+id).autocomplete( {
 var id = '<% $name . '-Value' %>';
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    serviceUrl: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    params: { '<% $name . '-Value' %>': '' },
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Value' %>",
 }
 );
 % }

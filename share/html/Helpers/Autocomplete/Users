@@ -46,10 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<% JSON::to_json( $result ) |n %>
+<% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
 $return => ''
+$term => ''
 $query => undef
 </%ARGS>
 <%INIT>
@@ -84,20 +85,18 @@ for (@fields) {
     );
 }
 
-my (@suggestions, @values);
+my @suggestions;
 
 while ( my $user = $users->Next ) {
     next if $user->id == $RT::SystemUser->id
          or $user->id == $RT::Nobody->id;
 
+    # we need to filter by ourselves to use jqueryui's autocomplete
+    next unless $user->$return =~ /$term/i;
+
     my $formatted = $m->scomp('/Elements/ShowUser', User => $user);
-       $formatted =~ s/\n//g;
-    push @suggestions, $formatted;
-    push @values, $user->$return;
+    $formatted =~ s/\n//g;
+    push @suggestions, { label => $formatted, value => $user->$return };
 }
-my $result = {
-    query       => $query,
-    suggestions => \@suggestions,
-    data        => \@values,
-};
+
 </%INIT>
