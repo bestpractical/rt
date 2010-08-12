@@ -1569,6 +1569,29 @@ Use this to set the default units for time entry to hours instead of minutes.
 
 Set($DefaultTimeUnitsToHours, 0);
 
+=item C<$UserAutocompleteFields>
+
+Specifies which fields of L<RT::User> to match against when autocompleting
+users.
+
+Default: C<< Set( $UserAutocompleteFields, [qw(EmailAddress Name RealName)] ) >>
+
+=cut
+
+Set( $UserAutocompleteFields, [qw(EmailAddress Name RealName)] );
+
+=item C<$AllowUserAutocompleteForUnprivileged>
+
+Should unprivileged users be allowed to autocomplete users.  Setting this
+option to a true value means unprivileged users will be able to search all your
+users.
+
+Default: C<< Set( $AllowUserAutocompleteForUnprivileged, 0 ) >>
+
+=cut
+
+Set( $AllowUserAutocompleteForUnprivileged, 0 );
+
 =back
 
 =head1 L<Net::Server> (rt-server) Configuration

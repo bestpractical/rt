@@ -67,7 +67,7 @@ my $CurrentUser = $session{'CurrentUser'};
 
 # Require privileged users or overriding config
 $m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUnprivilegedUserAutocomplete');
+              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
 
 my @fields = @{ RT->Config->Get('UserAutocompleteFields')
                 || [qw(EmailAddress Name RealName)] };
