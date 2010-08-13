@@ -45,13 +45,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<div class="requestor-ticket-links">
 % for my $status ( @$status_order ) {
 % my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
 %  $m->comp('/Elements/QueryString', Requestor => $Requestor->Id , Status => $status);
-<a href="<% $url | n %>" onclick="jQuery('#more-about-requestor-<% $Requestor->Id %>').load('<% $url |n %>'); return false;" >
+[<a href="<% $url | n %>" onclick="jQuery('#more-about-requestor-<% $Requestor->Id %>').load('<% $url |n %>'); return false;" >
 <% $status_link_text->{$status} %>
-</a>
+</a>]
 % }
+</div>
 <%INIT>
 my $status_link_text = {Active   => loc('Active Tickets'),
                         Inactive => loc('Inactive Tickets'),

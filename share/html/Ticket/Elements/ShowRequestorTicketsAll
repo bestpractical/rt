@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <span id="more-about-requestor-<%$Requestor->Id%>">
 <span class="label"><&|/l, $Rows &>This user's [_1] highest priority tickets</&>:</span>
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
 <& ShowRequestorToggleLinks, %ARGS, Status => 'All' &>
+<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
 </span>
 <%ARGS>
 $Requestor => undef

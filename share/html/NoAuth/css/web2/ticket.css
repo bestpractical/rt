@@ -229,3 +229,9 @@ table.ticket-summary td.boxcontainer:first-child {
   width: 50%;
 }
 
+div.requestor-ticket-links {
+    text-align: left;
+    font-size: 0.8em;
+    padding-top: 0.25em;
+}
+
