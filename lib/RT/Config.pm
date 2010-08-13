@@ -368,6 +368,22 @@ our %META = (
             Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
         },
     },
+    MoreAboutRequestorTicketList => {
+        Section         => 'Ticket display',                       #loc
+        Overridable     => 1,
+        SortOrder       => 6,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => q|What tickets to display in the 'More about requestor' box|,                #loc
+            Values      => [qw(Active Inactive All None)],
+            ValuesLabel => {
+                Active   => "Show the Requestor's 10 highest priority open tickets",                  #loc
+                Inactive => "Show the Requestor's 10 highest priority closed tickets",      #loc
+                All      => "Show the Requestor's 10 highest priority tickets",      #loc
+                None     => "Show no tickets for the Requestor", #loc
+            },
+        },
+    },
 
     # User overridable locale options
     DateTimeFormat => {

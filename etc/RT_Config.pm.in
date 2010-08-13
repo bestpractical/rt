@@ -871,6 +871,16 @@ shown for Privileged Users.
 
 Set($ShowMoreAboutPrivilegedUsers, 0);
 
+=item C<$MoreAboutRequestorTicketList>
+
+This can be set to Active, Inactive, All or None.  It controls what ticket
+list will be displayed in the More about requestor box on Ticket/Display.html.
+This option can be controlled by users also.
+
+=cut
+
+Set($MoreAboutRequestorTicketList, 'Active');
+
 =item C<$WebDomain>
 
 Domain name of the RT server, eg 'www.example.com'. It should not contain
