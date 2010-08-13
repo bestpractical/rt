@@ -405,8 +405,10 @@ sub Create {
         if ( $args{'Owner'}->id ) {
             $Owner = $args{'Owner'};
         } else {
-            $RT::Logger->error('passed not loaded owner object');
-            push @non_fatal_errors, $self->loc("Invalid owner object");
+            $RT::Logger->error('Passed an empty RT::User for owner');
+            push @non_fatal_errors,
+                $self->loc("Owner could not be set.") . " ".
+            $self->loc("Invalid value for [_1]",loc('owner'));
             $Owner = undef;
         }
     }
