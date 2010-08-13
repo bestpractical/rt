@@ -56,7 +56,12 @@ use constant _Queue => undef;
 
 sub Prepare {
     my $self = shift;
-    return (0) if $self->_Queue && $self->TicketObj->QueueObj->Name ne $self->_Queue;
+    if (   $self->_Queue
+        && $self->TicketObj->QueueObj->Name
+        && ( $self->TicketObj->QueueObj->Name ne $self->_Queue ) )
+    {
+        return (0);
+    }
     return 1;
 }
 

@@ -417,8 +417,9 @@ sub Create {
     elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
-        $Owner->LoadByEmail( $args{'Owner'} )
-            unless $Owner->Id;
+        if (!$Owner->id) {
+            $Owner->LoadByEmail( $args{'Owner'} )
+        }
         unless ( $Owner->Id ) {
             push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
@@ -3315,7 +3316,7 @@ sub _ApplyTransactionBatch {
     my $batch = $self->TransactionBatch;
 
     my %seen;
-    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->Type, grep defined, @{$batch};
+    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
