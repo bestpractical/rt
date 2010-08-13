@@ -22,7 +22,10 @@
     padding-bottom: 2em;
 }
 
+/*
 % if ( RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ) {
+*/
+
 #ticket-create-metadata,
 #ticket-update-metadata {
     float: right;
@@ -37,7 +40,19 @@
     clear: left;
 }
 
-/* These are only needed when using the two column layout */
+@media (max-width: 950px) {
+    /* Revert to a single column when we're less than 1000px wide */
+    #ticket-create-metadata,
+    #ticket-update-metadata,
+    #ticket-create-message,
+    #ticket-update-message
+    {
+        float: none;
+        width: auto;
+        clear: both;
+    }
+}
+
 #comp-Ticket-Update #body {
     padding-top: 3em;
 }
@@ -47,4 +62,6 @@
     float: right;
 }
 
+/*
 % }
+*/
