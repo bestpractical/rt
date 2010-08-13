@@ -62,7 +62,7 @@ $onload => undef
 	jQuery(function() {
 		jQuery(".ui-datepicker:not(.withtime)").datepicker( {
             dateFormat: 'yy-mm-dd',
-            constrainInput: false, 
+            constrainInput: false
         } );
 
 		jQuery(".ui-datepicker.withtime").datepicker( {
