@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 %# showing no tickets means doing no work
 <%ARGS>
-$Ticket => undef
 $Requestor => undef
 $conditions => []
 $Rows => 10

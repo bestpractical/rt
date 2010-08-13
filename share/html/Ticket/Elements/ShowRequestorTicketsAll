@@ -48,7 +48,6 @@
 <span class="label"><&|/l, $Rows &>This user's [_1] highest priority tickets</&>:</span>
 <& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
 <%ARGS>
-$Ticket => undef
 $Requestor => undef
 $conditions => []
 $Rows => 10

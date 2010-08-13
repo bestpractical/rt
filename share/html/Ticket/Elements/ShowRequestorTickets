@@ -63,7 +63,6 @@ $tickets->RowsPerPage( $Rows );
 $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
 </%INIT>
 <%ARGS>
-$Ticket => undef
 $Requestor => undef
 $conditions
 $Rows => 10

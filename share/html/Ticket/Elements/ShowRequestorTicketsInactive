@@ -55,7 +55,6 @@ unless ( @$conditions ) {
 }
 </%INIT>
 <%ARGS>
-$Ticket => undef
 $Requestor => undef
 $conditions => []
 $Rows => 10
