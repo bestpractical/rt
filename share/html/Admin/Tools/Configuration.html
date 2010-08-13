@@ -92,14 +92,8 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em>Password not printed</em>\
-% } elsif ( !ref $val ) {
-<% "$val" %>\
-% } elsif ( ref $val eq 'ARRAY' ) {
-<% join ', ', @$val %>\
-% } elsif ( ref $val eq 'HASH' ) {
-<% join ', ', %$val %>\
 % } else {
-<% ref $val %>\
+<% stringify($val) |n %>\
 % }
 </td>
 <td class="collection-as-table" style="white-space: nowrap">
@@ -240,3 +234,37 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 <% Config::myconfig() %>
 </pre>
 </&>
+
+<%INIT>
+use Data::Dumper;
+local $Data::Dumper::Terse = 1;
+local $Data::Dumper::Indent = 2;
+
+sub obfuscate_password {
+    my $value = shift;
+    if ( ref $value && ref $value eq 'HASH' ) {
+        for my $key ( keys %$value ) {
+            if ( $key =~ /password/i ) {
+                $value->{$key} = 'Password not printed', 
+            }
+            elsif ( ref $value->{$key} && ref $value->{$key} eq 'HASH' ) {
+                $value->{$key} = obfuscate_password( $value->{$key} ); 
+            }
+        }
+    }
+    return $value;
+}
+
+sub stringify {
+    my $value = shift;
+    if ( ref $value && ref $value eq 'HASH' ) {
+        $value = obfuscate_password( $value );
+    }
+
+    my $output = Dumper $value;
+    RT::Interface::Web::EscapeUTF8(\$output);
+    $output =~ s/ /&nbsp;/g;
+    $output =~ s!\n!<br />!g;
+    return $output;
+}
+</%INIT>
