@@ -91,7 +91,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <td class="collection-as-table"><% $key %></td>
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>\
+<em><% loc('Password not printed' ) %></em>\
 % } else {
 <% stringify($val) |n %>\
 % }
@@ -128,7 +128,7 @@ foreach my $key ( sort keys %{*RT::} ) {
 <td class="collection-as-table">RT::<% $key %></td>
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>
+<em><% loc('Password not printed' ) %></em>\
 % } else {
 <% ${'RT::'.$key} %>
 % }
@@ -245,7 +245,7 @@ sub obfuscate_password {
     if ( ref $value && ref $value eq 'HASH' ) {
         for my $key ( keys %$value ) {
             if ( $key =~ /password/i ) {
-                $value->{$key} = 'Password not printed', 
+                $value->{$key} = loc('Password not printed'),
             }
             elsif ( ref $value->{$key} && ref $value->{$key} eq 'HASH' ) {
                 $value->{$key} = obfuscate_password( $value->{$key} ); 
