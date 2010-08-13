@@ -63,6 +63,8 @@ unless ( @fields ) {
                 Name => 'Status',
                 DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
                 Default => $defaults{'Status'} || undef,
+                TicketObj => $TicketObj,
+                QueueObj => $TicketObj->QueueObj
             },
         },
         {   name => 'Queue',
@@ -71,8 +73,6 @@ unless ( @fields ) {
                 Name => 'Queue',
                 Default => $defaults{'Queue'} || $TicketObj->QueueObj->Id,
                 ShowNullOption => 0,
-                TicketObj => $TicketObj,
-                QueueObj => $TicketObj->QueueObj
             }
         },
         {   name => 'Owner',

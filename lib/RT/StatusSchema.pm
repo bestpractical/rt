@@ -193,6 +193,19 @@ sub is_initial {
     return scalar grep lc($_) eq $value, $self->valid('initial');
 }
 
+
+=head3 default_initial
+
+Returns the "default" initial status for this schema
+
+=cut
+
+sub default_initial {
+    my $self = shift;
+    return $self->{data}->{default_initial};
+}
+
+
 =head3 active
 
 Returns an array of all active statuses for this schema.
@@ -407,7 +420,7 @@ sub create {
     return (0, loc('Already exist'))
         if $STATUS_SCHEMAS_CACHE{ $name };
 
-    foreach my $method (qw(_set_statuses _set_transitions _set_actions)) {
+    foreach my $method (qw(_set_defaults _set_statuses _set_transitions _set_actions)) {
         my ($status, $msg) = $self->$method( %args, name => $name );
         return ($status, $msg) unless $status;
     }
@@ -437,6 +450,9 @@ sub set_statuses {
 
     return (1, loc('Updated schema'));
 }
+
+
+
 
 sub set_transitions {
     my $self = shift;
@@ -566,6 +582,21 @@ sub _set_statuses {
 
     return 1;
 }
+
+
+sub _set_defaults {
+    my $self = shift;
+    my %args = @_;
+
+    $STATUS_SCHEMAS{ $args{'name'} }{$_ } = $args{ $_ }
+        foreach qw(default_initial);
+
+    return 1;
+}
+
+
+
+
 
 sub _set_transitions {
     my $self = shift;

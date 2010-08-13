@@ -259,7 +259,7 @@ sub Create {
         InitialPriority    => undef,
         FinalPriority      => undef,
         Priority           => undef,
-        Status             => 'new',
+        Status             => undef,
         TimeWorked         => "0",
         TimeLeft           => 0,
         TimeEstimated      => 0,
@@ -306,9 +306,15 @@ sub Create {
             $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
     }
 
+    if ( ! defined $args{'Status'}) {
+        $args{'Status'} = $QueueObj->status_schema->default_initial();
+    }
+
     unless ( $QueueObj->IsValidStatus( $args{'Status'} )
             && $QueueObj->status_schema->is_initial( $args{'Status'} )) {
-        return ( 0, 0, $self->loc('Invalid value for status') );
+        return ( 0, 0,
+            $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
+                $self->loc($args{'Status'})));
     }
 
 
@@ -1727,13 +1733,7 @@ sub SetQueue {
     if ( $NewQueueObj->Id == $self->QueueObj->Id ) {
         return ( 0, $self->loc('That is the same value') );
     }
-    unless (
-        $self->CurrentUser->HasRight(
-            Right    => 'CreateTicket',
-            Object => $NewQueueObj
-        )
-      )
-    {
+    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket', Object => $NewQueueObj)) {
         return ( 0, $self->loc("You may not create requests in that queue.") );
     }
 
@@ -1749,12 +1749,7 @@ sub SetQueue {
             unless $new_status;
     }
 
-    unless (
-        $self->OwnerObj->HasRight(
-            Right    => 'OwnTicket',
-            Object => $NewQueueObj
-        )
-    ) {
+    unless ( $self->OwnerObj->HasRight( Right    => 'OwnTicket', Object => $NewQueueObj)) {
         my $clone = RT::Ticket->new( $RT::SystemUser );
         $clone->Load( $self->Id );
         unless ( $clone->Id ) {
@@ -1778,7 +1773,7 @@ sub SetQueue {
 
         #If we're changing the status from initial in old to not intial in new,
         # record that we've started
-        if ( $old_schema->is_initial($old_status) && !$new_schema->is_initial($new_status) ) {
+        if ( $old_schema->is_initial($old_status) && !$new_schema->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
             #Set the Started time to "now"
             $clone->_Set(
                 Field             => 'Started',
@@ -3066,19 +3061,12 @@ sub SetStatus {
 
     my $new = $args{'Status'};
     unless ( $schema->is_valid( $new ) ) {
-        return (0,
-            $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
-                $self->loc($new)
-        ));
+        return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
 
     my $old = $self->__Value('Status');
     unless ( $schema->is_transition( $old => $new ) ) {
-        return (0,
-            $self->loc("You can't change status from '[_1]' to '[_2]'.",
-                $self->loc($old), $self->loc($new)
-            )
-        );
+        return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
     }
 
     my $check_right = $schema->check_right( $old => $new );
@@ -3086,17 +3074,18 @@ sub SetStatus {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( !$args{Force} && $schema->is_inactive( $new )
-        && $self->HasUnresolvedDependencies
-    ) {
+    if ( !$args{Force} && $schema->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
+    my $raw_started = RT::Date->new($RT::SystemUser);
+    $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
+
     #If we're changing the status from new, record that we've started
-    if ( $schema->is_initial($old) && $schema->is_active($new) ) {
+    if ( $schema->is_initial($old) && !$schema->is_initial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',

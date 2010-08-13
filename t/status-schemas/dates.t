@@ -131,23 +131,33 @@ diag "dates on create for delivery schema";
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $msg) = $ticket->Create(
+        my ($id, $txn, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
-            Status => 'on way',
         );
         ok $id, 'created a ticket';
-        ok $ticket->StartedObj->Unix > 0, 'started is set';
-        ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+        diag($msg);
+        is $ticket->Status, 'ordered', "Status is ordered";
+        my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
+        ok($statusval,$statusmsg);
+        ok $ticket->StartedObj->Unix > 0, 'started is set to ' .$ticket->StartedObj->AsString ;
+        is $ticket->ResolvedObj->Unix, 0, 'resolved is not set';
     }
+    exit;
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
-            Status => 'delivered',
         );
         ok $id, 'created a ticket';
+
+        my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
+        ok($statusval,$statusmsg);
+
+        ($statusval,$statusmsg) = $ticket->SetStatus('delivered');
+        ok($statusval,$statusmsg);
+
         ok $ticket->StartedObj->Unix > 0, 'started is set';
         ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
     }
@@ -155,7 +165,7 @@ diag "dates on create for delivery schema";
     my $test_date = '2008-11-28 12:00:00';
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $msg) = $ticket->Create(
+        my ($id, $statusmsg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
             Status => 'ordered',
@@ -168,27 +178,32 @@ diag "dates on create for delivery schema";
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $msg) = $ticket->Create(
+        my ($id, $statusmsg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
-            Status => 'on way',
+            Status => 'ordered',
             Started => $test_date,
             Resolved => $test_date,
         );
         ok $id, 'created a ticket';
+        my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
+        ok($statusval,$statusmsg);
         is $ticket->StartedObj->ISO, $test_date, 'started is set';
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $msg) = $ticket->Create(
+        my ($id, $statusmsg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
-            Status => 'delivered',
             Started => $test_date,
             Resolved => $test_date,
         );
         ok $id, 'created a ticket';
+        my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
+        ok($statusval,$statusmsg);
+        ($statusval,$statusmsg) = $ticket->SetStatus('delievered');
+        ok($statusval,$statusmsg);
         is $ticket->StartedObj->ISO, $test_date, 'started is set';
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }

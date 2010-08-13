@@ -1756,6 +1756,7 @@ Set($ApprovalRejectionNotes, 1);
 
     Set( %StatusSchemaMeta,
         default => {
+            default_initial => 'new',
             initial  => ['new', 'open'],
             active   => ['open', 'stalled'],
             inactive => ['resolved', 'rejected', 'deleted'],

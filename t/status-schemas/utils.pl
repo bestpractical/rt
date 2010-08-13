@@ -9,6 +9,7 @@ BEGIN {
 $config = <<END;
 Set(\%StatusSchemaMeta,
     default => {
+        default_initial => 'new',
         initial  => [qw(new open resolved )],
         active   => [qw(open stalled)],
         inactive => [qw(resolved rejected deleted)],
@@ -38,6 +39,7 @@ Set(\%StatusSchemaMeta,
         },
     },
     delivery => {
+        default_initial => 'ordered',
         initial  => ['ordered'],
         active   => ['on way', 'delayed'],
         inactive => ['delivered'],
