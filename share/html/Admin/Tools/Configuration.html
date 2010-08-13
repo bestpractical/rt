@@ -221,7 +221,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
         <%$ver%>
     </td>
     <td class="collection-as-table">
-        <% $INC{$distfile} %>
+        <% $INC{$distfile} || '' %>
     </td>
 </tr>
 % }
