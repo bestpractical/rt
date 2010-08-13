@@ -45,20 +45,26 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<span id="more-about-requestor-<%$Requestor->Id%>">
-<span class="label"><&|/l, $Rows &>This user's [_1] highest priority active tickets</&>:</span>
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
-<& ShowRequestorToggleLinks, %ARGS, Status => 'Active' &>
-</span>
+% for my $status ( @$status_order ) {
+% my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
+%  $m->comp('/Elements/QueryString', Requestor => $Requestor->Id , Status => $status);
+<a href="<% $url | n %>" onclick="jQuery('#more-about-requestor-<% $Requestor->Id %>').load('<% $url |n %>'); return false;" >
+<% $status_link_text->{$status} %>
+</a>
+% }
 <%INIT>
-unless ( @$conditions ) {
-    foreach (RT::Queue->ActiveStatusArray()) {
-        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
-    }
+my $status_link_text = {Active   => loc('Active Tickets'),
+                        Inactive => loc('Inactive Tickets'),
+                        All      => loc('All Tickets')};
+my $status_order = [qw/Active Inactive All/];
+$m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_text, status_order => \$status_order );
+
+if ($Status) {
+    $status_order = [grep { $_ ne $Status } @$status_order];
+    delete $status_link_text->{$Status};
 }
 </%INIT>
 <%ARGS>
-$Requestor => undef
-$conditions => []
-$Rows => 10
+$Requestor
+$Status => ''
 </%ARGS>
