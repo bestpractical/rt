@@ -126,6 +126,9 @@ can be set for each config optin:
                  (such as seeing if a library is installed) and then change
                  the setting of this or other options in the Config using 
                  the RT::Config option.
+   Obfuscate   - subref passed the RT::Config object, current setting of the config option
+                 and a user object, can return obfuscated value. it's called in
+                 RT->Config->GetObfuscated() 
 
 =cut
 
@@ -734,6 +737,27 @@ sub Get {
     }
     $res = $OPTIONS{$name}           unless defined $res;
     $res = $META{$name}->{'Default'} unless defined $res;
+    return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
+}
+
+=head2 GetObfuscated
+
+the same as Get, except it returns Obfuscated value via Obfuscate sub
+
+=cut
+
+sub GetObfuscated {
+    my $self = shift;
+    my ( $name, $user ) = @_;
+    my $obfuscate = $META{$name}->{Obfuscate};
+
+    # we use two Get here is to simplify the logic of the return value
+    # configs need obfuscation are supposed to be less, so won't be too heavy
+
+    return $self->Get(@_) unless $obfuscate;
+
+    my $res = $self->Get(@_);
+    $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 
