@@ -64,6 +64,10 @@ border-top: 1px solid #999;
 
 }
 
+#nav #system-menu {
+    overflow: hidden;
+}
+
 div#nav ul {
  padding-left: 0.75em;
  margin-left: 0;
