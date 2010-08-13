@@ -103,7 +103,7 @@ my $COLUMN_MAP = {
 	value     => sub { return $_[0]->PagerPhone() },
     },
     Address1 => {
-        title     => 'Address 1', # loc
+        title     => 'Address', # loc
 	attribute => 'Address1',
 	value     => sub { return $_[0]->Address1() },
     },
