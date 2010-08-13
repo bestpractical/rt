@@ -63,17 +63,17 @@ my $COLUMN_MAP = {
 	value     => sub { return $_[0]->Name() },
     },
     RealName => {
-        title     => 'RealName', # loc
+        title     => 'Real Name', # loc
 	attribute => 'RealName',
 	value     => sub { return $_[0]->RealName() },
     },
     NickName => {
-        title     => 'NickName', # loc
+        title     => 'Nickname', # loc
 	attribute => 'NickName',
 	value     => sub { return $_[0]->NickName() },
     },
     EmailAddress => {
-        title     => 'EmailAddress', # loc
+        title     => 'Email Address', # loc
 	attribute => 'EmailAddress',
 	value     => sub { return $_[0]->EmailAddress() },
     },
@@ -83,32 +83,32 @@ my $COLUMN_MAP = {
 	value     => sub { return $_[0]->Organization() },
     },
     HomePhone => {
-        title     => 'HomePhone', # loc
+        title     => 'Home Phone', # loc
 	attribute => 'HomePhone',
 	value     => sub { return $_[0]->HomePhone() },
     },
     WorkPhone => {
-        title     => 'WorkPhone', # loc
+        title     => 'Work Phone', # loc
 	attribute => 'WorkPhone',
 	value     => sub { return $_[0]->WorkPhone() },
     },
     MobilePhone => {
-        title     => 'MobilePhone', # loc
+        title     => 'Mobile Phone', # loc
 	attribute => 'MobilePhone',
 	value     => sub { return $_[0]->MobilePhone() },
     },
     PagerPhone => {
-        title     => 'PagerPhone', # loc
+        title     => 'Pager Phone', # loc
 	attribute => 'PagerPhone',
 	value     => sub { return $_[0]->PagerPhone() },
     },
     Address1 => {
-        title     => 'Address1', # loc
+        title     => 'Address 1', # loc
 	attribute => 'Address1',
 	value     => sub { return $_[0]->Address1() },
     },
     Address2 => {
-        title     => 'Address2', # loc
+        title     => 'Address 2', # loc
 	attribute => 'Address2',
 	value     => sub { return $_[0]->Address2() },
     },
