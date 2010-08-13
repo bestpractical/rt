@@ -1756,23 +1756,23 @@ Set($ApprovalRejectionNotes, 1);
 
     Set( %StatusSchemaMeta,
         default => {
-            initial  => ['new'],
+            initial  => ['new', 'open'],
             active   => ['open', 'stalled'],
             inactive => ['resolved', 'rejected', 'deleted'],
 
             transitions => {
                 # from   => [ to list ],
-                new      => [qw(open resolved rejected deleted)],
-                open     => [qw(stalled resolved rejected deleted)],
-                stalled  => [qw(open)],
-                resolved => [qw(open)],
-                rejected => [qw(open)],
-                deleted  => [qw(open)],
+                new      => [qw(open stalled resolved rejected deleted)],
+                open     => [qw(new stalled resolved rejected deleted)],
+                stalled  => [qw(new open rejected resolved deleted)],
+                resolved => [qw(new open stalled rejected deleted)],
+                rejected => [qw(new open stalled resolved deleted)],
+                deleted  => [qw(new open stalled rejected resolved)],
             },
             rights  => {
                 '* -> deleted'  => 'DeleteTicket',
-                '* -> rejected' => 'RejectTicket',
-                '* -> *'        => 'ModifyTicketStatus',
+                '* -> rejected' => 'ModifyTicket',
+                '* -> *'        => 'ModifyTicket',
             },
             actions => {
                 # 'from -> to'    => [action text, Respond/Comment/hide/''],
@@ -1790,6 +1790,7 @@ Set($ApprovalRejectionNotes, 1);
                 'resolved -> open' => ['Re-open',  'Comment'],
                 'rejected -> open' => ['Re-open',  'Comment'],
                 'deleted -> open'  => ['Undelete', ''],
+                'open -> new'      => ['New', 'hide'],
             },
         },
     );
