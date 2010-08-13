@@ -125,8 +125,9 @@ diag "dates on create for delivery schema";
             Status => 'ordered',
         );
         ok $id, 'created a ticket';
-        ok $ticket->StartedObj->Unix <= 0, 'started is not set';
-        ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+        is $ticket->StartedObj->Unix , 0, 'started is not set';
+        is $ticket->ResolvedObj->Unix, 0, 'resolved is not set';
+
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );

@@ -9,7 +9,7 @@ BEGIN {
 $config = <<END;
 Set(\%StatusSchemaMeta,
     default => {
-        initial  => ['new'],
+        initial  => [qw(new open resolved )],
         active   => [qw(open stalled)],
         inactive => [qw(resolved rejected deleted)],
         transitions => {

@@ -8,35 +8,24 @@
 % }
 </select>
 <%INIT>
-my $caller = $m->callers(1)->path;
-if ( $caller eq '/Ticket/Update.html' ) {
-    $Ticket = LoadTicket( $m->caller_args(1)->{'id'} );
-}
-elsif ( $caller eq '/Ticket/Create.html' ) {
-    $Queue = RT::Queue->new( $session{'CurrentUser'} );
-    $Queue->Load( $m->caller_args(1)->{'Queue'} );
-}
-elsif ( $caller eq '/Ticket/Elements/EditBasics' ) {
-    $Ticket = $m->caller_args(1)->{'TicketObj'};
-}
 ### XXX: no cover for Tools/MyDay.html
 
 
 my @status;
-if ( $Ticket ) {
-    my $current = $Ticket->Status;
-    my $schema = $Ticket->QueueObj->status_schema;
+if ( $TicketObj ) {
+    my $current = $TicketObj->Status;
+    my $schema = $TicketObj->QueueObj->status_schema;
 
     my %has = ();
     foreach my $next ( $schema->transitions( $current ) ) {
         my $check = $schema->check_right( $current => $next );
-        $has{ $check } = $Ticket->CurrentUserHasRight( $check )
+        $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
             unless exists $has{ $check };
         push @status, $next if $has{ $check };
     }
 }
-elsif ( $Queue ) {
-    @status = $Queue->status_schema->valid;
+elsif ( $QueueObj ) {
+    @status = $QueueObj->status_schema->valid;
 }
 else {
     @status = RT::Queue->status_schema->valid;
@@ -44,8 +33,8 @@ else {
 </%INIT>
 <%ARGS>
 $Name => undef
-$Ticket => undef
-$Queue => undef
+$TicketObj => undef
+$QueueObj => undef
 $Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1

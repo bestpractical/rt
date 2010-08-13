@@ -23,9 +23,9 @@ diag "check basic API";
     my $schema = $general->status_schema;
     isa_ok($schema, 'RT::StatusSchema');
     is $schema->name, 'default', "it's a default schema";
-    is join(', ', $schema->valid),
-        join(', ', qw(new open stalled resolved rejected deleted)),
-        'this is default set';
+    is join(', ', sort $schema->valid),
+        join(', ', sort qw(new open stalled resolved rejected deleted)),
+        'this is the default set from our config file';
 }
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -48,6 +48,8 @@ diag "check status input on create";
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }
+
+
     ok $valid, 'all statuses in the form are valid';
 }
 

@@ -71,6 +71,8 @@ unless ( @fields ) {
                 Name => 'Queue',
                 Default => $defaults{'Queue'} || $TicketObj->QueueObj->Id,
                 ShowNullOption => 0,
+                TicketObj => $TicketObj,
+                QueueObj => $TicketObj->QueueObj
             }
         },
         {   name => 'Owner',

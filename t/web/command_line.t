@@ -269,7 +269,7 @@ expect_send("show ticket/$ticket_id -f status", 'Verifying change...');
 expect_like(qr/Status: resolved/, 'Verified change');
 # try to set status to an illegal value
 expect_send("edit ticket/$ticket_id set status=quux", 'Changing status to an illegal value...');
-expect_like(qr/illegal value/i, 'Errored out');
+expect_like(qr/isn't a valid status/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f status", 'Verifying lack of change...');
 expect_like(qr/Status: resolved/, 'Verified change');
 

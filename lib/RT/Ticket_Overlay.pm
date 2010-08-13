@@ -354,7 +354,17 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
-    elsif ( $args{'Status'} ne 'new' ) {
+    # We sort of want to ask "is this not an initial state
+    # But some schemes require active statuses to be duplicated
+    # in the initial state list so that tickets can be created
+    # in those states already open
+    #
+    # Instead, we check to make sure that it's either an "active" or "inactive" status
+    elsif (
+        $QueueObj->status_schema->is_active($args{'Status'}) ||
+        $QueueObj->status_schema->is_inactive($args{'Status'})
+
+    ){
         $Started->SetToNow;
     }
 
@@ -364,7 +374,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
+    elsif ( $QueueObj->status_schema->is_inactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -3057,10 +3067,9 @@ sub SetStatus {
     my $new = $args{'Status'};
     unless ( $schema->is_valid( $new ) ) {
         return (0,
-            $self->loc("Status '[_1]' is not valid for schema '[_2]'.",
-                $self->loc($new), $self->loc($schema->name)
-            )
-        );
+            $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
+                $self->loc($new)
+        ));
     }
 
     my $old = $self->__Value('Status');
@@ -3087,7 +3096,7 @@ sub SetStatus {
     $now->SetToNow();
 
     #If we're changing the status from new, record that we've started
-    if ( $schema->is_initial($old) && !$schema->is_initial($new) ) {
+    if ( $schema->is_initial($old) && $schema->is_active($new) ) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
