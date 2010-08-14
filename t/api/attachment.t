@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 4;
+use RT::Test tests => 7;
 
 
 {
@@ -40,6 +40,30 @@ is ($#headers, 2, "testing a bunch of singline multiple headers" );
 
 
 
+}
+
+
+{
+    my $iso_8859_1_ticket_email =
+      RT::Test::get_relocatable_file( 'new-ticket-from-iso-8859-1',
+        ( File::Spec->updir(), 'data', 'emails' ) );
+    my $content = RT::Test->file_content($iso_8859_1_ticket_email);
+
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar($content);
+    my $attachment = RT::Attachment->new( $RT::SystemUser );
+    my ( $id, $msg ) =
+      $attachment->Create( TransactionId => 1, Attachment => $parser->Entity );
+    ok( $id, $msg );
+    my $mime = $attachment->ContentAsMIME;
+    like( $mime->head->get('Content-Type'),
+        qr/charset="iso-8859-1"/, 'content type of ContentAsMIME is original' );
+    require Encode;
+    is(
+        Encode::decode( 'iso-8859-1', $mime->stringify_body ),
+        Encode::decode( 'utf8',       "Håvard\n" ),
+        'body of ContentAsMIME is original'
+    );
 }
 
 1;
