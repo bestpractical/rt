@@ -72,6 +72,7 @@
 
 <& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $QueueObj->AdminCc &>
 
+% $m->callback(CallbackName => 'CurrentWatchers', QueueObj => $QueueObj);
 
 </td>
 <td valign="top">
