@@ -1,0 +1,9 @@
+<%ARGS>
+$Label
+$QueueObj
+$Watchers
+</%ARGS>
+<span><% $Label %>:</span>
+
+<& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $Watchers &>
+
