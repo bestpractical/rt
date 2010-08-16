@@ -1752,53 +1752,251 @@ Set($ApprovalRejectionNotes, 1);
 
 =head1 Miscellaneous Configuration
 
+=head1 Statuses
+
+=head2
+
+Each schema is a list of possible statuses split into three logic sets:
+B<initial>, B<active> and B<inactive>. Each status in a schema must be
+unique. (Statuses may not be repeated across sets.)  Each set may have
+any number of statuses.
+
+For example:
+
+    default => {
+        default_initial => 'new',
+        initial  => ['new'],
+        active   => ['open', 'stalled'],
+        inactive => ['resolved', 'rejected', 'deleted'],
+        ...
+    },
+
+Because of database constraints, status names can be from 1
+to 10 characters.  Statuses are localized using RT's standard
+internationalization and localization system.
+
+=head3 Status sets
+
+=over 4
+
+=item default_initial
+
+As you'll read below, you can specify a set of statuses which
+RT will treat as valid "initial" statuses for tickets.
+
+If you (or yoour code) doesn't specify a status when creating a
+ticket, RT will use the L<"default_initial"> status.
+
+=item initial
+
+You can define multiple B<initial> statuses for tickets in a
+given status schema. Newly created tickets can only have
+a status that's listed as initial.
+
+A ticket's B<Created> date is set immediately upon ticket creation.
+RT will automatically set its B<Started> date when you change
+a ticket's status from an B<initial> state to an B<active> or B<inactive>
+status.
+
+=item active
+
+B<Active> tickets are "currently in play" - they're things that are
+being worked on and not yet complete.
+
+=item inactive
+
+B<Inactive> tickets are typically in their "final resting state".
+
+While you're free to implement a workflow that ignores that description,
+typically once a ticket enters an inactive state, it will never again
+enter an active state.
+
+RT will automatically set the B<Resolved> state when a ticket's status is
+changed from an B<Initial> or B<Active> status to an B<Inactive> status.
+
+B<deleted> is still a special status and protected by the B<DeleteTicket>
+right. If you don't want to allow ticket deletion at any time simply
+don't include it in your schema.
+
+=back
+
+Statuses in each set are ordered and listed in the UI in the defined
+order.
+
+Changes between statuses are constrained by transition rules,
+as described below.
+
+=head2 Transitions between statuses and UI actions
+
+A B<Transition> - is a change of status from A to B. You should define
+all possible transitions in each schema using the following format:
+
+    default => {
+        ...
+        transitions => {
+            new      => [qw(open resolved rejected deleted)],
+            open     => [qw(stalled resolved rejected deleted)],
+            stalled  => [qw(open)],
+            resolved => [qw(open)],
+            rejected => [qw(open)],
+            deleted  => [qw(open)],
+        },
+        ...
+    },
+
+=head3 Protecting status changes with with rights
+
+A transation or group of transitions can be protected by a specific right.
+
+For example:
+
+    default => {
+        ...
+        rights => {
+            '* -> deleted'  => 'DeleteTicket',
+            '* -> rejected' => 'RejectTicket',
+            '* -> *'        => 'ModifyTicketStatus',
+        },
+        ...
+    },
+
+On the left hand side you can have the following variants:
+
+    '<from> -> <to>'
+    '* -> <to>'
+    '<from> -> *'
+    '* -> *'
+
+Valid transitions are listed in order of priority. If a user attempts
+to to change status a ticket's status from B<new> to B<open> then the
+schema checked for presence of an exact match, then for 'any to B<open>',
+'B<new> to any' and finally 'any to any'.
+
+If you don't define any rights or there is no match for a
+transition RT will use B<DeleteTicket> or B<ModifyTicket> as
+apropriate.
+
+=head3 Labeling and defining actions
+
+Each transition can be named, by default it's named as the end state.
+
+Each action may be annotated with B<Comment>, B<Respond> or B<Hidden>.
+
+For example, you may want your staff to write a reply to the end user
+when they change status from B<new> to B<open>.
+
+Using B<Hide>, it's possible to hide the B<open> -> B<delete> from the ticket's main view, while still allowing it from the basics page and API.
+
+Neither B<Comment> nor B<Respond> are mandatory.
+
+Use the following format to define labels and actions of transitions:
+
+    default => {
+        ...
+        actions => {
+            'new -> open'     => ['Open It', 'Respond'],
+            'new -> resolved' => ['Resolve', 'Comment'],
+            'new -> rejected' => ['Reject',  'Respond'],
+            'new -> deleted'  => ['Delete',  ''],
+
+            'open -> stalled'  => ['Stall',   'Comment'],
+            'open -> resolved' => ['Resolve', 'Comment'],
+            'open -> rejected' => ['Reject',  'Respond'],
+            'open -> deleted'  => ['Delete',  'hide'],
+
+            'stalled -> open'  => ['Open It',  ''],
+            'resolved -> open' => ['Re-open',  'Comment'],
+            'rejected -> open' => ['Re-open',  'Comment'],
+            'deleted -> open'  => ['Undelete', ''],
+        },
+        ...
+    },
+
+=head2 Moving tickets between queues with different schemas
+
+Unless there is a mapping between statuses in two schemas,
+you can not move tickets between queues with these schemas.
+
+    __maps__ => {
+        'from schema -> to schema' => {
+            'status in left schema' => 'status in right schema',
+            ...
+        },
+        ...
+    },
+
+=back
+
 =cut
 
-    Set( %StatusSchemaMeta,
-        default => {
-            default_initial => 'new',
-            initial  => ['new', 'open'],
-            active   => ['open', 'stalled'],
-            inactive => ['resolved', 'rejected', 'deleted'],
+Set(%StatusSchemaMeta,
+    default => {
+        default_initial => 'new',
+        initial         => [ 'new', 'open' ],
+        active          => [ 'open', 'stalled' ],
+        inactive        => [ 'resolved', 'rejected', 'deleted' ],
 
-            transitions => {
-                # from   => [ to list ],
-                new      => [qw(open stalled resolved rejected deleted)],
-                open     => [qw(new stalled resolved rejected deleted)],
-                stalled  => [qw(new open rejected resolved deleted)],
-                resolved => [qw(new open stalled rejected deleted)],
-                rejected => [qw(new open stalled resolved deleted)],
-                deleted  => [qw(new open stalled rejected resolved)],
-            },
-            rights  => {
-                '* -> deleted'  => 'DeleteTicket',
-                '* -> rejected' => 'ModifyTicket',
-                '* -> *'        => 'ModifyTicket',
-            },
-            actions => {
-                # 'from -> to'    => [action text, Respond/Comment/hide/''],
-                'new -> open'     => ['Open It', 'Respond'],
-                'new -> resolved' => ['Resolve', 'Comment'],
-                'new -> rejected' => ['Reject',  'Respond'],
-                'new -> deleted'  => ['Delete',  ''],
+        transitions => {
 
-                'open -> stalled'  => ['Stall',   'Comment'],
-                'open -> resolved' => ['Resolve', 'Comment'],
-                'open -> rejected' => ['Reject',  'Respond'],
-                'open -> deleted'  => ['Delete',  'hide'],
-
-                'stalled -> open'  => ['Open It',  ''],
-                'resolved -> open' => ['Re-open',  'Comment'],
-                'rejected -> open' => ['Re-open',  'Comment'],
-                'deleted -> open'  => ['Undelete', ''],
-                'open -> new'      => ['New', 'hide'],
-            },
+            # from   => [ to list ],
+            new      => [qw(open stalled resolved rejected deleted)],
+            open     => [qw(new stalled resolved rejected deleted)],
+            stalled  => [qw(new open rejected resolved deleted)],
+            resolved => [qw(new open stalled rejected deleted)],
+            rejected => [qw(new open stalled resolved deleted)],
+            deleted  => [qw(new open stalled rejected resolved)],
         },
+        rights => {
+            '* -> deleted'  => 'DeleteTicket',
+            '* -> rejected' => 'ModifyTicket',
+            '* -> *'        => 'ModifyTicket',
+        },
+        actions => {
+
+            # 'from -> to'    => [action text, Respond/Comment/hide/''],
+            'new -> open'     => [ 'Open It', 'Respond' ],
+            'new -> resolved' => [ 'Resolve', 'Comment' ],
+            'new -> rejected' => [ 'Reject',  'Respond' ],
+            'new -> deleted'  => [ 'Delete',  '' ],
+
+            'open -> stalled'  => [ 'Stall',   'Comment' ],
+            'open -> resolved' => [ 'Resolve', 'Comment' ],
+            'open -> rejected' => [ 'Reject',  'Respond' ],
+            'open -> deleted'  => [ 'Delete',  'hide' ],
+
+            'stalled -> open'  => [ 'Open It',  '' ],
+            'resolved -> open' => [ 'Re-open',  'Comment' ],
+            'rejected -> open' => [ 'Re-open',  'Comment' ],
+            'deleted -> open'  => [ 'Undelete', '' ],
+            'open -> new'      => [ 'New',      'hide' ],
+        },
+    },
+);
+
+
+=item %StatusSchemas
+
+StatusSchemas map schemas to individual queues.
+
+If there is no record for a given queue then RT uses the
+B<default> schema.
+
+For example:
+
+    Set( %StatusSchemas,
+        General => 'some_schema',
+        'Another Queue' => 'another schema',
     );
 
+=cut
 
 
+Set( %StatusSchemas,
+     General => 'default',
+);
 
+
+=head1 Ticket Relationships
 
 =item C<$LinkTransactionsRun1Scrip>
 
@@ -1819,6 +2017,8 @@ them.
 =cut
 
 Set($StrictLinkACL, 1);
+
+=head1 Sending messages
 
 =item C<$PreviewScripMessages>
 
