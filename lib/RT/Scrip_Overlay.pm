@@ -106,6 +106,14 @@ sub Create {
         @_
     );
 
+    if (length($args{CustomPrepareCode}) || length($args{CustomCommitCode}) || length($args{CustomIsApplicableCode})) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                               Right  => 'ExecuteCode' ) )
+        {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
                                                Right  => 'ModifyScrips' ) )
@@ -503,12 +511,28 @@ sub Commit {
 # does an acl check and then passes off the call
 sub _Set {
     my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_,
+    );
 
     unless ( $self->CurrentUserHasRight('ModifyScrips') ) {
         $RT::Logger->debug(
                  "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
         return ( 0, $self->loc('Permission Denied') );
     }
+
+
+    if (length($args{Value})) {
+        if ($args{Field} eq 'CustomIsApplicableCode' || $args{Field} eq 'CustomPrepareCode' || $args{Field} eq 'CustomCommitCode') {
+            unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                                   Right  => 'ExecuteCode' ) ) {
+                return ( 0, $self->loc('Permission Denied') );
+            }
+        }
+    }
+
     return $self->__Set(@_);
 }
 
@@ -583,6 +607,35 @@ sub HasRight {
 # }}}
 
 # }}}
+
+=head2 CompileCheck
+
+This routine compile-checks the custom prepare, commit, and is-applicable code
+to see if they are syntactically valid Perl. We eval them in a codeblock to
+avoid actually executing the code.
+
+If one of the fields has a compile error, only the first is reported.
+
+Returns an (ok, message) pair.
+
+=cut
+
+sub CompileCheck {
+    my $self = shift;
+
+    for my $method (qw/CustomPrepareCode CustomCommitCode CustomIsApplicableCode/) {
+        my $code = $self->$method;
+
+        do {
+            no strict 'vars';
+            eval "sub { $code }";
+        };
+        next if !$@;
+
+        my $error = $@;
+        return (0, $self->loc("Couldn't compile [_1] codeblock '[_2]': [_3]", $method, $code, $error));
+    }
+}
 
 1;
 

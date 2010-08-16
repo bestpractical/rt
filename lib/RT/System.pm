@@ -90,6 +90,7 @@ our $RIGHTS = {
     ShowGlobalTemplates => "show global templates",     # loc_pair
     LoadSavedSearch => "allow loading of saved searches",     # loc_pair
     CreateSavedSearch => "allow creation of saved searches",      # loc_pair
+    ExecuteCode => "allow writing Perl code in templates, scrips, etc", # loc_pair
 };
 
 # Tell RT::ACE that this sort of object can get acls granted

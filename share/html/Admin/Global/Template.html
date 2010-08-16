@@ -53,7 +53,7 @@
     Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Template.html">
+<form method="post" name="ModifyTemplate" action="Template.html">
 %if ($Create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
@@ -62,8 +62,12 @@
 
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
-<& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
-$TemplateObj->Description, Content => $TemplateObj->Content &> 
+<& /Admin/Elements/ModifyTemplate,
+    Name        => $TemplateObj->Name,
+    Description => $TemplateObj->Description,
+    Content     => $TemplateObj->Content,
+    Type        => $TemplateObj->Type
+&>
 <& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
 </form>
 
@@ -103,7 +107,7 @@ else {
     
 }
 if ($TemplateObj->Id()) {
-  my @attribs = qw( Description Content Queue Name);
+  my @attribs = qw( Description Content Queue Name Type );
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
@@ -112,6 +116,9 @@ if ($TemplateObj->Id()) {
   		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id(),
 			};
   push @results, @aresults;
+
+  my ($ok, $msg) = $TemplateObj->CompileCheck;
+  push @results, $msg if !$ok;
 }
 
 </%INIT>

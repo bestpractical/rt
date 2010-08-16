@@ -88,6 +88,7 @@
 </table>
 </&>
 
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& /Elements/Submit,
     Label => $SubmitLabel,
     Reset => 1,
@@ -123,6 +124,8 @@
 </table>
 </&>
 
+% }
+
 <& /Elements/Submit,
     Label => $SubmitLabel,
     Reset => 1,
@@ -148,6 +151,9 @@ unless ( $id ) {
 }
 
 my $min_lines = 10;
+
+my ($ok, $msg) = $scrip->CompileCheck;
+push @actions, $msg if !$ok;
 
 </%init>
 
