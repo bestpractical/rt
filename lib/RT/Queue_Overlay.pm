@@ -71,6 +71,7 @@ no warnings qw(redefine);
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
+use RT::StatusSchema;
 
 our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
@@ -192,12 +193,19 @@ sub AvailableRights {
 
 sub status_schema {
     my $self = shift;
-    require RT::StatusSchema;
-    return RT::StatusSchema->load('') unless ref $self && $self->id;
+    unless (ref $self && $self->id) { 
+        return RT::StatusSchema->load('') 
+    }
+
+    my $name = '';
 
     # If you don't have StatusSchemas set, name is default
     my $schemas = RT->Config->Get('StatusSchemas');
-    my $name = $schemas ? ($schemas->{ $self->Name } || 'default') : 'default';
+    if ($schemas && $self->Name && defined $schemas->{$self->Name}) {
+        $name = $schemas->{$self->Name};
+    } else {
+        $name = 'default';
+    }
 
     my $res = RT::StatusSchema->load( $name );
     $RT::Logger->error("Status schema '$name' for queue '".$self->Name."' doesn't exist") unless $res;
