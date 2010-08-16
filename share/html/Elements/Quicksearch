@@ -16,5 +16,5 @@ my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
 my $comp = $SplitBySchema? '/Elements/QueueSummaryByStatusSchema' : '/Elements/QueueSummaryByStatus';
 </%INIT>
 <%ARGS>
-$SplitBySchema => 0
+$SplitBySchema => 1
 </%ARGS>
