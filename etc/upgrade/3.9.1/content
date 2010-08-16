@@ -11,17 +11,17 @@
         );
 
         if ($templates->Count) {
-#            die "You have templates with Type other than Action. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
+            die "You have templates with Type other than Action. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
         }
 
         $templates = RT::Templates->new($RT::SystemUser);
         $templates->UnLimit();
-#        while (my $template = $templates->Next) {
-#            my ($status, $msg) = $template->SetType('Perl');
-#            unless ( $status ) {
-#                die "Couldn't change Type of Template #" . $template->Id . ": $msg";
-#            }
-#        }
+        while (my $template = $templates->Next) {
+            my ($status, $msg) = $template->SetType('Perl');
+            unless ( $status ) {
+                die "Couldn't change Type of Template #" . $template->Id . ": $msg";
+            }
+        }
     },
     sub {
         use strict;
