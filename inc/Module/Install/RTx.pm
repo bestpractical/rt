@@ -42,8 +42,8 @@ sub RTx {
         $INC{'RT.pm'} = "$RT::LocalPath/lib/RT.pm";
     } else {
         local @INC = (
-            $ENV{RTHOME} ? ( $ENV{RTHOME}, "$ENV{RTHOME}/lib" ) : (),
             @INC,
+            $ENV{RTHOME} ? ( $ENV{RTHOME}, "$ENV{RTHOME}/lib" ) : (),
             map { ( "$_/rt3/lib", "$_/lib/rt3", "$_/lib" ) } grep $_,
             @prefixes
         );

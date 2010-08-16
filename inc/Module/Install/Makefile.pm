@@ -4,11 +4,10 @@ package Module::Install::Makefile;
 use strict 'vars';
 use ExtUtils::MakeMaker   ();
 use Module::Install::Base ();
-use Fcntl qw/:flock :seek/;
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '1.00';
+	$VERSION = '0.97';
 	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
 }
@@ -365,9 +364,9 @@ sub fix_up_makefile {
 		. ($self->postamble || '');
 
 	local *MAKEFILE;
-	open MAKEFILE, "+< $makefile_name" or die "fix_up_makefile: Couldn't open $makefile_name: $!";
-	eval { flock MAKEFILE, LOCK_EX };
+	open MAKEFILE, "< $makefile_name" or die "fix_up_makefile: Couldn't open $makefile_name: $!";
 	my $makefile = do { local $/; <MAKEFILE> };
+	close MAKEFILE or die $!;
 
 	$makefile =~ s/\b(test_harness\(\$\(TEST_VERBOSE\), )/$1'inc', /;
 	$makefile =~ s/( -I\$\(INST_ARCHLIB\))/ -Iinc$1/g;
@@ -387,8 +386,7 @@ sub fix_up_makefile {
 	# XXX - This is currently unused; not sure if it breaks other MM-users
 	# $makefile =~ s/^pm_to_blib\s+:\s+/pm_to_blib :: /mg;
 
-	seek MAKEFILE, 0, SEEK_SET;
-	truncate MAKEFILE, 0;
+	open  MAKEFILE, "> $makefile_name" or die "fix_up_makefile: Couldn't open $makefile_name: $!";
 	print MAKEFILE  "$preamble$makefile$postamble" or die $!;
 	close MAKEFILE  or die $!;
 
@@ -412,4 +410,4 @@ sub postamble {
 
 __END__
 
-#line 541
+#line 539
