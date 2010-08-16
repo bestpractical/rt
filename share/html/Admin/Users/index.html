@@ -83,7 +83,7 @@
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS &><br />
+<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &><br />
 <input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
 <&|/l&>Include disabled users in search.</&>
 <br />
@@ -122,6 +122,29 @@ else {
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 
+# Build up the list of fields to display for searching
+my $i = 0;
+my %sorted = map { $_ => $i++ } qw(
+    Name EmailAddress RealName Organization NickName WorkPhone HomePhone
+    MobilePhone PagerPhone Address1 Address2 City State Zip Country
+    Timezone Lang Gecos Comments
+);
+
+my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
+            grep { !/(?:^id$|ContactInfo|Encoding|^External|System|PGPKey|^Last|^Creat(?:ed|or)$|^Signature$)/ }
+            RT::User->ReadableAttributes;
+my @fields;
+
+for my $name (@attrs) {
+    my $label = $m->comp(
+        '/Elements/ColumnMap',
+        Class   => 'RT__User',
+        Name    => $name,
+        Attr    => 'title'
+    );
+
+    push @fields, [ $name, $label || $name ];
+}
 </%INIT>
 <%ARGS>
 $Format => undef,

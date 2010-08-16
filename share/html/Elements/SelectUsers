@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="UserField">
-% foreach my $col (RT::User->BasicColumns) {
+% foreach my $col (@fields) {
 <option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' |n %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->Next) {
@@ -60,9 +60,22 @@
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::User');
 $CFs->OrderBy( FIELD => 'Name' );
+
+my @fields = RT::User->BasicColumns;
+
+if ( $Fields and ref $Fields eq 'ARRAY' ) {
+    if ( ref $Fields->[0] eq 'ARRAY' ) {
+        @fields = @$Fields;
+    }
+    else {
+        # make the name equal the label
+        @fields = [ @$Fields, @$Fields ];
+    }
+}
 </%INIT>
 <%ARGS>
 $UserField  => ''
 $UserOp     => ''
 $UserString => ''
+$Fields     => undef
 </%ARGS>

@@ -132,6 +132,16 @@ my $COLUMN_MAP = {
 	attribute => 'Country',
 	value     => sub { return $_[0]->Country() },
     },
+    Gecos => {
+        title       => 'Unix login', #loc
+        attribute   => 'Gecos',
+        value       => sub { return $_[0]->Gecos() },
+    },
+    Lang => {
+        title       => 'Language', #loc
+        attribute   => 'Lang',
+        value       => sub { return $_[0]->Lang() },
+    },
 };
 
 </%ONCE>
