@@ -27,7 +27,7 @@ diag('make Autoreply template a html one and add utf8 chars')
         fields => {
             Content => <<'EOF',
 Subject: AutoReply: {$Ticket->Subject}
-Content-Type: text/html; charset="utf-8"
+Content-Type: text/html
 
 你好 éèà€
 {$Ticket->Subject}
@@ -68,9 +68,9 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
     # $mail is utf8 encoded
     my ($mail) = RT::Test->fetch_caught_mails;
     $mail = decode_utf8 $mail;
-    like( $mail, qr/你好/,    'mail has éèà€' );
-    like( $mail, qr/éèà€/, 'mail has éèà€' );
-    like( $mail, qr/标题/,    'mail has ticket subject 标题' );
-    like( $mail, qr/测试/,    'mail has ticket content 测试' );
+    like( $mail, qr/你好.*你好/s,    'mail has éèà€' );
+    like( $mail, qr/éèà€.*éèà€/s, 'mail has éèà€' );
+    like( $mail, qr/标题.*标题/s,    'mail has ticket subject 标题' );
+    like( $mail, qr/测试.*测试/s,    'mail has ticket content 测试' );
 }
 
