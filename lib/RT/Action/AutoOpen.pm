@@ -55,9 +55,7 @@ use base qw(RT::Action);
 
 =head1 DESCRIPTION
 
-AutoOpen in RT 3.8 sets status of a ticket to 'open' without considering
-custom statuses and possibility that there is no 'open' status in the system.
-This extension overrides behavior of the action.
+This action automatically moves a ticket to an active status.
 
 Status is not changed if there is no active statuses in the schema.
 
@@ -66,15 +64,17 @@ schema. For example if ticket's status is 'processing' and active statuses are
 'processing', 'on hold' and 'waiting' then status is not changed, but for ticket
 with status 'on hold' other rules are checked.
 
-Status is not changed if it's initial and creator of the current transaction
-is one of requestors.
+Status is not changed if it's in the list of C<initial> statuses for the
+current scheme and creator of the current transaction
+is one of the ticket's requestors.
 
 Status is not changed if message's head has field C<RT-Control> with C<no-autoopen>
 substring.
 
-Status is set to the first possible active status. It means that if ticket's
-status is X then RT finds all possible transitions from this status and selects
-first active status in the list.
+Status is set to the first possible active status. If the ticket's
+status is C<Stalled> then RT finds all possible transitions from C<Stalled>
+status and selects first one that results in the ticket having an
+active status.
 
 =cut
 
