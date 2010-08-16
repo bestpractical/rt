@@ -55,7 +55,7 @@ if ($Ticket) {
     my $id = $Ticket->id();
 
     my $current = $Ticket->Status;
-    my $schema  = $Ticket->QueueObj->status_schema;
+    my $lifecycle  = $Ticket->QueueObj->lifecycle;
     my %has;
     my $i = 1;
 
@@ -202,11 +202,11 @@ if ($Ticket) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        foreach my $next ( $schema->transitions($current) ) {
-            my $action = $schema->transition_action( $current => $next );
+        foreach my $next ( $lifecycle->transitions($current) ) {
+            my $action = $lifecycle->transition_action( $current => $next );
             next if $action eq 'hide';
 
-            my $check = $schema->check_right( $current => $next );
+            my $check = $lifecycle->check_right( $current => $next );
             $has{$check} = $Ticket->CurrentUserHasRight($check)
                 unless exists $has{$check};
             next unless $has{$check};
@@ -230,7 +230,7 @@ if ($Ticket) {
             }
             $actions->{ 'G' . $i++ } = {
                 path  => $path,
-                title => loc( $schema->transition_label( $current => $next ) ),
+                title => loc( $lifecycle->transition_label( $current => $next ) ),
             };
         }
     }

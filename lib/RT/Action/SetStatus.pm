@@ -57,9 +57,9 @@ RT::Action::SetStatus - RT's scrip action to set status of a ticket
 
 =head1 DESCRIPTION
 
-This action changes status to a new value according to L</ARGUMENT>.
-Status is not changed if transition is invalid or on other errors. All
-issues are logged with different level.
+This action changes status to a new value according to the rules in L</ARGUMENT>.
+Status is not changed if the transition is invalid or another error occurs. All
+issues are logged at apropriate levels.
 
 =head1 ARGUMENT
 
@@ -70,7 +70,7 @@ Argument can be one of the following:
 =item status literally
 
 Status is changed from the current value to a new defined by the argument,
-but only if it's valid status and allowed by transitions of the current schema,
+but only if it's valid status and allowed by transitions of the current lifecycle,
 for example:
 
     * The current status is 'stalled'
@@ -79,7 +79,7 @@ for example:
     * Status is changed
 
 However, in the example above Status is not changed if argument is anything
-else as it's just not allowed by the schema.
+else as it's just not allowed by the lifecycle.
 
 =item 'initial', 'active' or 'inactive'
 
@@ -100,7 +100,7 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $schema = $ticket->QueueObj->status_schema;
+    my $lifecycle = $ticket->QueueObj->lifecycle;
     my $status = $ticket->Status;
 
     my $argument = $self->Argument;
@@ -112,14 +112,14 @@ sub Prepare {
     my $next = '';
     if ( $argument =~ /^(initial|active|inactive)$/i ) {
         my $method = 'is_'. lc $argument;
-        ($next) = grep $schema->$method($_), $schema->transitions($status);
+        ($next) = grep $lifecycle->$method($_), $lifecycle->transitions($status);
         unless ( $next ) {
             $RT::Logger->info("No transition from '$status' to $argument set");
             return 1;
         }
     }
-    elsif ( $schema->is_valid( $argument ) ) {
-        unless ( $schema->is_transition( $status => $argument ) ) {
+    elsif ( $lifecycle->is_valid( $argument ) ) {
+        unless ( $lifecycle->is_transition( $status => $argument ) ) {
             $RT::Logger->warning("Transition '$status -> $argument' is not valid");
             return 1;
         }

@@ -14,21 +14,21 @@
 my @status;
 if ( $TicketObj ) {
     my $current = $TicketObj->Status;
-    my $schema = $TicketObj->QueueObj->status_schema;
+    my $lifecycle = $TicketObj->QueueObj->lifecycle;
 
     my %has = ();
-    foreach my $next ( $schema->transitions( $current ) ) {
-        my $check = $schema->check_right( $current => $next );
+    foreach my $next ( $lifecycle->transitions( $current ) ) {
+        my $check = $lifecycle->check_right( $current => $next );
         $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
             unless exists $has{ $check };
         push @status, $next if $has{ $check };
     }
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->status_schema->valid;
+    @status = $QueueObj->lifecycle->valid;
 }
 else {
-    @status = RT::Queue->status_schema->valid;
+    @status = RT::Queue->lifecycle->valid;
 }
 </%INIT>
 <%ARGS>

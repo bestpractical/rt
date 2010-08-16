@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-BEGIN {require  't/status-schemas/utils.pl'};
+BEGIN {require  't/lifecycles/utils.pl'};
 
 my $general = RT::Test->load_or_create_queue(
     Name => 'General',
@@ -20,8 +20,8 @@ my $tstatus = sub {
 
 diag "check basic API";
 {
-    my $schema = $general->status_schema;
-    isa_ok($schema, 'RT::StatusSchema');
+    my $schema = $general->lifecycle;
+    isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'default', "it's a default schema";
     is join(', ', sort $schema->valid),
         join(', ', sort qw(new open stalled resolved rejected deleted)),
@@ -44,7 +44,7 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        next if $general->status_schema->is_valid($_);
+        next if $general->lifecycle->is_valid($_);
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }

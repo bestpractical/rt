@@ -61,15 +61,15 @@ for my $queue (@queues) {
     my $name = $queue->{Name};
     $name =~ s/'/\\'/g;
     my $queue_cond = "Queue = '$name' AND ";
-    my $schema = $schema{ lc $queue->{'Schema'} };
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $schema->is_valid($_), @statuses ) . ')';
+    my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
+    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->is_valid($_), @statuses ) . ')';
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
 
 %   for my $status (@statuses) {
-%   if ( $schema->is_valid( $status ) ) {
+%   if ( $lifecycle->is_valid( $status ) ) {
 %       $Tickets->FromSQL( "Queue = $queue->{id} AND Status = '$status'" );
 <td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond ."Status = '$status'" |u,n %>"><% $Tickets->Count %></a></td>
 %   } else {
@@ -96,25 +96,23 @@ else {
         id          => $_->Id,
         Name        => $_->Name,
         Description => $_->Description,
-        Schema      => $_->status_schema->name,
+        Lifecycle      => $_->lifecycle->name,
     } } grep $_, @queues;
 
     $session{$cache} = \@queues if $cache;
 }
 
-use RT::StatusSchema;
-
-my %schema;
-$schema{ lc $_->name } = $_ foreach
-    grep $_, map RT::StatusSchema->load($_),
-    map $_->{'Schema'}, @queues;
+my %lifecycle;
+$lifecycle{ lc $_->name } = $_ foreach
+    grep $_, map RT::Lifecycle->load($_),
+    map $_->{'Lifecycle'}, @queues;
 
 
 unless ( @statuses ) {
     my %seen;
     foreach my $set('initial', 'active') {
-        foreach my $schema ( map $schema{$_}, sort keys %schema ) {
-            push @statuses, grep !$seen{lc $_}++, $schema->$set();
+        foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+            push @statuses, grep !$seen{lc $_}++, $lifecycle->$set();
         }
     }
 }

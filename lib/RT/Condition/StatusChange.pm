@@ -52,14 +52,14 @@ use strict;
 
 =head2 DESCRIPTION
 
-Condition check passes if the current transaction is a status change.
+This condition check passes if the current transaction is a status change.
 
-Argument can be used to apply additional conditions on old and new values.
+The argument can be used to apply additional conditions on old and new values.
 
-If argument is empty then check pass for any change of the status field.
+If argument is empty then the check passes for any change of the status field.
 
 If argument is equal to new value then check is passed. This is behavior
-is close to RT 3.8 and older. For example argumen equal 'resolved' means
+is close to RT 3.8 and older. For example, setting the argument to 'resolved' means
 'fire scrip when status changed from any to resolved'.
 
 The following extended format is supported:
@@ -113,14 +113,14 @@ sub IsApplicable {
     }
     else {
         $RT::Logger->error("Argument '$argument' is incorrect.")
-            unless RT::StatusSchema->load('')->is_valid( $argument );
+            unless RT::Lifecycle->load('')->is_valid( $argument );
         return 0;
     }
 
-    my $schema = $self->TicketObj->QueueObj->status_schema;
+    my $lifecycle = $self->TicketObj->QueueObj->lifecycle;
     if ( $new_must_be ) {
         return 0 unless grep lc($new) eq lc($_),
-            map {m/^(initial|active|inactive)$/i? $schema->valid(lc $_): $_ }
+            map {m/^(initial|active|inactive)$/i? $lifecycle->valid(lc $_): $_ }
             grep defined && length,
             map { s/^\s+//; s/\s+$//; $_ }
             split /,/, $new_must_be;
@@ -128,7 +128,7 @@ sub IsApplicable {
     if ( $old_must_be ) {
         my $old = lc($txn->OldValue || '');
         return 0 unless grep $old eq lc($_),
-            map {m/^(initial|active|inactive)$/i? $schema->valid(lc $_): $_ }
+            map {m/^(initial|active|inactive)$/i? $lifecycle->valid(lc $_): $_ }
             grep defined && length,
             map { s/^\s+//; s/\s+$//; $_ }
             split /,/, $old_must_be;

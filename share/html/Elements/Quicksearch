@@ -13,8 +13,8 @@
 </div>
 <%INIT>
 my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
-my $comp = $SplitBySchema? '/Elements/QueueSummaryByStatusSchema' : '/Elements/QueueSummaryByStatus';
+my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
 </%INIT>
 <%ARGS>
-$SplitBySchema => 1
+$SplitByLifecycle => 1
 </%ARGS>

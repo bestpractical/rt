@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-BEGIN {require 't/status-schemas/utils.pl'};
+BEGIN {require 't/lifecycles/utils.pl'};
 
 my $general = RT::Test->load_or_create_queue(
     Name => 'General',
@@ -28,12 +28,12 @@ ok $m->login, 'logged in';
 
 diag "check basic API";
 {
-    my $schema = $general->status_schema;
-    isa_ok($schema, 'RT::StatusSchema');
+    my $schema = $general->lifecycle;
+    isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'default', "it's a default schema";
 
-    $schema = $delivery->status_schema;
-    isa_ok($schema, 'RT::StatusSchema');
+    $schema = $delivery->lifecycle;
+    isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'delivery', "it's a delivery schema";
 }
 
@@ -276,7 +276,7 @@ diag "dates on status change for delivery schema";
 
 diag "add partial map between general->delivery";
 {
-    my $schemas = RT->Config->Get('StatusSchemaMeta');
+    my $schemas = RT->Config->Get('Lifecycles');
     $schemas->{'__maps__'} = {
         'default -> delivery' => {
             new => 'on way',
@@ -285,7 +285,7 @@ diag "add partial map between general->delivery";
             'on way' => 'resolved',
         },
     };
-    RT::StatusSchema->fill_cache;
+    RT::Lifecycle->fill_cache;
 }
 
 diag "check date changes on moving a ticket";

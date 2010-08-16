@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-BEGIN {require 't/status-schemas/utils.pl'};
+BEGIN {require 't/lifecycles/utils.pl'};
 
 my $general = RT::Test->load_or_create_queue(
     Name => 'General',
@@ -40,13 +40,13 @@ diag "check moving without a map";
 
 diag "add partial map";
 {
-    my $schemas = RT->Config->Get('StatusSchemaMeta');
+    my $schemas = RT->Config->Get('Lifecycles');
     $schemas->{'__maps__'} = {
         'default -> delivery' => {
             new => 'ordered',
         },
     };
-    RT::StatusSchema->fill_cache;
+    RT::Lifecycle->fill_cache;
 }
 
 diag "check moving with a partial map";

@@ -57,10 +57,10 @@ use base qw(RT::Action);
 
 This action automatically moves a ticket to an active status.
 
-Status is not changed if there is no active statuses in the schema.
+Status is not changed if there is no active statuses in the lifecycle.
 
 Status is not changed if the current status is first active for ticket's status
-schema. For example if ticket's status is 'processing' and active statuses are
+lifecycle. For example if ticket's status is 'processing' and active statuses are
 'processing', 'on hold' and 'waiting' then status is not changed, but for ticket
 with status 'on hold' other rules are checked.
 
@@ -82,11 +82,11 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $schema = $ticket->QueueObj->status_schema;
+    my $lifecycle = $ticket->QueueObj->lifecycle;
     my $status = $ticket->Status;
 
-    my @active = $schema->active;
-    # no change if no active statuses in the schema
+    my @active = $lifecycle->active;
+    # no change if no active statuses in the lifecycle
     return 1 unless @active;
 
     # no change if the ticket is already has first status from the list of active
@@ -94,13 +94,13 @@ sub Prepare {
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $schema->is_initial($status) && $self->TransactionObj->IsInbound;
+    return 1 if $lifecycle->is_initial($status) && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
         return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
-    my ($next) = grep $schema->is_active($_), $schema->transitions($status);
+    my ($next) = grep $lifecycle->is_active($_), $lifecycle->transitions($status);
 
     $self->{'set_status_to'} = $next;
 

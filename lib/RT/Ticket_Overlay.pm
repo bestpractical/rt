@@ -307,11 +307,11 @@ sub Create {
     }
 
     if ( ! defined $args{'Status'}) {
-        $args{'Status'} = $QueueObj->status_schema->default_initial();
+        $args{'Status'} = $QueueObj->lifecycle->default_initial();
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} )
-            && $QueueObj->status_schema->is_initial( $args{'Status'} )) {
+            && $QueueObj->lifecycle->is_initial( $args{'Status'} )) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
                 $self->loc($args{'Status'})));
@@ -367,8 +367,8 @@ sub Create {
     #
     # Instead, we check to make sure that it's either an "active" or "inactive" status
     elsif (
-        $QueueObj->status_schema->is_active($args{'Status'}) ||
-        $QueueObj->status_schema->is_inactive($args{'Status'})
+        $QueueObj->lifecycle->is_active($args{'Status'}) ||
+        $QueueObj->lifecycle->is_inactive($args{'Status'})
 
     ){
         $Started->SetToNow;
@@ -380,7 +380,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->status_schema->is_inactive( $args{'Status'} ) )
+    elsif ( $QueueObj->lifecycle->is_inactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -614,7 +614,7 @@ sub Create {
     # TODO: Adding link may fire scrips on other end and those scrips
     # could create transactions on this ticket before 'Create' transaction.
     #
-    # We should implement different schema: record 'Create' transaction,
+    # We should implement different lifecycle: record 'Create' transaction,
     # create links and only then fire create transaction's scrips.
     #
     # Ideal variant: add all links without firing scrips, record create
@@ -1741,14 +1741,14 @@ sub SetQueue {
     }
 
     my $new_status;
-    my $old_schema = $self->QueueObj->status_schema;
-    my $new_schema = $NewQueueObj->status_schema;
-    if ( $old_schema->name ne $new_schema->name ) {
-        unless ( $old_schema->has_map( $new_schema ) ) {
+    my $old_lifecycle = $self->QueueObj->lifecycle;
+    my $new_lifecycle = $NewQueueObj->lifecycle;
+    if ( $old_lifecycle->name ne $new_lifecycle->name ) {
+        unless ( $old_lifecycle->has_map( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }
-        $new_status = $old_schema->map( $new_schema )->{ $self->Status };
-        return ( 0, $self->loc("Mapping between queues' status schemas is incomplete. Contact your system administrator.") )
+        $new_status = $old_lifecycle->map( $new_lifecycle )->{ $self->Status };
+        return ( 0, $self->loc("Mapping between queues' lifecycles is incomplete. Contact your system administrator.") )
             unless $new_status;
     }
 
@@ -1776,7 +1776,7 @@ sub SetQueue {
 
         #If we're changing the status from initial in old to not intial in new,
         # record that we've started
-        if ( $old_schema->is_initial($old_status) && !$new_schema->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
+        if ( $old_lifecycle->is_initial($old_status) && !$new_lifecycle->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
             #Set the Started time to "now"
             $clone->_Set(
                 Field             => 'Started',
@@ -1787,7 +1787,7 @@ sub SetQueue {
 
         #When we close a ticket, set the 'Resolved' attribute to now.
         # It's misnamed, but that's just historical.
-        if ( $new_schema->is_inactive($new_status) ) {
+        if ( $new_lifecycle->is_inactive($new_status) ) {
             $clone->_Set(
                 Field             => 'Resolved',
                 Value             => $now->ISO,
@@ -3060,24 +3060,24 @@ sub SetStatus {
         %args = (@_);
     }
 
-    my $schema = $self->QueueObj->status_schema;
+    my $lifecycle = $self->QueueObj->lifecycle;
 
     my $new = $args{'Status'};
-    unless ( $schema->is_valid( $new ) ) {
+    unless ( $lifecycle->is_valid( $new ) ) {
         return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
 
     my $old = $self->__Value('Status');
-    unless ( $schema->is_transition( $old => $new ) ) {
+    unless ( $lifecycle->is_transition( $old => $new ) ) {
         return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
     }
 
-    my $check_right = $schema->check_right( $old => $new );
+    my $check_right = $lifecycle->check_right( $old => $new );
     unless ( $self->CurrentUserHasRight( $check_right ) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( !$args{Force} && $schema->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
+    if ( !$args{Force} && $lifecycle->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
@@ -3088,7 +3088,7 @@ sub SetStatus {
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
     #If we're changing the status from new, record that we've started
-    if ( $schema->is_initial($old) && !$schema->is_initial($new) && !$raw_started->Unix) {
+    if ( $lifecycle->is_initial($old) && !$lifecycle->is_initial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
@@ -3099,7 +3099,7 @@ sub SetStatus {
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $schema->is_inactive($new) ) {
+    if ( $lifecycle->is_inactive($new) ) {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,

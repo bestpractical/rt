@@ -1752,12 +1752,12 @@ Set($ApprovalRejectionNotes, 1);
 
 =head1 Miscellaneous Configuration
 
-=head1 Statuses
+=head1 Lifecycles
 
-=head2
+=head2 Lifecycle definitions
 
-Each schema is a list of possible statuses split into three logic sets:
-B<initial>, B<active> and B<inactive>. Each status in a schema must be
+Each lifecycle is a list of possible statuses split into three logic sets:
+B<initial>, B<active> and B<inactive>. Each status in a lifecycle must be
 unique. (Statuses may not be repeated across sets.)  Each set may have
 any number of statuses.
 
@@ -1790,7 +1790,7 @@ ticket, RT will use the L<"default_initial"> status.
 =item initial
 
 You can define multiple B<initial> statuses for tickets in a
-given status schema. Newly created tickets can only have
+given lifecycle. Newly created tickets can only have
 a status that's listed as initial.
 
 A ticket's B<Created> date is set immediately upon ticket creation.
@@ -1816,7 +1816,7 @@ changed from an B<Initial> or B<Active> status to an B<Inactive> status.
 
 B<deleted> is still a special status and protected by the B<DeleteTicket>
 right. If you don't want to allow ticket deletion at any time simply
-don't include it in your schema.
+don't include it in your lifecycle.
 
 =back
 
@@ -1829,7 +1829,7 @@ as described below.
 =head2 Transitions between statuses and UI actions
 
 A B<Transition> - is a change of status from A to B. You should define
-all possible transitions in each schema using the following format:
+all possible transitions in each lifecycle using the following format:
 
     default => {
         ...
@@ -1869,7 +1869,7 @@ On the left hand side you can have the following variants:
 
 Valid transitions are listed in order of priority. If a user attempts
 to to change status a ticket's status from B<new> to B<open> then the
-schema checked for presence of an exact match, then for 'any to B<open>',
+lifecycle is checked for presence of an exact match, then for 'any to B<open>',
 'B<new> to any' and finally 'any to any'.
 
 If you don't define any rights or there is no match for a
@@ -1912,14 +1912,14 @@ Use the following format to define labels and actions of transitions:
         ...
     },
 
-=head2 Moving tickets between queues with different schemas
+=head2 Moving tickets between queues with different lifecycles
 
-Unless there is a mapping between statuses in two schemas,
-you can not move tickets between queues with these schemas.
+Unless there is a mapping between statuses in two lifecycles,
+you can not move tickets between queues with these lifecycles.
 
     __maps__ => {
-        'from schema -> to schema' => {
-            'status in left schema' => 'status in right schema',
+        'from lifecycle -> to lifecycle' => {
+            'status in left lifecycle' => 'status in right lifecycle',
             ...
         },
         ...
@@ -1929,7 +1929,7 @@ you can not move tickets between queues with these schemas.
 
 =cut
 
-Set(%StatusSchemaMeta,
+Set(%Lifecycles,
     default => {
         default_initial => 'new',
         initial         => [ 'new', 'open' ],
@@ -1974,24 +1974,25 @@ Set(%StatusSchemaMeta,
 );
 
 
-=item %StatusSchemas
 
-StatusSchemas map schemas to individual queues.
+=item %LifecycleMap
+
+LifecycleMap maps lifecycles to individual queues.
 
 If there is no record for a given queue then RT uses the
-B<default> schema.
+B<default> lifecycle
 
 For example:
 
-    Set( %StatusSchemas,
-        General => 'some_schema',
-        'Another Queue' => 'another schema',
+    Set( %LifecycleMap,
+        General => 'some_lifecycle',
+        'Another Queue' => 'another_lifecycle',
     );
 
 =cut
 
 
-Set( %StatusSchemas,
+Set( %LifecycleMap,
      General => 'default',
 );
 

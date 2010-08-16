@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $schema ( map $schema{$_}, sort keys %schema ) {
-% my @cur_statuses = grep $schema->is_valid($_), @statuses;
+% foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+% my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
 % next unless @cur_statuses;
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
 
@@ -60,13 +60,13 @@
 <%PERL>
 my $i = 0;
 for my $queue (@queues) {
-    next if lc $queue->{Schema} ne lc $schema->name;
+    next if lc $queue->{Lifecycle} ne lc $lifecycle->name;
 
     $i++;
     my $name = $queue->{Name};
     $name =~ s/'/\\'/g;
     my $queue_cond = "Queue = '$name' AND ";
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $schema->is_valid($_), @statuses ) . ')';
+    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->is_valid($_), @statuses ) . ')';
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
@@ -97,25 +97,23 @@ else {
         id          => $_->Id,
         Name        => $_->Name,
         Description => $_->Description,
-        Schema      => $_->status_schema->name,
+        Lifecycle      => $_->lifecycle->name,
     } } grep $_, @queues;
 
     $session{$cache} = \@queues if $cache;
 }
 
-use RT::StatusSchema;
-
-my %schema;
-$schema{ lc $_->name } = $_ foreach
-    grep $_, map RT::StatusSchema->load($_),
-    map $_->{'Schema'}, @queues;
+my %lifecycle;
+$lifecycle{ lc $_->name } = $_ foreach
+    grep $_, map RT::Lifecycle->load($_),
+    map $_->{'Lifecycle'}, @queues;
 
 
 unless ( @statuses ) {
     my %seen;
     foreach my $set('initial', 'active') {
-        foreach my $schema ( map $schema{$_}, sort keys %schema ) {
-            push @statuses, grep !$seen{lc $_}++, $schema->$set();
+        foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+            push @statuses, grep !$seen{lc $_}++, $lifecycle->$set();
         }
     }
 }

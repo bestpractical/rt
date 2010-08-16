@@ -7,7 +7,7 @@ use warnings;
 my $config;
 BEGIN {
 $config = <<END;
-Set(\%StatusSchemaMeta,
+Set(\%Lifecycles,
     default => {
         default_initial => 'new',
         initial  => [qw(new open resolved )],
@@ -58,7 +58,7 @@ Set(\%StatusSchemaMeta,
         },
     },
 );
-Set(\%StatusSchemas, delivery => 'delivery');
+Set(\%LifecycleMap, delivery => 'delivery');
 END
 }
 

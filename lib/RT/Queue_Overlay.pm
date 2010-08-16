@@ -71,7 +71,6 @@ no warnings qw(redefine);
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
-use RT::StatusSchema;
 
 our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
@@ -191,24 +190,24 @@ sub AvailableRights {
 
 # {{{ ActiveStatusArray
 
-sub status_schema {
+sub lifecycle {
     my $self = shift;
     unless (ref $self && $self->id) { 
-        return RT::StatusSchema->load('') 
+        return RT::Lifecycle->load('')
     }
 
     my $name = '';
 
-    # If you don't have StatusSchemas set, name is default
-    my $schemas = RT->Config->Get('StatusSchemas');
-    if ($schemas && $self->Name && defined $schemas->{$self->Name}) {
-        $name = $schemas->{$self->Name};
+    # If you don't have Lifecycles set, name is default
+    my $lifecycles = RT->Config->Get('LifecycleMap');
+    if ($lifecycles && $self->Name && defined $lifecycles->{$self->Name}) {
+        $name = $lifecycles->{$self->Name};
     } else {
         $name = 'default';
     }
 
-    my $res = RT::StatusSchema->load( $name );
-    $RT::Logger->error("Status schema '$name' for queue '".$self->Name."' doesn't exist") unless $res;
+    my $res = RT::Lifecycle->load( $name );
+    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist") unless $res;
     return $res;
 }
 
@@ -220,7 +219,7 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return $self->status_schema->valid('initial', 'active');
+    return $self->lifecycle->valid('initial', 'active');
 }
 
 =head2 InactiveStatusArray
@@ -231,7 +230,7 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return $self->status_schema->inactive;
+    return $self->lifecycle->inactive;
 }
 
 =head2 StatusArray
@@ -242,7 +241,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return $self->status_schema->valid( @_ );
+    return $self->lifecycle->valid( @_ );
 }
 
 =head2 IsValidStatus value
@@ -253,7 +252,7 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 sub IsValidStatus {
     my $self  = shift;
-    return $self->status_schema->is_valid( shift );
+    return $self->lifecycle->is_valid( shift );
 }
 
 =head2 IsActiveStatus value
@@ -264,7 +263,7 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 sub IsActiveStatus {
     my $self  = shift;
-    return $self->status_schema->is_valid( shift, 'initial', 'active');
+    return $self->lifecycle->is_valid( shift, 'initial', 'active');
 }
 
 
@@ -278,7 +277,7 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 sub IsInactiveStatus {
     my $self  = shift;
-    return $self->status_schema->is_inactive( shift );
+    return $self->lifecycle->is_inactive( shift );
 }
 
 

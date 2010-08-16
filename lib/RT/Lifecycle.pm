@@ -2,12 +2,13 @@
 use strict;
 use warnings;
 
-package RT::StatusSchema;
+package RT::Lifecycle;
 
 sub loc { return $RT::SystemUser->loc( @_ ) }
 
-our %STATUS_SCHEMAS;
-our %STATUS_SCHEMAS_CACHE;
+our %LIFECYCLES;
+our %LIFECYCLES_CACHE;
+__PACKAGE__->register_rights;
 
 # cache structure:
 #    {
@@ -17,8 +18,8 @@ our %STATUS_SCHEMAS_CACHE;
 #            active => [...],
 #            inactive => [...],
 #        },
-#        schema_x => {
-#            '' => [...], # all valid in schema
+#        lifecycle_x => {
+#            '' => [...], # all valid in lifecycle
 #            initial => [...],
 #            active => [...],
 #            inactive => [...],
@@ -38,13 +39,13 @@ our %STATUS_SCHEMAS_CACHE;
 
 =head1 NAME
 
-RT::StatusSchema - class to access and manipulate status schemas
+RT::Lifecycle - class to access and manipulate lifecycles
 
 =head1 DESCRIPTION
 
-A status schema is a list of statuses that a ticket can have. There are three
-groups of statuses: initial, active and inactive. A status schema also defines
-possible transitions between statuses. For example, in the 'default' schema,
+A lifecycle is a list of statuses that a ticket can have. There are three
+groups of statuses: initial, active and inactive. A lifecycle also defines
+possible transitions between statuses. For example, in the 'default' lifecycle,
 you may only change status from 'stalled' to 'open'.
 
 It is also possible to define user-interface labels and the action a user
@@ -67,19 +68,19 @@ sub new {
     my $proto = shift;
     my $self = bless {}, ref($proto) || $proto;
 
-    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %LIFECYCLES_CACHE;
 
     return $self;
 }
 
 =head2 load
 
-Takes a name of the schema and loads it. If name is empty or undefined then
-loads the global schema with statuses from all named schemas.
+Takes a name of the lifecycle and loads it. If name is empty or undefined then
+loads the global lifecycle with statuses from all named lifecycles.
 
 Can be called as class method, returns a new object, for example:
 
-    my $schema = RT::StatusSchema->load('default');
+    my $lifecycle = RT::Lifecycle->load('default');
 
 =cut
 
@@ -89,31 +90,31 @@ sub load {
     return $self->new->load( $name, @_ )
         unless ref $self;
 
-    return unless exists $STATUS_SCHEMAS_CACHE{ $name };
+    return unless exists $LIFECYCLES_CACHE{ $name };
 
     $self->{'name'} = $name;
-    $self->{'data'} = $STATUS_SCHEMAS_CACHE{ $name };
+    $self->{'data'} = $LIFECYCLES_CACHE{ $name };
 
     return $self;
 }
 
 =head2 list
 
-Returns sorted list of the schemas' names.
+Returns sorted list of the lifecycles' names.
 
 =cut
 
 sub list {
     my $self = shift;
 
-    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %LIFECYCLES_CACHE;
 
-    return sort grep length && $_ ne '__maps__', keys %STATUS_SCHEMAS_CACHE;
+    return sort grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
 =head2 name
 
-Returns name of the laoded schema.
+Returns name of the laoded lifecycle.
 
 =cut
 
@@ -125,14 +126,14 @@ Methods to get statuses in different sets or validating them.
 
 =head3 valid
 
-Returns an array of all valid statuses for the current schema.
+Returns an array of all valid statuses for the current lifecycle.
 Statuses are not sorted alphabetically, instead initial goes first,
 then active and then inactive.
 
 Takes optional list of status types, from 'initial', 'active' or
 'inactive'. For example:
 
-    $schema->valid('initial', 'active');
+    $lifecycle->valid('initial', 'active');
 
 =cut
 
@@ -151,13 +152,13 @@ sub valid {
 =head3 is_valid
 
 Takes a status and returns true if value is a valid status for the current
-schema. Otherwise, returns false.
+lifecycle. Otherwise, returns false.
 
 Takes optional list of status types after the status, so it's possible check
 validity in particular sets, for example:
 
     # returns true if status is valid and from initial or active set
-    $schema->is_valid('some_status', 'initial', 'active');
+    $lifecycle->is_valid('some_status', 'initial', 'active');
 
 See also </valid>.
 
@@ -171,7 +172,7 @@ sub is_valid {
 
 =head3 initial
 
-Returns an array of all initial statuses for the current schema.
+Returns an array of all initial statuses for the current lifecycle.
 
 =cut
 
@@ -196,7 +197,7 @@ sub is_initial {
 
 =head3 default_initial
 
-Returns the "default" initial status for this schema
+Returns the "default" initial status for this lifecycle
 
 =cut
 
@@ -208,7 +209,7 @@ sub default_initial {
 
 =head3 active
 
-Returns an array of all active statuses for this schema.
+Returns an array of all active statuses for this lifecycle.
 
 =cut
 
@@ -232,7 +233,7 @@ sub is_active {
 
 =head3 inactive
 
-Returns an array of all inactive statuses for this schema.
+Returns an array of all inactive statuses for this lifecycle.
 
 =cut
 
@@ -317,12 +318,12 @@ sub check_right {
 sub register_rights {
     my $self = shift;
 
-    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %LIFECYCLES_CACHE;
 
     my %tmp;
-    foreach my $schema ( values %STATUS_SCHEMAS_CACHE ) {
-        next unless exists $schema->{'rights'};
-        while ( my ($transition, $right) = each %{ $schema->{'rights'} } ) {
+    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
+        next unless exists $lifecycle->{'rights'};
+        while ( my ($transition, $right) = each %{ $lifecycle->{'rights'} } ) {
             push @{ $tmp{ $right } ||=[] }, $transition;
         }
     }
@@ -391,7 +392,7 @@ sub transition_action {
 
 =head3 create
 
-Creates a new status schema in the DB. Takes a param hash with
+Creates a new lifecycle in the DB. Takes a param hash with
 'name', 'initial', 'active', 'inactive' and 'transitions' keys.
 
 All arguments except 'name' are optional and can be filled later
@@ -415,20 +416,20 @@ sub create {
     @{ $self }{qw(name data)} = (undef, undef);
 
     my $name = delete $args{'name'};
-    return (0, loc('Invalid schema name'))
+    return (0, loc('Invalid lifecycle name'))
         unless defined $name && length $name;
     return (0, loc('Already exist'))
-        if $STATUS_SCHEMAS_CACHE{ $name };
+        if $LIFECYCLES_CACHE{ $name };
 
     foreach my $method (qw(_set_defaults _set_statuses _set_transitions _set_actions)) {
         my ($status, $msg) = $self->$method( %args, name => $name );
         return ($status, $msg) unless $status;
     }
 
-    my ($status, $msg) = $self->_store_schemas( $name );
+    my ($status, $msg) = $self->_store_lifecycles( $name );
     return ($status, $msg) unless $status;
 
-    return (1, loc('Created a new status schema'));
+    return (1, loc('Created a new lifecycle'));
 }
 
 sub set_statuses {
@@ -440,15 +441,15 @@ sub set_statuses {
         @_
     );
 
-    my $name = $self->name or return (0, loc("Status schema is not loaded"));
+    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
 
     my ($status, $msg) = $self->_set_statuses( %args, name => $name );
     return ($status, $msg) unless $status;
 
-    ($status, $msg) = $self->_store_schemas( $name );
+    ($status, $msg) = $self->_store_lifecycles( $name );
     return ($status, $msg) unless $status;
 
-    return (1, loc('Updated schema'));
+    return (1, loc('Updated lifecycle'));
 }
 
 
@@ -458,101 +459,101 @@ sub set_transitions {
     my $self = shift;
     my %args = @_;
 
-    my $name = $self->name or return (0, loc("Status schema is not loaded"));
+    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
 
     my ($status, $msg) = $self->_set_transitions(
         transitions => \%args, name => $name
     );
     return ($status, $msg) unless $status;
 
-    ($status, $msg) = $self->_store_schemas( $name );
+    ($status, $msg) = $self->_store_lifecycles( $name );
     return ($status, $msg) unless $status;
 
-    return (1, loc('Updated schema with transitions data'));
+    return (1, loc('Updated lifecycle with transitions data'));
 }
 
 sub set_actions {
     my $self = shift;
     my %args = @_;
 
-    my $name = $self->name or return (0, loc("Status schema is not loaded"));
+    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
 
     my ($status, $msg) = $self->_set_actions(
         actions => \%args, name => $name
     );
     return ($status, $msg) unless $status;
 
-    ($status, $msg) = $self->_store_schemas( $name );
+    ($status, $msg) = $self->_store_lifecycles( $name );
     return ($status, $msg) unless $status;
 
-    return (1, loc('Updated schema with actions data'));
+    return (1, loc('Updated lifecycle with actions data'));
 }
 
 sub fill_cache {
     my $self = shift;
 
-    my $map = RT->Config->Get('StatusSchemaMeta') or return;
-#    my $map = $RT::System->first_attribute('StatusSchemas')
+    my $map = RT->Config->Get('Lifecycles') or return;
+#    my $map = $RT::System->first_attribute('Lifecycles')
 #        or return;
 #    $map = $map->content or return;
 
-    %STATUS_SCHEMAS_CACHE = %STATUS_SCHEMAS = %$map;
+    %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     my %all = (
         '' => [],
         initial => [],
         active => [],
         inactive => [],
     );
-    foreach my $schema ( values %STATUS_SCHEMAS_CACHE ) {
+    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
         my @res;
         foreach my $type ( qw(initial active inactive) ) {
-            push @{ $all{ $type } }, @{ $schema->{ $type } || [] };
-            push @res,               @{ $schema->{ $type } || [] };
+            push @{ $all{ $type } }, @{ $lifecycle->{ $type } || [] };
+            push @res,               @{ $lifecycle->{ $type } || [] };
         }
 
         my %seen;
         @res = grep !$seen{ lc $_ }++, @res;
-        $schema->{''} = \@res;
+        $lifecycle->{''} = \@res;
     }
     foreach my $type ( qw(initial active inactive), '' ) {
         my %seen;
         @{ $all{ $type } } = grep !$seen{ lc $_ }++, @{ $all{ $type } };
         push @{ $all{''} }, @{ $all{ $type } } if $type;
     }
-    $STATUS_SCHEMAS_CACHE{''} = \%all;
+    $LIFECYCLES_CACHE{''} = \%all;
     return;
 }
 
 sub for_localization {
     my $self = shift;
-    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %LIFECYCLES_CACHE;
 
     my @res = ();
 
-    push @res, @{ $STATUS_SCHEMAS_CACHE{''}{''} || [] };
-    foreach my $schema ( values %STATUS_SCHEMAS ) {
+    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
+    foreach my $lifecycle ( values %LIFECYCLES ) {
         push @res,
             grep defined && length,
             map $_->[0],
             grep ref($_),
-            values %{ $schema->{'actions'} || {} };
+            values %{ $lifecycle->{'actions'} || {} };
     }
 
     my %seen;
     return grep !$seen{lc $_}++, @res;
 }
 
-sub _store_schemas {
+sub _store_lifecycles {
     my $self = shift;
     my $name = shift;
     my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
-        description => 'all system status schemas',
-        content => \%STATUS_SCHEMAS,
+        name => 'Lifecycles',
+        description => 'all system lifecycles',
+        content => \%LIFECYCLES,
     );
     $self->fill_cache;
     $self->load( $name );
-    return ($status, loc("Couldn't store schema")) unless $status;
+    return ($status, loc("Couldn't store lifecycle")) unless $status;
     return 1;
 }
 
@@ -570,14 +571,14 @@ sub _set_statuses {
         foreach my $status ( grep defined && length, @{ $args{ $type } || [] } ) {
             return (0, loc('Status should contain ASCII characters only. Translate via po files.'))
                 unless $status =~ /^[a-zA-Z0-9.,! ]+$/;
-            return (0, loc('Statuses must be unique in one schema'))
+            return (0, loc('Statuses must be unique within a lifecycle'))
                 if grep lc($_) eq lc($status), @all;
             push @all, $status;
             push @{ $tmp{ $type } }, $status;
         }
     }
 
-    $STATUS_SCHEMAS{ $args{'name'} }{ $_ } = $tmp{ $_ }
+    $LIFECYCLES{ $args{'name'} }{ $_ } = $tmp{ $_ }
         foreach qw(initial active inactive);
 
     return 1;
@@ -588,7 +589,7 @@ sub _set_defaults {
     my $self = shift;
     my %args = @_;
 
-    $STATUS_SCHEMAS{ $args{'name'} }{$_ } = $args{ $_ }
+    $LIFECYCLES{ $args{'name'} }{$_ } = $args{ $_ }
         foreach qw(default_initial);
 
     return 1;
@@ -603,7 +604,7 @@ sub _set_transitions {
     my %args = @_;
 
     # XXX, TODO: more tests on data
-    $STATUS_SCHEMAS{ $args{'name'} }{'transitions'} = $args{'transitions'};
+    $LIFECYCLES{ $args{'name'} }{'transitions'} = $args{'transitions'};
     return 1;
 }
 
@@ -612,7 +613,7 @@ sub _set_actions {
     my %args = @_;
 
     # XXX, TODO: more tests on data
-    $STATUS_SCHEMAS{ $args{'name'} }{'actions'} = $args{'actions'};
+    $LIFECYCLES{ $args{'name'} }{'actions'} = $args{'actions'};
     return 1;
 }
 
@@ -628,30 +629,30 @@ sub from_set {
 sub map {
     my $from = shift;
     my $to = shift;
-    $to = RT::StatusSchema->load( $to ) unless ref $to;
-    return $STATUS_SCHEMAS{'__maps__'}{ $from->name .' -> '. $to->name } || {};
+    $to = RT::Lifecycle->load( $to ) unless ref $to;
+    return $LIFECYCLES{'__maps__'}{ $from->name .' -> '. $to->name } || {};
 }
 
 sub set_map {
     my $self = shift;
     my $to = shift;
-    $to = RT::StatusSchema->load( $to ) unless ref $to;
+    $to = RT::Lifecycle->load( $to ) unless ref $to;
     my %map = @_;
     $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
 
-    return (0, loc("Status schema is not loaded"))
+    return (0, loc("Lifecycle is not loaded"))
         unless $self->name;
 
-    return (0, loc("Status schema is not loaded"))
+    return (0, loc("Lifecycle is not loaded"))
         unless $to->name;
 
 
-    $STATUS_SCHEMAS{'__maps__'}{ $self->name .' -> '. $to->name } = \%map;
+    $LIFECYCLES{'__maps__'}{ $self->name .' -> '. $to->name } = \%map;
 
-    my ($status, $msg) = $self->_store_schemas( $self->name );
+    my ($status, $msg) = $self->_store_lifecycles( $self->name );
     return ($status, $msg) unless $status;
 
-    return (1, loc('Updated schema with actions data'));
+    return (1, loc('Updated lifecycle with actions data'));
 }
 
 sub has_map {
@@ -670,7 +671,7 @@ sub no_maps {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::StatusSchema->load( $from )->has_map( $to );
+                unless RT::Lifecycle->load( $from )->has_map( $to );
         }
     }
     return @res;
@@ -680,7 +681,7 @@ sub queues {
     my $self = shift;
     require RT::Queues;
     my $queues = RT::Queues->new( $RT::SystemUser );
-    $queues->limit( column => 'status_schema', value => $self->name );
+    $queues->limit( column => 'lifecycle', value => $self->name );
     return $queues;
 }
 
