@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 91;
+use RT::Test tests => 89;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -95,8 +95,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
     # try the following group of tests twice with different agents(logins)
     my $test_cb = sub {
         my $agent = shift;
-        $agent->goto_ticket( $id );
-        $agent->follow_link_ok({text => 'Basics'}, 'Ticket -> Basics');
+        $agent->get("/Ticket/Modify.html?id=$id");
         my $form = $agent->form_number(3);
         is $form->value('Owner'), $user_b->id, 'correct owner selected';
         $agent->select('Owner', $RT::Nobody->id);

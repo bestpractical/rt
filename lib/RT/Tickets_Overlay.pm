@@ -1423,111 +1423,164 @@ sub _CustomFieldLimit {
                 %rest
             );
         }
-        elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
-            unless ( length( Encode::encode_utf8($value) ) > 255 ) {
+        else {
+            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->Load($field);
+
+            # need special treatment for Date
+            if ( $cf->Type =~ /^Date(Time)?$/ ) {
+                my $is_datetime = $1 ? 1 : 0;
+                if ( $is_datetime && $op eq '=' ) {
+
+               # if we're specifying =, that means we want everything on a
+               # particular single day.  in the database, we need to check for >
+               # and < the edges of that day.
+
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set( Format => 'unknown', Value => $value );
+                    $date->SetToMidnight( Timezone => 'server' );
+                    my $daystart = $date->ISO;
+                    $date->AddDay;
+                    my $dayend = $date->ISO;
+
+                    $self->_OpenParen;
+
+                    $self->_SQLLimit(
+                        ALIAS    => $TicketCFs,
+                        FIELD    => 'Content',
+                        OPERATOR => ">=",
+                        VALUE    => $daystart,
+                        %rest,
+                    );
+
+                    $self->_SQLLimit(
+                        ALIAS    => $TicketCFs,
+                        FIELD    => 'Content',
+                        OPERATOR => "<=",
+                        VALUE    => $dayend,
+                        %rest,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->_CloseParen;
+                }
+                else {
+                    $self->_SQLLimit(
+                        ALIAS    => $TicketCFs,
+                        FIELD    => 'Content',
+                        OPERATOR => $op,
+                        VALUE    => $value,
+                        %rest,
+                    );
+                }
+            }
+            elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
+                unless ( length( Encode::encode_utf8($value) ) > 255 ) {
+                    $self->_SQLLimit(
+                        ALIAS    => $TicketCFs,
+                        FIELD    => 'Content',
+                        OPERATOR => $op,
+                        VALUE    => $value,
+                        %rest
+                    );
+                }
+                else {
+                    $self->_OpenParen;
+                    $self->_SQLLimit(
+                        ALIAS           => $TicketCFs,
+                        FIELD           => 'Content',
+                        OPERATOR        => '=',
+                        VALUE           => '',
+                        ENTRYAGGREGATOR => 'OR'
+                    );
+                    $self->_SQLLimit(
+                        ALIAS           => $TicketCFs,
+                        FIELD           => 'Content',
+                        OPERATOR        => 'IS',
+                        VALUE           => 'NULL',
+                        ENTRYAGGREGATOR => 'OR'
+                    );
+                    $self->_CloseParen;
+                    $self->_SQLLimit(
+                        ALIAS           => $TicketCFs,
+                        FIELD           => 'LargeContent',
+                        OPERATOR        => $fix_op->($op),
+                        VALUE           => $value,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+                }
+            }
+            else {
                 $self->_SQLLimit(
-                    ALIAS      => $TicketCFs,
-                    FIELD      => 'Content',
-                    OPERATOR   => $op,
-                    VALUE      => $value,
+                    ALIAS    => $TicketCFs,
+                    FIELD    => 'Content',
+                    OPERATOR => $op,
+                    VALUE    => $value,
                     %rest
                 );
-            } else {
+
+                $self->_OpenParen;
                 $self->_OpenParen;
                 $self->_SQLLimit(
-                    ALIAS      => $TicketCFs,
-                    FIELD      => 'Content',
-                    OPERATOR   => '=',
-                    VALUE      => '',
+                    ALIAS           => $TicketCFs,
+                    FIELD           => 'Content',
+                    OPERATOR        => '=',
+                    VALUE           => '',
                     ENTRYAGGREGATOR => 'OR'
                 );
                 $self->_SQLLimit(
-                    ALIAS      => $TicketCFs,
-                    FIELD      => 'Content',
-                    OPERATOR   => 'IS',
-                    VALUE      => 'NULL',
+                    ALIAS           => $TicketCFs,
+                    FIELD           => 'Content',
+                    OPERATOR        => 'IS',
+                    VALUE           => 'NULL',
                     ENTRYAGGREGATOR => 'OR'
                 );
                 $self->_CloseParen;
                 $self->_SQLLimit(
-                    ALIAS => $TicketCFs,
-                    FIELD => 'LargeContent',
-                    OPERATOR => $fix_op->($op),
-                    VALUE => $value,
+                    ALIAS           => $TicketCFs,
+                    FIELD           => 'LargeContent',
+                    OPERATOR        => $fix_op->($op),
+                    VALUE           => $value,
                     ENTRYAGGREGATOR => 'AND',
                 );
+                $self->_CloseParen;
             }
-        }
-        else {
-            $self->_SQLLimit(
-                ALIAS      => $TicketCFs,
-                FIELD      => 'Content',
-                OPERATOR   => $op,
-                VALUE      => $value,
-                %rest
-            );
-
-            $self->_OpenParen;
-            $self->_OpenParen;
-            $self->_SQLLimit(
-                ALIAS      => $TicketCFs,
-                FIELD      => 'Content',
-                OPERATOR   => '=',
-                VALUE      => '',
-                ENTRYAGGREGATOR => 'OR'
-            );
-            $self->_SQLLimit(
-                ALIAS      => $TicketCFs,
-                FIELD      => 'Content',
-                OPERATOR   => 'IS',
-                VALUE      => 'NULL',
-                ENTRYAGGREGATOR => 'OR'
-            );
             $self->_CloseParen;
-            $self->_SQLLimit(
-                ALIAS => $TicketCFs,
-                FIELD => 'LargeContent',
-                OPERATOR => $fix_op->($op),
-                VALUE => $value,
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $self->_CloseParen;
-        }
-        $self->_CloseParen;
 
-        # XXX: if we join via CustomFields table then
-        # because of order of left joins we get NULLs in
-        # CF table and then get nulls for those records
-        # in OCFVs table what result in wrong results
-        # as decifer method now tries to load a CF then
-        # we fall into this situation only when there
-        # are more than one CF with the name in the DB.
-        # the same thing applies to order by call.
-        # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
-        # we want treat IS NULL as (not applies or has
-        # no value)
-        $self->_SQLLimit(
-            ALIAS      => $CFs,
-            FIELD      => 'Name',
-            OPERATOR   => 'IS NOT',
-            VALUE      => 'NULL',
-            QUOTEVALUE => 0,
-            ENTRYAGGREGATOR => 'AND',
-        ) if $CFs;
-        $self->_CloseParen;
-
-        if ($negative_op) {
+            # XXX: if we join via CustomFields table then
+            # because of order of left joins we get NULLs in
+            # CF table and then get nulls for those records
+            # in OCFVs table what result in wrong results
+            # as decifer method now tries to load a CF then
+            # we fall into this situation only when there
+            # are more than one CF with the name in the DB.
+            # the same thing applies to order by call.
+            # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+            # we want treat IS NULL as (not applies or has
+            # no value)
             $self->_SQLLimit(
-                ALIAS           => $TicketCFs,
-                FIELD           => $column || 'Content',
-                OPERATOR        => 'IS',
+                ALIAS           => $CFs,
+                FIELD           => 'Name',
+                OPERATOR        => 'IS NOT',
                 VALUE           => 'NULL',
                 QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'OR',
-            );
-        }
+                ENTRYAGGREGATOR => 'AND',
+            ) if $CFs;
+            $self->_CloseParen;
 
-        $self->_CloseParen;
+            if ($negative_op) {
+                $self->_SQLLimit(
+                    ALIAS           => $TicketCFs,
+                    FIELD           => $column || 'Content',
+                    OPERATOR        => 'IS',
+                    VALUE           => 'NULL',
+                    QUOTEVALUE      => 0,
+                    ENTRYAGGREGATOR => 'OR',
+                );
+            }
+
+            $self->_CloseParen;
+        }
     }
     else {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;

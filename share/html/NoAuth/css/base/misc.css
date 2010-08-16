@@ -45,31 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+@import "jquery-ui-1.8.4.custom.modified.css";
+@import "ui.timepickr.css";
+
 .hide, .hidden { display: none !important; }
-
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
-}
-
 
 .clear { clear: both; }
 
@@ -102,13 +81,14 @@ hr.clear {
 
 /* Custom fields */
 
-.edit-custom-field {
+/* Only apply these when we're not rendering in a table, hence the leading div. */
+div.edit-custom-field {
     width: 48%;
     float: left;
     margin: 0.5em;
 }
 
-.edit-custom-field .cflabel {
+div.edit-custom-field .cflabel {
     float: left;
     padding-right: 0.5em;
 }

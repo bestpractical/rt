@@ -155,7 +155,7 @@
     <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
 %         if ($type->{"$action"}->{'html'}) {
       <% $type->{"$action"}->{'html'} | n %>
-%         } else {
+%         } elsif ($type->{$action}->{path})  {
       <a href="<%RT->Config->Get('WebPath')%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
 %         }
     </li>

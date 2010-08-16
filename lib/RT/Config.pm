@@ -126,6 +126,9 @@ can be set for each config optin:
                  (such as seeing if a library is installed) and then change
                  the setting of this or other options in the Config using 
                  the RT::Config option.
+   Obfuscate   - subref passed the RT::Config object, current setting of the config option
+                 and a user object, can return obfuscated value. it's called in
+                 RT->Config->GetObfuscated() 
 
 =cut
 
@@ -185,17 +188,26 @@ our %META = (
             Values => [qw(3.5-default 3.4-compat web2)],
         },
     },
-    MessageBoxRichText => {
-        Section => 'General',
+    UseSideBySideLayout => {
+        Section => 'Ticket composition',
         Overridable => 1,
         SortOrder => 5,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use a two column layout for create and update forms?' # loc
+        }
+    },
+    MessageBoxRichText => {
+        Section => 'Ticket composition',
+        Overridable => 1,
+        SortOrder => 5.1,
         Widget => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'WYSIWYG message composer' # loc
         }
     },
     MessageBoxRichTextHeight => {
-        Section => 'General',
+        Section => 'Ticket composition',
         Overridable => 1,
         SortOrder => 6,
         Widget => '/Widgets/Form/Integer',
@@ -204,7 +216,7 @@ our %META = (
         }
     },
     MessageBoxWidth => {
-        Section         => 'General',
+        Section         => 'Ticket composition',
         Overridable     => 1,
         SortOrder       => 7,
         Widget          => '/Widgets/Form/Integer',
@@ -213,12 +225,23 @@ our %META = (
         },
     },
     MessageBoxHeight => {
-        Section         => 'General',
+        Section         => 'Ticket composition',
         Overridable     => 1,
         SortOrder       => 8,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box height',          #loc
+        },
+    },
+    MessageBoxWrap => {
+        Section         => 'Ticket composition',                #loc
+        Overridable     => 1,
+        SortOrder       => 8.1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Message box wrapping',   #loc
+            Values => [qw(SOFT HARD)],
+            Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
         },
     },
     SearchResultsRefreshInterval => {
@@ -714,6 +737,27 @@ sub Get {
     }
     $res = $OPTIONS{$name}           unless defined $res;
     $res = $META{$name}->{'Default'} unless defined $res;
+    return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
+}
+
+=head2 GetObfuscated
+
+the same as Get, except it returns Obfuscated value via Obfuscate sub
+
+=cut
+
+sub GetObfuscated {
+    my $self = shift;
+    my ( $name, $user ) = @_;
+    my $obfuscate = $META{$name}->{Obfuscate};
+
+    # we use two Get here is to simplify the logic of the return value
+    # configs need obfuscation are supposed to be less, so won't be too heavy
+
+    return $self->Get(@_) unless $obfuscate;
+
+    my $res = $self->Get(@_);
+    $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 

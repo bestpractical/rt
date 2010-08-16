@@ -259,7 +259,7 @@ sub Create {
         InitialPriority    => undef,
         FinalPriority      => undef,
         Priority           => undef,
-        Status             => 'new',
+        Status             => undef,
         TimeWorked         => "0",
         TimeLeft           => 0,
         TimeEstimated      => 0,
@@ -306,9 +306,19 @@ sub Create {
             $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
     }
 
-    unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
-        return ( 0, 0, $self->loc('Invalid value for status') );
+    if ( ! defined $args{'Status'}) {
+        $args{'Status'} = $QueueObj->status_schema->default_initial();
     }
+
+    unless ( $QueueObj->IsValidStatus( $args{'Status'} )
+            && $QueueObj->status_schema->is_initial( $args{'Status'} )) {
+        return ( 0, 0,
+            $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
+                $self->loc($args{'Status'})));
+    }
+
+
+
 
     #Since we have a queue, we can set queue defaults
 
@@ -350,7 +360,17 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
-    elsif ( $args{'Status'} ne 'new' ) {
+    # We sort of want to ask "is this not an initial state
+    # But some schemes require active statuses to be duplicated
+    # in the initial state list so that tickets can be created
+    # in those states already open
+    #
+    # Instead, we check to make sure that it's either an "active" or "inactive" status
+    elsif (
+        $QueueObj->status_schema->is_active($args{'Status'}) ||
+        $QueueObj->status_schema->is_inactive($args{'Status'})
+
+    ){
         $Started->SetToNow;
     }
 
@@ -360,7 +380,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
+    elsif ( $QueueObj->status_schema->is_inactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -385,8 +405,10 @@ sub Create {
         if ( $args{'Owner'}->id ) {
             $Owner = $args{'Owner'};
         } else {
-            $RT::Logger->error('passed not loaded owner object');
-            push @non_fatal_errors, $self->loc("Invalid owner object");
+            $RT::Logger->error('Passed an empty RT::User for owner');
+            push @non_fatal_errors,
+                $self->loc("Owner could not be set.") . " ".
+            $self->loc("Invalid value for [_1]",loc('owner'));
             $Owner = undef;
         }
     }
@@ -395,8 +417,9 @@ sub Create {
     elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
-        $Owner->LoadByEmail( $args{'Owner'} )
-            unless $Owner->Id;
+        if (!$Owner->id) {
+            $Owner->LoadByEmail( $args{'Owner'} )
+        }
         unless ( $Owner->Id ) {
             push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
@@ -1713,23 +1736,23 @@ sub SetQueue {
     if ( $NewQueueObj->Id == $self->QueueObj->Id ) {
         return ( 0, $self->loc('That is the same value') );
     }
-    unless (
-        $self->CurrentUser->HasRight(
-            Right    => 'CreateTicket',
-            Object => $NewQueueObj
-        )
-      )
-    {
+    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket', Object => $NewQueueObj)) {
         return ( 0, $self->loc("You may not create requests in that queue.") );
     }
 
-    unless (
-        $self->OwnerObj->HasRight(
-            Right    => 'OwnTicket',
-            Object => $NewQueueObj
-        )
-      )
-    {
+    my $new_status;
+    my $old_schema = $self->QueueObj->status_schema;
+    my $new_schema = $NewQueueObj->status_schema;
+    if ( $old_schema->name ne $new_schema->name ) {
+        unless ( $old_schema->has_map( $new_schema ) ) {
+            return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
+        }
+        $new_status = $old_schema->map( $new_schema )->{ $self->Status };
+        return ( 0, $self->loc("Mapping between queues' status schemas is incomplete. Contact your system administrator.") )
+            unless $new_status;
+    }
+
+    unless ( $self->OwnerObj->HasRight( Right    => 'OwnTicket', Object => $NewQueueObj)) {
         my $clone = RT::Ticket->new( $RT::SystemUser );
         $clone->Load( $self->Id );
         unless ( $clone->Id ) {
@@ -1737,6 +1760,49 @@ sub SetQueue {
         }
         my ($status, $msg) = $clone->SetOwner( $RT::Nobody->Id, 'Force' );
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
+    }
+
+    if ( $new_status ) {
+        my $clone = RT::Ticket->new( $RT::SystemUser );
+        $clone->Load( $self->Id );
+        unless ( $clone->Id ) {
+            return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
+        }
+
+        my $now = RT::Date->new( $self->CurrentUser );
+        $now->SetToNow;
+
+        my $old_status = $clone->Status;
+
+        #If we're changing the status from initial in old to not intial in new,
+        # record that we've started
+        if ( $old_schema->is_initial($old_status) && !$new_schema->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
+            #Set the Started time to "now"
+            $clone->_Set(
+                Field             => 'Started',
+                Value             => $now->ISO,
+                RecordTransaction => 0
+            );
+        }
+
+        #When we close a ticket, set the 'Resolved' attribute to now.
+        # It's misnamed, but that's just historical.
+        if ( $new_schema->is_inactive($new_status) ) {
+            $clone->_Set(
+                Field             => 'Resolved',
+                Value             => $now->ISO,
+                RecordTransaction => 0,
+            );
+        }
+
+        #Actually update the status
+        my ($val, $msg)= $clone->_Set(
+            Field             => 'Status',
+            Value             => $new_status,
+            RecordTransaction => 0,
+        );
+        $RT::Logger->error( 'Status change failed on queue change: '. $msg )
+            unless $val;
     }
 
     my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
@@ -1749,7 +1815,7 @@ sub SetQueue {
             $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
         }
     }
-    
+
     return ($status, $msg);
 }
 
@@ -2516,6 +2582,18 @@ sub MergeInto {
 
     $RT::Handle->BeginTransaction();
 
+    $self->_MergeInto( $MergeInto );
+
+    $RT::Handle->Commit();
+
+    return ( 1, $self->loc("Merge Successful") );
+}
+
+sub _MergeInto {
+    my $self      = shift;
+    my $MergeInto = shift;
+
+
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
     # by trying to do a separate database query for merge info everytime 
@@ -2649,9 +2727,6 @@ sub MergeInto {
     $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->Id());
 
     $MergeInto->_SetLastUpdated;    
-
-    $RT::Handle->Commit();
-    return ( 1, $self->loc("Merge Successful") );
 }
 
 =head2 Merged
@@ -2951,12 +3026,14 @@ sub ValidateStatus {
     my $status = shift;
 
     #Make sure the status passed in is valid
-    unless ( $self->QueueObj->IsValidStatus($status) ) {
-        return (undef);
+    return 1 if $self->QueueObj->IsValidStatus($status);
+
+    my $i = 0;
+    while ( my $caller = (caller($i++))[3] ) {
+        return 1 if $caller eq 'RT::Ticket::SetQueue';
     }
 
-    return (1);
-
+    return 0;
 }
 
 # }}}
@@ -2974,59 +3051,71 @@ Alternatively, you can pass in a list of named parameters (Status => STATUS, For
 =cut
 
 sub SetStatus {
-    my $self   = shift;
+    my $self = shift;
     my %args;
-
     if (@_ == 1) {
-    $args{Status} = shift;
+        $args{Status} = shift;
     }
     else {
-    %args = (@_);
+        %args = (@_);
     }
 
-    #Check ACL
-    if ( $args{Status} eq 'deleted') {
-            unless ($self->CurrentUserHasRight('DeleteTicket')) {
-            return ( 0, $self->loc('Permission Denied') );
-       }
-    } else {
-            unless ($self->CurrentUserHasRight('ModifyTicket')) {
-            return ( 0, $self->loc('Permission Denied') );
-       }
+    my $schema = $self->QueueObj->status_schema;
+
+    my $new = $args{'Status'};
+    unless ( $schema->is_valid( $new ) ) {
+        return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
 
-    if (!$args{Force} && ($args{'Status'} eq 'resolved') && $self->HasUnresolvedDependencies) {
+    my $old = $self->__Value('Status');
+    unless ( $schema->is_transition( $old => $new ) ) {
+        return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
+    }
+
+    my $check_right = $schema->check_right( $old => $new );
+    unless ( $self->CurrentUserHasRight( $check_right ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    if ( !$args{Force} && $schema->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
-    #If we're changing the status from new, record that we've started
-    if ( $self->Status eq 'new' && $args{Status} ne 'new' ) {
+    my $raw_started = RT::Date->new($RT::SystemUser);
+    $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
+    #If we're changing the status from new, record that we've started
+    if ( $schema->is_initial($old) && !$schema->is_initial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
-        $self->_Set( Field             => 'Started',
-                     Value             => $now->ISO,
-                     RecordTransaction => 0 );
+        $self->_Set(
+            Field             => 'Started',
+            Value             => $now->ISO,
+            RecordTransaction => 0
+        );
     }
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->QueueObj->IsInactiveStatus($args{Status}) ) {
-        $self->_Set( Field             => 'Resolved',
-                     Value             => $now->ISO,
-                     RecordTransaction => 0 );
+    if ( $schema->is_inactive($new) ) {
+        $self->_Set(
+            Field             => 'Resolved',
+            Value             => $now->ISO,
+            RecordTransaction => 0,
+        );
     }
 
     #Actually update the status
-   my ($val, $msg)= $self->_Set( Field           => 'Status',
-                          Value           => $args{Status},
-                          TimeTaken       => 0,
-                          CheckACL      => 0,
-                          TransactionType => 'Status'  );
-
-    return($val,$msg);
+    my ($val, $msg)= $self->_Set(
+        Field           => 'Status',
+        Value           => $args{Status},
+        TimeTaken       => 0,
+        CheckACL        => 0,
+        TransactionType => 'Status',
+    );
+    return ($val, $msg);
 }
 
 # }}}
@@ -3227,7 +3316,7 @@ sub _ApplyTransactionBatch {
     my $batch = $self->TransactionBatch;
 
     my %seen;
-    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->Type, grep defined, @{$batch};
+    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(

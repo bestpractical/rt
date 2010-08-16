@@ -164,7 +164,7 @@ sub Set {
         @_
     );
 
-    return $self->Unix(0) unless $args{'Value'};
+    return $self->Unix(0) unless $args{'Value'} && $args{'Value'} =~ /\S/;
 
     if ( $args{'Format'} =~ /^unix$/i ) {
         return $self->Unix( $args{'Value'} );

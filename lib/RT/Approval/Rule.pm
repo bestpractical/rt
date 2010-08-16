@@ -57,7 +57,11 @@ use constant _Queue => '___Approvals';
 sub Prepare {
     my $self = shift;
     return unless $self->SUPER::Prepare();
-    $self->TicketObj->Type eq 'approval';
+    if (($self->TicketObj->__Value('Type')||'') eq 'approval') {
+        return 1;
+    } else {
+        return undef
+    }
 }
 
 sub GetTemplate {

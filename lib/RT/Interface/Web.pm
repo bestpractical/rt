@@ -1521,6 +1521,8 @@ sub ProcessTicketBasics {
     my $TicketObj = $args{'TicketObj'};
     my $ARGSRef   = $args{'ARGSRef'};
 
+    my $OrigOwner = $TicketObj->Owner;
+
     # {{{ Set basic fields
     my @attribs = qw(
         Subject
@@ -1553,7 +1555,7 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $TicketObj->Owner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
@@ -1736,6 +1738,9 @@ sub _ProcessObjectCustomFieldUpdates {
                 push( @results, $msg );
                 $values_hash{$val} = 1 if $val;
             }
+
+            # For Date Cfs, @values is empty when there is no changes (no datas in form input)
+            return @results if ( $cf->Type =~ /^Date(?:Time)?$/ && ! @values );
 
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {

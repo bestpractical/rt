@@ -68,7 +68,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <%PERL>
 my $index_conf;
 foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
-    my $val = RT->Config->Get( $key );
+    my $val = RT->Config->GetObfuscated( $key );
     next unless defined $val;
 
     my $meta = RT->Config->Meta( $key );
@@ -91,15 +91,9 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <td class="collection-as-table"><% $key %></td>
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>\
-% } elsif ( !ref $val ) {
-<% "$val" %>\
-% } elsif ( ref $val eq 'ARRAY' ) {
-<% join ', ', @$val %>\
-% } elsif ( ref $val eq 'HASH' ) {
-<% join ', ', %$val %>\
+<em><% loc('Password not printed' ) %></em>\
 % } else {
-<% ref $val %>\
+<% stringify($val) |n %>\
 % }
 </td>
 <td class="collection-as-table" style="white-space: nowrap">
@@ -134,7 +128,7 @@ foreach my $key ( sort keys %{*RT::} ) {
 <td class="collection-as-table">RT::<% $key %></td>
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>
+<em><% loc('Password not printed' ) %></em>\
 % } else {
 <% ${'RT::'.$key} %>
 % }
@@ -227,7 +221,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
         <%$ver%>
     </td>
     <td class="collection-as-table">
-        <% $INC{$distfile} %>
+        <% $INC{$distfile} || '' %>
     </td>
 </tr>
 % }
@@ -240,3 +234,18 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 <% Config::myconfig() %>
 </pre>
 </&>
+
+<%INIT>
+use Data::Dumper;
+local $Data::Dumper::Terse = 1;
+local $Data::Dumper::Indent = 2;
+
+sub stringify {
+    my $value = shift;
+    my $output = Dumper $value;
+    RT::Interface::Web::EscapeUTF8(\$output);
+    $output =~ s/ /&nbsp;/g;
+    $output =~ s!\n!<br />!g;
+    return $output;
+}
+</%INIT>

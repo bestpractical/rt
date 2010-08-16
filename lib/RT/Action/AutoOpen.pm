@@ -51,32 +51,58 @@ package RT::Action::AutoOpen;
 
 use strict;
 use warnings;
-
 use base qw(RT::Action);
 
 =head1 DESCRIPTION
 
-Opens a ticket unless it's allready open, but only unless transaction
-L<RT::Transaction/IsInbound> is inbound.
+This action automatically moves a ticket to an active status.
 
-Doesn't open a ticket if message's head has field C<RT-Control> with
-C<no-autoopen> substring.
+Status is not changed if there is no active statuses in the schema.
+
+Status is not changed if the current status is first active for ticket's status
+schema. For example if ticket's status is 'processing' and active statuses are
+'processing', 'on hold' and 'waiting' then status is not changed, but for ticket
+with status 'on hold' other rules are checked.
+
+Status is not changed if it's in the list of C<initial> statuses for the
+current scheme and creator of the current transaction
+is one of the ticket's requestors.
+
+Status is not changed if message's head has field C<RT-Control> with C<no-autoopen>
+substring.
+
+Status is set to the first possible active status. If the ticket's
+status is C<Stalled> then RT finds all possible transitions from C<Stalled>
+status and selects first one that results in the ticket having an
+active status.
 
 =cut
 
 sub Prepare {
     my $self = shift;
 
-    # if the ticket is already open or the ticket is new and the message is more mail from the
-    # requestor, don't reopen it.
+    my $ticket = $self->TicketObj;
+    my $schema = $ticket->QueueObj->status_schema;
+    my $status = $ticket->Status;
 
-    my $status = $self->TicketObj->Status;
-    return undef if $status eq 'open';
-    return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
+    my @active = $schema->active;
+    # no change if no active statuses in the schema
+    return 1 unless @active;
+
+    # no change if the ticket is already has first status from the list of active
+    return 1 if lc $status eq lc $active[0];
+
+    # no change if the ticket is in initial status and the message is a mail
+    # from a requestor
+    return 1 if $schema->is_initial($status) && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
-        return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+        return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
+
+    my ($next) = grep $schema->is_active($_), $schema->transitions($status);
+
+    $self->{'set_status_to'} = $next;
 
     return 1;
 }
@@ -84,16 +110,13 @@ sub Prepare {
 sub Commit {
     my $self = shift;
 
-    my $oldstatus = $self->TicketObj->Status;
-    $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
-    $self->TicketObj->_NewTransaction(
-        Type     => 'Status',
-        Field    => 'Status',
-        OldValue => $oldstatus,
-        NewValue => 'open',
-        Data     => 'Ticket auto-opened on incoming correspondence'
-    );
+    return 1 unless my $new_status = $self->{'set_status_to'};
 
+    my ($val, $msg) = $self->TicketObj->SetStatus( $new_status );
+    unless ( $val ) {
+        $RT::Logger->error( "Couldn't auto-open ticket: ". $msg );
+        return 0;
+    }
     return 1;
 }
 

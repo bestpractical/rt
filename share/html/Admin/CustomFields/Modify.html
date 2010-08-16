@@ -95,7 +95,7 @@
         Default => $CustomFieldObj->LookupType, &>
 </td></tr>
 
-<tr><td class="label"><&|/l&>Validation</&></td>
+<tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
     Name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
@@ -131,13 +131,15 @@
 </td></tr>
 % }
 
+% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
+
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
 <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 
-% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj);
+% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 </table>
 
@@ -157,6 +159,8 @@ my ($title, @results, $Disabled);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 my $current_tab = 'Admin/CustomFields/Modify.html';
+
+$m->callback(CallbackName => 'Initial', Pattern => \$Pattern, ARGSRef => \%ARGS);
 
 unless ( $id ) {
     $title = loc("Create a CustomField");

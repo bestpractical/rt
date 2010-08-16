@@ -45,31 +45,30 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<ul>
-% while( my $value = $values->Next ) {
-% my $desc = $value->Description || '';
-% $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
-<li><% $value->Name %><% $desc |n %></li>
-% }
-</ul>
+
+<% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%INIT>
 my ($CustomField, $Value);
-while( my($k, $v) = each %ARGS ) {
+$Value = $ARGS{query};
+for my $k ( keys %ARGS ) {
     next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
-    ($CustomField, $Value) = ($1, $v);
+    $CustomField = $1;
     last;
 }
+
 $m->abort unless $CustomField;
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 $CustomFieldObj->Load( $CustomField );
 my $values = $CustomFieldObj->Values;
+
 $values->Limit(
     FIELD           => 'Name',
     OPERATOR        => 'LIKE',
     VALUE           => $Value,
     SUBCLAUSE       => 'autcomplete',
 );
+
 $values->Limit(
     ENTRYAGGREGATOR => 'OR',
     FIELD           => 'Description',
@@ -78,4 +77,23 @@ $values->Limit(
     SUBCLAUSE       => 'autcomplete',
 );
 
+my @suggestions;
+
+# in case it accepts multiple values
+my $last_input = (split /\n/, $ARGS{term} || '')[-1];
+
+while( my $value = $values->Next ) {
+    # we need to filter by ourselves to use jqueryui's autocomplete
+    next unless $value->Name =~ /$last_input/i;
+
+    push @suggestions,
+      {
+        value => $value->Name,
+        label => $value->Description
+        ? $value->Name . ' (' . $value->Description . ')'
+        : $value->Name,
+      };
+}
+
+require JSON;
 </%INIT>

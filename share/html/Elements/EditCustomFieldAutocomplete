@@ -46,22 +46,38 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
+
 <script type="text/javascript">
-new Ajax.Autocompleter(
-    "<% $name %>-Values",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    { tokens: [ '\n' ] }
+var id = '<% $name . '-Values' %>';
+id = id.replace(/:/g,'\\:');
+jQuery('#'+id).autocomplete( {
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Values' %>",
+    focus: function () {
+        // prevent value inserted on focus
+        return false;
+    },
+    select: function(event, ui) {
+        var terms = this.value.split(/\n/);
+        // remove the current input
+        terms.pop();
+        // add the selected item
+        terms.push( ui.item.value );
+        // add placeholder to get the comma-and-space at the end
+        terms.push("");
+        this.value = terms.join("\n");
+        return false;
+    }
+}
 );
 % } else {
-<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default || '' %>"/>
 <script type="text/javascript">
-new Ajax.Autocompleter(
-    "<% $name %>-Value",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    {}
+var id = '<% $name . '-Value' %>';
+id = id.replace(/:/g,'\\:');
+jQuery('#'+id).autocomplete( {
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Value' %>",
+}
 );
 % }
 </script>

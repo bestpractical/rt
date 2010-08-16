@@ -7,7 +7,7 @@ my $tests;
 
 my $localized_datetime_tests;
 BEGIN {
-    $tests = 167;
+    $tests = 170;
     $localized_datetime_tests =
       eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; } &&
       DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
@@ -555,6 +555,19 @@ my $year = (localtime(time))[5] + 1900;
     is($date->GetMonth(-1),  'Dec', '11 is December');
     is($date->GetMonth(-12), 'Jan', '0 is January');
     is($date->GetMonth(-13),  '',    '-13 and lesser are invalid');
+}
+
+{
+    # set unknown format: edge cases
+    my $date = RT::Date->new($RT::SystemUser);
+    $date->Set( Value => 0, Format => 'unknown' );
+    is( $date->Unix(), 0, "unix is 0 with Value => 0, Format => 'unknown'" );
+
+    $date->Set( Value => '', Format => 'unknown' );
+    is( $date->Unix(), 0, "unix is 0 with Value => '', Format => 'unknown'" );
+
+    $date->Set( Value => ' ', Format => 'unknown' );
+    is( $date->Unix(), 0, "unix is 0 with Value => ' ', Format => 'unknown'" );
 }
 
 #TODO: AsString

@@ -1,0 +1,67 @@
+.ticket-info-basics input[name="Subject"] {
+    width: 20em;
+}
+
+#ticket-create-metadata .cflabel .name,
+#ticket-update-metadata .cflabel .name {
+    font-weight: normal;
+}
+
+#ticket-create-message .messagedetails,
+#ticket-update-message .messagedetails {
+    margin-bottom: 0.5em;
+}
+
+#ticket-create-message .messagedetails input[type="text"],
+#ticket-update-message .messagedetails input[type="text"] {
+    width: 90%;
+}
+
+#ticket-create-message #SubmitTicket,
+#ticket-update-message #SubmitTicket {
+    padding-bottom: 2em;
+}
+
+/*
+% if ( RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ) {
+*/
+
+#ticket-create-metadata,
+#ticket-update-metadata {
+    float: right;
+    width: 40%;
+    clear: right;
+}
+
+#ticket-create-message,
+#ticket-update-message {
+    float: left;
+    width: 58%;
+    clear: left;
+}
+
+@media (max-width: 950px) {
+    /* Revert to a single column when we're less than 1000px wide */
+    #ticket-create-metadata,
+    #ticket-update-metadata,
+    #ticket-create-message,
+    #ticket-update-message
+    {
+        float: none;
+        width: auto;
+        clear: both;
+    }
+}
+
+#comp-Ticket-Update #body {
+    padding-top: 3em;
+}
+
+#ticket-create-message .button[name="AddMoreAttach"],
+#ticket-update-message .button[name="AddMoreAttach"] {
+    float: right;
+}
+
+/*
+% }
+*/

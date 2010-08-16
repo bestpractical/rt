@@ -45,21 +45,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS, args => \%ARGS );
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    actions => $actions, 
-    current_tab => $current_tab, 
-    current_toptab => $ARGS{current_toptab} || 'Search/Build.html',
-    Title => $Title &> 
 <%INIT>
-my $tabs = {};
+my $tabs       = {};
 my $searchtabs = {};
 my $actions;
 
 if ($Ticket) {
 
     my $id = $Ticket->id();
+
+    my $current = $Ticket->Status;
+    my $schema  = $Ticket->QueueObj->status_schema;
+    my %has;
+    my $i = 1;
 
     if ( defined $session{'tickets'} ) {
 
@@ -84,8 +82,7 @@ if ($Ticket) {
             }
             $searchtabs->{"_b"} = {
                 class => "nav",
-                path  => "Ticket/Display.html?id="
-                    . $item_map->{ $Ticket->Id }->{prev},
+                path  => "Ticket/Display.html?id=" . $item_map->{ $Ticket->Id }->{prev},
                 title => '< ' . loc('Prev')
             };
         }
@@ -94,8 +91,7 @@ if ($Ticket) {
         if ( $item_map->{ $Ticket->Id }->{next} ) {
             $searchtabs->{'d'} = {
                 class => "nav",
-                path  => "Ticket/Display.html?id="
-                    . $item_map->{ $Ticket->Id }->{next},
+                path  => "Ticket/Display.html?id=" . $item_map->{ $Ticket->Id }->{next},
                 title => loc('Next') . ' >'
             };
             if ( $item_map->{last} ) {
@@ -115,7 +111,20 @@ if ($Ticket) {
         current_subtab => $current_subtab
     };
 
-    my %can = ( ModifyTicket => $Ticket->CurrentUserHasRight('ModifyTicket'), );
+    my %can = (
+        ModifyTicket      => $Ticket->CurrentUserHasRight('ModifyTicket'),
+        OwnTicket         => $Ticket->CurrentUserHasRight('OwnTicket'),
+        StealTicket         => $Ticket->CurrentUserHasRight('StealTicket'),
+        TakeTicket         => $Ticket->CurrentUserHasRight('TakeTicket'),
+        ReplyToTicket     => $Ticket->CurrentUserHasRight('ReplyToTicket'),
+        CommentOnTicket     => $Ticket->CurrentUserHasRight('CommentOnTicket'),
+        ModifyCustomField => $Ticket->CurrentUserHasRight('ModifyCustomField'),
+        _ModifyOwner      => (
+                   $Ticket->CurrentUserHasRight('OwnTicket')
+                || $Ticket->CurrentUserHasRight('TakeTicket')
+                || $Ticket->CurrentUserHasRight('StealTicket')
+        )
+    );
 
     my $ticket_page_tabs = {
         _A => {
@@ -129,23 +138,32 @@ if ($Ticket) {
         },
     };
 
-    if ($can{ModifyTicket}) {
+    if ( $can{ModifyTicket} || $can{ModifyCustomField} ) {
         $ticket_page_tabs->{_B} = {
             title => loc('Basics'),
             path  => "Ticket/Modify.html?id=" . $id,
         };
-        $ticket_page_tabs->{_C} = {
-            title => loc('Dates'),
-            path  => "Ticket/ModifyDates.html?id=" . $id,
-        };
+    }
+
+    if ( $can{ModifyTicket} || $can{_ModifyOwner} ) {
         $ticket_page_tabs->{_D} = {
             title => loc('People'),
             path  => "Ticket/ModifyPeople.html?id=" . $id,
+        };
+    }
+
+    if ( $can{ModifyTicket} ) {
+        $ticket_page_tabs->{_C} = {
+            title => loc('Dates'),
+            path  => "Ticket/ModifyDates.html?id=" . $id,
         };
         $ticket_page_tabs->{_E} = {
             title => loc('Links'),
             path  => "Ticket/ModifyLinks.html?id=" . $id,
         };
+    }
+
+    if ( $can{ModifyTicket} || $can{ModifyCustomField} || $can{_ModifyOwner} ) {
         $ticket_page_tabs->{_X} = {
             title => loc('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id,
@@ -163,23 +181,20 @@ if ($Ticket) {
     foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
         if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
             $ticket_page_tabs->{$tab}->{"subtabs"} = $subtabs;
-            $tabs->{'this'}->{"current_subtab"}
-                = $ticket_page_tabs->{$tab}->{"path"};
+            $tabs->{'this'}->{"current_subtab"} = $ticket_page_tabs->{$tab}->{"path"};
         }
     }
     $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
     $current_tab = "Ticket/Display.html?id=" . $id;
 
-    if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('ReplyToTicket') )
-    {
+    if ( $can{'ModifyTicket'} or $can{'ReplyToTicket'} ) {
         $actions->{'F'} = {
             title => loc('Reply'),
-            path  => "Ticket/Update.html?Action=Respond&id=" . $id,
+            path  => "Ticket/Update.html?Action=Respond;id=" . $id,
         };
     }
 
-    if ( $Ticket->CurrentUserHasRight('ForwardMessage') )
-    {
+    if ( $Ticket->CurrentUserHasRight('ForwardMessage') ) {
         $actions->{'FA'} = {
             title => loc('Forward'),
             path  => "Ticket/Forward.html?id=" . $id,
@@ -187,97 +202,118 @@ if ($Ticket) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        if ( $Ticket->Status ne 'resolved' ) {
-            $actions->{'G'} = {
-                path =>
-                    "Ticket/Update.html?Action="
-                    . RT->Config->Get('ResolveDefaultUpdateType', $session{'CurrentUser'})
-                    . "&DefaultStatus=resolved&id="
-                    . $id,
-                title => loc('Resolve')
-            };
-        }
-        if ( $Ticket->Status ne 'open' ) {
-            $actions->{'A'} = {
-                path  => "Ticket/Display.html?Status=open&id=" . $id,
-                title => loc('Open it')
+        foreach my $next ( $schema->transitions($current) ) {
+            my $action = $schema->transition_action( $current => $next );
+            next if $action eq 'hide';
+
+            my $check = $schema->check_right( $current => $next );
+            $has{$check} = $Ticket->CurrentUserHasRight($check)
+                unless exists $has{$check};
+            next unless $has{$check};
+
+            my $path = 'Ticket/';
+            if ($action) {
+                $path .= "Update.html?"
+                    . $m->comp(
+                    '/Elements/QueryString',
+                    Action        => $action,
+                    DefaultStatus => $next,
+                    id            => $id
+                    );
+            } else {
+                $path .= "Display.html?"
+                    . $m->comp(
+                    '/Elements/QueryString',
+                    Status => $next,
+                    id     => $id
+                    );
+            }
+            $actions->{ 'G' . $i++ } = {
+                path  => $path,
+                title => loc( $schema->transition_label( $current => $next ) ),
             };
         }
     }
-
-    if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-        if ( $Ticket->OwnerObj->Id == $RT::Nobody->id ) {
+    if ( $can{OwnTicket} ) {
+        if ($Ticket->OwnerObj->Id == $RT::Nobody->id
+            && (   $can{'ModifyTicket'} or $can{'TakeTicket'})
+            )
+        {
             $actions->{'B'} = {
-                path  => "Ticket/Display.html?Action=Take&id=" . $id,
+                path  => "Ticket/Display.html?Action=Take;id=" . $id,
                 title => loc('Take'),
                 }
-                if $can{'ModifyTicket'}
-                    or $Ticket->CurrentUserHasRight('TakeTicket');
-        } elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
+
+        } elsif ( $Ticket->OwnerObj->id != $RT::Nobody->id
+                    && $Ticket->OwnerObj->id != $session{CurrentUser}->id
+                    && ( $can{'ModifyTicket'} or $can{'StealTicket'})
+                )
+        {
+
             $actions->{'C'} = {
-                path  => "Ticket/Display.html?Action=Steal&id=" . $id,
+                path  => "Ticket/Display.html?Action=Steal;id=" . $id,
                 title => loc('Steal'),
-                }
-                if $can{'ModifyTicket'}
-                    or $Ticket->CurrentUserHasRight('StealTicket');
+            };
         }
     }
 
-    if (   $can{'ModifyTicket'}
-        or $Ticket->CurrentUserHasRight('CommentOnTicket') )
-    {
+    if (   $can{'ModifyTicket'} || $can{'CommentOnTicket'}) {
         $actions->{'E'} = {
             title => loc('Comment'),
-            path  => "Ticket/Update.html?Action=Comment&id=" . $id,
+            path  => "Ticket/Update.html?Action=Comment;id=" . $id,
         };
     }
 
-    $actions->{'_ZZ'}
-        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ),
-        };
+    $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ), };
 
-}
 
-if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
+if (( defined $actions->{B} || defined $actions->{C} )
     && (   defined $actions->{E}
         || defined $actions->{F}
-        || defined $actions->{G} ) )
+        || defined $actions->{G} )
+    )
 {
 
     if    ( defined $actions->{C} ) { $actions->{C}->{separator} = 1 }
     elsif ( defined $actions->{B} ) { $actions->{B}->{separator} = 1 }
-    elsif ( defined $actions->{A} ) { $actions->{A}->{separator} = 1 }
 }
 
-my $args = '';
+$actions->{ 'G' . 1 }{pre_separator} = 1;
+
+# Separator between the last status and the next set of actions
+$actions->{ 'G' . ( $i - 1 ) }{separator} = 1;
+}
+
+my $args      = '';
 my $has_query = '';
 my %query_args;
-my $search_id = $ARGS{'SavedSearchId'}
-            || $session{'CurrentSearchHash'}->{'SearchId'} || '';
+my $search_id
+    = $ARGS{'SavedSearchId'}
+    || $session{'CurrentSearchHash'}->{'SearchId'}
+    || '';
 my $chart_search_id = $ARGS{'SavedChartSearchId'} || '';
 
 $has_query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
-  
-%query_args = (
-        SavedSearchId => ($search_id eq 'new') ? undef : $search_id,
-        SavedChartSearchId => $chart_search_id,
-        Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
-        Format => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
-        OrderBy => $ARGS{'OrderBy'}
-            || $session{'CurrentSearchHash'}->{'OrderBy'},
-        Order => $ARGS{'Order'} || $session{'CurrentSearchHash'}->{'Order'},
-        Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
-        RowsPerPage  => $ARGS{'RowsPerPage'}  || $session{'CurrentSearchHash'}->{'RowsPerPage'},
-    );
 
-    $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
+%query_args = (
+    SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+    SavedChartSearchId => $chart_search_id,
+    Query              => $ARGS{'Query'} || $session{'CurrentSearchHash'}->{'Query'},
+    Format             => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
+    OrderBy            => $ARGS{'OrderBy'} || $session{'CurrentSearchHash'}->{'OrderBy'},
+    Order              => $ARGS{'Order'} || $session{'CurrentSearchHash'}->{'Order'},
+    Page               => $ARGS{'Page'} || $session{'CurrentSearchHash'}->{'Page'},
+    RowsPerPage        => $ARGS{'RowsPerPage'} || $session{'CurrentSearchHash'}->{'RowsPerPage'},
+);
+
+$args = "?" . $m->comp( '/Elements/QueryString', %query_args );
 
 $tabs->{"f"} = {
     path  => "Search/Build.html?NewQuery=1",
     title => loc('New Search')
 };
 $tabs->{"g"} = {
-    path  => "Search/Build.html" . (($has_query) ? $args : ''),
+    path => "Search/Build.html" . ( ($has_query) ? $args : '' ),
     title => loc('Edit Search')
 };
 $tabs->{"h"} = {
@@ -285,14 +321,13 @@ $tabs->{"h"} = {
     title     => loc('Advanced'),
     separator => 1
 };
+
 if ($has_query) {
 
     if ( $current_tab =~ m{Search/Results.html} ) {
         $current_tab = "Search/Results.html$args";
 
-        if ( $session{'CurrentUser'}
-            ->HasRight( Right => 'SuperUser', Object => $RT::System ) )
-        {
+        if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
             my $shred_args = $m->comp(
                 '/Elements/QueryString',
                 Search          => 1,
@@ -331,9 +366,22 @@ if ($has_query) {
 
 foreach my $searchtab ( keys %{$searchtabs} ) {
     ( $searchtab =~ /^_/ )
-        ? $tabs->{ "s" . $searchtab } = $searchtabs->{$searchtab}
+        ? $tabs->{ "s" . $searchtab }
+        = $searchtabs->{$searchtab}
         : $tabs->{ "z_" . $searchtab } = $searchtabs->{$searchtab};
 }
+
+$m->callback( Ticket => $Ticket, actions => $actions, tabs => $tabs, %ARGS, args => \%ARGS );
+$m->comp(
+    "/Elements/Tabs",
+    tabs           => $tabs,
+    actions        => $actions,
+    current_tab    => $current_tab,
+    current_toptab => $ARGS{current_toptab} || 'Search/Build.html',
+    Title          => $Title
+);
+
+return;
 
 </%INIT>
 

@@ -53,10 +53,12 @@ see docs/using_forms_widgets.pod
 <span class="label"><% $Description %></span>
 % }
 <span class="value"><& SELF:InputOnly, %ARGS &></span>
+<span class="hints"><% $Hints %></span>
 </div>
 <%ARGS>
 $Name
 $Description      => undef,
+$Hints            => ''
 </%ARGS>
 
 <%METHOD InputOnly>

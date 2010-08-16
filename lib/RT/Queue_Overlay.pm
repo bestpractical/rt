@@ -71,6 +71,7 @@ no warnings qw(redefine);
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
+use RT::StatusSchema;
 
 our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
@@ -109,11 +110,13 @@ our $RIGHTS = {
     CommentOnTicket => 'Comment on tickets',                          # loc_pair
     OwnTicket       => 'Own tickets',                                 # loc_pair
     ModifyTicket    => 'Modify tickets',                              # loc_pair
+    ModifyTicketStatus    => 'Modify ticket status',                              # loc_pair
     DeleteTicket    => 'Delete tickets',                              # loc_pair
+    RejectTicket    => 'Reject tickets',                              # loc_pair
     TakeTicket      => 'Take tickets',                                # loc_pair
     StealTicket     => 'Steal tickets',                               # loc_pair
 
-    ForwardMessage  => 'Forward messages to third person(s)',         # loc_pair
+    ForwardMessage  => 'Forward messages outside of RT',         # loc_pair
 
 };
 
@@ -188,6 +191,27 @@ sub AvailableRights {
 
 # {{{ ActiveStatusArray
 
+sub status_schema {
+    my $self = shift;
+    unless (ref $self && $self->id) { 
+        return RT::StatusSchema->load('') 
+    }
+
+    my $name = '';
+
+    # If you don't have StatusSchemas set, name is default
+    my $schemas = RT->Config->Get('StatusSchemas');
+    if ($schemas && $self->Name && defined $schemas->{$self->Name}) {
+        $name = $schemas->{$self->Name};
+    } else {
+        $name = 'default';
+    }
+
+    my $res = RT::StatusSchema->load( $name );
+    $RT::Logger->error("Status schema '$name' for queue '".$self->Name."' doesn't exist") unless $res;
+    return $res;
+}
+
 =head2 ActiveStatusArray
 
 Returns an array of all ActiveStatuses for this queue
@@ -196,17 +220,8 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    if (RT->Config->Get('ActiveStatus')) {
-    	return (RT->Config->Get('ActiveStatus'))
-    } else {
-        $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
-        return (@DEFAULT_ACTIVE_STATUS);
-    }
+    return $self->status_schema->valid('initial', 'active');
 }
-
-# }}}
-
-# {{{ InactiveStatusArray
 
 =head2 InactiveStatusArray
 
@@ -216,17 +231,8 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    if (RT->Config->Get('InactiveStatus')) {
-    	return (RT->Config->Get('InactiveStatus'))
-    } else {
-        $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
-        return (@DEFAULT_INACTIVE_STATUS);
-    }
+    return $self->status_schema->inactive;
 }
-
-# }}}
-
-# {{{ StatusArray
 
 =head2 StatusArray
 
@@ -236,70 +242,44 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return ($self->ActiveStatusArray(), $self->InactiveStatusArray());
+    return $self->status_schema->valid( @_ );
 }
 
-# }}}
+=head2 IsValidStatus value
 
-# {{{ IsValidStatus
-
-=head2 IsValidStatus VALUE
-
-Returns true if VALUE is a valid status.  Otherwise, returns 0.
-
+Returns true if value is a valid status.  Otherwise, returns 0.
 
 =cut
 
 sub IsValidStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->StatusArray );
-    return ($retval);
-
+    return $self->status_schema->is_valid( shift );
 }
 
-# }}}
+=head2 IsActiveStatus value
 
-# {{{ IsActiveStatus
-
-=head2 IsActiveStatus VALUE
-
-Returns true if VALUE is a Active status.  Otherwise, returns 0
-
+Returns true if value is a Active status.  Otherwise, returns 0
 
 =cut
 
 sub IsActiveStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->ActiveStatusArray );
-    return ($retval);
-
+    return $self->status_schema->is_valid( shift, 'initial', 'active');
 }
 
-# }}}
 
-# {{{ IsInactiveStatus
 
-=head2 IsInactiveStatus VALUE
+=head2 IsInactiveStatus value
 
-Returns true if VALUE is a Inactive status.  Otherwise, returns 0
+Returns true if value is a Inactive status.  Otherwise, returns 0
 
 
 =cut
 
 sub IsInactiveStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->InactiveStatusArray );
-    return ($retval);
-
+    return $self->status_schema->is_inactive( shift );
 }
-
-# }}}
 
 
 # {{{ sub Create

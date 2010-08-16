@@ -149,6 +149,10 @@ div.results .titlebox-content {
  width: 12em;
 }
 
+td.cflabel {
+    width: auto;
+}
+
 .labeltop, .label, .value {
   padding-top: 0.25em;
 }
