@@ -104,6 +104,8 @@ if ( defined $QueueString && length $QueueString ) {
         OPERATOR => $QueueOp,
         VALUE    => $QueueString,
     );
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Queues/Modify.html?id=".$queues->First->id)
+          if $queues->Count == 1;
 } else {
     $queues->UnLimit;
     $caption = $FindDisabledQueues
