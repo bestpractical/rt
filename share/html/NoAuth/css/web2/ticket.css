@@ -234,3 +234,18 @@ table.ticket-summary td.boxcontainer:first-child {
 .message-stanza-depth-1 {
     color: #1a1aa6;
 }
+
+div.requestor-ticket-links {
+    text-align: left;
+    font-size: 0.8em;
+    padding-top: 0.25em;
+}
+
+div.more-about-requestor-extra-info .label {
+    font-weight: bold;
+    padding-left: 0.5em;
+}
+
+div.more-about-requestor-extra-info .value {
+    padding-left: 0em;
+}
