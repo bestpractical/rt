@@ -620,7 +620,11 @@ sub _ValidRoleGroupType {
     my $self = shift;
     my $type = shift;
 
-    return $type =~ /^(?:Cc|AdminCc|Requestor|Owner)$/;
+    for my $valid_type (RT::Queue->RoleGroupTypes) {
+        return 1 if $type eq $valid_type;
+    }
+
+    return 0;
 }
 
 sub CreateRoleGroup {
