@@ -148,7 +148,7 @@ my $render_attachment = sub {
     # if it has a content-disposition: attachment, don't show inline
     my $disposition = $message->GetHeader('Content-Disposition');
     if ( $disposition && $disposition =~ /attachment/i && $disposition !~ /^\s*inline/ ) {
-        $disposition = 'attachemnt';
+        $disposition = 'attachment';
     } else {
         $disposition = 'inline';
     }
