@@ -60,7 +60,7 @@
 <%PERL>
 my $i = 0;
 for my $queue (@queues) {
-    next if lc $queue->{Lifecycle} ne lc $lifecycle->name;
+    next if lc($queue->{Lifecycle} || '') ne lc $lifecycle->name;
 
     $i++;
     my $name = $queue->{Name};
