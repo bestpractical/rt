@@ -616,13 +616,21 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
+sub _ValidRoleGroupType {
+    my $self = shift;
+    my $type = shift;
+
+    return $type =~ /^(?:Cc|AdminCc|Requestor|Owner)$/;
+}
+
 sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
                  Type     => undef,
                  Domain   => undef,
                  @_ );
-    unless ( $args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
+
+    unless ($self->_ValidRoleGroupType($args{Type})) {
         return ( 0, $self->loc("Invalid Group Type") );
     }
 
