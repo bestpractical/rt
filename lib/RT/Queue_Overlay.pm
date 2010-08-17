@@ -650,6 +650,19 @@ sub TicketTransactionCustomFields {
 
 # {{{ Routines dealing with watchers.
 
+# {{{ RoleGroupTypes
+=head2 RoleGroupTypes
+
+Returns a list of the names of the various role group types that this queue
+has.
+
+=cut
+
+sub RoleGroupTypes {
+    return qw(Cc AdminCc Requestor Owner);
+}
+# }}}
+
 # {{{ _CreateQueueGroups 
 
 =head2 _CreateQueueGroups
@@ -664,14 +677,10 @@ It will return true on success and undef on failure.
 
 =cut
 
-sub _RoleGroupTypes {
-    return qw(Cc AdminCc Requestor Owner);
-}
-
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = $self->_RoleGroupTypes;
+    my @types = $self->RoleGroupTypes;
 
     foreach my $type (@types) {
         my $ok = $self->_CreateQueueRoleGroup($type);
