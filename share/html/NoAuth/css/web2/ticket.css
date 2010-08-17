@@ -235,3 +235,11 @@ div.requestor-ticket-links {
     padding-top: 0.25em;
 }
 
+div.more-about-requestor-extra-info .label {
+    font-weight: bold;
+    padding-left: 0.5em;
+}
+
+div.more-about-requestor-extra-info .value {
+    padding-left: 0em;
+}

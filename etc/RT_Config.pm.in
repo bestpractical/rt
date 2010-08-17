@@ -864,7 +864,7 @@ Set($UsernameFormat, 'concise');
 
 =item C<$ShowMoreAboutPrivilegedUsers>
 
-This determines if the 'More about Requestor' box on Ticket/Display.html is
+This determines if the 'More about requestor' box on Ticket/Display.html is
 shown for Privileged Users.
 
 =cut
@@ -874,12 +874,23 @@ Set($ShowMoreAboutPrivilegedUsers, 0);
 =item C<$MoreAboutRequestorTicketList>
 
 This can be set to Active, Inactive, All or None.  It controls what ticket
-list will be displayed in the More about requestor box on Ticket/Display.html.
+list will be displayed in the 'More about requestor' box on Ticket/Display.html.
 This option can be controlled by users also.
 
 =cut
 
 Set($MoreAboutRequestorTicketList, 'Active');
+
+=item C<$MoreAboutRequestorExtraInfo>
+
+By default, the 'More about requestor' box on Ticket/Display.html shows
+the Requestor's name and ticket list.  If you would like to see extra information
+about the user, this expects a Format string of user attributes.  Please note that
+not all the attributes are supported in this display because we're not building a table.
+
+=cut
+
+Set($MoreAboutRequestorExtraInfo, '');
 
 =item C<$WebDomain>
 
