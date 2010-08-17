@@ -76,11 +76,10 @@
          $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
      }
 
-     if (my $enc = $AttachmentObj->OriginalEncoding) {
-        my $iana = Encode::find_encoding( $enc );
-        $iana = $iana? $iana->mime_name : $enc;
-	$content_type .= ";charset=$iana";
-     }
+     my $enc = $AttachmentObj->OriginalEncoding || 'utf-8';
+     my $iana = Encode::find_encoding( $enc );
+     $iana = $iana? $iana->mime_name : $enc;
+	 $content_type .= ";charset=$iana";
 
      # unless (RT->Config->Get('TrustMIMEAttachments')) {
      #     $content_type = 'application/octet-stream';
