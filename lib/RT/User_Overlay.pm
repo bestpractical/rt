@@ -1599,7 +1599,7 @@ sub SetPrivateKey {
 
 sub BasicColumns {
     (
-    [ Name => 'User Id' ],
+    [ Name => 'Username' ],
     [ EmailAddress => 'Email' ],
     [ RealName => 'Name' ],
     [ Organization => 'Organization' ],
