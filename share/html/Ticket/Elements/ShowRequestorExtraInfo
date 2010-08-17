@@ -53,7 +53,7 @@
 %   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<span class="more-about-requestor-extra-info <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
+<span class="more-about-requestor-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
 <span class="label"> <% $title %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
