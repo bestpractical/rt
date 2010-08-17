@@ -583,13 +583,13 @@ sub InsertInitialData {
     {
         require RT::CurrentUser;
 
-        my $test_user = RT::User->new( new RT::CurrentUser );
+        my $test_user = RT::User->new( RT::CurrentUser->new() );
         $test_user->Load('RT_System');
         if ( $test_user->id ) {
             push @warns, "Found system user in the DB.";
         }
         else {
-            my $user = RT::User->new( new RT::CurrentUser );
+            my $user = RT::User->new( RT::CurrentUser->new() );
             my ( $val, $msg ) = $user->_BootstrapCreate(
                 Name     => 'RT_System',
                 RealName => 'The RT System itself',

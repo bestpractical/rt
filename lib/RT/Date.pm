@@ -68,13 +68,15 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 
 package RT::Date;
 
-use Time::Local;
-use POSIX qw(tzset);
 
 use strict;
 use warnings;
 use base qw/RT::Base/;
 
+use DateTime;
+
+use Time::Local;
+use POSIX qw(tzset);
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
 $MINUTE = 60;
@@ -683,7 +685,7 @@ sub LocalizedDateTime
 
     # FIXME : another way to call this module without conflict with local
     # DateTime method?
-    my $dt = new DateTime::( locale => $lang,
+    my $dt = DateTime::->new( locale => $lang,
                             time_zone => $tz,
                             year => $year,
                             month => $mon,

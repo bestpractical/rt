@@ -366,7 +366,7 @@ sub Content {
 
         if ( $max > 76 ) {
             require Text::Wrapper;
-            my $wrapper = new Text::Wrapper(
+            my $wrapper = Text::Wrapper->new(
                 columns    => $args{'Wrap'},
                 body_start => ( $max > 70 * 3 ? '   ' : '' ),
                 par_start  => ''

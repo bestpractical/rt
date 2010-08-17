@@ -385,7 +385,7 @@ sub Quote {
 
 	if ($max>76) {
 	    require Text::Wrapper;
-	    my $wrapper=new Text::Wrapper
+	    my $wrapper = Text::Wrapper->new
 		(
 		 columns => 70, 
 		 body_start => ($max > 70*3 ? '   ' : ''),
@@ -420,7 +420,7 @@ Returns MIME entity built from this attachment.
 sub ContentAsMIME {
     my $self = shift;
 
-    my $entity = new MIME::Entity;
+    my $entity = MIME::Entity->new();
     foreach my $header ($self->SplitHeaders) {
         my ($h_key, $h_val) = split /:/, $header, 2;
         $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );

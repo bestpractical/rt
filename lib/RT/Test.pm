@@ -902,7 +902,7 @@ sub lsign_gnupg_key {
     my $key = shift;
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = new GnuPG::Interface;
+    my $gnupg = GnuPG::Interface->new();
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
@@ -911,12 +911,12 @@ sub lsign_gnupg_key {
 
     my %handle; 
     my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
+        stdin   => ($handle{'input'}   = IO::Handle->new()),
+        stdout  => ($handle{'output'}  = IO::Handle->new()),
+        stderr  => ($handle{'error'}   = IO::Handle->new()),
+        logger  => ($handle{'logger'}  = IO::Handle->new()),
+        status  => ($handle{'status'}  = IO::Handle->new()),
+        command => ($handle{'command'} = IO::Handle->new()),
     );
 
     eval {
@@ -959,7 +959,7 @@ sub trust_gnupg_key {
     my $key = shift;
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = new GnuPG::Interface;
+    my $gnupg = GnuPG::Interface->new();
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
@@ -968,12 +968,12 @@ sub trust_gnupg_key {
 
     my %handle; 
     my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
+        stdin   => ($handle{'input'}   = IO::Handle->new()),
+        stdout  => ($handle{'output'}  = IO::Handle->new()),
+        stderr  => ($handle{'error'}   = IO::Handle->new()),
+        logger  => ($handle{'logger'}  = IO::Handle->new()),
+        status  => ($handle{'status'}  = IO::Handle->new()),
+        command => ($handle{'command'} = IO::Handle->new()),
     );
 
     eval {
