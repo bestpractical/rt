@@ -49,7 +49,7 @@
 <& /Elements/SelectDate, Name => "$name", current => 0 &> (<%$DateObj->AsString%>)
 
 <%INIT>
-my $DateObj = new RT::Date ( $session{'CurrentUser'} );
+my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
 $DateObj->Set( Format => 'ISO', Value => $Default );
 </%INIT>
 <%ARGS>

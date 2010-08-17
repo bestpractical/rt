@@ -157,7 +157,7 @@ sub Create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = new RT::Attachment( $self->CurrentUser );
+            my $SubAttachment = RT::Attachment->new( $self->CurrentUser );
             my ($id) = $SubAttachment->Create(
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,

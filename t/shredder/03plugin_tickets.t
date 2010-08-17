@@ -16,7 +16,7 @@ BEGIN {
 
 use_ok('RT::Shredder::Plugin::Tickets');
 {
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     is(lc $plugin->Type, 'search', 'correct type');
@@ -35,7 +35,7 @@ use_ok('RT::Tickets');
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my ($status, $msg, @objs);
@@ -77,7 +77,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($status, $msg) = $child->AddLink( Target => $pid, Type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my (@objs);
@@ -121,7 +121,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     ok( $cid2, "created new ticket" );
     $child2->SetStatus('resolved');
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my ($status, $msg) = $plugin->TestArgs( query => 'Status = "resolved"', apply_query_to_linked => 1 );

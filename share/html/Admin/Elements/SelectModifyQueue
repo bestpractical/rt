@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($queue);
-my $queues = new RT::Queues($session{'CurrentUser'});
+my $queues = RT::Queues->new($session{'CurrentUser'});
 $queues->UnLimit;
 </%INIT>
 <%ARGS>

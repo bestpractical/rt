@@ -71,7 +71,7 @@ init_db();
 	is( $user->id, $uid, "id is correct" );
 
 	use RT::Queue;
-	my $queue = new RT::Queue( $RT::SystemUser );
+	my $queue = RT::Queue->new( $RT::SystemUser );
 	$queue->Load('general');
 	ok( $queue->id, "queue loaded succesfully" );
 

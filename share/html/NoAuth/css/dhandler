@@ -58,7 +58,7 @@ else {
     return $m->decline;
 }
 
-$squisher = new RT::CSS::Squish unless $squisher;
+$squisher = RT::CSS::Squish->new unless $squisher;
 $squisher->{'mason'} = $m;
 
 $m->out( $squisher->concatenate( $path ) );

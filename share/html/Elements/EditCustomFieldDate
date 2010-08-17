@@ -49,7 +49,7 @@
 <& /Elements/SelectDate, Name => "$name", current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0)%>)
 
 <%INIT>
-my $DateObj = new RT::Date ( $session{'CurrentUser'} );
+my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
 $DateObj->Set( Format => 'unknown', Value => $Default );
 </%INIT>
 <%ARGS>

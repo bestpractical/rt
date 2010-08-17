@@ -59,7 +59,7 @@
 
 <%INIT>
 my $current_tab = 'Admin/Users/History.html?id='.$id;
-my $UserObj = new RT::User($session{'CurrentUser'});
+my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("History of the user [_1]", $UserObj->Name);
 </%INIT>

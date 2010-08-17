@@ -59,7 +59,7 @@
 
 <%INIT>
 my $current_tab = 'Admin/Queues/History.html?id='.$id;
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id) || Abort("Couldn't load queue '$id'");
 my $title = loc("History of the queue [_1]", $QueueObj->Name);
 </%INIT>

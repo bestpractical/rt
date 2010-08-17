@@ -52,7 +52,7 @@
 </select>
 
 <%INIT>
-my $tickets = new RT::Tickets($session{'CurrentUser'});
+my $tickets = RT::Tickets->new($session{'CurrentUser'});
 my @sortfields = $tickets->SortFields();
 
 </%INIT>

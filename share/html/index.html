@@ -93,7 +93,7 @@ $m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial'
               skip_create => \$skip_create );
 
 if ( $ARGS{'QuickCreate'} ) {
-    my $QueueObj = new RT::Queue($session{'CurrentUser'});
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
     $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
     
     my $CFs = $QueueObj->TicketCustomFields();

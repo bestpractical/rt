@@ -54,7 +54,7 @@
 </ul>
 
 <%INIT>
-my $ACL = new RT::ACL($session{'CurrentUser'});
+my $ACL = RT::ACL->new($session{'CurrentUser'});
 $ACL->LimitToQueue($QueueObj->id);
 $ACL->LimitPrincipalToUser($PrincipalId);
 </%INIT>

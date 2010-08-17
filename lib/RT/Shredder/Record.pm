@@ -245,7 +245,7 @@ sub ValidateRelations
             @_
            );
     unless( $args{'Shredder'} ) {
-        $args{'Shredder'} = new RT::Shredder();
+        $args{'Shredder'} = RT::Shredder->new();
     }
 
     my $rec = $args{'Shredder'}->PutObject( Object => $self );

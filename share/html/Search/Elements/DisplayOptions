@@ -103,7 +103,7 @@ selected="selected"
 </&>
 
 <%INIT>
-my $tickets = new RT::Tickets($session{'CurrentUser'});
+my $tickets = RT::Tickets->new($session{'CurrentUser'});
 my %FieldDescriptions = %{$tickets->FIELDS};
 my %fields;
 

@@ -55,7 +55,7 @@ $changes => {}
 <%perl>
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
-my $queue = new RT::Queue $session{CurrentUser};
+my $queue = RT::Queue->new($session{CurrentUser});
 
 $queue->Load($id);
 if (!$queue->Id) {
@@ -71,7 +71,7 @@ if (%$changes) {
 my @data;
 
 push @data, [ id => "queue/" . $queue->Id ];
-my $qcfs = RT::CustomFields->new($session{CurrentUser});
+my $qcfs = RT::CustomFields->new($session{CurrentUser});;
 $qcfs->LimitToGlobalOrQueue($id);
 while ( my $qcf = $qcfs->Next() ) {
     if ( $format eq "l" ) {

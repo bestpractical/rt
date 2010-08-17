@@ -79,7 +79,7 @@ $show = sub {
     $m->out( '</pre></div>' );
 };
 
-my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
+my $AttachmentObj = RT::Attachment->new($session{'CurrentUser'});
 $AttachmentObj->Load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
 unless ( $AttachmentObj->id ) {
     Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));

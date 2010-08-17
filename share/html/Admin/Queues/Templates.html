@@ -56,7 +56,7 @@
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id);
 
 my ($title, $current_subtab);

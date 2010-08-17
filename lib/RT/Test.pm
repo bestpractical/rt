@@ -349,14 +349,14 @@ sub bootstrap_db {
     $dbh = _get_dbh(RT::Handle->DSN,
             $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( $dbh );
     $RT::Handle->InsertSchema( $dbh );
 
     my $db_type = RT->Config->Get('DatabaseType');
     $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
 
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
     RT->InitLogging;
@@ -364,7 +364,7 @@ sub bootstrap_db {
     $RT::Handle->InsertInitialData;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT->Init;
 
@@ -1055,7 +1055,7 @@ sub start_standalone_server {
     my $ret = $s->started_ok;
     push @SERVERS, $s->pids;
 
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
 

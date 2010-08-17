@@ -192,7 +192,7 @@ Creates and returns a new RT::Shredder object.
 
 sub shredder_new
 {
-    my $obj = new RT::Shredder;
+    my $obj = RT::Shredder->new;
 
     my $file = File::Spec->catfile( create_tmpdir(), test_name() .'.XXXX.sql' );
     $obj->AddDumpPlugin( Arguments => {

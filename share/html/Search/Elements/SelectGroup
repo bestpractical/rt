@@ -55,7 +55,7 @@
 </select>
 
 <%INIT>
-my $groups = new RT::Groups($session{'CurrentUser'});
+my $groups = RT::Groups->new($session{'CurrentUser'});
 $groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
 
 </%INIT>

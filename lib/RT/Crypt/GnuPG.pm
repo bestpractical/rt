@@ -1261,7 +1261,7 @@ sub DecryptRFC3156 {
     }
 
     seek $tmp_fh, 0, 0;
-    my $parser = new RT::EmailParser;
+    my $parser = RT::EmailParser->new;
     my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
     $args{'Top'}->parts( [] );

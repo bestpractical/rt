@@ -53,7 +53,7 @@ RT::Attributes - collection of RT::Attribute objects
 =head1 SYNOPSIS
 
     use RT::Attributes;
-    my $Attributes = new RT::Attributes($CurrentUser);
+    my $Attributes = RT::Attributes->new($CurrentUser);
 
 =head1 DESCRIPTION
 

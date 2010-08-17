@@ -378,7 +378,7 @@ sub LoadByCols {
 
 sub LastUpdatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = RT::Date->new( $self->CurrentUser );
 
     $obj->Set( Format => 'sql', Value => $self->LastUpdated );
     return $obj;
@@ -390,7 +390,7 @@ sub LastUpdatedObj {
 
 sub CreatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = RT::Date->new( $self->CurrentUser );
 
     $obj->Set( Format => 'sql', Value => $self->Created );
 
@@ -520,7 +520,7 @@ It takes no options. Arguably, this is a bug
 sub _SetLastUpdated {
     my $self = shift;
     use RT::Date;
-    my $now = new RT::Date( $self->CurrentUser );
+    my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     if ( $self->_Accessible( 'LastUpdated', 'auto' ) ) {
@@ -1221,7 +1221,7 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
+        $self->{"$field$type"} = RT::Links->new( $self->CurrentUser );
             # at least to myself
             $self->{"$field$type"}->Limit( FIELD => $field,
                                            VALUE => $self->URI,
@@ -1404,7 +1404,7 @@ sub _DeleteLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $link = new RT::Link( $self->CurrentUser );
+    my $link = RT::Link->new( $self->CurrentUser );
     $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
 
 
@@ -1476,7 +1476,7 @@ sub _NewTransaction {
     }
 
     require RT::Transaction;
-    my $trans = new RT::Transaction( $self->CurrentUser );
+    my $trans = RT::Transaction->new( $self->CurrentUser );
     my ( $transaction, $msg ) = $trans->Create(
 	ObjectId  => $self->Id,
 	ObjectType => ref($self),
@@ -1740,7 +1740,7 @@ sub _AddCustomFieldValue {
         # For datetime, we need to display them in "human" format in result message
         #XXX TODO how about date without time?
         if ($cf->Type eq 'DateTime') {
-            my $DateObj = new RT::Date( $self->CurrentUser );
+            my $DateObj = RT::Date->new( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'ISO',
                 Value  => $new_content,
@@ -1847,7 +1847,7 @@ sub DeleteCustomFieldValue {
     my $old_value = $TransactionObj->OldValue;
     # For datetime, we need to display them in "human" format in result message
     if ( $cf->Type eq 'DateTime' ) {
-        my $DateObj = new RT::Date( $self->CurrentUser );
+        my $DateObj = RT::Date->new( $self->CurrentUser );
         $DateObj->Set(
             Format => 'ISO',
             Value  => $old_value,

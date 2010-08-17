@@ -74,7 +74,7 @@
 
 <%INIT>
 
-my $TemplateObj = new RT::Template($session{'CurrentUser'});
+my $TemplateObj = RT::Template->new($session{'CurrentUser'});
 my  ($title, @results, $current_subtab, $SubmitLabel);
 
 my $subtabs = {

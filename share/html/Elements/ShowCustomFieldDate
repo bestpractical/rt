@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
  my $content = $Object->Content;
- my $DateObj = new RT::Date ( $session{'CurrentUser'} );
+ my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
  $DateObj->Set( Format => 'unknown', Value => $content );
  $content = $DateObj->AsString(Time => 0);
 </%INIT>

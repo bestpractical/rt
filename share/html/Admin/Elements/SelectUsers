@@ -54,7 +54,7 @@
 </select>
 
 <%INIT>
-my $users = new RT::Users($session{'CurrentUser'});
+my $users = RT::Users->new($session{'CurrentUser'});
 
 $users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=' );
 $users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );

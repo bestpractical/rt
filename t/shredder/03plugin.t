@@ -17,7 +17,7 @@ my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
 
 use_ok('RT::Shredder::Plugin');
 {
-    my $plugin = new RT::Shredder::Plugin;
+    my $plugin = RT::Shredder::Plugin->new;
     isa_ok($plugin, 'RT::Shredder::Plugin');
     my %plugins = $plugin->List;
     cmp_deeply( [sort keys %plugins], [@PLUGINS], "correct plugins" );
@@ -28,7 +28,7 @@ use_ok('RT::Shredder::Plugin');
 }
 { # reblessing on LoadByName
     foreach (@PLUGINS) {
-        my $plugin = new RT::Shredder::Plugin;
+        my $plugin = RT::Shredder::Plugin->new;
         isa_ok($plugin, 'RT::Shredder::Plugin');
         my ($status, $msg) = $plugin->LoadByName( $_ );
         ok($status, "loaded plugin by name") or diag("error: $msg");
@@ -36,7 +36,7 @@ use_ok('RT::Shredder::Plugin');
     }
 }
 { # error checking in LoadByName
-    my $plugin = new RT::Shredder::Plugin;
+    my $plugin = RT::Shredder::Plugin->new;
     isa_ok($plugin, 'RT::Shredder::Plugin');
     my ($status, $msg) = $plugin->LoadByName;
     ok(!$status, "not loaded plugin - empty name");

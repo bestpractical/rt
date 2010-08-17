@@ -954,7 +954,7 @@ sub CreateUser {
     }
 
     #Load the new user object
-    my $CurrentUser = new RT::CurrentUser;
+    my $CurrentUser = RT::CurrentUser->new;
     $CurrentUser->LoadByEmail( $Address );
 
     unless ( $CurrentUser->id ) {

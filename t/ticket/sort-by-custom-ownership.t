@@ -76,8 +76,8 @@ sub check_order {
 
 # The real tests start here
 
-my $cme = new RT::CurrentUser( $me );
-my $metx = new RT::Tickets( $cme );
+my $cme = RT::CurrentUser->new( $me );
+my $metx = RT::Tickets->new( $cme );
 # Make sure we can sort in both directions on a queue specific field.
 $metx->FromSQL(qq[queue="$queue"] );
 $metx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );
@@ -90,8 +90,8 @@ check_order( $metx, reverse qw[2 1 6 5 4 3]);
 
 
 
-my $cyou = new RT::CurrentUser( $you );
-my $youtx = new RT::Tickets( $cyou );
+my $cyou = RT::CurrentUser->new( $you );
+my $youtx = RT::Tickets->new( $cyou );
 # Make sure we can sort in both directions on a queue specific field.
 $youtx->FromSQL(qq[queue="$queue"] );
 $youtx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );

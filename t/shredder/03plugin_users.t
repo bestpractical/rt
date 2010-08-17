@@ -18,7 +18,7 @@ my @ARGS = sort qw(limit status name member_of email replace_relations no_ticket
 
 use_ok('RT::Shredder::Plugin::Users');
 {
-    my $plugin = new RT::Shredder::Plugin::Users;
+    my $plugin = RT::Shredder::Plugin::Users->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Users');
 
     is(lc $plugin->Type, 'search', 'correct type');

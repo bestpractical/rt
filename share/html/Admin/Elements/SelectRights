@@ -95,8 +95,8 @@ while ( my $ace = $ACLObj->Next ) {
     }
 
 
-    my $ACLObj = new RT::ACL($session{'CurrentUser'});
-    my $ACE = new RT::ACE($session{'CurrentUser'});
+    my $ACLObj = RT::ACL->new($session{'CurrentUser'});
+    my $ACE = RT::ACE->new($session{'CurrentUser'});
 
 
     $ACLObj->LimitToObject( $Object);

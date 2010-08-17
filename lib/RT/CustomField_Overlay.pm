@@ -1283,7 +1283,7 @@ sub AddValueForObject {
     }
     # For date, we need to store Content as ISO date
     if ( $self->Type eq 'DateTime' ) {
-        my $DateObj = new RT::Date( $self->CurrentUser );
+        my $DateObj = RT::Date->new( $self->CurrentUser );
         $DateObj->Set(
             Format => 'unknown',
             Value  => $args{'Content'},
@@ -1294,7 +1294,7 @@ sub AddValueForObject {
 
         # in case user input date with time, let's omit it by setting timezone
         # to utc so "hour" won't affect "day"
-        my $DateObj = new RT::Date( $self->CurrentUser );
+        my $DateObj = RT::Date->new( $self->CurrentUser );
         $DateObj->Set(
             Format   => 'unknown',
             Value    => $args{'Content'},
@@ -1435,7 +1435,7 @@ sub ValuesForObject {
     my $self = shift;
     my $object = shift;
 
-    my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
+    my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
     unless ($self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);

@@ -324,7 +324,7 @@ foreach my $set ( 'ru', 'latin1' ) {
 sub parse_mail {
     my $mail = shift;
     require RT::EmailParser;
-    my $parser = new RT::EmailParser;
+    my $parser = RT::EmailParser->new;
     $parser->ParseMIMEEntityFromScalar( $mail );
     return $parser->Entity;
 }
