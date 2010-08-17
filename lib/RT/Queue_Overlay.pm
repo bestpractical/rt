@@ -664,25 +664,38 @@ It will return true on success and undef on failure.
 
 =cut
 
+sub _RoleGroupTypes {
+    return qw(Cc AdminCc Requestor Owner);
+}
 
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = qw(Cc AdminCc Requestor Owner);
+    my @types = $self->_RoleGroupTypes;
 
     foreach my $type (@types) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
-                                                     Type => $type,
-                                                     Domain => 'RT::Queue-Role');
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
-                               $self->Id.": ".$msg);
-            return(undef);
-        }
-     }
-    return(1);
-   
+        my $ok = $self->_CreateQueueRoleGroup($type);
+        return undef if !$ok;
+    }
+
+    return 1;
+}
+
+sub _CreateQueueRoleGroup {
+    my $self = shift;
+    my $type = shift;
+
+    my $type_obj = RT::Group->new($self->CurrentUser);
+    my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
+                                                    Type => $type,
+                                                    Domain => 'RT::Queue-Role');
+    unless ($id) {
+        $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
+                            $self->Id.": ".$msg);
+        return(undef);
+    }
+
+    return $id;
 }
 
 
