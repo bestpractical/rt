@@ -48,13 +48,12 @@
 <div class="more-about-requestor-extra-info">
 % for my $column (@formats) {
 % my $title = $column->{title} || '';
-% unless (defined $column->{title}) {
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
 % unless (defined $column->{title}) {
 %   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<span>
+<span class="more-about-requestor-extra-info <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
 <span class="label"> <% $title %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
