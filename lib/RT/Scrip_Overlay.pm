@@ -106,7 +106,7 @@ sub Create {
         @_
     );
 
-    if (length($args{CustomPrepareCode}) || length($args{CustomCommitCode}) || length($args{CustomIsApplicableCode})) {
+    if ($args{CustomPrepareCode} || $args{CustomCommitCode} || $args{CustomIsApplicableCode}) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
                                                Right  => 'ExecuteCode' ) )
         {
