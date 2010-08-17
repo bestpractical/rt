@@ -50,16 +50,8 @@
 % my $title = $column->{title} || '';
 % unless (defined $column->{title}) {
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
-% my $tmp = $m->comp( '/Elements/ColumnMap',
-%                    Class => $Class,
-%                    Name  => $attr,
-%                    Attr  => 'title',
-%                   );
-% $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
-%
-% # in case title is not defined in ColumnMap 
-% # the following regex changes $attr like from "ReferredToBy" to "Referred To By"
-% $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
+% unless (defined $column->{title}) {
+%   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
 <span>
@@ -71,18 +63,7 @@
 %         push @out, $subcol;
 %         next;
 %     }
-
-%     my $value = $m->comp(
-%             "/Elements/ColumnMap",
-%             Class => $Class,
-%             Name  => $col,
-%             Attr  => 'value'
-%     );
-
-%     push @out, ProcessColumnMapValue(
-%         $value,
-%         Arguments => [$Requestor],
-%     );
+%     push @out, $fetch_columnmap->($col, 'value', [$Requestor]);
 % }
 % @out = grep { defined $_ } @out;
 <span class="value"><% join(' ',@out) %></span>
@@ -92,6 +73,16 @@
 <%INIT>
 my $format = RT->Config->Get('MoreAboutRequestorExtraInfo');
 my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $format);
+
+my $fetch_columnmap = sub {
+    my ($name, $attr, $arguments) = @_;
+    my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => $Class,
+            Name  => $name,
+            Attr  => $attr,
+            );
+    return ProcessColumnMapValue( $tmp, Arguments => $arguments );
+};
 </%INIT>
 <%ARGS>
 $Requestor => undef
