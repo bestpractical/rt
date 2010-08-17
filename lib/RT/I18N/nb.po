@@ -5574,7 +5574,7 @@ msgid "See custom fields"
 msgstr "Se fleksifelt"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Se utgående e-postmeldinger og mottakerne"
 
 #: lib/RT/Queue_Overlay.pm:102

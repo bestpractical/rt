@@ -5571,7 +5571,7 @@ msgid "See custom fields"
 msgstr "Вижте персонализирани полета"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Вижте точните излизащи съобщения по ел. поща и техните получатели"
 
 #: lib/RT/Queue_Overlay.pm:102

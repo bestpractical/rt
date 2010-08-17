@@ -5852,7 +5852,7 @@ msgid "See custom fields"
 msgstr "Özel alanları gör"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Giden eposta iletilerinin tamamını ve alıcılarını gör"
 
 #: lib/RT/Queue_Overlay.pm:102

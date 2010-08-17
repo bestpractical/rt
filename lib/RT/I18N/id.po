@@ -6052,7 +6052,7 @@ msgid "See custom fields"
 msgstr "Lihat kolom kustom"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Lihat pesan email yang keluar dan semua penerimanya dengan tepat"
 
 #: lib/RT/Queue_Overlay.pm:102

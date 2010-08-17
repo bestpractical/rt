@@ -5519,7 +5519,7 @@ msgid "See custom fields"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:102

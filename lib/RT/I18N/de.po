@@ -6066,7 +6066,7 @@ msgid "See custom fields"
 msgstr "Benutzerdefinierte Felder anzeigen"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Anzeigen der gesendeten Nachricht und deren Empfänger"
 
 #: lib/RT/Queue_Overlay.pm:102

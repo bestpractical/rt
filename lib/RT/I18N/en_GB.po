@@ -5368,8 +5368,8 @@ msgid "See custom fields"
 msgstr "See custom fields"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
+msgstr "See exact outgoing email messages and their recipients"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "See ticket private commentary"

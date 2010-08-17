@@ -6823,7 +6823,7 @@ msgid "See custom fields"
 msgstr "Vedi campi personalizzati"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Vedi letteralmente i messaggi in uscita e i loro destinatari"
 
 #: lib/RT/Queue_Overlay.pm:102

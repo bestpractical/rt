@@ -5673,7 +5673,7 @@ msgid "See custom fields"
 msgstr "Просматривать дополнительные поля"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "Просматривать полностью исходящую почту и ее получателей"
 
 #: lib/RT/Queue_Overlay.pm:102

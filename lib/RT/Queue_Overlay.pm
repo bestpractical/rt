@@ -100,7 +100,7 @@ our $RIGHTS = {
 
     ShowTicket         => 'See ticket summaries',                    # loc_pair
     ShowTicketComments => 'See ticket private commentary',           # loc_pair
-    ShowOutgoingEmail => 'See exact outgoing email messages and their recipeients',           # loc_pair
+    ShowOutgoingEmail => 'See exact outgoing email messages and their recipients',           # loc_pair
 
     Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
     WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair

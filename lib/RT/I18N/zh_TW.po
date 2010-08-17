@@ -8331,7 +8331,7 @@ msgid "See custom fields"
 msgstr "查閱自訂欄位"
 
 #: lib/RT/Queue_Overlay.pm:103
-msgid "See exact outgoing email messages and their recipeients"
+msgid "See exact outgoing email messages and their recipients"
 msgstr "查閱送出的電子郵件及收件人"
 
 #: lib/RT/Queue_Overlay.pm:102
