@@ -676,7 +676,7 @@ sub _CreateQueueGroups {
                                                      Type => $type,
                                                      Domain => 'RT::Queue-Role');
         unless ($id) {
-            $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
+            $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
                                $self->Id.": ".$msg);
             return(undef);
         }
