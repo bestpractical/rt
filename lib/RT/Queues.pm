@@ -72,11 +72,9 @@ use strict;
 
 package RT::Queues;
 
-use RT::SearchBuilder;
 use RT::Queue;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Queue->new($self->CurrentUser));
 }
 
-        eval "require RT::Queues_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Queues_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Queues_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

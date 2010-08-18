@@ -69,12 +69,8 @@ RT::ObjectCustomFieldValue
 =cut
 
 package RT::ObjectCustomFieldValue;
-use RT::Record; 
 use RT::CustomField;
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -96,7 +92,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'ObjectId'.
   int(11) 'SortOrder'.
   varchar(255) 'Content'.
-  longtext 'LargeContent'.
+  longblob 'LargeContent'.
   varchar(80) 'ContentType'.
   varchar(80) 'ContentEncoding'.
   smallint(6) 'Disabled'.
@@ -109,9 +105,9 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                CustomField => '0',
+                CustomField => '',
                 ObjectType => '',
-                ObjectId => '0',
+                ObjectId => '',
                 SortOrder => '0',
                 Content => '',
                 LargeContent => '',
@@ -162,6 +158,20 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+
+=head2 CustomFieldObj
+
+Returns the CustomField Object which has the id returned by CustomField
+
+
+=cut
+
+sub CustomFieldObj {
+	my $self = shift;
+	my $CustomField =  RT::CustomField->new($self->CurrentUser);
+	$CustomField->Load($self->__Value('CustomField'));
+	return($CustomField);
+}
 
 =head2 ObjectType
 
@@ -238,7 +248,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 LargeContent
 
 Returns the current value of LargeContent. 
-(In the database, LargeContent is stored as longtext.)
+(In the database, LargeContent is stored as longblob.)
 
 
 
@@ -247,7 +257,7 @@ Returns the current value of LargeContent.
 
 Set LargeContent to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, LargeContent will be stored as a longtext.)
+(In the database, LargeContent will be stored as a longblob.)
 
 
 =cut
@@ -350,17 +360,17 @@ sub _CoreAccessible {
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         CustomField => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         ObjectType => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         ObjectId => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Content => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         LargeContent => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longblob', default => ''},
         ContentType => 
 		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         ContentEncoding => 
@@ -380,22 +390,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::ObjectCustomFieldValue_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::ObjectCustomFieldValue_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ObjectCustomFieldValue_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

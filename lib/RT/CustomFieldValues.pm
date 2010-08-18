@@ -72,11 +72,9 @@ use strict;
 
 package RT::CustomFieldValues;
 
-use RT::SearchBuilder;
 use RT::CustomFieldValue;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -84,18 +82,20 @@ sub _Init {
     $self->{'table'} = 'CustomFieldValues';
     $self->{'primary_key'} = 'id';
 
-    # By default, order by SortOrder
-    $self->OrderByCols(
-         { ALIAS => 'main',
-           FIELD => 'SortOrder',
-           ORDER => 'ASC' },
-         { ALIAS => 'main',
-           FIELD => 'Name',
-           ORDER => 'ASC' },
-         { ALIAS => 'main',
-           FIELD => 'id',
-           ORDER => 'ASC' },
-    );
+
+
+  # By default, order by SortOrder
+  $self->OrderByCols(
+	 { ALIAS => 'main',
+	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'Name',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'id',
+	   ORDER => 'ASC' },
+     );
 
     return ( $self->SUPER::_Init(@_) );
 }
@@ -112,22 +112,8 @@ sub NewItem {
     return(RT::CustomFieldValue->new($self->CurrentUser));
 }
 
-        eval "require RT::CustomFieldValues_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::CustomFieldValues_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CustomFieldValues_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

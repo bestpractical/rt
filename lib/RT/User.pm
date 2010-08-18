@@ -69,11 +69,7 @@ RT::User
 =cut
 
 package RT::User;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -91,11 +87,11 @@ sub _Init {
 Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
-  varchar(40) 'Password'.
-  blob 'Comments'.
-  blob 'Signature'.
+  varbinary(40) 'Password'.
+  text 'Comments'.
+  text 'Signature'.
   varchar(120) 'EmailAddress'.
-  blob 'FreeformContactInfo'.
+  text 'FreeformContactInfo'.
   varchar(200) 'Organization'.
   varchar(120) 'RealName'.
   varchar(16) 'NickName'.
@@ -225,7 +221,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Password
 
 Returns the current value of Password. 
-(In the database, Password is stored as varchar(40).)
+(In the database, Password is stored as varbinary(40).)
 
 
 
@@ -234,7 +230,7 @@ Returns the current value of Password.
 
 Set Password to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Password will be stored as a varchar(40).)
+(In the database, Password will be stored as a varbinary(40).)
 
 
 =cut
@@ -243,7 +239,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Comments
 
 Returns the current value of Comments. 
-(In the database, Comments is stored as blob.)
+(In the database, Comments is stored as text.)
 
 
 
@@ -252,7 +248,7 @@ Returns the current value of Comments.
 
 Set Comments to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Comments will be stored as a blob.)
+(In the database, Comments will be stored as a text.)
 
 
 =cut
@@ -261,7 +257,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Signature
 
 Returns the current value of Signature. 
-(In the database, Signature is stored as blob.)
+(In the database, Signature is stored as text.)
 
 
 
@@ -270,7 +266,7 @@ Returns the current value of Signature.
 
 Set Signature to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Signature will be stored as a blob.)
+(In the database, Signature will be stored as a text.)
 
 
 =cut
@@ -297,7 +293,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 FreeformContactInfo
 
 Returns the current value of FreeformContactInfo. 
-(In the database, FreeformContactInfo is stored as blob.)
+(In the database, FreeformContactInfo is stored as text.)
 
 
 
@@ -306,7 +302,7 @@ Returns the current value of FreeformContactInfo.
 
 Set FreeformContactInfo to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, FreeformContactInfo will be stored as a blob.)
+(In the database, FreeformContactInfo will be stored as a text.)
 
 
 =cut
@@ -771,15 +767,15 @@ sub _CoreAccessible {
         Name => 
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Password => 
-		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(40)', default => ''},
         Comments => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Signature => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         EmailAddress => 
 		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         FreeformContactInfo => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Organization => 
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         RealName => 
@@ -839,22 +835,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::User_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::User_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::User_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

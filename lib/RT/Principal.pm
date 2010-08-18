@@ -69,11 +69,7 @@ RT::Principal
 =cut
 
 package RT::Principal;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -197,22 +193,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::Principal_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Principal_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Principal_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

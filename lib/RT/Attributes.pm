@@ -72,11 +72,9 @@ use strict;
 
 package RT::Attributes;
 
-use RT::SearchBuilder;
 use RT::Attribute;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Attribute->new($self->CurrentUser));
 }
 
-        eval "require RT::Attributes_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Attributes_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attributes_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

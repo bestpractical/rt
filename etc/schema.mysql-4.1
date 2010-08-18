@@ -168,7 +168,7 @@ CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   PrincipalType varchar(25) CHARACTER SET ascii NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor"
 
-  PrincipalId integer NOT NULL  , #Foreign key to principals
+  PrincipalId integer NOT NULL DEFAULT 0 , #Foreign key to principals
   RightName varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectType varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectId integer NOT NULL default 0,

@@ -69,11 +69,7 @@ RT::GroupMember
 =cut
 
 package RT::GroupMember;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -174,22 +170,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::GroupMember_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/GroupMember_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::GroupMember_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/GroupMember_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::GroupMember_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/GroupMember_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

@@ -72,11 +72,9 @@ use strict;
 
 package RT::CachedGroupMembers;
 
-use RT::SearchBuilder;
 use RT::CachedGroupMember;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::CachedGroupMember->new($self->CurrentUser));
 }
 
-        eval "require RT::CachedGroupMembers_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMembers_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::CachedGroupMembers_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMembers_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CachedGroupMembers_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMembers_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

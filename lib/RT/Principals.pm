@@ -72,11 +72,9 @@ use strict;
 
 package RT::Principals;
 
-use RT::SearchBuilder;
 use RT::Principal;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Principal->new($self->CurrentUser));
 }
 
-        eval "require RT::Principals_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principals_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Principals_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principals_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Principals_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principals_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

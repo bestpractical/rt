@@ -72,8 +72,9 @@ use strict;
 
 package RT::ACL;
 
-use base 'RT::SearchBuilder';
 use RT::ACE;
+
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -97,22 +98,8 @@ sub NewItem {
     return(RT::ACE->new($self->CurrentUser));
 }
 
-        eval "require RT::ACL_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACL_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::ACL_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACL_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ACL_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACL_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

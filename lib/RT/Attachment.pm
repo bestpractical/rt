@@ -69,11 +69,7 @@ RT::Attachment
 =cut
 
 package RT::Attachment;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -97,7 +93,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Filename'.
   varchar(80) 'ContentType'.
   varchar(80) 'ContentEncoding'.
-  longtext 'Content'.
+  longblob 'Content'.
   longtext 'Headers'.
 
 =cut
@@ -108,7 +104,7 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                TransactionId => '0',
+                TransactionId => '',
                 Parent => '0',
                 MessageId => '',
                 Subject => '',
@@ -273,7 +269,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Content
 
 Returns the current value of Content. 
-(In the database, Content is stored as longtext.)
+(In the database, Content is stored as longblob.)
 
 
 
@@ -282,7 +278,7 @@ Returns the current value of Content.
 
 Set Content to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Content will be stored as a longtext.)
+(In the database, Content will be stored as a longblob.)
 
 
 =cut
@@ -331,7 +327,7 @@ sub _CoreAccessible {
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         TransactionId => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Parent => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         MessageId => 
@@ -345,7 +341,7 @@ sub _CoreAccessible {
         ContentEncoding => 
 		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         Content => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longblob', default => ''},
         Headers => 
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
         Creator => 
@@ -357,22 +353,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::Attachment_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Attachment_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attachment_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

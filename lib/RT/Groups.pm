@@ -72,11 +72,9 @@ use strict;
 
 package RT::Groups;
 
-use RT::SearchBuilder;
 use RT::Group;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,20 +98,8 @@ sub NewItem {
     return(RT::Group->new($self->CurrentUser));
 }
 
-        eval "require RT::Groups_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Groups_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Groups_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Groups_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Groups_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Groups_Local.pm}) {
-            die $@;
-        };
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

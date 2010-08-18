@@ -69,12 +69,8 @@ RT::Template
 =cut
 
 package RT::Template;
-use RT::Record; 
 use RT::Queue;
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -97,7 +93,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(16) 'Type'.
   varchar(16) 'Language'.
   int(11) 'TranslationOf'.
-  blob 'Content'.
+  text 'Content'.
 
 =cut
 
@@ -264,7 +260,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Content
 
 Returns the current value of Content. 
-(In the database, Content is stored as blob.)
+(In the database, Content is stored as text.)
 
 
 
@@ -273,7 +269,7 @@ Returns the current value of Content.
 
 Set Content to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Content will be stored as a blob.)
+(In the database, Content will be stored as a text.)
 
 
 =cut
@@ -334,7 +330,7 @@ sub _CoreAccessible {
         TranslationOf => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Content => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         LastUpdated => 
 		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
@@ -348,22 +344,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::Template_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Template_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Template_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Template_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Template_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Template_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

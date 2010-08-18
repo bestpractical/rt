@@ -72,11 +72,9 @@ use strict;
 
 package RT::Attachments;
 
-use RT::SearchBuilder;
 use RT::Attachment;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Attachment->new($self->CurrentUser));
 }
 
-        eval "require RT::Attachments_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachments_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Attachments_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachments_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attachments_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachments_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

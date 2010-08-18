@@ -72,11 +72,9 @@ use strict;
 
 package RT::Tickets;
 
-use RT::SearchBuilder;
 use RT::Ticket;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Ticket->new($self->CurrentUser));
 }
 
-        eval "require RT::Tickets_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Tickets_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Tickets_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Tickets_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Tickets_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Tickets_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

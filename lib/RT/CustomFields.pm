@@ -72,11 +72,9 @@ use strict;
 
 package RT::CustomFields;
 
-use RT::SearchBuilder;
 use RT::CustomField;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -90,6 +88,9 @@ sub _Init {
   $self->OrderByCols(
 	 { ALIAS => 'main',
 	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'Name',
 	   ORDER => 'ASC' },
 	 { ALIAS => 'main',
 	   FIELD => 'id',
@@ -111,22 +112,8 @@ sub NewItem {
     return(RT::CustomField->new($self->CurrentUser));
 }
 
-        eval "require RT::CustomFields_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::CustomFields_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CustomFields_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

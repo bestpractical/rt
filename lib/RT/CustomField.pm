@@ -69,11 +69,7 @@ RT::CustomField
 =cut
 
 package RT::CustomField;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -93,15 +89,12 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Name'.
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
-  longtext 'Pattern'.
+  text 'Pattern'.
   smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
-
-  'LookupType' is generally the result of either 
-  RT::Ticket->CustomFieldLookupType or RT::Transaction->CustomFieldLookupType
 
 =cut
 
@@ -120,10 +113,8 @@ sub Create {
                 SortOrder => '0',
                 LookupType => '',
                 Disabled => '0',
-                LinkToValue => '',
-                IncludeContentForValue => '',
 
-                  @_);
+		  @_);
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
@@ -134,8 +125,6 @@ sub Create {
                          SortOrder => $args{'SortOrder'},
                          LookupType => $args{'LookupType'},
                          Disabled => $args{'Disabled'},
-                         LinkToValue => $args{'LinkToValue'},
-                         IncludeContentForValue => $args{'IncludeContentForValue'}
 );
 
 }
@@ -208,7 +197,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Pattern
 
 Returns the current value of Pattern. 
-(In the database, Pattern is stored as longtext.)
+(In the database, Pattern is stored as text.)
 
 
 
@@ -217,7 +206,7 @@ Returns the current value of Pattern.
 
 Set Pattern to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Pattern will be stored as a longtext.)
+(In the database, Pattern will be stored as a text.)
 
 
 =cut
@@ -362,7 +351,7 @@ sub _CoreAccessible {
         MaxValues => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Repeated => 
 		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Description => 
@@ -386,22 +375,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::CustomField_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::CustomField_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CustomField_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

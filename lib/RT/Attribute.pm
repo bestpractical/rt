@@ -69,11 +69,7 @@ RT::Attribute
 =cut
 
 package RT::Attribute;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -92,7 +88,7 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(255) 'Name'.
   varchar(255) 'Description'.
-  text 'Content'.
+  blob 'Content'.
   varchar(16) 'ContentType'.
   varchar(64) 'ObjectType'.
   int(11) 'ObjectId'.
@@ -174,7 +170,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Content
 
 Returns the current value of Content. 
-(In the database, Content is stored as text.)
+(In the database, Content is stored as blob.)
 
 
 
@@ -183,7 +179,7 @@ Returns the current value of Content.
 
 Set Content to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Content will be stored as a text.)
+(In the database, Content will be stored as a blob.)
 
 
 =cut
@@ -290,7 +286,7 @@ sub _CoreAccessible {
         Description => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Content => 
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
         ContentType => 
 		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         ObjectType => 
@@ -310,22 +306,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::Attribute_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Attribute_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attribute_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

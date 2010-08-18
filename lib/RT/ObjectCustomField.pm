@@ -69,12 +69,8 @@ RT::ObjectCustomField
 =cut
 
 package RT::ObjectCustomField;
-use RT::Record; 
 use RT::CustomField;
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -103,8 +99,8 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                CustomField => '0',
-                ObjectId => '0',
+                CustomField => '',
+                ObjectId => '',
                 SortOrder => '0',
 
 		  @_);
@@ -238,9 +234,9 @@ sub _CoreAccessible {
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         CustomField => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         ObjectId => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Creator => 
@@ -256,22 +252,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::ObjectCustomField_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::ObjectCustomField_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ObjectCustomField_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

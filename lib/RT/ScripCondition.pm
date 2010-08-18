@@ -69,11 +69,7 @@ RT::ScripCondition
 =cut
 
 package RT::ScripCondition;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -93,7 +89,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Name'.
   varchar(255) 'Description'.
   varchar(60) 'ExecModule'.
-  varchar(255) 'Argument'.
+  varbinary(255) 'Argument'.
   varchar(60) 'ApplicableTransTypes'.
 
 =cut
@@ -189,7 +185,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Argument
 
 Returns the current value of Argument. 
-(In the database, Argument is stored as varchar(255).)
+(In the database, Argument is stored as varbinary(255).)
 
 
 
@@ -198,7 +194,7 @@ Returns the current value of Argument.
 
 Set Argument to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Argument will be stored as a varchar(255).)
+(In the database, Argument will be stored as a varbinary(255).)
 
 
 =cut
@@ -271,7 +267,7 @@ sub _CoreAccessible {
         ExecModule => 
 		{read => 1, write => 1, sql_type => 12, length => 60,  is_blob => 0,  is_numeric => 0,  type => 'varchar(60)', default => ''},
         Argument => 
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(255)', default => ''},
         ApplicableTransTypes => 
 		{read => 1, write => 1, sql_type => 12, length => 60,  is_blob => 0,  is_numeric => 0,  type => 'varchar(60)', default => ''},
         Creator => 
@@ -287,22 +283,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::ScripCondition_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::ScripCondition_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripCondition_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

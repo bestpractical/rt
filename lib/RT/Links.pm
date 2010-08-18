@@ -72,11 +72,9 @@ use strict;
 
 package RT::Links;
 
-use RT::SearchBuilder;
 use RT::Link;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -100,22 +98,8 @@ sub NewItem {
     return(RT::Link->new($self->CurrentUser));
 }
 
-        eval "require RT::Links_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Links_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Links_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Links_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Links_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Links_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

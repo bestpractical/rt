@@ -69,15 +69,11 @@ RT::Scrip
 =cut
 
 package RT::Scrip;
-use RT::Record; 
 use RT::Queue;
 use RT::Template;
 use RT::ScripCondition;
 use RT::ScripAction;
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 
@@ -485,22 +481,8 @@ sub _CoreAccessible {
 };
 
 
-        eval "require RT::Scrip_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Scrip_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::Scrip_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Scrip_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Scrip_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Scrip_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO

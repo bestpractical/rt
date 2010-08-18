@@ -72,11 +72,9 @@ use strict;
 
 package RT::ObjectCustomFieldValues;
 
-use RT::SearchBuilder;
 use RT::ObjectCustomFieldValue;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base 'RT::SearchBuilder';
 
 
 sub _Init {
@@ -111,22 +109,8 @@ sub NewItem {
     return(RT::ObjectCustomFieldValue->new($self->CurrentUser));
 }
 
-        eval "require RT::ObjectCustomFieldValues_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValues_Overlay.pm}) {
-            die $@;
-        };
 
-        eval "require RT::ObjectCustomFieldValues_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValues_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ObjectCustomFieldValues_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValues_Local.pm}) {
-            die $@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO
