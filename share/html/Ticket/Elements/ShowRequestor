@@ -64,17 +64,18 @@ while ( my $requestor = $people->Next ) {
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
 <& ShowRequestorExtraInfo, Requestor => $requestor &>
 
-<span class="label commentsaboutuser"><&|/l&>Comments about this user</&>:</span><br />
-<b class="value commentsaboutuser"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
+<div class="comments-about-user">
+  <span class="label"><&|/l&>Comments about this user</&>:</span>
+  <span class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span>
+</div>
 
-<span id="more-about-requestor-<%$requestor->Id%>">
+<div class="more-about-requestor" id="more-about-requestor-<%$requestor->Id%>">
   <& $TicketTemplate, Requestor => $requestor &>
-</span>
+</div>
 
-<div class="moreaboutusergroups">
-<&|/l&>Groups this user belongs to</&>:<br />
-
-<& /Elements/ShowMemberships, UserObj => $requestor &>
+<div class="more-about-user-groups">
+  <span class="label"><&|/l&>Groups this user belongs to</&>:</span>
+  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor &></span>
 </div>
 
 </&>

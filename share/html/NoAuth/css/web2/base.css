@@ -51,9 +51,8 @@ a {
 }
 
 
-div#body a:visited {
+a:visited {
     color: #666;
-
 }
 
 a:hover  {

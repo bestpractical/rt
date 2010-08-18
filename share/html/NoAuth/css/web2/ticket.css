@@ -202,7 +202,7 @@ div#ticket-history .messagebody .messagebody{
 .ticket-info-attachments .titlebox-title .left { background-color: #993366;  color: #fff;}
 
 
-.ticket-summary .titlebox-title a, div#body .ticket-summary .titlebox-title a:visited { color: #fff;}
+.ticket-summary .titlebox-title .left a, .ticket-summary .titlebox-title .left a:visited { color: #fff;}
 
 .unread-messages .titlebox , .unread-messages .titlebox-title .left { 
   border: 1px solid #99a;
@@ -241,11 +241,37 @@ div.requestor-ticket-links {
     padding-top: 0.25em;
 }
 
-div.more-about-requestor-extra-info .label {
+.more-about-requestor-extra-field .label {
+    display: inline-block;
+    width: 8em;
     font-weight: bold;
-    padding-left: 0.5em;
+    text-align: right;
 }
 
-div.more-about-requestor-extra-info .value {
-    padding-left: 0em;
+.more-about-requestor-extra-field .value {
+    display: inline-block;
+}
+
+.ticket-info-requestor .more-about-requestor-extra,
+.ticket-info-requestor .comments-about-user,
+.ticket-info-requestor .more-about-requestor,
+.ticket-info-requestor .more-about-user-groups
+{
+    margin: 1em 0;
+}
+
+.ticket-info-requestor .comments-about-user .label,
+.ticket-info-requestor .more-about-user-groups .label,
+.ticket-info-requestor .more-about-requestor .label
+{
+    display: block;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ticket-info-requestor .more-about-user-groups .value ul,
+.ticket-info-requestor .more-about-requestor ul
+{
+    margin-top: 0;
+    margin-bottom: 0;
 }

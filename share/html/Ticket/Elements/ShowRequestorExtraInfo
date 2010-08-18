@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="more-about-requestor-extra-info">
+<div class="more-about-requestor-extra">
 % for my $column (@formats) {
 % my $title = $column->{title} || '';
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
@@ -53,7 +53,7 @@
 %   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<span class="more-about-requestor-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
+<div class="more-about-requestor-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
 <span class="label"> <% $title %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
@@ -64,9 +64,9 @@
 %     }
 %     push @out, $fetch_columnmap->($col, 'value', [$Requestor]);
 % }
-% @out = grep { defined $_ } @out;
+% @out = grep { defined $_ and length $_ } @out;
 <span class="value"><% join(' ',@out) %></span>
-</span>
+</div>
 % }
 </div>
 <%INIT>

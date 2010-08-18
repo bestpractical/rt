@@ -149,7 +149,8 @@
 
 }
 
-.titlebox .titlebox-title .right a {
+.titlebox .titlebox-title .right a,
+.titlebox .titlebox-title .right a:visited {
  color: #000;
 }
 
