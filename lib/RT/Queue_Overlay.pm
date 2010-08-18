@@ -678,6 +678,25 @@ sub ManageableRoleGroupTypes {
 }
 # }}}
 
+# {{{ IsManageableRoleGroupType
+=head2 IsManageableRoleGroupType
+
+Returns whether the passed-in type is a manageable role group type.
+
+=cut
+
+sub IsManageableRoleGroupType {
+    my $self = shift;
+    my $type = shift;
+
+    for my $valid_type ($self->ManageableRoleGroupTypes) {
+        return 1 if $type eq $valid_type;
+    }
+
+    return 0;
+}
+# }}}
+
 # {{{ _CreateQueueGroups 
 
 =head2 _CreateQueueGroups
