@@ -661,7 +661,7 @@ L</ManageableRoleGroupTypes>.
 
 sub AllRoleGroupTypes {
     my $self = shift;
-    return ($self->RoleGroupTypes, qw(Requestor Owner));
+    return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
 }
 # }}}
 
