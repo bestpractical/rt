@@ -84,6 +84,7 @@
 %   }
 </td>
 % }
+% $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
 </tr>
 % }
 
