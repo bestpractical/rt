@@ -650,16 +650,31 @@ sub TicketTransactionCustomFields {
 
 # {{{ Routines dealing with watchers.
 
-# {{{ RoleGroupTypes
-=head2 RoleGroupTypes
+# {{{ AllRoleGroupTypes
+=head2 AllRoleGroupTypes
 
 Returns a list of the names of the various role group types that this queue
-has.
+has, including Requestor and Owner. If you don't want them, see
+L</ManageableRoleGroupTypes>.
 
 =cut
 
-sub RoleGroupTypes {
-    return qw(Cc AdminCc Requestor Owner);
+sub AllRoleGroupTypes {
+    my $self = shift;
+    return ($self->RoleGroupTypes, qw(Requestor Owner));
+}
+# }}}
+
+# {{{ ManageableRoleGroupTypes
+=head2 ManageableRoleGroupTypes
+
+Returns a list of the names of the various role group types that this queue
+has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
+
+=cut
+
+sub ManageableRoleGroupTypes {
+    return qw(Cc AdminCc);
 }
 # }}}
 

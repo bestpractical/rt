@@ -620,7 +620,7 @@ sub _ValidRoleGroupType {
     my $self = shift;
     my $type = shift;
 
-    for my $valid_type (RT::Queue->RoleGroupTypes) {
+    for my $valid_type (RT::Queue->AllRoleGroupTypes) {
         return 1 if $type eq $valid_type;
     }
 

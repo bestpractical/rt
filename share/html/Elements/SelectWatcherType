@@ -57,7 +57,7 @@
 <%INIT>
 my @types;
 if ($Scope =~ 'queue') {
-   @types = grep { $_ ne 'Owner' && $_ ne 'Requestor' } RT::Queue->RoleGroupTypes;
+   @types = RT::Queue->ManageableRoleGroupTypes;
 }
 else { 
    @types = qw(Requestor Cc AdminCc);
