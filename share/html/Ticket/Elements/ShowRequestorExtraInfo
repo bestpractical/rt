@@ -54,7 +54,7 @@
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
 <div class="more-about-requestor-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
-<span class="label"> <% $title %></span>
+<span class="label"><% $title %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
 %     my ($col) = ($subcol =~ /^__(.*?)__$/);
