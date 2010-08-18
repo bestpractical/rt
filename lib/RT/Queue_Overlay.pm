@@ -763,6 +763,36 @@ sub _CreateQueueRoleGroup {
 
 # }}}
 
+# _HasModifyWatcherRight {{{
+sub _HasModifyWatcherRight {
+    my $self = shift;
+    my %args = (
+        Type  => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
+
+    return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
+
+    #If the watcher we're trying to add is for the current user
+    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+        if ( $args{'Type'} eq 'AdminCc' ) {
+            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
+        }
+        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
+            return 1 if $self->CurrentUserHasRight('Watch');
+        }
+        else {
+            $RT::Logger->warning( "$self -> _HasModifyWatcher got passed a bogus type $args{Type}");
+            return ( 0, $self->loc('Invalid queue role group type [_1]', $args{Type}) );
+        }
+    }
+
+    return ( 0, $self->loc("Permission Denied") );
+}
+# }}}
+
 # {{{ sub AddWatcher
 
 =head2 AddWatcher
@@ -802,43 +832,10 @@ sub AddWatcher {
     return ( 0, "Unknown watcher type [_1]", $args{Type} )
         unless $self->IsRoleGroupType($args{Type});
 
-    my ($ok, $msg) = $self->_HasAddWatcherRight(%args);
+    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
     return ($ok, $msg) if !$ok;
 
     return $self->_AddWatcher(%args);
-}
-
-sub _HasAddWatcherRight {
-    my $self = shift;
-    my %args = (
-        Type  => undef,
-        PrincipalId => undef,
-        Email => undef,
-        @_
-    );
-
-    return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
-
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
-            return 1 if $self->CurrentUserHasRight('Watch');
-        }
-        else {
-            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
-        }
-    }
-
-    return ( 0, $self->loc("Permission Denied") );
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
@@ -981,44 +978,11 @@ sub DeleteWatcher {
         return(0,$self->loc("Group not found"));
     }
 
-    my $can_modify_queue = $self->CurrentUserHasRight('ModifyQueueWatchers');
+    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+        unless $self->IsRoleGroupType($args{Type});
 
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} and $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyQueue', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $can_modify_queue
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyQueue', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $can_modify_queue
-                or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-        else {
-            $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->DeleteWatcher') );
-        }
-    }
-
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyQueueWathcers' bail
-    else {
-        unless ( $can_modify_queue ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # }}}
-
+    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
+    return ($ok, $msg) if !$ok;
 
     # see if this user is already a watcher.
 
