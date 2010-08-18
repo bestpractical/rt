@@ -54,7 +54,7 @@
                         OrderBy     => $OrderBy,
                         Order       => $Order );
 </%perl>
-<a href="<%$url%>"><&|/l&>Show tickets</&></a>
+<a href="<%$url%>"><&|/l, $Type &>Show [_1] tickets</&></a>
 % } else {
 <ul>
 <%perl>
@@ -81,6 +81,7 @@ if (@$conditions) {
 }
 </%INIT>
 <%ARGS>
+$Type => loc('all')
 $Requestor => undef
 $conditions
 $Rows => 10

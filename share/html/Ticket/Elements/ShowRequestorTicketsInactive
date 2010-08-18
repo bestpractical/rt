@@ -49,7 +49,7 @@
 <span class="label"><&|/l, $Rows &>This user's [_1] highest priority inactive tickets</&>:</span>
 <& ShowRequestorToggleLinks, %ARGS, Status => 'Inactive' &>
 % }
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
+<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('closed') &>
 <%INIT>
 unless ( @$conditions ) {
     foreach (RT::Queue->InactiveStatusArray()) {

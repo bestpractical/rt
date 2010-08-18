@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# showing no tickets means doing no work
 % if ( $AsLink ) {
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
+<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('all') &>
 % }
 <%ARGS>
 $Requestor => undef
