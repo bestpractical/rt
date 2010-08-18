@@ -78,10 +78,7 @@ sub IsApplicable {
     }
 }
 
-eval "require RT::Condition::Overdue_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Overdue_Vendor.pm});
-eval "require RT::Condition::Overdue_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Overdue_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
 

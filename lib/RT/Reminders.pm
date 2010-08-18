@@ -155,15 +155,7 @@ sub Resolve {
                                    NewValue => $reminder->id);
 }
 
-    eval "require RT::Reminders_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Reminders_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Reminders_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Reminders_Local.pm}) {
-            die $@;
-        };
+    RT::Base->_ImportOverlays();
 
 
 1;

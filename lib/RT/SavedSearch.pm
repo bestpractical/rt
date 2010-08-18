@@ -144,9 +144,6 @@ sub _PrivacyObjects {
     return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
 }
 
-eval "require RT::SavedSearch_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearch_Vendor.pm});
-eval "require RT::SavedSearch_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearch_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

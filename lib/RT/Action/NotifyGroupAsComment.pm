@@ -78,14 +78,6 @@ Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
 
 =cut
 
-eval "require RT::Action::NotifyGroupAsComment_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyGroupAsComment_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Action::NotifyGroupAsComment_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyGroupAsComment_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

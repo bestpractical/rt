@@ -51,9 +51,6 @@ package RT::Interface::Web::QueryBuilder;
 use strict;
 use warnings;
 
-eval "require RT::Interface::Web::QueryBuilder_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder_Vendor.pm});
-eval "require RT::Interface::Web::QueryBuilder_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

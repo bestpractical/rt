@@ -140,9 +140,6 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search_Vendor.pm});
-eval "require RT::Search_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

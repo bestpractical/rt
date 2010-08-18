@@ -289,14 +289,6 @@ sub PossibleCustomFields {
 }
 
 
-eval "require RT::SQL_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/SQL_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::SQL_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/SQL_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

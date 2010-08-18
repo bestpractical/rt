@@ -202,9 +202,6 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::Googleish_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Vendor.pm});
-eval "require RT::Search::Googleish_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

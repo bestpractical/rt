@@ -492,9 +492,6 @@ sub ObjectsForModifying {
     return grep { $self->CurrentUserCanModify($_) } $self->_PrivacyObjects;
 }
 
-eval "require RT::SharedSetting_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm});
-eval "require RT::SharedSetting_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

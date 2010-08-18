@@ -63,10 +63,7 @@ sub IsApplicable {
     return(1);
 }
 
-eval "require RT::Condition::AnyTransaction_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/AnyTransaction_Vendor.pm});
-eval "require RT::Condition::AnyTransaction_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/AnyTransaction_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
 

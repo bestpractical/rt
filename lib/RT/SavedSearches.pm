@@ -181,9 +181,6 @@ sub _GetObject {
     return RT::SavedSearch->new($self->CurrentUser)->_GetObject($privacy);
 }
 
-eval "require RT::SavedSearches_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Vendor.pm});
-eval "require RT::SavedSearches_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

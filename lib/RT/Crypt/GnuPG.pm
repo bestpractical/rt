@@ -2463,15 +2463,7 @@ sub _make_gpg_handles {
     return ($handles, \%handle_map);
 }
 
-eval "require RT::Crypt::GnuPG_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Crypt/GnuPG_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Crypt::GnuPG_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Crypt/GnuPG_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 # helper package to avoid using temp file
 package IO::Handle::CRLF;

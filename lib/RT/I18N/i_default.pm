@@ -50,10 +50,7 @@ package RT::I18N::i_default;
 use base 'RT::I18N';
 use strict;
 
-eval "require RT::I18N::i_default_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N/i_default_Vendor.pm});
-eval "require RT::I18N::i_default_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N/i_default_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
 

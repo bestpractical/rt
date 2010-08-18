@@ -90,14 +90,6 @@ sub Commit {
     return (1);
 }
 
-eval "require RT::Action::ExtractSubjectTag_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/ExtractSubjectTag_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Action::ExtractSubjectTag_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/ExtractSubjectTag_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

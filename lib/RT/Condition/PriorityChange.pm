@@ -68,10 +68,7 @@ sub IsApplicable {
     }
 }
 
-eval "require RT::Condition::PriorityChange_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/PriorityChange_Vendor.pm});
-eval "require RT::Condition::PriorityChange_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/PriorityChange_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
 

@@ -111,9 +111,6 @@ sub CreateTransaction {
 }
     
 
-eval "require RT::Action::RecordComment_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Vendor.pm});
-eval "require RT::Action::RecordComment_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

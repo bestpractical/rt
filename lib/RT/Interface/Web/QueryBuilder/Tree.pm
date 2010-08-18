@@ -285,9 +285,6 @@ sub ParseSQL {
     return @results;
 }
 
-eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm});
-eval "require RT::Interface::Web::QueryBuilder::Tree_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
