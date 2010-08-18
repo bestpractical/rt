@@ -683,6 +683,7 @@ sub IsRoleGroupType {
     return 0;
 }
 # }}}
+
 # {{{ ManageableRoleGroupTypes
 =head2 ManageableRoleGroupTypes
 
