@@ -67,6 +67,9 @@ to final priority.
 In this way, priority is either increased or decreased toward the final priority
 as the ticket heads toward its due date.
 
+Alternately, if you don't set a due date, the Priority will be incremented by 1
+until it reaches the Final Priority.  If a ticket without a due date has a Priority
+greater than Final Priority, it will be decremented by 1.
 
 =cut
 
