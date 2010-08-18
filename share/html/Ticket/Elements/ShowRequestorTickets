@@ -84,5 +84,5 @@ if (@$conditions) {
 $Requestor => undef
 $conditions
 $Rows => 10
-$AsLink
+$AsLink => undef
 </%ARGS>

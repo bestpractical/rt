@@ -56,6 +56,7 @@ while ( my $requestor = $people->Next ) {
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => loc("More about [_1]", $name),
+    titleright_raw => $m->scomp( $TicketsLinkTemplate, AsLink => 1, Requestor => $requestor ),
     class => 'ticket-info-requestor'
 &>
 
@@ -66,7 +67,9 @@ while ( my $requestor = $people->Next ) {
 <span class="label commentsaboutuser"><&|/l&>Comments about this user</&>:</span><br />
 <b class="value commentsaboutuser"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
 
-<& $TicketTemplate, AsLink => $TicketsAsLink, Requestor => $requestor &>
+<span id="more-about-requestor-<%$requestor->Id%>">
+  <& $TicketTemplate, Requestor => $requestor &>
+</span>
 
 <div class="moreaboutusergroups">
 <&|/l&>Groups this user belongs to</&>:<br />
@@ -90,12 +93,12 @@ my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
 $TicketTemplate ||= "ShowRequestorTickets".(RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser})||'Active');
 $TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
 
-$TicketsAsLink = RT->Config->Get('MoreAboutRequestorTicketsLink',
-                                 $session{'CurrentUser'})
-    unless defined $TicketsAsLink;
+$TicketsLinkTemplate ||= $TicketTemplate;
+$TicketsLinkTemplate = "ShowRequestorTicketsActive"
+    if $TicketsLinkTemplate =~ /None$/;
 </%INIT>
 <%ARGS>
 $Ticket=>undef
 $TicketTemplate=>undef
-$TicketsAsLink => undef
+$TicketsLinkTemplate => undef
 </%ARGS>

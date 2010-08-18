@@ -45,16 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<span id="more-about-requestor-<%$Requestor->Id%>">
 % unless ( $AsLink ) {
 <span class="label"><&|/l, $Rows &>This user's [_1] highest priority tickets</&>:</span>
 <& ShowRequestorToggleLinks, %ARGS, Status => 'All' &>
 % }
 <& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
-</span>
 <%ARGS>
 $Requestor => undef
 $conditions => []
 $Rows => 10
-$AsLink
+$AsLink => undef
 </%ARGS>

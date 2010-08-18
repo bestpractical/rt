@@ -871,16 +871,6 @@ shown for Privileged Users.
 
 Set($ShowMoreAboutPrivilegedUsers, 0);
 
-=item C<$MoreAboutRequestorTicketsLink>
-
-Determines if a search link or ticket list is shown for for each 'More about
-requestor' box on the ticket display page.  The default is to show a short
-ticket list.
-
-=cut
-
-Set($MoreAboutRequestorTicketsLink, 0);
-
 =item C<$MoreAboutRequestorTicketList>
 
 This can be set to Active, Inactive, All or None.  It controls what ticket

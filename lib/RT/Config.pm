@@ -368,17 +368,6 @@ our %META = (
             Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
         },
     },
-    MoreAboutRequestorTicketsLink => {
-        Section         => 'Ticket display',    #loc
-        Overridable     => 1,
-        SortOrder       => 6,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => q|Display a link to requestors' tickets?|,  #loc
-            Hints       => 'If yes, the link will replace the inline ticket list.  '
-                          .'The search conditions are still determined by the option below.',
-        },
-    },
     MoreAboutRequestorTicketList => {
         Section         => 'Ticket display',                       #loc
         Overridable     => 1,
