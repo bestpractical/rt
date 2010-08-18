@@ -54,6 +54,21 @@
 <style type="text/css" media="screen" id="test">
 </style>
 
+Upload Logo:
+<form method="POST" enctype="multipart/form-data">
+<input type="file" name="logo-upload" />
+<input type="submit">
+</form>
+
+% if ($colors) {
+Primary colors:
+%   for (@$colors) {
+%     my $fg = $_->{l} >= 0.6 ? 'black' : 'white';
+<span style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% $_->{l}%>></span>
+%   }
+% }
+
+<div class="clear">
 
 Csutom CSS:
 <textarea rows=30 cols=60 id="user_css">
@@ -78,6 +93,51 @@ jQuery(function($) {
 
 <%INIT>
 my @results;
+
+use Imager;
+use Graphics::Color::RGB;
+
+my $img = Imager->new;
+if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+    my ($id, $msg) = $RT::System->SetAttribute( Name => "UserLogo", Description => "User-provided logo", Content => \$file_hash->{LargeContent} );
+    $img->read(data => $file_hash->{LargeContent} );
+}
+else {
+    my $attr = $RT::System->FirstAttribute('UserLogo');
+    my $content = $attr->Content;
+    $img->read(data => $$content) or die "Cannot read: ", $img->errstr;
+}
+
+my $colors = $img ? analyze_img($img) : undef;
+use List::MoreUtils qw(uniq);
+
+sub analyze_img {
+    my $img = shift;
+    my $color;
+
+    for my $i (0..$img->getwidth-1) {
+        for my $j (0..$img->getheight-1) {
+            my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
+            my $hsl = Graphics::Color::RGB->new( red => $color[0] / 255, green => $color[2] / 255, blue => $color[2] / 255, alpha => $color[3] / 255 )->to_hsl;
+            my ($h,$s,$l) = $hsl->as_array;
+            pop @color;
+            my $c = join(',',@color);
+            next if $l < 0.1;
+            $color->{$c} ||= { h => $h, s => $s, l => $l, cnt => 0, c => $c};
+            $color->{$c}->{cnt}++;
+        }
+    }
+
+    for (values %$color) {
+        $_->{rank} = $_->{s} * $_->{cnt};
+    }
+    my @top5 = (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..4];
+    if ((scalar uniq map {$_->{rank}} @top5) == 1) {
+        warn "bad";
+    }
+    return \@top5;
+}
+
 
 </%INIT>
 <%ARGS>
