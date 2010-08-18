@@ -2300,6 +2300,56 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
+=head2 ScrubHTML content
+
+Removes unsafe and undesired HTML from the passed content
+
+=cut
+
+my $SCRUBBER;
+sub ScrubHTML {
+    my $Content = shift;
+    $SCRUBBER = _NewScrubber() unless $SCRUBBER;
+
+    $Content = '' if !defined($Content);
+    return $SCRUBBER->scrub($Content);
+}
+
+=head2 _NewScrubber
+
+Returns a new L<HTML::Scrubber> object.  Override this if you insist on
+letting more HTML through.
+
+=cut
+
+sub _NewScrubber {
+    require HTML::Scrubber;
+    my $scrubber = HTML::Scrubber->new();
+    $scrubber->default(
+        0,
+        {
+            '*'    => 0,
+            id     => 1,
+            class  => 1,
+            # Match http, ftp and relative urls
+            # XXX: we also scrub format strings with this module then allow simple config options
+            href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
+            face   => 1,
+            size   => 1,
+            target => 1,
+            style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
+                             (?:text-align:\s*))}ix,
+        }
+    );
+    $scrubber->deny(qw[*]);
+    $scrubber->allow(
+        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
+    );
+    $scrubber->comment(0);
+
+    return $scrubber;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

@@ -45,32 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ONCE>
-my $scrubber = new HTML::Scrubber;
-$scrubber->default(
-    0,
-    {
-        '*'    => 0,
-        id     => 1,
-        class  => 1,
-        # Match http, ftp and relative urls
-        # XXX: we also scrub format strings with this module then allow simple config options
-        href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
-        face   => 1,
-        size   => 1,
-        target => 1,
-        style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
-                         (?:text-align:\s*))}ix,
-    }
-);
-$scrubber->deny(qw[*]);
-$scrubber->allow(
-    qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
-);
-$scrubber->comment(0);
-</%ONCE>
 <%init>
-return $scrubber->scrub($Content);
+return ScrubHTML($Content);
 </%init>
 <%args>
 $Content => undef
