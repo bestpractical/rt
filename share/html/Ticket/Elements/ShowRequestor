@@ -64,19 +64,25 @@ while ( my $requestor = $people->Next ) {
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
 <& ShowRequestorExtraInfo, Requestor => $requestor &>
 
+% if ( $ShowComments ) {
 <div class="comments-about-user">
   <span class="label"><&|/l&>Comments about this user</&>:</span>
   <span class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span>
 </div>
+% }
 
+% if ( $ShowTickets ) {
 <div class="more-about-requestor" id="more-about-requestor-<%$requestor->Id%>">
   <& $TicketTemplate, Requestor => $requestor &>
 </div>
+% }
 
+% if ( $ShowGroups ) {
 <div class="more-about-user-groups">
   <span class="label"><&|/l&>Groups this user belongs to</&>:</span>
   <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor &></span>
 </div>
+% }
 
 </&>
 
@@ -102,4 +108,8 @@ $TicketsLinkTemplate = "ShowRequestorTicketsActive"
 $Ticket=>undef
 $TicketTemplate=>undef
 $TicketsLinkTemplate => undef
+$ShowComments => 1
+$ShowTickets => 1
+$ShowGroups => 1
+$Title => 'More about [_1]'
 </%ARGS>
