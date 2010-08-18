@@ -802,9 +802,6 @@ sub AddWatcher {
     return ( 0, "Unknown watcher type [_1]", $args{Type} )
         unless $self->IsRoleGroupType($args{Type});
 
-    return ( 0, "Unmanageable watcher type [_1]", $args{Type} )
-        unless $self->IsManageableRoleGroupType($args{Type});
-
     my ($ok, $msg) = $self->_HasAddWatcherRight(%args);
     return ($ok, $msg) if !$ok;
 
