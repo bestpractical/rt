@@ -1814,7 +1814,7 @@ internationalization and localization system.
 As you'll read below, you can specify a set of statuses which
 RT will treat as valid "initial" statuses for tickets.
 
-If you (or yoour code) doesn't specify a status when creating a
+If you (or your code) doesn't specify a status when creating a
 ticket, RT will use the L<"default_initial"> status.
 
 =item initial
@@ -1874,9 +1874,9 @@ all possible transitions in each lifecycle using the following format:
         ...
     },
 
-=head3 Protecting status changes with with rights
+=head3 Protecting status changes with rights
 
-A transation or group of transitions can be protected by a specific right.
+A transition or group of transitions can be protected by a specific right.
 
 For example:
 
@@ -1897,10 +1897,10 @@ On the left hand side you can have the following variants:
     '<from> -> *'
     '* -> *'
 
-Valid transitions are listed in order of priority. If a user attempts
-to to change status a ticket's status from B<new> to B<open> then the
-lifecycle is checked for presence of an exact match, then for 'any to B<open>',
-'B<new> to any' and finally 'any to any'.
+Valid transitions are listed in order of priority. If a user attempts to change
+a ticket's status from B<new> to B<open> then the lifecycle is checked for
+presence of an exact match, then for 'any to B<open>', 'B<new> to any' and
+finally 'any to any'.
 
 If you don't define any rights or there is no match for a
 transition RT will use B<DeleteTicket> or B<ModifyTicket> as
@@ -1915,7 +1915,8 @@ Each action may be annotated with B<Comment>, B<Respond> or B<Hidden>.
 For example, you may want your staff to write a reply to the end user
 when they change status from B<new> to B<open>.
 
-Using B<Hide>, it's possible to hide the B<open> -> B<delete> from the ticket's main view, while still allowing it from the basics page and API.
+Using B<Hide>, it's possible to hide the B<open> -> B<delete> from the ticket's
+main view, while still allowing it from the basics page and API.
 
 Neither B<Comment> nor B<Respond> are mandatory.
 
