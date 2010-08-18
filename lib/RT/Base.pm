@@ -163,10 +163,17 @@ sub loc_fuzzy {
     }
 }
 
-eval "require RT::Base_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
-eval "require RT::Base_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
+sub _ImportOverlays {
+    my $class = shift;
+    my ($package,undef,undef) = caller();
+    $package =~ s|::|/|g;
+    for (qw(Overlay Vendor Local)) {
+        my $filename = $package."_".$_.".pm";
+        eval { require $filename };
+        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+    }
+}
 
+__PACKAGE__->_ImportOverlays();
 
 1;
