@@ -915,7 +915,7 @@ sub _AddWatcher {
 
         return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
     }
-    return ( 1, $self->loc('Added principal as a [_1] for this queue', $args{'Type'}) );
+    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
 # }}}
@@ -999,7 +999,7 @@ sub DeleteWatcher {
         return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
 # }}}
