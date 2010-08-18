@@ -584,5 +584,65 @@ sub HasRight {
 
 # }}}
 
+
+=head2 SetScripAction
+
+=cut
+
+sub SetScripAction {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Action is mandatory argument") ) unless $value;
+
+    require RT::ScripAction;
+    my $action = RT::ScripAction->new( $self->CurrentUser );
+    $action->Load($value);
+    return ( 0, $self->loc( "Action '[_1]' not found", $value ) )
+      unless $action->Id;
+
+    return $self->_Set( Field => 'ScripAction', Value => $value );
+}
+
+=head2 SetScripCondition
+
+=cut
+
+sub SetScripCondition {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Condition is mandatory argument") )
+      unless $value;
+
+    require RT::ScripCondition;
+    my $condition = RT::ScripCondition->new( $self->CurrentUser );
+    $condition->Load($value);
+
+    return ( 0, $self->loc( "Condition '[_1]' not found", $value ) )
+      unless $condition->Id;
+
+    return $self->_Set( Field => 'ScripCondition', Value => $value );
+}
+
+=head2 SetTemplate
+
+=cut
+
+sub SetTemplate {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Template is mandatory argument") ) unless $value;
+
+    require RT::Template;
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->Load($value);
+    return ( 0, $self->loc( "Template '[_1]' not found", $value ) )
+      unless $template->Id;
+
+    return $self->_Set( Field => 'Template', Value => $value );
+}
+
 1;
 
