@@ -799,24 +799,41 @@ sub AddWatcher {
         $args{'PrincipalId'} = $user->PrincipalId if $user->id;
     }
 
-    # {{{ Check ACLS
-    return ( $self->_AddWatcher(%args) )
-        if $self->CurrentUserHasRight('ModifyQueueWatchers');
+    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+        unless $self->IsRoleGroupType($args{Type});
+
+    return ( 0, "Unmanageable watcher type [_1]", $args{Type} )
+        unless $self->IsManageableRoleGroupType($args{Type});
+
+    my ($ok, $msg) = $self->_HasAddWatcherRight(%args);
+    return ($ok, $msg) if !$ok;
+
+    return $self->_AddWatcher(%args);
+}
+
+sub _HasAddWatcherRight {
+    my $self = shift;
+    my %args = (
+        Type  => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
+
+    return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
 
     #If the watcher we're trying to add is for the current user
     if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
-            return ( $self->_AddWatcher(%args) )
-                if $self->CurrentUserHasRight('WatchAsAdminCc');
+        if ( $args{'Type'} eq 'AdminCc' ) {
+            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
         elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
-            return ( $self->_AddWatcher(%args) )
-                if $self->CurrentUserHasRight('Watch');
+            return 1 if $self->CurrentUserHasRight('Watch');
         }
         else {
             $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
