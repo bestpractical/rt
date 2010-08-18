@@ -45,25 +45,44 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% if ( $AsLink ) {
+<%perl>
+    my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
+       $url .= $m->comp('/Elements/QueryString',
+                        Query       => $sql,
+                        RowsPerPage => $Rows,
+                        OrderBy     => $OrderBy,
+                        Order       => $Order );
+</%perl>
+<a href="<%$url%>"><&|/l&>Show tickets</&></a>
+% } else {
 <ul>
-%while (my $w=$tickets->Next) {
-%my $uri = RT::URI->new( $session{'CurrentUser'} );
-%$uri->FromObject($w);
+<%perl>
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $tickets->FromSQL( $sql );
+    $tickets->RowsPerPage( $Rows );
+    $tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+
+    while (my $w=$tickets->Next) {
+        my $uri = RT::URI->new( $session{'CurrentUser'} );
+        $uri->FromObject($w);
+</%perl>
 <li class="value"><& /Elements/ShowLink, URI => $uri &></li>
-%}
+%   }
 </ul>
+% }
 <%INIT>
+my $OrderBy = 'Priority';
+my $Order   = 'DESC';
+
 my $sql = "Requestor.id = ". $Requestor->id;
 if (@$conditions) {
     $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
 }
-my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$tickets->FromSQL( $sql );
-$tickets->RowsPerPage( $Rows );
-$tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
 </%INIT>
 <%ARGS>
 $Requestor => undef
 $conditions
 $Rows => 10
+$AsLink
 </%ARGS>

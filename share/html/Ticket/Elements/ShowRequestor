@@ -66,13 +66,13 @@ while ( my $requestor = $people->Next ) {
 <span class="label commentsaboutuser"><&|/l&>Comments about this user</&>:</span><br />
 <b class="value commentsaboutuser"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
 
-<& $TicketTemplate, Requestor => $requestor &>
+<& $TicketTemplate, AsLink => $TicketsAsLink, Requestor => $requestor &>
 
-<span class="moreaboutusergroups">
+<div class="moreaboutusergroups">
 <&|/l&>Groups this user belongs to</&>:<br />
 
 <& /Elements/ShowMemberships, UserObj => $requestor &>
-</span>
+</div>
 
 </&>
 
@@ -89,8 +89,13 @@ my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
 
 $TicketTemplate ||= "ShowRequestorTickets".(RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser})||'Active');
 $TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
+
+$TicketsAsLink = RT->Config->Get('MoreAboutRequestorTicketsLink',
+                                 $session{'CurrentUser'})
+    unless defined $TicketsAsLink;
 </%INIT>
 <%ARGS>
 $Ticket=>undef
 $TicketTemplate=>undef
+$TicketsAsLink => undef
 </%ARGS>
