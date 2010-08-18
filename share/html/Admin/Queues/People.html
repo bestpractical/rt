@@ -63,9 +63,9 @@
 
 <h3><&|/l&>Current watchers</&></h3>
 
-<& /Admin/Elements/EditQueueWatcherGroup, Label => loc('Cc'), QueueObj => $QueueObj, Watchers => $QueueObj->Cc &>
-
-<& /Admin/Elements/EditQueueWatcherGroup, Label => loc('Administrative Cc'), QueueObj => $QueueObj, Watchers => $QueueObj->AdminCc &>
+% for my $Name (RT::Queue->ManageableRoleGroupTypes) {
+<& /Admin/Elements/EditQueueWatcherGroup, Label => loc($Name), QueueObj => $QueueObj, Watchers => $QueueObj->$Name &>
+% }
 
 % $m->callback(CallbackName => 'CurrentWatchers', QueueObj => $QueueObj);
 
