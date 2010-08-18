@@ -355,24 +355,4 @@ sub _CoreAccessible {
 
 RT::Base->_ImportOverlays();
 
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-Each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::Queue_Overlay, RT::Queue_Vendor, RT::Queue_Local
-
-=cut
-
-
 1;
