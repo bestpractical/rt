@@ -68,7 +68,7 @@ my $LicenseBlock = << '.';
 # 
 # COPYRIGHT:
 # 
-# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -344,11 +344,9 @@ $CreateOutParams);
 
 package $CollectionClassName;
 
-use $CollectionBaseclass;
 use $RecordClassName;
 
-use vars qw( \@ISA );
-\@ISA= qw($CollectionBaseclass);
+use base '$CollectionBaseclass';
 
 
 sub _Init {
@@ -358,7 +356,24 @@ sub _Init {
 
 ";
 
-    if ( $fields{'SortOrder'} ) {
+    if ( $fields{'SortOrder'} && $fields{'Name'} ) {
+        $CollectionClass .= "
+
+  # By default, order by SortOrder
+  \$self->OrderByCols(
+	 { ALIAS => 'main',
+	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'Name',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'id',
+	   ORDER => 'ASC' },
+     );
+";
+    }
+    elsif ( $fields{'SortOrder'} ) {
 
         $CollectionClass .= "
 
@@ -406,16 +421,12 @@ $RecordClassName
 =cut
 
 package $RecordClassName;
-use $RecordBaseclass; 
 ";
 
     foreach my $key ( keys %requirements ) {
         $RecordClassHeader .= $requirements{$key} . "\n";
     }
-    $RecordClassHeader .= "
-
-use vars qw( \@ISA );
-\@ISA= qw( $RecordBaseclass );
+    $RecordClassHeader .= "use base '$RecordBaseclass';
 
 sub _Init {
   my \$self = shift; 
@@ -468,27 +479,9 @@ sub MagicImport {
     #if (exists \$warnings::{unimport})  {
     #        no warnings qw(redefine);
 
-    my $path = $class;
-    $path =~ s#::#/#gi;
-
-
     my $content = "
-        eval \"require @{[$class]}_Overlay\";
-        if (\$@ && \$@ !~ qr{^Can't locate ".$path."_Overlay.pm}) {
-            die \$@;
-        };
 
-        eval \"require @{[$class]}_Vendor\";
-        if (\$@ && \$@ !~ qr{^Can't locate ".$path."_Vendor.pm}) {
-            die \$@;
-        };
-
-        eval \"require @{[$class]}_Local\";
-        if (\$@ && \$@ !~ qr{^Can't locate ".$path."_Local.pm}) {
-            die \$@;
-        };
-
-
+RT::Base->_ImportOverlays();
 
 
 =head1 SEE ALSO
