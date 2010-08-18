@@ -733,7 +733,7 @@ It will return true on success and undef on failure.
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = $self->RoleGroupTypes;
+    my @types = $self->AllRoleGroupTypes;
 
     foreach my $type (@types) {
         my $ok = $self->_CreateQueueRoleGroup($type);
