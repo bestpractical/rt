@@ -616,17 +616,6 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub _ValidRoleGroupType {
-    my $self = shift;
-    my $type = shift;
-
-    for my $valid_type (RT::Queue->AllRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
-}
-
 sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
@@ -634,7 +623,7 @@ sub CreateRoleGroup {
                  Domain   => undef,
                  @_ );
 
-    unless ($self->_ValidRoleGroupType($args{Type})) {
+    unless (RT::Queue->IsRoleGroupType($args{Type})) {
         return ( 0, $self->loc("Invalid Group Type") );
     }
 

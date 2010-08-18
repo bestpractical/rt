@@ -665,6 +665,24 @@ sub AllRoleGroupTypes {
 }
 # }}}
 
+# {{{ IsRoleGroupType
+=head2 IsRoleGroupType
+
+Returns whether the passed-in type is a role group type.
+
+=cut
+
+sub IsRoleGroupType {
+    my $self = shift;
+    my $type = shift;
+
+    for my $valid_type ($self->AllRoleGroupTypes) {
+        return 1 if $type eq $valid_type;
+    }
+
+    return 0;
+}
+# }}}
 # {{{ ManageableRoleGroupTypes
 =head2 ManageableRoleGroupTypes
 
