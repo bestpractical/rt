@@ -17,6 +17,16 @@ accidentally damage your database and lose data or worse.
 If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
+
+
+*******
+
+UPGRADING FROM RT 3.8.x - Changes:
+
+The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
+have been removed, but you shouldn't have been using them anyway. You should have been using
+RT::Action, RT::Condition and RT::Search, respectively.
+
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:
 
