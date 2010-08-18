@@ -157,17 +157,21 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 # }}}
 
 # {{{ Add new watchers
-    foreach my  $key (keys %ARGS) {
-        #They're in this order because otherwise $1 gets clobbered :/
-        if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
-         ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
-        $RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-        my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
-                                                 PrincipalId => $1);
-        push @results, $msg;
-        }
-    }
+    foreach my $key (keys %ARGS) {
+        my $type = $ARGS{$key};
 
+        next unless $key =~ /^Queue-AddWatcher-Principal-(\d*)$/;
+        my $id = $1;
+
+        next unless RT::Queue->IsManageableRoleGroupType($type);
+
+        $RT::Logger->debug("Adding a watcher $id to $type\n");
+        my ($code, $msg) = $QueueObj->AddWatcher(
+            Type => $type,
+            PrincipalId => $id,
+        );
+        push @results, $msg;
+    }
 # }}}
 }
  
