@@ -63,7 +63,7 @@ if ( $Default and not $Default =~ /\D/ ) {
 }
 
 # Map to a string of RT::Ticket-1|RT::Queue-5|...
-my $limit = join '|', map { join '-', ref($_), $_->id } @$Objects;
+my $limit = join '|', map { join '-', ref($_), ($_->id || '') } @$Objects;
 
 my $query = $m->comp('/Elements/QueryString',
     return  => $ValueAttribute,
