@@ -46,3 +46,5 @@ inc/
 rt4
 var/
 etc/site_config.yml
+etc/local.yml
+etc/log4perl.conf
