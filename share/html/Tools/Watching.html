@@ -50,7 +50,7 @@
     current_tab => "Tools/Watching.html", 
     Title => loc("Watching Queues") &>
 
-<ul>
+<ul class="queue-list">
 
 <%perl>
 my $Queues = RT::Queues->new($session{CurrentUser});
@@ -68,10 +68,10 @@ while (my $Queue = $Queues->Next) {
     next if !@types;
 </%perl>
 
-    <li><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
-        <ul>
+    <li class="queue"><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
+        <ul class="queue-roles">
 %           for my $type (@types) {
-                <li><% $type %></li>
+                <li class="queue-role"><% $type %></li>
 %           }
         </ul>
     </li>
