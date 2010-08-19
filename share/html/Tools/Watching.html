@@ -50,9 +50,8 @@
     current_tab => "Tools/Watching.html", 
     Title => loc("Watching Queues") &>
 
-<ul class="queue-list">
-
 <%perl>
+my $count = 0;
 my $Queues = RT::Queues->new($session{CurrentUser});
 $Queues->UnLimit;
 while (my $Queue = $Queues->Next) {
@@ -66,6 +65,15 @@ while (my $Queue = $Queues->Next) {
     }
 
     next if !@types;
+
+    my $first = ($count == 0);
+    if ($first) {
+</%perl>
+        <ul class="queue-list">
+<%perl>
+    }
+
+    $count += @types;
 </%perl>
 
     <li class="queue"><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
@@ -77,4 +85,9 @@ while (my $Queue = $Queues->Next) {
     </li>
 % }
 
-</ul>
+% if ($count) {
+    </ul>
+% } else {
+    <p><&|/l&>You are not watching any queues.</&></p>
+% }
+
