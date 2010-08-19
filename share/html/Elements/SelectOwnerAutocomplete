@@ -61,8 +61,21 @@ if ( $Default and not $Default =~ /\D/ ) {
     $user->Load($Default);
     $value = $user->$ValueAttribute;
 }
+
+# Map to a string of RT::Ticket-1|RT::Queue-5|...
+my $limit = join '|', map { join '-', ref($_), $_->id } @$Objects;
+
+my $query = $m->comp('/Elements/QueryString',
+    return  => $ValueAttribute,
+    limit   => $limit,
+);
 </%INIT>
 
 <input type="text" name="<%$Name%>" id="<%$Name%>" value="<% $value %>" />
 <script type="text/javascript">
+    jQuery(function() {
+        jQuery("#<% $Name %>").autocomplete({
+            source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Owners?<% $query|n %>"
+        });
+    });
 </script>
