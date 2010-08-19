@@ -47,10 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Name           => undef
-$User           => undef
-$TicketObj      => undef
-$QueueObj       => undef
-$cfqueues       => undef
+$Objects        => []
 $Default        => 0
 $ValueAttribute => 'id'
 </%ARGS>
