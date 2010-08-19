@@ -6,7 +6,7 @@ use Module::Install::Base ();
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.97';
+	$VERSION = '1.00';
 	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
 }
@@ -616,8 +616,15 @@ sub _perl_version {
 	return $v;
 }
 
-
-
+sub add_metadata {
+    my $self = shift;
+    my %hash = @_;
+    for my $key (keys %hash) {
+        warn "add_metadata: $key is not prefixed with 'x_'.\n" .
+             "Use appopriate function to add non-private metadata.\n" unless $key =~ /^x_/;
+        $self->{values}->{$key} = $hash{$key};
+    }
+}
 
 
 ######################################################################
