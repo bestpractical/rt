@@ -49,10 +49,10 @@
 $Name           => undef
 $Objects        => []
 $Default        => 0
-$ValueAttribute => 'id'
+$ValueAttribute => 'Name'
 </%ARGS>
 <%INIT>
-$ValueAttribute = 'id' unless $ValueAttribute =~ /^(?:id|Name)$/;
+$ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
 
 my $value = '';
 
@@ -79,3 +79,4 @@ my $query = $m->comp('/Elements/QueryString',
         });
     });
 </script>
+

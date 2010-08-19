@@ -49,7 +49,7 @@
 <% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
-$return => ''
+$return => 'Name'
 $limit => undef
 $term => undef
 </%ARGS>
@@ -57,7 +57,7 @@ $term => undef
 require JSON;
 
 # Only allow certain return fields
-$return = 'id'
+$return = 'Name'
     unless $return =~ /^(?:EmailAddress|Name|RealName|id)$/;
 
 $m->abort unless defined $return
