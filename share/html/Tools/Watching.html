@@ -68,7 +68,7 @@ while (my $Queue = $Queues->Next) {
     next if !@types;
 </%perl>
 
-    <li><% $Queue->Name %>
+    <li><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
         <ul>
 %           for my $type (@types) {
                 <li><% $type %></li>
