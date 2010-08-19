@@ -892,6 +892,16 @@ not all the attributes are supported in this display because we're not building 
 
 Set($MoreAboutRequestorExtraInfo, '');
 
+=item C<$AutocompleteOwners>
+
+If true, the owner dropdowns for ticket update/modify and the query builder are
+replaced by text fields that autocomplete.  This can alleviate the sometimes
+huge owner list for installations where many users have the OwnTicket right.
+
+=cut
+
+Set( $AutocompleteOwners, 0 );
+
 =item C<$WebDomain>
 
 Domain name of the RT server, eg 'www.example.com'. It should not contain
