@@ -50,3 +50,31 @@
     current_tab => "Tools/Watching.html", 
     Title => loc("Watching Queues") &>
 
+<ul>
+
+<%perl>
+my $Queues = RT::Queues->new($session{CurrentUser});
+$Queues->UnLimit;
+while (my $Queue = $Queues->Next) {
+    my @types;
+
+    for my $type ($Queue->AllRoleGroupTypes) {
+        push @types, $type if $Queue->IsWatcher(
+            PrincipalId => $session{CurrentUser}->id,
+            Type        => $type,
+        );
+    }
+
+    next if !@types;
+</%perl>
+
+    <li><% $Queue->Name %>
+        <ul>
+%           for my $type (@types) {
+                <li><% $type %></li>
+%           }
+        </ul>
+    </li>
+% }
+
+</ul>
