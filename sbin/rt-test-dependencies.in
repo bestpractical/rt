@@ -271,6 +271,7 @@ Test::Builder 0.77 # needed to fix TODO test
 Test::MockTime
 HTTP::Server::Simple::Mason 0.13
 Log::Dispatch::Perl
+Test::XPath
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
