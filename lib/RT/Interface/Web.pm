@@ -1536,11 +1536,15 @@ sub ProcessTicketBasics {
         Queue
     );
 
-    if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Queue->new($RT::SystemUser);
-        $tempqueue->Load( $ARGSRef->{'Queue'} );
-        if ( $tempqueue->id ) {
-            $ARGSRef->{'Queue'} = $tempqueue->id;
+    # Canonicalize Queue and Owner to their IDs if they aren't numeric
+    for my $field (qw(Queue Owner)) {
+        if ( $ARGSRef->{$field} and ( $ARGSRef->{$field} !~ /^(\d+)$/ ) ) {
+            my $class = $field eq 'Owner' ? "RT::User" : "RT::$field";
+            my $temp = $class->new($RT::SystemUser);
+            $temp->Load( $ARGSRef->{$field} );
+            if ( $temp->id ) {
+                $ARGSRef->{$field} = $temp->id;
+            }
         }
     }
 
