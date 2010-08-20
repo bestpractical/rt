@@ -52,6 +52,7 @@
 $return => 'Name'
 $limit => undef
 $term => undef
+$max => 10
 </%ARGS>
 <%INIT>
 require JSON;
@@ -88,6 +89,7 @@ foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
     }
 
     my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->RowsPerPage( $max );
 
     # Limit by our autocomplete term BEFORE we limit to OwnTicket because that
     # does a funky union hack
@@ -127,12 +129,16 @@ my @users = sort { lc $a->[1] cmp lc $b->[1] }
                  values %user_uniq_hash;
 
 my @suggestions;
+my $count = 1;
+
 for my $tuple ( @users ) {
+    last if $count > $max;
     my $formatted = $tuple->[1];
     $formatted =~ s/\n//g;
     push @suggestions, {
         label => $formatted,
         value => $tuple->[0]->$return
     };
+    $count++;
 }
 </%INIT>

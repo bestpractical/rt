@@ -52,6 +52,7 @@
 $return => ''
 $term => undef
 $delim => undef
+$max => 10
 </%ARGS>
 <%INIT>
 require JSON;
@@ -86,6 +87,7 @@ my @fields = @{ RT->Config->Get('UserAutocompleteFields')
                 || [qw(EmailAddress Name RealName)] };
 
 my $users = RT::Users->new( $CurrentUser );
+$users->RowsPerPage( $max );
 
 for (@fields) {
     $users->Limit(
