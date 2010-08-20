@@ -74,8 +74,24 @@ my $query = $m->comp('/Elements/QueryString',
 <input type="text" name="<%$Name%>" id="<%$Name%>" value="<% $value %>" />
 <script type="text/javascript">
     jQuery(function() {
+        var cache = {};
         jQuery("#<% $Name %>").autocomplete({
-            source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Owners?<% $query|n %>"
+            source: function(request, response) {
+                if ( request.term in cache ) {
+                    response( cache[ request.term ] );
+                }
+                else {
+                    jQuery.ajax({
+                        url: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Owners?<% $query|n %>",
+                        dataType: "json",
+                        data: request,
+                        success: function( data ) {
+                            cache[ request.term ] = data;
+                            response( data );
+                        }
+                    });
+                }
+            }
         });
     });
 </script>
