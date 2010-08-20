@@ -16,8 +16,7 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_contains('You are not watching any queues.');
 
-    # need to recover from embedded javascript using <!-- -->
-    my $tx = Test::XPath->new(xml => $m->content, is_html => 1, options => { recover => 1 });
+    my $tx = new_tx($m->content);
     $tx->not_ok('//ul[contains(@class,"queue-list")]', 'no queue list when watching nothing');
 }
 
@@ -69,11 +68,23 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_lacks('You are not watching any queues.');
 
-    # need to recover from embedded javascript using <!-- -->
-    my $tx = Test::XPath->new(xml => $m->content, is_html => 1, options => { recover => 1 });
+    my $tx = new_tx($m->content);
     $tx->ok('//ul[contains(@class,"queue-list")]', sub {
         my $tx = shift;
         $tx->is('count(//li[contains(@class,"queue-roles")])', 1, 'only one queue');
     });
+}
+
+sub new_tx {
+    my $content = shift;
+
+    # need to recover from embedded javascript using <!-- -->
+    my $tx = Test::XPath->new(
+        xml     => $content,
+        is_html => 1,
+        options => { recover => 1 },
+    );
+
+    return $tx;
 }
 
