@@ -76,8 +76,8 @@ while (my $Queue = $Queues->Next) {
     $count += @types;
 </%perl>
 
-    <li class="queue"><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
-        <ul class="queue-roles">
+    <li class="queue-roles"><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &>
+        <ul class="queue-role-list">
 %           for my $type (@types) {
                 <li class="queue-role"><% $type %></li>
 %           }
