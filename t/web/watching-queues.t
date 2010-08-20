@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 20;
+use RT::Test tests => 25;
 use Test::XPath;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
+
 
 diag "check watching page" if $ENV{'TEST_VERBOSE'};
 {
@@ -70,8 +71,14 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     my $tx = new_tx($m->content);
     $tx->ok('//ul[contains(@class,"queue-list")]', sub {
-        my $tx = shift;
-        $tx->is('count(//li[contains(@class,"queue-roles")])', 1, 'only one queue');
+        $_->is('count(.//li[contains(@class,"queue-roles")])', 1, 'only one queue');
+        $_->ok('.//li[contains(@class,"queue-roles")]', sub {
+            $_->like('.//span[contains(@class,"queue-name")][text()]', qr/^\s*General\s*$/, 'correct queue');
+            $_->ok('.//ul[contains(@class,"queue-role-list")]', sub {
+                $_->is('count(.//li[contains(@class,"queue-role")])', 1, 'only one role');
+                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/^\s*AdminCc\s*$/, 'correct role');
+            });
+        });
     });
 }
 
