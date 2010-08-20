@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 37;
+use RT::Test tests => 39;
+use JSON qw(from_json);
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -39,8 +40,7 @@ diag "current user has no right to own, nobody selected as owner on create" if $
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), $RT::Nobody->Name, 'correct owner selected';
-#    ok !grep($_ == $user_a->id, $form->find_input('Owner')->possible_values),
-#        'user A can not own tickets';
+    autocomplete_lacks( 'RT::Queue-'.$queue->id, 'user_a' );
     $agent_a->submit;
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
@@ -64,8 +64,7 @@ diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), $RT::Nobody->Name, 'correct owner selected';
 
-#    ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
-#        'user B is listed as potential owner';
+    autocomplete_contains( 'RT::Queue-'.$queue->id, 'user_b' );
     $form->value('Owner', $user_b->Name);
     $agent_a->submit;
 
@@ -141,3 +140,47 @@ diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';
 }
+
+sub autocomplete {
+    my $limit = shift;
+    my $agent = shift;
+    $agent->get("/Helpers/Autocomplete/Owners?term=&limit=$limit&return=Name", "fetched autocomplete values");
+    return from_json($agent->content);
+}
+
+sub autocomplete_contains {
+    my $limit = shift;
+    my $expected = shift;
+    my $agent = shift;
+    
+    unless ( $agent ) {
+        $agent = RT::Test::Web->new;
+        $agent->login('user_a', 'password');
+    }
+    
+    my $results = autocomplete( $limit, $agent );
+
+    my %seen;
+    $seen{$_->{value}}++ for @$results;
+    $expected = [$expected] unless ref $expected eq 'ARRAY';
+    is((scalar grep { not $seen{$_} } @$expected), 0, "got all expected values");
+}
+
+sub autocomplete_lacks {
+    my $limit = shift;
+    my $lacks = shift;
+    my $agent = shift;
+    
+    unless ( $agent ) {
+        $agent = RT::Test::Web->new;
+        $agent->login('user_a', 'password');
+    }
+    
+    my $results = autocomplete( $limit, $agent );
+
+    my %seen;
+    $seen{$_->{value}}++ for @$results;
+    $lacks = [$lacks] unless ref $lacks eq 'ARRAY';
+    is((scalar grep { $seen{$_} } @$lacks), 0, "didn't get any unexpected values");
+}
+
