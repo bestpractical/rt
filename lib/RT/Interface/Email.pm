@@ -1247,7 +1247,7 @@ sub _LoadPlugins {
         } elsif ( !ref $plugin ) {
             my $Class = $plugin;
             $Class = "RT::Interface::Email::" . $Class
-                unless $Class =~ /^RT::Interface::Email::/;
+                unless $Class =~ /^RT::/;
             $Class->require or
                 do { $RT::Logger->error("Couldn't load $Class: $@"); next };
 
