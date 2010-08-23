@@ -83,16 +83,19 @@ my $CurrentUser = $session{'CurrentUser'};
 $m->abort unless $CurrentUser->Privileged
               or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
 
-my @fields = @{ RT->Config->Get('UserAutocompleteFields')
-                || [qw(EmailAddress Name RealName)] };
+my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
 
 my $users = RT::Users->new( $CurrentUser );
 $users->RowsPerPage( $max );
 
-for (@fields) {
+while (my ($name, $op) = each %fields) {
+    $op = 'STARTSWITH'
+        unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
+
     $users->Limit(
-        FIELD           => $_,
-        OPERATOR        => 'LIKE',
+        FIELD           => $name,
+        OPERATOR        => $op,
         VALUE           => $term,
         ENTRYAGGREGATOR => 'OR',
         SUBCLAUSE       => 'autocomplete',

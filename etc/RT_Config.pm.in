@@ -1611,17 +1611,24 @@ Set($DefaultTimeUnitsToHours, 0);
 
 =item C<$UserAutocompleteFields>
 
-Specifies which fields of L<RT::User> to match against when autocompleting
-users.  Not all User fields are publically accessible and hence won't work for
+Specifies which fields of L<RT::User> to match against and how to match each
+field when autocompleting users.  Valid match methods are LIKE, STARTSWITH, and
+ENDSWITH.
+
+Not all User fields are publically accessible and hence won't work for
 autocomplete unless you override their accessibility using a local overlay or a
 plugin.  Out of the box the following fields are public: Name, EmailAddress,
 RealName, NickName, and Organization.
 
-Default: C<< Set( $UserAutocompleteFields, [qw(EmailAddress Name RealName)] ) >>
+Default: C<< Set( $UserAutocompleteFields, { EmailAddress => 'STARTSWITH', Name => 'STARTSWITH', RealName => 'LIKE' })] ) >>
 
 =cut
 
-Set( $UserAutocompleteFields, [qw(EmailAddress Name RealName)] );
+Set( $UserAutocompleteFields, {
+    EmailAddress => 'STARTSWITH',
+    Name         => 'STARTSWITH',
+    RealName     => 'LIKE',
+});
 
 =item C<$AllowUserAutocompleteForUnprivileged>
 
