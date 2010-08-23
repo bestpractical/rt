@@ -350,7 +350,7 @@ sub ContentLength {
     unless ( defined $len ) {
         use bytes;
         no warnings 'uninitialized';
-        $len = length($self->Content);
+        $len = length($self->Content) || 0;
         $self->SetHeader('Content-Length' => $len);
     }
     return $len;
