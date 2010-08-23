@@ -92,7 +92,6 @@ sub _Init {
 
 # }}}
 
-# {{{ _PrimaryKeys
 
 =head2 _PrimaryKeys
 
@@ -101,8 +100,22 @@ The primary keys for RT classes is 'id'
 =cut
 
 sub _PrimaryKeys { return ['id'] }
+# short circuit many, many thousands of calls from searchbuilder
+sub _PrimaryKey { 'id' }
 
-# }}}
+=head2 Id
+
+Override L<DBIx::SearchBuilder/Id> to avoid a few lookups RT doesn't do
+on a very common codepath
+
+C<id> is an alias to C<Id> and is the preferred way to call this method.
+
+=cut
+
+sub Id {
+    return shift->{values}->{id};
+}
+
 
 =head2 Delete
 
