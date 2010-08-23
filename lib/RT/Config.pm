@@ -930,12 +930,12 @@ sub SetFromConfig {
         # scan $pack's nametable(hash)
         foreach my $k ( keys %{$pack} ) {
 
-            # hash for main:: has reference on itself
+            # The hash for main:: has a reference to itself
             next if $k eq 'main::';
 
-            # if entry has trailing '::' then
-            # it is link to other name space
-            if ( $k =~ /::$/ ) {
+            # if the entry has a trailing '::' then
+            # it is a link to another name space
+            if ( substr( $k, -2 ) eq '::') {
                 $name = $self->__GetNameByRef( $ref, $k );
                 return $name if $name;
             }
