@@ -1807,7 +1807,11 @@ sub SetQueue {
 
     my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
 
+
     if ( $status ) {
+        # Clear the queue object cache;
+        $self->{_queue_obj} = undef;
+
         # On queue change, change queue for reminders too
         my $reminder_collection = $self->Reminders->Collection;
         while ( my $reminder = $reminder_collection->Next ) {
@@ -1832,11 +1836,14 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
 
-    my $queue_obj = RT::Queue->new( $self->CurrentUser );
+    if(!$self->{_queue_obj} || ! $self->{_queue_obj}->id) {
 
-    #We call __Value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $queue_obj->Load( $self->__Value('Queue') );
-    return ($queue_obj);
+        $self->{_queue_obj} = RT::Queue->new( $self->CurrentUser );
+
+        #We call __Value so that we can avoid the ACL decision and some deep recursion
+        my ($result) = $self->{_queue_obj}->Load( $self->__Value('Queue') );
+    }
+    return ($self->{_queue_obj});
 }
 
 # }}}
