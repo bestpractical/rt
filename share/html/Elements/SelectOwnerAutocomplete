@@ -45,72 +45,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
-<% JSON::to_json( \@suggestions ) |n %>
-% $m->abort;
 <%ARGS>
-$return => ''
-$term => undef
-$delim => undef
-$max => 10
+$Name           => undef
+$Objects        => []
+$Default        => 0
+$ValueAttribute => 'Name'
 </%ARGS>
 <%INIT>
-require JSON;
+$ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
 
-# Only allow certain return fields
-$return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
+my $value = '';
 
-$m->abort unless defined $return
-             and defined $term
-             and length $term;
-
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
-    }
-
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
+if ( $Default and not $Default =~ /\D/ ) {
+    my $user = RT::User->new( $session{'CurrentUser'} );
+    $user->Load($Default);
+    $value = $user->$ValueAttribute;
 }
 
-my $CurrentUser = $session{'CurrentUser'};
+# Map to a string of RT::Ticket-1|RT::Queue-5|...
+my $limit = join '|', map { join '-', ref($_), ($_->id || '') } @$Objects;
 
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
-
-my %fields = %{ RT->Config->Get('UserAutocompleteFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
-my $users = RT::Users->new( $CurrentUser );
-$users->RowsPerPage( $max );
-
-while (my ($name, $op) = each %fields) {
-    $op = 'STARTSWITH'
-        unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
-
-    $users->Limit(
-        FIELD           => $name,
-        OPERATOR        => $op,
-        VALUE           => $term,
-        ENTRYAGGREGATOR => 'OR',
-        SUBCLAUSE       => 'autocomplete',
-    );
-}
-
-my @suggestions;
-
-while ( my $user = $users->Next ) {
-    next if $user->id == $RT::SystemUser->id
-         or $user->id == $RT::Nobody->id;
-
-    my $formatted = $m->scomp('/Elements/ShowUser', User => $user);
-    $formatted =~ s/\n//g;
-    push @suggestions, { label => $formatted, value => $user->$return };
-}
-
+my $query = $m->comp('/Elements/QueryString',
+    return  => $ValueAttribute,
+    limit   => $limit,
+);
 </%INIT>
+
+<input type="text" name="<%$Name%>" id="<%$Name%>" value="<% $value %>" />
+<script type="text/javascript">
+    jQuery(function() {
+        var cache = {};
+        jQuery("#<% $Name %>").autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                if ( request.term in cache ) {
+                    response( cache[ request.term ] );
+                }
+                else {
+                    jQuery.ajax({
+                        url: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Owners?<% $query|n %>",
+                        dataType: "json",
+                        data: request,
+                        success: function( data ) {
+                            cache[ request.term ] = data;
+                            response( data );
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+

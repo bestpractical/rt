@@ -45,72 +45,55 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
-<% JSON::to_json( \@suggestions ) |n %>
-% $m->abort;
-<%ARGS>
-$return => ''
-$term => undef
-$delim => undef
-$max => 10
-</%ARGS>
+<select name="<%$Name%>" id="<%$Name%>">
+%if ($DefaultValue) {
+<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel%></option>
+%}
+% $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
+% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', User => $_)]} grep { $_->id != $RT::Nobody->id } @users;
+% my $nobody = [$RT::Nobody, $m->scomp('/Elements/ShowUser', User => $RT::Nobody)];
+% unshift @formatednames, $nobody;
+%foreach my $UserRef ( @formatednames)  {
+%my $User = $UserRef->[0];
+<option <% ( $User->Id == $Default) ? qq[ selected="selected"] : '' |n %>
+%if ($ValueAttribute eq 'id') {
+    value="<%$User->id%>"
+%} elsif ($ValueAttribute eq 'Name') {
+    value="<%$User->Name%>"
+%}
+><% $UserRef->[1] |n %></option>
+%}
+</select>
 <%INIT>
-require JSON;
+my %user_uniq_hash;
 
-# Only allow certain return fields
-$return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
-
-$m->abort unless defined $return
-             and defined $term
-             and length $term;
-
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
-    }
-
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
-}
-
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
-
-my %fields = %{ RT->Config->Get('UserAutocompleteFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
-my $users = RT::Users->new( $CurrentUser );
-$users->RowsPerPage( $max );
-
-while (my ($name, $op) = each %fields) {
-    $op = 'STARTSWITH'
-        unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
-
-    $users->Limit(
-        FIELD           => $name,
-        OPERATOR        => $op,
-        VALUE           => $term,
-        ENTRYAGGREGATOR => 'OR',
-        SUBCLAUSE       => 'autocomplete',
+my $isSU = $session{CurrentUser}
+    ->HasRight( Right => 'SuperUser', Object => $RT::System );
+foreach my $object (@$Objects) {
+    my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $object,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => $isSU
     );
+    while ( my $User = $Users->Next() ) {
+        $user_uniq_hash{ $User->Id() } = $User;
+    }
+}
+if ($Default && $Default != $RT::Nobody->id && !$user_uniq_hash{$Default}) {
+    $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
+    $user_uniq_hash{$Default}->Load($Default);
 }
 
-my @suggestions;
-
-while ( my $user = $users->Next ) {
-    next if $user->id == $RT::SystemUser->id
-         or $user->id == $RT::Nobody->id;
-
-    my $formatted = $m->scomp('/Elements/ShowUser', User => $user);
-    $formatted =~ s/\n//g;
-    push @suggestions, { label => $formatted, value => $user->$return };
-}
-
+my @users = values %user_uniq_hash;
 </%INIT>
+
+<%ARGS>
+$Name => undef
+$Objects => []
+$Default => 0
+$DefaultValue => 1
+$DefaultLabel => "-"
+$ValueAttribute => 'id'
+</%ARGS>

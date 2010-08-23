@@ -177,6 +177,16 @@ our %META = (
             },
         },
     },
+    AutocompleteOwners => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 3.1,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use autocomplete to find owners?', # loc
+            Hints       => 'Replaces the owner dropdowns with textboxes' #loc
+        }
+    },
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
