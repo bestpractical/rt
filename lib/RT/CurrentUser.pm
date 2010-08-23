@@ -266,9 +266,7 @@ Return the current currentuser object
 =cut
 
 sub CurrentUser {
-    my $self = shift;
-    return($self);
-
+    return shift;
 }
 
 =head2 Authenticate
