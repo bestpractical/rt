@@ -82,35 +82,17 @@ GetOptions(
     'resolve',
     'force',
     'verbose|v',
+    'help|h',
 );
 
-usage() unless $opt{'check'};
+if ( $opt{help} || !$opt{check} ) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
+
 usage_warning() if $opt{'resolve'} && !$opt{'force'};
 
-sub usage {
-    print STDERR <<END;
-Usage: $0 options
-
-Options:
-
-    $0 --check
-    $0 --check --verbose
-    $0 --check --verbose --resolve
-    $0 --check --verbose --resolve --force
-
---check   - is mandatory argument, you can use -c, as well.
---verbose - print additional info to STDOUT
---resolve - enable resolver that can delete or create some records
---force   - resolve without asking questions
-
-Description:
-
-This script checks integrity of records in RT's DB. May delete some invalid
-records or ressurect accidentally deleted.
-
-END
-    exit 1;
-}
 
 sub usage_warning {
     print <<END;
@@ -1116,3 +1098,47 @@ sub prompt_integer {
 } }
 
 1;
+
+__END__
+
+=head1 NAME
+
+rt-validator - show the content of an attribute 
+
+=head1 SYNOPSIS
+
+    rt-validator --check 
+    rt-validator --check --verbose
+    rt-validator --check --verbose --resolve
+    rt-validator --check --verbose --resolve --force
+
+=head1 DESCRIPTION
+
+This script checks integrity of records in RT's DB. May delete some invalid
+records or ressurect accidentally deleted.
+
+=head1 OPTIONS
+
+=over
+
+=item check
+
+    mandatory.
+    
+    it's equall to -c
+
+=item verbose
+
+    print additional info to STDOUT
+    it's equall to -v
+
+=item resolve
+
+    enable resolver that can delete or create some records
+
+=item force
+
+    resolve without asking questions
+
+=back
+

@@ -74,16 +74,31 @@ BEGIN {
 
 }
 
-use RT;
-use RT::Interface::CLI qw{ CleanEnv loc };
-
+# Read in the options
+my %opts;
 use Getopt::Long;
-use HTML::Mason;
-use HTML::RewriteAttributes::Resources;
-use HTML::RewriteAttributes::Links;
-use MIME::Types;
-use POSIX 'tzset';
-use File::Temp 'tempdir';
+GetOptions( \%opts,
+    "help|h", "dryrun", "verbose", "debug", "epoch=i", "all", "skip-acl"
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage(-verbose => 2);
+    exit;
+}
+
+require RT;
+require RT::Interface::CLI;
+RT::Interface::CLI->import(qw{ CleanEnv loc });
+
+require HTML::Mason;
+require HTML::RewriteAttributes::Resources;
+require HTML::RewriteAttributes::Links;
+require MIME::Types;
+require POSIX;
+POSIX->import('tzset');
+require File::Temp;
+File::Temp->import('tempdir');
 
 # Clean out all the nasties from the environment
 CleanEnv();
@@ -100,19 +115,6 @@ require RT::Dashboard;
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
 no warnings 'once';
-
-# Read in the options
-my %opts;
-GetOptions( \%opts,
-    "help", "dryrun", "verbose", "debug", "epoch=i", "all", "skip-acl"
-);
-
-if ($opts{'help'}) {
-    require Pod::Usage;
-    import Pod::Usage;
-    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
-    exit 1;
-}
 
 # helper functions
 sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; 1 }
@@ -506,7 +508,7 @@ rt-email-dashboards - Send email dashboards
 
 =head1 SYNOPSIS
 
-    /opt/rt3/local/sbin/rt-email-dashboards [options]
+    rt-email-dashboards [options]
 
 =head1 DESCRIPTION
 
@@ -532,6 +534,8 @@ tweaking to be run as the correct user.
 This tool supports a few options. Most are for debugging.
 
 =over 8
+
+=item -h
 
 =item --help
 

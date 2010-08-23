@@ -76,15 +76,6 @@ BEGIN {
 
 }
 
-#This drags in  RT's config.pm
-# We do it in a begin block because RT::Handle needs to know the type to do its
-# inheritance
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::InitClasses();
-}
-
 use Term::ReadKey;
 use Getopt::Long;
 
@@ -96,13 +87,20 @@ GetOptions(
     'action=s',
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
-    'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s'
+    'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
+    'help|h',
 );
 
-unless ( $args{'action'} ) {
-    help();
-    exit(-1);
+no warnings 'once';
+if ( $args{help} || ! $args{'action'} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;
 }
+
+require RT;
+RT->LoadConfig();
+RT->InitClasses();
 
 # get customized root password
 my $root_password;
@@ -397,13 +395,10 @@ sub get_dba_password {
     return ($password);
 }
 
-=head2 get_system_dbh
+#   get_system_dbh
+#   Returns L<DBI> database handle connected to B<system> with DBA credentials.
+#   See also L<RT::Handle/SystemDSN>.
 
-Returns L<DBI> database handle connected to B<system> with DBA credentials.
-
-See also L<RT::Handle/SystemDSN>.
-
-=cut
 
 sub get_system_dbh {
     return _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
@@ -413,13 +408,11 @@ sub get_admin_dbh {
     return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
 }
 
-=head2 get_rt_dbh [USER, PASSWORD]
+# get_rt_dbh [USER, PASSWORD]
 
-Returns L<DBI> database handle connected to RT database,
-you may specify credentials(USER and PASSWORD) to connect
-with. By default connects with credentials from RT config.
-
-=cut
+# Returns L<DBI> database handle connected to RT database,
+# you may specify credentials(USER and PASSWORD) to connect
+# with. By default connects with credentials from RT config.
 
 sub get_rt_dbh {
     return _get_dbh( RT::Handle->DSN, $db_user, $db_pass );
@@ -448,59 +441,105 @@ sub _yesno {
     $x =~ /^y/i;
 }
 
-sub help {
+1;
 
-    print <<EOF;
+__END__
 
-$0: Set up RT's database
+=head1 NAME
 
---action        init     Initialize the database. This is combination of
-                         multiple actions listed below. Create DB, schema,
-                         setup acl, insert core data and initial data.
+rt-setup-database - Set up RT's database
 
-                upgrade  Apply all needed schema/acl/content updates (will ask
-                         for version to upgrade from)
+=head1 SYNOPSIS
 
-                create   Create the database.
+    rt-setup-database --action ... 
 
-                drop     Drop the database.
-                         This will ERASE ALL YOUR DATA
+=head1 OPTIONS
 
-                schema   Initialize only the database schema
-                         To use a local or supplementary datafile, specify it
-                         using the '--datadir' option below.
+=over
 
-                acl      Initialize only the database ACLs
-                         To use a local or supplementary datafile, specify it
-                         using the '--datadir' option below.
-
-                coredata Insert data into RT's database. This data is required
-                         for normal functioning of any RT instance.
-
-                insert   Insert data into RT's database.
-                         By default, will use RT's installation data.
-                         To use a local or supplementary datafile, specify it
-                         using the '--datafile' option below.
+=item action
 
 Several actions can be combined using comma separated list.
 
---datafile /path/to/datafile
---datadir /path/to/              Used to specify a path to find the local
-                                 database schema and acls to be installed.
+=over
+
+=item init
+
+    Initialize the database. This is combination of multiple actions listed 
+    below. Create DB, schema, setup acl, insert core data and initial data.
+
+=item upgrade
+
+    Apply all needed schema/acl/content updates (will ask for version to 
+    upgrade from)
+
+=item create
+
+    Create the database.
+
+=item drop
+
+    Drop the database.
+    This will ERASE ALL YOUR DATA
+
+=item schema
+
+    Initialize only the database schema
+    To use a local or supplementary datafile, specify it
+    using the '--datadir' option below.
 
 
---dba                           dba's username
---dba-password                  dba's password
---prompt-for-dba-password       Ask for the database administrator's password interactively
---skip-create                   for 'init': skip creating the database and the
-                                user account, so we don't need administrator
-                                privileges
---root-password-file            for 'init' and 'insert': rather than using the default 
-                                administrative password for RT's "root" user, use
-                                the password in this file.
+=item acl
+    Initialize only the database ACLs
+    To use a local or supplementary datafile, specify it
+    using the '--datadir' option below.
 
-EOF
+=item coredata 
 
-}
+    Insert data into RT's database. This data is required
+    for normal functioning of any RT instance.
 
-1;
+=item insert
+    Insert data into RT's database.
+    By default, will use RT's installation data.
+    To use a local or supplementary datafile, specify it
+    using the '--datafile' option below.
+
+=back
+
+
+=item datafile
+
+file path of the data you want to action on
+
+e.g. --datafile /path/to/datafile
+
+=item datadir
+
+    Used to specify a path to find the local database schema and acls to be
+    installed.
+
+e.g. --datadir /path/to/
+
+=item dba
+
+    dba's username
+=item dba-password
+
+    dba's password
+
+=item prompt-for-dba-password
+
+Ask for the database administrator's password interactively
+
+=item skip-create
+
+    for 'init': skip creating the database and the user account, so we don't
+    need administrator privileges
+
+=item root-password-file
+
+    for 'init' and 'insert': rather than using the default administrative 
+    password for RT's "root" user, use the password in this file.
+
+=back

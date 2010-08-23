@@ -73,21 +73,16 @@ BEGIN {
     }
 }
 
+use Getopt::Long;
+my %opt;
+GetOptions( \%opt, 'help|h', );
+
 my $id = shift;
-usage() unless $id;
 
-sub usage {
-    print STDERR <<END;
-Usage: $0 <attribute id>
-
-Description:
-
-This script deserializes and print content of an attribute defined
-by <attribute id>. May be useful for developers and for troubleshooting
-problems.
-
-END
-    exit 1;
+if ( $opt{help} || !$id ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;
 }
 
 require RT;
@@ -107,4 +102,21 @@ $res{$_} = $attr->$_() foreach qw(ObjectType ObjectId Name Description Content C
 
 use Data::Dumper;
 print "Content of attribute #$id: ". Dumper( \%res );
+
+__END__
+
+=head1 NAME
+
+rt-attributes-viewer - show the content of an attribute 
+
+=head1 SYNOPSIS
+
+    # show the content of attribute 2
+    rt-attributes-viewer 2  
+
+=head1 DESCRIPTION
+
+This script deserializes and print content of an attribute defined
+by <attribute id>. May be useful for developers and for troubleshooting
+problems.
 

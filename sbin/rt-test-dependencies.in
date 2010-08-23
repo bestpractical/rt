@@ -74,12 +74,14 @@ GetOptions(
 
     'download=s',
     'repository=s',
-    'list-deps'
+    'list-deps',
+    'help|h',
 );
 
-unless (keys %args) {
-    help();
-    exit(1);
+if ( $args{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
 }
 
 # Set up defaults
@@ -155,44 +157,6 @@ sub conclude {
         exit 1;
     }
 }
-
-
-sub help {
-
-    print <<'.';
-
-By default, testdeps determine whether you have 
-installed all the perl modules RT needs to run.
-
-    --install           Install missing modules
-
-The following switches will tell the tool to check for specific dependencies
-
-    --with-mysql        Database interface for MySQL
-    --with-postgresql   Database interface for PostgreSQL 
-    --with-oracle       Database interface for Oracle
-    --with-sqlite       Database interface and driver for SQLite (unsupported)
-
-    --with-standalone     Libraries needed to support the standalone simple pure perl server
-    --with-fastcgi-server Libraries needed to support the external fastcgi server
-    --with-fastcgi        Libraries needed to support the fastcgi handler
-    --with-speedycgi      Libraries needed to support the speedycgi handler
-    --with-modperl1       Libraries needed to support the modperl 1 handler
-    --with-modperl2       Libraries needed to support the modperl 2 handler
-
-    --with-dev          Tools needed for RT development
-
-You can also specify -v or --verbose to list the status of all dependencies,
-rather than just the missing ones.
-
-The "RT_FIX_DEPS_CMD" environment variable, if set, will be used
-instead of the standard CPAN shell by --install to install any
-required modules.  It will be called with the module name, or, if
-"RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
-module name before calling the program.
-.
-}
-
 
 sub text_to_hash {
     my %hash;
@@ -598,6 +562,93 @@ sub check_users {
   print_found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
 }
 
-
-
 1;
+
+__END__
+
+=head1 NAME
+
+rt-test-dependencies - test rt's dependencies
+
+=head1 SYNOPSIS
+
+    rt-test-dependencies
+    rt-test-dependencies --install
+    rt-test-dependencies --with-mysql --with-fastcgi
+
+=head1 DESCRIPTION
+
+by default, C<rt-test-dependencies> determines whether you have installed all
+the perl modules RT needs to run.
+
+the "RT_FIX_DEPS_CMD" environment variable, if set, will be used instead of
+the standard CPAN shell by --install to install any required modules.  it will
+be called with the module name, or, if "RT_FIX_DEPS_CMD" contains a "%s", will
+replace the "%s" with the module name before calling the program.
+
+=head1 OPTIONS
+
+=over
+
+=item install
+
+    install missing modules
+
+=item verbose
+
+list the status of all dependencies, rather than just the missing ones.
+
+-v is equal to --verbose
+
+=item specify dependencies
+
+=over
+
+=item --with-mysql
+
+    database interface for mysql
+
+=item --with-postgresql
+
+    database interface for postgresql 
+
+=item with-oracle       
+    
+    database interface for oracle
+
+=item with-sqlite 
+
+    database interface and driver for sqlite (unsupported)
+
+=item  with-standalone
+
+    libraries needed to support the standalone simple pure perl server
+
+=item with-fastcgi-server
+
+    libraries needed to support the external fastcgi server
+ 
+=item with-fastcgi 
+
+    libraries needed to support the fastcgi handler
+
+=item with-speedycgi
+
+    libraries needed to support the speedycgi handler
+
+=item with-modperl1
+
+    libraries needed to support the modperl 1 handler
+
+=item with-modperl2
+
+    libraries needed to support the modperl 2 handler
+
+=item with-dev
+
+    tools needed for RT development
+
+=back
+
+=back
+

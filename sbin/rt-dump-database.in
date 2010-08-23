@@ -77,8 +77,18 @@ BEGIN {
 
 }
 
-use RT;
-use XML::Simple;
+use Getopt::Long;
+my %opt;
+GetOptions( \%opt, "help|h" );
+
+if ( $opt{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
+
+require RT;
+require XML::Simple;
 
 RT::LoadConfig();
 RT::Init();
@@ -190,10 +200,32 @@ no strict; use XML::Simple; *_ = XMLin(do { local \$/; readline(DATA) }, ForceAr
 __DATA__
 .
 
-print XMLout(
+print XML::Simple::XMLout(
     { map { ($_ => ($RV{$_} || [])) } @classes },
     RootName => 'InitialData',
     NoAttr => 1,
     SuppressEmpty => '',
     XMLDecl => '<?xml version="1.0" encoding="UTF-8"?>',
 );
+
+__END__
+
+=head1 NAME
+
+rt-dump-database - dump the Request Tracker database
+
+=head1 SYNOPSIS
+
+    rt-dump-database [ 0 ]
+
+=head1 DESCRIPTION
+
+C<rt-dump-database> is a tool that dumps the Request Tracker database
+into XML format, suitable for feeding into C<rt-setup-database>.
+
+When run without arguments, the database dump will only include 'local'
+configuration changes, i.e. those done manually in the web interface.
+
+When run with the argument '0', the dump will include all configuration
+metadata.
+

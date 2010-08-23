@@ -75,14 +75,13 @@ BEGIN {
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "older=s", "debug", "help", "skip-user");
+GetOptions( \%opt, "older=s", "debug", "help|h", "skip-user" );
 
 
 if ( $opt{help} ) {
     require Pod::Usage;
-    import Pod::Usage;
-    pod2usage({ -message => "RT Session cleanup tool\n", verbose => 1 });
-    exit 1;    
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;    
 }
 
 
@@ -137,13 +136,13 @@ rt-clean-sessions - clean old and duplicate RT sessions
 
 =head1 SYNOPSIS
 
-    rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
+     rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
 
-    rt-clean-sessions
-    rt-clean-sessions --debug
-    rt-clean-sessions --older 10D
-    rt-clean-sessions --debug --older 1M
-    rt-clean-sessions --older 10D --skip-user
+     rt-clean-sessions
+     rt-clean-sessions --debug
+     rt-clean-sessions --older 10D
+     rt-clean-sessions --debug --older 1M
+     rt-clean-sessions --older 10D --skip-user
 
 =head1 DESCRIPTION
 

@@ -68,8 +68,7 @@ GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "e
 
 if ( $opts{'help'} ) {
     require Pod::Usage;
-    import Pod::Usage;
-    pod2usage("RT Mail Gateway\n");
+    Pod::Usage::pod2usage({verbose =>2});
     exit 1;    # Don't want to succeed if this is really an email!
 }
 
@@ -290,6 +289,8 @@ Print debugging output to standard error
 Configure the timeout for posting the message to the web server.  The
 default timeout is 3 minutes (180 seconds).
 
+=back
+
 
 =head1 DESCRIPTION
 
@@ -379,7 +380,7 @@ If we don't already have a ticket id, we need to know which queue we're talking 
 
 The action being performed. At the moment, it's one of "comment" or "correspond"
 
-=back 4
+=back
 
 It returns two values, the new C<RT::CurrentUser> object, and the new
 authentication level. The authentication level can be zero, not allowed
@@ -403,7 +404,7 @@ See also C<--extension> option. Note that value of the environment variable is
 always added to the message header when it's not empty even if C<--extension>
 option is not provided.
 
-=back 4
+=back
 
 =cut
 

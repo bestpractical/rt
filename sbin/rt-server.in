@@ -74,15 +74,28 @@ BEGIN {
 
 }
 
-use RT;
-RT::LoadConfig();
+use Getopt::Long;
+
+my %opt;
+GetOptions(\%opt, 'help|h');
+
+if ( $opt{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
+
+my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
+
+
+require RT;
+RT->LoadConfig();
 RT->InitLogging();
 if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
 RT->InitPluginPaths();
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
 
 
 require RT::Handle;
@@ -126,4 +139,19 @@ my $server = RT::Interface::Web::Standalone->new;
 $server->net_server('RT::Interface::Web::Standalone::PreFork');
 $server->port($port);
 $server->run();
+
+__END__
+
+=head1 NAME
+
+rt-server - RT standalone server with prefork
+
+=head1 SYNOPSIS
+
+    # runs server listening on port 8080
+    rt-server 8080
+
+=head1 DESCRIPTION
+
+This script runs an RT server using C<RT::Interface::Web::Standalone::PreFork>
 
