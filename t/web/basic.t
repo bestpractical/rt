@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Encode;
 
-use RT::Test tests => 24;
+use RT::Test tests => 21;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -20,15 +20,8 @@ diag $url if $ENV{TEST_VERBOSE};
 
 # test a login
 {
-    ok($agent->{form}->find_input('user'));
-    ok($agent->{form}->find_input('pass'));
-
-    ok($agent->{'content'} =~ /username:/i);
-    $agent->field( 'user' => 'root' );
-    $agent->field( 'pass' => 'password' );
-
+    $agent->login('root' => 'password');
     # the field isn't named, so we have to click link 0
-    $agent->click(0);
     is( $agent->{'status'}, 200, "Fetched the page ok");
     ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
 }

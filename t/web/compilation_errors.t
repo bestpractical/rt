@@ -7,7 +7,7 @@ BEGIN {
     sub wanted {
         -f && /\.html$/ && $_ !~ /Logout.html$/;
     }
-    my $tests = 7;
+    my $tests = 4;
     find( sub { wanted() and $tests += 4 }, 'share/html/' );
     plan tests => $tests;
 }
@@ -36,15 +36,7 @@ is ($agent->{'status'}, 200, "Loaded a page");
 # {{{ test a login
 
 # follow the link marked "Login"
-
-ok($agent->{form}->find_input('user'));
-
-ok($agent->{form}->find_input('pass'));
-like ($agent->{'content'} , qr/username:/i);
-$agent->field( 'user' => 'root' );
-$agent->field( 'pass' => 'password' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
+$agent->login(root => 'password');
 is($agent->{'status'}, 200, "Fetched the page ok");
 like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
