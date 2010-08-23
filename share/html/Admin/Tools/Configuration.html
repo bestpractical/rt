@@ -97,7 +97,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
 </td>
 <td class="collection-as-table" style="white-space: nowrap">
-% if ( $description =~ /^.*site config$/ ) {
+% if ( $meta->{'Source'}{'SiteConfig'} ) {
 <span style="font-weight: bold"><% $description %></span>
 % } else {
 <% $description %>
