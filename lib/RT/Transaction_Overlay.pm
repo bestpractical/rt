@@ -415,11 +415,16 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 sub ContentObj {
     my $self = shift;
-    my %args = ( Type => $PreferredContentType, @_ );
+    my %args = ( Type => $PreferredContentType, Attachment => undef, @_ );
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
-    return undef unless my $Attachment = $self->Attachments->First;
+
+    my $Attachment = $args{'Attachment'};
+
+    $Attachment ||= $self->Attachments->First;
+
+    return undef unless ($Attachment);
 
     # If it's a textual part, just return the body.
     if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
@@ -429,7 +434,14 @@ sub ContentObj {
     # If it's a multipart object, first try returning the first part with preferred
     # MIME type ('text/plain' by default).
 
-    elsif ( $Attachment->ContentType =~ '^multipart/' ) {
+    elsif ( $Attachment->ContentType =~ qr|^multipart/mixed|i ) {
+        my $kids = $Attachment->Children;
+        while (my $child = $kids->Next) {
+            my $ret =  $self->ContentObj(%args, Attachment => $child);
+            return $ret if ($ret);
+        }
+    }
+    elsif ( $Attachment->ContentType =~ qr|^multipart/|i ) {
         if ( $args{Type} ) {
             my $plain_parts = $Attachment->Children;
             $plain_parts->ContentType( VALUE => $args{Type} );
