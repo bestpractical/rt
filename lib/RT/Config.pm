@@ -643,8 +643,8 @@ sub _LoadConfig {
         require $args{'File'};
     };
     if ($@) {
-        return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
-        if ( $is_site || $@ !~ qr{^Can't locate \Q$args{File}} ) {
+        return 1 if $is_site && $@ =~ /^Can't locate \Q$args{File}/;
+        if ( $is_site || $@ !~ /^Can't locate \Q$args{File}/ ) {
             die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
         }
 

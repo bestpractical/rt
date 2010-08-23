@@ -414,7 +414,7 @@ sub text_plain_nested_redef_sendmessage {
                  $subject  = MIME::Base64::decode_base64( $subject);
                 chomp($subject);
                 # TODO, why does this test fail
-                #ok($subject =~ qr{Niv\x{e5}er}, "The subject matches the word - $subject");
+                #ok($subject =~ /Niv\x{e5}er/, "The subject matches the word - $subject");
                 1;
                  }';
 }

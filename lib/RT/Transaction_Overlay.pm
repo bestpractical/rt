@@ -434,14 +434,14 @@ sub ContentObj {
     # If it's a multipart object, first try returning the first part with preferred
     # MIME type ('text/plain' by default).
 
-    elsif ( $Attachment->ContentType =~ qr|^multipart/mixed|i ) {
+    elsif ( $Attachment->ContentType =~ m|^multipart/mixed|i ) {
         my $kids = $Attachment->Children;
         while (my $child = $kids->Next) {
             my $ret =  $self->ContentObj(%args, Attachment => $child);
             return $ret if ($ret);
         }
     }
-    elsif ( $Attachment->ContentType =~ qr|^multipart/|i ) {
+    elsif ( $Attachment->ContentType =~ m|^multipart/|i ) {
         if ( $args{Type} ) {
             my $plain_parts = $Attachment->Children;
             $plain_parts->ContentType( VALUE => $args{Type} );

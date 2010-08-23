@@ -85,7 +85,7 @@ sub login {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
-    unless ( $self->content =~ qr/Logout/i ) {
+    unless ( $self->content =~ m/Logout/i ) {
         Test::More::diag("error: page has no Logout");
         return 0;
     }
@@ -104,7 +104,7 @@ sub logout {
     Test::More::diag( "error: status is ". $self->status )
         unless $self->status == 200;
 
-    if ( $self->content =~ qr/Logout/i ) {
+    if ( $self->content =~ /Logout/i ) {
         $self->follow_link( text => 'Logout' );
         Test::More::diag( "error: status is ". $self->status ." when tried to logout" )
             unless $self->status == 200;
@@ -114,7 +114,7 @@ sub logout {
     }
 
     $self->get($url);
-    if ( $self->content =~ qr/Logout/i ) {
+    if ( $self->content =~ /Logout/i ) {
         Test::More::diag( "error: couldn't logout" );
         return 0;
     }
