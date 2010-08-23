@@ -82,8 +82,9 @@ L<DBIx::SearchBuilder::Handle>, using the C<DatabaseType> configuration.
 =cut
 
 sub FinalizeDatabaseType {
-    eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
-    \@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
+    eval {
+        use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
+    };
 
     if ($@) {
         die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
