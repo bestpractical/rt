@@ -903,6 +903,13 @@ sub SetFromConfig {
     return 1;
 }
 
+    our %REF_SYMBOLS = (
+            SCALAR => '$',
+            ARRAY  => '@',
+            HASH   => '%',
+            CODE   => '&',
+        );
+
 {
     my $last_pack = '';
 
@@ -917,12 +924,6 @@ sub SetFromConfig {
         $pack ||= 'main::';
         $pack .= '::' unless substr( $pack, -2 ) eq '::';
 
-        my %ref_sym = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
         no strict 'refs';
         my $name = undef;
 
@@ -956,7 +957,7 @@ sub SetFromConfig {
             # if references are equal then we've found
             if ( $entry_ref == $ref ) {
                 $last_pack = $pack;
-                return ( $ref_sym{ ref($ref) } || '*' ) . $pack . $k;
+                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
             }
         }
         return '';
