@@ -70,7 +70,7 @@ package RT::Handle;
 
 use strict;
 use warnings;
-use vars qw/@ISA/;
+use File::Spec;
 
 =head1 METHODS
 
@@ -129,7 +129,6 @@ from the config.
 
 =cut
 
-require File::Spec;
 
 sub BuildDSN {
     my $self = shift;
