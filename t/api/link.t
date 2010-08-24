@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 77;
+use RT::Test tests => 83;
 use RT::Test::Web;
 
 use RT::Link;
@@ -33,15 +33,26 @@ my $child = RT::Ticket->new($RT::SystemUser);
 ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
 
 {
+    my @warnings;
+    local $SIG{__WARN__} = sub {
+        push @warnings, "@_";
+    };
+
     clean_links();
     my ($status, $msg) = $parent->AddLink;
     ok(!$status, "didn't create a link: $msg");
+    is(@warnings, 1, "one warning");
+    like(shift @warnings, qr/Base or Target must be specified/, "warned about linking a ticket to itself");
 
     ($status, $msg) = $parent->AddLink( Base => $parent->id );
     ok(!$status, "didn't create a link: $msg");
+    is(@warnings, 1, "one warning");
+    like(shift @warnings, qr/Can't link a ticket to itself/, "warned about linking a ticket to itself");
 
     ($status, $msg) = $parent->AddLink( Base => $parent->id, Type => 'HasMember' );
     ok(!$status, "didn't create a link: $msg");
+    is(@warnings, 1, "one warning");
+    like(shift @warnings, qr/Can't link a ticket to itself/, "warned about linking a ticket to itself");
 }
 
 {
