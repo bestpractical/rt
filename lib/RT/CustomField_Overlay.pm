@@ -1281,27 +1281,12 @@ sub AddValueForObject {
             $extra_values--;
         }
     }
-    # For date, we need to store Content as ISO date
-    if ( $self->Type eq 'DateTime' ) {
-        my $DateObj = RT::Date->new( $self->CurrentUser );
-        $DateObj->Set(
-            Format => 'unknown',
-            Value  => $args{'Content'},
-        );
-        $args{'Content'} = $DateObj->ISO;
-    }
-    elsif ( $self->Type eq 'Date' ) {
 
-        # in case user input date with time, let's omit it by setting timezone
-        # to utc so "hour" won't affect "day"
-        my $DateObj = RT::Date->new( $self->CurrentUser );
-        $DateObj->Set(
-            Format   => 'unknown',
-            Value    => $args{'Content'},
-            Timezone => 'UTC',
-        );
-        $args{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+    if (my $canonicalizer = $self->can('_CanonicalizeValue'.$self->Type)) {
+         $canonicalizer->($self, \%args);
     }
+
+
 
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my $val    = $newval->Create(
@@ -1325,6 +1310,30 @@ sub AddValueForObject {
 
 # }}}
 
+
+sub _CanonicalizeValueDateTime {
+    my $self    = shift;
+    my $args    = shift;
+    my $DateObj = RT::Date->new( $self->CurrentUser );
+    $DateObj->Set( Format => 'unknown',
+                   Value  => $args->{'Content'} );
+    $args->{'Content'} = $DateObj->ISO;
+}
+
+# For date, we need to store Content as ISO date
+sub _CanonicalizeValueDate {
+    my $self = shift;
+    my $args = shift;
+
+    # in case user input date with time, let's omit it by setting timezone
+    # to utc so "hour" won't affect "day"
+    my $DateObj = RT::Date->new( $self->CurrentUser );
+    $DateObj->Set( Format   => 'unknown',
+                   Value    => $args->{'Content'},
+                   Timezone => 'UTC',
+                 );
+    $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+}
 # {{{ MatchPattern
 
 =head2 MatchPattern STRING
