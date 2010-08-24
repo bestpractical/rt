@@ -106,7 +106,9 @@ var section_css_mapping = {
     'default': ['body',
               'input[type="reset"], input[type="submit"], input[class="button"]'],
     'quickbar': ['div#quickbar'],
-    'mainbody': ['div#body']
+    'mainbody': ['div#body'],
+    'navigation': ['div#nav'],
+    'page-menu': ['div#page-navigation ul#page-menu'],
 };
 
 jQuery(function($) {
@@ -191,6 +193,10 @@ div#body {}
 div#header h1 { }
 
 div#quickbar {}
+
+div#nav {}
+
+div#page-navigation ul#page-menu {}
 
 input[type="reset"], input[type="submit"], input[class="button"] {}
 ';
