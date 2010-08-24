@@ -63,6 +63,12 @@ Upload Logo:
 <input type="submit">
 </form>
 
+<div class="pick-section">
+<select id="section">
+</select>
+</div>
+
+<div class="pick-color">
 % if ($colors) {
 Primary colors:
 %   for (@$colors) {
@@ -75,6 +81,8 @@ Primary colors:
 <span class="color-template" style="background-color: white; color: gray; width: 5em">test</span>
 <span class="color-template" style="background-color: red; color: white; width: 5em">test</span>
 </div>
+</div>
+
 <div class="clear">
 
 Csutom CSS (Advanced):<br />
@@ -90,16 +98,19 @@ Csutom CSS (Advanced):<br />
 
 <script type="text/javascript">
 
-var section = 'main';
-
 var section_css_mapping = {
-    main: ['body',
-           'div#body',
-           'div#quickbar',
-           'input[type="reset"], input[type="submit"], input[class="button"]']
+    default: ['body',
+              'input[type="reset"], input[type="submit"], input[class="button"]'],
+    quickbar: ['div#quickbar'],
+    mainbody: ['div#body']
 };
 
 jQuery(function($) {
+
+    for (var section in section_css_mapping) {
+        $('select#section').append($("<option/>").attr('value', section).text(section));
+    }
+
     $("style#test").text($('#user_css').val());
     $('#try').click(function() {
         $("style#test").text($('#user_css').val());
@@ -109,6 +120,8 @@ jQuery(function($) {
     $('span.color-template').click(function() {
       var bg = $(this).css('background-color');
       var fg = $(this).css('color');
+      var section = $('select#section').val();
+
       var applying = section_css_mapping[section];
       var css = $('#user_css').val();
       if (applying) {
