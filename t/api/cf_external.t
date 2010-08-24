@@ -53,4 +53,3 @@ isa_ok( $cf, 'RT::CustomField' );
     is( $values->Count, $count, "count is correct" );
 }
 
-exit(0);

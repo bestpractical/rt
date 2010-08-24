@@ -573,5 +573,3 @@ my $year = (localtime(time))[5] + 1900;
 #TODO: AsString
 #TODO: RFC2822, W3CDTF with Timezones
 
-exit(0);
-
