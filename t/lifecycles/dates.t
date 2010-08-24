@@ -178,7 +178,7 @@ diag "dates on create for delivery schema" if $ENV{TEST_VERBOSE};
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $statusmsg) = $ticket->Create(
+        my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
             Status => 'ordered',
@@ -193,7 +193,7 @@ diag "dates on create for delivery schema" if $ENV{TEST_VERBOSE};
     }
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
-        my ($id, $statusmsg) = $ticket->Create(
+        my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
             Started => $test_date,
