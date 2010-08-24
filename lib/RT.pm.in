@@ -169,6 +169,7 @@ sub LoadConfig {
     }
     
     RT::I18N->Init;
+    return $Config;
 }
 
 =head2 Init
@@ -534,7 +535,7 @@ Method can be called as class method.
 
 =cut
 
-sub Config { return $Config }
+sub Config { return $Config || shift->LoadConfig(); }
 
 =head2 DatabaseHandle
 
