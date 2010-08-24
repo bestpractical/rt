@@ -47,6 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::Handler;
+use warnings;
+use strict;
 
 use CGI qw/-private_tempfiles/;
 use MIME::Entity;
