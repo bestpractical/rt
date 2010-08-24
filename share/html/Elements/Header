@@ -77,7 +77,7 @@
 % }
 % if (my $attr = $RT::System->FirstAttribute('UserCSS')) {
 <style type="text/css" media="screen">
-<% $attr->Content %>
+<% $attr->Content |n%>
 </style>
 % }
 
