@@ -75,7 +75,7 @@ wrap 'HTTP::Request::Common::form_data',
    };
 
 
-our @EXPORT = qw(is_empty);
+our @EXPORT = qw(is_empty diag);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -178,6 +178,12 @@ sub import {
     }
 
     Test::More->export_to_level($level);
+
+    # blow away their diag so we can redefine it without warning
+    # better than "no warnings 'redefine'" because we might accidentally
+    # suppress a mistaken redefinition
+    no strict 'refs';
+    delete ${ caller($level) . '::' }{diag};
     __PACKAGE__->export_to_level($level);
 }
 
@@ -1293,6 +1299,11 @@ sub process_in_file {
     seek $out_fh, 0, 0;
 
     return ($out_fh, $out_conf);
+}
+
+sub diag {
+    return unless $ENV{TEST_VERBOSE};
+    goto \&Test::More::diag;
 }
 
 END {
