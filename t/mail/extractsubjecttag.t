@@ -77,7 +77,6 @@ Subject: [$subject_tag #$ticketid] [remote-rt-system #79] test
 
 reply with subject tag and remote rt subject tag
 EOF
-    diag($text);
     my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue->Name);
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticketid, "Replied to ticket $id correctly");
