@@ -59,7 +59,7 @@ my $queues = RT::Queues->new($session{'CurrentUser'});
 $queues->UnLimit;
 
 my $queue_count = 0;
-my $queue_id = 1;
+my $queue_id;
 
 while (my $queue = $queues->Next) {
   next unless $queue->CurrentUserHasRight('CreateTicket');
@@ -87,7 +87,8 @@ if ($queue_count > 1) {
         $tabs->{C} = { title => loc('New ticket'),
                        path => 'SelfService/CreateTicketInQueue.html'
                        };
-} else {
+}
+elsif ($queue_id) {
         $tabs->{C} = { title => loc('New ticket'),
                        path => 'SelfService/Create.html?Queue=' . $queue_id
                        };
