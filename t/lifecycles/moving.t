@@ -23,7 +23,7 @@ my $tstatus = sub {
     return $ticket->Status;
 };
 
-diag "check moving without a map";
+diag "check moving without a map" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id, $msg) = $ticket->Create(
@@ -38,7 +38,7 @@ diag "check moving without a map";
     is $ticket->Status, 'new', 'status is steal the same';
 }
 
-diag "add partial map";
+diag "add partial map" if $ENV{TEST_VERBOSE};
 {
     my $schemas = RT->Config->Get('Lifecycles');
     $schemas->{'__maps__'} = {
@@ -49,7 +49,7 @@ diag "add partial map";
     RT::Lifecycle->fill_cache;
 }
 
-diag "check moving with a partial map";
+diag "check moving with a partial map" if $ENV{TEST_VERBOSE};
 {
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -80,7 +80,7 @@ diag "check moving with a partial map";
     }
 }
 
-diag "one way map doesn't work backwards";
+diag "one way map doesn't work backwards" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id, $msg) = $ticket->Create(

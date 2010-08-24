@@ -199,7 +199,7 @@ diag "check that things still doesn't work if two keys are not trusted" if $ENV{
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }
 
-diag "check that we see key selector even if only one key is trusted but there are more keys";
+diag "check that we see key selector even if only one key is trusted but there are more keys" if $ENV{TEST_VERBOSE};
 {
     RT::Test->clean_caught_mails;
 
@@ -226,7 +226,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "check that key selector works and we can select trusted key";
+diag "check that key selector works and we can select trusted key" if $ENV{TEST_VERBOSE};
 {
     RT::Test->clean_caught_mails;
 
@@ -258,7 +258,7 @@ diag "check that key selector works and we can select trusted key";
     check_text_emails( { Encrypt => 1 }, @mail );
 }
 
-diag "check encrypting of attachments";
+diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
 {
     RT::Test->clean_caught_mails;
 
