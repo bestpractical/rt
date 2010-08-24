@@ -57,56 +57,56 @@ use RT::ObjectCustomFieldValues;
 
 
 our %FieldTypes = (
-    Select => [
+    Select => { labels => [
         'Select multiple values',    # loc
         'Select one value',        # loc
         'Select up to [_1] values',    # loc
-    ],
-    Freeform => [
+    ]},
+    Freeform => { labels => [
         'Enter multiple values',    # loc
         'Enter one value',        # loc
         'Enter up to [_1] values',    # loc
-    ],
-    Text => [
+    ]},
+    Text => { labels => [
         'Fill in multiple text areas',    # loc
         'Fill in one text area',    # loc
         'Fill in up to [_1] text areas',# loc
-    ],
-    Wikitext => [
+    ]},
+    Wikitext => { labels => [
         'Fill in multiple wikitext areas',    # loc
         'Fill in one wikitext area',    # loc
         'Fill in up to [_1] wikitext areas',# loc
-    ],
-    Image => [
+    ]},
+    Image => { labels => [
         'Upload multiple images',    # loc
         'Upload one image',        # loc
         'Upload up to [_1] images',    # loc
-    ],
-    Binary => [
+    ]},
+    Binary => { labels => [
         'Upload multiple files',    # loc
         'Upload one file',        # loc
         'Upload up to [_1] files',    # loc
-    ],
-    Combobox => [
+    ]},
+    Combobox => { labels => [
         'Combobox: Select or enter multiple values',    # loc
         'Combobox: Select or enter one value',        # loc
         'Combobox: Select or enter up to [_1] values',    # loc
-    ],
-    Autocomplete => [
+    ]},
+    Autocomplete => { labels => [
         'Enter multiple values with autocompletion',    # loc
         'Enter one value with autocompletion',            # loc
         'Enter up to [_1] values with autocompletion',    # loc
-    ],
-    Date => [
+    ]},
+    Date => { labels => [
         'Select multiple dates',	# loc
         'Select date',			# loc
         'Select up to [_1] dates',	# loc
-    ],
-    DateTime => [
+    ]},
+    DateTime => { labels => [
         'Select multiple datetimes',	# loc
         'Select datetime',			# loc
         'Select up to [_1] datetimes',	# loc
-    ],
+    ]},
 );
 
 our %RenderTypes = (
@@ -595,7 +595,7 @@ sub FriendlyType {
     my $max  = @_ ? shift : $self->MaxValues;
     $max = 0 unless $max;
 
-    if (my $friendly_type = $FieldTypes{$type}[$max>2 ? 2 : $max]) {
+    if (my $friendly_type = $FieldTypes{$type}->{labels}->[$max>2 ? 2 : $max]) {
         return ( $self->loc( $friendly_type, $max ) );
     }
     else {
