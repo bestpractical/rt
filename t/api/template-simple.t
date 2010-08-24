@@ -193,6 +193,8 @@ $template->SetType('Perl');
 $template->Parse;
 is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 
+undef $ticket;
+
 my $counter = 0;
 sub IndividualTemplateTest {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
