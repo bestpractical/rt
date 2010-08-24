@@ -75,6 +75,12 @@
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
+% if (my $attr = $RT::System->FirstAttribute('UserCSS')) {
+<style type="text/css" media="screen">
+<% $attr->Content %>
+</style>
+% }
+
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>

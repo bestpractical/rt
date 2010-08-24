@@ -67,29 +67,61 @@ Upload Logo:
 Primary colors:
 %   for (@$colors) {
 %     my $fg = $_->{l} >= 0.6 ? 'black' : 'white';
-<span style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% $_->{l}%>></span>
+<span class="color-template" style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% $_->{l}%>></span>
 %   }
 % }
-
+<div class="clear">
+<span class="color-template" style="background-color: white; color: black; width: 5em">test</span>
+<span class="color-template" style="background-color: white; color: gray; width: 5em">test</span>
+<span class="color-template" style="background-color: red; color: white; width: 5em">test</span>
+</div>
 <div class="clear">
 
-Csutom CSS:
-<textarea rows=30 cols=60 id="user_css">
-body {background: orange}
+Csutom CSS (Advanced):<br />
 
-div#header h1 { color:black }
+<form method="POST">
 
-input[type="reset"], input[type="submit"], input[class="button"] {background: green}
-
-</textarea>
+<textarea rows=30 cols=60 id="user_css" name="user_css"><% $user_css %></textarea>
 
 <input id="try" type="button" value="Try">
+<input name="reset_css" value="Reset CSS" type="submit">
+<input value="Save" type="submit">
+</form>
 
 <script type="text/javascript">
+
+var section = 'main';
+
+var section_css_mapping = {
+    main: ['body',
+           'div#body',
+           'div#quickbar',
+           'input[type="reset"], input[type="submit"], input[class="button"]']
+};
+
 jQuery(function($) {
-  $('#try').click(function() {
     $("style#test").text($('#user_css').val());
-  })
+    $('#try').click(function() {
+        $("style#test").text($('#user_css').val());
+    });
+
+
+    $('span.color-template').click(function() {
+      var bg = $(this).css('background-color');
+      var fg = $(this).css('color');
+      var applying = section_css_mapping[section];
+      var css = $('#user_css').val();
+      if (applying) {
+          for (var name in applying) {
+              var rule = new RegExp('\\b'+applying[name]+'\\s*{.*?}');
+              css = css.replace(rule, applying[name]+' { background: '+bg+'; color: '+fg+ '} ');
+          }
+      }
+      $('#user_css').val(css);
+      $("style#test").text(css);
+
+  });
+
 
 });
 </script>
@@ -118,6 +150,33 @@ else {
     else {
         $RT::System->DeleteAttribute('UserLogo');
     }
+}
+
+if ($user_css) {
+    if ($ARGS{'reset_css'}) {
+        $RT::System->DeleteAttribute('UserCSS');
+        undef $user_css;
+    }
+    else {
+        my ($id, $msg) = $RT::System->SetAttribute( Name => "UserCSS",
+                                                    Description => "User-provided css",
+                                                    Content => $user_css );
+    }
+}
+
+if (!$user_css) {
+    my $attr = $RT::System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : 'body {}
+
+div#body {}
+
+div#header h1 { }
+
+div#quickbar {}
+
+input[type="reset"], input[type="submit"], input[class="button"] {}
+';
+
 }
 
 my $colors = $img ? analyze_img($img) : undef;
@@ -153,5 +212,5 @@ sub analyze_img {
 
 </%INIT>
 <%ARGS>
-
+$user_css => ''
 </%ARGS>
