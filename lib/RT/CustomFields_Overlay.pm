@@ -355,7 +355,7 @@ sub Next {
     my $CF = $self->SUPER::Next();
     return $CF unless $CF;
 
-    $CF->SetContextOject( $self->ContextObject );
+    $CF->SetContextObject( $self->ContextObject );
 
     return $self->Next unless $CF->CurrentUserHasRight('SeeCustomField');
     return $CF;
