@@ -11,7 +11,7 @@ use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';
 
-diag "Create a CF" if $ENV{'TEST_VERBOSE'};
+diag "Create a CF";
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is(q/RT Administration/, 'admin screen');
@@ -29,7 +29,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     );
 }
 
-diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
+diag "apply the CF to General queue";
 my ( $cf, $cfid, $tid );
 {
     $m->title_is(q/Created CustomField img/, 'admin-cf created');
@@ -64,8 +64,7 @@ RT::Test->set_rights(
 ok $m->login( $tester->Name, 123456), 'logged in';
 
 diag "check that we have no the CF on the create"
-    ." ticket page when user has no SeeCustomField right"
-        if $ENV{'TEST_VERBOSE'};
+    ." ticket page when user has no SeeCustomField right";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -95,8 +94,7 @@ RT::Test->set_rights(
 );
 
 diag "check that we have no the CF on the create"
-    ." ticket page when user has no ModifyCustomField right"
-        if $ENV{'TEST_VERBOSE'};
+    ." ticket page when user has no ModifyCustomField right";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -128,7 +126,7 @@ RT::Test->set_rights(
     },
 );
 
-diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
+diag "create a ticket with an image";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",

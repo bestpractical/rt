@@ -505,7 +505,7 @@ like ($cc , qr/test5/, "Found test 5");
 
 # }}}
 
-diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+diag q{regression test for #5248 from rt3.fsck.com};
 {
     my $subject_folding_email = RT::Test::get_relocatable_file(
         'subject-with-folding-ws', (File::Spec->updir(), 'data', 'emails'));
@@ -518,7 +518,7 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     is ($ticket->Subject, 'test', 'correct subject');
 }
 
-diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+diag q{regression test for #5248 from rt3.fsck.com};
 {
     my $long_subject_email = RT::Test::get_relocatable_file('very-long-subject',
         (File::Spec->updir(), 'data', 'emails'));

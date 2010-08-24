@@ -43,7 +43,7 @@ sub selectedClauses {
 }
 
 
-diag "add the first condition" if $ENV{'TEST_VERBOSE'};
+diag "add the first condition";
 {
     ok $agent->form_name('BuildQuery'), "found the form once";
     $agent->field("ActorField", "Owner");
@@ -53,7 +53,7 @@ diag "add the first condition" if $ENV{'TEST_VERBOSE'};
     is getQueryFromForm, "Owner = 'Nobody'", 'correct query';
 }
 
-diag "set the next condition" if $ENV{'TEST_VERBOSE'};
+diag "set the next condition";
 {
     ok($agent->form_name('BuildQuery'), "found the form again");
     $agent->field("QueueOp", "!=");
@@ -63,7 +63,7 @@ diag "set the next condition" if $ENV{'TEST_VERBOSE'};
         'correct query';
 }
 
-diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
+diag "We're going to delete the owner";
 {
     $agent->select("clauses", ["0"] );
     $agent->click("DeleteClause");
@@ -71,7 +71,7 @@ diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
     is getQueryFromForm, "Queue != 'Regression'", 'correct query';
 }
 
-diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
+diag "add a cond with OR and se number by the way";
 {
     $agent->field("AndOr", "OR");
     $agent->select("idOp", ">");
@@ -84,7 +84,7 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 
 }
 
-diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
+diag "Move the second one up a level";
 {
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
@@ -92,7 +92,7 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
 }
 
-diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
+diag "Move the second one right";
 {
     $agent->click("Right");
     ok $agent->form_name('BuildQuery'), "found the form again";
@@ -101,7 +101,7 @@ diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["2"], 'the one we moved right is selected';
 }
 
-diag "Move the block up" if $ENV{'TEST_VERBOSE'};
+diag "Move the block up";
 {
     $agent->select("clauses", ["1"]);
     $agent->click("Up");
@@ -111,7 +111,7 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
 }
 
 
-diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
+diag "Can not move up the top most clause";
 {
     $agent->select("clauses", ["0"]);
     $agent->click("Up");
@@ -120,7 +120,7 @@ diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
-diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
+diag "Can not move left the left most clause";
 {
     $agent->click("Left");
     ok($agent->form_name('BuildQuery'), "found the form again");
@@ -128,7 +128,7 @@ diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
-diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
+diag "Add a condition into a nested block";
 {
     $agent->select("clauses", ["1"]);
     $agent->select("ValueOfStatus" => "stalled");
@@ -140,8 +140,7 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
         "added new one";
 }
 
-diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same."
-    if $ENV{'TEST_VERBOSE'};
+diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same.";
 {
     my $response = $agent->get($url."Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
@@ -224,8 +223,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 
 }
 
-diag "input a condition, select (several conditions), click delete"
-    if $ENV{'TEST_VERBOSE'};
+diag "input a condition, select (several conditions), click delete";
 {
     my $response = $agent->get( $url."Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";

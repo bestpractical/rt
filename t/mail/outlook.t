@@ -60,7 +60,7 @@ use RT::Test tests => 43;
 my ($baseurl, $m) = RT::Test->started_ok;
 # 12.0 is outlook 2007, 14.0 is 2010
 for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
-    diag "Test mail with multipart/alternative" if $ENV{'TEST_VERBOSE'};
+    diag "Test mail with multipart/alternative";
     {
         my $text = <<EOF;
 From: root\@localhost
@@ -106,8 +106,7 @@ EOF
             $mailer . ' with multipart/alternative, \n\n are replaced' );
     }
 
-    diag "Test mail with multipart/mixed, with multipart/alternative in it"
-      if $ENV{'TEST_VERBOSE'};
+    diag "Test mail with multipart/mixed, with multipart/alternative in it";
     {
         my $text = <<EOF;
 From: root\@localhost
@@ -167,8 +166,7 @@ EOF
             $mailer . ' with multipart/multipart, \n\n are replaced' );
     }
 
-    diag "Test mail with with outlook, but the content type is text/plain"
-      if $ENV{'TEST_VERBOSE'};
+    diag "Test mail with with outlook, but the content type is text/plain";
     {
         my $text = <<EOF;
 From: root\@localhost
@@ -203,8 +201,7 @@ EOF
     }
 }
 
-diag "Test mail with with multipart/alternative but x-mailer is not outlook "
-  if $ENV{'TEST_VERBOSE'};
+diag "Test mail with with multipart/alternative but x-mailer is not outlook ";
 {
     my $text = <<EOF;
 From: root\@localhost

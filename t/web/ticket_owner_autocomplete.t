@@ -30,7 +30,7 @@ ok( RT::Test->set_rights(
 my $agent_a = RT::Test::Web->new;
 ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 
-diag "current user has no right to own, nobody selected as owner on create" if $ENV{TEST_VERBOSE};
+diag "current user has no right to own, nobody selected as owner on create";
 {
     $agent_a->get_ok('/', 'open home page');
     $agent_a->form_name('CreateTicketInQueue');
@@ -53,7 +53,7 @@ diag "current user has no right to own, nobody selected as owner on create" if $
     is $ticket->Owner, $RT::Nobody->id, 'correct owner';
 }
 
-diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
+diag "user can chose owner of a new ticket";
 {
     $agent_a->get_ok('/', 'open home page');
     $agent_a->form_name('CreateTicketInQueue');
@@ -81,7 +81,7 @@ diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
 my $agent_b = RT::Test::Web->new;
 ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
-diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
+diag "user A can not change owner after create";
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -113,11 +113,11 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
     };
 
     $test_cb->($agent_a);
-    diag "even owner(user B) can not change owner" if $ENV{TEST_VERBOSE};
+    diag "even owner(user B) can not change owner";
     $test_cb->($agent_b);
 }
 
-diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
+diag "on reply correct owner is selected";
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(

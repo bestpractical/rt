@@ -48,7 +48,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     for my $format (qw/MIME inline/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
-            diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
+            diag "Email $eid: $usage, $attachment email with $format format";
             eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
@@ -58,13 +58,13 @@ $eid = 18;
 {
     my ($usage, $format, $attachment) = ('signed', 'inline', 'plain');
     ++$eid;
-    diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
+    diag "Email $eid: $usage, $attachment email with $format format";
     eval { email_ok($eid, $usage, $format, $attachment) };
 }
 
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
-    diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
+    diag "email_ok $eid: $usage, $format, $attachment";
 
     my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
         qw(data gnupg emails));

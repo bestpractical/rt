@@ -18,7 +18,7 @@ my $tstatus = sub {
     return $ticket->Status;
 };
 
-diag "check basic API" if $ENV{TEST_VERBOSE};
+diag "check basic API";
 {
     my $schema = $general->lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
@@ -31,7 +31,7 @@ diag "check basic API" if $ENV{TEST_VERBOSE};
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-diag "check status input on create" if $ENV{TEST_VERBOSE};
+diag "check status input on create";
 {
     $m->goto_create_ticket( $general );
 
@@ -52,7 +52,7 @@ diag "check status input on create" if $ENV{TEST_VERBOSE};
     ok $valid, 'all statuses in the form are valid';
 }
 
-diag "create a ticket" if $ENV{TEST_VERBOSE};
+diag "create a ticket";
 my $tid;
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -61,7 +61,7 @@ my $tid;
     is $ticket->Status, 'new', 'correct status';
 }
 
-diag "new ->(open it)-> open" if $ENV{TEST_VERBOSE};
+diag "new ->(open it)-> open";
 {
     ok $m->goto_ticket( $tid ), 'opened a ticket';
 
@@ -88,7 +88,7 @@ diag "new ->(open it)-> open" if $ENV{TEST_VERBOSE};
     is $tstatus->($tid), 'open', 'changed status';
 }
 
-diag "open ->(stall)-> stalled" if $ENV{TEST_VERBOSE};
+diag "open ->(stall)-> stalled";
 {
     is $tstatus->($tid), 'open', 'ticket is open';
 
@@ -117,7 +117,7 @@ diag "open ->(stall)-> stalled" if $ENV{TEST_VERBOSE};
     is $tstatus->($tid), 'stalled', 'changed status';
 }
 
-diag "stall ->(open it)-> open" if $ENV{TEST_VERBOSE};
+diag "stall ->(open it)-> open";
 {
     is $tstatus->($tid), 'stalled', 'ticket is stalled';
 
@@ -144,7 +144,7 @@ diag "stall ->(open it)-> open" if $ENV{TEST_VERBOSE};
     is $tstatus->($tid), 'open', 'changed status';
 }
 
-diag "open -> deleted, only via modify" if $ENV{TEST_VERBOSE};
+diag "open -> deleted, only via modify";
 {
     is $tstatus->($tid), 'open', 'ticket is open';
 
@@ -163,7 +163,7 @@ diag "open -> deleted, only via modify" if $ENV{TEST_VERBOSE};
     is $tstatus->($tid), 'deleted', 'deleted ticket';
 }
 
-diag "deleted -> X via modify, only open is available" if $ENV{TEST_VERBOSE};
+diag "deleted -> X via modify, only open is available";
 {
     is $tstatus->($tid), 'deleted', 'ticket is deleted';
 
@@ -177,7 +177,7 @@ diag "deleted -> X via modify, only open is available" if $ENV{TEST_VERBOSE};
     is join('-', @form_values), '-open', 'only open and default available';
 }
 
-diag "check illegal values and transitions" if $ENV{TEST_VERBOSE};
+diag "check illegal values and transitions";
 {
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );

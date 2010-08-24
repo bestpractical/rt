@@ -11,7 +11,7 @@ use RT::CustomField;
 
 # Test Sorting by custom fields.
 
-diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
+diag "Create a queue to test with.";
 my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
@@ -23,7 +23,7 @@ my $queue;
     ok($ret, "$queue_name - test queue creation. $msg");
 }
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 my $cf_name = "Order$$";
 my $cf;
 {

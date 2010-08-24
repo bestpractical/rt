@@ -42,17 +42,17 @@ $user->SetEmailAddress('rt@example.com');
 
 if (0) {
     # XXX: need to generate these mails
-    diag "no signature" if $ENV{TEST_VERBOSE};
-    diag "no encryption on encrypted queue" if $ENV{TEST_VERBOSE};
-    diag "mismatched signature" if $ENV{TEST_VERBOSE};
-    diag "unknown public key" if $ENV{TEST_VERBOSE};
-    diag "unknown private key" if $ENV{TEST_VERBOSE};
-    diag "signer != sender" if $ENV{TEST_VERBOSE};
-    diag "encryption to user whose pubkey is not signed" if $ENV{TEST_VERBOSE};
-    diag "no encryption of attachment on encrypted queue" if $ENV{TEST_VERBOSE};
-    diag "no signature of attachment" if $ENV{TEST_VERBOSE};
-    diag "revoked key" if $ENV{TEST_VERBOSE};
-    diag "expired key" if $ENV{TEST_VERBOSE};
-    diag "unknown algorithm" if $ENV{TEST_VERBOSE};
+    diag "no signature";
+    diag "no encryption on encrypted queue";
+    diag "mismatched signature";
+    diag "unknown public key";
+    diag "unknown private key";
+    diag "signer != sender";
+    diag "encryption to user whose pubkey is not signed";
+    diag "no encryption of attachment on encrypted queue";
+    diag "no signature of attachment";
+    diag "revoked key";
+    diag "expired key";
+    diag "unknown algorithm";
 }
 

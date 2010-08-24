@@ -6,7 +6,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
-diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
+diag "Create a queue CF";
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is(q/RT Administration/, 'admin screen');
@@ -25,7 +25,7 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
     $m->content_like( qr/Object created/, 'CF QueueCFTest created' );
 }
 
-diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
+diag "Apply the new CF globally";
 {
     $m->follow_link( text => 'Global' );
     $m->title_is(q!Admin/Global configuration!, 'global configuration screen');
@@ -42,7 +42,7 @@ diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
     $m->content_like( qr/Object created/, 'CF QueueCFTest enabled globally' );
 }
 
-diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
+diag "Edit the CF value for default queue";
 {
     $m->follow_link( url => '/Admin/Queues/' );
     $m->title_is(q/Admin queues/, 'queues configuration screen');

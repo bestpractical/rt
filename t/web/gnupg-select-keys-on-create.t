@@ -27,7 +27,7 @@ RT->Config->Set( GnuPGOptions =>
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'} if $ENV{TEST_VERBOSE};
+diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -46,7 +46,7 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
+diag "check that signing doesn't work if there is no key";
 {
     RT::Test->clean_caught_mails;
 
@@ -72,7 +72,7 @@ diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
-diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
+diag "check that things don't work if there is no key";
 {
     RT::Test->clean_caught_mails;
 
@@ -98,7 +98,7 @@ diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import first key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
+diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -107,7 +107,7 @@ my $fpr1 = '';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
 }
 
-diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_VERBOSE};
+diag "check that things still doesn't work if key is not trusted";
 {
     RT::Test->clean_caught_mails;
 
@@ -145,7 +145,7 @@ diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_V
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import a second key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
+diag "import a second key of rt-test\@example.com";
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
@@ -154,7 +154,7 @@ my $fpr2 = '';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};
 }
 
-diag "check that things still doesn't work if two keys are not trusted" if $ENV{TEST_VERBOSE};
+diag "check that things still doesn't work if two keys are not trusted";
 {
     RT::Test->clean_caught_mails;
 
@@ -199,7 +199,7 @@ diag "check that things still doesn't work if two keys are not trusted" if $ENV{
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }
 
-diag "check that we see key selector even if only one key is trusted but there are more keys" if $ENV{TEST_VERBOSE};
+diag "check that we see key selector even if only one key is trusted but there are more keys";
 {
     RT::Test->clean_caught_mails;
 
@@ -226,7 +226,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "check that key selector works and we can select trusted key" if $ENV{TEST_VERBOSE};
+diag "check that key selector works and we can select trusted key";
 {
     RT::Test->clean_caught_mails;
 
@@ -258,7 +258,7 @@ diag "check that key selector works and we can select trusted key" if $ENV{TEST_
     check_text_emails( { Encrypt => 1 }, @mail );
 }
 
-diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
+diag "check encrypting of attachments";
 {
     RT::Test->clean_caught_mails;
 

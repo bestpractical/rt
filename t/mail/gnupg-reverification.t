@@ -25,7 +25,7 @@ RT->Config->Set( 'GnuPGOptions',
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 
-diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
+diag "load Everyone group";
 my $everyone;
 {
     $everyone = RT::Group->new( $RT::SystemUser );
@@ -50,7 +50,7 @@ my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
     qw(data gnupg emails));
 my @files = glob("$emaildatadir/*-signed-*");
 foreach my $file ( @files ) {
-    diag "testing $file" if $ENV{'TEST_VERBOSE'};
+    diag "testing $file";
 
     my ($eid) = ($file =~ m{(\d+)[^/\\]+$});
     ok $eid, 'figured id of a file';
@@ -77,11 +77,11 @@ foreach my $file ( @files ) {
     push @ticket_ids, $id;
 }
 
-diag "import key into keyring" if $ENV{'TEST_VERBOSE'};
+diag "import key into keyring";
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 
 foreach my $id ( @ticket_ids ) {
-    diag "testing ticket #$id" if $ENV{'TEST_VERBOSE'};
+    diag "testing ticket #$id";
 
     $m->goto_ticket( $id );
     $m->content_like(

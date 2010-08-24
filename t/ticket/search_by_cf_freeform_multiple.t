@@ -10,7 +10,7 @@ my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 my ($cf_name, $cf_id, $cf) = ("Test", 0, undef);
 {
     $cf = RT::CustomField->new( $RT::SystemUser );

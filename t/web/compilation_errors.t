@@ -28,7 +28,6 @@ $agent->cookie_jar($cookie_jar);
 
 # get the top page
 my $url = $agent->rt_base_url;
-diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page");
@@ -47,7 +46,7 @@ sub test_get {
         my $file = shift;
 
         $file =~ s#^share/html/##;
-        diag( "testing $url/$file" ) if $ENV{TEST_VERBOSE};
+        diag( "testing $url/$file" );
         ok ($agent->get("$url/$file", "GET $url/$file"), "Can Get $url/$file");
         is ($agent->{'status'}, 200, "Loaded $file");
 #        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");

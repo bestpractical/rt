@@ -26,7 +26,7 @@ my $tstatus = sub {
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-diag "check basic API" if $ENV{TEST_VERBOSE};
+diag "check basic API";
 {
     my $schema = $general->lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
@@ -37,7 +37,7 @@ diag "check basic API" if $ENV{TEST_VERBOSE};
     is $schema->name, 'delivery', "it's a delivery schema";
 }
 
-diag "dates on create for default schema" if $ENV{TEST_VERBOSE};
+diag "dates on create for default schema";
 {
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -115,7 +115,7 @@ diag "dates on create for default schema" if $ENV{TEST_VERBOSE};
     }
 }
 
-diag "dates on create for delivery schema" if $ENV{TEST_VERBOSE};
+diag "dates on create for delivery schema";
 {
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -136,7 +136,7 @@ diag "dates on create for delivery schema" if $ENV{TEST_VERBOSE};
             Subject => 'test',
         );
         ok $id, 'created a ticket';
-        diag($msg) if $ENV{TEST_VERBOSE};
+        diag($msg);
         is $ticket->Status, 'ordered', "Status is ordered";
         my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
         ok($statusval,$statusmsg);
@@ -209,7 +209,7 @@ diag "dates on create for delivery schema" if $ENV{TEST_VERBOSE};
     }
 }
 
-diag "dates on status change for default schema" if $ENV{TEST_VERBOSE};
+diag "dates on status change for default schema";
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id, $msg) = $ticket->Create(
@@ -244,7 +244,7 @@ diag "dates on status change for default schema" if $ENV{TEST_VERBOSE};
     ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
 }
 
-diag "dates on status change for delivery schema" if $ENV{TEST_VERBOSE};
+diag "dates on status change for delivery schema";
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id, $msg) = $ticket->Create(
@@ -274,7 +274,7 @@ diag "dates on status change for delivery schema" if $ENV{TEST_VERBOSE};
     ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
 }
 
-diag "add partial map between general->delivery" if $ENV{TEST_VERBOSE};
+diag "add partial map between general->delivery";
 {
     my $schemas = RT->Config->Get('Lifecycles');
     $schemas->{'__maps__'} = {
@@ -288,7 +288,7 @@ diag "add partial map between general->delivery" if $ENV{TEST_VERBOSE};
     RT::Lifecycle->fill_cache;
 }
 
-diag "check date changes on moving a ticket" if $ENV{TEST_VERBOSE};
+diag "check date changes on moving a ticket";
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id, $msg) = $ticket->Create(

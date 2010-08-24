@@ -11,7 +11,7 @@ my $queue_name = "CFSortQueue-$$";
 my $queue = RT::Test->load_or_create_queue( Name => $queue_name );
 ok($queue && $queue->id, "$queue_name - test queue creation");
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 my $cf_name = "Rights$$";
 my $cf;
 {
@@ -98,7 +98,7 @@ ok( RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login( tester => 'password' ), 'logged in';
 
-diag "check that we have no the CF on the create" if $ENV{'TEST_VERBOSE'};
+diag "check that we have no the CF on the create";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -123,7 +123,7 @@ diag "check that we have no the CF on the create" if $ENV{'TEST_VERBOSE'};
     ok !$form->find_input( $cf_field ), 'no form field on the page';
 }
 
-diag "check that we see CF as Cc" if $ENV{'TEST_VERBOSE'};
+diag "check that we see CF as Cc";
 {
     my $ticket = RT::Ticket->new( $tester );
     my ($tid, $msg) = $ticket->Create( Queue => $queue, Subject => 'test', Cc => $tester->id );
@@ -133,7 +133,7 @@ diag "check that we see CF as Cc" if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr/$cf_name/, "see CF");
 }
 
-diag "check that owner can see and edit CF" if $ENV{'TEST_VERBOSE'};
+diag "check that owner can see and edit CF";
 {
     my $ticket = RT::Ticket->new( $tester );
     my ($tid, $msg) = $ticket->Create( Queue => $queue, Subject => 'test', Cc => $tester->id, Owner => $tester->id );

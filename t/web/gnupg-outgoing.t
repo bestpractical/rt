@@ -63,7 +63,7 @@ my %mail = (
     signed_encrypted => [],
 );
 
-diag "check in read-only mode that queue's props influence create/update ticket pages" if $ENV{TEST_VERBOSE};
+diag "check in read-only mode that queue's props influence create/update ticket pages";
 {
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );

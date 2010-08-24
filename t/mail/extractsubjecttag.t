@@ -17,7 +17,7 @@ my $queue = RT::Test->load_or_create_queue(
 my $subject_tag = 'Windows/Servers-Desktops';
 ok $queue && $queue->id, 'loaded or created queue';
 
-diag "Set Subject Tag" if $ENV{'TEST_VERBOSE'};
+diag "Set Subject Tag";
 {
     is(RT->System->SubjectTag($queue), undef, 'No Subject Tag yet');
     my ($status, $msg) = $queue->SetSubjectTag( $subject_tag );
@@ -26,7 +26,7 @@ diag "Set Subject Tag" if $ENV{'TEST_VERBOSE'};
 }
 
 my $original_ticket = RT::Ticket->new( $RT::SystemUser );
-diag "Create a ticket and make sure it has the subject tag" if $ENV{'TEST_VERBOSE'};
+diag "Create a ticket and make sure it has the subject tag";
 {
     $original_ticket->Create(
         Queue => $queue->id,
@@ -47,7 +47,7 @@ diag "Create a ticket and make sure it has the subject tag" if $ENV{'TEST_VERBOS
 }
 
 
-diag "Test that a reply with a Subject Tag doesn't change the subject" if $ENV{'TEST_VERBOSE'};
+diag "Test that a reply with a Subject Tag doesn't change the subject";
 {
     my $ticketid = $original_ticket->Id;
     my $text = <<EOF;
@@ -67,7 +67,7 @@ EOF
 
 }
 
-diag "Test that a reply with another RT's subject tag changes the subject" if $ENV{'TEST_VERBOSE'};
+diag "Test that a reply with another RT's subject tag changes the subject";
 {
     my $ticketid = $original_ticket->Id;
     my $text = <<EOF;

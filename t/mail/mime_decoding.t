@@ -5,7 +5,7 @@ use RT::Test nodata => 1, tests => 7;
 
 use_ok('RT::I18N');
 
-diag q{'=' char in a leading part before an encoded part} if $ENV{TEST_VERBOSE};
+diag q{'=' char in a leading part before an encoded part};
 {
     my $str = 'key="plain"; key="=?UTF-8?B?0LzQvtC5X9GE0LDQudC7LmJpbg==?="';
     is(
@@ -15,8 +15,7 @@ diag q{'=' char in a leading part before an encoded part} if $ENV{TEST_VERBOSE};
     );
 }
 
-diag q{not compliant with standards, but MUAs send such field when attachment has non-ascii in name}
-    if $ENV{TEST_VERBOSE};
+diag q{not compliant with standards, but MUAs send such field when attachment has non-ascii in name};
 {
     my $str = 'attachment; filename="=?UTF-8?B?0LzQvtC5X9GE0LDQudC7LmJpbg==?="';
     is(
@@ -26,7 +25,7 @@ diag q{not compliant with standards, but MUAs send such field when attachment ha
     );
 }
 
-diag q{'=' char in a trailing part after an encoded part} if $ENV{TEST_VERBOSE};
+diag q{'=' char in a trailing part after an encoded part};
 {
     my $str = 'attachment; filename="=?UTF-8?B?0LzQvtC5X9GE0LDQudC7LmJpbg==?="; some_prop="value"';
     is(
@@ -36,7 +35,7 @@ diag q{'=' char in a trailing part after an encoded part} if $ENV{TEST_VERBOSE};
     );
 }
 
-diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
+diag q{regression test for #5248 from rt3.fsck.com};
 {
     my $str = qq{Subject: =?ISO-8859-1?Q?Re=3A_=5BXXXXXX=23269=5D_=5BComment=5D_Frag?=}
         . qq{\n =?ISO-8859-1?Q?e_zu_XXXXXX--xxxxxx_/_Xxxxx=FCxxxxxxxxxx?=};
@@ -47,7 +46,7 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     );
 }
 
-diag q{newline and encoded file name} if $ENV{TEST_VERBOSE};
+diag q{newline and encoded file name};
 {
     my $str = qq{application/vnd.ms-powerpoint;\n\tname="=?ISO-8859-1?Q?Main_presentation.ppt?="};
     is(
@@ -57,7 +56,7 @@ diag q{newline and encoded file name} if $ENV{TEST_VERBOSE};
     );
 }
 
-diag q{rfc2231} if $ENV{TEST_VERBOSE};
+diag q{rfc2231};
 {
     my $str =
 "filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74 filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";

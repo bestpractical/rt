@@ -22,7 +22,7 @@ sub get_rights {
     return @rights;
 };
 
-diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
+diag "load Everyone group";
 my ($everyone, $everyone_gid);
 {
     $everyone = RT::Group->new( $RT::SystemUser );
@@ -30,7 +30,7 @@ my ($everyone, $everyone_gid);
     ok($everyone_gid = $everyone->id, "loaded 'everyone' group");
 }
 
-diag "revoke all global rights from Everyone group" if $ENV{'TEST_VERBOSE'};
+diag "revoke all global rights from Everyone group";
 my @has = get_rights( $m, $everyone_gid, 'RT::System-1' );
 if ( @has ) {
     $m->form_number(3);
@@ -42,7 +42,7 @@ if ( @has ) {
     ok(1, 'the group has no global rights');
 }
 
-diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
+diag "grant SuperUser right to everyone";
 {
     $m->form_number(3);
     $m->select("GrantRight-$everyone_gid-RT::System-1", ['SuperUser']);
@@ -54,7 +54,7 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
-diag "revoke the right" if $ENV{'TEST_VERBOSE'};
+diag "revoke the right";
 {
     $m->form_number(3);
     $m->tick("RevokeRight-$everyone_gid-RT::System-1", 'SuperUser');
@@ -67,7 +67,7 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 }
 
 
-diag "return rights the group had in the beginning" if $ENV{'TEST_VERBOSE'};
+diag "return rights the group had in the beginning";
 if ( @has ) {
     $m->form_number(3);
     $m->select("GrantRight-$everyone_gid-RT::System-1", \@has);

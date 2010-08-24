@@ -11,7 +11,7 @@ ok $m->login, 'logged in as root';
 my $cf_name = 'test select one value';
 
 my $cfid;
-diag "Create a CF" if $ENV{'TEST_VERBOSE'};
+diag "Create a CF";
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is(q/RT Administration/, 'admin screen');
@@ -31,7 +31,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
 
-diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF" if $ENV{'TEST_VERBOSE'};
+diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF";
 {
     foreach my $value(qw(qwe ASD 0), 'foo ') {
         $m->submit_form(
@@ -52,7 +52,7 @@ diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF" if $ENV{'TEST_VERBO
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
+diag "apply the CF to General queue";
 {
     $m->follow_link( text => 'Queues' );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
@@ -69,8 +69,7 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
 }
 
 my $tid;
-diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
-    if $ENV{'TEST_VERBOSE'};
+diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF";
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($txnid, $msg);
@@ -80,7 +79,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
         "CustomField-$cfid" => 'asd',
     );
     ok $tid, "created ticket";
-    diag $msg if $msg && $ENV{'TEST_VERBOSE'};
+    diag $msg if $msg;
 
     # we use lc as we really don't care about case
     # so if later we'll add canonicalization of value
@@ -89,8 +88,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
        'asd', 'assigned value of the CF';
 }
 
-diag "check that values of the CF are case insensetive(asd vs. ASD)"
-    if $ENV{'TEST_VERBOSE'};
+diag "check that values of the CF are case insensetive(asd vs. ASD)";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );
@@ -112,8 +110,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)"
        'asd', 'value is still the same';
 }
 
-diag "check that 0 is ok value of the CF"
-    if $ENV{'TEST_VERBOSE'};
+diag "check that 0 is ok value of the CF";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );
@@ -137,8 +134,7 @@ diag "check that 0 is ok value of the CF"
        '0', 'API returns correct value';
 }
 
-diag "check that we can set empty value when the current is 0"
-    if $ENV{'TEST_VERBOSE'};
+diag "check that we can set empty value when the current is 0";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );

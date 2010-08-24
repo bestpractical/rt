@@ -10,7 +10,6 @@ $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $url = $agent->rt_base_url;
-diag $url if $ENV{TEST_VERBOSE};
 
 # get the top page
 {

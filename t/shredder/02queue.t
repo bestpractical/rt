@@ -15,7 +15,7 @@ BEGIN {
 init_db();
 
 
-diag 'simple queue' if $ENV{'TEST_VERBOSE'};
+diag 'simple queue' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $queue = RT::Queue->new( $RT::SystemUser );
@@ -28,7 +28,7 @@ diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
+diag 'queue with scrip' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $queue = RT::Queue->new( $RT::SystemUser );
@@ -51,7 +51,7 @@ diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'queue with template' if $ENV{'TEST_VERBOSE'};
+diag 'queue with template' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $queue = RT::Queue->new( $RT::SystemUser );
@@ -72,7 +72,7 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
+diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $queue = RT::Queue->new( $RT::SystemUser );
@@ -95,7 +95,7 @@ diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
+diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 {
 # XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
 #	create_savepoint('clean');

@@ -20,7 +20,7 @@ my $owner_role_group = RT::Group->new( $RT::SystemUser );
 $owner_role_group->LoadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
-diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
+diag "check that deffering owner doesn't regress";
 {
     RT::Test->set_rights(
         { Principal => $tester->PrincipalObj,
@@ -39,14 +39,13 @@ diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
         Owner   => $tester->id,
         AdminCc => 'root@localhost',
     );
-    diag $msg if $msg && $ENV{'TEST_VERBOSE'};
+    diag $msg if $msg;
     ok $tid, "created a ticket";
     is $ticket->Owner, $tester->id, 'correct owner';
     like $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is there';
 }
 
-diag "check that previous trick doesn't work without sufficient rights"
-    if $ENV{'TEST_VERBOSE'};
+diag "check that previous trick doesn't work without sufficient rights";
 {
     RT::Test->set_rights(
         { Principal => $tester->PrincipalObj,
@@ -61,13 +60,13 @@ diag "check that previous trick doesn't work without sufficient rights"
         Owner   => $tester->id,
         AdminCc => 'root@localhost',
     );
-    diag $msg if $msg && $ENV{'TEST_VERBOSE'};
+    diag $msg if $msg;
     ok $tid, "created a ticket";
     is $ticket->Owner, $tester->id, 'correct owner';
     unlike $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is there';
 }
 
-diag "check that deffering owner really works" if $ENV{'TEST_VERBOSE'};
+diag "check that deffering owner really works";
 {
     RT::Test->set_rights(
         { Principal => $tester->PrincipalObj,
@@ -85,13 +84,13 @@ diag "check that deffering owner really works" if $ENV{'TEST_VERBOSE'};
         Owner => $tester->id,
         Cc    => 'tester@localhost',
     );
-    diag $msg if $msg && $ENV{'TEST_VERBOSE'};
+    diag $msg if $msg;
     ok $tid, "created a ticket";
     like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
     is $ticket->Owner, $tester->id, 'tester is also owner';
 }
 
-diag "check that deffering doesn't work without correct rights" if $ENV{'TEST_VERBOSE'};
+diag "check that deffering doesn't work without correct rights";
 {
     RT::Test->set_rights(
         { Principal => $tester->PrincipalObj,
@@ -110,7 +109,7 @@ diag "check that deffering doesn't work without correct rights" if $ENV{'TEST_VE
         );
     } qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
 
-    diag $msg if $msg && $ENV{'TEST_VERBOSE'};
+    diag $msg if $msg;
     ok $tid, "created a ticket";
     like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
     isnt $ticket->Owner, $tester->id, 'tester is also owner';

@@ -13,7 +13,7 @@ ok( $root->Load('root'), 'load root user' );
 my $cf_name = 'test cf date';
 
 my $cfid;
-diag "Create a CF" if $ENV{'TEST_VERBOSE'};
+diag "Create a CF";
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is( q/RT Administration/, 'admin screen' );
@@ -33,7 +33,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
 
-diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
+diag "apply the CF to General queue";
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
 
@@ -54,8 +54,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->content_like( qr/Object created/, 'TCF added to the queue' );
 }
 
-diag 'check valid inputs with various timezones in ticket create page'
-  if $ENV{'TEST_VERBOSE'};
+diag 'check valid inputs with various timezones in ticket create page';
 {
     my ( $ticket, $id );
 
@@ -85,7 +84,7 @@ diag 'check valid inputs with various timezones in ticket create page'
         'has cf date value on the page' );
 }
 
-diag 'check search build page' if $ENV{'TEST_VERBOSE'};
+diag 'check search build page';
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
 
@@ -168,7 +167,7 @@ diag 'check search build page' if $ENV{'TEST_VERBOSE'};
     $m->content_contains( 'Found 0 tickets', 'Found 0 tickets' );
 }
 
-diag 'check invalid inputs' if $ENV{'TEST_VERBOSE'};
+diag 'check invalid inputs';
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",

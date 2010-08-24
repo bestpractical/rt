@@ -70,7 +70,7 @@ use LWP::UserAgent;
 
 my $url = $m->rt_base_url;
 
-diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'TEST_VERBOSE'};
+diag "Make sure that when we call the mailgate without URL, it fails";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -84,7 +84,7 @@ EOF
     ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
 }
 
-diag "Make sure that when we call the mailgate with wrong URL, it tempfails" if $ENV{'TEST_VERBOSE'};
+diag "Make sure that when we call the mailgate with wrong URL, it tempfails";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -99,7 +99,7 @@ EOF
 }
 
 my $everyone_group;
-diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
+diag "revoke rights tests depend on";
 {
     $everyone_group = RT::Group->new( $RT::SystemUser );
     $everyone_group->LoadSystemInternalGroup( 'Everyone' );
@@ -110,7 +110,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-diag "Test new ticket creation by root who is privileged and superuser" if $ENV{'TEST_VERBOSE'};
+diag "Test new ticket creation by root who is privileged and superuser";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -131,7 +131,7 @@ EOF
     is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
 }
 
-diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket" if $ENV{'TEST_VERBOSE'};
+diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -167,7 +167,7 @@ EOF
     );
 }
 
-diag "Make sure that not standard --extension is passed" if $ENV{'TEST_VERBOSE'};
+diag "Make sure that not standard --extension is passed";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -200,7 +200,7 @@ EOF
     );
 }
 
-diag "Test new ticket creation without --action argument" if $ENV{'TEST_VERBOSE'};
+diag "Test new ticket creation without --action argument";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -220,7 +220,7 @@ EOF
     is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
 }
 
-diag "This is a test of new ticket creation as an unknown user" if $ENV{'TEST_VERBOSE'};
+diag "This is a test of new ticket creation as an unknown user";
 {
     my $text = <<EOF;
 From: doesnotexist\@@{[RT->Config->Get('rtname')]}
@@ -244,7 +244,7 @@ EOF
     ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
 }
 
-diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
+diag "grant everybody with CreateTicket right";
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->PrincipalObj,
@@ -254,7 +254,7 @@ diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 }
 
 my $ticket_id;
-diag "now everybody can create tickets. can a random unkown user create tickets?" if $ENV{'TEST_VERBOSE'};
+diag "now everybody can create tickets. can a random unkown user create tickets?";
 {
     my $text = <<EOF;
 From: doesnotexist\@@{[RT->Config->Get('rtname')]}
@@ -280,7 +280,7 @@ EOF
     $ticket_id = $id;
 }
 
-diag "can another random reply to a ticket without being granted privs? answer should be no." if $ENV{'TEST_VERBOSE'};
+diag "can another random reply to a ticket without being granted privs? answer should be no.";
 {
     my $text = <<EOF;
 From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
@@ -299,7 +299,7 @@ EOF
     ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
 }
 
-diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
+diag "grant everyone 'ReplyToTicket' right";
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->PrincipalObj,
@@ -308,7 +308,7 @@ diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
     ), "Granted everybody the right to reply to tickets" );
 }
 
-diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
+diag "can another random reply to a ticket after being granted privs? answer should be yes";
 {
     my $text = <<EOF;
 From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
@@ -327,7 +327,7 @@ EOF
     ok ($u->Id, "user exists and was created by ticket correspondence submission");
 }
 
-diag "add a reply to the ticket using '--extension ticket' feature" if $ENV{'TEST_VERBOSE'};
+diag "add a reply to the ticket using '--extension ticket' feature";
 {
     my $text = <<EOF;
 From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
@@ -359,7 +359,7 @@ EOF
     is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
 }
 
-diag "can another random comment on a ticket without being granted privs? answer should be no" if $ENV{'TEST_VERBOSE'};
+diag "can another random comment on a ticket without being granted privs? answer should be no";
 {
     my $text = <<EOF;
 From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
@@ -379,7 +379,7 @@ EOF
 }
 
 
-diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
+diag "grant everyone 'CommentOnTicket' right";
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->PrincipalObj,
@@ -388,7 +388,7 @@ diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
     ), "Granted everybody the right to comment on tickets");
 }
 
-diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
+diag "can another random reply to a ticket after being granted privs? answer should be yes";
 {
     my $text = <<EOF;
 From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
@@ -407,7 +407,7 @@ EOF
     ok ($u->Id, " user exists and was created by ticket comment submission");
 }
 
-diag "add comment to the ticket using '--extension action' feature" if $ENV{'TEST_VERBOSE'};
+diag "add comment to the ticket using '--extension action' feature";
 {
     my $text = <<EOF;
 From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
@@ -444,7 +444,7 @@ EOF
     is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
 }
 
-diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
+diag "Testing preservation of binary attachments";
 {
     # Get a binary blob (Best Practical logo) 
     my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
@@ -475,7 +475,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
 
     my $file = `cat $LOGO_FILE`;
     ok ($file, "Read in the logo image");
-    diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file) if $ENV{'TEST_VERBOSE'};
+    diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file);
 
     # Verify that the binary attachment is valid in the database
     my $attachments = RT::Attachments->new($RT::SystemUser);
@@ -493,7 +493,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     ok ($attachment->Id, 'loaded attachment object');
     my $acontent = $attachment->Content;
 
-    diag "coming from the database, md5 hex is ".Digest::MD5::md5_hex($acontent) if $ENV{'TEST_VERBOSE'};
+    diag "coming from the database, md5 hex is ".Digest::MD5::md5_hex($acontent);
     is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
     # Grab the binary attachment via the web ui
@@ -506,7 +506,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     is ($file, $r->content, 'The attachment isn\'t screwed up in download');
 }
 
-diag "Simple I18N testing" if $ENV{'TEST_VERBOSE'};
+diag "Simple I18N testing";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -542,7 +542,7 @@ EOF
     );
 }
 
-diag "supposedly I18N fails on the second message sent in." if $ENV{'TEST_VERBOSE'};
+diag "supposedly I18N fails on the second message sent in.";
 {
     my $text = <<EOF;
 From: root\@localhost
@@ -574,7 +574,7 @@ EOF
     );
 }
 
-diag "check that mailgate doesn't suffer from empty Reply-To:" if $ENV{'TEST_VERBOSE'};
+diag "check that mailgate doesn't suffer from empty Reply-To:";
 {
     my $text = <<EOF;
 From: root\@localhost

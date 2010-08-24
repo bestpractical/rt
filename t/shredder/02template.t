@@ -15,7 +15,7 @@ BEGIN {
 init_db();
 
 
-diag 'global template' if $ENV{'TEST_VERBOSE'};
+diag 'global template' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $template = RT::Template->new( $RT::SystemUser );
@@ -31,7 +31,7 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'local template' if $ENV{'TEST_VERBOSE'};
+diag 'local template' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $template = RT::Template->new( $RT::SystemUser );
@@ -48,7 +48,7 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
+diag 'template used in scrip' if $ENV{TEST_VERBOSE};
 {
 	create_savepoint('clean');
     my $template = RT::Template->new( $RT::SystemUser );

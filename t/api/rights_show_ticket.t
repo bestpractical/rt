@@ -26,7 +26,7 @@ ok $user_b && $user_b->id, 'loaded or created user';
 
 foreach my $option (0 .. 1 ) { RT->Config->Set( 'UseSQLForACLChecks' => $option );
 
-diag "Testing with UseSQLForACLChecks => $option" if $ENV{TEST_VERBOSE};
+diag "Testing with UseSQLForACLChecks => $option";
 
 # Global Cc has right, a User is nobody
 {

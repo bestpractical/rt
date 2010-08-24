@@ -96,7 +96,7 @@ ok ($id,$msg);
 
 my $creator = RT::CurrentUser->new($u1->id);
 
-diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
+diag('Create tickets without rights to link');
 {
     # on q2 we have no rights, yet
     my $parent = RT::Ticket->new( $RT::SystemUser );
@@ -110,7 +110,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
     is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
 }
 
-diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
+diag('Create tickets with rights checks on one end of a link');
 {
     # on q2 we have no rights, but use checking one only on thing
     RT->Config->Set( StrictLinkACL => 0 );
@@ -131,7 +131,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q1, Right => 'ModifyTicket');
 ok ($id,$msg);
 
-diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
+diag('try to add link without rights');
 {
     # on q2 we have no rights, yet
     my $parent = RT::Ticket->new( $RT::SystemUser );
@@ -148,7 +148,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
 }
 
-diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
+diag('add link with rights only on base');
 {
     # on q2 we have no rights, but use checking one only on thing
     RT->Config->Set( StrictLinkACL => 0 );
@@ -193,7 +193,7 @@ ok($ticket->isa('RT::Ticket'));
 ($id,$tid, $msg) = $ticket->Create(Subject => 'Link test 1', Queue => $q1->id);
 ok ($id,$msg);
 
-diag('try link to itself') if $ENV{'TEST_VERBOSE'};
+diag('try link to itself');
 {
     my ($id, $msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket->id);
     ok(!$id, $msg);

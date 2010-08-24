@@ -11,7 +11,7 @@ my $queue_name = "CFSortQueue-$$";
 my $queue = RT::Test->load_or_create_queue( Name => $queue_name );
 ok($queue && $queue->id, "$queue_name - test queue creation");
 
-diag "create multiple CFs: B, A and C" if $ENV{TEST_VERBOSE};
+diag "create multiple CFs: B, A and C";
 my @cfs = ();
 {
     my $cf = RT::CustomField->new( $RT::SystemUser );
@@ -47,7 +47,7 @@ my @cfs = ();
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login( root => 'password' ), 'logged in';
 
-diag "reorder CFs: C, A and B" if $ENV{TEST_VERBOSE};
+diag "reorder CFs: C, A and B";
 {
     $m->get( '/Admin/Queues/' );
     $m->follow_link_ok( {text => $queue->id} );
@@ -64,7 +64,7 @@ diag "reorder CFs: C, A and B" if $ENV{TEST_VERBOSE};
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);
 }
 
-diag "check ticket create, display and edit pages" if $ENV{TEST_VERBOSE};
+diag "check ticket create, display and edit pages";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",

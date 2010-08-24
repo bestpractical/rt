@@ -14,7 +14,7 @@ use RT::CustomField;
 #########################################################
 
 
-diag "Create queues to test with." if $ENV{TEST_VERBOSE};
+diag "Create queues to test with.";
 my @qids;
 my @queues;
 # create them in reverse order to avoid false positives
