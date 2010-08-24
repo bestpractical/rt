@@ -1,0 +1,11 @@
+<%INIT>
+RT::Interface::Web::StaticFileHeaders();
+if ( my $attr = $RT::System->FirstAttribute('UserLogo') ) {
+    my $content = $attr->Content;
+    $r->content_type($content->{type}) ;
+    $m->out( $content->{data} );
+    $m->abort;
+}
+
+
+</%INIT>
