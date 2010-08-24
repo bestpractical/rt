@@ -864,35 +864,66 @@ sub SetReturnAddress {
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        if ( RT->Config->Get('UseFriendlyFromLine') ) {
-            my $friendly_name = $args{friendly_name};
-
-            unless ( $friendly_name ) {
-                $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
-                if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-                    $friendly_name = $1;
-                }
-            }
-
-            $friendly_name =~ s/"/\\"/g;
-            $self->SetHeader(
-                'From',
-                sprintf(
-                    RT->Config->Get('FriendlyFromLineFormat'),
-                    $self->MIMEEncodeString(
-                        $friendly_name, RT->Config->Get('EmailOutputEncoding')
-                    ),
-                    $replyto
-                ),
-            );
-        } else {
-            $self->SetHeader( 'From', $replyto );
-        }
+        $self->SetFrom( %args, From => $replyto );
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
         $self->SetHeader( 'Reply-To', "$replyto" );
     }
+
+}
+
+=head2 SetFrom ( From => emailaddress )
+
+Set the From: address for outgoing email
+
+=cut
+
+sub SetFrom {
+    my $self = shift;
+    my %args = @_;
+
+    if ( RT->Config->Get('UseFriendlyFromLine') ) {
+        my $friendly_name = $self->GetFriendlyName(%args);
+        $self->SetHeader(
+            'From',
+            sprintf(
+                RT->Config->Get('FriendlyFromLineFormat'),
+                $self->MIMEEncodeString(
+                    $friendly_name, RT->Config->Get('EmailOutputEncoding')
+                ),
+                $args{From}
+            ),
+        );
+    } else {
+        $self->SetHeader( 'From', $args{From} );
+    }
+}
+
+=head2 GetFriendlyName
+
+Calculate the proper Friendly Name based on the creator of the transaction
+
+=cut
+
+sub GetFriendlyName {
+    my $self = shift;
+    my %args = (
+        is_comment => 0,
+        friendly_name => '',
+        @_
+    );
+    my $friendly_name = $args{friendly_name};
+
+    unless ( $friendly_name ) {
+        $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
+        if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+            $friendly_name = $1;
+        }
+    }
+
+    $friendly_name =~ s/"/\\"/g;
+    return $friendly_name;
 
 }
 
