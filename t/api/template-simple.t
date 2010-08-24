@@ -263,5 +263,3 @@ sub SimpleTemplateTest {
     );
 }
 
-1;
-
