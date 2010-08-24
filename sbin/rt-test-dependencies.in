@@ -205,6 +205,7 @@ CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
 Text::Password::Pronounceable
+Devel::GlobalDestruction
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];

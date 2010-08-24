@@ -82,6 +82,7 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
+use Devel::GlobalDestruction;
 
 
 # {{{ LINKTYPEMAP
@@ -3355,6 +3356,10 @@ sub DESTROY {
     # It protects against the fact that perl doesn't deal gracefully
     # when an object's refcount is changed in its destructor.
     return if $self->{_Destroyed}++;
+
+    if (in_global_destruction()) {
+        warn "Too late to safely run transaction-batch scrips! This is typically caused by using ticket objects at the top-level of a script which uses the RT API. Be sure to explicitly undef such ticket objects, or put them inside of a lexical scope.";
+    }
 
     my $batch = $self->TransactionBatch;
     return unless $batch && @$batch;
