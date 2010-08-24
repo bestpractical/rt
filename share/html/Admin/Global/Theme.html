@@ -64,11 +64,14 @@ Upload Logo:
 </form>
 
 <div class="pick-section">
+<span class="description">Pick a section first</span>
 <select id="section">
 </select>
 </div>
 
 <div class="pick-color">
+<span class="description">Then click on the following color to apply</span>
+<div class="clear">
 % if ($colors) {
 Primary colors:
 %   for (@$colors) {
@@ -77,6 +80,7 @@ Primary colors:
 %   }
 % }
 <div class="clear">
+Pre-defined colors:
 <span class="color-template" style="background-color: white; color: black; width: 5em">test</span>
 <span class="color-template" style="background-color: white; color: gray; width: 5em">test</span>
 <span class="color-template" style="background-color: red; color: white; width: 5em">test</span>
