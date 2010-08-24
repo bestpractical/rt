@@ -3,7 +3,7 @@ Subject: Test Email ID:4
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-From: root@localhost
+From: rt-test@example.com
 
 Forwarded email with signature quoted. RT shouldn't bother
 about it.

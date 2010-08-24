@@ -1,6 +1,6 @@
 Message-ID: <46BCDC0C.6090400@mit.edu>
 Date: Fri, 10 Aug 2007 17:43:40 -0400
-From: Christian Ternus <ternus@mit.edu>
+From: rt-test@example.com
 User-Agent: Thunderbird 1.5.0.12 (X11/20070604)
 MIME-Version: 1.0
 To:  rt-recipient@example.com

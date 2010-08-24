@@ -28,6 +28,7 @@ RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+RT::Test->trust_gnupg_key('rt-test@example.com');
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we did log in';

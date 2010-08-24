@@ -8,7 +8,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; x-action=pgp-signed
 Content-Disposition: inline
 User-Agent: Mutt/1.5.13 (2006-08-11)
-From: ternus@mit.edu (Christian Ternus)
+From: rt-test@example.com
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
