@@ -2708,7 +2708,7 @@ sub _MergeInto {
                 PrincipalId => $watcher->MemberId
             );
             unless ($val) {
-                $RT::Logger->warning($msg);
+                $RT::Logger->debug($msg);
             }
     }
 
