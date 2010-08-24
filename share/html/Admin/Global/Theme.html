@@ -147,7 +147,7 @@ jQuery(function($) {
 my @results;
 
 use Imager;
-use Graphics::Color::RGB;
+use Convert::Color;
 
 my $img = Imager->new;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
@@ -207,12 +207,11 @@ sub analyze_img {
     for my $i (0..$img->getwidth-1) {
         for my $j (0..$img->getheight-1) {
             my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
-            my $hsl = Graphics::Color::RGB->new( red => $color[0] / 255, green => $color[2] / 255, blue => $color[2] / 255, alpha => $color[3] / 255 )->to_hsl;
-            my ($h,$s,$l) = $hsl->as_array;
             pop @color;
+            my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
             my $c = join(',',@color);
-            next if $l < 0.1;
-            $color->{$c} ||= { h => $h, s => $s, l => $l, cnt => 0, c => $c};
+            next if $hsl->lightness < 0.1;
+            $color->{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
             $color->{$c}->{cnt}++;
         }
     }
