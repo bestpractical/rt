@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 196;
+use RT::Test tests => 199;
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Load("General");
@@ -129,12 +129,14 @@ SimpleTemplateTest(
 TemplateTest(
     Content      => "\ntest { \$Ticket->Nonexistent }",
     PerlOutput   => undef,
+    PerlWarnings => qr/RT::Ticket::Nonexistent Unimplemented/,
     SimpleOutput => "test { \$Ticket->Nonexistent }",
 );
 
 TemplateTest(
     Content      => "\ntest { \$Nonexistent->Nonexistent }",
     PerlOutput   => undef,
+    PerlWarnings => qr/Can't call method "Nonexistent" on an undefined value/,
     SimpleOutput => "test { \$Nonexistent->Nonexistent }",
 );
 
@@ -147,6 +149,7 @@ TemplateTest(
 TemplateTest(
     Content      => "\ntest { *!( }",
     PerlOutput   => undef,
+    PerlWarnings => qr/syntax error/,
     SimpleOutput => "test { *!( }",
 );
 
@@ -200,6 +203,11 @@ sub IndividualTemplateTest {
         @_,
     );
 
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    } if $args{Warnings};
+
     my $t = RT::Template->new($RT::SystemUser);
     $t->Create(
         Name    => $args{Name},
@@ -221,7 +229,11 @@ sub IndividualTemplateTest {
         is($t->MIMEObj->stringify_body, $args{Output}, "$args{Type} template's output");
     }
     else {
-        ok(!$ok, "expected failure: $msg");
+        ok(!$ok, "expected a failure");
+    }
+
+    if ($args{Warnings}) {
+        like($warnings, $args{Warnings}, "warnings matched");
     }
 }
 
@@ -234,8 +246,9 @@ sub TemplateTest {
 
         IndividualTemplateTest(
             %args,
-            Type   => $type,
-            Output => $args{$type . 'Output'},
+            Type     => $type,
+            Output   => $args{$type . 'Output'},
+            Warnings => $args{$type . 'Warnings'},
         );
     }
 }
