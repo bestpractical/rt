@@ -187,5 +187,5 @@ diag "create another CF";
 );
 run_tests();
 
-
+@tickets = ();
 

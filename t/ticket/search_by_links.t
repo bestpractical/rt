@@ -130,3 +130,5 @@ my $pid = $tickets[1]->id;
 }
 run_tests();
 
+@tickets = ();
+
