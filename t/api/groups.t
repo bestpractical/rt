@@ -1,16 +1,10 @@
-
 use strict;
 use warnings;
-use RT;
-use RT::Test tests => 28;
+use RT::Test tests => 27;
 
-
-{
-
-ok (require RT::Groups);
-
-
-}
+RT::Group->AddRights(
+    'RTxGroupRight' => 'Just a right for testing rights',
+);
 
 {
 
