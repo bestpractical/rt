@@ -140,7 +140,7 @@ sub SetRecipients {
     }
 
     my $creatorObj = $self->TransactionObj->CreatorObj;
-    my $creator = $creatorObj->EmailAddress();
+    my $creator = $creatorObj->EmailAddress() || '';
 
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
