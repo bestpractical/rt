@@ -76,10 +76,13 @@
     <td class="label"><&|/l&>Priority</&>:</td>
     <td class="value"><& ShowPriority, Ticket => $Ticket &></td>
   </tr>
+%# This will check SeeQueue at the ticket role level, queue level, and global level
+% if ($Ticket->CurrentUserHasRight('SeeQueue')) {
   <tr class="queue">
     <td class="label"><&|/l&>Queue</&>:</td>
     <td class="value"><& ShowQueue, QueueObj => $Ticket->QueueObj &></td>
   </tr>
+% }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
