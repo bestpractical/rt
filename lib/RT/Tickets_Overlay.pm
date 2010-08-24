@@ -1428,51 +1428,37 @@ sub _CustomFieldLimit {
             $cf->Load($field);
 
             # need special treatment for Date
-            if ( $cf->Type =~ /^Date(Time)?$/ ) {
-                my $is_datetime = $1 ? 1 : 0;
-                if ( $is_datetime && $op eq '=' ) {
+            if ( $cf->Type eq 'DateTime' && $op eq '=' ) {
 
-               # if we're specifying =, that means we want everything on a
-               # particular single day.  in the database, we need to check for >
-               # and < the edges of that day.
+                # if we're specifying =, that means we want everything on a
+                # particular day.  in the database, we need to check for >
+                # and < the edges of that day.
 
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set( Format => 'unknown', Value => $value );
-                    $date->SetToMidnight( Timezone => 'server' );
-                    my $daystart = $date->ISO;
-                    $date->AddDay;
-                    my $dayend = $date->ISO;
+                my $date = RT::Date->new( $self->CurrentUser );
+                $date->Set( Format => 'unknown', Value => $value );
+                $date->SetToMidnight( Timezone => 'server' );
+                my $daystart = $date->ISO;
+                $date->AddDay;
+                my $dayend = $date->ISO;
 
-                    $self->_OpenParen;
+                $self->_OpenParen;
 
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => ">=",
-                        VALUE    => $daystart,
-                        %rest,
-                    );
+                $self->_SQLLimit( ALIAS    => $TicketCFs,
+                                  FIELD    => 'Content',
+                                  OPERATOR => ">=",
+                                  VALUE    => $daystart,
+                                  %rest,
+                                );
 
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => "<=",
-                        VALUE    => $dayend,
-                        %rest,
-                        ENTRYAGGREGATOR => 'AND',
-                    );
+                $self->_SQLLimit( ALIAS    => $TicketCFs,
+                                  FIELD    => 'Content',
+                                  OPERATOR => "<=",
+                                  VALUE    => $dayend,
+                                  %rest,
+                                  ENTRYAGGREGATOR => 'AND',
+                                );
 
-                    $self->_CloseParen;
-                }
-                else {
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => $op,
-                        VALUE    => $value,
-                        %rest,
-                    );
-                }
+                $self->_CloseParen;
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
