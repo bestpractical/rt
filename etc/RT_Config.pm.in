@@ -2190,6 +2190,24 @@ production:
 Set($DevelMode, '@RT_DEVEL_MODE@');
 
 
+=item C<$RecordBaseClass>
+
+What abstract base class should RT use for its records. You should never change this.
+
+Valid values are 
+
+=over 
+
+=item DBIx::SearchBuilder::Record
+
+=item DBIx::SearchBuilder::Record::Cachable
+
+=back
+
+=cut
+
+Set($RecordBaseClass, 'DBIx::SearchBuilder::Record::Cachable');
+
 =back
 
 =head1 Deprecated Options

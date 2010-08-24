@@ -72,15 +72,8 @@ use RT::Attributes;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
-
-use RT::Base;
-my $base = 'DBIx::SearchBuilder::Record::Cachable';
-if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
-    $base = 'DBIx::SearchBuilder::Record';
-}
-eval "require $base" or die $@;
-our @ISA = 'RT::Base';
-push @ISA, $base;
+use base RT->Config->Get('RecordBaseClass');
+use base 'RT::Base';
 
 # {{{ sub _Init 
 
