@@ -1475,7 +1475,7 @@ sub _CustomFieldLimit {
                 }
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
-                unless ( length( Encode::encode_utf8($value) ) > 255 ) {
+                if ( length( Encode::encode_utf8($value) ) < 256 ) {
                     $self->_SQLLimit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
