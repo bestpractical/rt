@@ -159,13 +159,14 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
     $img->read(data => $file_hash->{LargeContent} );
 }
 else {
-    my $attr = $RT::System->FirstAttribute('UserLogo');
-    my $content = $attr->Content;
-    if (ref($content) eq 'HASH') {
-        $img->read(data => $content->{data}) or die "Cannot read: ", $img->errstr;
-    }
-    else {
-        $RT::System->DeleteAttribute('UserLogo');
+    if (my $attr = $RT::System->FirstAttribute('UserLogo')) {
+        my $content = $attr->Content;
+        if (ref($content) eq 'HASH') {
+            $img->read(data => $content->{data}) or die "Cannot read: ", $img->errstr;
+        }
+        else {
+            $RT::System->DeleteAttribute('UserLogo');
+        }
     }
 }
 
