@@ -619,7 +619,7 @@ per array entry. multiple lines are folded.
 
 sub _SplitHeaders {
     my $self = shift;
-    my $headers = (shift || $self->SUPER::Headers());
+    my $headers = (shift || $self->_Value('Headers'));
     my @headers;
     for (split(/\n(?=\w|\z)/,$headers)) {
         push @headers, $_;

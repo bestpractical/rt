@@ -264,7 +264,7 @@ sub SetDisabled {
  
     # if it's already disabled, we're good.
     return (1) if ( $self->__Value('Disabled') == $val);
-    my $err = $self->SUPER::SetDisabled($val);
+    my $err = $self->_Set(Field => 'Disabled', Value => $val);
     my ($retval, $msg) = $err->as_array();
     unless ($retval) {
         $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id .": $msg");

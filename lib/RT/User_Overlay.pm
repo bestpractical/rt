@@ -808,7 +808,7 @@ sub SetPassword {
     else {
         my $new = !$self->HasPassword;
         $password = $self->_GeneratePassword($password);
-        my ( $val, $msg ) = $self->SUPER::SetPassword($password);
+        my ( $val, $msg ) = $self->_Set(Field => 'Password', Value => $password);
         if ($val) {
             return ( 1, $self->loc("Password set") ) if $new;
             return ( 1, $self->loc("Password changed") );
@@ -906,7 +906,7 @@ sub IsPassword {
         or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
     {
         # ...but upgrade the legacy password inplace.
-        $self->SUPER::SetPassword( $self->_GeneratePassword($value) );
+        $self->_Set(Field => 'Password', Value =>  $self->_GeneratePassword($value) );
         return(1);
     }
 

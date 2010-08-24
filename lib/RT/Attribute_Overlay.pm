@@ -282,7 +282,7 @@ sub SetContent {
             return(0, "Content couldn't be frozen");
         }
     }
-    return $self->SUPER::SetContent( $content );
+    return $self->_Set( Field => 'Content', Value => $content );
 }
 
 =head2 SubValue KEY

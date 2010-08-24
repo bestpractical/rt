@@ -644,7 +644,7 @@ sub SetType {
         $RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
         $self->SetMaxValues($1 ? 1 : 0);
     }
-    $self->SUPER::SetType($type);
+    $self->_Set(Field => 'Type', Value =>$type);
 }
 
 =head2 SetPattern STRING
@@ -661,7 +661,7 @@ sub SetPattern {
 
     my ($ok, $msg) = $self->_IsValidRegex($regex);
     if ($ok) {
-        return $self->SUPER::SetPattern($regex);
+        return $self->_Set(Field => 'Pattern', Value => $regex);
     }
     else {
         return (0, $self->loc("Invalid pattern: [_1]", $msg));
@@ -968,7 +968,7 @@ sub SetLookupType {
         $ObjectCustomFields->LimitToCustomField($self->Id);
         $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
     }
-    return $self->SUPER::SetLookupType($lookup);
+    return $self->_Set(Field => 'LookupType', Value =>$lookup);
 }
 
 =head2 LookupTypes
