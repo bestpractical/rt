@@ -47,10 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <% $value %>
 <%ARGS>
+$Ticket => undef
 $QueueObj
 </%ARGS>
 <%INIT>
 my $value = $QueueObj->Name;
+
+if ( $Ticket and $Ticket->CurrentUserHasRight('SeeQueue') ) {
+    # Grab the queue name anyway if the current user can
+    # see the queue based on his role for this ticket
+    $value = $QueueObj->__Value('Name');
+}
+
 $value = '#'. $QueueObj->id
     unless defined $value && length $value;
 </%INIT>
