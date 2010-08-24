@@ -821,7 +821,7 @@ my $build_selfservice_nav = sub {
     $queues->UnLimit;
 
     my $queue_count = 0;
-    my $queue_id    = 1;
+    my $queue_id;
 
     while ( my $queue = $queues->Next ) {
         next unless $queue->CurrentUserHasRight('CreateTicket');
@@ -836,7 +836,7 @@ my $build_selfservice_nav = sub {
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
     if ( $queue_count > 1 ) {
         $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/CreateTicketInQueue.html' );
-    } else {
+    } elsif ( $queue_id ) {
         $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
 
