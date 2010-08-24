@@ -144,9 +144,7 @@ our $RIGHTS = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
+__PACKAGE__->AddRights(%$RIGHTS);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 

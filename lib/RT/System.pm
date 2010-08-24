@@ -96,10 +96,7 @@ our $RIGHTS = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-
+__PACKAGE__->AddRights(%$RIGHTS);
 
 =head2 AvailableRights
 

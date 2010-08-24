@@ -125,9 +125,7 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
+__PACKAGE__->AddRights(%$RIGHTS);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
