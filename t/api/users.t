@@ -1,16 +1,10 @@
-
 use strict;
 use warnings;
-use RT;
-use RT::Test tests => 11;
+use RT::Test tests => 10;
 
-
-{
-
-ok(require RT::Users);
-
-
-}
+RT::System->AddRights(
+    'RTxUserRight' => 'Just a right for testing rights',
+);
 
 {
     no warnings qw(redefine once);
