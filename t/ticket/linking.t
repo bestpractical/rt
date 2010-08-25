@@ -40,7 +40,6 @@ ok ($id,$msg);
 my $commit_code = <<END;
 open my \$file, "<$filename" or die "couldn't open $filename";
 my \$data = <\$file>;
-chomp \$data;
 \$data += 0;
 close \$file;
 \$RT::Logger->debug("Data is \$data");
