@@ -58,40 +58,6 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/squished.js"></script>
 % }
 
-<script type="text/javascript">
-	jQuery(function() {
-		jQuery(".ui-datepicker:not(.withtime)").datepicker( {
-            dateFormat: 'yy-mm-dd',
-            constrainInput: false
-        } );
-
-		jQuery(".ui-datepicker.withtime").datepicker( {
-            dateFormat: 'yy-mm-dd',
-            constrainInput: false, 
-            onSelect: function( dateText, inst ) { 
-                // trigger timepicker to get time
-                var button = document.createElement('input');
-                button.setAttribute('type',  'button');
-                jQuery(button).width('5em');
-                jQuery(button).insertAfter(this);
-                jQuery(button).timepickr({val: '00:00'});
-                var date_input = this;
-
-                jQuery(button).blur( function() {
-                    var time = jQuery(button).val();
-                    if ( ! time.match(/\d\d:\d\d/) ) {
-                        time = '00:00';
-                    }
-                    jQuery(date_input).val(  dateText + ' ' + time + ':00' );
-                    jQuery(button).remove();
-                } );
-
-                jQuery(button).focus();
-            }
-        } );
-	});
-</script>
-
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
@@ -100,61 +66,11 @@ $onload => undef
 % if ( $focus ) {
     jQuery(function () { focusElementById('<% $focus %>') });
 % }
-
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    function ReplaceAllTextareas() {
-        var sAgent = navigator.userAgent.toLowerCase();
-        if (!FCKeditor_IsCompatibleBrowser() ||
-            sAgent.indexOf('iphone') != -1 ||
-            sAgent.indexOf('android') != -1 )
-            return false;
-
-        // replace all content and signature message boxes
-        var allTextAreas = document.getElementsByTagName("textarea");
-
-        for (var i=0; i < allTextAreas.length; i++) {
-            var textArea = allTextAreas[i];
-            if ( (textArea.getAttribute('class') == 'messagebox')
-              || (textArea.getAttribute('className') == 'messagebox')) {
-                // Turn the original plain text content into HTML 
-
-%# Special case - when we re-edit a textarea, don't re-encode it
-% if (!$m->request_args->{'FCKeditorEncoded'}) {
-                textArea.value = textArea.value.replace(
-                    /&/g, "&amp;"
-                ).replace(
-                    /</g, "&lt;"
-                ).replace(
-                    />/g, "&gt;"
-                ).replace(
-                    /\n/g, "\n<br />"
-                );
-% }
-
-%# for this template..
-                var FCKeditorEncoded = document.createElement('input');
-                FCKeditorEncoded.setAttribute('type', 'hidden');
-                FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-                FCKeditorEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(FCKeditorEncoded);
-
-%# for FCKeditor..
-                var typeField = document.createElement('input');
-                typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + 'Type');
-                typeField.setAttribute('value', 'text/html');
-                textArea.parentNode.appendChild(typeField);
-
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
-                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
-                oFCKeditor.ReplaceTextarea();
-            }
-        }
-    }
-    jQuery(ReplaceAllTextareas);
+    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'FCKeditorEncoded'} || 0 %>') });
 % }
 --></script>
