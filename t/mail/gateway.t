@@ -447,7 +447,7 @@ EOF
 diag "Testing preservation of binary attachments";
 {
     # Get a binary blob (Best Practical logo) 
-    my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+    my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
 
     # Create a mime entity with an attachment
     my $entity = MIME::Entity->build(
@@ -459,7 +459,7 @@ diag "Testing preservation of binary attachments";
 
     $entity->attach(
         Path     => $LOGO_FILE,
-        Type     => 'image/gif',
+        Type     => 'image/png',
         Encoding => 'base64',
     );
     # Create a ticket with a binary attachment
@@ -479,7 +479,7 @@ diag "Testing preservation of binary attachments";
 
     # Verify that the binary attachment is valid in the database
     my $attachments = RT::Attachments->new($RT::SystemUser);
-    $attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
+    $attachments->Limit(FIELD => 'ContentType', VALUE => 'image/png');
     my $txn_alias = $attachments->Join(
         ALIAS1 => 'main',
         FIELD1 => 'TransactionId',
@@ -488,7 +488,7 @@ diag "Testing preservation of binary attachments";
     );
     $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
     $attachments->Limit( ALIAS => $txn_alias, FIELD => 'ObjectId', VALUE => $id );
-    is ($attachments->Count, 1, 'Found only one gif attached to the ticket');
+    is ($attachments->Count, 1, 'Found only one png attached to the ticket');
     my $attachment = $attachments->First;
     ok ($attachment->Id, 'loaded attachment object');
     my $acontent = $attachment->Content;
@@ -499,7 +499,7 @@ diag "Testing preservation of binary attachments";
     # Grab the binary attachment via the web ui
     my $ua = new LWP::UserAgent;
     my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
-        ."/". $attachment->id. "/bplogo.gif?&user=root&pass=password";
+        ."/". $attachment->id. "/bpslogo.png?&user=root&pass=password";
     my $r = $ua->get( $full_url );
 
     # Verify that the downloaded attachment is the same as what we uploaded.

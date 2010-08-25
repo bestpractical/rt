@@ -3,7 +3,7 @@ use strict;
 
 use RT::Test tests => 14;
 
-use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -28,7 +28,7 @@ is($m->status, 200, "request successful");
 
 $m->content_like(qr/Attachments test/, 'we have subject on the page');
 $m->content_like(qr/Some content/, 'and content');
-$m->content_like(qr/Download bplogo\.gif/, 'page has file name');
+$m->content_like(qr/Download bpslogo\.png/, 'page has file name');
 
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
 $m->form_name('TicketUpdate');
@@ -42,6 +42,6 @@ $m->field('UpdateContent', 'Message');
 $m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
-$m->content_like(qr/Download bplogo\.gif/, 'page has file name');
+$m->content_like(qr/Download bpslogo\.png/, 'page has file name');
 $m->content_like(qr/Download favicon\.png/, 'page has file name');
 

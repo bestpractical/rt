@@ -6,7 +6,7 @@ $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
 use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';
@@ -151,7 +151,7 @@ diag "create a ticket with an image";
 
     $m->title_like(qr/testing img cf creation/, "its title is the Subject");
 
-    $m->follow_link( text => 'bplogo.gif' );
+    $m->follow_link( text => 'bpslogo.png' );
     $m->content_is(ImageFileContent, "it links to the uploaded image");
 }
 
@@ -180,7 +180,7 @@ $m->click('AddCol');
 $m->form_name('BuildQuery');
 $m->click('DoSearch');
 
-$m->follow_link( text_regex => qr/bplogo\.gif/ );
+$m->follow_link( text_regex => qr/bpslogo\.png/ );
 $m->content_is(ImageFileContent, "it links to the uploaded image");
 
 __END__

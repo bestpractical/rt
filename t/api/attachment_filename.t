@@ -8,32 +8,32 @@ my $mime   = MIME::Entity->build(
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bplogo.gif',
-    Type     => 'image/gif',
+    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Type     => 'image/png',
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bplogo.gif',
-    Type     => 'image/gif',
-    Filename => 'bplogo.gif',
+    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Type     => 'image/png',
+    Filename => 'bpslogo.png',
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bplogo.gif',
-    Filename => 'images/bplogo.gif',
-    Type     => 'image/gif',
+    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Filename => 'images/bpslogo.png',
+    Type     => 'image/png',
 );
 
 my $id = $ticket->Create( MIMEObj => $mime, Queue => 'General' );
 ok( $id, "created ticket $id" );
 
 my $atts = RT::Attachments->new( $RT::SystemUser );
-$atts->Limit( FIELD => 'ContentType', VALUE => 'image/gif' );
-is( $atts->Count, 3, 'got 3 gif files' );
+$atts->Limit( FIELD => 'ContentType', VALUE => 'image/png' );
+is( $atts->Count, 3, 'got 3 png files' );
 
 # no matter if mime's filename include path or not,
 # we should throw away the path all the time.
 while ( my $att = $atts->Next ) {
-    is( $att->Filename, 'bplogo.gif', "attachment's filename" );
+    is( $att->Filename, 'bpslogo.png', "attachment's filename" );
 }
 
