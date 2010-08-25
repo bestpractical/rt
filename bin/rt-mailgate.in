@@ -1,41 +1,41 @@
 #!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,8 +44,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 rt-mailgate - Mail interface to RT3.
@@ -65,7 +66,10 @@ use constant EX_TEMPFAIL => 75;
 use constant BUFFER_SIZE => 8192;
 
 my $opts = {};
-GetOptions( $opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s", "timeout=i" );
+GetOptions( $opts,   "queue=s", "action=s", "url=s",
+            "jar=s", "help",    "debug",    "extension=s",
+            "timeout=i"
+          );
 
 validate_post_params();
 
@@ -74,8 +78,7 @@ my %post_params = ();
 my %message;
 
 setup_session($opts);
-upload_message(\%post_params);
-
+upload_message( \%post_params );
 
 exit;
 
@@ -127,21 +130,23 @@ sub setup_session {
     # Read the message in from STDIN
     my $message = slurp_message();
     unless ( $message->{'filename'} ) {
-        $post_params{'message'} = [ undef, '',
-                             'Content-Type' => 'application/octet-stream',
-                             Content        => ${ $message->{'content'} },
-                           ];
+        $post_params{'message'} = [
+                                 undef, '',
+                                 'Content-Type' => 'application/octet-stream',
+                                 Content        => ${ $message->{'content'} },
+        ];
     } else {
-        $post_params{'message'} = [ $message->{'filename'}, '',
-                             'Content-Type' => 'application/octet-stream',
-                           ];
+        $post_params{'message'} = [
+                                 $message->{'filename'}, '',
+                                 'Content-Type' => 'application/octet-stream',
+        ];
     }
 
 }
 
 sub upload_message {
     my $post_params = shift;
-    my $full_url = $opts->{'url'} . "/REST/1.0/NoAuth/mail-gateway";
+    my $full_url    = $opts->{'url'} . "/REST/1.0/NoAuth/mail-gateway";
     print STDERR "$0: connecting to $full_url\n" if $opts->{'debug'};
 
     $ua->timeout( exists( $opts->{'timeout'} ) ? $opts->{'timeout'} : 180 );
@@ -168,7 +173,6 @@ EOF
     }
 }
 
-
 sub check_failure {
     my $r = shift;
     return if $r->is_success;
@@ -179,15 +183,14 @@ sub check_failure {
     require HTML::FormatText;
 
     my $error = $r->error_as_HTML;
-    my $tree  = HTML::TreeBuilder->new->parse( $error );
+    my $tree  = HTML::TreeBuilder->new->parse($error);
     $tree->eof;
 
     # It'll be a cold day in hell before RT sends out bounces in HTML
-    my $formatter = HTML::FormatText->new(
-        leftmargin  => 0,
-        rightmargin => 50,
-    );
-    print STDERR $formatter->format( $tree );
+    my $formatter =
+        HTML::FormatText->new( leftmargin  => 0,
+                               rightmargin => 50, );
+    print STDERR $formatter->format($tree);
     print STDERR "\n$0: undefined server error\n" if $opts->{'debug'};
     exit EX_TEMPFAIL;
 }
@@ -196,27 +199,29 @@ sub slurp_message {
     local $@;
 
     my %message;
-    my ($fh, $filename) = eval { tempfile(DIR => tempdir(CLEANUP =>1)) };
+    my ( $fh, $filename )
+        = eval { tempfile( DIR => tempdir( CLEANUP => 1 ) ) };
     if ( !$fh || $@ ) {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local (@ARGV, $/); <> };
+        my $message = \do { local ( @ARGV, $/ ); <> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
             exit 0;
         }
         $$message = $opts->{'headers'} . $$message if $opts->{'headers'};
-        return ( {content => $message} );
+        return ( { content => $message } );
     }
 
     binmode $fh;
     binmode \*STDIN;
-    
+
     print $fh $opts->{'headers'} if $opts->{'headers'};
 
-    my $buf; my $empty = 1;
-    while(1) {
+    my $buf;
+    my $empty = 1;
+    while (1) {
         my $status = read \*STDIN, $buf, BUFFER_SIZE;
         unless ( defined $status ) {
             print STDERR "$0: couldn't read message: $!\n";
@@ -226,17 +231,16 @@ sub slurp_message {
         }
         $empty = 0 if $buf =~ /\S/;
         print $fh $buf;
-    };
+    }
     close $fh;
 
-    if ( $empty ) {
+    if ($empty) {
         print STDERR "$0: no message passed on STDIN\n";
         exit 0;
     }
     print STDERR "$0: temp file is '$filename'\n" if $opts->{'debug'};
-    return ({filename => $filename});
+    return ( { filename => $filename } );
 }
-
 
 =head1 SYNOPSIS
 
