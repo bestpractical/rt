@@ -71,7 +71,7 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "timeout=i"
           );
 
-validate_cli_flags();
+validate_cli_flags($opts);
 
 my $ua          = get_useragent($opts);
 my $post_params = setup_session($opts);
@@ -80,6 +80,7 @@ upload_message( $ua => $post_params );
 exit;
 
 sub validate_cli_flags {
+    my $opts = shift;
     if ( $opts->{'help'} ) {
         require Pod::Usage;
         Pod::Usage::pod2usage( { verbose => 2 } );
