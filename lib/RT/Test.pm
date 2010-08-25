@@ -773,7 +773,7 @@ sub run_and_capture {
     return ($?, $result);
 }
 
-sub send_via_mailgate {
+sub send_via_mailgate_and_http {
     my $self = shift;
     my $message = shift;
     my %args = (@_);
@@ -795,6 +795,26 @@ sub send_via_mailgate {
     }
     return ($status, $id);
 }
+
+
+sub send_via_mailgate {
+    my $self    = shift;
+    my $message = shift;
+    my %args = ( action => 'correspond',
+                 queue  => 'General',
+                 @_
+               );
+
+    if ( UNIVERSAL::isa( $message, 'MIME::Entity' ) ) {
+        $message = $message->as_string;
+    }
+
+    my ( $status, $error_message, $ticket )
+        = RT::Interface::Email::Gateway( {%args, message => $message} );
+    return ( $status, $ticket->id );
+
+}
+
 
 sub open_mailgate_ok {
     my $class   = shift;
