@@ -7,7 +7,7 @@ my $tests;
 
 my $localized_datetime_tests;
 BEGIN {
-    $tests = 170;
+    $tests = 165;
     $localized_datetime_tests =
       eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; } &&
       DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
@@ -53,7 +53,6 @@ my $current_user;
 
 {
     my $date = RT::Date->new( $current_user );
-    is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'), 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('server'), 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('unknown'), 'UTC', "with wrong context returns UTC");
@@ -65,7 +64,6 @@ my $current_user;
     is($date->Timezone('user'),
        'Europe/Moscow',
        "in user context returns user's timezone");
-    is($date->Timezone, 'UTC', "the deafult value is always UTC");
     is($date->Timezone('server'), 'UTC', "wasn't changed");
 
     RT->Config->Set( Timezone => 'Africa/Ouagadougou' );
@@ -75,7 +73,6 @@ my $current_user;
     is($date->Timezone('user'),
        'Europe/Moscow',
        "in user context still returns user's timezone");
-    is($date->Timezone, 'UTC', "the deafult value is always UTC");
     
     $current_user->UserObj->__Set( Field => 'Timezone', Value => '');
     is_empty($current_user->UserObj->Timezone,
@@ -83,7 +80,6 @@ my $current_user;
     is($date->Timezone('user'),
        'Africa/Ouagadougou',
        "in user context returns timezone of the server if user's one is not defined");
-    is($date->Timezone, 'UTC', "the deafult value is always UTC");
 
     RT->Config->Set( Timezone => 'GMT' );
     is($date->Timezone('server'),
@@ -91,7 +87,6 @@ my $current_user;
        "timezone is GMT which one is alias for UTC");
 
     RT->Config->Set( Timezone => '' );
-    is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'),
        'UTC',
        "user's and server's timzones are not defined, so UTC");
