@@ -73,8 +73,6 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
 
 validate_cli_flags();
 
-my %message;
-
 my $ua          = get_useragent($opts);
 my $post_params = setup_session($opts);
 upload_message( $ua => $post_params );
