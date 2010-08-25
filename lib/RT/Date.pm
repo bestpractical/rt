@@ -1024,6 +1024,11 @@ If both server's and user's timezone names are undefined returns 'UTC'.
 
 sub Timezone {
     my $self = shift;
+
+    if (@_ == 0) {
+        Carp::croak "RT::Date->Timezone is a setter only";
+    }
+
     my $context = lc(shift);
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
