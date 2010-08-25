@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test tests => 14;
+use RT::Test nodata => 1, tests => 14;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my $q = RT::Queue->new($RT::SystemUser);

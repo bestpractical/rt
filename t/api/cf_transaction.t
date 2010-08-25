@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-use RT::Test tests => 14;
+use RT::Test nodata => 1, tests => 14;
 use_ok('RT');
 use_ok('RT::Transactions');
 

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 99;
+use RT::Test nodata => 1, tests => 99;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );

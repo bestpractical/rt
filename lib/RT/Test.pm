@@ -352,8 +352,16 @@ sub bootstrap_db {
         RT::Handle->DropDatabase( $dbh, Force => 1 );
     }
 
+    if (my $forceopt = $ENV{RT_TEST_FORCE_OPT}) {
+        Test::More::diag "forcing $forceopt";
+        $args{$forceopt}=1;
+    }
+
     if ($args{nodb}) {
         $args{noinitialdata} = 1;
+        $args{nodata} = 1;
+    }
+    elsif ($args{noinitialdata}) {
         $args{nodata} = 1;
     }
 
