@@ -57,6 +57,19 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+
+my $opts = {};
+GetOptions( $opts,   "queue=s", "action=s", "url=s",
+            "jar=s", "help",    "debug",    "extension=s",
+            "timeout=i"
+          );
+
+RT::Client::MailGateway->run($opts);
+
+exit;
+
+package RT::Client::MailGateway;
+
 use LWP::UserAgent;
 use HTTP::Request::Common qw($DYNAMIC_FILE_UPLOAD);
 use File::Temp qw(tempfile tempdir);
@@ -65,19 +78,16 @@ $DYNAMIC_FILE_UPLOAD = 1;
 use constant EX_TEMPFAIL => 75;
 use constant BUFFER_SIZE => 8192;
 
-my $opts = {};
-GetOptions( $opts,   "queue=s", "action=s", "url=s",
-            "jar=s", "help",    "debug",    "extension=s",
-            "timeout=i"
-          );
+sub run {
+    my $class = shift;
+    my $opts  = shift;
 
-validate_cli_flags($opts);
+    validate_cli_flags($opts);
 
-my $ua          = get_useragent($opts);
-my $post_params = setup_session($opts);
-upload_message( $ua => $post_params );
-
-exit;
+    my $ua          = get_useragent($opts);
+    my $post_params = setup_session($opts);
+    upload_message( $ua => $post_params );
+}
 
 sub validate_cli_flags {
     my $opts = shift;
@@ -96,7 +106,7 @@ sub validate_cli_flags {
 
 sub get_useragent {
     my $opts = shift;
-    $ua = LWP::UserAgent->new();
+    my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
     return $ua;
 }
