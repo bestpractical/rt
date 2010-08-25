@@ -71,7 +71,7 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "timeout=i"
           );
 
-validate_post_params();
+validate_cli_flags();
 
 my $ua;
 my %post_params = ();
@@ -82,7 +82,7 @@ upload_message( \%post_params );
 
 exit;
 
-sub validate_post_params {
+sub validate_cli_flags {
     if ( $opts->{'help'} ) {
         require Pod::Usage;
         Pod::Usage::pod2usage( { verbose => 2 } );
