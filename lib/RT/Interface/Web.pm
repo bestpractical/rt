@@ -1632,10 +1632,6 @@ sub ProcessObjectCustomFieldUpdates {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
-                unless ( $CustomFieldObj->CurrentUserCan('SeeCustomField') ) {
-                    $RT::Logger->debug("Permission Denied");
-                    next;
-                }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
