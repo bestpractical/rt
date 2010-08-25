@@ -1648,7 +1648,7 @@ sub ProcessObjectCustomFieldUpdates {
 sub _ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $cf      = $args{'CustomField'};
-    my $cf_type = $cf->Type;
+    my $cf_type = $cf->Type || '';
 
     # Remove blank Values since the magic field will take care of this. Sometimes
     # the browser gives you a blank value which causes CFs to be processed twice
