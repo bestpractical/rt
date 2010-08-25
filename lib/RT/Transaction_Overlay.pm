@@ -730,15 +730,17 @@ sub BriefDescription {
             $field = $cf->Name();
         }
 
-        if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
-            return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
-        }
-        elsif ( !defined $self->NewValue || $self->NewValue eq '' ) {
-            return ( $self->loc("[_1] [_2] deleted", $field, $self->OldValue) );
+        my $new = $self->NewValue;
+        my $old = $self->OldValue;
 
+        if ( !defined($old) || $old eq '' ) {
+            return $self->loc("[_1] [_2] added", $field, $new);
+        }
+        elsif ( !defined($new) || $new eq '' ) {
+            return $self->loc("[_1] [_2] deleted", $field, $old);
         }
         else {
-            return $self->loc("[_1] [_2] changed to [_3]", $field, $self->OldValue, $self->NewValue );
+            return $self->loc("[_1] [_2] changed to [_3]", $field, $old, $new);
         }
     },
     Untake => sub {
