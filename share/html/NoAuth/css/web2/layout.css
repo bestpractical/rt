@@ -166,24 +166,26 @@ div#footer #bpscredits {
 
 /* logo stuff */
 
-div#logo {
-}
-
-
 div#logo a {
-     display: none;
     position: absolute;
-    left: 0;
-    bottom: 0;
+    left: 2px;
+    top: 0;
+    height: 2.3em;
 }
+
 div#logo a img {
     border: 0;
+    height: 100% !important;
+    width: auto !important;
 }
+
 div#logo .rtname {
     position: absolute;
     font-weight: bold;
-    top: 1em;
-    left: 1em;
+    top: 0.5em;
+    left: 30%;
+    right: 30%;
+    text-align: center;
 }
 
 
