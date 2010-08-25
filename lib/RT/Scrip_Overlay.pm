@@ -625,6 +625,7 @@ sub CompileCheck {
 
     for my $method (qw/CustomPrepareCode CustomCommitCode CustomIsApplicableCode/) {
         my $code = $self->$method;
+        next if !defined($code);
 
         do {
             no strict 'vars';
