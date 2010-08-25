@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 8;
+use RT::Test noinitialdata => 1, tests => 8;
 
 
 {

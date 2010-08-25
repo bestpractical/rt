@@ -6,7 +6,7 @@ use warnings;
 use Test::Deep;
 use File::Spec;
 use Test::More tests => 15;
-use RT::Test ();
+use RT::Test nodb => 1;
 
 
 BEGIN {

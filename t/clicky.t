@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test tests => 14;
+use RT::Test nodb => 1, tests => 14;
 my %clicky;
 
 BEGIN {
