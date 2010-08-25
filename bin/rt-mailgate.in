@@ -73,12 +73,11 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
 
 validate_cli_flags();
 
-my $ua;
-my %post_params = ();
 my %message;
 
-setup_session($opts);
-upload_message( \%post_params );
+my $ua          = get_useragent($opts);
+my $post_params = setup_session($opts);
+upload_message( $ua => $post_params );
 
 exit;
 
@@ -96,10 +95,16 @@ sub validate_cli_flags {
     }
 }
 
-sub setup_session {
+sub get_useragent {
     my $opts = shift;
     $ua = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
+    return $ua;
+}
+
+sub setup_session {
+    my $opts = shift;
+    my %post_params;
     $post_params{SessionType} = 'REST';    # Surpress login box
     foreach (qw(queue action)) {
         $post_params{$_} = $opts->{$_} if defined $opts->{$_};
@@ -142,9 +147,11 @@ sub setup_session {
         ];
     }
 
+    return \%post_params;
 }
 
 sub upload_message {
+    my $ua          = shift;
     my $post_params = shift;
     my $full_url    = $opts->{'url'} . "/REST/1.0/NoAuth/mail-gateway";
     print STDERR "$0: connecting to $full_url\n" if $opts->{'debug'};
