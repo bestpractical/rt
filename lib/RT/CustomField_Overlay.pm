@@ -57,71 +57,100 @@ use RT::ObjectCustomFieldValues;
 
 
 our %FieldTypes = (
-    Select => { labels => [
-        'Select multiple values',    # loc
-        'Select one value',        # loc
-        'Select up to [_1] values',    # loc
-    ]},
-    Freeform => { labels => [
-        'Enter multiple values',    # loc
-        'Enter one value',        # loc
-        'Enter up to [_1] values',    # loc
-    ]},
-    Text => { labels => [
-        'Fill in multiple text areas',    # loc
-        'Fill in one text area',    # loc
-        'Fill in up to [_1] text areas',# loc
-    ]},
-    Wikitext => { labels => [
-        'Fill in multiple wikitext areas',    # loc
-        'Fill in one wikitext area',    # loc
-        'Fill in up to [_1] wikitext areas',# loc
-    ]},
-    Image => { labels => [
-        'Upload multiple images',    # loc
-        'Upload one image',        # loc
-        'Upload up to [_1] images',    # loc
-    ]},
-    Binary => { labels => [
-        'Upload multiple files',    # loc
-        'Upload one file',        # loc
-        'Upload up to [_1] files',    # loc
-    ]},
-    Combobox => { labels => [
-        'Combobox: Select or enter multiple values',    # loc
-        'Combobox: Select or enter one value',        # loc
-        'Combobox: Select or enter up to [_1] values',    # loc
-    ]},
-    Autocomplete => { labels => [
-        'Enter multiple values with autocompletion',    # loc
-        'Enter one value with autocompletion',            # loc
-        'Enter up to [_1] values with autocompletion',    # loc
-    ]},
-    Date => { labels => [
-        'Select multiple dates',	# loc
-        'Select date',			# loc
-        'Select up to [_1] dates',	# loc
-    ]},
-    DateTime => { labels => [
-        'Select multiple datetimes',	# loc
-        'Select datetime',			# loc
-        'Select up to [_1] datetimes',	# loc
-    ]},
-);
-
-our %RenderTypes = (
     Select => {
-        multiple => [
-            # Default is the first one
-            'Select box',   # loc
-            'List',         # loc
-        ],
-        single => [
-            'Select box',   # loc
-            'Dropdown',     # loc
-            'List',         # loc
-        ]
+        selection_type => 1,
+
+        labels => [ 'Select multiple values',      # loc
+                    'Select one value',            # loc
+                    'Select up to [_1] values',    # loc
+                  ],
+
+        render_types => {
+            multiple => [
+
+                # Default is the first one
+                'Select box',              # loc
+                'List',                    # loc
+            ],
+            single => [ 'Select box',              # loc
+                        'Dropdown',                # loc
+                        'List',                    # loc
+                      ]
+        },
+
     },
+    Freeform => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple values',       # loc
+                    'Enter one value',             # loc
+                    'Enter up to [_1] values',     # loc
+                  ]
+                },
+    Text => {
+        selection_type => 0,
+        labels         => [
+                    'Fill in multiple text areas',      # loc
+                    'Fill in one text area',            # loc
+                    'Fill in up to [_1] text areas',    # loc
+                  ]
+            },
+    Wikitext => {
+        selection_type => 0,
+        labels         => [
+                    'Fill in multiple wikitext areas',      # loc
+                    'Fill in one wikitext area',            # loc
+                    'Fill in up to [_1] wikitext areas',    # loc
+                  ]
+                },
+    Image => {
+        selection_type => 0,
+        labels         => [
+                    'Upload multiple images',               # loc
+                    'Upload one image',                     # loc
+                    'Upload up to [_1] images',             # loc
+                  ]
+             },
+    Binary => {
+        selection_type => 0,
+        labels         => [
+                    'Upload multiple files',                # loc
+                    'Upload one file',                      # loc
+                    'Upload up to [_1] files',              # loc
+                  ]
+              },
+    Combobox => {
+        selection_type => 1,
+        labels         => [
+                    'Combobox: Select or enter multiple values',      # loc
+                    'Combobox: Select or enter one value',            # loc
+                    'Combobox: Select or enter up to [_1] values',    # loc
+                  ]
+                },
+    Autocomplete => {
+        selection_type => 1,
+        labels         => [
+                    'Enter multiple values with autocompletion',      # loc
+                    'Enter one value with autocompletion',            # loc
+                    'Enter up to [_1] values with autocompletion',    # loc
+                  ]
+    },
+    Date => {
+        selection_type => 0,
+        labels         => [
+                    'Select multiple dates',                          # loc
+                    'Select date',                                    # loc
+                    'Select up to [_1] dates',                        # loc
+                  ]
+            },
+    DateTime => {
+        selection_type => 0,
+        labels         => [
+                    'Select multiple datetimes',                      # loc
+                    'Select datetime',                                # loc
+                    'Select up to [_1] datetimes',                    # loc
+                  ]
+                },
 );
 
 
@@ -524,7 +553,7 @@ sub HasRenderTypes {
     my $self = shift;
     my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
     return undef unless $type;
-    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' };
+    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
 }
 
 # {{{ IsSelectionType
@@ -540,8 +569,7 @@ sub IsSelectionType {
     my $self = shift;
     my $type = @_? shift : $self->Type;
     return undef unless $type;
-
-    $type =~ /(?:Select|Combobox|Autocomplete)/;
+    return $FieldTypes{$type}->{selection_type};
 }
 
 # }}}
@@ -933,7 +961,7 @@ sub DefaultRenderType {
     my $composite    = @_ ? shift : $self->TypeComposite;
     my ($type, $max) = split /-/, $composite, 2;
     return unless $type and $self->HasRenderTypes($composite);
-    return defined $RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }[0];
+    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
 }
 
 =head2 RenderTypes [TYPE COMPOSITE]
@@ -948,7 +976,7 @@ sub RenderTypes {
     my $composite    = @_ ? shift : $self->TypeComposite;
     my ($type, $max) = split /-/, $composite, 2;
     return unless $type and $self->HasRenderTypes($composite);
-    return @{$RenderTypes{$type}->{ $max == 1 ? 'single' : 'multiple' }};
+    return @{$FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }};
 }
 
 =head2 SetLookupType
