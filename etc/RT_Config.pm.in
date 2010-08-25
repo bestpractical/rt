@@ -976,7 +976,7 @@ C<$LogoURL> points to the URL of the RT logo displayed in the web UI
 
 =cut
 
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "bplogo.gif");
+Set($LogoURL, RT->Config->Get('WebImagesURL') . "bpslogo.png");
 
 =item C<$LogoLinkURL>
 
@@ -1002,7 +1002,7 @@ C<img> tag.
 
 =cut
 
-Set($LogoImageHeight, 33);
+Set($LogoImageHeight, 38);
 
 =item C<$LogoImageWidth>
 
@@ -1011,7 +1011,7 @@ C<img> tag.
 
 =cut
 
-Set($LogoImageWidth, 177);
+Set($LogoImageWidth, 181);
 
 =item C<$WebNoAuthRegex>
 

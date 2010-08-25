@@ -159,9 +159,9 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
- background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//bplogo.gif) no-repeat top right;
+ background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
  padding-top: 4em;
-} 
+}
 
 
 /* logo stuff */
