@@ -152,9 +152,13 @@ sub import {
 
     $class->bootstrap_db( %args );
 
-    RT->Init;
+    RT->InitClasses();
+    RT->InitLogging();
 
     $class->bootstrap_plugins( %args );
+
+    RT->InitPlugins();
+    RT->Config->PostLoadCheck;
 
     $class->set_config_wrapper;
 
@@ -348,39 +352,48 @@ sub bootstrap_db {
         RT::Handle->DropDatabase( $dbh, Force => 1 );
     }
 
-    RT::Handle->CreateDatabase( $dbh );
-    $dbh->disconnect;
-    $created_new_db++;
-
-    $dbh = _get_dbh(RT::Handle->DSN,
-            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->dbh( $dbh );
-    $RT::Handle->InsertSchema( $dbh );
-
-    my $db_type = RT->Config->Get('DatabaseType');
-    $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
-
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-    RT->InitLogging;
-    RT->InitSystemObjects;
-    $RT::Handle->InsertInitialData;
-
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->dbh( undef );
-    RT->Init;
-
-    $RT::Handle->PrintError;
-    $RT::Handle->dbh->{PrintError} = 1;
-
-    unless ( $args{'nodata'} ) {
-        $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+    if ($args{nodb}) {
+        $args{noinitialdata} = 1;
+        $args{nodata} = 1;
     }
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+    unless ($args{nodb}) {
+        RT::Handle->CreateDatabase( $dbh );
+        $dbh->disconnect;
+        $created_new_db++;
+
+        $dbh = _get_dbh(RT::Handle->DSN,
+                        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( $dbh );
+        $RT::Handle->InsertSchema( $dbh );
+
+        my $db_type = RT->Config->Get('DatabaseType');
+        $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase;
+        RT->InitLogging;
+
+        unless ($args{noinitialdata}) {
+            $RT::Handle->InsertInitialData;
+
+            DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        }
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase();
+        $RT::Handle->PrintError;
+        $RT::Handle->dbh->{PrintError} = 1;
+
+        unless ( $args{'nodata'} ) {
+            $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+            DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        }
+    }
 }
 
 sub bootstrap_plugins {
