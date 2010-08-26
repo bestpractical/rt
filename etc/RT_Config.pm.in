@@ -23,9 +23,9 @@ Instead, copy any sections you want to change to F<RT_SiteConfig.pm> and edit th
 
 =over 4
 
-=item C<$rtname>
+=item C<rtname>
 
-C<$rtname> is the string that RT will look for in mail messages to
+C<rtname> is the string that RT will look for in mail messages to
 figure out what ticket a new piece of mail belongs to.
 
 Your domain name is recommended, so as not to pollute the namespace.
@@ -34,35 +34,35 @@ once you start using a given tag, you should probably never change it.
 
 =cut
 
-Set($rtname , "example.com");
+Set(rtname => "example.com");
 
 
-=item C<$EmailSubjectTagRegex>
+=item C<EmailSubjectTagRegex>
 
 This regexp controls what subject tags RT recognizes as its own.
-If you're not dealing with historical C<$rtname> values, you'll likely
+If you're not dealing with historical C<rtname> values, you'll likely
 never have to enable this feature.
 
-Be VERY CAREFUL with it. Note that it overrides C<$rtname> for subject
+Be VERY CAREFUL with it. Note that it overrides C<rtname> for subject
 token matching and that you should use only "non-capturing" parenthesis
 grouping. For example:
 
-C<Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
+C<Set(EmailSubjectTagRegex => qr/(?:example.com|example.org)/i );>
 
 and NOT
 
-C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
+C<Set(EmailSubjectTagRegex => qr/(example.com|example.org)/i );>
 
 This setting would make RT behave exactly as it does without the 
 setting enabled.
 
 =cut
 
-#Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+#Set(EmailSubjectTagRegex => qr/\Q$rtname\E/i );
 
 
 
-=item C<$Organization>
+=item C<Organization>
 
 You should set this to your organization's DNS domain. For example,
 I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
@@ -70,25 +70,25 @@ guarantee that ticket URIs are unique and easy to construct.
 
 =cut
 
-Set($Organization , "example.com");
+Set(Organization => "example.com");
 
-=item C<$MinimumPasswordLength>
+=item C<MinimumPasswordLength>
 
-C<$MinimumPasswordLength> defines the minimum length for user
+C<MinimumPasswordLength> defines the minimum length for user
 passwords. Setting it to 0 disables this check.
 
 =cut
 
-Set($MinimumPasswordLength , "5");
+Set(MinimumPasswordLength => "5");
 
-=item C<$Timezone>
+=item C<Timezone>
 
-C<$Timezone> is used to convert times entered by users into GMT and back again
+C<Timezone> is used to convert times entered by users into GMT and back again
 It should be set to a timezone recognized by your local unix box.
 
 =cut
 
-Set($Timezone , 'US/Eastern');
+Set(Timezone => 'US/Eastern');
 
 =back
 
@@ -96,7 +96,7 @@ Set($Timezone , 'US/Eastern');
 
 =over 4
 
-=item C<$DatabaseType>
+=item C<DatabaseType>
 
 Database driver being used; case matters.
 
@@ -104,9 +104,9 @@ Valid types are "mysql", "Oracle" and "Pg"
 
 =cut
 
-Set($DatabaseType , '@DB_TYPE@');
+Set(DatabaseType => '@DB_TYPE@');
 
-=item C<$DatabaseHost>, C<$DatabaseRTHost>
+=item C<DatabaseHost>, C<DatabaseRTHost>
 
 The domain name of your database server.
 
@@ -115,67 +115,67 @@ leave it blank for enhanced performance
 
 =cut
 
-Set($DatabaseHost   , '@DB_HOST@');
-Set($DatabaseRTHost , '@DB_RT_HOST@');
+Set(DatabaseHost => '@DB_HOST@');
+Set(DatabaseRTHost => '@DB_RT_HOST@');
 
-=item C<$DatabasePort>
+=item C<DatabasePort>
 
 The port that your database server is running on.  Ignored unless it's
 a positive integer. It's usually safe to leave this blank
 
 =cut
 
-Set($DatabasePort , '@DB_PORT@');
+Set(DatabasePort => '@DB_PORT@');
 
-=item C<$DatabaseUser>
+=item C<DatabaseUser>
 
 The name of the database user (inside the database)
 
 =cut
 
-Set($DatabaseUser , '@DB_RT_USER@');
+Set(DatabaseUser => '@DB_RT_USER@');
 
-=item C<$DatabasePassword>
+=item C<DatabasePassword>
 
-Password the C<$DatabaseUser> should use to access the database
+Password the C<DatabaseUser> should use to access the database
 
 =cut
 
-Set($DatabasePassword , '@DB_RT_PASS@');
+Set(DatabasePassword => '@DB_RT_PASS@');
 
-=item C<$DatabaseName>
+=item C<DatabaseName>
 
 The name of the RT's database on your database server. For Oracle
-it's SID, DB objects are created in L<$DatabaseUser>'s schema.
+it's SID, DB objects are created in L<DatabaseUser>'s schema.
 
 =cut
 
-Set($DatabaseName , '@DB_DATABASE@');
+Set(DatabaseName => '@DB_DATABASE@');
 
-=item C<$DatabaseRequireSSL>
+=item C<DatabaseRequireSSL>
 
 If you're using Postgres and have compiled in SSL support,
-set C<$DatabaseRequireSSL> to 1 to turn on SSL communication
+set C<DatabaseRequireSSL> to 1 to turn on SSL communication
 
 =cut
 
-Set($DatabaseRequireSSL , undef);
+Set(DatabaseRequireSSL => undef);
 
-=item C<$UseSQLForACLChecks>
+=item C<UseSQLForACLChecks>
 
 In RT for ages ACL are checked after search what in some situtations
 result in empty search pages and wrong count of tickets.
 
-Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
+Set C<UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
 
 However, this option is beta. In some cases it result in performance
 improvements, but some setups can not handle it.
 
 =cut
 
-Set($UseSQLForACLChecks, undef);
+Set(UseSQLForACLChecks => undef);
 
-=item C<$TicketsItemMapSize>
+=item C<TicketsItemMapSize>
 
 In RT at display page of a ticket and there is the current search,
 then links for first, next, previous and last ticket are shown in
@@ -185,7 +185,7 @@ To build full map RT has to fetch full result set out of DB what can
 eat lots of resourses. Using this option it's possible to limit number
 of tickets fetched.
 
-Set C<$TicketsItemMapSize> to number of tickets you want RT to look
+Set C<TicketsItemMapSize> to number of tickets you want RT to look
 at to build the map. If full result set is bigger than that number
 then there would be no 'last' link in the menu.
 
@@ -193,7 +193,7 @@ Set this to zero to return back to old behaviour.
 
 =cut
 
-Set($TicketsItemMapSize, 1000);
+Set(TicketsItemMapSize => 1000);
 
 =back
 
@@ -201,28 +201,28 @@ Set($TicketsItemMapSize, 1000);
 
 =over 4
 
-=item C<$OwnerEmail>
+=item C<OwnerEmail>
 
-C<$OwnerEmail> is the address of a human who manages RT. RT will send
+C<OwnerEmail> is the address of a human who manages RT. RT will send
 errors generated by the mail gateway to this address.  This address
 should _not_ be an address that's managed by your RT instance.
 
 =cut
 
-Set($OwnerEmail , 'root');
+Set(OwnerEmail => 'root');
 
-=item C<$LoopsToRTOwner>
+=item C<LoopsToRTOwner>
 
-If C<$LoopsToRTOwner> is defined, RT will send mail that it believes
-might be a loop to C<$OwnerEmail>
+If C<LoopsToRTOwner> is defined, RT will send mail that it believes
+might be a loop to C<OwnerEmail>
 
 =cut
 
-Set($LoopsToRTOwner , 1);
+Set(LoopsToRTOwner => 1);
 
-=item C<$StoreLoops>
+=item C<StoreLoops>
 
-If C<$StoreLoops> is defined, RT will record messages that it believes
+If C<StoreLoops> is defined, RT will record messages that it believes
 to be part of mail loops.
 
 As it does this, it will try to be careful not to send mail to the
@@ -230,11 +230,11 @@ sender of these messages
 
 =cut
 
-Set($StoreLoops , undef);
+Set(StoreLoops => undef);
 
-=item C<$MaxAttachmentSize>
+=item C<MaxAttachmentSize>
 
-C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments stored
+C<MaxAttachmentSize> sets the maximum size (in bytes) of attachments stored
 in the database.
 
 For mysql and oracle, we set this size at 10 megabytes.
@@ -244,41 +244,41 @@ to drop this to 8192. (8k)
 =cut
 
 
-Set($MaxAttachmentSize , 10000000);
+Set(MaxAttachmentSize => 10000000);
 
-=item C<$TruncateLongAttachments>
+=item C<TruncateLongAttachments>
 
-C<$TruncateLongAttachments>: if this is set to a non-undef value,
-RT will truncate attachments longer than C<$MaxAttachmentSize>.
+C<TruncateLongAttachments>: if this is set to a non-undef value,
+RT will truncate attachments longer than C<MaxAttachmentSize>.
 
 =cut
 
-Set($TruncateLongAttachments , undef);
+Set(TruncateLongAttachments => undef);
 
-=item C<$DropLongAttachments>
+=item C<DropLongAttachments>
 
-C<$DropLongAttachments>: if this is set to a non-undef value,
+C<DropLongAttachments>: if this is set to a non-undef value,
 RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 =cut
 
-Set($DropLongAttachments , undef);
+Set(DropLongAttachments => undef);
 
-=item C<$ParseNewMessageForTicketCcs>
+=item C<ParseNewMessageForTicketCcs>
 
-If C<$ParseNewMessageForTicketCcs> is true, RT will attempt to divine
+If C<ParseNewMessageForTicketCcs> is true, RT will attempt to divine
 Ticket 'Cc' watchers from the To and Cc lines of incoming messages
 Be forewarned that if you have _any_ addresses which forward mail to
 RT automatically and you enable this option without modifying
-C<$RTAddressRegexp> below, you will get yourself into a heap of trouble.
+C<RTAddressRegexp> below, you will get yourself into a heap of trouble.
 
 =cut
 
-Set($ParseNewMessageForTicketCcs , undef);
+Set(ParseNewMessageForTicketCcs => undef);
 
-=item C<$RTAddressRegexp> 
+=item C<RTAddressRegexp> 
 
-C<$RTAddressRegexp> is used to make sure RT doesn't add itself as a ticket CC if
+C<RTAddressRegexp> is used to make sure RT doesn't add itself as a ticket CC if
 the setting above is enabled.  It is important that you set this to a 
 regular expression that matches all addresses used by your RT.  This lets RT
 avoid sending mail to itself.  It will also hide RT addresses from the list of 
@@ -291,15 +291,15 @@ can generate a naive first pass regexp by using
 
 =cut
 
-Set($RTAddressRegexp , undef);
+Set(RTAddressRegexp => undef);
 
-=item C<$CanonicalizeEmailAddressMatch>, C<$CanonicalizeEmailAddressReplace>
+=item C<CanonicalizeEmailAddressMatch>, C<CanonicalizeEmailAddressReplace>
 
 RT provides functionality which allows the system to rewrite
 incoming email addresses.  In its simplest form,
-you can substitute the value in $<CanonicalizeEmailAddressReplace>
-for the value in $<CanonicalizeEmailAddressMatch>
-(These values are passed to the $<CanonicalizeEmailAddress> subroutine in
+you can substitute the value in C<CanonicalizeEmailAddressReplace>
+for the value in C<CanonicalizeEmailAddressMatch>
+(These values are passed to the C<CanonicalizeEmailAddress> subroutine in
  F<RT/User.pm>)
 
 By default, that routine performs a C<s/$Match/$Replace/gi> on any address
@@ -307,10 +307,10 @@ passed to it.
 
 =cut
 
-#Set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
-#Set($CanonicalizeEmailAddressReplace , '@example.com');
+#Set(CanonicalizeEmailAddressMatch => '@subdomain\.example\.com$');
+#Set(CanonicalizeEmailAddressReplace => '@example.com');
 
-=item C<$CanonicalizeEmailAddressMatch>
+=item C<CanonicalizeEmailAddressMatch>
 
 Set this to true and the create new user page will use the values that you
 enter in the form but use the function CanonicalizeUserInfo in
@@ -318,17 +318,17 @@ F<RT/User_Local.pm>
 
 =cut
 
-Set($CanonicalizeOnCreate, 0);
+Set(CanonicalizeOnCreate => 0);
 
-=item C<$ValidateUserEmailAddresses>
+=item C<ValidateUserEmailAddresses>
 
-If C<$ValidateUserEmailAddresses> is true, RT will refuse to create users with
+If C<ValidateUserEmailAddresses> is true, RT will refuse to create users with
 an invalid email address (as specified in RFC 2822) or with an email address
 made of multiple email adresses.
 
 =cut
 
-Set($ValidateUserEmailAddresses, undef);
+Set(ValidateUserEmailAddresses => undef);
 
 =item C<@MailPlugins>
 
@@ -337,16 +337,16 @@ to use; see L<rt-mailgate>
 
 =cut
 
-=item C<$UnsafeEmailCommands>
+=item C<UnsafeEmailCommands>
 
-C<$UnsafeEmailCommands>, if set to true, enables 'take' and 'resolve'
+C<UnsafeEmailCommands>, if set to true, enables 'take' and 'resolve'
 as possible actions via the mail gateway.  As its name implies, this
 is very unsafe, as it allows email with a forged sender to possibly
 resolve arbitrary tickets!
 
 =cut
 
-=item C<$ExtractSubjectTagMatch>, C<$ExtractSubjectTagNoMatch>
+=item C<ExtractSubjectTagMatch>, C<ExtractSubjectTagNoMatch>
 
 The default "extract remote tracking tags" scrip settings; these
 detect when your RT is talking to another RT, and adjusts the
@@ -354,8 +354,8 @@ subject accordingly.
 
 =cut
 
-Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
-Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
+Set(ExtractSubjectTagMatch => qr/\[.+? #\d+\]/);
+Set(ExtractSubjectTagNoMatch => ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
 
@@ -365,28 +365,28 @@ Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
 
 =over 4
 
-=item C<$MailCommand>
+=item C<MailCommand>
 
-C<$MailCommand> defines which method RT will use to try to send mail.
+C<MailCommand> defines which method RT will use to try to send mail.
 We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
 doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
 or 'qmail'.
 
-Note that you should remove the '-t' from C<$SendmailArguments>
+Note that you should remove the '-t' from C<SendmailArguments>
 if you use 'sendmail' rather than 'sendmailpipe'
 
 For testing purposes, or to simply disable sending mail out into the world, you
-can set C<$MailCommand> to 'testfile' which writes all mail to a temporary
+can set C<MailCommand> to 'testfile' which writes all mail to a temporary
 file.  RT will log the location of the temporary file so you can extract mail
 from it afterwards.
 
 =cut
 
-Set($MailCommand , 'sendmailpipe');
+Set(MailCommand => 'sendmailpipe');
 
-=item C<$SetOutgoingMailFrom>
+=item C<SetOutgoingMailFrom>
 
-C<$SetOutgoingMailFrom> tells RT to set the sender envelope with the correspond
+C<SetOutgoingMailFrom> tells RT to set the sender envelope with the correspond
 mail address of the ticket's queue.
 
 Warning: If you use this setting, bounced mails will appear to be incoming
@@ -394,11 +394,11 @@ mail to the system, thus creating new tickets.
 
 =cut
 
-Set($SetOutgoingMailFrom, 0);
+Set(SetOutgoingMailFrom => 0);
 
-=item C<$OverrideOutgoingMailFrom>
+=item C<OverrideOutgoingMailFrom>
 
-C<$OverrideOutgoingMailFrom> is used for overwriting the Correspond
+C<OverrideOutgoingMailFrom> is used for overwriting the Correspond
 address of the queue as it is handed to sendmail -f. This helps force
 the From_ header away from www-data or other email addresses that show
 up in the "Sent by" line in Outlook.
@@ -410,16 +410,16 @@ used.
 
 =cut
 
-Set($OverrideOutgoingMailFrom, {
+Set(OverrideOutgoingMailFrom => {
 #    'Default' => 'admin@rt.example.com',
 #    'General' => 'general@rt.example.com',
 });
 
 =back
 
-=item C<$DefaultMailPrecedence>
+=item C<DefaultMailPrecedence>
 
-C<$DefaultMailPrecedence> is used to control the default
+C<DefaultMailPrecedence> is used to control the default
 Precedence level of outgoing mail where none is specified.
 By default it is C<bulk>, but if you only send mail to
 your staff, you may wish to change it.
@@ -433,13 +433,13 @@ Precedence header it will be preserved.
 
 =cut
 
-Set($DefaultMailPrecedence, 'bulk');
+Set(DefaultMailPrecedence => 'bulk');
 
 =back
 
-=item C<$DefaultErrorMailPrecedence>
+=item C<DefaultErrorMailPrecedence>
 
-C<$DefaultErrorMailPrecedence> is used to control the default
+C<DefaultErrorMailPrecedence> is used to control the default
 Precedence level of outgoing mail that indicates some kind of
 error condition. By default it is C<bulk>, but if you only send
 mail to your staff, you may wish to change it.
@@ -449,94 +449,94 @@ header to error mail.
 
 =cut
 
-Set($DefaultErrorMailPrecedence, 'bulk');
+Set(DefaultErrorMailPrecedence => 'bulk');
 
 =back
 
-=item C<$UseOriginatorHeader>
+=item C<UseOriginatorHeader>
 
-C<$UseOriginatorHeader> is used to control the insertion of an
+C<UseOriginatorHeader> is used to control the insertion of an
 RT-Originator Header in every outgoing mail, containing the
 mail address of the transaction creator.
 
 =cut
 
-Set($UseOriginatorHeader, 1);
+Set(UseOriginatorHeader => 1);
 
 =back
 
 =head1 Sendmail Configuration
 
-These options only take effect if C<$MailCommand> is 'sendmail' or
+These options only take effect if C<MailCommand> is 'sendmail' or
 'sendmailpipe'
 
 =over 4
 
-=item C<$SendmailArguments> 
+=item C<SendmailArguments> 
 
-C<$SendmailArguments> defines what flags to pass to C<$SendmailPath>
-If you picked 'sendmailpipe', you MUST add a -t flag to C<$SendmailArguments>
+C<SendmailArguments> defines what flags to pass to C<SendmailPath>
+If you picked 'sendmailpipe', you MUST add a -t flag to C<SendmailArguments>
 These options are good for most sendmail wrappers and workalikes
 
 These arguments are good for sendmail brand sendmail 8 and newer
-C<Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
+C<Set(SendmailArguments =>"-oi -t -ODeliveryMode=b -OErrorMode=m");>
 
 =cut
 
-Set($SendmailArguments , "-oi -t");
+Set(SendmailArguments => "-oi -t");
 
 
-=item C<$SendmailBounceArguments>
+=item C<SendmailBounceArguments>
 
-C<$SendmailBounceArguments> defines what flags to pass to C<$Sendmail>
+C<SendmailBounceArguments> defines what flags to pass to C<Sendmail>
 assuming RT needs to send an error (ie. bounce).
 
 =cut
 
-Set($SendmailBounceArguments , '-f "<>"');
+Set(SendmailBounceArguments => '-f "<>"');
 
-=item C<$SendmailPath>
+=item C<SendmailPath>
 
 If you selected 'sendmailpipe' above, you MUST specify the path to
-your sendmail binary in C<$SendmailPath>.
+your sendmail binary in C<SendmailPath>.
 
 =cut
 
-Set($SendmailPath , "/usr/sbin/sendmail");
+Set(SendmailPath => "/usr/sbin/sendmail");
 
 
 =back
 
 =head1 SMTP Configuration
 
-These options only take effect if C<$MailCommand> is 'smtp'
+These options only take effect if C<MailCommand> is 'smtp'
 
 =over 4
 
-=item C<$SMTPServer>
+=item C<SMTPServer>
 
-C<$SMTPServer> should be set to the hostname of the SMTP server to use
+C<SMTPServer> should be set to the hostname of the SMTP server to use
 
 =cut
 
-Set($SMTPServer, undef);
+Set(SMTPServer => undef);
 
-=item C<$SMTPFrom>
+=item C<SMTPFrom>
 
-C<$SMTPFrom> should be set to the 'From' address to use, if not the
+C<SMTPFrom> should be set to the 'From' address to use, if not the
 email's 'From'
 
 =cut
 
-Set($SMTPFrom, undef);
+Set(SMTPFrom => undef);
 
-=item C<$SMTPDebug> 
+=item C<SMTPDebug> 
 
-C<$SMTPDebug> should be set to true to debug SMTP mail sending
+C<SMTPDebug> should be set to true to debug SMTP mail sending
 
 =cut
 
-Set($SMTPDebug, 0);
+Set(SMTPDebug => 0);
 
 =back
 
@@ -546,57 +546,57 @@ Set($SMTPDebug, 0);
 
 =item C<@MailParams>
 
-C<@MailParams> defines a list of options passed to $MailCommand if it
+C<@MailParams> defines a list of options passed to C<MailCommand> if it
 is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 =cut
 
-Set(@MailParams, ());
+SetArray(MailParams => ());
 
-=item C<$CorrespondAddress>, C<$CommentAddress>
+=item C<CorrespondAddress>, C<CommentAddress>
 
 RT is designed such that any mail which already has a ticket-id associated
 with it will get to the right place automatically.
 
-C<$CorrespondAddress> and C<$CommentAddress> are the default addresses
+C<CorrespondAddress> and C<CommentAddress> are the default addresses
 that will be listed in From: and Reply-To: headers of correspondence
 and comment mail tracked by RT, unless overridden by a queue-specific
 address.
 
 =cut
 
-Set($CorrespondAddress , '');
+Set(CorrespondAddress => '');
 
-Set($CommentAddress , '');
+Set(CommentAddress => '');
 
-=item C<$DashboardAddress>
+=item C<DashboardAddress>
 
 The email address from which RT will send dashboards. If none is set, then
-C<$OwnerEmail> will be used.
+C<OwnerEmail> will be used.
 
 =cut
 
-Set($DashboardAddress, '');
+Set(DashboardAddress => '');
 
-=item C<$UseFriendlyFromLine>
+=item C<UseFriendlyFromLine>
 
 By default, RT sets the outgoing mail's "From:" header to
-"SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
+"SenderName via RT".  Setting C<UseFriendlyFromLine> to 0 disables it.
 
 =cut
 
-Set($UseFriendlyFromLine, 1);
+Set(UseFriendlyFromLine => 1);
 
-=item C<$FriendlyFromLineFormat>
+=item C<FriendlyFromLineFormat>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are SenderName and SenderEmailAddress.
 
 =cut
 
-Set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
+Set(FriendlyFromLineFormat => "\"%s via RT\" <%s>");
 
-=item C<$UseFriendlyToLine>
+=item C<UseFriendlyToLine>
 
 RT can optionally set a "Friendly" 'To:' header when sending messages to
 Ccs or AdminCcs (rather than having a blank 'To:' header.
@@ -607,37 +607,37 @@ you _must_ disable this option.
 
 =cut
 
-Set($UseFriendlyToLine, 0);
+Set(UseFriendlyToLine => 0);
 
-=item C<$FriendlyToLineFormat>
+=item C<FriendlyToLineFormat>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are WatcherType and TicketId.
 
 =cut
 
-Set($FriendlyToLineFormat, "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\":;");
+Set(FriendlyToLineFormat => "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\":;");
 
-=item C<$NotifyActor>
+=item C<NotifyActor>
 
 By default, RT doesn't notify the person who performs an update, as they
 already know what they've done. If you'd like to change this behaviour,
-Set C<$NotifyActor> to 1
+Set C<NotifyActor> to 1
 
 =cut
 
-Set($NotifyActor, 0);
+Set(NotifyActor => 0);
 
-=item C<$RecordOutgoingEmail>
+=item C<RecordOutgoingEmail>
 
 By default, RT records each message it sends out to its own internal database.
-To change this behavior, set C<$RecordOutgoingEmail> to 0 
+To change this behavior, set C<RecordOutgoingEmail> to 0 
 
 =cut
 
-Set($RecordOutgoingEmail, 1);
+Set(RecordOutgoingEmail => 1);
 
-=item C<$VERPPrefix>, C<$VERPPrefix>
+=item C<VERPPrefix>, C<VERPPrefix>
 
 VERP support (http://cr.yp.to/proto/verp.txt)
 
@@ -649,23 +649,23 @@ This currently only works with sendmail and sendmailppie.
 
 =cut
 
-# Set($VERPPrefix, 'rt-');
-# Set($VERPDomain, $RT::Organization);
+# Set(VERPPrefix => 'rt-');
+# Set(VERPDomain => $RT::Organization);
 
 
-=item C<$ForwardFromUser>
+=item C<ForwardFromUser>
 
 By default, RT forwards a message using queue's address and adds RT's tag into
 subject of the outgoing message, so recipients' replies go into RT as correspondents.
 
-To change this behavior, set C<$ForwardFromUser> to true value and RT will use
+To change this behavior, set C<ForwardFromUser> to true value and RT will use
 address of the current user and leave subject without RT's tag.
 
 =cut
 
-Set($ForwardFromUser, 0);
+Set(ForwardFromUser => 0);
 
-=item C<$ShowBccHeader>
+=item C<ShowBccHeader>
 
 By default RT hides from the web UI information about blind copies user sent on
 reply or comment.
@@ -674,9 +674,9 @@ To change this set the following option to true value.
 
 =cut
 
-Set($ShowBccHeader, 0);
+Set(ShowBccHeader => 0);
 
-=item C<$DashboardSubject>
+=item C<DashboardSubject>
 
 Lets you set the subject of dashboards. Arguments are the frequency (Daily,
 Weekly, Monthly) of the dashboard and the dashboard's name. [_1] for the name
@@ -684,7 +684,7 @@ of the dashboard.
 
 =cut
 
-Set($DashboardSubject, '%s Dashboard: %s');
+Set(DashboardSubject => '%s Dashboard: %s');
 
 =back
 
@@ -712,7 +712,7 @@ with incorrect GnuPG data.
 
 =cut
 
-Set( %GnuPG,
+SetHash(GnuPG =>
     Enable => @RT_GPG@,
     OutgoingMessagesFormat => 'RFC', # Inline
     AllowEncryptDataInDB   => 0,
@@ -732,7 +732,7 @@ NOTE that options with '-' character MUST be quoted.
 
 =cut
 
-Set(%GnuPGOptions,
+SetHash(GnuPGOptions =>
     homedir => '@RT_VAR_PATH@/data/gpg',
 
 # URL of a keyserver
@@ -762,7 +762,7 @@ log message.
 
 =over 4
 
-=item C<$LogToSyslog>, C<$LogToScreen>
+=item C<LogToSyslog>, C<LogToScreen>
 
 The minimum level error that will be logged to the specific device.
 From lowest to highest priority, the levels are:
@@ -770,10 +770,10 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-Set($LogToSyslog    , 'info');
-Set($LogToScreen    , 'info');
+Set(LogToSyslog => 'info');
+Set(LogToScreen => 'info');
 
-=item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
+=item C<LogToFile>, C<LogDir>, C<LogToFileNamed>
 
 Logging to a standalone file is also possible, but note that the
 file should needs to both exist and be writable by all direct users
@@ -786,11 +786,11 @@ direct file logging.
 
 =cut
 
-Set($LogToFile      , undef);
-Set($LogDir, '@RT_LOG_PATH@');
-Set($LogToFileNamed , "rt.log");    #log to rt.log
+Set(LogToFile => undef);
+Set(LogDir => '@RT_LOG_PATH@');
+Set(LogToFileNamed => "rt.log");    #log to rt.log
 
-=item C<$LogStackTraces>
+=item C<LogStackTraces>
 
 If set to a log level then logging will include stack traces for
 messages with level equal to or greater than specified.
@@ -801,7 +801,7 @@ information such as passwords or ticket content in your logs.
 
 =cut
 
-Set($LogStackTraces, '');
+Set(LogStackTraces => '');
 
 =item C<@LogToSyslogConf>
 
@@ -813,17 +813,17 @@ ident too, if you have multiple RT installations.)
 
 =cut
 
-Set(@LogToSyslogConf, ());
+SetArray(LogToSyslogConf => ());
 
-=item C<$StatementLog>,
+=item C<StatementLog>,
 
 RT has rudimentary SQL statement logging support if you have
-DBIx-SearchBuilder 1.31_1 or higher; simply set C<$StatementLog> to be
+DBIx-SearchBuilder 1.31_1 or higher; simply set C<StatementLog> to be
 the level that you wish SQL statements to be logged at.
 
 =cut
 
-Set($StatementLog, undef);
+Set(StatementLog => undef);
 
 =back
 
@@ -831,7 +831,7 @@ Set($StatementLog, undef);
 
 =over 4
 
-=item C<$WebDefaultStylesheet>
+=item C<WebDefaultStylesheet>
 
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
@@ -849,9 +849,9 @@ option can be overridden by users in their preferences.
 
 =cut
 
-Set($WebDefaultStylesheet, 'web2');
+Set(WebDefaultStylesheet => 'web2');
 
-=item C<$UsernameFormat>
+=item C<UsernameFormat>
 
 This determines how user info is displayed. 'concise' will show one of 
 either NickName, RealName, Name or EmailAddress, depending on what exists 
@@ -860,18 +860,18 @@ EmailAddress.
 
 =cut
 
-Set($UsernameFormat, 'concise');
+Set(UsernameFormat => 'concise');
 
-=item C<$ShowMoreAboutPrivilegedUsers>
+=item C<ShowMoreAboutPrivilegedUsers>
 
 This determines if the 'More about requestor' box on Ticket/Display.html is
 shown for Privileged Users.
 
 =cut
 
-Set($ShowMoreAboutPrivilegedUsers, 0);
+Set(ShowMoreAboutPrivilegedUsers => 0);
 
-=item C<$MoreAboutRequestorTicketList>
+=item C<MoreAboutRequestorTicketList>
 
 This can be set to Active, Inactive, All or None.  It controls what ticket
 list will be displayed in the 'More about requestor' box on Ticket/Display.html.
@@ -879,9 +879,9 @@ This option can be controlled by users also.
 
 =cut
 
-Set($MoreAboutRequestorTicketList, 'Active');
+Set(MoreAboutRequestorTicketList => 'Active');
 
-=item C<$MoreAboutRequestorExtraInfo>
+=item C<MoreAboutRequestorExtraInfo>
 
 By default, the 'More about requestor' box on Ticket/Display.html shows
 the Requestor's name and ticket list.  If you would like to see extra information
@@ -890,9 +890,9 @@ not all the attributes are supported in this display because we're not building 
 
 =cut
 
-Set($MoreAboutRequestorExtraInfo, '');
+Set(MoreAboutRequestorExtraInfo => '');
 
-=item C<$AutocompleteOwners>
+=item C<AutocompleteOwners>
 
 If true, the owner dropdowns for ticket update/modify and the query builder are
 replaced by text fields that autocomplete.  This can alleviate the sometimes
@@ -900,18 +900,18 @@ huge owner list for installations where many users have the OwnTicket right.
 
 =cut
 
-Set( $AutocompleteOwners, 0 );
+Set(AutocompleteOwners => 0 );
 
-=item C<$WebDomain>
+=item C<WebDomain>
 
 Domain name of the RT server, eg 'www.example.com'. It should not contain
 anything else, but server name.
 
 =cut
 
-Set( $WebDomain, 'localhost' );
+Set(WebDomain => 'localhost' );
 
-=item C<$WebPort>
+=item C<WebPort>
 
 If we're running as a superuser, run on port 80
 Otherwise, pick a high port for this user.
@@ -920,100 +920,100 @@ Otherwise, pick a high port for this user.
 
 =cut
 
-Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
+Set(WebPort => 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
-=item C<$WebPath>
+=item C<WebPath>
 
 If you're putting the web ui somewhere other than at the root of
-your server, you should set C<$WebPath> to the path you'll be 
+your server, you should set C<WebPath> to the path you'll be 
 serving RT at.
 
-C<$WebPath> requires a leading / but no trailing /, or it can be blank.
+C<WebPath> requires a leading / but no trailing /, or it can be blank.
 
-In most cases, you should leave C<$WebPath> set to '' (an empty value).
+In most cases, you should leave C<WebPath> set to '' (an empty value).
 
 =cut
 
-Set($WebPath, "");
+Set(WebPath => "");
 
-=item C<$WebBaseURL>, C<$WebURL>
+=item C<WebBaseURL>, C<WebURL>
 
 Usually you don't want to set these options. The only obviouse reason is
 RT accessible via https protocol on non standard port, eg
 'https://rt.example.com:9999'. In all other cases these options are computed
-using C<$WebDomain>, C<$WebPort> and C<$WebPath>.
+using C<WebDomain>, C<WebPort> and C<WebPath>.
 
-C<$WebBaseURL> is the scheme, server and port (eg 'http://rt.example.com')
-for constructing urls to the web UI. C<$WebBaseURL> doesn't need a trailing /.
+C<WebBaseURL> is the scheme, server and port (eg 'http://rt.example.com')
+for constructing urls to the web UI. C<WebBaseURL> doesn't need a trailing /.
 
-C<$WebURL> is the C<$WebBaseURL>, C<$WebPath> and trailing /, for example:
+C<WebURL> is the C<WebBaseURL>, C<WebPath> and trailing /, for example:
 'http://www.example.com/rt/'.
 
 =cut
 
 my $port = RT->Config->Get('WebPort');
-Set($WebBaseURL,
+Set(WebBaseURL =>
     ($port == 443? 'https': 'http') .'://'
     . RT->Config->Get('WebDomain')
     . ($port != 80 && $port != 443? ":$port" : '')
 );
 
-Set($WebURL, RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
+Set(WebURL => RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
 
-=item C<$WebImagesURL>
+=item C<WebImagesURL>
 
-C<$WebImagesURL> points to the base URL where RT can find its images.
+C<WebImagesURL> points to the base URL where RT can find its images.
 Define the directory name to be used for images in rt web
 documents.
 
 =cut
 
-Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+Set(WebImagesURL => RT->Config->Get('WebPath') . "/NoAuth/images/");
 
-=item C<$LogoURL>
+=item C<LogoURL>
 
-C<$LogoURL> points to the URL of the RT logo displayed in the web UI
-
-=cut
-
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "bpslogo.png");
-
-=item C<$LogoLinkURL>
-
-C<$LogoLinkURL> is the URL that the RT logo hyperlinks to.
+C<LogoURL> points to the URL of the RT logo displayed in the web UI
 
 =cut
 
-Set($LogoLinkURL, "http://bestpractical.com");
+Set(LogoURL => RT->Config->Get('WebImagesURL') . "bpslogo.png");
 
-=item C<$LogoAltText>
+=item C<LogoLinkURL>
 
-C<$LogoAltText> is a string of text for the alt-text of the logo. It
+C<LogoLinkURL> is the URL that the RT logo hyperlinks to.
+
+=cut
+
+Set(LogoLinkURL => "http://bestpractical.com");
+
+=item C<LogoAltText>
+
+C<LogoAltText> is a string of text for the alt-text of the logo. It
 will be passed through C<loc> for localization.
 
 =cut
 
-Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
+Set(LogoAltText => "Best Practical Solutions, LLC corporate logo");
 
-=item C<$LogoImageHeight>
+=item C<LogoImageHeight>
 
-C<$LogoImageHeight> is the value of the C<height> attribute of the logo
+C<LogoImageHeight> is the value of the C<height> attribute of the logo
 C<img> tag.
 
 =cut
 
-Set($LogoImageHeight, 38);
+Set(LogoImageHeight => 38);
 
-=item C<$LogoImageWidth>
+=item C<LogoImageWidth>
 
-C<$LogoImageWidth> is the value of the C<width> attribute of the logo
+C<LogoImageWidth> is the value of the C<width> attribute of the logo
 C<img> tag.
 
 =cut
 
-Set($LogoImageWidth, 181);
+Set(LogoImageWidth => 181);
 
-=item C<$WebNoAuthRegex>
+=item C<WebNoAuthRegex>
 
 What portion of RT's URL space should not require authentication.
 
@@ -1022,9 +1022,9 @@ login if you change it.
 
 =cut
 
-Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
+Set(WebNoAuthRegex => qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
-=item C<$SelfServiceRegex>
+=item C<SelfServiceRegex>
 
 What portion of RT's URLspace should be accessible to Unprivileged users
 This does not override the redirect from F</Ticket/Display.html> to
@@ -1033,9 +1033,9 @@ ticked displays
 
 =cut
 
-Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+Set(SelfServiceRegex => qr!^(?:/+SelfService/)!x );
 
-=item C<$UseSideBySideLayout>
+=item C<UseSideBySideLayout>
 
 Should the ticket create and update forms use a more space efficient
 two column layout.  This layout may not work in narrow browsers if you
@@ -1045,9 +1045,9 @@ Default: yes
 
 =cut
 
-Set($UseSideBySideLayout, 1);
+Set(UseSideBySideLayout => 1);
 
-=item C<$MessageBoxWidth>, C<$MessageBoxHeight>
+=item C<MessageBoxWidth>, C<MessageBoxHeight>
 
 For message boxes, set the entry box width, height and what type of
 wrapping to use.  These options can be overridden by users in their
@@ -1065,10 +1065,10 @@ See below for Rich Text settings.
 
 =cut
 
-Set($MessageBoxWidth, undef);
-Set($MessageBoxHeight, 15);
+Set(MessageBoxWidth => undef);
+Set(MessageBoxHeight => 15);
 
-=item C<$MessageBoxWrap>
+=item C<MessageBoxWrap>
 
 Default wrapping: "SOFT"  (choices "SOFT", "HARD")
 
@@ -1078,41 +1078,41 @@ Text Editor.
 
 =cut
 
-Set($MessageBoxWrap, "SOFT");
+Set(MessageBoxWrap => "SOFT");
 
-=item C<$MessageBoxRichText>
+=item C<MessageBoxRichText>
 
 Should "rich text" editing be enabled? This option lets your users send html email messages from the web interface.
 
 =cut
 
-Set($MessageBoxRichText, 1);
+Set(MessageBoxRichText => 1);
 
-=item C<$MessageBoxRichTextHeight>
+=item C<MessageBoxRichTextHeight>
 
 Height of RichText javascript enabled editing boxes (in pixels)
 
 =cut
 
-Set($MessageBoxRichTextHeight, 200);
+Set(MessageBoxRichTextHeight => 200);
 
-=item C<$MessageBoxIncludeSignature>
+=item C<MessageBoxIncludeSignature>
 
 Should your user's signatures (from their Preferences page) be included in Comments and Replies
 
 =cut
 
-Set($MessageBoxIncludeSignature, 1);
+Set(MessageBoxIncludeSignature => 1);
 
-=item C<$MessageBoxIncludeSignatureOnComment>
+=item C<MessageBoxIncludeSignatureOnComment>
 
-Should your user's signatures (from their Preferences page) be included in Comments. Setting this to false overrides C<$MessageBoxIncludeSignature>.
+Should your user's signatures (from their Preferences page) be included in Comments. Setting this to false overrides C<MessageBoxIncludeSignature>.
 
 =cut
 
-Set($MessageBoxIncludeSignatureOnComment, 1);
+Set(MessageBoxIncludeSignatureOnComment => 1);
 
-=item C<$WikiImplicitLinks>
+=item C<WikiImplicitLinks>
 
 Support implicit links in WikiText custom fields?  A true value
 causes InterCapped or ALLCAPS words in WikiText fields to
@@ -1121,9 +1121,9 @@ RTFM articles, it links to the RTFM article with that name.
 
 =cut
 
-Set($WikiImplicitLinks, 0);
+Set(WikiImplicitLinks => 0);
 
-=item C<$TrustHTMLAttachments>
+=item C<TrustHTMLAttachments>
 
 if C<TrustHTMLAttachments> is not defined, we will display them
 as text. This prevents malicious HTML and javascript from being
@@ -1131,30 +1131,30 @@ sent in a request (although there is probably more to it than that)
 
 =cut
 
-Set($TrustHTMLAttachments, undef);
+Set(TrustHTMLAttachments => undef);
 
-=item C<$AlwaysDownloadAttachments>
+=item C<AlwaysDownloadAttachments>
 
 Always download attachments, regardless of content type. If set,
 this overrides C<TrustHTMLAttachments>.
 
 =cut
 
-Set($AlwaysDownloadAttachments, undef);
+Set(AlwaysDownloadAttachments => undef);
 
-=item C<$AttachmentUnits>
+=item C<AttachmentUnits>
 
 Controls the units (kilobytes or bytes) that attachment sizes use
 for display. The default is to display kilobytes if the attachment
 is larger than 1024 bytes, bytes otherwise. If you set
-C<$AttachmentUnits> to C<'k'> then attachment sizes will always be
+C<AttachmentUnits> to C<'k'> then attachment sizes will always be
 displayed in kilobytes. If set to C<'b'>, then sizes will be bytes.
 
 =cut
 
-Set($AttachmentUnits, undef);
+Set(AttachmentUnits => undef);
 
-=item C<$RedistributeAutoGeneratedMessages>
+=item C<RedistributeAutoGeneratedMessages>
 
 Should RT redistribute correspondence that it identifies as
 machine generated? A true value will do so; setting this to '0'
@@ -1165,31 +1165,31 @@ bounces and loops caused by autocreated requestors with bogus addresses.
 
 =cut
 
-Set($RedistributeAutoGeneratedMessages, 'privileged');
+Set(RedistributeAutoGeneratedMessages => 'privileged');
 
-=item C<$PreferRichText>
+=item C<PreferRichText>
 
-If C<$PreferRichText> is set to a true value, RT will show HTML/Rich text
+If C<PreferRichText> is set to a true value, RT will show HTML/Rich text
 messages in preference to their plaintext alternatives. RT "scrubs" the 
 html to show only a minimal subset of HTML to avoid possible contamination
 by cross-site-scripting attacks.
 
 =cut
 
-Set($PreferRichText, undef);
+Set(PreferRichText => undef);
 
-=item C<$WebExternalAuth>
+=item C<WebExternalAuth>
 
-If C<$WebExternalAuth> is defined, RT will defer to the environment's
+If C<WebExternalAuth> is defined, RT will defer to the environment's
 REMOTE_USER variable.
 
 =cut
 
-Set($WebExternalAuth, undef);
+Set(WebExternalAuth => undef);
 
-=item C<$WebExternalAuthContinuous>
+=item C<WebExternalAuthContinuous>
 
-If C<$WebExternalAuthContinuous> is defined, RT will check for the
+If C<WebExternalAuthContinuous> is defined, RT will check for the
 REMOTE_USER on each access.  If you would prefer this to only happen
 once (at initial login) set this to a false value.  The default setting
 will help ensure that if your external auth system deauthenticates a
@@ -1197,69 +1197,69 @@ user, RT notices as soon as possible.
 
 =cut
 
-Set($WebExternalAuthContinuous, 1);
+Set(WebExternalAuthContinuous => 1);
 
-=item C<$WebFallbackToInternalAuth>
+=item C<WebFallbackToInternalAuth>
 
-If C<$WebFallbackToInternalAuth> is defined, the user is allowed a chance
+If C<WebFallbackToInternalAuth> is defined, the user is allowed a chance
 of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
 
-Set($WebFallbackToInternalAuth , undef);
+Set(WebFallbackToInternalAuth => undef);
 
-=item C<$WebExternalGecos>
+=item C<WebExternalGecos>
 
-C<$WebExternalGecos> means to match 'gecos' field as the user identity);
+C<WebExternalGecos> means to match 'gecos' field as the user identity);
 useful with mod_auth_pwcheck and IIS Integrated Windows logon.
 
 =cut
 
-Set($WebExternalGecos , undef);
+Set(WebExternalGecos => undef);
 
-=item C<$WebExternalAuto>
+=item C<WebExternalAuto>
 
-C<$WebExternalAuto> will create users under the same name as REMOTE_USER
+C<WebExternalAuto> will create users under the same name as REMOTE_USER
 upon login, if it's missing in the Users table.
 
 =cut
 
-Set($WebExternalAuto , undef);
+Set(WebExternalAuto => undef);
 
-=item C<$AutoCreate>
+=item C<AutoCreate>
 
-If C<$WebExternalAuto> is true, C<$AutoCreate> will be passed to User's
+If C<WebExternalAuto> is true, C<AutoCreate> will be passed to User's
 Create method.  Use it to set defaults, such as creating 
 Unprivileged users with C<{ Privileged => 0 }>
 ( Must be a hashref of arguments )
 
 =cut
 
-Set($AutoCreate, undef);
+Set(AutoCreate => undef);
 
-=item C<$WebSessionClass>
+=item C<WebSessionClass>
 
-C<$WebSessionClass> is the class you wish to use for managing Sessions.
+C<WebSessionClass> is the class you wish to use for managing Sessions.
 It defaults to use your SQL database, but if you are using MySQL 3.x and
 plans to use non-ascii Queue names, uncomment and add this line to
 F<RT_SiteConfig.pm> will prevent session corruption.
 
 =cut
 
-# Set($WebSessionClass , 'Apache::Session::File');
+# Set(WebSessionClass => 'Apache::Session::File');
 
-=item C<$AutoLogoff>
+=item C<AutoLogoff>
 
 By default, RT's user sessions persist until a user closes his or her 
-browser. With the C<$AutoLogoff> option you can setup session lifetime in 
+browser. With the C<AutoLogoff> option you can setup session lifetime in 
 minutes. A user will be logged out if he or she doesn't send any requests 
 to RT for the defined time.
 
 =cut
 
-Set($AutoLogoff, 0);
+Set(AutoLogoff => 0);
 
-=item C<$LogoutRefresh>
+=item C<LogoutRefresh>
 
 The number of seconds to wait after logout before sending the user to the
 login page. By default, 1 second, though you may want to increase this if
@@ -1267,74 +1267,74 @@ you display additional information on the logout page.
 
 =cut
 
-Set($LogoutRefresh, 1);
+Set(LogoutRefresh => 1);
 
-=item C<$WebSecureCookies>
+=item C<WebSecureCookies>
 
 By default, RT's session cookie isn't marked as "secure" Some web browsers 
 will treat secure cookies more carefully than non-secure ones, being careful
 not to write them to disk, only send them over an SSL secured connection 
-and so on. To enable this behaviour, set C<$WebSecureCookies> to a true value. 
+and so on. To enable this behaviour, set C<WebSecureCookies> to a true value. 
 NOTE: You probably don't want to turn this on _unless_ users are only connecting
 via SSL encrypted HTTP connections.
 
 =cut
 
-Set($WebSecureCookies, 0);
+Set(WebSecureCookies => 0);
 
-=item C<$WebFlushDbCacheEveryRequest>
+=item C<WebFlushDbCacheEveryRequest>
 
 By default, RT clears its database cache after every page view.
 This ensures that you've always got the most current information 
 when working in a multi-process (mod_perl or FastCGI) Environment
-Setting C<$WebFlushDbCacheEveryRequest> to '0' will turn this off,
+Setting C<WebFlushDbCacheEveryRequest> to '0' will turn this off,
 which will speed RT up a bit, at the expense of a tiny bit of data 
 accuracy.
 
 =cut
 
-Set($WebFlushDbCacheEveryRequest, '1');
+Set(WebFlushDbCacheEveryRequest => '1');
 
 
-=item C<$MaxInlineBody>
+=item C<MaxInlineBody>
 
-C<$MaxInlineBody> is the maximum attachment size that we want to see
+C<MaxInlineBody> is the maximum attachment size that we want to see
 inline when viewing a transaction.  RT will inline any text if value
 is undefined or 0.  This option can be overridden by users in their
 preferences.
 
 =cut
 
-Set($MaxInlineBody, 12000);
+Set(MaxInlineBody => 12000);
 
-=item C<$DefaultSummaryRows>
+=item C<DefaultSummaryRows>
 
-C<$DefaultSummaryRows> is default number of rows displayed in for search
+C<DefaultSummaryRows> is default number of rows displayed in for search
 results on the frontpage.
 
 =cut
 
-Set($DefaultSummaryRows, 10);
+Set(DefaultSummaryRows => 10);
 
-=item C<$HomePageRefreshInterval>
+=item C<HomePageRefreshInterval>
 
-C<$HomePageRefreshInterval> is default number of seconds to refresh the RT
+C<HomePageRefreshInterval> is default number of seconds to refresh the RT
 home page. Choose from [0, 120, 300, 600, 1200, 3600, 7200].
 
 =cut
 
-Set($HomePageRefreshInterval, 0);
+Set(HomePageRefreshInterval => 0);
 
-=item C<$SearchResultsRefreshInterval>
+=item C<SearchResultsRefreshInterval>
 
-C<$SearchResultsRefreshInterval> is default number of seconds to refresh
+C<SearchResultsRefreshInterval> is default number of seconds to refresh
 search results in RT. Choose from [0, 120, 300, 600, 1200, 3600, 7200].
 
 =cut
 
-Set($SearchResultsRefreshInterval, 0);
+Set(SearchResultsRefreshInterval => 0);
 
-=item C<$ResolveDefaultUpdateType>
+=item C<ResolveDefaultUpdateType>
 
 Set the default Update Type when clicking the Resolve link in the Ticket
 links tab.
@@ -1344,10 +1344,10 @@ links tab.
 
 =cut
 
-Set($ResolveDefaultUpdateType, 'Comment');
+Set(ResolveDefaultUpdateType => 'Comment');
 
 
-=item C<$OldestTransactionsFirst>
+=item C<OldestTransactionsFirst>
 
 By default, RT shows newest transactions at the bottom of the ticket
 history page, if you want see them at the top set this to '0'.  This
@@ -1355,9 +1355,9 @@ option can be overridden by users in their preferences.
 
 =cut
 
-Set($OldestTransactionsFirst, '1');
+Set(OldestTransactionsFirst => '1');
 
-=item C<$DeferTransactionLoading>
+=item C<DeferTransactionLoading>
 
 When set, defers loading ticket history until the user clicks a link.
 This should end up serving pages to users quicker, since generating
@@ -1365,61 +1365,61 @@ all the HTML for transaction history can be slow for long tickets.
 
 =cut
 
-#Set($DeferTransactionLoading, '1');
+#Set(DeferTransactionLoading => '1');
 
-=item C<$ShowTransactionImages>
+=item C<ShowTransactionImages>
 
 By default, RT shows images attached to incoming (and outgoing) ticket updates
 inline. Set this variable to 0 if you'd like to disable that behaviour
 
 =cut
 
-Set($ShowTransactionImages, 1);
+Set(ShowTransactionImages => 1);
 
-=item C<$PlainTextPre>
+=item C<PlainTextPre>
 
 Normally plaintext attachments are displayed as HTML with line
 breaks preserved.  This causes space- and tab-based formatting not
-to be displayed correctly.  By setting $PlainTextPre they'll be
+to be displayed correctly.  By setting C<PlainTextPre> they'll be
 displayed using <pre> instead so such formatting works, but they'll
-use a monospaced font, no matter what the value of C<$PlainTextMono> is.
+use a monospaced font, no matter what the value of C<PlainTextMono> is.
 
 =cut
 
-Set($PlainTextPre, 0);
+Set(PlainTextPre => 0);
 
 
-=item C<$PlainTextMono> 
+=item C<PlainTextMono> 
 
 To display plaintext attachments,
-Set C<$PlainTextMono> to 1 to use monospaced font and preserve
+Set C<PlainTextMono> to 1 to use monospaced font and preserve
 formatting, but unlike PlainTextPre, the text will wrap to fit into the
 UI.
 
 =cut
 
-Set($PlainTextMono, 0);
+Set(PlainTextMono => 0);
 
-=item C<$ShowUnreadMessageNotifications>
+=item C<ShowUnreadMessageNotifications>
 
 By default, RT will prompt users when there are new, unread messages on
 tickets they are viewing.
 
-Set C<$ShowUnreadMessageNotifications> to a false value to disable this feature.
+Set C<ShowUnreadMessageNotifications> to a false value to disable this feature.
 
 =cut
 
-Set($ShowUnreadMessageNotifications, 1);
+Set(ShowUnreadMessageNotifications => 1);
 
 
-=item C<$HomepageComponents>
+=item C<HomepageComponents>
 
-C<$HomepageComponents> is an arrayref of allowed components on a user's
+C<HomepageComponents> is an arrayref of allowed components on a user's
 customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
+Set(HomepageComponents => [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
 
 =item C<@MasonParameters>
 
@@ -1428,19 +1428,19 @@ HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
-    Set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
+    SetArray(MasonParameters => (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
 
 =cut
 
-Set(@MasonParameters, ());
+SetArray(MasonParameters => ());
 
-=item C<$DefaultSearchResultFormat>
+=item C<DefaultSearchResultFormat>
 
-C<$DefaultSearchResultFormat> is the default format for RT search results
+C<DefaultSearchResultFormat> is the default format for RT search results
 
 =cut
 
-Set ($DefaultSearchResultFormat, qq{
+Set(DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
@@ -1455,14 +1455,14 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
-=item C<$DefaultSelfServiceSearchResultFormat>
+=item C<DefaultSelfServiceSearchResultFormat>
 
-C<$DefaultSelfServiceSearchResultFormat> is the default format of searches displayed in the 
+C<DefaultSelfServiceSearchResultFormat> is the default format of searches displayed in the 
 SelfService interface.
 
 =cut
 
-Set($DefaultSelfServiceSearchResultFormat, qq{
+Set(DefaultSelfServiceSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
@@ -1477,7 +1477,7 @@ strings per RT class.
 
 =cut
 
-Set(%AdminSearchResultFormat,
+SetHash(AdminSearchResultFormat =>
     Queues =>
         q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
@@ -1509,25 +1509,25 @@ Set(%AdminSearchResultFormat,
         .q{,'__Description__'},
 );
 
-=item C<$SuppressInlineTextFiles>
+=item C<SuppressInlineTextFiles>
 
-If C<$SuppressInlineTextFiles> is set to a true value, then uploaded
+If C<SuppressInlineTextFiles> is set to a true value, then uploaded
 text files (text-type attachments with file names) are prevented
 from being displayed in-line when viewing a ticket's history.
 
 =cut
 
-Set($SuppressInlineTextFiles, undef);
+Set(SuppressInlineTextFiles => undef);
 
-=item C<$DontSearchFileAttachments>
+=item C<DontSearchFileAttachments>
 
-If C<$DontSearchFileAttachments> is set to a true value, then uploaded
+If C<DontSearchFileAttachments> is set to a true value, then uploaded
 files (attachments with file names) are not searched during full-content
 ticket searches.
 
 =cut
 
-Set($DontSearchFileAttachments, undef);
+Set(DontSearchFileAttachments => undef);
 
 =item C<%ChartFont>
 
@@ -1550,17 +1550,17 @@ Set(
     'others' => "$RT::BasePath/share/fonts/DroidSans.ttf",
 );
 
-=item C<$ChartsTimezonesInDB>
+=item C<ChartsTimezonesInDB>
 
 Dates are stored using UTC timezone in the DB, so charts groupped
-by dates and time are not representative. Set C<$ChartsTimezonesInDB>
+by dates and time are not representative. Set C<ChartsTimezonesInDB>
 to a true value to enable timezones conversions using DB's
 capabilities. You may need to do some work on DB side to use this
 feature, read more in F<docs/timezones_in_charts.pod>.
 
 =cut
 
-Set( $ChartsTimezonesInDB, 0 );
+Set(ChartsTimezonesInDB => 0 );
 
 =item C<@Active_MakeClicky>
 
@@ -1580,9 +1580,9 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 =cut
 
-Set(@Active_MakeClicky, qw());
+SetArray(Active_MakeClicky => qw());
 
-=item C<$DefaultQueue>
+=item C<DefaultQueue>
 
 Use this to select the default queue name that will be used for creating new
 tickets. You may use either the queue's name or its ID. This only affects the
@@ -1590,26 +1590,26 @@ queue selection boxes on the web interface.
 
 =cut
 
-#Set($DefaultQueue, 'General');
+#Set(DefaultQueue => 'General');
 
-=item C<$RememberDefaultQueue>
+=item C<RememberDefaultQueue>
 
 When a queue is selected in the new ticket dropdown, make it the new default
 for the new ticket dropdown.
 
 =cut
 
-#Set($RememberDefaultQueue, 1);
+#Set(RememberDefaultQueue => 1);
 
-=item C<$DefaultTimeUnitsToHours>
+=item C<DefaultTimeUnitsToHours>
 
 Use this to set the default units for time entry to hours instead of minutes.
 
 =cut
 
-Set($DefaultTimeUnitsToHours, 0);
+Set(DefaultTimeUnitsToHours => 0);
 
-=item C<$UserAutocompleteFields>
+=item C<UserAutocompleteFields>
 
 Specifies which fields of L<RT::User> to match against and how to match each
 field when autocompleting users.  Valid match methods are LIKE, STARTSWITH, and
@@ -1620,27 +1620,27 @@ autocomplete unless you override their accessibility using a local overlay or a
 plugin.  Out of the box the following fields are public: Name, EmailAddress,
 RealName, NickName, and Organization.
 
-Default: C<< Set( $UserAutocompleteFields, { EmailAddress => 'STARTSWITH', Name => 'STARTSWITH', RealName => 'LIKE' })] ) >>
+Default: C<< Set(UserAutocompleteFields => { EmailAddress => 'STARTSWITH', Name => 'STARTSWITH', RealName => 'LIKE' })] ) >>
 
 =cut
 
-Set( $UserAutocompleteFields, {
+Set(UserAutocompleteFields => {
     EmailAddress => 'STARTSWITH',
     Name         => 'STARTSWITH',
     RealName     => 'LIKE',
 });
 
-=item C<$AllowUserAutocompleteForUnprivileged>
+=item C<AllowUserAutocompleteForUnprivileged>
 
 Should unprivileged users be allowed to autocomplete users.  Setting this
 option to a true value means unprivileged users will be able to search all your
 users.
 
-Default: C<< Set( $AllowUserAutocompleteForUnprivileged, 0 ) >>
+Default: C<< Set(AllowUserAutocompleteForUnprivileged => 0 ) >>
 
 =cut
 
-Set( $AllowUserAutocompleteForUnprivileged, 0 );
+Set(AllowUserAutocompleteForUnprivileged => 0 );
 
 =back
 
@@ -1648,7 +1648,7 @@ Set( $AllowUserAutocompleteForUnprivileged, 0 );
 
 =over 4
 
-=item C<$StandaloneMinServers>, C<$StandaloneMaxServers>
+=item C<StandaloneMinServers>, C<StandaloneMaxServers>
 
 The absolute minimum and maximum number of servers that will be created to
 handle requests. Having multiple servers means that serving a slow page will
@@ -1656,21 +1656,21 @@ affect other users less.
 
 =cut
 
-Set($StandaloneMinServers, 1);
-Set($StandaloneMaxServers, 1);
+Set(StandaloneMinServers => 1);
+Set(StandaloneMaxServers => 1);
 
-=item C<$StandaloneMinSpareServers>, C<$StandaloneMaxSpareServers>
+=item C<StandaloneMinSpareServers>, C<StandaloneMaxSpareServers>
 
 These next two options can be used to scale up and down the number of servers
-to adjust to load. These two options will respect the C<$StandaloneMinServers
-> and C<$StandaloneMaxServers options>.
+to adjust to load. These two options will respect the C<StandaloneMinServers>
+and C<StandaloneMaxServers> options.
 
 =cut
 
-Set($StandaloneMinSpareServers, 0);
-Set($StandaloneMaxSpareServers, 0);
+Set(StandaloneMinSpareServers => 0);
+Set(StandaloneMaxSpareServers => 0);
 
-=item C<$StandaloneMaxRequests>
+=item C<StandaloneMaxRequests>
 
 This sets the absolute maximum number of requests a single server will serve.
 Setting this would be useful if, for example, memory usage slowly crawls up
@@ -1678,7 +1678,7 @@ every hit.
 
 =cut
 
-#Set($StandaloneMaxRequests, 50);
+#Set(StandaloneMaxRequests => 50);
 
 =item C<%NetServerOptions>
 
@@ -1686,11 +1686,11 @@ C<%NetServerOptions> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
-C<Set(%NetServerOptions, (reverse_lookups => 1));>
+C<SetHash(NetServerOptions => (reverse_lookups => 1));>
 
 =cut
 
-Set(%NetServerOptions, ());
+SetHash(NetServerOptions => ());
 
 =back
 
@@ -1707,7 +1707,7 @@ RT bilingual instead of multilingual, but will save some memory.
 
 =cut
 
-Set(@LexiconLanguages, qw(*));
+SetArray(LexiconLanguages => qw(*));
 
 =item C<@EmailInputEncodings>
 
@@ -1717,15 +1717,15 @@ L<Encode::Guess>.
 
 =cut
 
-Set(@EmailInputEncodings, qw(utf-8 iso-8859-1 us-ascii));
+SetArray(EmailInputEncodings => qw(utf-8 iso-8859-1 us-ascii));
 
-=item C<$EmailOutputEncoding>
+=item C<EmailOutputEncoding>
 
 The charset for localized email.  Must be recognized by Encode.
 
 =cut
 
-Set($EmailOutputEncoding, 'utf-8');
+Set(EmailOutputEncoding => 'utf-8');
 
 
 =back
@@ -1734,49 +1734,49 @@ Set($EmailOutputEncoding, 'utf-8');
 
 =over 4
 
-=item C<$DateTimeFormat>
+=item C<DateTimeFormat>
 
 You can choose date and time format.  See "Output formatters"
 section in perldoc F<lib/RT/Date.pm> for more options.  This option can
 be overridden by users in their preferences.
 Some examples:
 
-C<Set($DateTimeFormat, 'LocalizedDateTime');>
-C<Set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
-C<Set($DateTimeFormat, 'RFC2822');>
-C<Set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
+C<Set(DateTimeFormat => 'LocalizedDateTime');>
+C<Set(DateTimeFormat => { Format => 'ISO', Seconds => 0 });>
+C<Set(DateTimeFormat => 'RFC2822');>
+C<Set(DateTimeFormat => { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
 
 =cut
 
-Set($DateTimeFormat, 'DefaultFormat');
+Set(DateTimeFormat => 'DefaultFormat');
 
 # Next two options are for Time::ParseDate
 
-=item C<$DateDayBeforeMonth>
+=item C<DateDayBeforeMonth>
 
 Set this to 1 if your local date convention looks like "dd/mm/yy" instead of
 "mm/dd/yy". Used only for parsing, not for displaying dates.
 
 =cut
 
-Set($DateDayBeforeMonth , 1);
+Set(DateDayBeforeMonth => 1);
 
-=item C<$AmbiguousDayInPast>, C<$AmbiguousDayInFuture>
+=item C<AmbiguousDayInPast>, C<AmbiguousDayInFuture>
 
 Should an unspecified day or year in a date refer to a future or a
 past value? For example, should a date of "Tuesday" default to mean
 the date for next Tuesday or last Tuesday? Should the date "March 1"
 default to the date for next March or last March?
 
-Set $<AmbiguousDayInPast> for the last date, or $<$AmbiguousDayInFuture> for the
+Set C<AmbiguousDayInPast> for the last date, or C<AmbiguousDayInFuture> for the
 next date.
 
 The default is usually good.
 
 =cut
 
-Set($AmbiguousDayInPast, 0);
-Set($AmbiguousDayInFuture, 0);
+Set(AmbiguousDayInPast => 0);
+Set(AmbiguousDayInFuture => 0);
 
 =back
 
@@ -1786,13 +1786,13 @@ Configration for the approvl system
 
 =over 4
 
-=item C<$ApprovalRejectionNotes>
+=item C<ApprovalRejectionNotes>
 
 Should rejection notes be sent to the requestors?  The default is true.
 
 =cut
 
-Set($ApprovalRejectionNotes, 1);
+Set(ApprovalRejectionNotes => 1);
 
 
 =back
@@ -1977,7 +1977,7 @@ you can not move tickets between queues with these lifecycles.
 
 =cut
 
-Set(%Lifecycles,
+SetHash(Lifecycles =>
     default => {
         default_initial => 'new',
         initial         => [ 'new', 'open' ],
@@ -2032,7 +2032,7 @@ B<default> lifecycle
 
 For example:
 
-    Set( %LifecycleMap,
+    SetHash(LifecycleMap =>
         General => 'some_lifecycle',
         'Another Queue' => 'another_lifecycle',
     );
@@ -2040,14 +2040,14 @@ For example:
 =cut
 
 
-Set( %LifecycleMap,
+SetHash(LifecycleMap =>
      General => 'default',
 );
 
 
 =head1 Ticket Relationships
 
-=item C<$LinkTransactionsRun1Scrip>
+=item C<LinkTransactionsRun1Scrip>
 
 RT-3.4 backward compatibility setting. Add/Delete Link used to record one
 transaction and run one scrip. Set this value to 1 if you want
@@ -2055,9 +2055,9 @@ only one of the link transactions to have scrips run.
 
 =cut
 
-Set($LinkTransactionsRun1Scrip, 0);
+Set(LinkTransactionsRun1Scrip => 0);
 
-=item C<$StrictLinkACL>
+=item C<StrictLinkACL>
 
 When this feature is enabled a user needs I<ModifyTicket> rights on both
 tickets to link them together, otherwise he can have rights on either of
@@ -2065,29 +2065,29 @@ them.
 
 =cut
 
-Set($StrictLinkACL, 1);
+Set(StrictLinkACL => 1);
 
 =head1 Sending messages
 
-=item C<$PreviewScripMessages>
+=item C<PreviewScripMessages>
 
-Set C<$PreviewScripMessages> to 1 if the scrips preview on the ticket
+Set C<PreviewScripMessages> to 1 if the scrips preview on the ticket
 reply page should include the content of the messages to be sent.
 
 =cut
 
-Set($PreviewScripMessages, 0);
+Set(PreviewScripMessages => 0);
 
-=item C<$UseTransactionBatch>
+=item C<UseTransactionBatch>
 
-Set C<$UseTransactionBatch> to 1 to execute transactions in batches,
+Set C<UseTransactionBatch> to 1 to execute transactions in batches,
 such that a resolve and comment (for example) would happen
 simultaneously, instead of as two transactions, unaware of each
 others' existence.
 
 =cut
 
-Set($UseTransactionBatch, 1);
+Set(UseTransactionBatch => 1);
 
 =item C<@CustomFieldValuesSources>
 
@@ -2097,11 +2097,11 @@ custom field values from external sources at runtime.
 
 =cut
 
-Set(@CustomFieldValuesSources, ());
+SetArray(CustomFieldValuesSources => ());
 
-=item C<$CanonicalizeRedirectURLs>
+=item C<CanonicalizeRedirectURLs>
 
-Set C<$CanonicalizeRedirectURLs> to 1 to use $C<WebURL> when redirecting rather
+Set C<CanonicalizeRedirectURLs> to 1 to use C<WebURL> when redirecting rather
 than the one we get from C<%ENV>.
 
 If you use RT behind a reverse proxy, you almost certainly want to
@@ -2109,14 +2109,14 @@ enable this option.
 
 =cut
 
-Set($CanonicalizeRedirectURLs, 0);
-=item C<$EnableReminders>
+Set(CanonicalizeRedirectURLs => 0);
+=item C<EnableReminders>
 
 Hide links/portlets related to Reminders by setting this to 0
 
 =cut
 
-Set($EnableReminders,1);
+Set(EnableReminders =>1);
 
 
 =item C<@Plugins>
@@ -2125,11 +2125,11 @@ Set C<@Plugins> to a list of external RT plugins that should be enabled (those
 plugins have to be previously downloaded and installed).
 Example:
 
-C<Set(@Plugins, (qw(Extension::QuickDelete RT::FM)));>
+C<SetArray(Plugins => (qw(Extension::QuickDelete RT::FM)));>
 
 =cut
 
-Set(@Plugins, ());
+SetArray(Plugins => ());
 
 =item C<@JSFilesInHead>
 
@@ -2137,11 +2137,11 @@ a list of js files to be included in head
 
 Example:
 
-Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js/);
+SetArray(JSFilesInHead => qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js/);
 
 =cut
 
-Set(@JSFilesInHead, qw/
+SetArray(JSFilesInHead => qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
@@ -2151,7 +2151,7 @@ Set(@JSFilesInHead, qw/
     userautocomplete.js
 /);
 
-=item C<$JSMinPath>
+=item C<JSMinPath>
 
 Path to jsmin binary.
 You can go to http://www.crockford.com/javascript/jsmin.html to get one.
@@ -2162,7 +2162,7 @@ If that still fails, RT will simply concatenate js files.
 
 Example:
 
-C<Set($JSMinPath, '/path/to/jsmin');>
+C<Set(JSMinPath => '/path/to/jsmin');>
 
 =cut
 
@@ -2172,7 +2172,7 @@ C<Set($JSMinPath, '/path/to/jsmin');>
 
 =over 4
 
-=item C<$DevelMode>
+=item C<DevelMode>
 
 RT comes with a "Development mode" setting. 
 This setting, as a convenience for developers, turns on 
@@ -2187,10 +2187,10 @@ production:
 
 =cut
 
-Set($DevelMode, '@RT_DEVEL_MODE@');
+Set(DevelMode => '@RT_DEVEL_MODE@');
 
 
-=item C<$RecordBaseClass>
+=item C<RecordBaseClass>
 
 What abstract base class should RT use for its records. You should never change this.
 
@@ -2206,7 +2206,7 @@ Valid values are
 
 =cut
 
-Set($RecordBaseClass, 'DBIx::SearchBuilder::Record::Cachable');
+Set(RecordBaseClass => 'DBIx::SearchBuilder::Record::Cachable');
 
 =back
 
@@ -2214,15 +2214,15 @@ Set($RecordBaseClass, 'DBIx::SearchBuilder::Record::Cachable');
 
 =over 4
 
-=item C<$AlwaysUseBase64>
+=item C<AlwaysUseBase64>
 
 Encode blobs as base64 in DB (?)
 
-=item C<$TicketBaseURI>
+=item C<TicketBaseURI>
 
 Base URI to tickets in this system; used when loading (?)
 
-=item C<$UseCodeTickets>
+=item C<UseCodeTickets>
 
 This option is exists for backwards compatibility.  Don't use it.
 
