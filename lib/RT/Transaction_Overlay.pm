@@ -728,6 +728,7 @@ sub BriefDescription {
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->Load( $self->Field );
             $field = $cf->Name();
+            $field = $self->loc('a custom field') if !defined($field);
         }
 
         my $new = $self->NewValue;
