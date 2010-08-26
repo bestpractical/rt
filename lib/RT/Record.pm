@@ -109,6 +109,7 @@ sub Id {
     return shift->{values}->{id};
 }
 
+*id = \&Id;
 
 =head2 Delete
 
