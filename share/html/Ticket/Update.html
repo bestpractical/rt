@@ -168,7 +168,7 @@ my $TicketObj = LoadTicket($id);
 
 my @results;
 
-$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, checks_failure => \$checks_failure, results => \@results, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
