@@ -270,14 +270,15 @@ sub Create {
     my $self    = shift;
     my %attribs = (@_);
     foreach my $key ( keys %attribs ) {
-        my $method = "Validate$key";
-        unless ( $self->$method( $attribs{$key} ) ) {
+        if (my $method = $self->can("Validate$key")) {
+        if (! $method->( $self, $attribs{$key} ) ) {
             if (wantarray) {
                 return ( 0, $self->loc('Invalid value for [_1]', $key) );
             }
             else {
                 return (0);
             }
+        }
         }
     }
     my $now = RT::Date->new( $self->CurrentUser );
