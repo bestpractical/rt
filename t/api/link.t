@@ -8,6 +8,7 @@ use RT::Test::Web;
 use RT::Link;
 my $link = RT::Link->new($RT::SystemUser);
 
+use RT::Test::Web;
 
 ok (ref $link);
 isa_ok( $link, 'RT::Link');
