@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<% $Address || $User->RealName || $User->Name %>\
+<% $display |n %>\
 <%ARGS>
 $User => undef
 $Address => undef
@@ -61,4 +61,7 @@ if ( !$User && $Address ) {
         $Address = $Address->address;
     }
 }
+my $display = $Address || $User->RealName || $User->Name;
+   $display = $m->interp->apply_escapes( $display, 'h' )
+        unless $ARGS{'NoEscape'};
 </%INIT>

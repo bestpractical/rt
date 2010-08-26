@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<%$Address->format%>\
+<% $display |n %>\
 <%INIT>
 my ($phrase, $address, $comment);
 
@@ -66,6 +66,9 @@ if ( $phrase and my ( $l, $r ) = ( $phrase =~ /^(\w+) (\w+)$/ ) ) {
       || $Address->user =~ /^\Q$r\E.\Q$l\E$/;
 }
 
+my $display = $Address->format;
+   $display = $m->interp->apply_escapes( $display, 'h' )
+        unless $ARGS{'NoEscape'};
 </%INIT>
 <%ARGS>
 $User => undef

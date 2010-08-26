@@ -59,13 +59,14 @@ unless ( $m->comp_exists( $comp ) ) {
         . ', but '. $comp . "doesn't exist"
     );
     return $m->comp('/Elements/ShowUserConcise',
-        User => $User, Address => $Address,
+        User => $User, Address => $Address, NoEscape => $NoEscape
     );
 }
-return $m->comp( $comp, User => $User, Address => $Address );
+return $m->comp( $comp, User => $User, Address => $Address, NoEscape => $NoEscape );
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
+$NoEscape => 0
 $style => RT->Config->Get('UsernameFormat', $session{'CurrentUser'})
 </%ARGS>

@@ -108,7 +108,7 @@ while ( my $user = $users->Next ) {
     next if $user->id == $RT::SystemUser->id
          or $user->id == $RT::Nobody->id;
 
-    my $formatted = $m->scomp('/Elements/ShowUser', User => $user);
+    my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
     $formatted =~ s/\n//g;
     push @suggestions, { label => $formatted, value => $user->$return };
 }
