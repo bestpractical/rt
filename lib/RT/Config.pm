@@ -623,19 +623,32 @@ sub _LoadConfig {
 
     eval {
         package RT;
-        local *Set = sub(\[$@%]@) {
-            my ( $opt_ref, @args ) = @_;
-            my ( $pack, $file, $line ) = caller;
+        my $Set = sub {
+            my ( $name, @args ) = @{ shift(@_) };
+            my ( $pack, $file, $line ) = caller(1);
+
             return $self->SetFromConfig(
-                Option     => $opt_ref,
+                Option     => $name,
                 Value      => [@args],
                 Package    => $pack,
                 File       => $file,
                 Line       => $line,
                 SiteConfig => $is_site,
                 Extension  => $is_ext,
+                @_,
             );
         };
+
+        local *Set = sub {
+            $Set->([@_], Type => 'SCALAR');
+        };
+        local *SetArray = sub {
+            $Set->([@_], Type => 'ARRAY');
+        };
+        local *SetHash = sub {
+            $Set->([@_], Type => 'HASH');
+        };
+
         my @etc_dirs = ($RT::LocalEtcPath);
         push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
         push @etc_dirs, $RT::EtcPath, @INC;
@@ -846,17 +859,7 @@ sub SetFromConfig {
         ( $args{'Package'}, $args{'File'}, $args{'Line'} ) = caller(1);
     }
 
-    my $opt = $args{'Option'};
-
-    my $type;
-    my $name = $self->__GetNameByRef($opt);
-    if ($name) {
-        $type = ref $opt;
-        $name =~ s/.*:://;
-    } else {
-        $name = $$opt;
-        $type = $META{$name}->{'Type'} || 'SCALAR';
-    }
+    my $name = $args{'Option'};
 
     # if option is already set we have to check where
     # it comes from and may be ignore it
@@ -894,74 +897,13 @@ sub SetFromConfig {
         }
     }
 
-    $META{$name}->{'Type'} = $type;
+    $META{$name}->{'Type'} = $args{'Type'};
     foreach (qw(Package File Line SiteConfig Extension)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
-}
-
-    our %REF_SYMBOLS = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
-
-{
-    my $last_pack = '';
-
-    sub __GetNameByRef {
-        my $self = shift;
-        my $ref  = shift;
-        my $pack = shift;
-        if ( !$pack && $last_pack ) {
-            my $tmp = $self->__GetNameByRef( $ref, $last_pack );
-            return $tmp if $tmp;
-        }
-        $pack ||= 'main::';
-        $pack .= '::' unless substr( $pack, -2 ) eq '::';
-
-        no strict 'refs';
-        my $name = undef;
-
-        # scan $pack's nametable(hash)
-        foreach my $k ( keys %{$pack} ) {
-
-            # The hash for main:: has a reference to itself
-            next if $k eq 'main::';
-
-            # if the entry has a trailing '::' then
-            # it is a link to another name space
-            if ( substr( $k, -2 ) eq '::') {
-                $name = $self->__GetNameByRef( $ref, $k );
-                return $name if $name;
-            }
-
-            # entry of the table with references to
-            # SCALAR, ARRAY... and other types with
-            # the same name
-            my $entry = ${$pack}{$k};
-            next unless $entry;
-
-            # get entry for type we are looking for
-            # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. may be we should skip any
-            # reference
-            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
-            next unless $entry_ref;
-
-            # if references are equal then we've found
-            if ( $entry_ref == $ref ) {
-                $last_pack = $pack;
-                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
-            }
-        }
-        return '';
-    }
 }
 
 =head2 Metadata
