@@ -281,14 +281,20 @@ sub Create {
         }
         }
     }
-    my $now = RT::Date->new( $self->CurrentUser );
-    $now->Set( Format => 'unix', Value => time );
-    $attribs{'Created'} = $now->ISO() if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
+
+
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();
+
+    my $now_iso =
+     sprintf("%04d-%02d-%02d %02d:%02d:%02d", ($year+1900), ($mon+1), $mday, $hour, $min, $sec);
+
+    $attribs{'Created'} = $now_iso if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
 
     if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'}) {
          $attribs{'Creator'} = $self->CurrentUser->id || '0'; 
     }
-    $attribs{'LastUpdated'} = $now->ISO()
+    $attribs{'LastUpdated'} = $now_iso
       if ( $self->_Accessible( 'LastUpdated', 'auto' ) && !$attribs{'LastUpdated'});
 
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
