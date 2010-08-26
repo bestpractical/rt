@@ -72,7 +72,7 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->CreatedObj->AgeAsString }
     },
     CreatedBy => {
-        attribute => 'CreatedBy',
+        attribute => 'Creator',
         title     => 'Created By', # loc
         value     => sub { return $_[0]->CreatorObj->Name }
     },
