@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 13;
+use RT::Test tests => 13;
 
 my $q = RT::Queue->new($RT::SystemUser);
 ok( $q->Create( Name => 'DateCFTest' . $$ ), 'create queue' );

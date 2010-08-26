@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use RT;
-use RT::Test nodata => 1, tests => 7;
+use RT::Test tests => 7;
 
 
 use strict;

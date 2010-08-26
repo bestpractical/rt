@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 9;
+use RT::Test tests => 9;
 
 
 {

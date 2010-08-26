@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => 76;
+use RT::Test tests => 76;
 
 
 {

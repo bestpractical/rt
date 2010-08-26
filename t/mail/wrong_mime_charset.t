@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 3;
+use RT::Test nodata => 1, tests => 3;
 
 use_ok('RT::I18N');
 use utf8;

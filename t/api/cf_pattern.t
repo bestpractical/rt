@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use RT;
-use RT::Test nodata => 1, tests => 17;
+use RT::Test tests => 17;
 
 
 sub fails { ok(!$_[0], "This should fail: $_[1]") }

@@ -15,7 +15,7 @@ use warnings;
 
 use RT;
 
-use RT::Test nodata => 1, tests => 98;
+use RT::Test tests => 98;
 
 my ($u1, $u2, $g1, $g2, $g3, $pg1, $pg2, $ace, @groups, @users, @principals);
 @groups = (\$g1, \$g2, \$g3, \$pg1, \$pg2);

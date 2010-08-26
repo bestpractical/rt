@@ -47,7 +47,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-use RT::Test nodata => 1, tests => 30;
+use RT::Test tests => 30;
 
 use strict;
 use warnings;
