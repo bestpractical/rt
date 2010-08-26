@@ -1026,7 +1026,8 @@ sub Timezone {
     my $self = shift;
 
     if (@_ == 0) {
-        Carp::croak "RT::Date->Timezone is a setter only";
+        Carp::carp "RT::Date->Timezone is a setter only";
+        return undef;
     }
 
     my $context = lc(shift);
