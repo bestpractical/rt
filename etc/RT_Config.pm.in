@@ -330,9 +330,9 @@ made of multiple email adresses.
 
 Set(ValidateUserEmailAddresses => undef);
 
-=item C<@MailPlugins>
+=item C<MailPlugins>
 
-C<@MailPlugins> is a list of auth plugins for L<RT::Interface::Email>
+C<MailPlugins> is a list of auth plugins for L<RT::Interface::Email>
 to use; see L<rt-mailgate>
 
 =cut
@@ -544,9 +544,9 @@ Set(SMTPDebug => 0);
 
 =over 4
 
-=item C<@MailParams>
+=item C<MailParams>
 
-C<@MailParams> defines a list of options passed to C<MailCommand> if it
+C<MailParams> defines a list of options passed to C<MailCommand> if it
 is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 =cut
@@ -696,7 +696,7 @@ by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
 
 =over 4
 
-=item C<%GnuPG>
+=item C<GnuPG>
 
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
@@ -721,7 +721,7 @@ SetHash(GnuPG =>
     RejectOnBadData           => 1,
 );
 
-=item C<%GnuPGOptions>
+=item C<GnuPGOptions>
 
 Options of GnuPG program.
 
@@ -803,7 +803,7 @@ information such as passwords or ticket content in your logs.
 
 Set(LogStackTraces => '');
 
-=item C<@LogToSyslogConf>
+=item C<LogToSyslogConf>
 
 On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
 override any other options RT passes to L<Log::Dispatch::Syslog>.
@@ -1421,9 +1421,9 @@ customized homepage ("RT at a glance").
 
 Set(HomepageComponents => [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
 
-=item C<@MasonParameters>
+=item C<MasonParameters>
 
-C<@MasonParameters> is the list of parameters for the constructor of
+C<MasonParameters> is the list of parameters for the constructor of
 HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
@@ -1469,10 +1469,10 @@ Set(DefaultSelfServiceSearchResultFormat => qq{
    Requestors,
    OwnerName});
 
-=item C<%AdminSearchResultFormat>
+=item C<AdminSearchResultFormat>
 
 In admin interface format strings similar to tickets search result
-formats are used. Use C<%AdminSearchResultFormat> to define format
+formats are used. Use C<AdminSearchResultFormat> to define format
 strings per RT class.
 
 =cut
@@ -1529,7 +1529,7 @@ ticket searches.
 
 Set(DontSearchFileAttachments => undef);
 
-=item C<%ChartFont>
+=item C<ChartFont>
 
 The L<GD> module (which RT uses for graphs) ships with a builtin font 
 that doesn't have full Unicode support. You can use a given TrueType font 
@@ -1562,7 +1562,7 @@ feature, read more in F<docs/timezones_in_charts.pod>.
 
 Set(ChartsTimezonesInDB => 0 );
 
-=item C<@Active_MakeClicky>
+=item C<Active_MakeClicky>
 
 MakeClicky detects various formats of data in headers and email
 messages, and extends them with supporting links.  By default, RT
@@ -1680,9 +1680,9 @@ every hit.
 
 #Set(StandaloneMaxRequests => 50);
 
-=item C<%NetServerOptions>
+=item C<NetServerOptions>
 
-C<%NetServerOptions> is a hash of additional options to use for
+C<NetServerOptions> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
@@ -1699,7 +1699,7 @@ SetHash(NetServerOptions => ());
 
 =over 4
 
-=item C<@LexiconLanguages>
+=item C<LexiconLanguages>
 
 An array that contains languages supported by RT's internationalization
 interface.  Defaults to all *.po lexicons; setting it to C<qw(en ja)> will make
@@ -1709,7 +1709,7 @@ RT bilingual instead of multilingual, but will save some memory.
 
 SetArray(LexiconLanguages => qw(*));
 
-=item C<@EmailInputEncodings>
+=item C<EmailInputEncodings>
 
 An array that contains default encodings used to guess which charset
 an attachment uses if not specified.  Must be recognized by
@@ -2089,9 +2089,9 @@ others' existence.
 
 Set(UseTransactionBatch => 1);
 
-=item C<@CustomFieldValuesSources>
+=item C<CustomFieldValuesSources>
 
-Set C<@CustomFieldValuesSources> to a list of class names which extend
+Set C<CustomFieldValuesSources> to a list of class names which extend
 L<RT::CustomFieldValues::External>.  This can be used to pull lists of
 custom field values from external sources at runtime.
 
@@ -2119,9 +2119,9 @@ Hide links/portlets related to Reminders by setting this to 0
 Set(EnableReminders =>1);
 
 
-=item C<@Plugins>
+=item C<Plugins>
 
-Set C<@Plugins> to a list of external RT plugins that should be enabled (those
+Set C<Plugins> to a list of external RT plugins that should be enabled (those
 plugins have to be previously downloaded and installed).
 Example:
 
@@ -2131,7 +2131,7 @@ C<SetArray(Plugins => (qw(Extension::QuickDelete RT::FM)));>
 
 SetArray(Plugins => ());
 
-=item C<@JSFilesInHead>
+=item C<JSFilesInHead>
 
 a list of js files to be included in head
 
