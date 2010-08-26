@@ -14,11 +14,11 @@
 #
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
 
-Set( $rtname, 'example.com');
+Set(rtname => 'example.com');
 
 # You must install Plugins on your own, this is only an example
 # of the correct syntax to use when activating them.
-# There should only be one @Plugins declaration in your config file.
-#Set(@Plugins,(qw(RT::Extension::QuickDelete RT::FM)));
+# There should only be one set-Plugins declaration in your config file.
+#SetArray(Plugins => (qw(RT::Extension::QuickDelete RT::FM)));
 
 1;
