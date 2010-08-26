@@ -152,12 +152,17 @@ sub import {
 
     $class->bootstrap_db( %args );
 
-    RT->InitClasses();
-    RT->InitLogging();
+    RT::InitPluginPaths();
+
+    RT::ConnectToDatabase()
+        unless $args{nodb};
+
+    RT::InitClasses();
+    RT::InitLogging();
 
     $class->bootstrap_plugins( %args );
 
-    RT->InitPlugins();
+    RT::InitPlugins();
     RT->Config->PostLoadCheck;
 
     $class->set_config_wrapper;
@@ -437,7 +442,6 @@ sub bootstrap_plugins {
     };
 
     RT->Config->Set( Plugins => @plugins );
-    RT->InitPluginPaths;
 
     my $dba_dbh;
     $dba_dbh = _get_dbh(
