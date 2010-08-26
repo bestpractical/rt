@@ -99,16 +99,6 @@ sub CurrentUser {
             if ref $self->{'user'} && $self->{'user'} == $self;
     }
 
-    unless ( ref $self->{'user'} && $self->{'user'}->isa('RT::CurrentUser') ) {
-        my $msg = "$self was created without a CurrentUser."
-            ." Any RT object which is subclass of RT::Base must be created"
-            ." with a RT::CurrentUser or a RT::User object as the first argument.";
-        $msg .= "\n". Carp::longmess() if @_;
-
-        $RT::Logger->error( $msg );
-        return $self->{'user'} = undef;
-    }
-
     return ( $self->{'user'} );
 }
 
