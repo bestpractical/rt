@@ -7,7 +7,7 @@ use warnings;
 my $config;
 BEGIN {
 $config = <<END;
-Set(\%Lifecycles,
+SetHash(Lifecycles =>
     default => {
         default_initial => 'new',
         initial  => [qw(new open resolved )],
@@ -58,7 +58,7 @@ Set(\%Lifecycles,
         },
     },
 );
-Set(\%LifecycleMap, delivery => 'delivery');
+SetHash(LifecycleMap => delivery => 'delivery');
 END
 }
 
