@@ -80,7 +80,7 @@ while ( my $requestor = $people->Next ) {
 % if ( $ShowGroups ) {
 <div class="more-about-user-groups">
   <span class="label"><&|/l&>Groups this user belongs to</&>:</span>
-  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor &></span>
+  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => RT->Config->Get('MoreAboutRequestorGroupsLimit') &></span>
 </div>
 % }
 

@@ -46,6 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <ul>
+% my $i = 1;
 % while ( my $GroupMember = $GroupMembers->Next ) {
 %    my $Group = RT::Group->new($session{'CurrentUser'});
 %    $Group->Load($GroupMember->GroupId) or next;
@@ -54,6 +55,7 @@
 %    } elsif ($Group->Domain eq 'SystemInternal') {
 <li><em><% loc($Group->Type) %></em></li>
 %    }
+%    last if $Limit && ++$i > $Limit;
 % }
 </ul>
 <%INIT>
@@ -82,7 +84,9 @@ $GroupMembers->OrderByCols(
     { ALIAS => $alias, FIELD => 'Domain' },
     { ALIAS => $alias, FIELD => 'Name' },
 );
+
 </%INIT>
 <%ARGS>
 $UserObj
+$Limit => undef
 </%ARGS>

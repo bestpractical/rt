@@ -892,6 +892,20 @@ not all the attributes are supported in this display because we're not building 
 
 Set($MoreAboutRequestorExtraInfo, '');
 
+=item C<$MoreAboutRequestorGroupsLimit>
+
+By default, the 'More about requestor' box on Ticket/Display.html shows all
+the groups of the Requestor.
+Use this to limit the number of groups.
+
+e.g.
+
+Set($MoreAboutRequestorGroupsLimit, 10);
+
+=cut
+
+Set($MoreAboutRequestorGroupsLimit, undef);
+
 =item C<$AutocompleteOwners>
 
 If true, the owner dropdowns for ticket update/modify and the query builder are
