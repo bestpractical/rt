@@ -227,19 +227,19 @@ sub bootstrap_config {
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
-Set( \$WebDomain, "localhost");
-Set( \$WebPort,   $port);
-Set( \$WebPath,   "");
-Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
+Set(WebDomain => "localhost");
+Set(WebPort   => $port);
+Set(WebPath   => "");
+Set(RTAddressRegexp => qr/^bad_re_that_doesnt_match\$/);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
-        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
-        print $config "Set( \$DatabaseUser , '$dbname');\n";
+        print $config "Set(DatabaseName => '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set(DatabaseUser => '$dbname');\n";
     } else {
-        print $config "Set( \$DatabaseName , '$dbname');\n";
-        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+        print $config "Set(DatabaseName => '$dbname');\n";
+        print $config "Set(DatabaseUser => 'u${dbname}');\n";
     }
-    print $config "Set( \$DevelMode, 0 );\n"
+    print $config "Set(DevelMode => 0 );\n"
         if $INC{'Devel/Cover.pm'};
 
     $self->bootstrap_logging( $config );
@@ -249,7 +249,7 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
         $tmp{'directory'}->dirname, 'mailbox.eml'
     );
     print $config <<END;
-Set( \$MailCommand, sub {
+Set(MailCommand => sub {
     my \$MIME = shift;
 
     open my \$handle, '>>', '$mail_catcher'
@@ -285,11 +285,11 @@ sub bootstrap_logging {
     chmod 0666, $tmp{'log'}{'RT'};
 
     print $config <<END;
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
-Set( \$LogToFile, 'debug' );
-Set( \$LogDir, q{$tmp{'directory'}} );
-Set( \$LogToFileNamed, 'rt.debug.log' );
+Set(LogToSyslog    => undef);
+Set(LogToScreen    => "warning");
+Set(LogToFile      => 'debug' );
+Set(LogDir         => q{$tmp{'directory'}} );
+Set(LogToFileNamed => 'rt.debug.log' );
 END
 }
 
@@ -303,19 +303,18 @@ sub set_config_wrapper {
         if ( ($caller[1]||'') =~ /\.t$/ ) {
             my ($self, $name) = @_;
             my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
-            my %sigils = (
-                HASH   => '%',
-                ARRAY  => '@',
-                SCALAR => '$',
+            my %function = (
+                HASH   => 'Hash',
+                ARRAY  => 'Array',
             );
-            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+            my $function = $function{$type} || '';
             open my $fh, '>>', $tmp{'config'}{'RT'}
                 or die "Couldn't open config file: $!";
             require Data::Dumper;
             my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
             $dump =~ s/;\s+$//;
             print $fh
-                "\nSet(${sigil}${name}, \@{". $dump ."}); 1;\n";
+                "\nSet$function(${name} => \@{". $dump ."}); 1;\n";
             close $fh;
 
             if ( @SERVERS ) {
