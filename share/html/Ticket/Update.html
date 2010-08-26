@@ -277,8 +277,11 @@ if ( $ARGS{'SubmitTicket'} ) {
         $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
     }
 }
+my $skip_update = 0;
+$m->callback( CallbackName => 'BeforeUpdate', ARGSRef => \%ARGS, skip_update => \$skip_update,
+              checks_failure => $checks_failure, results => \@results, TicketObj => $TicketObj );
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+if ( !$checks_failure && !$skip_update && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
