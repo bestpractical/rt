@@ -20,8 +20,8 @@ ok( $id, 'created ticket' );
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in as root' );
 $m->get_ok( $url . '/Ticket/Display.html?id=' . $id );
-$m->content_contains( 'Everyone', 'got the first group' );
-$m->content_lacks( 'Privileged', 'not the second group' );
+$m->content_like( qr/Everyone|Privileged/, 'got one group' );
+$m->content_unlike( qr/Everyone.*?Privileged/, 'not 2 groups' );
 
 RT::Test->stop_server;
 
