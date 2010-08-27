@@ -198,7 +198,7 @@ $ENV{'RT_WEBMUX_HEAVY_LOAD'} = 1;
 use File::Basename;
 require (dirname(__FILE__) .'/webmux.pl');
 
-unless ( $opt{'socket'} && $opt{'port'} ) {
+unless ( $opt{'socket'} || $opt{'port'} ) {
     require File::Spec;
     $opt{'socket'} = File::Spec->catfile($RT::VarPath, 'fastcgi.sock');
 }
