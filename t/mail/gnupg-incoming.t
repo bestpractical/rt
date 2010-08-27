@@ -79,7 +79,7 @@ my $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -121,7 +121,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign --clearsign),
+        qw(gpg --batch --no-tty --armor --sign --clearsign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -162,7 +162,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --encrypt --armor --sign),
+        qw(gpg --batch --no-tty --encrypt --armor --sign),
         '--recipient'   => 'general@example.com',
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
@@ -211,7 +211,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'rt@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'test',
@@ -247,7 +247,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'random@localhost',
         '--homedir'     => $homedir,
     ),
@@ -284,7 +284,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'rt@example.com',
         '--homedir'     => $homedir,
     ),
