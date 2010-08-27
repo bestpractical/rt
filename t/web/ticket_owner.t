@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 89;
+use RT::Test nodata => 1, tests => 89;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';

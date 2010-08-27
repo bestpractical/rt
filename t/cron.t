@@ -3,7 +3,7 @@
 use strict;
 
 use RT;
-use RT::Test tests => 18;
+use RT::Test nodata => 1, tests => 18;
 
 
 ### Set up some testing data.  Test the testing data because why not?

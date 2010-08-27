@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 83;
+use RT::Test nodata => 1, tests => 83;
 use RT::Test::Web;
 
 use RT::Link;

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 4;
+use RT::Test nodb => 1, tests => 4;
 
 RT->Config->Set( RTAddressRegexp => qr/^rt\@example.com$/i );
 

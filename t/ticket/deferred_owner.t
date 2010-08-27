@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test nodata => 1, tests => 18;
 use_ok('RT');
 use_ok('RT::Ticket');
 use Test::Warn;
