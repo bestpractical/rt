@@ -239,7 +239,9 @@ sub no_leftover_warnings_ok {
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    my @warnings = @{ $self->{stashed_server_warnings} || [] };
+    # we clear the warnings because we don't want to break later tests
+    # in case there *are* leftover warnings
+    my @warnings = splice @{ $self->{stashed_server_warnings} || [] };
 
     Test::More::is(@warnings, 0, $name);
     for (@warnings) {
