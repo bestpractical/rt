@@ -57,7 +57,7 @@ use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => 159;
+use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => 219;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
@@ -82,6 +82,7 @@ EOF
     my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, url => undef);
     is ($status >> 8, 1, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id") or diag "by mistake ticket #$id";
+    $m->no_warnings_ok;
 }
 
 diag "Make sure that when we call the mailgate with wrong URL, it tempfails";
@@ -96,6 +97,7 @@ EOF
     my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, url => 'http://this.test.for.non-connection.is.expected.to.generate.an.error');
     is ($status >> 8, 75, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id");
+    $m->no_warnings_ok;
 }
 
 my $everyone_group;
@@ -129,6 +131,7 @@ EOF
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
     is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
+    $m->no_warnings_ok;
 }
 
 diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket";
@@ -165,6 +168,7 @@ EOF
         "bad value with newlines",
         'header is in place, without trailing newline char'
     );
+    $m->no_warnings_ok;
 }
 
 diag "Make sure that not standard --extension is passed";
@@ -198,6 +202,7 @@ EOF
         'some-extension-arg',
         'header is in place'
     );
+    $m->no_warnings_ok;
 }
 
 diag "Test new ticket creation without --action argument";
@@ -218,6 +223,7 @@ EOF
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
     is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
+    $m->no_warnings_ok;
 }
 
 diag "This is a test of new ticket creation as an unknown user";
@@ -242,6 +248,13 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
     ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
+
+    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email/);
+    TODO: {
+        local $TODO = "we're a bit noisy for this warning case";
+        $m->next_warning_like(qr/Could not load a valid user/);
+        $m->no_leftover_warnings_ok;
+    }
 }
 
 diag "grant everybody with CreateTicket right";
@@ -278,6 +291,7 @@ EOF
     $u->Load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
     ok ($u->Id, "user does not exist and was created by ticket submission");
     $ticket_id = $id;
+    $m->no_warnings_ok;
 }
 
 diag "can another random reply to a ticket without being granted privs? answer should be no.";
@@ -297,6 +311,11 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
+    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email \(doesnotexist-2\@example\.com\)/);
+    TODO: {
+        local $TODO = "we're a bit noisy for this warning case";
+        $m->no_leftover_warnings_ok;
+    }
 }
 
 diag "grant everyone 'ReplyToTicket' right";
@@ -325,6 +344,7 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok ($u->Id, "user exists and was created by ticket correspondence submission");
+    $m->no_warnings_ok;
 }
 
 diag "add a reply to the ticket using '--extension ticket' feature";
@@ -357,6 +377,7 @@ EOF
     my $attachment = $txn->Attachments->First;
     isa_ok ($attachment, 'RT::Attachment');
     is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
+    $m->no_warnings_ok;
 }
 
 diag "can another random comment on a ticket without being granted privs? answer should be no";
@@ -376,6 +397,11 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
+    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email \(doesnotexist-3\@example\.com\)/);
+    TODO: {
+        local $TODO = "we're a bit noisy for this warning case";
+        $m->no_leftover_warnings_ok;
+    }
 }
 
 
@@ -405,6 +431,7 @@ EOF
     my $u = RT::User->new($RT::SystemUser);
     $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok ($u->Id, " user exists and was created by ticket comment submission");
+    $m->no_warnings_ok;
 }
 
 diag "add comment to the ticket using '--extension action' feature";
@@ -442,6 +469,7 @@ EOF
     my $attachment = $txn->Attachments->First;
     isa_ok ($attachment, 'RT::Attachment');
     is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
+    $m->no_warnings_ok;
 }
 
 diag "Testing preservation of binary attachments";
@@ -504,6 +532,8 @@ diag "Testing preservation of binary attachments";
 
     # Verify that the downloaded attachment is the same as what we uploaded.
     is ($file, $r->content, 'The attachment isn\'t screwed up in download');
+
+    $m->no_warnings_ok;
 }
 
 diag "Simple I18N testing";
@@ -540,6 +570,8 @@ EOF
         $tick->Transactions->First->Content =~ /$unistring/i,
         $tick->Id." appears to be unicode ". $tick->Transactions->First->Attachments->First->Id
     );
+
+    $m->no_warnings_ok;
 }
 
 diag "supposedly I18N fails on the second message sent in.";
@@ -572,6 +604,8 @@ EOF
         $tick->Transactions->First->Content =~ $unistring,
         "It appears to be unicode - ". $tick->Transactions->First->Content
     );
+
+    $m->no_warnings_ok;
 }
 
 diag "check that mailgate doesn't suffer from empty Reply-To:";
@@ -595,6 +629,8 @@ EOF
     is ($tick->Id, $id, "correct ticket");
 
     like $tick->RequestorAddresses, qr/root\@localhost/, 'correct requestor';
+
+    $m->no_warnings_ok;
 }
 
 
@@ -643,6 +679,8 @@ my $status;
 ok( $status, 'successfuly changed owner: '. ($msg||'') );
 is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 
+$m->no_warnings_ok;
+
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
@@ -667,6 +705,9 @@ $txns->OrderBy( FIELD => 'id', ORDER => 'DESC' );
 # +1 because of auto open
 is( $tick->Transactions->Count, 6, 'no superfluous transactions');
 is( $txns->First->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
+
+$m->no_warnings_ok;
+
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
@@ -702,6 +743,8 @@ ok( $id, 'create new ticket' );
 
 my $rtname = RT->Config->Get('rtname');
 
+$m->no_warnings_ok;
+
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
@@ -720,6 +763,10 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
+$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/Could not record email: Ticket not taken/);
+$m->no_leftover_warnings_ok;
+
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
@@ -735,6 +782,10 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "one transactions added" );
 
+$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/Could not record email: Ticket not taken/);
+$m->no_leftover_warnings_ok;
+
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
@@ -749,6 +800,10 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "no transactions added, user can't take ticket first" );
+
+$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/Could not record email: Ticket not taken/);
+$m->no_leftover_warnings_ok;
 
 # revoke ReplyToTicket right
 use RT::ACE;
@@ -793,6 +848,7 @@ is( $tick->Owner, $user->id, "we changed owner" );
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
 is( $tick->Transactions->Count, 5, "transactions added" );
 
+$m->no_warnings_ok;
 
 # }}}
 };
