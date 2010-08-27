@@ -88,6 +88,8 @@ my %tmp = (
     mailbox   => undef,
 );
 
+my %rttest_opt;
+
 =head1 NAME
 
 RT::Test - RT Testing
@@ -130,7 +132,7 @@ BEGIN {
 
 sub import {
     my $class = shift;
-    my %args = @_;
+    my %args = %rttest_opt = @_;
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
@@ -1076,6 +1078,10 @@ sub started_ok {
     my $self = shift;
 
     require RT::Test::Web;
+
+    if ($rttest_opt{nodb}) {
+        die "you are trying to use a test web server without db, try use noinitialdata => 1 instead";
+    }
 
     my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
     my ($server, $variant) = split /\+/, $which, 2;
