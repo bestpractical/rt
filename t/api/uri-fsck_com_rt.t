@@ -25,4 +25,3 @@ $ticket->Load(1);
 $uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
 is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
 
-1;

@@ -130,4 +130,3 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 
 }
 
-1;

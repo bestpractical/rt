@@ -87,4 +87,3 @@ my ($trans, $desc, $transaction) = $ticket2->Comment(MIMEObj => $template_obj->M
 my $bogus_action = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->Prepare(), "Comment aborted to prevent loop");
 
-1;

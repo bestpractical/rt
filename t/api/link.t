@@ -218,4 +218,3 @@ sub clean_links {
     }
 }
 
-1;

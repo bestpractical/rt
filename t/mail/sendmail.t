@@ -535,4 +535,3 @@ diag q{regression test for #5248 from rt3.fsck.com};
 
 # Don't taint the environment
 $everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
-1;

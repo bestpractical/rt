@@ -46,4 +46,3 @@ isnt ($ticket2->Priority , '87', "Ticket priority is set right");
 
 }
 
-1;

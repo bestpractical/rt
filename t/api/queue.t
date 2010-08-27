@@ -89,4 +89,3 @@ ok ($group->Id, "Found the AdminCc object for this Queue");
 
 }
 
-1;

@@ -96,4 +96,3 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
 
 }
 
-1;

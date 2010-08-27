@@ -70,4 +70,3 @@ my $string = 'subject/content SQL test';
 
 }
 
-1;

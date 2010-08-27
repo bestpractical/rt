@@ -42,4 +42,3 @@ is ($#headers, 2, "testing a bunch of singline multiple headers" );
 
 }
 
-1;

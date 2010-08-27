@@ -242,5 +242,3 @@ ok( $has{$parentid}, "The collection has our parent");
 ok( $has{$grand_childid}, "The collection have our child");
 ok( !$has{$unlinked_id}, "unlinked is not in collection");
 
-
-1;

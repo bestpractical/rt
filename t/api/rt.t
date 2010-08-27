@@ -15,4 +15,3 @@ isnt ($RT::SystemUser->Name() , 'noname', "The system user isn't noname");
 
 }
 
-1;

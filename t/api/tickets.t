@@ -101,4 +101,3 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
 
 }
 
-1;

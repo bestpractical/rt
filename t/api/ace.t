@@ -235,4 +235,3 @@ ok(  !$user_b->HasRight(Right => 'OwnTicket', Object => $q)   ,"user b does not 
 
 }
 
-1;

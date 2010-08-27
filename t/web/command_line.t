@@ -540,6 +540,3 @@ sub check_attachment {
     }
 }
 
-
-
-1;

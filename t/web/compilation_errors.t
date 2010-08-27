@@ -61,4 +61,3 @@ sub test_get {
         };
 }
 
-1;

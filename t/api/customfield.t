@@ -71,4 +71,3 @@ ok(!$cf->ValidateType('SelectFooMultiple'));
 
 }
 
-1;

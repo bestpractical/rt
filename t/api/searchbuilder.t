@@ -37,4 +37,3 @@ is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name
 
 }
 
-1;

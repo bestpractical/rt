@@ -45,4 +45,3 @@ is($first->FirstCustomFieldValue($cf->id), '2.0');
 my $second = $tix->Next;
 is($second->Subject(), 'hello'); 
 is($second->FirstCustomFieldValue($cf->id), '3.0');
-1;

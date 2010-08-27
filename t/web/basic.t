@@ -134,5 +134,3 @@ $query =~ s/\s+/ /g;
 
 is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
 
-
-1;

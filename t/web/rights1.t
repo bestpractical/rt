@@ -107,4 +107,3 @@ ok($agent->form_name('BuildQuery'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('ValueOfActor');
 ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
-1;

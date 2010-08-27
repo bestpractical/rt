@@ -52,4 +52,3 @@ for (@files) {
     require_ok($_);
 }
 
-1;

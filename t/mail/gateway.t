@@ -797,6 +797,3 @@ is( $tick->Transactions->Count, 5, "transactions added" );
 # }}}
 };
 
-
-1;
-

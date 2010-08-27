@@ -27,4 +27,3 @@ is($en->encoding , 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 }
 
-1;

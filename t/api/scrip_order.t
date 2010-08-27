@@ -53,4 +53,3 @@ is  ($ticket->Priority , 10, "Ticket should be priority 10");
 
 # }}}
 
-1;

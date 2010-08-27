@@ -85,4 +85,4 @@ while ( my $reminder = $reminders->Next ) {
 is($r_resolved, 1, 'Reminder resolved');
 
 }
-1;
+

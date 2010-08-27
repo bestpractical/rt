@@ -35,4 +35,3 @@ is($t->CustomFieldValues($cf->id)->Count, 1, "One now");
 $t->AddCustomFieldValue(Field => $cf->id, Value => 'Second');
 is($t->CustomFieldValues($cf->id)->Count, 1, "Still one");
 
-1;

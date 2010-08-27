@@ -81,6 +81,3 @@ ok(1, $attr->BuildSelectQuery);
 @names = $attr->Names;
 is("@names", "TestAttr");
 
-
-
-1;

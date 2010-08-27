@@ -23,4 +23,3 @@ ok($t2->QueueObj->id, "Got the template's queue objet");
 
 }
 
-1;

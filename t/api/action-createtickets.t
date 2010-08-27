@@ -237,4 +237,3 @@ foreach my $id ( sort keys %expected ) {
 
 }
 
-1;

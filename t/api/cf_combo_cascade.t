@@ -43,4 +43,3 @@ is($cfv->Category, '1. Category A');
 works($cfv->SetCategory('1. Category AAA'));
 is($cfv->Category, '1. Category AAA');
 
-1;
