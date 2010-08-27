@@ -45,9 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-@import "jquery-ui-1.8.4.custom.modified.css";
-@import "ui.timepickr.css";
-
 .hide, .hidden { display: none !important; }
 
 .clear { clear: both; }

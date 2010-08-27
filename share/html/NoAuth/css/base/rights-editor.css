@@ -1,0 +1,59 @@
+/* This selector is very heavy handed, but the jQuery UI theme is tenacious */
+.rights-editor, .rights-editor * {
+    font-family: arial, helvetica, sans-serif !important;
+}
+
+/* Styles for putting jQuery UI tabs on the left */
+.rights-editor {
+    border: none;
+    background: transparent;
+}
+
+/* Position and style the left tabs */
+.rights-editor > .ui-tabs-nav {
+    float: left;
+    background: transparent;
+    border: none;
+    color: black;
+}
+
+.rights-editor > .ui-tabs-nav li {
+    float: none;
+    display: block;
+    border: none;
+    background: transparent;
+}
+
+.rights-editor > .ui-tabs-nav li a {
+    float: none;
+    display: block;
+    padding: 0 0 0.2em 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rights-editor .ui-tabs-nav li.category {
+    text-transform: uppercase;
+}
+
+li.category ~ li.category {
+    margin-top: 1em;
+}
+
+/* Position the outer-most panel */
+.rights-editor > .ui-tabs-panel {
+    position: static;
+    float: right;
+}
+
+.rights-editor .ui-tabs-panel {
+    padding: 2px;
+}
+
+.rights-editor .ui-tabs-panel h3 {
+    margin-top: 0;
+}
+
+.rights-editor ul.rights-list {
+    list-style: none;
+}

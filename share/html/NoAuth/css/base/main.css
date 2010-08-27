@@ -47,8 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'Begin');
 
+@import "jquery-ui.css";
 @import "misc.css";
 @import "ticket-form.css";
+@import "rights-editor.css";
 
 % $m->callback(CallbackName => 'End');
 

@@ -1,0 +1,95 @@
+<%args>
+$Context
+$Principals
+</%args>
+<%init>
+use Scalar::Util qw(blessed);
+</%init>
+%# Principals is an array of arrays, where the inner arrays are like:
+%#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
+%# The last value is a boolen determining if the value of DisplayColumn
+%# should be loc()-ed before display.
+
+<script type="text/javascript">
+  jQuery(function() {
+      jQuery(".rights-editor").tabs();
+  });
+</script>
+
+<div class="rights-editor clearfix">
+  <ul>
+<%perl>
+for my $category (@$Principals) {
+    my ($name, $collection, $col, $loc) = @$category;
+</%perl>
+<li class="category"><% $name %></li>
+<%perl>
+    while ( my $obj = $collection->Next ) {
+        my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
+        my $id = "acl-$name-" . $obj->PrincipalId;
+        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+</%perl>
+<li><a href="#<% $id %>"><% $loc ? loc($display) : $display %></a></li>
+<%perl>
+    }
+}
+</%perl>
+  </ul>
+
+<%perl>
+# Find all our available rights
+my %available_rights;
+if ( blessed($Context) and $Context->can('AvailableRights') ) { 
+    %available_rights = %{$Context->AvailableRights};
+}
+else {
+    %available_rights = ( loc('System Error') => loc("No rights found") );
+}
+
+# Find all the current rights
+my %current_rights;
+for my $collection (map { $_->[1] } @$Principals) {
+    while (my $group = $collection->Next) {
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $Context );
+        $acls->LimitToPrincipal( Id => $group->PrincipalId );
+        $acls->OrderBy( FIELD => 'RightName' ); 
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+            $current_rights{$group->PrincipalId}->{$right} = 1;
+        }
+    }
+}
+
+# Now generate our rights panels for each principal
+for my $category (@$Principals) {
+    my ($name, $collection, $col, $loc) = @$category;
+    while ( my $obj = $collection->Next ) {
+        my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
+        my $acldesc = join '-', $obj->PrincipalId, ref($Context), $Context->Id;
+        my $id = "acl-$name-" . $obj->PrincipalId;
+        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+</%perl>
+  <div id="<% $id %>">
+    <h3>Rights for <% $loc ? loc($display) : $display %></h3>
+    <ul class="rights-list">
+% for my $right (keys %available_rights) {
+      <li>
+        <input type="checkbox" class="checkbox"
+               name="GrantRight-<% $acldesc %>"
+               id="GrantRight-<% $acldesc %>-<% $right %>"
+               value="<% $right %>"
+               <% $current_rights{$obj->PrincipalId}->{$right} ? 'checked' : '' %> />
+        <label for="GrantRight-<% $acldesc %>-<% $right %>">
+          <% loc($available_rights{$right}) %>
+        </label>
+      </li>
+% }
+    </ul>
+  </div>
+<%perl>
+    }
+}
+</%perl>
+</div>
