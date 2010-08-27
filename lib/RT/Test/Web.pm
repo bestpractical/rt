@@ -196,6 +196,26 @@ sub warning_like {
     return Test::More::like($warnings[0], $re, $name);
 }
 
+sub next_warning_like {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    if (@{ $self->{stashed_server_warnings} || [] } == 0) {
+        my @warnings = $self->get_warnings;
+        if (@warnings == 0) {
+            Test::More::fail("no warnings emitted; expected 1");
+            return 0;
+        }
+        $self->{stashed_server_warnings} = \@warnings;
+    }
+
+    my $warning = shift @{ $self->{stashed_server_warnings} };
+    return Test::More::like($warning, $re, $name);
+}
+
 sub no_warnings_ok {
     my $self = shift;
     my $name = shift || "no warnings emitted";
@@ -207,6 +227,23 @@ sub no_warnings_ok {
     Test::More::is(@warnings, 0, $name);
     for (@warnings) {
         Test::More::diag("got warning: $_");
+    }
+
+    return @warnings == 0 ? 1 : 0;
+}
+
+sub no_leftover_warnings_ok {
+    my $self = shift;
+
+    my $name = shift || "no leftover warnings";
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = @{ $self->{stashed_server_warnings} || [] };
+
+    Test::More::is(@warnings, 0, $name);
+    for (@warnings) {
+        Test::More::diag("leftover warning: $_");
     }
 
     return @warnings == 0 ? 1 : 0;
