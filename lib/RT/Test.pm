@@ -1242,6 +1242,8 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
+
+    @SERVERS = ();
 }
 
 sub file_content {
