@@ -231,13 +231,13 @@ sub process {
     print loc("Action committed.\n") if $verbose;
 }
 
-=head2 get_transactions
-
-Takes ticket and returns L<RT::Transactions> object with transactions
-of the ticket according to command line arguments C<--transaction>
-and <--transaction-type>.
-
-=cut
+# =head2 get_transactions
+# 
+# Takes ticket and returns L<RT::Transactions> object with transactions
+# of the ticket according to command line arguments C<--transaction>
+# and <--transaction-type>.
+# 
+# =cut
 
 sub get_transactions {
     my $ticket = shift;
@@ -258,11 +258,11 @@ sub get_transactions {
     return $txns;
 }
 
-=head2 get_template
-
-Takes a ticket and returns a template according to command line options.
-
-=cut
+# =head2 get_template
+# 
+# Takes a ticket and returns a template according to command line options.
+# 
+# =cut
 
 { my $cache = undef;
 sub get_template {
@@ -295,11 +295,11 @@ sub get_template {
 
 # {{{ load_module 
 
-=head2 load_module
-
-Loads a perl module, dying nicely if it can't find it.
-
-=cut
+# =head2 load_module
+# 
+# Loads a perl module, dying nicely if it can't find it.
+# 
+# =cut
 
 sub load_module {
     my $modname = shift;
@@ -314,11 +314,11 @@ sub load_module {
 
 # {{{ loc 
 
-=head2 loc LIST
-
-Localize this string, with the current user's currentuser object
-
-=cut
+# =head2 loc LIST
+# 
+# Localize this string, with the current user's currentuser object
+# 
+# =cut
 
 sub loc {
     $CurrentUser->loc(@_);
@@ -398,3 +398,90 @@ sub help {
 
     exit(0);
 }
+
+__END__
+
+=head1 NAME
+
+rt-crontool - a tool to act on tickets from an external scheduling tool
+
+=head1 SYNOPSIS
+
+    # find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:
+    rt-crontool \
+      --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+      --condition RT::Condition::Overdue \
+      --action RT::Action::SetPriority --action-arg 99 \
+      --verbose
+
+    # Escalate tickets
+      rt-crontool \
+        --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+        --action RT::Action::EscalatePriority
+
+=head1 DESCRIPTION
+
+This script is a tool to act on tickets from an external scheduling tool, such
+as cron.
+
+Security:
+
+This tool allows the user to run arbitrary perl modules from within RT. If
+this tool were setgid, a hostile local user could use this tool to gain
+administrative access to RT. It is incredibly important that nonprivileged
+users not be allowed to run this tool. It is suggested that you create a
+non-privileged unix user with the correct group membership and RT access to
+run this tool.
+
+
+=head1 OPTIONS
+
+=over
+
+=item search 
+
+Specify the search module you want to use
+
+=item search-arg 
+
+An argument to pass to --search
+
+=item condition
+
+Specify the condition module you want to use
+
+=item condition-arg
+
+An argument to pass to --condition
+
+=item action 
+
+Specify the action module you want to use
+
+=item action-arg
+
+An argument to pass to --action
+
+=item template
+
+Specify name or id of template(s) you want to use
+
+=item transaction
+
+Specify if you want to use either 'first', 'last' or 'all' transactions
+
+
+=item transaction-type
+
+Specify the comma separated list of transactions' types you want to use
+
+=item log
+
+Adjust LogToScreen config option
+
+=item verbose
+
+Output status updates to STDOUT
+
+=back
+
