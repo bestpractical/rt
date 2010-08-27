@@ -359,7 +359,7 @@ sub Delete {
 
 =head2 MemberObj
 
-Returns an RT::Principal object for the Principal specified by $self->PrincipalId
+Returns an RT::Principal object for the Principal specified by $self->MemberId
 
 =cut
 
