@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 92;
+use RT::Test nodata => 1, tests => 97;
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
@@ -69,6 +69,11 @@ diag 'only signing. correct passphrase';
 
 diag 'only signing. missing passphrase';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         Subject => 'test',
@@ -82,10 +87,17 @@ diag 'only signing. missing passphrase';
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
     is( $status[0]->{'Status'}, 'MISSING', 'missing passphrase');
+
+    like($warnings, qr/bad passphrase/);
 }
 
 diag 'only signing. wrong passphrase';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         Subject => 'test',
@@ -99,6 +111,8 @@ diag 'only signing. wrong passphrase';
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
     is( $status[0]->{'Status'}, 'BAD', 'wrong passphrase');
+
+    like($warnings, qr/bad passphrase/);
 }
 
 diag 'encryption only';
@@ -129,6 +143,11 @@ diag 'encryption only';
 
 diag 'encryption only, bad recipient';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'keyless@example.com',
@@ -142,6 +161,8 @@ diag 'encryption only, bad recipient';
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Keyword'}, 'INV_RECP', 'invalid recipient');
+
+    like($warnings, qr/public key not found/);
 }
 
 diag 'encryption and signing with combined method';
@@ -221,6 +242,11 @@ diag 'find signed/encrypted part deep inside';
 
 diag 'wrong signed/encrypted parts: no protocol';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
@@ -233,10 +259,17 @@ diag 'wrong signed/encrypted parts: no protocol';
 
     my @parts = RT::Crypt::GnuPG::FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
+
+    like($warnings, qr{Entity is 'multipart/encrypted', but has no protocol defined. Skipped});
 }
 
 diag 'wrong signed/encrypted parts: not enought parts';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
@@ -249,6 +282,8 @@ diag 'wrong signed/encrypted parts: not enought parts';
 
     my @parts = RT::Crypt::GnuPG::FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
+
+    like($warnings, qr/Encrypted or signed entity must has two subparts. Skipped/);
 }
 
 diag 'wrong signed/encrypted parts: wrong proto';
