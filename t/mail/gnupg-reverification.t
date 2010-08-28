@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 120;
+use RT::Test tests => 188;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -74,6 +74,15 @@ foreach my $file ( @files ) {
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
 
+    $m->next_warning_like(qr/public key not found/);
+
+    # some mails contain multiple signatures
+    if ($eid == 5 || $eid == 17 || $eid == 18) {
+        $m->next_warning_like(qr/public key not found/);
+    }
+
+    $m->no_leftover_warnings_ok;
+
     push @ticket_ids, $id;
 }
 
@@ -88,5 +97,7 @@ foreach my $id ( @ticket_ids ) {
         qr/The signature is good/is,
         "signature is re-verified and now good",
     );
+
+    $m->no_warnings_ok;
 }
 
