@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 188;
+use RT::Test tests => 214;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -58,9 +58,22 @@ foreach my $file ( @files ) {
     my $email_content = RT::Test->file_content( $file );
     ok $email_content, "$eid: got content of email";
 
-    my ($status, $id) = RT::Test->send_via_mailgate( $email_content );
+    my $warnings;
+    my ($status, $id);
+
+    {
+        local $SIG{__WARN__} = sub {
+            $warnings .= "@_";
+        };
+
+        ($status, $id) = RT::Test->send_via_mailgate( $email_content );
+    }
+
     is $status >> 8, 0, "$eid: the mail gateway exited normally";
     ok $id, "$eid: got id of a newly created ticket - $id";
+
+    like($warnings, qr/Had a problem during decrypting and verifying/);
+    like($warnings, qr/public key not found/);
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
