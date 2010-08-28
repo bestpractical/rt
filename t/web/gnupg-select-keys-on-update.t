@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 68;
+use RT::Test tests => 85;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -75,6 +75,9 @@ diag "check that signing doesn't work if there is no key";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $m->next_warning_like(qr/secret key not available/);
+    $m->no_leftover_warnings_ok;
 }
 
 {
@@ -109,6 +112,9 @@ diag "check that things don't work if there is no key";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $m->no_leftover_warnings_ok;
 }
 
 
@@ -158,6 +164,8 @@ diag "check that things still doesn't work if key is not trusted";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $m->no_warnings_ok;
 }
 
 diag "import a second key of rt-test\@example.com";
@@ -206,6 +214,8 @@ diag "check that things still doesn't work if two keys are not trusted";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $m->no_warnings_ok;
 }
 
 {
@@ -241,6 +251,8 @@ diag "check that we see key selector even if only one key is trusted but there a
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $m->no_warnings_ok;
 }
 
 diag "check that key selector works and we can select trusted key";
@@ -274,6 +286,8 @@ diag "check that key selector works and we can select trusted key";
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
     check_text_emails( { Encrypt => 1 }, @mail );
+
+    $m->no_warnings_ok;
 }
 
 diag "check encrypting of attachments";
@@ -308,6 +322,8 @@ diag "check encrypting of attachments";
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
     check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
+
+    $m->no_warnings_ok;
 }
 
 sub check_text_emails {
