@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 94;
+use RT::Test tests => 95;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -379,9 +379,18 @@ To: general\@example.com
 hello
 MAIL
  
-((my $status), $id) = RT::Test->send_via_mailgate($mail);
+my ($warnings, $status);
+{
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
+    ($status, $id) = RT::Test->send_via_mailgate($mail);
+}
+
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
+like($warnings, qr/nokey\@example.com: skipped: public key not found/);
 
 $tick = RT::Ticket->new( $RT::SystemUser );
 $tick->Load( $id );
