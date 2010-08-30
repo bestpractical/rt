@@ -1367,24 +1367,29 @@ sub ParseDateToISO {
 
 sub ProcessACLChanges {
     my $ARGSref = shift;
+    my (%state, @results);
 
     #XXX: why don't we get ARGSref like in other Process* subs?
 
-    my @results;
+    my $CheckACL = $ARGSref->{'CheckACL'};
+    my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
 
+    # Build our rights state for each Principal-Object tuple
     foreach my $arg ( keys %$ARGSref ) {
-        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ );
+        next unless $arg =~ /^SetRights-(\d+-.+?-\d+)$/;
 
-        my ( $method, $principal_id, $object_type, $object_id ) = ( $1, $2, $3, $4 );
-
-        my @rights;
-        if ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
-            @rights = @{ $ARGSref->{$arg} };
-        } else {
-            @rights = $ARGSref->{$arg};
-        }
-        @rights = grep $_, @rights;
+        my $tuple  = $1;
+        my $value  = $ARGSref->{$arg};
+        my @rights = grep { $_ } (ref $value eq 'ARRAY' ? @$value : $value);
         next unless @rights;
+
+        $state{$tuple} = { map { $_ => 1 } @rights };
+    }
+
+    foreach my $tuple (@check) {
+        next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
+
+        my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
 
         my $principal = RT::Principal->new( $session{'CurrentUser'} );
         $principal->Load($principal_id);
@@ -1405,9 +1410,35 @@ sub ProcessACLChanges {
             next;
         }
 
-        foreach my $right (@rights) {
-            my ( $val, $msg ) = $principal->$method( Object => $obj, Right => $right );
-            push( @results, $msg );
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $obj );
+        $acls->LimitToPrincipal( Id => $principal_id );
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+
+            # Has right and should have right
+            next if delete $state{$tuple}->{$right};
+
+            # Has right and shouldn't have right
+            my ($val, $msg) = $principal->RevokeRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # For everything left, they don't have the right but they should
+        for my $right (keys %{ $state{$tuple} || {} }) {
+            delete $state{$tuple}->{$right};
+            my ($val, $msg) = $principal->GrantRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # Check our state for leftovers
+        if ( keys %{ $state{$tuple} || {} } ) {
+            my $missed = join '|', %{$state{$tuple} || {}};
+            $RT::Logger->warn(
+               "Uh-oh, it looks like we somehow missed a right in "
+              ."ProcessACLChanges.  Here's what was leftover: $missed"
+            );
         }
     }
 

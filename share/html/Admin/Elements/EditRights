@@ -71,22 +71,24 @@ for my $category (@$Principals) {
         my $id = "acl-$name-" . $obj->PrincipalId;
         $id =~ s/[^a-zA-Z0-9\-]/_/g;
 </%perl>
+
   <div id="<% $id %>">
     <h3>Rights for <% $loc ? loc($display) : $display %></h3>
     <ul class="rights-list">
 % for my $right (keys %available_rights) {
       <li>
         <input type="checkbox" class="checkbox"
-               name="GrantRight-<% $acldesc %>"
-               id="GrantRight-<% $acldesc %>-<% $right %>"
+               name="SetRights-<% $acldesc %>"
+               id="SetRights-<% $acldesc %>-<% $right %>"
                value="<% $right %>"
                <% $current_rights{$obj->PrincipalId}->{$right} ? 'checked' : '' %> />
-        <label for="GrantRight-<% $acldesc %>-<% $right %>">
+        <label for="SetRights-<% $acldesc %>-<% $right %>">
           <% loc($available_rights{$right}) %>
         </label>
       </li>
 % }
     </ul>
+    <input type="hidden" name="CheckACL" value="<% $acldesc %>" />
   </div>
 <%perl>
     }
