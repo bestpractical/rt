@@ -1,9 +1,20 @@
 <%args>
 $Context
 $Principals
+$AddPrincipal => undef
 </%args>
 <%init>
 use Scalar::Util qw(blessed);
+
+unless ( $AddPrincipal ) {
+    my $last = $Principals->[-1];
+    if ( $last->[0] =~ /Groups/i ) {
+        $AddPrincipal = 'group';
+    }
+    elsif ( $last->[0] =~ /Users/i ) {
+        $AddPrincipal = 'user';
+    }
+}
 </%init>
 %# Principals is an array of arrays, where the inner arrays are like:
 %#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
@@ -34,6 +45,16 @@ for my $category (@$Principals) {
     }
 }
 </%perl>
+% if ( $AddPrincipal ) {
+    <li class="category"><&|/l&>Add</&> <% loc($AddPrincipal) %></li>
+    <li>
+      <a href="#acl-addprincipal">
+        <input type="text" value=""
+               name="AddPrincipalForRights-<% lc $AddPrincipal %>"
+               id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
+      </a>
+    </li>
+% }
   </ul>
 
 <%perl>
@@ -72,7 +93,7 @@ for my $category (@$Principals) {
 </%perl>
 
   <div id="<% $id %>">
-    <h3>Rights for <% $loc ? loc($display) : $display %></h3>
+    <h3><&|/l&>Rights for</&> <% $loc ? loc($display) : $display %></h3>
     <ul class="rights-list">
 % for my $right (sort keys %available_rights) {
       <li>
@@ -92,5 +113,25 @@ for my $category (@$Principals) {
 <%perl>
     }
 }
+
+if ( $AddPrincipal ) {
+    my $acldesc = join '-', 'addprincipal', ref($Context), $Context->Id;
 </%perl>
+  <div id="acl-addprincipal">
+    <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
+    <ul class="rights-list">
+% for my $right (sort keys %available_rights) {
+      <li>
+        <input type="checkbox" class="checkbox"
+               name="SetRights-<% $acldesc %>"
+               id="SetRights-<% $acldesc %>-<% $right %>"
+               value="<% $right %>" />
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+          <% loc($available_rights{$right}) %>
+        </label>
+      </li>
+% }
+    </ul>
+  </div>
+% }
 </div>

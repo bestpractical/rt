@@ -3,7 +3,7 @@ jQuery(function() {
     var multipleCompletion = new Array("Requestors", "To", "Bcc", "Cc", "AdminCc", "WatcherAddressEmail[123]", "UpdateCc", "UpdateBcc");
 
     // inputs with only a single email address allowed
-    var singleCompletion   = new Array("(Add|Delete)Requestor", "(Add|Delete)Cc", "(Add|Delete)AdminCc");
+    var singleCompletion   = new Array("(Add|Delete)Requestor", "(Add|Delete)Cc", "(Add|Delete)AdminCc", "AddPrincipalForRights-user");
 
     // build up the regexps we'll use to match
     var applyto  = new RegExp('^(' + multipleCompletion.concat(singleCompletion).join('|') + ')$');
