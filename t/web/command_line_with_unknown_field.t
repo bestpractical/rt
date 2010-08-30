@@ -32,3 +32,5 @@ expect_like(qr/homer: Unknown field/, 'homer is unknown field');
 expect_like(qr/homer: simpson/, 'the value we set for homer is shown too');
 
 expect_quit();
+
+1; # needed to avoid a weird exit value from expect_quit
