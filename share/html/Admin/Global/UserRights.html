@@ -51,49 +51,12 @@
     Title => loc('Modify global user rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="post" action="UserRights.html">
-      
-<&| /Widgets/TitleBox, title => loc('Modify global user rights.') &>
-<table>
-
-% while ( my $UserObj = $Users->Next ) {
-% my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup( $UserObj );
-  <tr align="right">
-	<td valign="top"><& /Elements/ShowUser, User => $UserObj &></td>
-	<td><& /Admin/Elements/SelectRights,
-        PrincipalId => $group->PrincipalId,
-        Object => $RT::System,
-    &></td>
-  </tr>
-% }
-</table>
-</&>
-
-<& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
-      
+<form method="post" action="UserRights.html">
+  <& /Admin/Elements/EditRights, Context => $RT::System, Principals => \@principals &>
+  <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
 </form>
 <%INIT>
- 
-  #Update the acls.
-  my @results =  ProcessACLChanges(\%ARGS);
-
-# {{{ Deal with setting up the display of current rights.
-
-
-# Find out which users we want to display ACL selects for
-my $Privileged = RT::Group->new($session{'CurrentUser'});
-$Privileged->LoadSystemInternalGroup('Privileged');
-my $Users = $Privileged->UserMembersObj();
-$Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
-
-    
-  
-# }}}
-    
+# Update the acls.
+my @results = ProcessACLChanges(\%ARGS);
+my @principals = GetPrincipalsMap($RT::System, 'Users');
 </%INIT>
-
-<%ARGS>
-$UserOrderBy => 'Name'
-$UserOrder => 'ASC'
-</%ARGS>

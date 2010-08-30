@@ -54,54 +54,12 @@
 
   <form method="post" action="GroupRights.html">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
-      
-<&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
-      
-<h1><&|/l&>System groups</&></h1>
-<table>
-% $Groups = RT::Groups->new($session{'CurrentUser'});
-% $Groups->LimitToSystemInternalGroups();
-%	while (my $Group = $Groups->Next()) {
-  <tr align="right"> 
-	<td valign="top">
-	    <% loc($Group->Type) %>
-		  </td>
-	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        PrincipalType => 'Group',
-        Object => $GroupObj  &>
-	  </td>
-	</tr>
-% }
-</table>
-<h1><&|/l&>User defined groups</&></h1>
-<table>
-% $Groups = RT::Groups->new($session{'CurrentUser'});
-% $Groups->LimitToUserDefinedGroups();    
-%	while (my $Group = $Groups->Next()) {
-  <tr align="right"> 
-	<td valign="top">
-	    <% $Group->Name %>
-		  </td>
-	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        PrincipalType => 'Group',
-        Object => $GroupObj  &>
-	  </td>
-	</tr>
-% }
-</table>
-            
-      </&>
-      <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
-      
+    <& /Admin/Elements/EditRights, Context => $GroupObj, Principals => \@principals &>
+    <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
   </form>
-  
 <%INIT>
- 
-  #Update the acls.
-  my @results =  ProcessACLChanges(\%ARGS);
-
+# Update the acls.
+my @results = ProcessACLChanges(\%ARGS);
 
 if (!defined $id) {
     Abort(loc("No Group defined"));
@@ -110,8 +68,7 @@ if (!defined $id) {
 my $GroupObj = RT::Group->new($session{'CurrentUser'});
 $GroupObj->Load($id) || Abort(loc("Couldn't load group [_1]",$id));
 
-my $Groups;
-    
+my @principals = GetPrincipalsMap($GroupObj, 'System', 'User Groups');
 </%INIT>
 
 <%ARGS>

@@ -2129,6 +2129,58 @@ sub ProcessColumnMapValue {
     return $value;
 }
 
+=head2 GetPrincipalsMap OBJECT, CATEGORIES
+
+Returns an array suitable for passing to /Admin/Elements/EditRights with the
+principal collections mapped from the categories given.
+
+=cut
+
+sub GetPrincipalsMap {
+    my $object = shift;
+    my @map;
+    for (@_) {
+        if (/System/) {
+            my $system = RT::Groups->new($session{'CurrentUser'});
+            $system->LimitToSystemInternalGroups();
+            push @map, ['System' => $system => 'Type' => 1];
+        }
+        elsif (/Groups/) {
+            my $groups = RT::Groups->new($session{'CurrentUser'});
+            $groups->LimitToUserDefinedGroups();
+            # XXX TODO: only find those user groups with rights granted
+            push @map, ['User Groups' => $groups => 'Name' => 0];
+        }
+        elsif (/Roles/) {
+            my $roles = RT::Groups->new($session{'CurrentUser'});
+
+            if ($object->isa('RT::System')) {
+                $roles->LimitToRolesForSystem();
+            }
+            elsif ($object->isa('RT::Queue')) {
+                $roles->LimitToRolesForQueue($object->Id);
+            }
+            else {
+                $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
+                next;
+            }
+            push @map, ['Roles' => $roles => 'Type' => 1];
+        }
+        elsif (/Users/) {
+            my $Privileged = RT::Group->new($session{'CurrentUser'});
+            $Privileged->LoadSystemInternalGroup('Privileged');
+            my $Users = $Privileged->UserMembersObj();
+            $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            my $display = sub {
+                $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
+            };
+            push @map, ['Users' => $Users => $display => 0];
+        }
+    }
+    return @map;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.

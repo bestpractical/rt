@@ -55,8 +55,7 @@
 <form method="post" action="GroupRights.html">
   <input type="hidden" class="hidden" name="id" value="<% $QueueObj->id %>" />
 
-%# XXX TODO: this was just after the opening table tag, put it somewhere reasonable    
-% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
+% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results, principals => \@principals );
 
   <& /Admin/Elements/EditRights, Context => $QueueObj, Principals => \@principals &>
 
@@ -65,7 +64,7 @@
 
 <%INIT>
 # Update the acls.
-my @results =  ProcessACLChanges(\%ARGS);
+my @results = ProcessACLChanges(\%ARGS);
 
 if (!defined $id) {
     Abort(loc("No Queue defined"));
@@ -77,22 +76,7 @@ $QueueObj->Load($id) || Abort(loc("Couldn't load queue [_1]",$id));
 my $current_tab = 'Admin/Queues/GroupRights.html?id='.$QueueObj->id;
 
 # Principal collections
-my $system = RT::Groups->new($session{'CurrentUser'});
-$system->LimitToSystemInternalGroups();
-
-my $roles = RT::Groups->new($session{'CurrentUser'});
-$roles->LimitToRolesForQueue($QueueObj->Id);
-
-my $groups = RT::Groups->new($session{'CurrentUser'});
-$groups->LimitToUserDefinedGroups();
-# XXX TODO: only find those user groups with rights granted
-
-my @principals = (
-    # Category        collection   column    loc?
-    ['System'      => $system   => 'Type' => 1],
-    ['Roles'       => $roles    => 'Type' => 1],
-    ['User Groups' => $groups   => 'Name' => 0],
-);
+my @principals = GetPrincipalsMap($QueueObj, qw(System Roles Groups));
 </%INIT>
 <%ARGS>
 $id => undef
