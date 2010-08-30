@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 492;
+use RT::Test tests => 456;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -94,8 +94,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
 
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );
-        $m->goto_ticket( $id );
-        $m->follow_link_ok({text => 'Reply'}, '-> reply');
+        $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$id" );
         $m->form_number(3);
         if ( $variant->{'Encrypt'} ) {
             ok $m->value('Encrypt', 2), "encrypt tick box is checked";
@@ -283,8 +282,7 @@ sub update_ticket {
 
     RT::Test->clean_caught_mails;
 
-    ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
-    $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
+    $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$tid" );
     $m->form_number(3);
     $m->field( UpdateContent => 'Some content' );
 
