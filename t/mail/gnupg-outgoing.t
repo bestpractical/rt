@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 456;
+use RT::Test tests => 430;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -62,52 +62,6 @@ my %mail = (
     encrypted        => [],
     signed_encrypted => [],
 );
-
-diag "check in read-only mode that queue's props influence create/update ticket pages";
-{
-    foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
-        $m->goto_create_ticket( $queue );
-        $m->form_name('TicketCreate');
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
-        } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
-        }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
-        } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
-        }
-    }
-
-    # to avoid encryption/signing during create
-    set_queue_crypt_options();
-
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    my ($id) = $ticket->Create(
-        Subject   => 'test',
-        Queue     => $queue->id,
-        Requestor => 'rt-test@example.com',
-    );
-    ok $id, 'ticket created';
-
-    foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
-        $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$id" );
-        $m->form_number(3);
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
-        } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
-        }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
-        } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
-        }
-    }
-}
 
 # create a ticket for each combination
 foreach my $queue_set ( @variants ) {
