@@ -109,9 +109,9 @@ ok(
     $ticket->Create(
         Queue                    => $q->id,
         Subject                  => 'Test',
-        'CustomField-' . $cf->id => '2010-05-04 12:34:56',
+        'CustomField-' . $cf->id => '2010-05-04 11:34:56',
     ),
-    'create ticket with cf set to 2010-05-04 12:34:56'
+    'create ticket with cf set to 2010-05-04 11:34:56'
 );
 
 is( $ticket->CustomFieldValues->First->Content,
