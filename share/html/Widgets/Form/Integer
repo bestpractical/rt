@@ -68,7 +68,7 @@ $CurrentValue => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
+$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue || '' ),
 </%ARGS>
 
 <%METHOD InputOnly>
