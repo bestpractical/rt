@@ -68,7 +68,7 @@ if (!defined $id) {
 my $GroupObj = RT::Group->new($session{'CurrentUser'});
 $GroupObj->Load($id) || Abort(loc("Couldn't load group [_1]",$id));
 
-my @principals = GetPrincipalsMap($GroupObj, 'System', 'User Groups');
+my @principals = GetPrincipalsMap($GroupObj, 'System', 'Groups');
 </%INIT>
 
 <%ARGS>
