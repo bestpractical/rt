@@ -2143,12 +2143,21 @@ sub GetPrincipalsMap {
         if (/System/) {
             my $system = RT::Groups->new($session{'CurrentUser'});
             $system->LimitToSystemInternalGroups();
+            $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
             push @map, ['System' => $system => 'Type' => 1];
         }
         elsif (/Groups/) {
             my $groups = RT::Groups->new($session{'CurrentUser'});
             $groups->LimitToUserDefinedGroups();
-            # XXX TODO: only find those user groups with rights granted
+            $groups->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show groups who have rights granted on this object
+            $groups->WithGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0
+            );
+
             push @map, ['User Groups' => $groups => 'Name' => 0];
         }
         elsif (/Roles/) {
@@ -2164,6 +2173,7 @@ sub GetPrincipalsMap {
                 $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
                 next;
             }
+            $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
             push @map, ['Roles' => $roles => 'Type' => 1];
         }
         elsif (/Users/) {
@@ -2171,6 +2181,13 @@ sub GetPrincipalsMap {
             $Privileged->LoadSystemInternalGroup('Privileged');
             my $Users = $Privileged->UserMembersObj();
             $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show users who have rights granted on this object
+            $Users->WhoHaveGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0
+            );
 
             my $display = sub {
                 $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
