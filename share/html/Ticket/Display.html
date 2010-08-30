@@ -46,12 +46,12 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject),
+    Title => $title,
     LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
-    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+    Title => $title &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
@@ -100,7 +100,7 @@ $Collapsed => undef
 
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
-my (@Actions, $Tickets);  
+my (@Actions, $Tickets, $title);
 
 
 unless ($id || $TicketObj) {
@@ -177,11 +177,14 @@ if ($ARGS{'id'} eq 'new') {
     }
 }
 
+$title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject);
+
 $m->callback(
     CallbackName => 'BeforeDisplay',
     TicketObj => \$TicketObj,
     Tickets => \$Tickets,
     Actions => \@Actions,
+    title => \$title,
     ARGSRef => \%ARGS,
 );
 
