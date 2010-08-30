@@ -152,10 +152,7 @@ sub goto_create_ticket {
         die "not yet implemented";
     }
 
-    $self->get('/');
-    $self->form_name('CreateTicketInQueue');
-    $self->select( 'Queue', $id );
-    $self->submit;
+    $self->get($self->rt_base_url . '/Ticket/Create.html?Queue='.$id);
 
     return 1;
 }
