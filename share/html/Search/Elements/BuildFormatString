@@ -146,7 +146,7 @@ if ( $RemoveCol ) {
     # we do this regex match to avoid a non-numeric warning
     my ($index) = $CurrentDisplayColumns =~ /^(\d+)/;
     my $column = $seen[$index];
-    if ($index) {
+    if ( defined($index) ) {
         delete $seen[$index];
         my @temp = @seen;
         @seen = ();
