@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 430;
+use RT::Test tests => 422;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -301,15 +301,7 @@ sub cleanup_headers {
 
 sub set_queue_crypt_options {
     my %args = @_;
-    $m->get_ok("/Admin/Queues/Modify.html?id=". $queue->id);
-    $m->form_with_fields('Sign', 'Encrypt');
-    foreach my $opt ('Sign', 'Encrypt') {
-        if ( $args{$opt} ) {
-            $m->tick($opt => 1);
-        } else {
-            $m->untick($opt => 1);
-        }
-    }
-    $m->submit;
+            $queue->SetEncrypt($args{'Encrypt'});
+            $queue->SetSign($args{'Sign'});
 }
 
