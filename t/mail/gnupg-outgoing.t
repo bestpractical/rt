@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 422;
+use RT::Test tests => 390;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -224,7 +224,6 @@ sub create_a_ticket {
 
     unlike($m->content, qr/unable to sign outgoing email messages/);
 
-    $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
     check_text_emails( \%args, @mail );
@@ -252,7 +251,6 @@ sub update_ticket {
     is $m->status, 200, "request successful";
     $m->content_like(qr/Message recorded/, 'Message recorded') or diag $m->content;
 
-    $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
     check_text_emails( \%args, @mail );
