@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 
-use RT::Test tests => 137;
+use RT::Test tests => 138;
 
 use RT::EmailParser;
 use RT::Tickets;
@@ -406,17 +406,21 @@ is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and 
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::Action::SendEmail::SendMessage { 
-                my $self = shift; 
-                my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
-                 my $subject  =  $MIME->head->get("subject");
-                 $subject  = MIME::Base64::decode_base64( $subject);
-                chomp($subject);
-                # TODO, why does this test fail
-                #ok($subject =~ /Niv\x{e5}er/, "The subject matches the word - $subject");
-                1;
-                 }';
+        my $self = shift;
+        my $MIME = shift;
+
+        return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+
+        is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
+
+        my $encoded_subject = $MIME->head->get("subject");
+        warn "<$encoded_subject>";
+        my $subject = MIME::Base64::decode_base64($encoded_subject);
+
+        like($subject, qr/Niv\x{e5}er/, "The subject matches the word - $subject");
+
+        1;
+    }';
 }
 
 # }}}
