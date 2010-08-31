@@ -105,5 +105,6 @@ if ( $ARGS{'CreatedAfter'} ) {
 $m->callback(CallbackName => 'Search', clauses => \@clauses);
 my $query = join (' AND ', map { "( $_ )" } @clauses);
 $tickets->FromSQL($query);
+$tickets->OrderBy( FIELD => 'id' );
 
 </%init>
