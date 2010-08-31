@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use Test::MockTime qw(set_fixed_time restore_time);
+use DateTime;
 
 use Test::More;
 my $tests;
@@ -8,9 +9,7 @@ my $tests;
 my $localized_datetime_tests;
 BEGIN {
     $tests = 165;
-    $localized_datetime_tests =
-      eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; } &&
-      DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
+    $localized_datetime_tests = DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
 
     if ($localized_datetime_tests) {
 

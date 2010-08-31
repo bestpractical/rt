@@ -119,8 +119,7 @@ our @FORMATTERS = (
     'RFC2616',       # loc
     'iCal',          # loc
 );
-if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' && 
-     DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
+if (DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
     push @FORMATTERS, 'LocalizedDateTime'; # loc
 }
 
@@ -654,8 +653,6 @@ sub LocalizedDateTime
                  @_,
                );
 
-    return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
-    return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
     return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
         unless can DateTime::('format_cldr');
 
