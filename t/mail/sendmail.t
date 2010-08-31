@@ -22,13 +22,13 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
 
 {
     no warnings qw/redefine/;
-    sub RT::Action::SendEmail::SendMessage {
+    *RT::Action::SendEmail::SendMessage = sub {
         my $self = shift;
         my $MIME = shift;
 
         main::_fired_scrip($self->ScripObj);
         main::is(ref($MIME) , 'MIME::Entity', "hey, look. it's a mime entity");
-    }
+    };
 }
 
 # some utils
@@ -192,8 +192,7 @@ sub _fired_scrip {
 
 sub utf8_redef_sendmessage {
     no warnings qw/redefine/;
-    eval ' 
-    sub RT::Action::SendEmail::SendMessage {
+    *RT::Action::SendEmail::SendMessage = sub {
         my $self = shift;
         my $MIME = shift;
 
@@ -201,26 +200,25 @@ sub utf8_redef_sendmessage {
         ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
-        main::is( ref($MIME) , \'MIME::Entity\',
-                  "hey, look. it\'s a mime entity" );
-        main::is( ref( $MIME->head ) , \'MIME::Head\',
+        main::is( ref($MIME) , 'MIME::Entity',
+                  "hey, look. it's a mime entity" );
+        main::is( ref( $MIME->head ) , 'MIME::Head',
                   "its mime header is a mime header. yay" );
-        main::like( $MIME->head->get(\'Content-Type\') , qr/utf-8/,
+        main::like( $MIME->head->get('Content-Type') , qr/utf-8/,
                   "Its content type is utf-8" );
         my $message_as_string = $MIME->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode_utf8($message_as_string);
         main::like(
             $message_as_string , qr/H\x{e5}vard/,
-"The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
+"The message's content contains havard's name. this will fail if it's not utf8 out");
 
-    }';
+    };
 }
 
 sub iso8859_redef_sendmessage {
     no warnings qw/redefine/;
-    eval ' 
-    sub RT::Action::SendEmail::SendMessage {
+    *RT::Action::SendEmail::SendMessage = sub {
         my $self = shift;
         my $MIME = shift;
 
@@ -228,19 +226,18 @@ sub iso8859_redef_sendmessage {
         ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
-        main::is( ref($MIME) , \'MIME::Entity\',
-                  "hey, look. it\'s a mime entity" );
-        main::is( ref( $MIME->head ) , \'MIME::Head\',
+        main::is( ref($MIME) , 'MIME::Entity',
+                  "hey, look. it's a mime entity" );
+        main::is( ref( $MIME->head ) , 'MIME::Head',
                   "its mime header is a mime header. yay" );
-        main::like( $MIME->head->get(\'Content-Type\') , qr/iso-8859-1/,
+        main::like( $MIME->head->get('Content-Type') , qr/iso-8859-1/,
                   "Its content type is iso-8859-1 - " . $MIME->head->get("Content-Type") );
         my $message_as_string = $MIME->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode("iso-8859-1",$message_as_string);
         main::like(
-            $message_as_string , qr/H\x{e5}vard/, "The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
-
-    }';
+            $message_as_string , qr/H\x{e5}vard/, "The message's content contains havard's name. this will fail if it's not utf8 out");
+    };
 }
 
 # {{{ test a multipart alternative containing a text-html part with an umlaut
@@ -299,14 +296,14 @@ is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a 
 
 sub text_html_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
-                my $self = shift;
-                my $MIME = shift;
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                is ($MIME->parts, 0, "generated correspondence mime entity
-                        does not have parts");
-                is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
-         }';
+    *RT::Action::SendEmail::SendMessage = sub {
+        my $self = shift;
+        my $MIME = shift;
+        return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+        is ($MIME->parts, 0, "generated correspondence mime entity
+                does not have parts");
+        is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
+    };
 }
 
 # }}}
@@ -362,16 +359,15 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-plain");
 is ($tick->Subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
 sub text_plain_russian_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
-                my $self = shift; 
-                my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
-                 my $subject  = $MIME->head->get("subject");
-                chomp($subject);
-                #is( $subject ,      /^=\?KOI8-R\?B\?W2V4YW1wbGUuY39tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
-                };
-                 ';
+    *RT::Action::SendEmail::SendMessage = sub {
+        my $self = shift; 
+        my $MIME = shift; 
+        return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+        is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
+            my $subject  = $MIME->head->get("subject");
+        chomp($subject);
+        #is( $subject ,      /^=\?KOI8-R\?B\?W2V4YW1wbGUuY39tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
+    };
 }
 
 my @input_encodings = RT->Config->Get( 'EmailInputEncodings' );
@@ -405,7 +401,7 @@ like (first_attach($tick)->ContentType , qr/multipart\/mixed/, "We recorded the 
 is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
+    *RT::Action::SendEmail::SendMessage = sub {
         my $self = shift;
         my $MIME = shift;
 
@@ -416,11 +412,11 @@ sub text_plain_nested_redef_sendmessage {
         use MIME::Words qw(:all);
         my $encoded_subject = $MIME->head->get("subject");
         my $subject = decode_mimewords($encoded_subject);
-        
+
         like($subject, qr/Niv\x{e5}er/, "The subject matches the word - $subject");
 
         1;
-    }';
+    };
 }
 
 # }}}
