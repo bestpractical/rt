@@ -4,14 +4,12 @@ use strict;
 use RT::Test tests => 101;
 
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
 
 use RT::Action::SendEmail;
-
-eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
