@@ -414,7 +414,6 @@ sub text_plain_nested_redef_sendmessage {
         is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
 
         my $encoded_subject = $MIME->head->get("subject");
-        warn "<$encoded_subject>";
         my $subject = MIME::Base64::decode_base64($encoded_subject);
 
         like($subject, qr/Niv\x{e5}er/, "The subject matches the word - $subject");
