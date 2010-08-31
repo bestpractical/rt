@@ -654,7 +654,7 @@ sub LocalizedDateTime
                );
 
     return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
-        unless can DateTime::('format_cldr');
+        unless DateTime::->can('format_cldr');
 
 
     my $date_format = $args{'DateFormat'};
