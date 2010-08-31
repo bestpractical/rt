@@ -139,6 +139,9 @@ sub import {
         $class->builder->plan( tests => $args{'tests'} )
           unless $args{'tests'} eq 'no_declare';
     }
+    elsif ( exists $args{'tests'} ) {
+        # do nothing if they say "tests => undef" - let them make the plan
+    }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
