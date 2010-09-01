@@ -3,12 +3,18 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 489;
+use RT::Test tests => 489;
 
-RT::Test->started_ok;
-my $agent = default_agent();
+my ($baseurl, $agent) =RT::Test->started_ok;
 
-use_ok('RT::IR');
+my $q = RT::Queue->new($RT::SystemUser);
+$q->Load('General');
+my $ip_cf = RT::CustomField->new($RT::SystemUser);
+        
+my ($val,$msg) = $ip_cf->Create(Name => 'IP', Type =>'IPAddressRange', LookupType => 'RT::Queue-RT::Ticket');
+ok($val,$msg);
+$ip_cf->AddToObject($q);
+use_ok('RT');
 
 my $cf;
 diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
@@ -18,7 +24,7 @@ diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
     is( $cfs->Count, 1, "found one CF with name 'IP'" );
 
     $cf = $cfs->First;
-    is( $cf->Type, 'Freeform', 'type check' );
+    is( $cf->Type, 'IPAddressRange', 'type check' );
     is( $cf->LookupType, 'RT::Queue-RT::Ticket', 'lookup type check' );
     ok( !$cf->MaxValues, "unlimited number of values" );
     ok( !$cf->Disabled, "not disabled" );
@@ -26,7 +32,7 @@ diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 
 diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 {
-    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach ( 'General'){ 
         my $queue = RT::Queue->new( $RT::SystemUser );
         $queue->Load( $_ );
         ok( $queue->id, 'loaded queue '. $_ );
@@ -35,7 +41,7 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
         is( $cfs->Count, 1, 'field applies to queue' );
     }
 }
-my $rtir_user = RT::CurrentUser->new( rtir_user() );
+my $rtir_user = RT::CurrentUser->new( 'root' );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
 {
@@ -45,7 +51,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = $agent->create_rtir_ticket_ok(
+        my $id = $agent->create_ticket_ok(
             $queue,
             {
                 Subject => "test ip",
@@ -73,7 +79,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = $agent->create_rtir_ticket_ok(
+        my $id = $agent->create_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
@@ -101,7 +107,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = $agent->create_rtir_ticket_ok(
+        my $id = $agent->create_ticket_ok(
             $queue,
             {
                 Subject => "test ip",
@@ -132,7 +138,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = $agent->create_rtir_ticket_ok(
+        my $id = $agent->create_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
@@ -162,7 +168,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = $agent->create_rtir_ticket_ok(
+        my $id = $agent->create_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
@@ -551,7 +557,7 @@ diag "create two tickets with different IP ranges and check several searches" if
 
 diag "merge ticket, IPs should be merged";
 {
-    my $incident_id = $agent->create_rtir_ticket_ok(
+    my $incident_id = $agent->create_ticket_ok(
         'Incidents',
         { Subject => "test" },
     );
@@ -591,7 +597,7 @@ diag "merge ticket, IPs should be merged";
 
 diag "merge ticket with the same IP";
 {
-    my $incident_id = $agent->create_rtir_ticket_ok(
+    my $incident_id = $agent->create_ticket_ok(
         'Incidents',
         { Subject => "test" },
     );
