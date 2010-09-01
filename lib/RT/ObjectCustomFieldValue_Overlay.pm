@@ -68,6 +68,17 @@ sub Create {
         @_,
     );
 
+
+    my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
+    $cf_as_sys->Load($args{'CustomField'});
+    if($cf_as_sys->Type eq 'IPAddress' || $cf_as_sys->Type eq 'IPAddressRange') {
+        if ($args{'Content'}) {
+            ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
+
+        }
+    }
+
+
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
             $RT::Logger->error("Content is longer than 255 bytes and LargeContent specified");
@@ -103,6 +114,32 @@ sub LargeContent {
         $self->ContentEncoding,
         $self->_Value( 'LargeContent', decode_utf8 => 0 )
     );
+}
+
+
+=head2 LoadByCols
+
+=cut
+
+sub LoadByCols {
+    my $self = shift;
+    my %args = (@_);
+    my $cf;
+    if ( $args{CustomField} ) {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load( $args{CustomField} );
+        if ( $cf->Type eq 'IPAddressRange' ) {
+
+            my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
+            if ( $sIP && $eIP ) {
+                $self->SUPER::LoadByCols( %args,
+                                          Content      => $sIP,
+                                          LargeContent => $eIP
+                                        );
+            }
+        }
+    }
+    return $self->SUPER::LoadByCols(%args);
 }
 
 =head2 LoadByTicketContentAndCustomField { Ticket => TICKET, CustomField => CUSTOMFIELD, Content => CONTENT }
@@ -172,9 +209,29 @@ content, try "LargeContent"
 
 =cut
 
+my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
+my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
+
 sub Content {
     my $self = shift;
+
     my $content = $self->_Value('Content');
+    if ( $self->CustomFieldObj->Type eq 'IPAddress' ||
+         $self->CustomFieldObj->Type eq 'IPAddressRange') {
+
+       if ($content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+        $content = sprintf "%d.%d.%d.%d", split /\./, $1;
+       }
+
+        my $large_content = $self->__Value('LargeContent');
+            if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+                my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+                return $content . "-".$eIP if ($content  && $eIP);
+            } else {
+                return $content;
+            }
+
+    }
     if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {

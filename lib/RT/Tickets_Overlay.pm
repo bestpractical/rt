@@ -1349,6 +1349,10 @@ Meta Data:
 
 =cut
 
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::Common::net::CIDR;
+
+
 sub _CustomFieldLimit {
     my ( $self, $_field, $op, $value, %rest ) = @_;
 
@@ -1375,6 +1379,14 @@ sub _CustomFieldLimit {
         return 'NOT MATCHES' if $op eq '!=';
         return $op;
     };
+       if ( $cf && ( $cf->Type eq 'IPAddress'  || $cf->Type eq 'IPAddressRange')) {
+        return unless $op =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o;
+        # convert incomplete 192.168/24 to 192.168.0.0/24 format
+        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        # convert to range and continue, it will be catched by next wrapper
+        $op = (Net::CIDR::cidr2range( $cidr ))[0] || $op;
+
+     }
 
     my $single_value = !$cf || !$cfid || $cf->SingleValue;
 
@@ -1403,6 +1415,51 @@ sub _CustomFieldLimit {
         ) if $CFs;
         $self->_CloseParen;
     }
+       elsif ( $op!~ /^[<>]=?$/ && (  $cf && ($cf->Type eq 'IPAddress'  || $cf->Type eq 'IPAddressRange'))) {
+    
+        $value =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o;
+        my ($start_ip, $end_ip) = ($1, ($2 || $1));
+        $_ = sprintf "%03d.%03d.%03d.%03d", split /\./, $_
+            for $start_ip, $end_ip;
+        ($start_ip, $end_ip) = ($end_ip, $start_ip) if $start_ip gt $end_ip;
+        
+        my ($self, $field, $op, $value, %rest) = @_[0..($#_-1)];
+        $self->_OpenParen;
+        if ( $op !~ /NOT|!=|<>/i ) { # positive equation
+            $self->_CustomFieldLimit(
+                $field, '<=', $end_ip, %rest,
+                SUBKEY => $rest{'SUBKEY'}. '.Content',
+            );
+            $self->_CustomFieldLimit(
+                $field, '>=', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'AND',
+            ); 
+            # as well limit borders so DB optimizers can use better
+            # estimations and scan less rows
+            $self->_CustomFieldLimit(
+                $field, '>=', '000.000.000.000', %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.Content',
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $self->_CustomFieldLimit(
+                $field, '<=', '255.255.255.255', %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'AND',
+            );  
+        }       
+        else { # negative equation
+            $self->_CustomFieldLimit($field, '>', $end_ip, %rest);
+            $self->_CustomFieldLimit(
+                $field, '<', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'OR',
+            );  
+            # TODO: as well limit borders so DB optimizers can use better
+            # estimations and scan less rows, but it's harder to do
+            # as we have OR aggregator
+        }
+    } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
         my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
