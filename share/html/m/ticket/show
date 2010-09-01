@@ -1,0 +1,431 @@
+<%args>
+$id => undef
+</%args>
+<%init>
+my $Ticket;
+my @Actions; 
+
+if ($ARGS{'id'} eq 'new') {
+    # {{{ Create a new ticket
+
+    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    $Queue->Load($ARGS{'Queue'});
+    unless ( $Queue->id ) {
+        Abort('Queue not found');
+    }
+
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort('You have no permission to create tickets in that queue.');
+    }
+
+    ($Ticket, @Actions) = CreateTicket(
+        Attachments => delete $session{'Attachments'},
+        %ARGS,
+    );
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+    # }}}
+} else { 
+    $Ticket ||= LoadTicket($ARGS{'id'});
+
+    $m->callback( CallbackName => 'BeforeProcessArguments',
+        TicketObj => $Ticket,
+        ActionsRef => \@Actions, ARGSRef => \%ARGS );
+    if ( defined $ARGS{'Action'} ) {
+        if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+            my $action = $1;
+            my ($res, $msg) = $Ticket->$action();
+            push(@Actions, $msg);
+        }
+    }
+
+    $m->callback(CallbackName => 'ProcessArguments', 
+            Ticket => $Ticket, 
+            ARGSRef => \%ARGS, 
+            Actions => \@Actions);
+    
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
+    push @Actions,
+        ProcessUpdateMessage(
+        ARGSRef   => \%ARGS,
+        Actions   => \@Actions,
+        TicketObj => $Ticket,
+        );
+    delete $session{'Attachments'};
+
+    #Process status updates
+    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $Ticket );
+    push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $Ticket );
+    push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $Ticket );
+    push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $Ticket );
+    push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $Ticket );
+
+    # XXX: we shouldn't block actions here if user has no right to see the ticket,
+    # but we should allow him to see actions he has done
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+        Abort("No permission to view ticket");
+    }
+    if ( $ARGS{'MarkAsSeen'} ) {
+        $Ticket->SetAttribute(
+            Name => 'User-'. $Ticket->CurrentUser->id .'-SeenUpTo',
+            Content => $Ticket->LastUpdated,
+        );
+        push @Actions, loc('Marked all messages as seen');
+    }
+}
+
+$m->callback(
+    CallbackName => 'BeforeDisplay',
+    TicketObj => \$Ticket,
+    Actions => \@Actions,
+    ARGSRef => \%ARGS,
+);
+
+# This code does automatic redirection if any updates happen. 
+
+if (@Actions) {
+
+    # We've done something, so we need to clear the decks to avoid
+    # resubmission on refresh.
+    # But we need to store Actions somewhere too, so we don't lose them.
+    my $key = Digest::MD5::md5_hex( rand(1024) );
+    push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
+    $session{'i'}++;
+    my $url = RT->Config->Get('WebURL') . "/m/ticket/show?id=" . $Ticket->id . "&results=" . $key;
+    $url .= '#' . $ARGS{Anchor} if $ARGS{Anchor};
+    RT::Interface::Web::Redirect($url);
+}
+
+# If we haven't been passed in an Attachments object (through the precaching mechanism)
+# then we need to find one
+my $Attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+
+my %documents;
+while ( my $attach = $Attachments->Next() ) {
+    next unless ($attach->Filename());
+   unshift( @{ $documents{ $attach->Filename } }, $attach );
+}
+
+my $CustomFields = $Ticket->CustomFields;
+$m->callback(
+    CallbackName => 'MassageCustomFields',
+    Object => $Ticket,
+    CustomFields => $CustomFields,
+);
+
+my $print_value = sub {
+    my ($cf, $value) = @_;
+    my $linked = $value->LinkValueTo;
+    if ( defined $linked && length $linked ) {
+        my $linked = $m->interp->apply_escapes( $linked, 'h' );
+        $m->out('<a href="'. $linked .'" target="_new">');
+    }
+    my $comp = "ShowCustomField". $cf->Type;
+    $m->callback(
+        CallbackName => 'ShowComponentName',
+        Name         => \$comp,
+        CustomField  => $cf,
+        Object       => $Ticket,
+    );
+    if ( $m->comp_exists( $comp ) ) {
+        $m->comp( $comp, Object => $value );
+    } else {
+        $m->out( $m->interp->apply_escapes( $value->Content, 'h' ) );
+    }
+    $m->out('</a>') if defined $linked && length $linked;
+
+    # This section automatically populates a<div with the "IncludeContentForValue" for this custom
+    # field if it's been defined
+    if ( $cf->IncludeContentForValue ) {
+       my $vid = $value->id;
+       $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
+       $m->print( loc("See also:") );
+       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
+       $m->print( $value->IncludeContentForValue );
+       $m->out(   qq{</a></div>\n} );
+       $m->out(   qq{<script><!--\nahah('} );
+       $m->print( $value->IncludeContentForValue );
+       $m->out(   qq{', 'object_cf_value_$vid');\n--></script>\n} );
+    }
+};
+
+</%init>
+<&| /m/_elements/wrapper, title => $Ticket->Subject &>
+<div id="ticket-show">
+<& /m/_elements/ticket_menu, ticket => $Ticket &>
+
+    <&| /Widgets/TitleBox, title => loc('The Basics'),
+        class => 'ticket-info-basics',
+    &>
+
+
+ <div class="entry">
+    <div class="label id"><&|/l&>Id</&>:</div>
+    <div class="value id"><%$Ticket->Id %></div>
+  </div>
+ <div class="entry">
+    <div class="label status"><&|/l&>Status</&>:</div>
+    <div class="value status"><% loc($Ticket->Status) %></div>
+  </div>
+% if ($Ticket->TimeEstimated) {
+ <div class="entry">
+    <div class="label time estimated"><&|/l&>Estimated</&>:</div>
+    <div class="value time estimated"><& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>
+  </div>
+% }
+% if ($Ticket->TimeWorked) {
+ <div class="entry">
+    <div class="label time worked"><&|/l&>Worked</&>:</div>
+    <div class="value time worked"><& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeWorked &></div>
+  </div>
+% }
+% if ($Ticket->TimeLeft) {
+ <div class="entry">
+    <div class="label time left"><&|/l&>Left</&>:</div>
+    <div class="value time left"><& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeLeft &></div>
+  </div>
+% }
+ <div class="entry">
+    <div class="label priority"><&|/l&>Priority</&>:</div>
+    <div class="value priority"><& /Ticket/Elements/ShowPriority, Ticket => $Ticket &></div>
+  </div>
+ <div class="entry">
+    <div class="label queue"><&|/l&>Queue</&>:</div>
+    <div class="value queue"><& /Ticket/Elements/ShowQueue, QueueObj => $Ticket->QueueObj &></div>
+  </div>
+    </&>
+
+% if ($Ticket->CustomFields->First) {
+    <&| /Widgets/TitleBox, title => loc('Custom Fields'),
+        class => 'ticket-info-cfs',
+    &>
+
+% while ( my $CustomField = $CustomFields->Next ) {
+% my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+% my $count = $Values->Count;
+  <div class="entry" id="CF-<%$CustomField->id%>-ShowRow">
+    <div class="label"><% $CustomField->Name %>:</div>
+    <div class="value">
+% unless ( $count ) {
+<i><&|/l&>(no value)</&></i>
+% } elsif ( $count == 1 ) {
+%   $print_value->( $CustomField, $Values->First );
+% } else {
+<ul>
+% while ( my $Value = $Values->Next ) {
+<li>
+% $print_value->( $CustomField, $Value );
+</li>
+% }
+</ul>
+% }
+    </div>
+  </div>
+% }
+
+</&>
+% }
+
+    <&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
+
+
+ <div class="entry">
+    <div class="label"><&|/l&>Owner</&>:</div>
+    <div class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket &>
+    </div>
+  </div>
+ <div class="entry">
+    <div class="label"><&|/l&>Requestors</&>:</div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></div>
+  </div>
+ <div class="entry">
+    <div class="label"><&|/l&>Cc</&>:</div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></div>
+  </div>
+ <div class="entry">
+    <div class="label"><&|/l&>AdminCc</&>:</div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></div>
+  </div>
+
+    </&>
+
+% if (keys %documents) {
+<&| /Widgets/TitleBox, title => loc('Attachments'), 
+        title_class=> 'inverse',  
+        class => 'ticket-info-attachments',
+        color => "#336699" &>
+
+% foreach my $key (keys %documents) {
+
+<%$key%><br />
+<ul>
+% foreach my $rev (@{$documents{$key}}) {
+
+<%PERL>
+my $size = $rev->ContentLength;
+
+if ($size) {
+    my $kb = int($size/102.4) / 10;
+    my $units = RT->Config->Get('AttachmentUnits');
+
+    if (!defined($units)) {
+        if ($size > 1024) {
+            $size = $kb . "k";
+        }
+        else {
+            $size = $size . "b";
+        }
+    }
+    elsif ($units eq 'k') {
+        $size = $kb . "k";
+    }
+    else {
+        $size = $size . "b";
+    }
+
+</%PERL>
+
+<li><font size="-2">
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
+<&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
+</a>
+</font></li>
+% }
+% }
+</ul>
+
+% }
+</&>
+
+% }
+% # too painful to deal with reminders
+% if ( 0 &&  RT->Config->Get('EnableReminders') ) {
+    <&|/Widgets/TitleBox, title => loc("Reminders"),
+        class => 'ticket-info-reminders',
+    &>
+       <div class="entry"><div
+            <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+                <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+            </form>
+        </div></div>
+    </&>
+% }
+
+    <&| /Widgets/TitleBox, title => loc("Dates"),
+        class => 'ticket-info-dates',
+    &>
+
+
+ <div class="entry">
+    <div class="label date created"><&|/l&>Created</&>:</div>
+    <div class="value date created"><% $Ticket->CreatedObj->AsString %></div>
+  </div>
+ <div class="entry">
+    <div class="label date starts"><&|/l&>Starts</&>:</div>
+    <div class="value date starts"><% $Ticket->StartsObj->AsString %></div>
+  </div>
+ <div class="entry">
+    <div class="label date started"><&|/l&>Started</&>:</div>
+    <div class="value date started"><% $Ticket->StartedObj->AsString %></div>
+  </div>
+ <div class="entry">
+    <div class="label date told"><&|/l&>Last Contact</&>:</div>
+    <div class="value date told"><% $Ticket->ToldObj->AsString %></div>
+  </div>
+ <div class="entry">
+    <div class="label date due"><&|/l&>Due</&>:</div>
+% my $due = $Ticket->DueObj;
+% if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
+    <div class="value date due"><span class="overdue"><% $due->AsString  %></span></div>
+% } else {
+    <div class="value date due"><% $due->AsString  %></div>
+% }
+  </div>
+ <div class="entry">
+    <div class="label date resolved"><&|/l&>Closed</&>:</div>
+    <div class="value date resolved"><% $Ticket->ResolvedObj->AsString  %></div>
+  </div>
+ <div class="entry">
+    <div class="label date updated"><&|/l&>Updated</&>:</div>
+% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name) : loc("Never");
+    <div class="value date updated"><% $UpdatedString | h %></div>
+  </div>
+
+    </&>
+
+    <&| /Widgets/TitleBox, title => loc('Links'), class => 'ticket-info-links' &>
+
+ <div class="entry">
+    <div class="label"><% loc('Depends on')%>:</div>
+    <div class="value">
+
+<%PERL>
+my ( @active, @inactive, @not_tickets );
+for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
+    my $target = $link->TargetObj;
+    if ( $target && $target->isa('RT::Ticket') ) {
+        if ( $target->QueueObj->IsInactiveStatus( $target->Status ) ) {
+            push( @inactive, $link->TargetURI );
+        }
+        else {
+            push( @active, $link->TargetURI );
+        }
+    }
+    else {
+        push( @not_tickets, $link->TargetURI );
+    }
+}
+</%PERL>
+
+
+<ul>
+% for my $Link (@not_tickets, @active, @inactive) {
+<li><& /Elements/ShowLink, URI => $Link &></li>
+% }
+</ul>
+    </div>
+  </div>
+ <div class="entry">
+    <div class="label"><% loc('Depended on by')%>:</div>
+    <div class="value">
+<ul>
+% while (my $Link = $Ticket->DependedOnBy->Next) {
+<li><& /Elements/ShowLink, URI => $Link->BaseURI &></li>
+% }
+</ul>
+    </div>
+  </div>
+ <div class="entry">
+    <div class="label"><% loc('Parents') %>:</div>
+    <div class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></div>
+  </div>
+ <div class="entry">
+    <div class="label"><% loc('Children')%>:</div>
+    <div class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></div>
+  </div>
+ <div class="entry">
+    <div class="label"><% loc('Refers to')%>:</div>
+    <div class="value">
+<ul>
+% while (my $Link = $Ticket->RefersTo->Next) {
+<li><& /Elements/ShowLink, URI => $Link->TargetURI &></li>
+% }
+</ul>
+    </div>
+  </div>
+ <div class="entry">
+    <div class="label"><% loc('Referred to by')%>:</div>
+    <div class="value">
+    <ul>
+% while (my $Link = $Ticket->ReferredToBy->Next) {
+% next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
+<li><& /Elements/ShowLink, URI => $Link->BaseURI &></li>
+% }
+</ul>
+    </div>
+  </div>
+    </&>
+</div>
+</&>

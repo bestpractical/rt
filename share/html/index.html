@@ -86,6 +86,11 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <& /Elements/MyRT &>
 <%init>
 
+if ( RT::Interface::Web->MobileClient()) {
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."m/");
+    $m->abort();
+}
+
 my @results;
 my $skip_create = 0;
 

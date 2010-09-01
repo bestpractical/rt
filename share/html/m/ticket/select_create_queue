@@ -1,0 +1,18 @@
+<%init>
+my $queues = RT::Queues->new($session{'CurrentUser'});
+$queues->UnLimit();
+
+</%init>
+<&| /m/_elements/wrapper, title => loc("Create a ticket") &>
+<div class="select_queue">
+<&|/Widgets/TitleBox, title => loc("Select a queue") &>
+<ul class="menu">
+% while (my $q = $queues->Next()) {
+% next if (! $q->CurrentUserHasRight('CreateTicket'));
+<li><a href="<%RT->Config->Get('WebPath')%>/m/ticket/create?Queue=<%$q->id%>"><%$q->Name%></a></li>
+% }
+</ul>
+</&>
+</div>
+</&>
+

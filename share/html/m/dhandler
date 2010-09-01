@@ -1,0 +1,5 @@
+<%init>
+# deal with users who don't have options indexes set right
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."m/index.html");
+$m->abort();
+</%init>

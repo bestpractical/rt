@@ -1,0 +1,31 @@
+<%args>
+$id => undef
+</%args>
+<%init>
+my $t = RT::Ticket->new($session{CurrentUser});
+$t->Load($id);
+my $history = $t->Transactions()->ItemsArrayRef;
+</%init>
+<&| /m/_elements/wrapper, title => $t->Subject &>
+<div class="history">
+<& /m/_elements/ticket_menu, ticket => $t &>
+<&|/Widgets/TitleBox &>
+<ul class="history-list">
+% for my $entry (reverse @$history) {
+<li>
+<span class="age"><% $entry->CreatedObj->AgeAsString() %></span> -
+<& /Elements/ShowUser, User => $entry->CreatorObj &> - 
+<%$entry->BriefDescription%>
+% if ($entry->Type !~ /EmailRecord/) {
+% if ($entry->ContentObj) {
+<div class="txn-content">
+<%$entry->Content%>
+</div>
+%}
+% }
+</li>
+% }
+</ul>
+</&>
+</div>
+</&>

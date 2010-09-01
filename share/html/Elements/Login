@@ -46,11 +46,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
+if ( $m->request_comp->path =~ '^/REST/\d+\.\d+/' ) {
     $r->content_type("text/plain");
     $m->error_format("text");
     $m->out("RT/$RT::VERSION 401 Credentials required\n");
     $m->out("\n$Error\n") if $Error;
+    $m->abort;
+} elsif (    RT::Interface::Web->MobileClient()
+          || ( $m->request_comp->path() =~ m{^/m(?:\/|$)} ) ) {
+    $m->comp( '/m / login ', %ARGS );
     $m->abort;
 }
 

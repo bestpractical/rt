@@ -1,0 +1,64 @@
+<%args>
+$order => undef
+$order_by => undef
+$query => ''
+$page => 1
+</%args>
+<%init>
+my $collection = RT::Tickets->new($session{'CurrentUser'});
+$collection->FromSQL($query);
+$collection->RowsPerPage(10);
+$collection->GotoPage($page-1);
+# XXX: ->{'order_by'} is hacky, but there is no way to check if
+# collection is ordered or not
+if ( $order_by) {
+        my @order_by = split /\|/, $order_by;
+        my @order = split /\|/,$order;
+    $collection->OrderByCols(
+        map { { FIELD => $order_by[$_], ORDER => $order[$_] } }
+        ( 0 .. $#order_by )
+    );
+}
+
+
+
+$collection->RedoSearch();
+ 
+if ($page > 1 && ! @{$collection->ItemsArrayRef||[]}) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')."/m/tickets/search?page=".($page-1)."&query=".$query."&order=$order&order_by=$order_by");
+}
+
+</%init>
+<&| /m/_elements/wrapper, title => 
+loc("Found [quant,_1,ticket]",$collection->Count) &>
+<&|/Widgets/TitleBox, class => 'search'
+&>
+<ul class="ticketlist">
+% while (my $ticket = $collection->Next()) {
+<li class="ticket">
+<a class="ticket" href="<%RT->Config->Get('WebPath')%>/m/ticket/show?id=<%$ticket->id%>"><%$ticket->id%>: <%$ticket->Subject%></a>
+<div class="metadata">
+<%perl>
+
+</%perl>
+<div class="requestors"><span class="label"><&|/l&>Requestors</&>:</span> <& /Ticket/Elements/ShowGroupMembers, Group => $ticket->Requestors, Ticket => $ticket &></div>
+<div class="status"><span class="label"><&|/l&>Status</&>:</span> <%$ticket->Status%></div>
+<div class="owner"><span class="label"><&|/l&>Owner</&>:</span> <& /Elements/ShowUser, User => $ticket->OwnerObj, Ticket => $ticket &></div>
+<div class="created"><span class="label"><&|/l&>Created</&>:</span> <%$ticket->CreatedObj->AgeAsString()%></div>
+% if ($ticket->Priority) {
+<div class="priority"><span class="label"><&|/l&>Priority</&>:</span> <%$ticket->Priority%></div>
+% }
+</div>
+</li>
+% }
+</ul>
+<div id="paging">
+% if ($page > 1) { 
+<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page-1%>&query=<%$query%>&order=<%$order%>&order_by=<%$order_by%>">Back</a>
+% }
+Page <%$page%>
+
+<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page+1%>&query=<%$query%>&order=<%$order%>&order_by=<%$order_by%>">Next</a>
+</div>
+</&>
+</&>

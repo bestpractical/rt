@@ -1,0 +1,4 @@
+<%init>
+ $m->comp('../_elements/ticket_list', %ARGS, query => 'Requestors.EmailAddress = "'.$session{CurrentUser}->EmailAddress.'" AND (Status != "resolved" AND Status != "rejected" AND Status != "stalled")'); 
+$m->abort();
+</%init>

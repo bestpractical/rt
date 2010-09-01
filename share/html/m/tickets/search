@@ -1,0 +1,64 @@
+<%args>
+$page => 1
+$order_by => 'id'
+$order => 'desc'
+$name => undef
+</%args>
+<%init>
+use RT::Search::Googleish;
+my $query = $ARGS{'query'};
+if ($ARGS{'q'}) {
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    my %args = (
+        Argument   => $ARGS{q},
+        TicketsObj => $tickets,
+    );
+    my $search = RT::Search::Googleish->new(%args);
+    $query = $search->QueryToSQL();
+
+}
+
+elsif ($ARGS{'name'}) {
+my $search_arg;
+
+my $search;
+
+    if ($name)  {
+        ($search) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named( 'Search - ' . $name );
+        unless ( $search && $search->Id ) {
+            my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
+            foreach my $custom (@custom_searches) {
+                if ( $custom->Description eq $name ) { $search = $custom; last }
+            }
+            unless ( $search && $search->id ) {
+                $m->out("Predefined search $name not found");
+                return;
+            }
+        }
+
+        $search_arg = $session{'CurrentUser'}->UserObj->Preferences( $search, $search->Content );
+    }
+
+    foreach ($search_arg) {
+        if ( $_->{'Query'} =~ /__Bookmarks__/ ) {
+            $_->{'Rows'} = 999;
+
+            # DEPRECATED: will be here for a while up to 3.10/4.0
+            my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
+            $bookmarks = $bookmarks->Content if $bookmarks;
+            $bookmarks ||= {};
+            my $query = join( " OR ", map " id = '$_' ", grep $bookmarks->{$_}, keys %$bookmarks ) || 'id=0';
+            $_->{'Query'} =~ s/__Bookmarks__/( $query )/g;
+        }
+    }
+
+    $query    = $search_arg->{Query};
+    $order_by = $search_arg->{OrderBy};
+    $order    = $search_arg->{Order};
+
+}
+
+
+$m->comp('../_elements/ticket_list', query => $query, page => $page, order_by => $order_by, order => $order);
+$m->abort();
+</%init>

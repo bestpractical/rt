@@ -1,0 +1,5 @@
+<%init>
+    $HTML::Mason::Commands::r->content_type('text/css');
+    $m->comp('/m/_elements/raw_style');
+    $m->abort();
+</%init>
