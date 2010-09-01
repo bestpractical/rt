@@ -49,10 +49,8 @@
     onLoadHook('createCalendarLink("CreatedBefore");');
     onLoadHook('createCalendarLink("CreatedAfter");');
 --></script>
-% my %done;
 % while (my $ticket = $tickets->Next() ) {
 %   next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies( Type => 'approval' );
-%   next if $done{$ticket->Id}++; # don't show duplicate tickets
 <& Approve, ticket => $ticket &>
 % }
 
