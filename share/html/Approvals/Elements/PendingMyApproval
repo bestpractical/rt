@@ -76,7 +76,7 @@ my $created_after = RT::Date->new( $session{'CurrentUser'} );
 my @clauses;
 push @clauses,
     "Owner = '".$session{CurrentUser}->Id."' OR AdminCc = '".$session{CurrentUser}->UserObj->EmailAddress."'";
-push @clauses, "Type = 'Approval'";
+push @clauses, "Type = 'approval'";
 
 my @statuses;
 if ( $ARGS{'ShowResolved'} ) {
