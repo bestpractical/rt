@@ -2186,7 +2186,8 @@ sub GetPrincipalsMap {
             $groups->WithGroupRight(
                 Right   => '',
                 Object  => $object,
-                IncludeSystemRights => 0
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
             );
 
             push @map, ['User Groups' => $groups => 'Name' => 0];
