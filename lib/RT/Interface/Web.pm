@@ -1374,6 +1374,37 @@ sub ProcessACLChanges {
     my $CheckACL = $ARGSref->{'CheckACL'};
     my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
 
+    # Check if we want to grant rights to a previously rights-less user
+    for my $type (qw(user group)) {
+        my $key = "AddPrincipalForRights-$type";
+
+        next unless $ARGSref->{$key};
+
+        my $principal;
+        if ( $type eq 'user' ) {
+            $principal = RT::User->new( $session{'CurrentUser'} );
+            $principal->Load( $ARGSref->{$key} );
+        }
+        else {
+            $principal = RT::Group->new( $session{'CurrentUser'} );
+            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+        }
+
+        unless ($principal->PrincipalId) {
+            push @results, loc("Couldn't load the specified principal");
+            next;
+        }
+
+        my $principal_id = $principal->PrincipalId;
+
+        # Turn our addprincipal rights spec into a real one
+        for my $arg (keys %$ARGSref) {
+            next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
+            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
+            push @check, "$principal_id-$1";
+        }
+    }
+
     # Build our rights state for each Principal-Object tuple
     foreach my $arg ( keys %$ARGSref ) {
         next unless $arg =~ /^SetRights-(\d+-.+?-\d+)$/;

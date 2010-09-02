@@ -28,6 +28,9 @@ jQuery(function() {
 
         var queryargs = [];
 
+        if (inputName.match("AddPrincipalForRights-user"))
+            queryargs.push("return=Name");
+
         if (inputName.match(onlyPrivileged)) {
             queryargs.push("privileged=1");
         }
