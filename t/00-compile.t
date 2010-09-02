@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 31;
+use RT::Test nodb => 1, tests => 31;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -52,4 +52,3 @@ for (@files) {
     require_ok($_);
 }
 
-1;

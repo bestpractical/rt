@@ -136,6 +136,7 @@ sub FromURI {
 	$scheme = $1;
     }
     else {
+        $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
         $RT::Logger->warning("Could not determine a URI scheme for $uri");
         return (undef);
     }

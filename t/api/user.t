@@ -336,4 +336,3 @@ ok($rqv, "Revoked the right successfully - $rqm");
 
 }
 
-1;

@@ -188,13 +188,13 @@ sub send_digest {
     }
 }
 
-=item mark_transactions_sent( $frequency, $user, @txn_list );
-
-Takes a frequency string (either 'daily' or 'weekly'), a user  and one or more
-transaction objects as its arguments.  Marks the given deferred
-notifications as sent.
-
-=cut
+# =item mark_transactions_sent( $frequency, $user, @txn_list );
+# 
+# Takes a frequency string (either 'daily' or 'weekly'), a user  and one or more
+# transaction objects as its arguments.  Marks the given deferred
+# notifications as sent.
+# 
+# =cut
 
 sub mark_transactions_sent {
     my ( $freq, $user, @txns ) = @_;
@@ -335,3 +335,42 @@ sub build_digest_for_user {
     return ( $contents_list, $contents_body );
 
 }
+
+__END__
+
+=head1 NAME
+
+rt-email-digest - dispatch deferred notifications as a per-user digest
+
+=head1 SYNOPSIS
+
+    rt-email-digest -m (daily|weekly) [--print] [--help]
+
+=head1 DESCRIPTION
+
+This script is a tool to dispatch all deferred RT notifications as a per-user
+object.
+
+=head1 OPTIONS
+
+=over
+
+=item mode
+
+Specify whether this is a daily or weekly run.
+
+--mode is equal to -m
+
+=item print
+
+Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent
+
+--print is equal to -p
+
+=item help
+
+Print this message
+
+--help is equal to -h
+
+=back

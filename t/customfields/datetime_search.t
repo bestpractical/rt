@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test tests => 14;
+use RT::Test nodata => 1, tests => 14;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my $q = RT::Queue->new($RT::SystemUser);
@@ -27,14 +27,14 @@ ok(
     $ticket->Create(
         Queue                    => $q->id,
         Subject                  => 'Test',
-        'CustomField-' . $cf->id => '2010-05-04 08:00:00',
+        'CustomField-' . $cf->id => '2010-05-04 07:00:00',
     ),
-    'create ticket with cf set to 2010-05-04 08:00:00( 2010-05-04 12:00:00 with UTC )'
+    'create ticket with cf set to 2010-05-04 07:00:00( 2010-05-04 11:00:00 with UTC )'
 );
 
 is(
     $ticket->CustomFieldValues->First->Content,
-    '2010-05-04 12:00:00',
+    '2010-05-04 11:00:00',
     'date in db is in timezone UTC'
 );
 
@@ -44,10 +44,10 @@ is(
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '=',
-        VALUE       => '2010-05-04 12:00:00',    # this timezone is UTC
+        VALUE       => '2010-05-04 11:00:00',    # this timezone is UTC
     );
 
-    is( $tickets->Count, 1, 'found the ticket with exact date: 2010-05-04 12:00:00' );
+    is( $tickets->Count, 1, 'found the ticket with exact date: 2010-05-04 11:00:00' );
 }
 
 {

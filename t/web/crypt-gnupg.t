@@ -1,17 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 94;
-
+use RT::Test tests => undef;
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-
+plan tests => 101;
 
 use RT::Action::SendEmail;
-
-eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
@@ -379,9 +376,18 @@ To: general\@example.com
 hello
 MAIL
  
-((my $status), $id) = RT::Test->send_via_mailgate($mail);
+my ($warnings, $status);
+{
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
+    ($status, $id) = RT::Test->send_via_mailgate($mail);
+}
+
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
+like($warnings, qr/nokey\@example.com: skipped: public key not found/);
 
 $tick = RT::Ticket->new( $RT::SystemUser );
 $tick->Load( $id );
@@ -423,6 +429,8 @@ like($m->content, qr/$key2/, "second key shows up in preferences");
 like($m->content, qr/$key1/, "first key shows up in preferences");
 like($m->content, qr/$key2.*?$key1/s, "second key (now preferred) shows up before the first");
 
+$m->no_warnings_ok;
+
 # test that the new fields work
 $m->get("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
@@ -441,6 +449,10 @@ like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey war
 like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for nobody");
 
 like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
+
 like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
 like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
+$m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/public key not found/);
+$m->no_leftover_warnings_ok;

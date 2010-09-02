@@ -274,9 +274,8 @@ $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
 $session{DefaultQueue} = $Queue;
 
-my $CloneTicketObj;
 if ($CloneTicket) {
-    $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
+    my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
         or Abort( loc("Ticket could not be loaded") );
 

@@ -80,7 +80,7 @@ my $fetch_columnmap = sub {
             Name  => $name,
             Attr  => $attr,
             );
-    return ProcessColumnMapValue( $tmp, Arguments => $arguments );
+    return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => 0 );
 };
 </%INIT>
 <%ARGS>

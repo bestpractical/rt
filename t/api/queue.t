@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 24;
+use RT::Test nodata => 1, tests => 24;
 
 
 {
@@ -89,4 +89,3 @@ ok ($group->Id, "Found the AdminCc object for this Queue");
 
 }
 
-1;

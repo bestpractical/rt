@@ -540,6 +540,4 @@ sub check_attachment {
     }
 }
 
-
-
-1;
+1; # needed to avoid a weird exit value from expect_quit

@@ -2,13 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 120;
-
+use RT::Test tests => undef;
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-
+plan tests => 214;
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
@@ -58,9 +57,22 @@ foreach my $file ( @files ) {
     my $email_content = RT::Test->file_content( $file );
     ok $email_content, "$eid: got content of email";
 
-    my ($status, $id) = RT::Test->send_via_mailgate( $email_content );
+    my $warnings;
+    my ($status, $id);
+
+    {
+        local $SIG{__WARN__} = sub {
+            $warnings .= "@_";
+        };
+
+        ($status, $id) = RT::Test->send_via_mailgate( $email_content );
+    }
+
     is $status >> 8, 0, "$eid: the mail gateway exited normally";
     ok $id, "$eid: got id of a newly created ticket - $id";
+
+    like($warnings, qr/Had a problem during decrypting and verifying/);
+    like($warnings, qr/public key not found/);
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
@@ -73,6 +85,15 @@ foreach my $file ( @files ) {
         "$eid: signature is not verified",
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
+
+    $m->next_warning_like(qr/public key not found/);
+
+    # some mails contain multiple signatures
+    if ($eid == 5 || $eid == 17 || $eid == 18) {
+        $m->next_warning_like(qr/public key not found/);
+    }
+
+    $m->no_leftover_warnings_ok;
 
     push @ticket_ids, $id;
 }
@@ -88,5 +109,7 @@ foreach my $id ( @ticket_ids ) {
         qr/The signature is good/is,
         "signature is re-verified and now good",
     );
+
+    $m->no_warnings_ok;
 }
 

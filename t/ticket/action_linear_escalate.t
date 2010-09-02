@@ -60,9 +60,6 @@ escalate_ticket_ok($ticket3);
 ok( $ticket3->LastUpdatedBy == $user->id, "Did not set LastUpdated" );
 ok( $ticket3->Transactions->Last->Type =~ /Create/i, "Did not record a transaction" );
 
-1;
-
-
 sub create_ticket_as_ok {
     my $user = shift;
 

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 4;
+use RT::Test nodb => 1, tests => 4;
 
 RT->Config->Set( RTAddressRegexp => qr/^rt\@example.com$/i );
 
@@ -16,4 +16,3 @@ my @before = ("rt\@example.com", "frt\@example.com");
 my @after = ("frt\@example.com");
 ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
 
-1;

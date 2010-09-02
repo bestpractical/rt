@@ -18,4 +18,3 @@ is($uri->Object->Id, 1, "Object loaded has correct ID");
 is($uri->URI, 'fsck.com-rt://'.RT->Config->Get('Organization').'/ticket/1',
    "URI object has correct URI string");
 
-1;

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 7;
+use RT::Test nodata => 1, tests => 7;
 
 
 {
@@ -30,4 +30,3 @@ is ($sys->id, 1);
 
 }
 
-1;

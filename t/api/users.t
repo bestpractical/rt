@@ -71,4 +71,3 @@ is($users->Count, 1, "RTxUserRight found for RTxObj2");
 
 }
 
-1;

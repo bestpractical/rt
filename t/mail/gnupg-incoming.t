@@ -2,13 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 39;
-
+use RT::Test tests => undef;
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-
+plan tests => 39;
 
 use File::Temp;
 use Cwd 'getcwd';
@@ -79,7 +78,7 @@ my $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -121,7 +120,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign --clearsign),
+        qw(gpg --batch --no-tty --armor --sign --clearsign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -162,7 +161,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --encrypt --armor --sign),
+        qw(gpg --batch --no-tty --encrypt --armor --sign),
         '--recipient'   => 'general@example.com',
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
@@ -211,7 +210,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'rt@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'test',
@@ -247,7 +246,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'random@localhost',
         '--homedir'     => $homedir,
     ),
@@ -284,7 +283,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'rt@example.com',
         '--homedir'     => $homedir,
     ),

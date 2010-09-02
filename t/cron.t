@@ -3,7 +3,7 @@
 use strict;
 
 use RT;
-use RT::Test tests => 18;
+use RT::Test nodata => 1, tests => 18;
 
 
 ### Set up some testing data.  Test the testing data because why not?
@@ -87,4 +87,3 @@ my ($trans, $desc, $transaction) = $ticket2->Comment(MIMEObj => $template_obj->M
 my $bogus_action = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->Prepare(), "Comment aborted to prevent loop");
 
-1;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 39;
+use RT::Test nodata => 1, tests => 41;
 use JSON qw(from_json);
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
@@ -144,7 +144,7 @@ diag "on reply correct owner is selected";
 sub autocomplete {
     my $limit = shift;
     my $agent = shift;
-    $agent->get("/Helpers/Autocomplete/Owners?term=&limit=$limit&return=Name", "fetched autocomplete values");
+    $agent->get_ok("/Helpers/Autocomplete/Owners?term=&limit=$limit&return=Name", "fetched autocomplete values");
     return from_json($agent->content);
 }
 

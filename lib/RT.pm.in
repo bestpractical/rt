@@ -497,7 +497,6 @@ sub InitClasses {
             );
         }
 
-        #RT::I18N->LoadLexicons;
     }
 }
 

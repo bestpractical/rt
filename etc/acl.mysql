@@ -13,12 +13,10 @@ sub acl {
         return;
     }
     print "Granting access to $db_user\@'$db_rthost' on $db_name.\n";
+    $db_name =~ s/([_%])/\\$1/g;
     return (
-        "USE mysql;",
-        "DELETE FROM user WHERE user = '$db_user';",
-        "DELETE FROM db where db = '$db_name';",
         "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
-               ON $db_name.*
+               ON `$db_name`.*
                TO '$db_user'\@'$db_rthost'
                IDENTIFIED BY '$db_pass';",
     );

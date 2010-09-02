@@ -48,4 +48,3 @@ is ($ticket->Priority , '24', "Ticket priority is set right");
 
 }
 
-1;

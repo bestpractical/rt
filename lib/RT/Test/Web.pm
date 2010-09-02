@@ -152,10 +152,7 @@ sub goto_create_ticket {
         die "not yet implemented";
     }
 
-    $self->get('/');
-    $self->form_name('CreateTicketInQueue');
-    $self->select( 'Queue', $id );
-    $self->submit;
+    $self->get($self->rt_base_url . '/Ticket/Create.html?Queue='.$id);
 
     return 1;
 }
@@ -196,6 +193,26 @@ sub warning_like {
     return Test::More::like($warnings[0], $re, $name);
 }
 
+sub next_warning_like {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    if (@{ $self->{stashed_server_warnings} || [] } == 0) {
+        my @warnings = $self->get_warnings;
+        if (@warnings == 0) {
+            Test::More::fail("no warnings emitted; expected 1");
+            return 0;
+        }
+        $self->{stashed_server_warnings} = \@warnings;
+    }
+
+    my $warning = shift @{ $self->{stashed_server_warnings} };
+    return Test::More::like($warning, $re, $name);
+}
+
 sub no_warnings_ok {
     my $self = shift;
     my $name = shift || "no warnings emitted";
@@ -207,6 +224,25 @@ sub no_warnings_ok {
     Test::More::is(@warnings, 0, $name);
     for (@warnings) {
         Test::More::diag("got warning: $_");
+    }
+
+    return @warnings == 0 ? 1 : 0;
+}
+
+sub no_leftover_warnings_ok {
+    my $self = shift;
+
+    my $name = shift || "no leftover warnings";
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    # we clear the warnings because we don't want to break later tests
+    # in case there *are* leftover warnings
+    my @warnings = splice @{ $self->{stashed_server_warnings} || [] };
+
+    Test::More::is(@warnings, 0, $name);
+    for (@warnings) {
+        Test::More::diag("leftover warning: $_");
     }
 
     return @warnings == 0 ? 1 : 0;

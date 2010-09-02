@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 10;
+use RT::Test nodata => 1, tests => 10;
 
 # setup the queue
 

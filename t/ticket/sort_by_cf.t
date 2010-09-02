@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test tests => 21;
+use RT::Test nodata => 1, tests => 21;
 RT::Init();
 
 use strict;

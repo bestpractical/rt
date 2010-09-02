@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 9;
+use RT::Test nodb => 1, tests => 9;
 
 
 {
@@ -27,4 +27,3 @@ is($en->encoding , 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 }
 
-1;

@@ -51,6 +51,12 @@
 
 use strict;
 
+if ( $ARGV[0] =~ /^(?:--help|-h)$/ ) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
+
 # This program is intentionally written to have as few non-core module
 # dependencies as possible. It should stay that way.
 
@@ -2584,3 +2590,24 @@ Text:
         $ rt shell
         rt> quit
         $
+
+__END__
+
+=head1 NAME
+
+rt - command-line interface to RT 3.0 or newer
+
+=head1 SYNOPSIS
+
+    rt help
+
+=head1 DESCRIPTION
+
+This script allows you to interact with an RT server over HTTP, and offers an
+interface to RT's functionality that is better-suited to automation and
+integration with other tools.
+
+In general, each invocation of this program should specify an action to
+perform on one or more objects, and any other arguments required to complete
+the desired action.
+

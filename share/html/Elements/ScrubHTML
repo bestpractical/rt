@@ -70,6 +70,7 @@ $scrubber->allow(
 $scrubber->comment(0);
 </%ONCE>
 <%init>
+$Content = '' if !defined($Content);
 return $scrubber->scrub($Content);
 </%init>
 <%args>

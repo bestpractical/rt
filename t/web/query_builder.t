@@ -244,4 +244,3 @@ diag "input a condition, select (several conditions), click delete";
     );
 }
 
-1;

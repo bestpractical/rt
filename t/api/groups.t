@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 27;
+use RT::Test nodata => 1, tests => 27;
 
 RT::Group->AddRights(
     'RTxGroupRight' => 'Just a right for testing rights',
@@ -130,4 +130,3 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 
 }
 
-1;

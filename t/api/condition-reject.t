@@ -42,4 +42,3 @@ is ($ticket->Priority , '21', "Condition is false, scrip skipped");
 
 }
 
-1;

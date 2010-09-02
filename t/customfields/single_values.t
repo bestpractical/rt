@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use RT;
-use RT::Test tests => 8;
+use RT::Test nodata => 1, tests => 8;
 
 
 
@@ -35,4 +35,3 @@ is($t->CustomFieldValues($cf->id)->Count, 1, "One now");
 $t->AddCustomFieldValue(Field => $cf->id, Value => 'Second');
 is($t->CustomFieldValues($cf->id)->Count, 1, "Still one");
 
-1;

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 38;
+use RT::Test nodata => 1, tests => 38;
 
 
 {
@@ -96,4 +96,3 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
 
 }
 
-1;

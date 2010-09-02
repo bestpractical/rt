@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 4;
+use RT::Test nodb => 1, tests => 4;
 
 
 {
@@ -42,4 +42,3 @@ is ($#headers, 2, "testing a bunch of singline multiple headers" );
 
 }
 
-1;

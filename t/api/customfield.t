@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 29;
+use RT::Test nodata => 1, tests => 29;
 use Test::Warn;
 
 
@@ -71,4 +71,3 @@ ok(!$cf->ValidateType('SelectFooMultiple'));
 
 }
 
-1;

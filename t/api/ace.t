@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 76;
+use RT::Test nodata => 1, tests => 76;
 
 
 {
@@ -235,4 +235,3 @@ ok(  !$user_b->HasRight(Right => 'OwnTicket', Object => $q)   ,"user b does not 
 
 }
 
-1;

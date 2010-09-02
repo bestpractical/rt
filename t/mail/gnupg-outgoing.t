@@ -2,13 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 492;
-
+use RT::Test tests => undef;
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-
+plan tests => 390;
 
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -62,53 +61,6 @@ my %mail = (
     encrypted        => [],
     signed_encrypted => [],
 );
-
-diag "check in read-only mode that queue's props influence create/update ticket pages";
-{
-    foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
-        $m->goto_create_ticket( $queue );
-        $m->form_name('TicketCreate');
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
-        } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
-        }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
-        } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
-        }
-    }
-
-    # to avoid encryption/signing during create
-    set_queue_crypt_options();
-
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    my ($id) = $ticket->Create(
-        Subject   => 'test',
-        Queue     => $queue->id,
-        Requestor => 'rt-test@example.com',
-    );
-    ok $id, 'ticket created';
-
-    foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
-        $m->goto_ticket( $id );
-        $m->follow_link_ok({text => 'Reply'}, '-> reply');
-        $m->form_number(3);
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
-        } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
-        }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
-        } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
-        }
-    }
-}
 
 # create a ticket for each combination
 foreach my $queue_set ( @variants ) {
@@ -271,7 +223,6 @@ sub create_a_ticket {
 
     unlike($m->content, qr/unable to sign outgoing email messages/);
 
-    $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
     check_text_emails( \%args, @mail );
@@ -283,8 +234,7 @@ sub update_ticket {
 
     RT::Test->clean_caught_mails;
 
-    ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
-    $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
+    $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$tid" );
     $m->form_number(3);
     $m->field( UpdateContent => 'Some content' );
 
@@ -300,7 +250,6 @@ sub update_ticket {
     is $m->status, 200, "request successful";
     $m->content_like(qr/Message recorded/, 'Message recorded') or diag $m->content;
 
-    $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
     check_text_emails( \%args, @mail );
@@ -349,15 +298,7 @@ sub cleanup_headers {
 
 sub set_queue_crypt_options {
     my %args = @_;
-    $m->get_ok("/Admin/Queues/Modify.html?id=". $queue->id);
-    $m->form_with_fields('Sign', 'Encrypt');
-    foreach my $opt ('Sign', 'Encrypt') {
-        if ( $args{$opt} ) {
-            $m->tick($opt => 1);
-        } else {
-            $m->untick($opt => 1);
-        }
-    }
-    $m->submit;
+            $queue->SetEncrypt($args{'Encrypt'});
+            $queue->SetSign($args{'Sign'});
 }
 
