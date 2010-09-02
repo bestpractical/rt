@@ -3,11 +3,15 @@ jQuery(function() {
     var multipleCompletion = new Array("Requestors", "To", "Bcc", "Cc", "AdminCc", "WatcherAddressEmail[123]", "UpdateCc", "UpdateBcc");
 
     // inputs with only a single email address allowed
-    var singleCompletion   = new Array("(Add|Delete)Requestor", "(Add|Delete)Cc", "(Add|Delete)AdminCc", "AddPrincipalForRights-user");
+    var singleCompletion   = new Array("(Add|Delete)Requestor", "(Add|Delete)Cc", "(Add|Delete)AdminCc");
+
+    // inputs for only privileged users
+    var privilegedCompletion = new Array("AddPrincipalForRights-user");
 
     // build up the regexps we'll use to match
-    var applyto  = new RegExp('^(' + multipleCompletion.concat(singleCompletion).join('|') + ')$');
+    var applyto  = new RegExp('^(' + multipleCompletion.concat(singleCompletion, privilegedCompletion).join('|') + ')$');
     var acceptsMultiple = new RegExp('^(' + multipleCompletion.join('|') + ')$');
+    var onlyPrivileged = new RegExp('^(' + privilegedCompletion.join('|') + ')$');
 
     var inputs = document.getElementsByTagName("input");
 
@@ -22,8 +26,14 @@ jQuery(function() {
             source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users"
         };
 
+        var queryargs = [];
+
+        if (inputName.match(onlyPrivileged)) {
+            queryargs.push("privileged=1");
+        }
+
         if (inputName.match(acceptsMultiple)) {
-            options.source = options.source + "?delim=,";
+            queryargs.push("delim=,");
 
             options.focus = function () {
                 // prevent value inserted on focus
@@ -38,6 +48,10 @@ jQuery(function() {
                 return false;
             }
         }
+
+        if (queryargs.length)
+            options.source += "?" + queryargs.join("&");
+
         jQuery(input).autocomplete(options);
     }
 });

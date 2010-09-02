@@ -53,6 +53,7 @@ $return => ''
 $term => undef
 $delim => undef
 $max => 10
+$privileged => undef
 </%ARGS>
 <%INIT>
 require JSON;
@@ -88,6 +89,8 @@ my %fields = %{ RT->Config->Get('UserAutocompleteFields')
 
 my $users = RT::Users->new( $CurrentUser );
 $users->RowsPerPage( $max );
+
+$users->LimitToPrivileged() if $privileged;
 
 while (my ($name, $op) = each %fields) {
     $op = 'STARTSWITH'
