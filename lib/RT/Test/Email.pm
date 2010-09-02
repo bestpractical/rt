@@ -122,7 +122,8 @@ END {
     if (scalar @mail) {
         diag ((scalar @mail)." uncaught notification email at end of test: ");
         diag "From: @{[ $_->header('From' ) ]}, Subject: @{[ $_->header('Subject') ]}"
-            for @mail;
+            for map { Email::Abstract->new($_)->cast('Email::Simple') } @mail;
+
         die;
     }
 }
