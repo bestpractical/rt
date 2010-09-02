@@ -6,6 +6,7 @@ $AddPrincipal => undef
 <%init>
 use Scalar::Util qw(blessed);
 
+# Try to detect if we want to include an add user/group box
 unless ( $AddPrincipal ) {
     my $last = $Principals->[-1];
     if ( $last->[0] =~ /Groups/i ) {
@@ -52,6 +53,13 @@ for my $category (@$Principals) {
         <input type="text" value=""
                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
+% if (lc $AddPrincipal eq 'group') {
+        <script type="text/javascript">
+            jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").autocomplete({
+                source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
+            });
+        </script>
+% }
       </a>
     </li>
 % }
