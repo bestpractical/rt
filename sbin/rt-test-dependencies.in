@@ -247,6 +247,8 @@ Term::ReadKey
 .
 
 $deps{'DEV'} = [ text_to_hash( << '.') ];
+Email::Abstract
+Test::Email
 HTML::Form
 HTML::TokeParser
 WWW::Mechanize
