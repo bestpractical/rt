@@ -119,6 +119,37 @@ our $RIGHTS = {
 
 };
 
+our $RIGHT_CATEGORIES = {
+    SeeQueue            => 'General',
+    AdminQueue          => 'Admin',
+    ShowACL             => 'Admin',
+    ModifyACL           => 'Admin',
+    ModifyQueueWatchers => 'Admin',
+    SeeCustomField      => 'General',
+    ModifyCustomField   => 'Staff',
+    AssignCustomFields  => 'Admin',
+    ModifyTemplate      => 'Admin',
+    ShowTemplate        => 'Admin',
+    ModifyScrips        => 'Admin',
+    ShowScrips          => 'Admin',
+    ShowTicket          => 'General',
+    ShowTicketComments  => 'Staff',
+    ShowOutgoingEmail   => 'Staff',
+    Watch               => 'General',
+    WatchAsAdminCc      => 'Staff',
+    CreateTicket        => 'General',
+    ReplyToTicket       => 'General',
+    CommentOnTicket     => 'General',
+    OwnTicket           => 'Admin',
+    ModifyTicket        => 'Staff',
+    ModifyTicketStatus  => 'Staff',
+    DeleteTicket        => 'Staff',
+    RejectTicket        => 'Staff',
+    TakeTicket          => 'Staff',
+    StealTicket         => 'Staff',
+    ForwardMessage      => 'Staff',
+};
+
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
@@ -185,6 +216,18 @@ sub AvailableRights {
     my $self = shift;
     return($RIGHTS);
 }
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
 
 # {{{ ActiveStatusArray
 

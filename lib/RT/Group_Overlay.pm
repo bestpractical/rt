@@ -81,7 +81,7 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
-use vars qw/$RIGHTS/;
+use vars qw/$RIGHTS $RIGHT_CATEGORIES/;
 
 $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
@@ -98,6 +98,20 @@ $RIGHTS = {
     CreateGroupDashboard    => 'Create dashboards for this group', #loc_pair
     ModifyGroupDashboard    => 'Modify dashboards for this group', #loc_pair
     DeleteGroupDashboard    => 'Delete dashboards for this group', #loc_pair
+};
+
+$RIGHT_CATEGORIES = {
+    AdminGroup              => 'Admin',
+    AdminGroupMembership    => 'Admin',
+    DelegateRights          => 'Staff',
+    ModifyOwnMembership     => 'Staff',
+    EditSavedSearches       => 'Admin',
+    ShowSavedSearches       => 'Staff',
+    SeeGroup                => 'Staff',
+    SeeGroupDashboard       => 'Staff',
+    CreateGroupDashboard    => 'Admin',
+    ModifyGroupDashboard    => 'Admin',
+    DeleteGroupDashboard    => 'Admin',
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
@@ -135,6 +149,17 @@ Returns a hash of available rights for this object. The keys are the right names
 sub AvailableRights {
     my $self = shift;
     return($RIGHTS);
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
 }
 
 

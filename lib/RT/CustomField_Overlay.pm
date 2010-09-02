@@ -170,6 +170,13 @@ our $RIGHTS = {
     ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
 };
 
+our $RIGHT_CATEGORIES = {
+    SeeCustomField          => 'General',
+    AdminCustomField        => 'Admin',
+    AdminCustomFieldValues  => 'Admin',
+    ModifyCustomField       => 'Staff',
+};
+
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
@@ -193,6 +200,17 @@ sub AddRights {
 sub AvailableRights {
     my $self = shift;
     return $RIGHTS;
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
 }
 
 =head1 NAME

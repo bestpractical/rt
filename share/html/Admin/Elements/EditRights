@@ -25,6 +25,7 @@ unless ( $AddPrincipal ) {
 <script type="text/javascript">
   jQuery(function() {
       jQuery(".rights-editor").tabs();
+      jQuery(".rights-editor .category-tabs").tabs();
   });
 </script>
 
@@ -66,14 +67,30 @@ for my $category (@$Principals) {
   </ul>
 
 <%perl>
-# Find all our available rights
-my %available_rights;
+# Find all our available rights...
+my (%available_rights, %categories);
 if ( blessed($Context) and $Context->can('AvailableRights') ) { 
     %available_rights = %{$Context->AvailableRights};
-}
-else {
+} else {
     %available_rights = ( loc('System Error') => loc("No rights found") );
 }
+
+# ...and their categories
+if ( blessed($Context) and $Context->can('RightCategories') ) { 
+    my %right_categories = %{$Context->RightCategories};
+    
+    for my $right (keys %available_rights) {
+        push @{$categories{$right_categories{$right}}}, $right;
+    }
+}
+
+my %category_desc = (
+    'General' => 'General rights',
+    'Staff'   => 'Rights for Staff',
+    'Admin'   => 'Rights for Administrators',
+);
+
+my %catsort = ( General => 1, Staff => 2, Admin => 3, );
 
 # Find all the current rights
 my %current_rights;
@@ -101,9 +118,17 @@ for my $category (@$Principals) {
 </%perl>
 
   <div id="<% $id %>">
-    <h3><&|/l&>Rights for</&> <% $loc ? loc($display) : $display %></h3>
+    <h3><% $loc ? loc($display) : $display %></h3>
+    <div class="category-tabs">
+      <ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+        <li><a href="#<% "$id-$category" %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+% }
+      </ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+    <div id="<% "$id-$category" %>">
     <ul class="rights-list">
-% for my $right (sort keys %available_rights) {
+%     for my $right (sort @{$categories{$category}}) {
       <li>
         <input type="checkbox" class="checkbox"
                name="SetRights-<% $acldesc %>"
@@ -114,8 +139,11 @@ for my $category (@$Principals) {
           <% loc($available_rights{$right}) %>
         </label>
       </li>
-% }
+%     }
     </ul>
+    </div>
+% }
+    </div>
     <input type="hidden" name="CheckACL" value="<% $acldesc %>" />
   </div>
 <%perl>
@@ -127,8 +155,16 @@ if ( $AddPrincipal ) {
 </%perl>
   <div id="acl-addprincipal">
     <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
+    <div class="category-tabs">
+      <ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+        <li><a href="#acl-addprincipal-<% $category %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+% }
+      </ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+    <div id="acl-addprincipal-<% $category %>">
     <ul class="rights-list">
-% for my $right (sort keys %available_rights) {
+%     for my $right (sort @{$categories{$category}}) {
       <li>
         <input type="checkbox" class="checkbox"
                name="SetRights-<% $acldesc %>"
@@ -138,8 +174,11 @@ if ( $AddPrincipal ) {
           <% loc($available_rights{$right}) %>
         </label>
       </li>
-% }
+%     }
     </ul>
+    </div>
+% }
+  </div>
   </div>
 % }
 </div>

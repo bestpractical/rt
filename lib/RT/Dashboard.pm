@@ -88,6 +88,19 @@ RT::System::AddRights(
     DeleteOwnDashboard => 'Delete personal dashboards', #loc_pair
 );
 
+RT::System::AddRightCategories(
+    SubscribeDashboard => 'Staff',
+
+    SeeDashboard       => 'General',
+    CreateDashboard    => 'Admin',
+    ModifyDashboard    => 'Admin',
+    DeleteDashboard    => 'Admin',
+
+    SeeOwnDashboard    => 'Staff',
+    CreateOwnDashboard => 'Staff',
+    ModifyOwnDashboard => 'Staff',
+    DeleteOwnDashboard => 'Staff',
+);
 
 =head2 ObjectName
 

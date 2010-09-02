@@ -93,6 +93,21 @@ our $RIGHTS = {
     ExecuteCode => "allow writing Perl code in templates, scrips, etc", # loc_pair
 };
 
+our $RIGHT_CATEGORIES = {
+    SuperUser              => 'Admin',
+    AdminAllPersonalGroups => 'Admin',
+    AdminOwnPersonalGroups => 'Admin',
+    AdminUsers             => 'Admin',
+    ModifySelf             => 'Staff',
+    DelegateRights         => 'Admin',
+    ShowConfigTab          => 'Admin',
+    ShowApprovalsTab       => 'Admin',
+    ShowGlobalTemplates    => 'Staff',
+    LoadSavedSearch        => 'General',
+    CreateSavedSearch      => 'General',
+    ExecuteCode            => 'Admin',
+};
+
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
@@ -131,6 +146,30 @@ sub AvailableRights {
     return(\%rights);
 }
 
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    my $self = shift;
+
+    my $queue = RT::Queue->new($RT::SystemUser);
+    my $group = RT::Group->new($RT::SystemUser);
+    my $cf    = RT::CustomField->new($RT::SystemUser);
+
+    my $qr = $queue->RightCategories();
+    my $gr = $group->RightCategories();
+    my $cr = $cf->RightCategories();
+
+    # Build a merged list of all system wide rights, queue rights and group rights.
+    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr});
+
+    return(\%rights);
+}
+
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
 Adds the given rights to the list of possible rights.  This method
@@ -144,6 +183,19 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 sub _Init {
