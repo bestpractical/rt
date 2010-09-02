@@ -51,6 +51,10 @@ package RT::ObjectCustomFieldValue;
 use strict;
 use warnings;
 use RT::Interface::Web;
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::Common::net::CIDR;
+require Net::CIDR;
+
 
 no warnings qw(redefine);
 
@@ -362,6 +366,32 @@ a IncludeContentForValue
 sub IncludeContentForValue {
     my $self = shift;
     return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
+}
+
+
+sub ParseIPRange {
+    my $self = shift;
+    my $arg = shift or return ();
+    
+    if ( $arg =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/go ) {
+        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        $arg = (Net::CIDR::cidr2range( $cidr ))[0] || $arg;
+    }
+    
+    my ($sIP, $eIP);
+    if ( $arg =~ /^\s*($RE{net}{IPv4})\s*$/o ) {
+        $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $arg =~ /^\s*($RE{net}{IPv4})-($RE{net}{IPv4})\s*$/o ) {
+        $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+        $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
+    }
+    else {
+        return ();
+    }
+    ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
+    
+    return $sIP, $eIP;
 }
 
 1;
