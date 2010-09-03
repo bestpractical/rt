@@ -601,7 +601,7 @@ sub SetScripAction {
     return ( 0, $self->loc( "Action '[_1]' not found", $value ) )
       unless $action->Id;
 
-    return $self->_Set( Field => 'ScripAction', Value => $value );
+    return $self->_Set( Field => 'ScripAction', Value => $action->Id );
 }
 
 =head2 SetScripCondition
@@ -622,7 +622,7 @@ sub SetScripCondition {
     return ( 0, $self->loc( "Condition '[_1]' not found", $value ) )
       unless $condition->Id;
 
-    return $self->_Set( Field => 'ScripCondition', Value => $value );
+    return $self->_Set( Field => 'ScripCondition', Value => $condition->Id );
 }
 
 =head2 SetTemplate
@@ -641,7 +641,7 @@ sub SetTemplate {
     return ( 0, $self->loc( "Template '[_1]' not found", $value ) )
       unless $template->Id;
 
-    return $self->_Set( Field => 'Template', Value => $value );
+    return $self->_Set( Field => 'Template', Value => $template->Id );
 }
 
 1;
