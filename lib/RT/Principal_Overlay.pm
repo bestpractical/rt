@@ -210,6 +210,12 @@ sub RevokeRight {
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );
+
+    if ( not $status and $msg =~ /Invalid right/ ) {
+        $RT::Logger->warn("Tried to revoke the invalid right '$args{Right}', ignoring it.");
+        return (1);
+    }
+
     return ($status, $msg) unless $status;
     return $ace->Delete;
 }
