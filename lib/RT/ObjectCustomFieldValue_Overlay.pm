@@ -230,7 +230,12 @@ sub Content {
         my $large_content = $self->__Value('LargeContent');
             if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
                 my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
-                return $content . "-".$eIP if ($content  && $eIP);
+                if ( $content eq $eIP ) {
+                    return $content;
+                }
+                else {
+                    return $content . "-".$eIP;
+                }
             } else {
                 return $content;
             }
