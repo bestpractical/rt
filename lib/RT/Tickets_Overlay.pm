@@ -1484,6 +1484,9 @@ sub _CustomFieldLimit {
                 VALUE      => $value,
                 %rest
             );
+            $self->_CloseParen;
+            $self->_CloseParen;
+            $self->_CloseParen;
         }
         else {
             my $cf = RT::CustomField->new( $self->CurrentUser );
