@@ -124,6 +124,7 @@ $RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
 # stuff the rights into a hash of rights that can exist.
 
 __PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -160,6 +161,19 @@ values are the category (General, Staff, Admin) the right falls into.
 
 sub RightCategories {
     return $RIGHT_CATEGORIES;
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 

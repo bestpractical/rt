@@ -112,6 +112,7 @@ our $RIGHT_CATEGORIES = {
 $RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AvailableRights
 
