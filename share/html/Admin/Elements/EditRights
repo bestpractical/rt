@@ -118,7 +118,23 @@ for my $category (@$Principals) {
 </%perl>
 
   <div id="<% $id %>">
-    <h3><% $loc ? loc($display) : $display %></h3>
+    <h3>
+      <% $loc ? loc($display) : $display %>
+<%perl>
+if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
+    my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
+    $subgroups->LimitToUserDefinedGroups;
+    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name );
+
+    if ( $subgroups->Count ) {
+        my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};
+</%perl>
+      <span class="subgroups"><&|/l, $inc &>includes [_1]</&></span>\
+<%perl>
+    }
+}
+</%perl>
+    </h3>
     <div class="category-tabs">
       <ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {

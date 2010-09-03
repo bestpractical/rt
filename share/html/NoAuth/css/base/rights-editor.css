@@ -54,7 +54,14 @@ li.category ~ li.category {
 }
 
 .rights-editor .ui-tabs-panel h3 {
+    color: black;
     margin-top: 0;
+    line-height: 0.8em;
+}
+
+.rights-editor .ui-tabs-panel h3 .subgroups {
+    color: #444;
+    font-size: 80%;
 }
 
 .rights-editor ul.rights-list {
