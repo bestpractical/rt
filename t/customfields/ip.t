@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 139;
+use RT::Test tests => 133;
 
 my ($baseurl, $agent) =RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -219,12 +219,8 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
                 $cf_field => $invalid,
             }
         );
-        my ($id) = $agent->content =~ /Ticket (\d+) created/;
-        ok( $id, "created ticket $id" );
-        my $ticket = RT::Ticket->new($RT::SystemUser);
-        $ticket->Load($id);
-        is( $ticket->id,                             $id, 'loaded ticket' );
-        is( $ticket->CustomFieldValues('IP')->Count, 0,   "IP wasn't added" );
+
+        $agent->content_like( qr/can not be parsed to IPAddressRange/, 'ticket fails to create' );
     }
 
 }
