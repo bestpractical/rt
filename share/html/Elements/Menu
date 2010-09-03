@@ -69,24 +69,14 @@ my @tabs = sort keys %$toptabs;
      $sep     = $toptabs->{$tab}->{'separator'} ? 1 : 0;
 
      my @aclass;
-     push @aclass, 'selected'
-            if $path eq $current;
-
-     push @aclass, 'odd'
-            if $level % 2;
-
+     push @aclass, 'selected' if $path eq $current;
+     push @aclass, 'odd' if $level % 2;
      $class->{a} = join ' ', @aclass;
 
      my @li;
-     push @li, 'first'
-            if $count == 1;
-
-     push @li, 'pre-separator'
-            if $sep;
-
-     push @li, 'post-separator'
-            if $postsep;
-
+     push @li, 'first' if $count == 1;
+     push @li, 'pre-separator' if $sep;
+     push @li, 'post-separator' if $postsep;
      push @li, 'last' if ( $tab eq $tabs[-1]);
      $class->{li} = join ' ', @li;
 
@@ -95,14 +85,8 @@ my @tabs = sort keys %$toptabs;
          : RT->Config->Get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
      
 </%perl>
-    <li<% $class->{'li'} ? qq[ class="$class->{li}"] : ''|n %> >
-    <% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
-    <a href="<% $url %>"
-      <% $class->{a} && qq[ class="$class->{a}"] |n %>
-      <% $target && qq[ target="$target"] |n %>
-      <% !$level && " accesskey='".$accesskey++."'" |n %>>
-    <% $toptabs->{$tab}->{'title'}%></a>
-
+    <li<% $class->{'li'} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%><a href="<% $url %>" <% $class->{a} && qq[ class="$class->{a}"] |n %> <% $target && qq[ target="$target"] |n %> <% !$level && " accesskey='".$accesskey++."'" |n %>><% $toptabs->{$tab}->{'title'}%></a>
+%
 %# Second-level items
 %     if ($toptabs->{$tab}->{'subtabs'}
 %         and keys %{$toptabs->{$tab}->{'subtabs'}})
@@ -123,16 +107,11 @@ my @tabs = sort keys %$toptabs;
 </ul>
 
 <%INIT>
-my ($tab, $class, $count);
-
-my @ul;
-push @ul, 'last-menu-level'
-    if $last_level;
-push @ul, 'odd'
-    if $level % 2;
+my ($tab, $class, $count, @ul);
+push @ul, 'last-menu-level' if $last_level;
+push @ul, 'odd' if $level % 2;
 my $menu_class = join ' ', @ul;
 </%INIT>
-
 <%ARGS>
 $toptabs => {}
 $current_toptab => ''

@@ -151,8 +151,6 @@ div#page-navigation ul#page-menu {
  left: 8em;
  font-size: 0.9em;
  top: 2.3em;
- /* if bigger than 0.87em, firefox/opera will show the 2nd line a bit, ugly */
- height: 0.87em;
  background-color: white;
  right: 0em;
  padding-top:0.3em;
