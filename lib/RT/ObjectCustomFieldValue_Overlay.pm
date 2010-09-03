@@ -78,7 +78,13 @@ sub Create {
     if($cf_as_sys->Type eq 'IPAddress' || $cf_as_sys->Type eq 'IPAddressRange') {
         if ($args{'Content'}) {
             ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
+        }
 
+        unless ( defined $args{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content can't be empty for IPAddress(Range)") )
+              : 0;
         }
     }
 
