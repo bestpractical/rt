@@ -167,6 +167,7 @@ div.submit {
 
 div.submit .extra-buttons {
  text-align: left;
+ float: left;
 }
 
 
