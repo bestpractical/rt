@@ -1168,7 +1168,7 @@ sub UpdateCustomFields {
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
-            next unless length($value);
+            next unless (defined($value) && length($value));
             $self->_AddCustomFieldValue(
                 Field             => $cfid,
                 Value             => $value,
