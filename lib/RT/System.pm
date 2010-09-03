@@ -85,12 +85,12 @@ our $RIGHTS = {
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
     DelegateRights =>
       "Delegate specific rights which have been granted to you.",     # loc_pair
-    ShowConfigTab => "show Configuration tab",     # loc_pair
-    ShowApprovalsTab => "show Approvals tab",     # loc_pair
-    ShowGlobalTemplates => "show global templates",     # loc_pair
-    LoadSavedSearch => "allow loading of saved searches",     # loc_pair
-    CreateSavedSearch => "allow creation of saved searches",      # loc_pair
-    ExecuteCode => "allow writing Perl code in templates, scrips, etc", # loc_pair
+    ShowConfigTab => "Show Configuration tab",     # loc_pair
+    ShowApprovalsTab => "Show Approvals tab",     # loc_pair
+    ShowGlobalTemplates => "Show global templates",     # loc_pair
+    LoadSavedSearch => "Allow loading of saved searches",     # loc_pair
+    CreateSavedSearch => "Allow creation of saved searches",      # loc_pair
+    ExecuteCode => "Allow writing Perl code in templates, scrips, etc", # loc_pair
 };
 
 our $RIGHT_CATEGORIES = {
