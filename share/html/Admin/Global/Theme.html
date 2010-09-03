@@ -148,8 +148,8 @@ jQuery(function($) {
 <%INIT>
 my @results;
 
-use Imager;
-use Convert::Color;
+my $has_color_analyzer =
+eval { require Imger; require Convert::Color; 1 };
 
 my $img = Imager->new;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
@@ -203,7 +203,9 @@ input[type="reset"], input[type="submit"], input[class="button"] {}
 
 }
 
-my $colors = $img ? analyze_img($img) : undef;
+# XXX: move this to some other modules
+
+my $colors = $img && $has_color_analyzer? analyze_img($img) : undef;
 use List::MoreUtils qw(uniq);
 
 sub analyze_img {
