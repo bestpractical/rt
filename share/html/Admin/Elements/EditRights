@@ -6,6 +6,9 @@ $AddPrincipal => undef
 <%init>
 use Scalar::Util qw(blessed);
 
+# Let callbacks get at principals and context before we do anything with them
+$m->callback( Principals => $Principals, Context => $Context );
+
 # Try to detect if we want to include an add user/group box
 unless ( $AddPrincipal ) {
     my $last = $Principals->[-1];
