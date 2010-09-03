@@ -6,6 +6,6 @@ if ( my $attr = $RT::System->FirstAttribute('UserLogo') ) {
     $m->out( $content->{data} );
     $m->abort;
 }
-
+# XXX: 404
 
 </%INIT>
