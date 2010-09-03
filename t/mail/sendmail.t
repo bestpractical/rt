@@ -413,6 +413,8 @@ sub text_plain_nested_redef_sendmessage {
         my $encoded_subject = $MIME->head->get("subject");
         my $subject = decode_mimewords($encoded_subject);
 
+        # MIME::Words isn't actually UTF8-safe. There go 4 hours I'll never get back.
+        utf8::decode($subject);
         like($subject, qr/Niv\x{e5}er/, "The subject matches the word - $subject");
 
         1;
