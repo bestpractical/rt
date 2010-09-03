@@ -183,9 +183,7 @@ for my $admin (qw/coo ceo/) {
         from    => qr/RT System/,
         to      => 'minion@company.com',
         subject => qr/Ticket Approved:/,
-#        body    => qr/approved by \U$admin\E.*notes: Resources exist to be consumed/s
-# TODO current template uses Owner's name :/
-        body    => qr/approved by CTO.*notes: Resources exist to be consumed/s
+        body    => qr/approved by \U$admin\E.*notes: Resources exist to be consumed/s
       },
       {
         from    => qr/\U$admin/,
