@@ -1,0 +1,62 @@
+<&| /Widgets/TitleBox, class => 'menu'&>
+<ul class="menu">
+% for my $item (@menu) {
+% if (exists $item->{html}) {
+<li><%$item->{html} |n%></li>
+% } else {
+<li><a href="<%RT->Config->Get('WebPath')%><%$item->{url}%>"><%$item->{label}%></a></li>
+% }
+% }
+</ul>
+</&>
+<%init>
+use RT::SavedSearches;
+my @menu = (
+    {         html => '<form method="GET" id="search" action="'
+            . RT->Config->Get('WebPath')
+            . '/m/tickets/search">'
+            . loc("Search")
+            . ': <input type="text" name="q" id="q" value=""/>'
+            . '<input type="submit" value="'
+            . loc("Go")
+            . '"/></form>'
+    },
+    {   label => loc("New ticket"),
+        url   => '/m/ticket/select_create_queue',
+    },
+    {   label => loc("Bookmarked tickets"),
+        url   => '/m/tickets/search?name=Bookmarked%20Tickets',
+    },
+    {   label => loc("Tickets I own"),
+        url   => '/m/tickets/search?name=My%20Tickets',
+    },
+    {   label => loc("Unowned tickets"),
+        url   => '/m/tickets/search?name=Unowned%20Tickets',
+    },
+    {   label => loc("All tickets"),
+        url   => '/m/tickets/search?query=id!%3d0&order_by=id&order=DESC'
+    },
+);
+
+
+if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $RT::System))
+    {
+
+        my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
+        push @Objects, RT::System->new( $session{'CurrentUser'} )
+            if $session{'CurrentUser'}->HasRight(
+            Object => $RT::System,
+            Right  => 'SuperUser'
+            );
+
+        foreach my $object (@Objects) {
+            my @searches = $object->Attributes->Named('SavedSearch');
+            foreach my $search (@searches) {
+                next unless $search->SubValue("SearchType") eq 'Ticket';
+                push @menu, { label => $search->Description, url => '/m/tickets/search?query=' . $search->SubValue("Query").'&order='.$search->SubValue("Order").'&order_by='.$search->SubValue("OrderBy") };
+
+            }
+        }
+}
+push @menu,  {   label => loc("Logout"), url   => '/m/logout', } ;
+</%init>

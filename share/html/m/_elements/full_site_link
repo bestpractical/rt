@@ -1,0 +1,1 @@
+<a id="fullsite" href="<%RT->Config->Get('WebPath')%>/m?NotMobile=1"><&|/l&>Not using a mobile browser?</&></a>

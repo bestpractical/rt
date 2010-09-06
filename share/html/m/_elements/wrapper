@@ -1,0 +1,15 @@
+<%args>
+$title => ''
+$show_home_button => 1
+</%args>
+<%init>
+if ($m->request_args->{'NotMobile'}) {
+    $session{'NotMobile'} = 1;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+    $m->abort();
+}
+$m->comp('header', title => $title, show_home_button => $show_home_button);
+$m->out($m->content);
+$m->comp('footer');
+$m->abort();
+</%init>

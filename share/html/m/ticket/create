@@ -1,0 +1,400 @@
+<%ARGS>
+$QuoteTransaction => undef
+$CloneTicket => undef
+</%ARGS>
+<%init>
+$m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
+my $Queue = $ARGS{Queue};
+
+
+my $showrows = sub {
+    my @pairs = @_;
+
+    while (@pairs) {
+        my $key = shift @pairs;
+        my $val = shift @pairs;
+
+        $m->out("<div class=\"entry\"><span class=\"label\">$key</span><div class=\"value\">$val</div></div>");
+
+    }
+
+};
+
+
+my $CloneTicketObj;
+if ($CloneTicket) {
+    $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
+    $CloneTicketObj->Load($CloneTicket)
+        or Abort( loc("Ticket could not be loaded") );
+
+    my $clone = {
+        Requestors => join( ',', $CloneTicketObj->RequestorAddresses ),
+        Cc         => join( ',', $CloneTicketObj->CcAddresses ),
+        AdminCc    => join( ',', $CloneTicketObj->AdminCcAddresses ),
+        InitialPriority => $CloneTicketObj->Priority,
+    };
+
+    $clone->{$_} = $CloneTicketObj->$_()
+        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked
+        Status TimeLeft/;
+
+    $clone->{$_} = $CloneTicketObj->$_->AsString
+        for grep { $CloneTicketObj->$_->Unix }
+        map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
+
+    my $members = $CloneTicketObj->Members;
+    my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
+    my $refers = $CloneTicketObj->RefersTo;
+    while ( my $refer = $refers->Next ) {
+        push @refers, $refer->LocalTarget;
+    }
+    $clone->{'new-RefersTo'} = join ' ', @refers;
+
+    my $refers_by = $CloneTicketObj->ReferredToBy;
+    while ( my $refer_by = $refers_by->Next ) {
+        push @refers_by, $refer_by->LocalBase;
+    }
+    $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    if (0) {    # Temporarily disabled
+        my $depends = $CloneTicketObj->DependsOn;
+        while ( my $depend = $depends->Next ) {
+            push @depends, $depend->LocalTarget;
+        }
+        $clone->{'new-DependsOn'} = join ' ', @depends;
+
+        my $depends_by = $CloneTicketObj->DependedOnBy;
+        while ( my $depend_by = $depends_by->Next ) {
+            push @depends_by, $depend_by->LocalBase;
+        }
+        $clone->{'DependsOn-new'} = join ' ', @depends_by;
+
+        while ( my $member = $members->Next ) {
+            push @members, $member->LocalBase;
+        }
+        $clone->{'MemberOf-new'} = join ' ', @members;
+
+        my $members_of = $CloneTicketObj->MemberOf;
+        while ( my $member_of = $members_of->Next ) {
+            push @members_of, $member_of->LocalTarget;
+        }
+        $clone->{'new-MemberOf'} = join ' ', @members_of;
+
+    }
+
+    my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
+    while ( my $cf = $cfs->Next ) {
+        my $cf_id     = $cf->id;
+        my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
+        my @cf_values;
+        while ( my $cf_value = $cf_values->Next ) {
+            push @cf_values, $cf_value->Content;
+        }
+        $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} = join "\n",
+            @cf_values;
+    }
+
+    for ( keys %$clone ) {
+        $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
+    }
+
+}
+
+my @results;
+
+my $title = loc("Create a ticket");
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
+$m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
+
+$QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+
+my $CFs = $QueueObj->TicketCustomFields();
+
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CFs,
+    ARGSRef => \%ARGS
+);
+
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+# }}}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    my $attachment = MakeMIMEEntity(
+        AttachmentFieldName => 'Attach'
+    );
+
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+	$file_path => $attachment,
+    };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+    delete $session{'Attachments'};
+}
+
+my $checks_failure = 0;
+
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
+
+
+if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
+    );
+    $checks_failure = 1 unless $status;
+}
+
+# check email addresses for RT's
+{
+    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+        my $value = $ARGS{ $field };
+        next unless defined $value && length $value;
+
+        my @emails = Email::Address->parse( $value );
+        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
+            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+            $checks_failure = 1;
+            $email = undef;
+        }
+        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+    }
+}
+
+my $skip_create = 0;
+$m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
+              checks_failure => $checks_failure, results => \@results );
+
+if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
+    if ( $ValidCFs && !$checks_failure && !$skip_create ) {
+        $m->comp('show', %ARGS);
+        $RT::Logger->crit("After display call; error is $@");
+        $m->abort();
+    }
+    elsif ( !$ValidCFs ) {
+        # Invalid CFs
+        while (my $CF = $CFs->Next) {
+            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+            push @results, $CF->Name . ': ' . $msg;
+        }
+    }
+}
+
+
+
+
+</%init>
+<&| /m/_elements/wrapper, title => $title &>
+<& /Elements/ListActions, actions => \@results  &>
+<form action="<% RT->Config->Get('WebPath') %>/m/ticket/create" method="post" enctype="multipart/form-data" name="TicketCreate" id="ticket-create">
+<input type="hidden" class="hidden" name="id" value="new" />
+% $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+% if ($gnupg_widget) {
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+% }
+
+
+<div id="ticket-create-simple">
+<&| /Widgets/TitleBox, title => $QueueObj->Name &>
+
+<%perl>
+$showrows->(
+    loc("Subject") => '<input name="Subject" size="30" maxsize="200" value="'.($ARGS{Subject} || '').'" />');
+</%perl>
+    <span class="content-label label"><%loc("Describe the issue below")%></span>
+        <& /Elements/MessageBox, exists $ARGS{Content}  ? (Default => $ARGS{Content}, IncludeSignature => 0 ) : ( QuoteTransaction => $QuoteTransaction ), Height => 5  &>
+
+
+<&/Elements/Submit, Label => loc("Create") &>
+
+
+</&>
+</div>
+
+<div id="ticket-create-basics">
+<&| /Widgets/TitleBox &>
+   <input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->id %>" />
+<%perl>
+
+$showrows->(
+
+   # loc('Queue') => $m->scomp( '/Ticket/Elements/ShowQueue', QueueObj => $QueueObj ) ,
+
+    loc('Status') =>
+
+        $m->scomp(
+        "/Elements/SelectStatus",
+        Name         => "Status",
+        Default      => $ARGS{Status} || 'new',
+        DefaultValue => 0,
+        SkipDeleted  => 1
+        ),
+
+    loc("Owner") =>
+
+        $m->scomp(
+        "/Elements/SelectOwner",
+        Name         => "Owner",
+        QueueObj     => $QueueObj,
+        Default      => $ARGS{Owner} || $RT::Nobody->Id,
+        DefaultValue => 0
+        ),
+
+    loc("Requestors") => $m->scomp(
+        "/Elements/EmailInput",
+        Name    => 'Requestors',
+        Size    => '40',
+        Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress
+    ),
+
+    loc("Cc") =>
+
+        $m->scomp( "/Elements/EmailInput", Name => 'Cc', Size => '40', Default => $ARGS{Cc} )
+        . '<span class="comment"><i><font size="-2">'
+        . loc(
+        "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
+        )
+        . '</font></i></span>',
+
+    loc("Admin Cc") =>
+
+        $m->scomp( "/Elements/EmailInput", Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} )
+        . '<span class="comment" colspan="2"><i><font size="-2">'
+        . loc(
+        "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
+        )
+        . '</font></i></span>',
+
+
+);
+
+
+$m->scomp("/Ticket/Elements/EditCustomFields", %ARGS, QueueObj => $QueueObj );
+
+
+$m->scomp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $QueueObj );
+
+</%perl>
+% if (exists $session{'Attachments'}) {
+
+<%loc("Attached file") %>
+
+<%loc("Check box to delete")%><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+
+
+% } # end of if
+
+<%perl>
+$showrows->(
+    loc("Attach file") =>
+
+        '<div class="value" colspan="5">
+<input type="file" name="Attach" />
+<input type="submit" class="button" name="AddMoreAttach" value="' . loc("Add More Files") . '" />'
+);
+</%perl>
+
+
+% if ( $gnupg_widget ) {
+%$m->scomp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
+% }
+
+
+    <div class="ticket-info-basics">
+	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
+		title_class=> 'inverse',  
+		color => "#993333" &>
+<%perl>
+$showrows->(
+    loc("Priority") => $m->scomp(
+        "/Elements/SelectPriority",
+        Name    => "InitialPriority",
+        Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
+    ),
+    loc("Final Priority") => $m->scomp(
+        "/Elements/SelectPriority",
+        Name    => "FinalPriority",
+        Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
+    ),
+
+    loc("Time Estimated") => '<span class="timefield">'.$m->scomp(
+        "/Elements/EditTimeValue",
+        Name    => 'TimeEstimated',
+        Default => $ARGS{TimeEstimated} || '',
+        InUnits => $ARGS{'TimeEstimated-TimeUnits'}
+        ).'</span>',
+
+    loc("Time Worked") => '<span class="timefield">'.$m->scomp(
+        "/Elements/EditTimeValue",
+        Name    => 'TimeWorked',
+        Default => $ARGS{TimeWorked} || '',
+        InUnits => $ARGS{'TimeWorked-TimeUnits'}
+    ). '</span>',
+
+    loc("Time Left") => '<span class="timefield">'.$m->scomp(
+        "/Elements/EditTimeValue",
+        Name    => 'TimeLeft',
+        Default => $ARGS{TimeLeft} || '',
+        InUnits => $ARGS{'TimeLeft-TimeUnits'}
+    ).'</span>',
+);
+
+</%perl>
+</&>
+<&|/Widgets/TitleBox, title => loc("Dates"),
+		title_class=> 'inverse',  
+		 color => "#663366"  &>
+
+<%perl>
+$showrows->(
+    loc("Starts") => $m->scomp( "/Elements/SelectDate", Name => "Starts", Default => ( $ARGS{Starts} || '' )),
+    loc("Due")    => $m->scomp( "/Elements/SelectDate", Name => "Due",    Default => ($ARGS{Due}    || '' ))
+);
+
+</%perl>
+</&>
+
+<&|/Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
+
+<em><%loc("(Enter ticket ids or URLs, separated with spaces)")%></em>
+
+<%perl>
+$showrows->(
+    loc("Depends on")     => '<input size="10" name="new-DependsOn" value="' . ($ARGS{'new-DependsOn'} || '' ). '" />',
+    loc("Depended on by") => '<input size="10" name="DependsOn-new" value="' . ($ARGS{'DependsOn-new'} || '' ) . '" />',
+    loc("Parents")        => '<input size="10" name="new-MemberOf" value="' . ($ARGS{'new-MemberOf'} || '') . '" />',
+    loc("Children")       => '<input size="10" name="MemberOf-new" value="' . ($ARGS{'MemberOf-new'} || '') . '" />',
+    loc("Refers to")      => '<input size="10" name="new-RefersTo" value="' . ($ARGS{'new-RefersTo'} || '') . '" />',
+    loc("Referred to by") => '<input size="10" name="RefersTo-new" value="' . ($ARGS{'RefersTo-new'} || ''). '" />'
+);
+</%perl>
+
+</&>
+
+
+<& /Elements/Submit, Label => loc("Create") &>
+</form>
+</&>
+</&>

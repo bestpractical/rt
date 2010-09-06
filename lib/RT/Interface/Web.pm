@@ -656,6 +656,21 @@ sub SendStaticFile {
     close $fh;
 }
 
+
+
+sub MobileClient {
+    my $self = shift;
+
+
+if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
+    return 1;
+} else {
+    return undef;
+}
+
+}
+
+
 sub StripContent {
     my %args    = @_;
     my $content = $args{Content};
