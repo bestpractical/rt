@@ -284,6 +284,8 @@ $actions->{ 'G' . 1 }{pre_separator} = 1;
 $actions->{ 'G' . ( $i - 1 ) }{separator} = 1;
 }
 
+$actions = $ARGS{actions} if defined $ARGS{actions};
+
 my $args      = '';
 my $has_query = '';
 my %query_args;

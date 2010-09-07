@@ -1225,6 +1225,37 @@ sub CustomFieldLookupType {
 }
 
 
+=head2 Recipients
+
+Returns the list of email addresses (as L<Email::Address> objects)
+that this transaction would send mail to.  There may be duplicates.
+
+=cut
+
+sub Recipients {
+    my $self = shift;
+    my @recipients;
+    foreach my $scrip ( @{ $self->Scrips->Prepared } ) {
+        my $action = $scrip->ActionObj->Action;
+        next unless $action->isa('RT::Action::SendEmail');
+
+        foreach my $type qw(To Cc Bcc) {
+            push @recipients, $action->$type();
+        }
+    }
+
+    if ( $self->Rules ) {
+        for my $rule (@{$self->Rules}) {
+            next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
+            my $data = $rule->{hints}{recipients};
+            foreach my $type qw(To Cc Bcc) {
+                push @recipients, map {Email::Address->new($_)} @{$data->{$type}};
+            }
+        }
+    }
+    return @recipients;
+}
+
 =head2 DeferredRecipients($freq, $include_sent )
 
 Takes the following arguments:
