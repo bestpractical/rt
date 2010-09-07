@@ -142,9 +142,11 @@ jQuery(function($) {
               var rule = new RegExp('\\b'+applying[name]+'\\s*{.*?}');
               var newcss = "background: " + bg;
 
+              /* Don't set the text color on <body> as it affects too much */
               if (applying[name] != "body")
                   newcss += "; color: " + fg;
 
+              /* Kill the border on the quickbar if we're styling it */
               if (applying[name].match(/quickbar/))
                   newcss += "; border: none;"
 
