@@ -49,11 +49,13 @@
 $TicketObj => undef
 </%args>
 <%init>
-my $arg = 'Ticket-'.$TicketObj->Id.'-SquelchMailTo';
-my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
+my %diff;
+$diff{$_}++ for Email::Address->parse($ARGS{"Ticket-".$TicketObj->Id."-Recipients"});
+my $arg = 'Ticket-'.$TicketObj->Id.'-SendMailTo';
+$diff{$_}-- for grep {$_} ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
-foreach my $address (@squelchto) {
-        $TicketObj->SquelchMailTo($address) if ($address);
+foreach my $address (grep {$diff{$_} > 0} keys %diff) {
+    $TicketObj->SquelchMailTo($address);
 }
 
 
@@ -61,16 +63,17 @@ $arg = 'Ticket-'.$TicketObj->Id.'-UnsquelchMailTo';
 my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@unsquelchto) {
-        $TicketObj->UnsquelchMailTo($address) if ($address);
+    $TicketObj->UnsquelchMailTo($address) if ($address);
 }
 
 my $Object = $TicketObj->DryRun(%ARGS);
 my @non_recipients = $TicketObj->SquelchMailTo;
+my @recipients;
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 
 % if ( $Object and $Object->Scrips ) {
-<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
+<i><&|/l&>(Uncheck boxes to disable notifications to the listed recipients)</&></i><br />
 
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
@@ -82,9 +85,10 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <ul>
 %foreach my $addr (@addresses) {
 <li>
-    <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+    <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SendMailTo" checked="1" value="<%$addr->address%>" /> <%$addr->address%>
 
 % $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
+% push @recipients, $addr->address;
 </li>
 % }
 </ul>
@@ -106,9 +110,10 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <ul>
 %        foreach my $address (@{$data->{$type}}) {
 <li>
-    <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$address%>" /> <%$address%>
+    <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SendMailTo" value="<%$address%>" /> <%$address%>
 
 %            $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => Email::Address->parse($address), Type => $type);
+% push @recipients, $address;
 </li>
 %        }
 </ul>
@@ -116,6 +121,7 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 %   }
 % }
 % }
+<input type="hidden" name="Ticket-<%$TicketObj->id%>-Recipients" value="<%join(",",@recipients)%>" />
 <br />
 
 <h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
