@@ -51,9 +51,14 @@
     Title => loc("Theme") &>
 <& /Elements/ListActions, actions => \@results &>
 
+
+<script type="text/javascript" src="/NoAuth/js/farbtastic.js"></script>
+<link rel="stylesheet" href="/NoAuth/css/farbtastic.css" type="text/css" />
 <style type="text/css" media="screen" id="test">
 </style>
 
+<h1>Logo</h3>
+<div class="upload-logo">
 Upload Logo:
 % if ($img) {
 <img src="/Helpers/UserLogo?<% time() %>" />
@@ -62,44 +67,48 @@ Upload Logo:
 <input type="file" name="logo-upload" />
 <input type="submit">
 </form>
+</div>
 
-<div class="pick-section">
-<span class="description">Pick a section first</span>
+<h1>Customize Theme</h3>
+<div class="pick-section" style="float: left; width: 40%">
+<span class="description">Select a section</span>
 <select id="section">
 </select>
 </div>
 
-<div class="pick-color">
-<span class="description">Then click on the following color to apply</span>
-<div class="clear">
+<div class="pick-color" style="float: left; width: 50%">
+<span class="description">click on the color to apply to the selected section</span>
+<div class="clear"></div>
 % if ($colors) {
-Primary colors:
+Primary colors:<br/>
 %   for (@$colors) {
 %     my $fg = $_->{l} >= 0.6 ? 'black' : 'white';
-<span class="color-template" style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% $_->{l}%>></span>
+<span class="color-template" style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% int(100*$_->{l})/100%></span>
 %   }
 % }
 <div class="clear">
-Pre-defined colors:
-<span class="color-template" style="background-color: white; color: black; width: 5em">test</span>
-<span class="color-template" style="background-color: white; color: gray; width: 5em">test</span>
-<span class="color-template" style="background-color: red; color: white; width: 5em">test</span>
-</div>
+<div id="picker"></div>
 </div>
 
-<div class="clear">
 
-Csutom CSS (Advanced):<br />
+</div>
+
+<div class="clear"></div>
+
+<h1>Custom CSS (Advanced)</h1>
+<div class="custom-css">
+
 
 <form method="POST">
 
 <textarea rows=30 cols=60 id="user_css" name="user_css"><% $user_css %></textarea>
 
 <input id="try" type="button" value="Try">
-<input name="reset_css" value="Reset CSS" type="submit">
+<input id="reset" type="reset" value="Reset" type="submit">
+<input name="reset_css" value="Reset to default RT Theme" type="submit">
 <input value="Save" type="submit">
 </form>
-
+</div>
 <script type="text/javascript">
 
 var section_css_mapping = {
@@ -122,10 +131,14 @@ jQuery(function($) {
         $("style#test").text($('#user_css').val());
     });
 
+    $('#reset').click(function() {
+        setTimeout(function() {
+          $("style#test").text($('#user_css').val());
+        }, 1000);
+    });
 
-    $('span.color-template').click(function() {
-      var bg = $(this).css('background-color');
-      var fg = $(this).css('color');
+
+    function change_color(bg, fg) {
       var section = $('select#section').val();
 
       var applying = section_css_mapping[section];
@@ -138,7 +151,12 @@ jQuery(function($) {
       }
       $('#user_css').val(css);
       $("style#test").text(css);
+    }
 
+    $('#picker').farbtastic(function(color){ change_color(color, this.hsl[2] > 0.5 ? '#000' : '#fff') });
+
+    $('span.color-template').click(function() {
+      change_color($(this).css('background-color'), $(this).css('color'));
   });
 
 
@@ -149,7 +167,7 @@ jQuery(function($) {
 my @results;
 
 my $has_color_analyzer =
-eval { require Imger; require Convert::Color; 1 };
+eval { require Imager; require Convert::Color; 1 };
 
 my $img = Imager->new;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
