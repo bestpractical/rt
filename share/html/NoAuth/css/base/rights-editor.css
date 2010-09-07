@@ -70,4 +70,33 @@ li.category ~ li.category {
 
 .category-tabs {
     width: 100%;
+    border: none;
+    background: none;
 }
+
+.category-tabs .ui-tabs-nav {
+    border: none;
+    background: none;
+}
+
+.category-tabs .ui-tabs-panel {
+    background: none;
+    border: 1px solid #aaa;
+}
+
+.rights-editor li.ui-tabs-selected {
+    background: white !important;
+    color: #222 !important;
+    border-color: #aaa !important; 
+}
+
+.rights-editor .ui-state-active a,
+.rights-editor .ui-state-hover a {
+    color: #222 !important;
+}
+
+.rights-editor .category-tabs li.ui-state-hover {
+    background: #f6f6f6;
+    border-color: #aaa !important;
+}
+
