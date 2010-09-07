@@ -45,14 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Theme") &>
+<& /Admin/Elements/Header,
+    Title => loc("Theme"),
+    LinkRel => { stylesheet => '/NoAuth/css/farbtastic.css' }
+    &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Theme.html', 
     Title => loc("Theme") &>
 <& /Elements/ListActions, actions => \@results &>
 
 <script type="text/javascript" src="/NoAuth/js/farbtastic.js"></script>
-<link rel="stylesheet" href="/NoAuth/css/farbtastic.css" type="text/css" />
 <style type="text/css" media="screen" id="test"></style>
 
 <div id="simple-customize">
