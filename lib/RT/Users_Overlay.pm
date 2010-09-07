@@ -461,6 +461,7 @@ sub _JoinGroupMembersForGroupRights
                   VALUE => "$group_members.GroupId",
                   QUOTEVALUE => 0,
                 );
+    return $group_members;
 }
 
 # XXX: should be generalized
@@ -504,7 +505,7 @@ sub WhoHaveGroupRight
     }
     $self->_AddSubClause( "WhichObject", "($check_objects)" );
     
-    $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
+    my $group_members = $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
     # Find only members of groups that have the right.
     $self->Limit( ALIAS => $acl,
                   FIELD => 'PrincipalType',
@@ -517,7 +518,7 @@ sub WhoHaveGroupRight
                   OPERATOR => '!=',
                   VALUE => $RT::SystemUser->id
                 );
-    return;
+    return $group_members;
 }
 
 # {{{ WhoBelongToGroups
