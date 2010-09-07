@@ -51,73 +51,68 @@
     Title => loc("Theme") &>
 <& /Elements/ListActions, actions => \@results &>
 
-
 <script type="text/javascript" src="/NoAuth/js/farbtastic.js"></script>
 <link rel="stylesheet" href="/NoAuth/css/farbtastic.css" type="text/css" />
-<style type="text/css" media="screen" id="test">
-</style>
+<style type="text/css" media="screen" id="test"></style>
 
-<h1>Logo</h3>
-<div class="upload-logo">
-Upload Logo:
+<div id="simple-customize">
+<div id="upload-logo">
+  <h2>Logo</h2>
 % if ($img) {
-<img src="/Helpers/UserLogo?<% time() %>" />
+  <img src="/Helpers/UserLogo?<% time() %>" />
 % }
-<form method="POST" enctype="multipart/form-data">
-<input type="file" name="logo-upload" />
-<input type="submit">
-</form>
+  <form method="POST" enctype="multipart/form-data">
+    <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
+    <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <input type="submit" value="Upload" />
+  </form>
 </div>
 
-<h1>Customize Theme</h3>
-<div class="pick-section" style="float: left; width: 40%">
-<span class="description">Select a section</span>
-<select id="section">
-</select>
-</div>
-
-<div class="pick-color" style="float: left; width: 50%">
-<span class="description">click on the color to apply to the selected section</span>
-<div class="clear"></div>
+<div id="customize-theme">
+  <h2>Customize the RT theme</h2>
+  <ol>
+    <li>
+      <label for="section"><&|/l&>Select a section</&>:</label>
+      <select id="section"></select>
+    </li>
+    <li>
+      <div class="description"><&|/l&>Select a color for the section</&>:</div>
 % if ($colors) {
-Primary colors:<br/>
+<div class="primary-colors">
 %   for (@$colors) {
-%     my $fg = $_->{l} >= 0.6 ? 'black' : 'white';
-<span class="color-template" style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% int(100*$_->{l})/100%></span>
+%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
+<button type="button" class="color-template"
+        style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+  <&|/l&>Text</&>
+</button>
 %   }
+</div>
 % }
-<div class="clear">
-<div id="picker"></div>
+      <div id="color-picker"></div>
+    </li>
+  </ol>
+</div>
 </div>
 
-
+<div id="custom-css">
+  <h2>Custom CSS (Advanced)</h2>
+  
+  <form method="POST">
+    <textarea rows=20 id="user_css" name="user_css"><% $user_css %></textarea><br />
+    <input id="try" type="button" class="button" value="Try" />
+    <input id="reset" type="reset" value="Reset" type="submit" />
+    <input name="reset_css" value="Reset to default RT Theme" type="submit" />
+    <input value="Save" type="submit" />
+  </form>
 </div>
 
-<div class="clear"></div>
-
-<h1>Custom CSS (Advanced)</h1>
-<div class="custom-css">
-
-
-<form method="POST">
-
-<textarea rows=30 cols=60 id="user_css" name="user_css"><% $user_css %></textarea>
-
-<input id="try" type="button" value="Try">
-<input id="reset" type="reset" value="Reset" type="submit">
-<input name="reset_css" value="Reset to default RT Theme" type="submit">
-<input value="Save" type="submit">
-</form>
-</div>
 <script type="text/javascript">
-
 var section_css_mapping = {
-    'default': ['body',
-              'input[type="reset"], input[type="submit"], input[class="button"]'],
-    'quickbar': ['div#quickbar'],
-    'mainbody': ['div#body'],
-    'navigation': ['div#nav'],
-    'page-menu': ['div#page-navigation ul#page-menu'],
+    'Page': ['body', 'input[type="reset"], input[type="submit"], input[class="button"]'],
+    'Header': ['div#quickbar'],
+    'Page content': ['div#body'],
+    'Navigation': ['div#nav'],
+    'Page menu': ['div#page-navigation ul#page-menu'],
 };
 
 jQuery(function($) {
@@ -137,7 +132,6 @@ jQuery(function($) {
         }, 1000);
     });
 
-
     function change_color(bg, fg) {
       var section = $('select#section').val();
 
@@ -146,16 +140,24 @@ jQuery(function($) {
       if (applying) {
           for (var name in applying) {
               var rule = new RegExp('\\b'+applying[name]+'\\s*{.*?}');
-              css = css.replace(rule, applying[name]+' { background: '+bg+'; color: '+fg+ '} ');
+              var newcss = "background: " + bg;
+
+              if (applying[name] != "body")
+                  newcss += "; color: " + fg;
+
+              if (applying[name].match(/quickbar/))
+                  newcss += "; border: none;"
+
+              css = css.replace(rule, applying[name]+" { "+newcss+" } ");
           }
       }
       $('#user_css').val(css);
       $("style#test").text(css);
     }
 
-    $('#picker').farbtastic(function(color){ change_color(color, this.hsl[2] > 0.5 ? '#000' : '#fff') });
+    $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });
 
-    $('span.color-template').click(function() {
+    $('button.color-template').click(function() {
       change_color($(this).css('background-color'), $(this).css('color'));
   });
 
@@ -164,6 +166,7 @@ jQuery(function($) {
 </script>
 
 <%INIT>
+my $text_threshold = 0.6;
 my @results;
 
 my $has_color_analyzer =
@@ -204,19 +207,24 @@ if ($user_css) {
 
 if (!$user_css) {
     my $attr = $RT::System->FirstAttribute('UserCSS');
-    $user_css = $attr ? $attr->Content : 'body {}
+    $user_css = $attr ? $attr->Content : '/* Page */
+body {}
+input[type="reset"], input[type="submit"], input[class="button"] {}
 
+/* Page content */
 div#body {}
 
-div#header h1 { }
+/* Page title */
+div#header h1 {}
 
+/* Header */
 div#quickbar {}
 
+/* Navigation */
 div#nav {}
 
+/* Page menu */
 div#page-navigation ul#page-menu {}
-
-input[type="reset"], input[type="submit"], input[class="button"] {}
 ';
 
 }
@@ -245,14 +253,12 @@ sub analyze_img {
     for (values %$color) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
-    my @top5 = (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..4];
+    my @top5 = (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
     if ((scalar uniq map {$_->{rank}} @top5) == 1) {
         warn "bad";
     }
     return \@top5;
 }
-
-
 </%INIT>
 <%ARGS>
 $user_css => ''

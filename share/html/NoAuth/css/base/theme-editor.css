@@ -1,0 +1,60 @@
+#upload-logo h2, #pick-section h2 {
+    margin: 0 0 0.5em 0;
+}
+
+#custom-css h2 {
+    margin: 0;
+}
+
+#upload-logo label {
+    font-weight: bold;
+}
+
+#simple-customize {
+    float: left;
+    width: 48%;
+}
+
+#custom-css {
+    float: right;
+    width: 48%;
+}
+
+#custom-css textarea {
+    width: 100%;
+}
+
+#customize-theme ol li {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#customize-theme ol li .description,
+#customize-theme ol li label
+{
+    font-weight: normal;
+}
+
+#customize-theme #section {
+    font-size: 1em;
+}
+
+.color-template {
+    height: 2em;
+    margin: 0 0 0.5em 0;
+}
+
+.primary-colors, #color-picker {
+    margin-top: 0.5em;
+}
+
+.primary-colors {
+    float: left;
+    width: 20%;
+}
+
+#color-picker {
+    float: right;
+    width: 78%; 
+}
+
