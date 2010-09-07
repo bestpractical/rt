@@ -137,7 +137,7 @@ above GCF1, but they will be in the same order in all queues.
 However, LCF1 and other local can be placed at any place
 for particular queue: above global, between them or below.
 
-=head3 MoveDown
+=head3 MoveUp
 
 Moves custom field up. See </Sorting custom fields applications>.
 
