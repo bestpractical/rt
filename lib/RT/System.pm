@@ -83,8 +83,6 @@ our $RIGHTS = {
       'Create, delete and modify the members of personal groups',     # loc_pair
     AdminUsers     => 'Create, delete and modify users',              # loc_pair
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
-    DelegateRights =>
-      "Delegate specific rights which have been granted to you.",     # loc_pair
     ShowConfigTab => "Show Configuration tab",     # loc_pair
     ShowApprovalsTab => "Show Approvals tab",     # loc_pair
     ShowGlobalTemplates => "Show global templates",     # loc_pair
@@ -99,7 +97,6 @@ our $RIGHT_CATEGORIES = {
     AdminOwnPersonalGroups => 'Admin',
     AdminUsers             => 'Admin',
     ModifySelf             => 'Staff',
-    DelegateRights         => 'Admin',
     ShowConfigTab          => 'Admin',
     ShowApprovalsTab       => 'Admin',
     ShowGlobalTemplates    => 'Staff',

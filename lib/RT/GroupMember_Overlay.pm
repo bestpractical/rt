@@ -334,16 +334,6 @@ sub Delete {
         return (undef);
     }
 
-    # Since this deletion may have changed the former member's
-    # delegation rights, we need to ensure that no invalid delegations
-    # remain.
-    $err = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
-    unless ($err) {
-	$RT::Logger->warning("Unable to revoke delegated rights for principal ".$self->Id);
-	$RT::Handle->Rollback();
-	return (undef);
-    }
-
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
     RT::Principal->InvalidateACLCache();

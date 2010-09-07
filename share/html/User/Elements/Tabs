@@ -61,14 +61,6 @@ my $tabs = {
         title => loc('About me'),
         path => 'User/Prefs.html',
     },
-    g => {
-        title => loc('Personal Groups'),
-        path => 'User/Groups/',
-    },
-    h => {
-        title => loc('Delegation'),
-        path => 'User/Delegation.html',
-    },
     f => {
         title => loc('Search options'),
         path => 'Prefs/SearchOptions.html',

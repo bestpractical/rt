@@ -187,8 +187,6 @@ PARAMS is a parameter hash with the following elements:
    PrincipalId => The id of an RT::Principal object
    PrincipalType => "User" "Group" or any Role type
    RightName => the name of a right. in any case
-   DelegatedBy => The Principal->Id of the user delegating the right
-   DelegatedFrom => The id of the ACE which this new ACE is delegated from
 
 
     Either:
@@ -289,8 +287,7 @@ sub Create {
                        RightName     => $args{'RightName'},
                        ObjectType    => $args{'ObjectType'},
                        ObjectId      => $args{'ObjectId'},
-                       DelegatedBy   => 0,
-                       DelegatedFrom => 0 );
+                   );
     if ( $self->Id ) {
         return ( 0, $self->loc('That principal already has that right') );
     }
@@ -300,8 +297,7 @@ sub Create {
                                    RightName     => $args{'RightName'},
                                    ObjectType    => ref( $args{'Object'} ),
                                    ObjectId      => $args{'Object'}->id,
-                                   DelegatedBy   => 0,
-                                   DelegatedFrom => 0 );
+                               );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     RT::Principal->InvalidateACLCache();
@@ -311,106 +307,6 @@ sub Create {
     }
     else {
         return ( 0, $self->loc('System error. Right not granted.') );
-    }
-}
-
-# }}}
-
-# {{{ sub Delegate
-
-=head2 Delegate <PARAMS>
-
-This routine delegates the current ACE to a principal specified by the
-B<PrincipalId>  parameter.
-
-Returns an error if the current user doesn't have the right to be delegated
-or doesn't have the right to delegate rights.
-
-Always returns a tuple of (ReturnValue, Message)
-
-
-=cut
-
-sub Delegate {
-    my $self = shift;
-    my %args = ( PrincipalId => undef,
-                 @_ );
-
-    unless ( $self->Id ) {
-        return ( 0, $self->loc("Right not loaded.") );
-    }
-    my $princ_obj;
-    ( $princ_obj, $args{'PrincipalType'} ) =
-      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
-                                     $args{'PrincipalType'} );
-
-    unless ( $princ_obj->id ) {
-        return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
-        );
-    }
-
-    # }}}
-
-    # {{{ Check the ACL
-
-    # First, we check to se if the user is delegating rights and
-    # they have the permission to
-    unless ( $self->CurrentUser->HasRight(Right => 'DelegateRights', Object => $self->Object) ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    unless ( $self->PrincipalObj->IsGroup ) {
-        return ( 0, $self->loc("System Error") );
-    }
-    unless ( $self->PrincipalObj->Object->HasMemberRecursively(
-                                                $self->CurrentUser->PrincipalObj
-             )
-      ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    # }}}
-
-    my $concurrency_check = RT::ACE->new($RT::SystemUser);
-    $concurrency_check->Load( $self->Id );
-    unless ( $concurrency_check->Id ) {
-        $RT::Logger->crit(
-                   "Trying to delegate a right which had already been deleted");
-        return ( 0, $self->loc('Permission Denied') );
-    }
-
-    my $delegated_ace = RT::ACE->new( $self->CurrentUser );
-
-    # Make sure the right doesn't already exist.
-    $delegated_ace->LoadByCols( PrincipalId   => $princ_obj->Id,
-                                PrincipalType => 'Group',
-                                RightName     => $self->__Value('RightName'),
-                                ObjectType    => $self->__Value('ObjectType'),
-                                ObjectId      => $self->__Value('ObjectId'),
-                                DelegatedBy => $self->CurrentUser->PrincipalId,
-                                DelegatedFrom => $self->id );
-    if ( $delegated_ace->Id ) {
-        return ( 0, $self->loc('That principal already has that right') );
-    }
-    my $id = $delegated_ace->SUPER::Create(
-        PrincipalId   => $princ_obj->Id,
-        PrincipalType => 'Group',          # do we want to hardcode this?
-        RightName     => $self->__Value('RightName'),
-        ObjectType    => $self->__Value('ObjectType'),
-        ObjectId      => $self->__Value('ObjectId'),
-        DelegatedBy   => $self->CurrentUser->PrincipalId,
-        DelegatedFrom => $self->id );
-
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
-    RT::Principal->InvalidateACLCache();
-
-    if ( $id > 0 ) {
-        return ( $id, $self->loc('Right Delegated') );
-    }
-    else {
-        return ( 0, $self->loc('System error. Right not delegated.') );
     }
 }
 
@@ -437,11 +333,7 @@ sub Delete {
 
     # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
     # or if it's a delegated ACE and it was delegated by the current user
-    unless (
-         (    $self->CurrentUser->HasRight(Right => 'ModifyACL', Object => $self->Object)
-           && $self->__Value('DelegatedBy') == 0 )
-         || ( $self->__Value('DelegatedBy') == $self->CurrentUser->PrincipalId )
-      ) {
+    unless ($self->CurrentUser->HasRight(Right => 'ModifyACL', Object => $self->Object)) {
         return ( 0, $self->loc('Permission Denied') );
     }
     $self->_Delete(@_);
@@ -457,32 +349,7 @@ sub _Delete {
 
     $RT::Handle->BeginTransaction() unless $InsideTransaction;
 
-    my $delegated_from_this = RT::ACL->new($RT::SystemUser);
-    $delegated_from_this->Limit( FIELD    => 'DelegatedFrom',
-                                 OPERATOR => '=',
-                                 VALUE    => $self->Id );
-
-    my $delete_succeeded = 1;
-    my $submsg;
-    while ( my $delegated_ace = $delegated_from_this->Next ) {
-        ( $delete_succeeded, $submsg ) =
-          $delegated_ace->_Delete( InsideTransaction => 1 );
-        last unless ($delete_succeeded);
-    }
-
-    unless ($delete_succeeded) {
-        $RT::Handle->Rollback() unless $InsideTransaction;
-        return ( 0, $self->loc('Right could not be revoked') );
-    }
-
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
-
-    # If we're revoking delegation rights (see above), we may need to
-    # revoke all rights delegated by the recipient.
-    if ($val and ($self->RightName() eq 'DelegateRights' or
-		  $self->RightName() eq 'SuperUser')) {
-	$val = $self->PrincipalObj->_CleanupInvalidDelegations( InsideTransaction => 1 );
-    }
 
     if ($val) {
 	#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -647,10 +514,7 @@ sub _Set {
 sub _Value {
     my $self = shift;
 
-    if ( $self->__Value('DelegatedBy') eq $self->CurrentUser->PrincipalId ) {
-        return ( $self->__Value(@_) );
-    }
-    elsif ( $self->PrincipalObj->IsGroup
+    if ( $self->PrincipalObj->IsGroup
             && $self->PrincipalObj->Object->HasMemberRecursively(
                                                 $self->CurrentUser->PrincipalObj
             )

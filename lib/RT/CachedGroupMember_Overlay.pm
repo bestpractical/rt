@@ -210,40 +210,12 @@ sub Delete {
             }
         }
     }
-    my $err = $self->SUPER::Delete();
-    unless ($err) {
+    my $ret = $self->SUPER::Delete();
+    unless ($ret) {
         $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
         return (undef);
     }
-
-    # Unless $self->GroupObj still has the member recursively $self->MemberObj
-    # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberId ) ) {
-
-
-        #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::ACL->new($RT::SystemUser);
-        $acl->LimitToPrincipal( Id => $self->GroupId );
-
-
-        while ( my $this_ace = $acl->Next() ) {
-            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::ACL->new($RT::SystemUser);
-            $delegations->DelegatedFrom( Id => $this_ace->Id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
-
-            # For each delegation 
-            while ( my $delegation = $delegations->Next ) {
-                # WHACK IT
-                my $del_ret = $delegation->_Delete(InsideTransaction => 1);
-                unless ($del_ret) {
-                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->Id);
-                    return(undef);
-                }
-            }
-        }
-    }
-    return ($err);
+    return $ret;
 }
 
 # }}}
@@ -283,31 +255,6 @@ sub SetDisabled {
             unless ($kid_err) {
                 $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $kid->Id );
                 return ($kid_err);
-            }
-        }
-    }
-
-    # Unless $self->GroupObj still has the member recursively $self->MemberObj
-    # (Since we SetDisabledd the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberId ) ) {
-        #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::ACL->new($RT::SystemUser);
-        $acl->LimitToPrincipal( Id => $self->GroupId );
-
-        while ( my $this_ace = $acl->Next() ) {
-            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::ACL->new($RT::SystemUser);
-            $delegations->DelegatedFrom( Id => $this_ace->Id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
-
-            # For each delegation,  blow away the delegation
-            while ( my $delegation = $delegations->Next ) {
-                # WHACK IT
-                my $del_ret = $delegation->_Delete(InsideTransaction => 1);
-                unless ($del_ret) {
-                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->Id);
-                    return(undef);
-                }
             }
         }
     }
