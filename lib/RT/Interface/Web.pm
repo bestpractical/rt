@@ -2230,11 +2230,24 @@ sub GetPrincipalsMap {
             $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
 
             # Only show users who have rights granted on this object
-            $Users->WhoHaveGroupRight(
+            my $group_members = $Users->WhoHaveGroupRight(
                 Right   => '',
                 Object  => $object,
-                IncludeSystemRights => 0
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
             );
+
+            # Limit to UserEquiv groups
+            my $groups = $Users->NewAlias('Groups');
+            $Users->Join(
+                ALIAS1 => $groups,
+                FIELD1 => 'id',
+                ALIAS2 => $group_members,
+                FIELD2 => 'GroupId'
+            );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
+
 
             my $display = sub {
                 $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
