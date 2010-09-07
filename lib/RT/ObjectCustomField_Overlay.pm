@@ -127,7 +127,7 @@ sub CustomFieldObj {
 =head2 Sorting custom fields applications
 
 Custom fields sorted on multiple layers. First of all custom
-fields with different lookup type are sorted indepedantly. All
+fields with different lookup type are sorted independently. All
 global custom fields have fixed order for all objects, but you
 can insert object specific custom fields between them. Object
 specific custom fields can be applied to several objects and
