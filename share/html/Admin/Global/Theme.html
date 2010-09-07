@@ -253,7 +253,8 @@ sub analyze_img {
     for (values %$color) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
-    my @top5 = (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
+    my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
+                    (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
     if ((scalar uniq map {$_->{rank}} @top5) == 1) {
         warn "bad";
     }
