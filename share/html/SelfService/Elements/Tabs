@@ -83,13 +83,13 @@ my $tabs = { A  => { title => loc('Open tickets'),
                        },
            };
 
-if ($queue_count == 1) {
+if ($queue_count > 1) {
         $tabs->{C} = { title => loc('New ticket'),
-                       path => 'SelfService/Create.html?Queue=' . $queue_id
+                       path => 'SelfService/CreateTicketInQueue.html'
                        };
 } else {
         $tabs->{C} = { title => loc('New ticket'),
-                       path => 'SelfService/CreateTicketInQueue.html'
+                       path => 'SelfService/Create.html?Queue=' . $queue_id
                        };
 }
 
