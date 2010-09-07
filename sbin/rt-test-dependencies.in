@@ -208,6 +208,7 @@ File::Glob
 Devel::StackTrace 1.19
 Text::Password::Pronounceable
 Devel::GlobalDestruction
+List::MoreUtils
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
