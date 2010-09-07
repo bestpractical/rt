@@ -71,6 +71,7 @@ GetOptions(
     'with-GRAPHVIZ',
     'with-GD',
     'with-DASHBOARDS',
+    'with-USERLOGO',
 
     'download=s',
     'repository=s',
@@ -97,7 +98,8 @@ my %default = (
     'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
-    'with-DASHBOARDS' => 1
+    'with-DASHBOARDS' => 1,
+    'with-USERLOGO' => 1,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -348,6 +350,11 @@ $deps{'GD'} = [ text_to_hash( << '.') ];
 GD
 GD::Graph
 GD::Text
+.
+
+$deps{'USERLOGO'} = [ text_to_hash( << '.') ];
+Imager
+Convert::Color
 .
 
 my %AVOID = (

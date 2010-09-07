@@ -46,11 +46,17 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div id="logo">
+% if ($use_user_logo) {
+<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
+    src="/Helpers/UserLogo"
+    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
+% } else {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
     src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
     alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>"
     width="<%$ARGS{'LogoImageWidth'}||RT->Config->Get('LogoImageWidth')%>"
     height="<%$ARGS{'LogoImageHeight'}||RT->Config->Get('LogoImageHeight')%>" /></a>
+% }
 % if ( $ShowName ) {
     <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
 % }
@@ -60,6 +66,9 @@ if ( exists $ARGS{'show_name'} ) {
     $RT::Logger->warning('show_name argument was renamed, use ShowName');
     $ShowName = delete $ARGS{'show_name'};
 }
+
+my $use_user_logo = $RT::System->FirstAttribute('UserLogo');
+
 </%INIT>
 <%ARGS>
 $ShowName => 1

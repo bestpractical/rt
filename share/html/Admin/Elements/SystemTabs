@@ -73,6 +73,9 @@
                 I => { title => loc('RT at a glance'),
                                 path => 'Admin/Global/MyRT.html',
                       },
+                J => { title => loc('Theme'),
+                                path => 'Admin/Global/Theme.html',
+                      },
 
 };
 

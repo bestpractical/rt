@@ -1,0 +1,259 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Theme") &>
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/Theme.html', 
+    Title => loc("Theme") &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+<script type="text/javascript" src="/NoAuth/js/farbtastic.js"></script>
+<link rel="stylesheet" href="/NoAuth/css/farbtastic.css" type="text/css" />
+<style type="text/css" media="screen" id="test">
+</style>
+
+<h1>Logo</h3>
+<div class="upload-logo">
+Upload Logo:
+% if ($img) {
+<img src="/Helpers/UserLogo?<% time() %>" />
+% }
+<form method="POST" enctype="multipart/form-data">
+<input type="file" name="logo-upload" />
+<input type="submit">
+</form>
+</div>
+
+<h1>Customize Theme</h3>
+<div class="pick-section" style="float: left; width: 40%">
+<span class="description">Select a section</span>
+<select id="section">
+</select>
+</div>
+
+<div class="pick-color" style="float: left; width: 50%">
+<span class="description">click on the color to apply to the selected section</span>
+<div class="clear"></div>
+% if ($colors) {
+Primary colors:<br/>
+%   for (@$colors) {
+%     my $fg = $_->{l} >= 0.6 ? 'black' : 'white';
+<span class="color-template" style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>; width: 5em">test l=<% int(100*$_->{l})/100%></span>
+%   }
+% }
+<div class="clear">
+<div id="picker"></div>
+</div>
+
+
+</div>
+
+<div class="clear"></div>
+
+<h1>Custom CSS (Advanced)</h1>
+<div class="custom-css">
+
+
+<form method="POST">
+
+<textarea rows=30 cols=60 id="user_css" name="user_css"><% $user_css %></textarea>
+
+<input id="try" type="button" value="Try">
+<input id="reset" type="reset" value="Reset" type="submit">
+<input name="reset_css" value="Reset to default RT Theme" type="submit">
+<input value="Save" type="submit">
+</form>
+</div>
+<script type="text/javascript">
+
+var section_css_mapping = {
+    'default': ['body',
+              'input[type="reset"], input[type="submit"], input[class="button"]'],
+    'quickbar': ['div#quickbar'],
+    'mainbody': ['div#body'],
+    'navigation': ['div#nav'],
+    'page-menu': ['div#page-navigation ul#page-menu'],
+};
+
+jQuery(function($) {
+
+    for (var section in section_css_mapping) {
+        $('select#section').append($("<option/>").attr('value', section).text(section));
+    }
+
+    $("style#test").text($('#user_css').val());
+    $('#try').click(function() {
+        $("style#test").text($('#user_css').val());
+    });
+
+    $('#reset').click(function() {
+        setTimeout(function() {
+          $("style#test").text($('#user_css').val());
+        }, 1000);
+    });
+
+
+    function change_color(bg, fg) {
+      var section = $('select#section').val();
+
+      var applying = section_css_mapping[section];
+      var css = $('#user_css').val();
+      if (applying) {
+          for (var name in applying) {
+              var rule = new RegExp('\\b'+applying[name]+'\\s*{.*?}');
+              css = css.replace(rule, applying[name]+' { background: '+bg+'; color: '+fg+ '} ');
+          }
+      }
+      $('#user_css').val(css);
+      $("style#test").text(css);
+    }
+
+    $('#picker').farbtastic(function(color){ change_color(color, this.hsl[2] > 0.5 ? '#000' : '#fff') });
+
+    $('span.color-template').click(function() {
+      change_color($(this).css('background-color'), $(this).css('color'));
+  });
+
+
+});
+</script>
+
+<%INIT>
+my @results;
+
+my $has_color_analyzer =
+eval { require Imager; require Convert::Color; 1 };
+
+my $img = Imager->new;
+if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+    my ($id, $msg) = $RT::System->SetAttribute( Name => "UserLogo",
+                                                Description => "User-provided logo",
+                                                Content => {
+                                                    type => $file_hash->{ContentType},
+                                                    data => $file_hash->{LargeContent} } );
+    $img->read(data => $file_hash->{LargeContent} );
+}
+else {
+    if (my $attr = $RT::System->FirstAttribute('UserLogo')) {
+        my $content = $attr->Content;
+        if (ref($content) eq 'HASH') {
+            $img->read(data => $content->{data}) or die "Cannot read: ", $img->errstr;
+        }
+        else {
+            $RT::System->DeleteAttribute('UserLogo');
+        }
+    }
+}
+
+if ($user_css) {
+    if ($ARGS{'reset_css'}) {
+        $RT::System->DeleteAttribute('UserCSS');
+        undef $user_css;
+    }
+    else {
+        my ($id, $msg) = $RT::System->SetAttribute( Name => "UserCSS",
+                                                    Description => "User-provided css",
+                                                    Content => $user_css );
+    }
+}
+
+if (!$user_css) {
+    my $attr = $RT::System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : 'body {}
+
+div#body {}
+
+div#header h1 { }
+
+div#quickbar {}
+
+div#nav {}
+
+div#page-navigation ul#page-menu {}
+
+input[type="reset"], input[type="submit"], input[class="button"] {}
+';
+
+}
+
+# XXX: move this to some other modules
+
+my $colors = $img && $has_color_analyzer? analyze_img($img) : undef;
+use List::MoreUtils qw(uniq);
+
+sub analyze_img {
+    my $img = shift;
+    my $color;
+
+    for my $i (0..$img->getwidth-1) {
+        for my $j (0..$img->getheight-1) {
+            my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
+            pop @color;
+            my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
+            my $c = join(',',@color);
+            next if $hsl->lightness < 0.1;
+            $color->{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
+            $color->{$c}->{cnt}++;
+        }
+    }
+
+    for (values %$color) {
+        $_->{rank} = $_->{s} * $_->{cnt};
+    }
+    my @top5 = (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..4];
+    if ((scalar uniq map {$_->{rank}} @top5) == 1) {
+        warn "bad";
+    }
+    return \@top5;
+}
+
+
+</%INIT>
+<%ARGS>
+$user_css => ''
+</%ARGS>
