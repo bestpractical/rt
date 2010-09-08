@@ -66,6 +66,7 @@
   <form method="POST" enctype="multipart/form-data">
     <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
     <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <input name="reset_logo" value="Reset to default RT Logo" type="submit" />
     <input type="submit" value="Upload" />
   </form>
 </div>
@@ -176,19 +177,24 @@ my @results;
 my $has_color_analyzer =
 eval { require Imager; require Convert::Color; 1 };
 
-my $img = Imager->new;
+my $img;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
     my ($id, $msg) = $RT::System->SetAttribute( Name => "UserLogo",
                                                 Description => "User-provided logo",
                                                 Content => {
                                                     type => $file_hash->{ContentType},
                                                     data => $file_hash->{LargeContent} } );
+    $img = Imager->new;
     $img->read(data => $file_hash->{LargeContent} );
+}
+elsif ($ARGS{'reset_logo'}) {
+    $RT::System->DeleteAttribute('UserLogo');
 }
 else {
     if (my $attr = $RT::System->FirstAttribute('UserLogo')) {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
+            $img = Imager->new;
             $img->read(data => $content->{data}) or die "Cannot read: ", $img->errstr;
         }
         else {
