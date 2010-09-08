@@ -331,7 +331,7 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Your ticket has been approved by { eval { $Approver->Name } }.
 Other approvals may be pending.
 
 Approver\'s notes: { $Notes }
@@ -345,7 +345,7 @@ Approver\'s notes: { $Notes }
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Your ticket has been approved by { eval { $Approver->Name } }.
 Its Owner may now start to act on it.
 
 Approver\'s notes: { $Notes }
