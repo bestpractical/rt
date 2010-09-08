@@ -1,0 +1,31 @@
+@Initial = (
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing all delegated rights');
+
+
+        my $acl = RT::ACL->new($RT::SystemUser);
+        $acl->Limit(
+            CLAUSE          => 'search',
+            FIELD           => 'DelegatedBy',
+            OPERATOR        => '>',
+            VALUE           => '0'
+        );
+        $acl->Limit(
+            CLAUSE          => 'search',
+            FIELD           => 'DelegatedFrom',
+            OPERATOR        => '>',
+            VALUE           => '0',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        while (my $ace = $acl->Next) {
+            my ($ok, $msg) = $ace->Delete();
+
+            if (!$ok) {
+                $RT::Logger->warn("Unable to delete ACE ".$ace->id.": ".$msg);
+            }
+        }
+    },
+);
+
