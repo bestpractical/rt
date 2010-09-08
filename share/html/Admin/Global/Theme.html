@@ -185,7 +185,10 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                     type => $file_hash->{ContentType},
                                                     data => $file_hash->{LargeContent} } );
     $img = Imager->new;
-    $img->read(data => $file_hash->{LargeContent} );
+    unless ( $img->read(data => $file_hash->{LargeContent}) ) {
+        push @results, loc("Unable to read image: [_1]", $img->errstr);
+        undef $img;
+    }
 }
 elsif ($ARGS{'reset_logo'}) {
     $RT::System->DeleteAttribute('UserLogo');
@@ -195,7 +198,10 @@ else {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
             $img = Imager->new;
-            $img->read(data => $content->{data}) or die "Cannot read: ", $img->errstr;
+            unless ( $img->read(data => $content->{data}) ) {
+                push @results, loc("Unable to read image: [_1]", $img->errstr);
+                undef $img;
+            }
         }
         else {
             $RT::System->DeleteAttribute('UserLogo');
