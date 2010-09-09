@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 28;
+use RT::Test tests => 45;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -76,6 +76,14 @@ my $query = join ' OR ', map { "id=$_" } @search_tickets;
 $m->get_ok( $url . "/Search/Bulk.html?Query=$query&Rows=10" );
 $m->content_contains( 'Current Links', 'has current links part' );
 $m->content_lacks( 'DeleteLink--', 'no delete link stuff' );
+
+$m->form_number(3);
+my @fields = qw/Owner AddRequestor DeleteRequestor AddCc DeleteCc AddAdminCc
+DeleteAdminCc Subject Priority Queue Status Starts_Date Told_Date Due_Date
+Resolved_Date UpdateSubject UpdateContent/;
+for my $field ( @fields ) {
+    is( $m->value($field), '', "default $field is empty" );
+}
 
 # test DependsOn, MemberOf and RefersTo
 $m->submit_form(
