@@ -1484,13 +1484,6 @@ sub _Value {
     my $self  = shift;
     my $field = shift;
 
-    #If the current user doesn't have ACLs, don't let em at it.  
-
-    my @PublicFields = qw( Name EmailAddress Organization Disabled
-      RealName NickName Gecos ExternalAuthId
-      AuthSystem ExternalContactInfoId
-      ContactInfoSystem );
-
     #if the field is public, return it.
     if ( $self->_Accessible( $field, 'public' ) ) {
         return ( $self->SUPER::_Value($field) );
