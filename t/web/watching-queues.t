@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 58;
+use RT::Test tests => 75;
 use Web::Scraper;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -24,6 +24,12 @@ my $group = RT::Group->new($RT::SystemUser);
 $group->CreateUserDefinedGroup(
     Name => 'Groupies',
     Description => 'for the Metallica Speed of Sound tour',
+);
+
+my $outer_group = RT::Group->new($RT::SystemUser);
+$outer_group->CreateUserDefinedGroup(
+    Name => 'Groupies 2.0',
+    Description => 'for the Metallica Ride The Lightning tour',
 );
 
 my $watching = scraper {
@@ -252,6 +258,8 @@ diag "add group as Cc on Loopy" if $ENV{'TEST_VERBOSE'};
     ok($loopy_queue->IsWatcher(Type => 'Cc', PrincipalId => $group->PrincipalId), 'added Groupies as Cc on Loopy');
 }
 
+$group->AddMember($user->PrincipalId);
+
 diag "check watching page (no change since root is not a groupy)" if $ENV{'TEST_VERBOSE'};
 {
     $m->follow_link( text => 'Tools' );
@@ -271,7 +279,100 @@ diag "check watching page (no change since root is not a groupy)" if $ENV{'TEST_
                 name  => 'General',
                 roles => ['Cc', 'AdminCc'],
             },
+            {
+                name  => 'Loopy',
+                roles => ['Cc'],
+            },
         ],
     });
 }
 
+diag "add other group as AdminCc on Loopy" if $ENV{'TEST_VERBOSE'};
+{
+    $m->follow_link( text => 'Configuration' );
+    $m->title_is('RT Administration', 'admin page');
+    $m->follow_link( text => 'Queues' );
+    $m->title_is('Admin queues', 'queues page');
+    $m->follow_link( text => 'Loopy' );
+    $m->title_is('Editing Configuration for queue Loopy');
+    $m->follow_link( text => 'Watchers' );
+    $m->title_is('Modify people related to queue Loopy');
+
+    $m->submit_form_ok({
+        form_number => 3,
+        fields => {
+            GroupField  => 'Name',
+            GroupOp     => 'LIKE',
+            GroupString => 'Groupies',
+        },
+    });
+
+    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+
+    $m->submit_form_ok({
+        form_number => 3,
+        fields => {
+            'Queue-AddWatcher-Principal-' . $outer_group->PrincipalId => 'AdminCc',
+        },
+    });
+
+    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+
+    ok($loopy_queue->IsWatcher(Type => 'AdminCc', PrincipalId => $outer_group->PrincipalId), 'added Groupies 2.0 as AdminCc on Loopy');
+}
+
+diag "check watching page (no change since root is not in groupy 2.0)" if $ENV{'TEST_VERBOSE'};
+{
+    $m->follow_link( text => 'Tools' );
+    $m->title_is('Tools', 'tools screen');
+    $m->follow_link( text => 'Watching Queues' );
+    $m->title_is('Watching Queues', 'watching screen');
+
+    $m->content_lacks('You are not watching any queues.');
+
+    is_deeply($watching->scrape($m->content), {
+        queues => [
+            {
+                name  => 'Fancypants',
+                roles => ['AdminCc'],
+            },
+            {
+                name  => 'General',
+                roles => ['Cc', 'AdminCc'],
+            },
+            {
+                name  => 'Loopy',
+                roles => ['Cc'],
+            },
+        ],
+    });
+}
+
+$outer_group->AddMember($group->PrincipalId);
+
+diag "user is not a member of the outer group recursively" if $ENV{'TEST_VERBOSE'};
+{
+    $m->follow_link( text => 'Tools' );
+    $m->title_is('Tools', 'tools screen');
+    $m->follow_link( text => 'Watching Queues' );
+    $m->title_is('Watching Queues', 'watching screen');
+
+    $m->content_lacks('You are not watching any queues.');
+
+    is_deeply($watching->scrape($m->content), {
+        queues => [
+            {
+                name  => 'Fancypants',
+                roles => ['AdminCc'],
+            },
+            {
+                name  => 'General',
+                roles => ['Cc', 'AdminCc'],
+            },
+            {
+                name  => 'Loopy',
+                roles => ['Cc', 'AdminCc'],
+            },
+        ],
+    });
+}
