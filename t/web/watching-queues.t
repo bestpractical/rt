@@ -65,7 +65,7 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
     $m->submit_form_ok({
         form_number => 3,
         fields => {
-            'Queue-AddWatcher-Principal-' . $user->id => 'AdminCc',
+            'Queue-AddWatcher-Principal-' . $user->PrincipalId => 'AdminCc',
         },
     });
 
@@ -120,7 +120,7 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
     $m->submit_form_ok({
         form_number => 3,
         fields => {
-            'Queue-AddWatcher-Principal-' . $user->id => 'Cc',
+            'Queue-AddWatcher-Principal-' . $user->PrincipalId => 'Cc',
         },
     });
 
@@ -175,7 +175,7 @@ diag "add self as AdminCc on Fancypants" if $ENV{'TEST_VERBOSE'};
     $m->submit_form_ok({
         form_number => 3,
         fields => {
-            'Queue-AddWatcher-Principal-' . $user->id => 'AdminCc',
+            'Queue-AddWatcher-Principal-' . $user->PrincipalId => 'AdminCc',
         },
     });
 
