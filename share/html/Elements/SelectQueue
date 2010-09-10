@@ -55,7 +55,7 @@
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
 %     }
-%     for my $queue (@{$session{$cache_key}}) {
+%     for my $queue (@{$session{$cache_key}{queues}}) {
   <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>"\
 % if ($queue->{Id} eq ($Default||'') || $queue->{Name} eq ($Default||'')) {
  selected="selected"\
@@ -88,18 +88,27 @@ my $cache_key = "SelectQueue---"
                 . $session{'CurrentUser'}->Id
                 . "---$CheckQueueRight---$ShowAllQueues";
 
-if (not defined $session{$cache_key} and not $Lite) {
+if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
+    delete $session{$cache_key};
+}
+if ( defined $session{$cache_key} &&
+     $session{$cache_key}{lastupdated} < $RT::System->QueueCacheNeedsUpdate ) {
+    delete $session{$cache_key};
+}
+
+if ( not defined $session{$cache_key} and not $Lite ) {
     my $q = RT::Queues->new($session{'CurrentUser'});
     $q->UnLimit;
     
     while (my $queue = $q->Next) {
         if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
-            push @{$session{$cache_key}}, {
+            push @{$session{$cache_key}{queues}}, {
                 Id          => $queue->Id,
                 Name        => $queue->Name,
                 Description => $queue->Description,
             };
         }
     }
+    $session{$cache_key}{lastupdated} = time();
 }
 </%init>

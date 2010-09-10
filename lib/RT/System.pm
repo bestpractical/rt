@@ -241,6 +241,17 @@ sub SubjectTag {
     return grep !$seen{lc $_}++, values %$map;
 }
 
+sub QueueCacheNeedsUpdate {
+    my $self = shift;
+    my $update = shift;
+
+    if ($update) {
+        return $self->SetAttribute('QueueCacheNeedsUpdate', $update);
+    } else {
+        return $self->FirstAttribute('QueueCacheNeedsUpdate') || 0;
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;
