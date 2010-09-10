@@ -7,6 +7,9 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
+my $user = RT::User->new($RT::SystemUser);
+$user->LoadByEmail('root@localhost');
+
 my $other_queue = RT::Queue->new($RT::SystemUser);
 $other_queue->Create(
     Name => 'Fancypants',
@@ -58,9 +61,6 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
     });
 
     $m->title_is('Modify people related to queue General', 'caught the right form! :)');
-
-    my $user = RT::User->new($RT::SystemUser);
-    $user->LoadByEmail('root@localhost');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -117,9 +117,6 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
 
     $m->title_is('Modify people related to queue General', 'caught the right form! :)');
 
-    my $user = RT::User->new($RT::SystemUser);
-    $user->LoadByEmail('root@localhost');
-
     $m->submit_form_ok({
         form_number => 3,
         fields => {
@@ -174,9 +171,6 @@ diag "add self as AdminCc on Fancypants" if $ENV{'TEST_VERBOSE'};
     });
 
     $m->title_is('Modify people related to queue Fancypants', 'caught the right form! :)');
-
-    my $user = RT::User->new($RT::SystemUser);
-    $user->LoadByEmail('root@localhost');
 
     $m->submit_form_ok({
         form_number => 3,
