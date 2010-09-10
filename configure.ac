@@ -399,6 +399,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
                  sbin/rt-attributes-viewer
+                 sbin/rt-session-viewer
                  sbin/rt-dump-database
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
