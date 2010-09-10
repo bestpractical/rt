@@ -23,6 +23,7 @@ $loopy_queue->Create(
 my $group = RT::Group->new($RT::SystemUser);
 $group->CreateUserDefinedGroup(
     Name => 'Groupies',
+    Description => 'for the Metallica Speed of Sound tour',
 );
 
 my $watching = scraper {
