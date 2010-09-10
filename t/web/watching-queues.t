@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 70;
-use Test::XPath;
+use RT::Test tests => 45;
+use Web::Scraper;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
@@ -11,6 +11,19 @@ my $other_queue = RT::Queue->new($RT::SystemUser);
 $other_queue->Create(
     Name => 'Fancypants',
 );
+
+my $watching = scraper {
+    process "li.queue-roles", 'queues[]' => scraper {
+        # trim the queue name
+        process 'span.queue-name', name => sub {
+            my $name = shift->as_text;
+            $name =~ s/^\s*//;
+            $name =~ s/\s*$//;
+            return $name;
+        };
+        process "li.queue-role", 'roles[]' => 'TEXT';
+    };
+};
 
 diag "check watching page" if $ENV{'TEST_VERBOSE'};
 {
@@ -21,8 +34,7 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_contains('You are not watching any queues.');
 
-    my $tx = new_tx($m->content);
-    $tx->not_ok('//ul[contains(@class,"queue-list")]', 'no queue list when watching nothing');
+    is_deeply($watching->scrape($m->content), {});
 }
 
 diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
@@ -73,16 +85,13 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_lacks('You are not watching any queues.');
 
-    my $tx = new_tx($m->content);
-    $tx->ok('//ul[contains(@class,"queue-list")]', sub {
-        $_->is('count(.//li[contains(@class,"queue-roles")])', 1, 'only one queue');
-        $_->ok('.//li[contains(@class,"queue-roles")]', sub {
-            $_->like('.//span[contains(@class,"queue-name")][text()]', qr/^\s*General\s*$/, 'correct queue');
-            $_->ok('.//ul[contains(@class,"queue-role-list")]', sub {
-                $_->is('count(.//li[contains(@class,"queue-role")])', 1, 'only one role');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/^\s*AdminCc\s*$/, 'correct role');
-            });
-        });
+    is_deeply($watching->scrape($m->content), {
+        queues => [
+            {
+                name  => 'General',
+                roles => ['AdminCc'],
+            },
+        ],
     });
 }
 
@@ -134,17 +143,13 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_lacks('You are not watching any queues.');
 
-    my $tx = new_tx($m->content);
-    $tx->ok('//ul[contains(@class,"queue-list")]', sub {
-        $_->is('count(.//li[contains(@class,"queue-roles")])', 1, 'only one queue');
-        $_->ok('.//li[contains(@class,"queue-roles")]', sub {
-            $_->like('.//span[contains(@class,"queue-name")][text()]', qr/^\s*General\s*$/, 'correct queue');
-            $_->ok('.//ul[contains(@class,"queue-role-list")]', sub {
-                $_->is('count(.//li[contains(@class,"queue-role")])', 2, 'two roles');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/AdminCc/, 'list includes AdminCc');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/(?<!Admin)Cc/, 'list includes Cc too');
-            });
-        });
+    is_deeply($watching->scrape($m->content), {
+        queues => [
+            {
+                name  => 'General',
+                roles => ['Cc', 'AdminCc'],
+            },
+        ],
     });
 }
 
@@ -194,39 +199,17 @@ diag "check watching page" if $ENV{'TEST_VERBOSE'};
 
     $m->content_lacks('You are not watching any queues.');
 
-    my $tx = new_tx($m->content);
-    $tx->ok('//ul[contains(@class,"queue-list")]', sub {
-        $_->is('count(.//li[contains(@class,"queue-roles")])', 2, 'two queues');
-
-        $_->ok('.//li[contains(@class,"queue-roles")][contains(.//span[contains(@class,"queue-name")][text()],"General")]', sub {
-            $_->like('.//span[contains(@class,"queue-name")][text()]', qr/^\s*General\s*$/, 'correct queue');
-            $_->ok('.//ul[contains(@class,"queue-role-list")]', sub {
-                $_->is('count(.//li[contains(@class,"queue-role")])', 2, 'two roles');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/AdminCc/, 'list includes AdminCc');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/(?<!Admin)Cc/, 'list includes Cc too');
-            });
-        });
-
-        $_->ok('.//li[contains(@class,"queue-roles")][contains(.//span[contains(@class,"queue-name")][text()],"Fancypants")]', sub {
-            $_->like('.//span[contains(@class,"queue-name")][text()]', qr/^\s*Fancypants\s*$/, 'correct queue');
-            $_->ok('.//ul[contains(@class,"queue-role-list")]', sub {
-                $_->is('count(.//li[contains(@class,"queue-role")])', 1, 'one roles');
-                $_->like('.//li[contains(@class,"queue-role")][text()]', qr/^\s*AdminCc\s*$/, 'correct role');
-            });
-        });
+    is_deeply($watching->scrape($m->content), {
+        queues => [
+            {
+                name  => 'Fancypants',
+                roles => ['AdminCc'],
+            },
+            {
+                name  => 'General',
+                roles => ['Cc', 'AdminCc'],
+            },
+        ],
     });
-}
-
-sub new_tx {
-    my $content = shift;
-
-    # need to recover from embedded javascript using <!-- -->
-    my $tx = Test::XPath->new(
-        xml     => $content,
-        is_html => 1,
-        options => { recover => 1 },
-    );
-
-    return $tx;
 }
 
