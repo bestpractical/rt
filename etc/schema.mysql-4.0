@@ -170,8 +170,6 @@ CREATE TABLE ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId integer NOT NULL default 0,
-  DelegatedBy integer NOT NULL default 0, #foreign key to principals with a userid
-  DelegatedFrom integer NOT NULL default 0, #foreign key to ACL
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 

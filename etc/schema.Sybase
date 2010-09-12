@@ -169,8 +169,6 @@ CREATE TABLE rt3.ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId integer NOT NULL ,
-  DelegatedBy integer NOT NULL , #foreign key to principals with a userid
-  DelegatedFrom integer NOT NULL , #foreign key to ACL
   PRIMARY KEY (id)
 ) ;
 
