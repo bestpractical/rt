@@ -27,6 +27,8 @@ The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Searc
 have been removed, but you shouldn't have been using them anyway. You should have been using
 RT::Action, RT::Condition and RT::Search, respectively.
 
+* The "Rights Delegation" feature has been removed.
+
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:
 
