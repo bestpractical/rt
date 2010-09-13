@@ -52,6 +52,7 @@
 @import "ticket-form.css";
 @import "rights-editor.css";
 @import "theme-editor.css";
+@import "ticket.css";
 
 % $m->callback(CallbackName => 'End');
 

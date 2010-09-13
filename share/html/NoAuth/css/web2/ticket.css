@@ -254,7 +254,7 @@ div.requestor-ticket-links {
 
 .ticket-info-requestor .more-about-requestor-extra,
 .ticket-info-requestor .comments-about-user,
-.ticket-info-requestor .more-about-requestor,
+.ticket-info-requestor .more-about-requestor-tickets,
 .ticket-info-requestor .more-about-user-groups
 {
     margin: 1em 0;
@@ -262,7 +262,7 @@ div.requestor-ticket-links {
 
 .ticket-info-requestor .comments-about-user .label,
 .ticket-info-requestor .more-about-user-groups .label,
-.ticket-info-requestor .more-about-requestor .label
+.ticket-info-requestor .more-about-requestor-tickets .label
 {
     display: block;
     font-weight: bold;
@@ -270,7 +270,7 @@ div.requestor-ticket-links {
 }
 
 .ticket-info-requestor .more-about-user-groups .value ul,
-.ticket-info-requestor .more-about-requestor ul
+.ticket-info-requestor .more-about-requestor-tickets ul
 {
     margin-top: 0;
     margin-bottom: 0;

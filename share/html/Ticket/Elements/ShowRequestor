@@ -48,7 +48,7 @@
 % if ($ShowTickets) {
 <script type="text/javascript">
     jQuery(function() {
-        jQuery(".more-about-requestor").tabs({
+        jQuery(".more-about-requestor-tickets").tabs({
             cache: true,
             collapsible: true,
             selected: <% $selected %>
@@ -83,7 +83,7 @@ while ( my $requestor = $people->Next ) {
 % }
 
 % if ( $ShowTickets ) {
-<div class="more-about-requestor" id="more-about-requestor-<%$requestor->Id%>">
+<div class="more-about-requestor-tickets" id="more-about-requestor-tickets-<%$requestor->Id%>">
   <ul>
 % for my $status ( @$status_order ) {
 % my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
