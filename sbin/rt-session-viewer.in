@@ -109,8 +109,8 @@ rt-session-viewer - show the content of a user's session
 
 =head1 SYNOPSIS
 
-    # show the content of session 
-    rt-attributes-viewer 
+    # show the content of a session
+    rt-session-viewer 2c21c8a2909c14eff12975dd2cc7b9a3
 
 =head1 DESCRIPTION
 
