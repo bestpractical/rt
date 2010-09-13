@@ -56,7 +56,6 @@ while ( my $requestor = $people->Next ) {
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => loc("More about [_1]", $name),
-    titleright_raw => $m->scomp( $TicketsLinkTemplate, AsLink => 1, Requestor => $requestor ),
     class => 'ticket-info-requestor'
 &>
 
@@ -89,7 +88,6 @@ while ( my $requestor = $people->Next ) {
   <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => RT->Config->Get('MoreAboutRequestorGroupsLimit') &></span>
 </div>
 % }
-
 </&>
 
 % }
@@ -105,15 +103,10 @@ my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
 
 $TicketTemplate ||= "ShowRequestorTickets".(RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser})||'Active');
 $TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
-
-$TicketsLinkTemplate ||= $TicketTemplate;
-$TicketsLinkTemplate = "ShowRequestorTicketsActive"
-    if $TicketsLinkTemplate =~ /None$/;
 </%INIT>
 <%ARGS>
 $Ticket=>undef
 $TicketTemplate=>undef
-$TicketsLinkTemplate => undef
 $ShowComments => 1
 $ShowTickets => 1
 $ShowGroups => 1

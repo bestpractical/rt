@@ -45,13 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<span id="more-about-requestor-<%$Requestor->Id%>">
 %# showing no tickets means doing no work
-% if ( $AsLink ) {
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('all') &>
-% }
+<& ShowRequestorToggleLinks, %ARGS, Status => 'Inactive' &>
+</span>
 <%ARGS>
 $Requestor => undef
 $conditions => []
 $Rows => 10
-$AsLink => undef
 </%ARGS>

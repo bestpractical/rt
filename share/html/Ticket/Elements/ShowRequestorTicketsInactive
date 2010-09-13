@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% unless ( $AsLink ) {
+<span id="more-about-requestor-<%$Requestor->Id%>">
 <span class="label"><&|/l, $Rows &>This user's [_1] highest priority inactive tickets</&>:</span>
 <& ShowRequestorToggleLinks, %ARGS, Status => 'Inactive' &>
-% }
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('closed') &>
+<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
+</span>
 <%INIT>
 unless ( @$conditions ) {
     foreach (RT::Queue->InactiveStatusArray()) {
@@ -61,5 +61,4 @@ unless ( @$conditions ) {
 $Requestor => undef
 $conditions => []
 $Rows => 10
-$AsLink => undef
 </%ARGS>
