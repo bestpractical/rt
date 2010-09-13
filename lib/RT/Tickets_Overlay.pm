@@ -1379,8 +1379,15 @@ sub _CustomFieldLimit {
         return 'NOT MATCHES' if $op eq '!=';
         return $op;
     };
+
     if (   $cf
-        && ( $cf->Type eq 'IPAddress' || $cf->Type eq 'IPAddressRange' )
+        && $cf->Type eq 'IPAddress'
+        && $value =~ /^\s*$RE{net}{IPv4}\s*$/o )
+    {
+        $value = sprintf "%03d.%03d.%03d.%03d", split /\./, $value;
+    }
+
+    if (   $cf
         && $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o )
     {
 
@@ -1420,7 +1427,7 @@ sub _CustomFieldLimit {
         ) if $CFs;
         $self->_CloseParen;
     }
-    elsif ( $op !~ /^[<>]=?$/ && (  $cf && ($cf->Type eq 'IPAddress'  || $cf->Type eq 'IPAddressRange'))) {
+    elsif ( $op !~ /^[<>]=?$/ && (  $cf && $cf->Type eq 'IPAddressRange')) {
     
         $value =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o;
         my ($start_ip, $end_ip) = ($1, ($2 || $1));

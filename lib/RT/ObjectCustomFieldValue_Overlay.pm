@@ -75,7 +75,22 @@ sub Create {
 
     my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
     $cf_as_sys->Load($args{'CustomField'});
-    if($cf_as_sys->Type eq 'IPAddress' || $cf_as_sys->Type eq 'IPAddressRange') {
+
+    if($cf_as_sys->Type eq 'IPAddress') {
+        unless ( defined $args{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content can't be empty for IPAddress") )
+              : 0;
+        }
+
+        if ( $args{'Content'} =~ /^\s*$RE{net}{IPv4}\s*$/o ) {
+            $args{'Content'} = sprintf "%03d.%03d.%03d.%03d", split /\./,
+              $args{'Content'};
+        }
+    }
+
+    if($cf_as_sys->Type eq 'IPAddressRange') {
         if ($args{'Content'}) {
             ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
         }
@@ -83,11 +98,10 @@ sub Create {
         unless ( defined $args{'Content'} ) {
             return
               wantarray
-              ? ( 0, $self->loc("Content can't be empty for IPAddress(Range)") )
+              ? ( 0, $self->loc("Content can't be empty for IPAddressRange") )
               : 0;
         }
     }
-
 
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
@@ -226,27 +240,31 @@ sub Content {
     my $self = shift;
 
     my $content = $self->_Value('Content');
-    if ( $self->CustomFieldObj->Type eq 'IPAddress' ||
-         $self->CustomFieldObj->Type eq 'IPAddressRange') {
+    if (   $self->CustomFieldObj->Type eq 'IPAddress'
+        || $self->CustomFieldObj->Type eq 'IPAddressRange' )
+    {
 
-       if ($content =~ /^\s*($re_ip_serialized)\s*$/o ) {
-        $content = sprintf "%d.%d.%d.%d", split /\./, $1;
-       }
+        if ( $content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+            $content = sprintf "%d.%d.%d.%d", split /\./, $1;
+        }
+
+        return $content if $self->CustomFieldObj->Type eq 'IPAddress';
 
         my $large_content = $self->__Value('LargeContent');
-            if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
-                my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
-                if ( $content eq $eIP ) {
-                    return $content;
-                }
-                else {
-                    return $content . "-".$eIP;
-                }
-            } else {
+        if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+            my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+            if ( $content eq $eIP ) {
                 return $content;
             }
-
+            else {
+                return $content . "-" . $eIP;
+            }
+        }
+        else {
+            return $content;
+        }
     }
+
     if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {
