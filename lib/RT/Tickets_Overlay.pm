@@ -1390,17 +1390,35 @@ sub _CustomFieldLimit {
         }
     }
 
-    if (   $cf
-        && $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o )
-    {
+    if ( $cf && $cf->Type eq 'IPAddressRange' ) {
 
-        # convert incomplete 192.168/24 to 192.168.0.0/24 format
-        my $cidr =
-          join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2";
+        if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
 
-        # convert to range and continue, it will be catched by next wrapper
-        $value = ( Net::CIDR::cidr2range($cidr) )[0] || $value;
+            # convert incomplete 192.168/24 to 192.168.0.0/24 format
+            $value =
+              join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
+              || $value;
+        }
 
+        my ( $start_ip, $end_ip ) =
+          RT::ObjectCustomFieldValue->ParseIPRange($value);
+        if ( $start_ip && $end_ip ) {
+            if ( $op =~ /^([<>])=?$/ ) {
+                my $is_less = $1 eq '<' ? 1 : 0;
+                if ( $is_less ) {
+                    $value = $start_ip;
+                }
+                else {
+                    $value = $end_ip;
+                }
+            }
+            else {
+                $value = join '-', $start_ip, $end_ip;
+            }
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddressRange");
+        }
     }
 
     my $single_value = !$cf || !$cfid || $cf->SingleValue;
@@ -1432,11 +1450,7 @@ sub _CustomFieldLimit {
     }
     elsif ( $op !~ /^[<>]=?$/ && (  $cf && $cf->Type eq 'IPAddressRange')) {
     
-        $value =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o;
-        my ($start_ip, $end_ip) = ($1, ($2 || $1));
-        $_ = sprintf "%03d.%03d.%03d.%03d", split /\./, $_
-            for $start_ip, $end_ip;
-        ($start_ip, $end_ip) = ($end_ip, $start_ip) if $start_ip gt $end_ip;
+        my ($start_ip, $end_ip) = split /-/, $value;
         
         $self->_OpenParen;
         if ( $op !~ /NOT|!=|<>/i ) { # positive equation
@@ -1451,16 +1465,17 @@ sub _CustomFieldLimit {
             ); 
             # as well limit borders so DB optimizers can use better
             # estimations and scan less rows
-            $self->_CustomFieldLimit(
-                $field, '>=', '000.000.000.000', %rest,
-                SUBKEY          => $rest{'SUBKEY'}. '.Content',
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $self->_CustomFieldLimit(
-                $field, '<=', '255.255.255.255', %rest,
-                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
-                ENTRYAGGREGATOR => 'AND',
-            );  
+# have to disable this tweak because of ipv6
+#            $self->_CustomFieldLimit(
+#                $field, '>=', '000.000.000.000', %rest,
+#                SUBKEY          => $rest{'SUBKEY'}. '.Content',
+#                ENTRYAGGREGATOR => 'AND',
+#            );
+#            $self->_CustomFieldLimit(
+#                $field, '<=', '255.255.255.255', %rest,
+#                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+#                ENTRYAGGREGATOR => 'AND',
+#            );  
         }       
         else { # negative equation
             $self->_CustomFieldLimit($field, '>', $end_ip, %rest);

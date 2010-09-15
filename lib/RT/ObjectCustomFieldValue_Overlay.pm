@@ -250,9 +250,18 @@ sub Content {
 
         return $content if $self->CustomFieldObj->Type eq 'IPAddress';
 
-        my $large_content = $self->__Value('LargeContent');
+        my $large_content = $self->LargeContent;
         if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
             my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+            if ( $content eq $eIP ) {
+                return $content;
+            }
+            else {
+                return $content . "-" . $eIP;
+            }
+        }
+        elsif ( $large_content =~ /^\s*($IPv6_re)\s*$/o ) {
+            my $eIP = $1;
             if ( $content eq $eIP ) {
                 return $content;
             }
@@ -400,24 +409,40 @@ sub IncludeContentForValue {
 
 sub ParseIPRange {
     my $self = shift;
-    my $arg = shift or return ();
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
     
-    if ( $arg =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/go ) {
+    if ( $value =~ /^$RE{net}{CIDR}{IPv4}{-keep}$/go ) {
         my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
-        $arg = (Net::CIDR::cidr2range( $cidr ))[0] || $arg;
+        $value = (Net::CIDR::cidr2range( $cidr ))[0] || $value;
+    }
+    elsif ( $value =~ /^$IPv6_re(?:\/\d+)?$/o ) {
+        $value = (Net::CIDR::cidr2range( $value ))[0] || $value;
     }
     
     my ($sIP, $eIP);
-    if ( $arg =~ /^\s*($RE{net}{IPv4})\s*$/o ) {
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
         $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
     }
-    elsif ( $arg =~ /^\s*($RE{net}{IPv4})-($RE{net}{IPv4})\s*$/o ) {
+    elsif ( $value =~ /^($RE{net}{IPv4})-($RE{net}{IPv4})$/o ) {
         $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
         $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
     }
-    else {
-        return ();
+    elsif ( $value =~ /^($IPv6_re)$/o ) {
+        $sIP = $self->ParseIP( $1 );
+        $eIP = $sIP;
     }
+    elsif ( $value =~ /^($IPv6_re)-($IPv6_re)$/o ) {
+        ($sIP, $eIP) = ( $1, $2 );
+        $sIP = $self->ParseIP( $sIP );
+        $eIP = $self->ParseIP( $eIP );
+    }
+    else {
+        return;
+    }
+
     ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
     
     return $sIP, $eIP;
