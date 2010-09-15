@@ -1,9 +1,9 @@
 use strict;
 use warnings;
-use RT::Test tests => 10;
+use RT::Test tests => 17;
 
 # make an initial queue, so we have more than 1
-new_queue("Test$$");
+my $original_test_queue = new_queue("Test$$");
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -19,8 +19,16 @@ diag("Add a new queue, which won't show up until we fix the cache") if $ENV{TEST
     check_queues();
 }
 
+diag("Disable an existing queue, it should stop appearing in the list") if $ENV{TEST_VERBOSE};
+{
+    sleep(1); # so the cache will actually invalidate
+    ok($original_test_queue->SetDisabled(1));
+    check_queues();
+}
+
 sub new_queue {
     my $name = shift;
+    sleep(1); # so the cache will actually invalidate
     my $new_queue = RT::Queue->new($RT::SystemUser);
     ok($new_queue->Create( Name => $name, Description => "Testing for $name queue" ), "Created queue ".$new_queue->Name);
     return $new_queue;
@@ -37,6 +45,7 @@ sub internal_queues {
 }
 
 sub check_queues {
+    $m->get_ok($baseurl,"Navigated to homepage");
     ok(my $form = $m->form_name('CreateTicketInQueue'), "Found New Ticket In form");
     ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
     my @queues = $queuelist->possible_values;
