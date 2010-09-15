@@ -1431,6 +1431,134 @@ sub ProcessACLChanges {
 
 # }}}
 
+=head2 ProcessACLs
+
+ProcessACLs expects values from a series of checkboxes that describe the full
+set of rights a principal should have on an object.
+
+It expects form inputs with names like SetRights-PrincipalId-ObjType-ObjId
+instead of with the prefixes Grant/RevokeRight.  Each input should be an array
+listing the rights the principal should have, and ProcessACLs will modify the
+current rights to match.  Additionally, the previously unused CheckACL input
+listing PrincipalId-ObjType-ObjId is now used to catch cases when all the
+rights are removed from a principal and as such no SetRights input is
+submitted.
+
+=cut
+
+sub ProcessACLs {
+    my $ARGSref = shift;
+    my (%state, @results);
+
+    #XXX: why don't we get ARGSref like in other Process* subs?
+
+    my $CheckACL = $ARGSref->{'CheckACL'};
+    my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
+
+    # Check if we want to grant rights to a previously rights-less user
+    for my $type (qw(user group)) {
+        my $key = "AddPrincipalForRights-$type";
+
+        next unless $ARGSref->{$key};
+
+        my $principal;
+        if ( $type eq 'user' ) {
+            $principal = RT::User->new( $session{'CurrentUser'} );
+            $principal->Load( $ARGSref->{$key} );
+        }
+        else {
+            $principal = RT::Group->new( $session{'CurrentUser'} );
+            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+        }
+
+        unless ($principal->PrincipalId) {
+            push @results, loc("Couldn't load the specified principal");
+            next;
+        }
+
+        my $principal_id = $principal->PrincipalId;
+
+        # Turn our addprincipal rights spec into a real one
+        for my $arg (keys %$ARGSref) {
+            next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
+            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
+            push @check, "$principal_id-$1";
+        }
+    }
+
+    # Build our rights state for each Principal-Object tuple
+    foreach my $arg ( keys %$ARGSref ) {
+        next unless $arg =~ /^SetRights-(\d+-.+?-\d+)$/;
+
+        my $tuple  = $1;
+        my $value  = $ARGSref->{$arg};
+        my @rights = grep { $_ } (ref $value eq 'ARRAY' ? @$value : $value);
+        next unless @rights;
+
+        $state{$tuple} = { map { $_ => 1 } @rights };
+    }
+
+    foreach my $tuple (@check) {
+        next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
+
+        my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
+
+        my $principal = RT::Principal->new( $session{'CurrentUser'} );
+        $principal->Load($principal_id);
+
+        my $obj;
+        if ( $object_type eq 'RT::System' ) {
+            $obj = $RT::System;
+        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+            $obj = $object_type->new( $session{'CurrentUser'} );
+            $obj->Load($object_id);
+            unless ( $obj->id ) {
+                $RT::Logger->error("couldn't load $object_type #$object_id");
+                next;
+            }
+        } else {
+            $RT::Logger->error("object type '$object_type' is incorrect");
+            push( @results, loc("System Error") . ': ' . loc( "Rights could not be granted for [_1]", $object_type ) );
+            next;
+        }
+
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $obj );
+        $acls->LimitToPrincipal( Id => $principal_id );
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+
+            # Has right and should have right
+            next if delete $state{$tuple}->{$right};
+
+            # Has right and shouldn't have right
+            my ($val, $msg) = $principal->RevokeRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # For everything left, they don't have the right but they should
+        for my $right (keys %{ $state{$tuple} || {} }) {
+            delete $state{$tuple}->{$right};
+            my ($val, $msg) = $principal->GrantRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # Check our state for leftovers
+        if ( keys %{ $state{$tuple} || {} } ) {
+            my $missed = join '|', %{$state{$tuple} || {}};
+            $RT::Logger->warn(
+               "Uh-oh, it looks like we somehow missed a right in "
+              ."ProcessACLs.  Here's what was leftover: $missed"
+            );
+        }
+    }
+
+    return (@results);
+}
+
+
+
 # {{{ sub UpdateRecordObj
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
