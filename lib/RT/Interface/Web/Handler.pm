@@ -260,6 +260,11 @@ sub CleanupRequest {
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
 
+    # RT::System persists between requests, so its attributes cache has to be
+    # cleared manually. Without this, for example, subject tags across multiple
+    # processes will remain cached incorrectly
+    delete $RT::System->{attributes};
+
     # Explicitly remove any tmpfiles that GPG opened, and close their
     # filehandles.
     File::Temp::cleanup;
