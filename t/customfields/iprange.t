@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 133;
+use RT::Test tests => 127;
 
 my ($baseurl, $agent) =RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -110,11 +110,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    my $values = $ticket->CustomFieldValues('IP');
-    my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{$val}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'), $val, 'correct value' );
 
     diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
     $val = "  172.16.0.2  \n  ";
@@ -131,11 +127,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    $values = $ticket->CustomFieldValues('IP');
-    %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{'172.16.0.2'}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'), '172.16.0.2', 'correct value' );
 
     diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
     $val = '172.16.0.0-172.16.0.255';
@@ -152,22 +144,15 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    $values = $ticket->CustomFieldValues('IP');
-    %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{$val}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'), $val, 'correct value' );
 
     diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
     $val = '172.16/16';
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
     $agent->form_number(3);
-    like(
-        $agent->value($cf_field),
-        qr/^\s*\Q172.16.0.0-172.16.0.255\E\s*$/,
-        'IP is empty'
-    );
+    is( $agent->value($cf_field),
+        '172.16.0.0-172.16.0.255', 'IP is in input box' );
     $agent->field( $cf_field => $val );
     $agent->click('SubmitTicket');
 
@@ -176,11 +161,8 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    $values = $ticket->CustomFieldValues('IP');
-    %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{'172.16.0.0-172.16.255.255'}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'),
+        '172.16.0.0-172.16.255.255', 'correct value' );
 }
 
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
@@ -203,11 +185,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
         $ticket->Load($id);
         is( $ticket->id, $id, 'loaded ticket' );
 
-        my %has = ();
-        $has{ $_->Content }++
-          foreach @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        is( scalar values %has, 1, "one IP was added" );
-        ok( $has{$valid}, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'), $valid, 'correct value' );
     }
 
     for my $invalid (qw{255.255.255.256 355.255.255.255 8.13.8/8.13.0/1.0}) {
@@ -249,18 +227,8 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
     $tickets->FromSQL("id = $id AND CF.{IP} = '172.16.1.1'");
     ok( $tickets->Count, "found tickets" );
 
-    my $flag = 1;
-    while ( my $ticket = $tickets->Next ) {
-        my %has =
-          map { $_->Content => 1 }
-          @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        next if $has{'172.16.1.0-172.16.1.1'};
-        $flag = 0;
-        ok( 0, "ticket #" . $ticket->id . " has no IP 172.16.1.1, but should" )
-          or diag "but has values " . join ", ", keys %has;
-        last;
-    }
-    ok( 1, "all tickets has IP 172.16.1.1" ) if $flag;
+    is( $ticket->FirstCustomFieldValue('IP'),
+        '172.16.1.0-172.16.1.1', 'correct value' );
 }
 
 diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
@@ -287,15 +255,8 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
     $tickets->FromSQL("id = $id AND CF.{IP} = '172.16.2.0-172.16.2.255'");
     ok( $tickets->Count, "found tickets" );
 
-    my $flag = 1;
-    while ( my $ticket = $tickets->Next ) {
-        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        next if grep /^172\.16\.2\./, keys %has;
-        $flag = 0;
-        ok(0, "ticket #". $ticket->id ." has no IP from 172.16.2.0-172.16.2.255, but should");
-        last;
-    }
-    ok(1, "all tickets have at least one IP from 172.16.2.0-172.16.2.255") if $flag;
+    is( $ticket->FirstCustomFieldValue('IP'),
+        '172.16.2.0-172.16.2.63', 'correct value' );
 }
 
 diag "create two tickets with different IPs and check several searches" if $ENV{'TEST_VERBOSE'};
@@ -492,7 +453,7 @@ diag "create two tickets with different IP ranges and check several searches" if
     # IP range, greater than both
     $tickets = RT::Tickets->new( $RT::SystemUser );
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22/24'");
-    is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
+    is( $tickets->Count, 0, "didn't find ticket" ) or diag "but found ". $tickets->First->id;
 }
 
 
