@@ -93,11 +93,7 @@ diag "create a ticket and edit IP field using Edit page"
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    my $values = $ticket->CustomFieldValues('IP');
-    my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{$val}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'), '172.16.0.1' );
 
     diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
     $val = "  172.16.0.2  \n  ";
@@ -114,11 +110,8 @@ diag "create a ticket and edit IP field using Edit page"
     $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    $values = $ticket->CustomFieldValues('IP');
-    %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-    is( scalar values %has, 1, "one IP were added" );
-    ok( $has{'172.16.0.2'}, "has value" )
-      or diag "but has values " . join ", ", keys %has;
+    is( $ticket->FirstCustomFieldValue('IP'),
+        '172.16.0.2', 'correct value' );
 }
 
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
@@ -141,11 +134,8 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
         $ticket->Load($id);
         is( $ticket->id, $id, 'loaded ticket' );
 
-        my %has = ();
-        $has{ $_->Content }++
-          foreach @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        is( scalar values %has, 1, "one IP was added" );
-        ok( $has{$valid}, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'),
+            $valid, 'correct value' );
     }
 
     for my $invalid (qw{255.255.255.256 355.255.255.255 8.13.8/8.13.0/1.0}) {
@@ -229,6 +219,16 @@ diag "create two tickets with different IPs and check several searches"
         '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new($RT::SystemUser);
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.10'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->FirstCustomFieldValue('IP'),
+        '192.168.22.10', "correct value" );
+
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} <= '192.168.21.10'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->FirstCustomFieldValue('IP'),
+        '192.168.21.10', "correct value" );
+    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} >= '192.168.22.10'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->FirstCustomFieldValue('IP'),
         '192.168.22.10', "correct value" );
