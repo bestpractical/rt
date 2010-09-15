@@ -27,7 +27,7 @@ unless ( $AddPrincipal ) {
 
 <script type="text/javascript">
   jQuery(function() {
-      jQuery(".rights-editor").tabs({ selected: -1 });
+      jQuery(".rights-editor").tabs();
       jQuery(".rights-editor .category-tabs").tabs();
   });
 </script>
