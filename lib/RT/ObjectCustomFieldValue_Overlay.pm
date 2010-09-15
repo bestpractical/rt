@@ -433,7 +433,7 @@ sub ParseIP {
     if ( $value =~ /^($RE{net}{IPv4})$/o ) {
         return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
     }
-    elsif ( $value =~ /^$IPv6_re$/ ) {
+    elsif ( $value =~ /^$IPv6_re$/o ) {
 
         # up_fields are before '::'
         # low_fields are after '::' but without v4
