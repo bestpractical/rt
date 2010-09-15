@@ -1357,7 +1357,7 @@ sub process_in_file {
 }
 
 sub diag {
-    return unless $ENV{TEST_VERBOSE};
+    return unless $ENV{RT_TEST_VERBOSE} || $ENV{TEST_VERBOSE};
     goto \&Test::More::diag;
 }
 
