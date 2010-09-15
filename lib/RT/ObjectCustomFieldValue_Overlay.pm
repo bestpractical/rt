@@ -94,6 +94,7 @@ sub Create {
         if ($args{'Content'}) {
             ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
         }
+        $args{'ContentType'} = 'text/plain';
 
         unless ( defined $args{'Content'} ) {
             return
@@ -250,7 +251,7 @@ sub Content {
 
         return $content if $self->CustomFieldObj->Type eq 'IPAddress';
 
-        my $large_content = $self->LargeContent;
+        my $large_content = $self->__Value('LargeContent');
         if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
             my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
             if ( $content eq $eIP ) {
