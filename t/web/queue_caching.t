@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 6;
+use RT::Test tests => 10;
 
 # make an initial queue, so we have more than 1
 new_queue("Test$$");
@@ -10,12 +10,13 @@ ok $m->login, 'logged in';
 
 diag("Check for 2 existing queues being visible") if $ENV{TEST_VERBOSE};
 {
-ok(my $form = $m->form_name('CreateTicketInQueue'), "Found New Ticket In form");
-ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
-my @queues = $queuelist->possible_values;
+    check_queues();
+}
 
-my $queue_list = internal_queues();
-is_deeply([sort @queues],[sort keys %$queue_list], "Queue list contains the expected queues");
+diag("Add a new queue, which won't show up until we fix the cache") if $ENV{TEST_VERBOSE};
+{
+    new_queue("New Test $$");
+    check_queues();
 }
 
 sub new_queue {
@@ -35,3 +36,11 @@ sub internal_queues {
     return $queuelist;
 }
 
+sub check_queues {
+    ok(my $form = $m->form_name('CreateTicketInQueue'), "Found New Ticket In form");
+    ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
+    my @queues = $queuelist->possible_values;
+
+    my $queue_list = internal_queues();
+    is_deeply([sort @queues],[sort keys %$queue_list], "Queue list contains the expected queues");
+}
