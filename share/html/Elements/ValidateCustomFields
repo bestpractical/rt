@@ -85,7 +85,8 @@ while ( my $CF = $CustomFields->Next ) {
         if ($value) {
             if ( $CF->Type eq 'IPAddress' ) {
                 use Regexp::Common qw(RE_net_IPv4);
-                unless ( $value =~ /^$RE{net}{IPv4}$/ ) {
+                my $ip = RT::ObjectCustomFieldValue->ParseIP( $value );
+                unless ( $ip ) {
                     my $msg =
                       loc( "Input can not be parsed to " . loc( $CF->Type ) );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );

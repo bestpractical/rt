@@ -52,6 +52,7 @@ use strict;
 use warnings;
 use RT::Interface::Web;
 use Regexp::Common qw(RE_net_IPv4);
+use Regexp::IPv6 qw($IPv6_re);
 use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
@@ -77,16 +78,15 @@ sub Create {
     $cf_as_sys->Load($args{'CustomField'});
 
     if($cf_as_sys->Type eq 'IPAddress') {
+        if ( $args{'Content'} ) {
+            $args{'Content'} = $self->ParseIP( $args{'Content'} );
+        }
+
         unless ( defined $args{'Content'} ) {
             return
               wantarray
               ? ( 0, $self->loc("Content can't be empty for IPAddress") )
               : 0;
-        }
-
-        if ( $args{'Content'} =~ /^\s*$RE{net}{IPv4}\s*$/o ) {
-            $args{'Content'} = sprintf "%03d.%03d.%03d.%03d", split /\./,
-              $args{'Content'};
         }
     }
 
@@ -421,6 +421,54 @@ sub ParseIPRange {
     ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
     
     return $sIP, $eIP;
+}
+
+sub ParseIP {
+    my $self = shift;
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
+
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
+        return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $value =~ /^$IPv6_re$/ ) {
+
+        # up_fields are before '::'
+        # low_fields are after '::' but without v4
+        # v4_fields are the v4
+        my ( @up_fields, @low_fields, @v4_fields );
+        my $v6;
+        if ( $value =~ /(.*:)(\d+\..*)/ ) {
+            ( $v6, my $v4 ) = ( $1, $2 );
+            chop $v6 unless $v6 =~ /::$/;
+            while ( $v4 =~ /(\d+)\.(\d+)/g ) {
+                push @v4_fields, sprintf '%.2x%.2x', $1, $2;
+            }
+        }
+        else {
+            $v6 = $value;
+        }
+
+        my ( $up, $low );
+        if ( $v6 =~ /::/ ) {
+            ( $up, $low ) = split /::/, $v6;
+        }
+        else {
+            $up = $v6;
+        }
+
+        @up_fields = split /:/, $up;
+        @low_fields = split /:/, $low if $low;
+
+        my @zero_fields =
+          ('0000') x ( 8 - @v4_fields - @up_fields - @low_fields );
+        my @fields = ( @up_fields, @zero_fields, @low_fields, @v4_fields );
+
+        return join ':', map { sprintf "%.4x", hex "0x$_" } @fields;
+    }
+    return;
 }
 
 1;

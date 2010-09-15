@@ -1380,11 +1380,14 @@ sub _CustomFieldLimit {
         return $op;
     };
 
-    if (   $cf
-        && $cf->Type eq 'IPAddress'
-        && $value =~ /^\s*$RE{net}{IPv4}\s*$/o )
-    {
-        $value = sprintf "%03d.%03d.%03d.%03d", split /\./, $value;
+    if ( $cf && $cf->Type eq 'IPAddress' ) {
+        my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
+        if ($parsed) {
+            $value = $parsed;
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddress");
+        }
     }
 
     if (   $cf

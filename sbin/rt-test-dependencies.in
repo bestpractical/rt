@@ -207,6 +207,7 @@ Devel::StackTrace 1.19
 Text::Password::Pronounceable
 Net::CIDR
 Regexp::Common::net::CIDR
+Regexp::IPv6
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
