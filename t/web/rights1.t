@@ -58,7 +58,7 @@ ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
 $agent->follow_link( url => "$RT::WebPath/Search/Build.html",
 		     text => 'Tickets');
-is($agent->{'status'}, 200, "Fetched search builder page");
+is($agent->status, 200, "Fetched search builder page");
 ok($agent->{'content'} !~ /Load saved search/i, "No search loading box");
 ok($agent->{'content'} !~ /Saved searches/i, "No saved searches box");
 

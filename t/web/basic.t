@@ -14,20 +14,20 @@ my $url = $agent->rt_base_url;
 # get the top page
 {
     $agent->get($url);
-    is ($agent->{'status'}, 200, "Loaded a page");
+    is ($agent->status, 200, "Loaded a page");
 }
 
 # test a login
 {
     $agent->login('root' => 'password');
     # the field isn't named, so we have to click link 0
-    is( $agent->{'status'}, 200, "Fetched the page ok");
+    is( $agent->status, 200, "Fetched the page ok");
     ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
 }
 
 {
     $agent->goto_create_ticket(1);
-    is ($agent->{'status'}, 200, "Loaded Create.html");
+    is ($agent->status, 200, "Loaded Create.html");
     $agent->form_number(3);
     my $string = Encode::decode_utf8("I18N Web Testing æøå");
     $agent->field('Subject' => "Ticket with utf8 body");
@@ -48,7 +48,7 @@ my $url = $agent->rt_base_url;
 
 {
     $agent->goto_create_ticket(1);
-    is ($agent->{'status'}, 200, "Loaded Create.html");
+    is ($agent->status, 200, "Loaded Create.html");
     $agent->form_number(3);
 
     my $string = Encode::decode_utf8("I18N Web Testing æøå");
