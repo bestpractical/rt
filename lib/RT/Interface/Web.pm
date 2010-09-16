@@ -1450,8 +1450,6 @@ sub ProcessACLs {
     my $ARGSref = shift;
     my (%state, @results);
 
-    #XXX: why don't we get ARGSref like in other Process* subs?
-
     my $CheckACL = $ARGSref->{'CheckACL'};
     my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
 
