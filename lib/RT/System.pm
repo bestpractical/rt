@@ -241,14 +241,25 @@ sub SubjectTag {
     return grep !$seen{lc $_}++, values %$map;
 }
 
+=head2 QueueCacheNeedsUpdate ( 1 )
+
+Attribute to decide when SelectQueue needs to flush the list of queues
+and retrieve new ones.  Set when queues are created, enabled/disabled
+and on certain acl changes.  Should also better understand group management.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
 sub QueueCacheNeedsUpdate {
     my $self = shift;
     my $update = shift;
 
     if ($update) {
-        return $self->SetAttribute('QueueCacheNeedsUpdate', $update);
+        return $self->SetAttribute(Name => 'QueueCacheNeedsUpdate', Content => time);
     } else {
-        return $self->FirstAttribute('QueueCacheNeedsUpdate') || 0;
+        my $cache = $self->FirstAttribute('QueueCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0 );
     }
 }
 
