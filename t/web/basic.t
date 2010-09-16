@@ -22,7 +22,7 @@ my $url = $agent->rt_base_url;
     $agent->login('root' => 'password');
     # the field isn't named, so we have to click link 0
     is( $agent->status, 200, "Fetched the page ok");
-    ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
+    $agent->content_like(qr/Logout/i, "Found a logout link");
 }
 
 {
@@ -74,7 +74,7 @@ my $url = $agent->rt_base_url;
         fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
     );
 
-    like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
+    $agent->content_like(qr/to &#39;300&#39;/, "5 hours is 300 minutes");
 }
 
 # {{{ test an image

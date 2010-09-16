@@ -35,7 +35,7 @@ is($agent->status, 200, "Loaded a page");
 # follow the link marked "Login"
 $agent->login(root => 'password');
 is($agent->status, 200, "Fetched the page ok");
-like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
+$agent->content_like(qr/Logout/i, "Found a logout link");
 
 
 find ( sub { wanted() and test_get($File::Find::name) } , 'share/html/');
@@ -50,12 +50,12 @@ sub test_get {
 
         $file =~ s#^share/html/##;
         diag( "testing $url/$file" );
+
         $agent->get_ok("$url/$file");
         is($agent->status, 200, "Loaded $file");
-#        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
-        ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
-        ok( $agent->{'content'} !~ /raw error/i, "Didn't get a Mason compilation error on $file") or do {
-            if (my ($error) = $agent->{'content'} =~ /<pre>(.*)/) {
+        $agent->content_unlike(qr/Not logged in/i, "Still logged in for  $file");
+        $agent->content_unlike(qr/raw error/i, "Didn't get a Mason compilation error on $file") or do {
+            if (my ($error) = $agent->content =~ /<pre>(.*)/) {
                 diag "$file: $error";
             }
         };

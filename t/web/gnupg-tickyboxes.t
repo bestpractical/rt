@@ -131,7 +131,7 @@ sub create_a_ticket {
     $m->submit;
     is $m->status, 200, "request successful";
 
-    unlike($m->content, qr/unable to sign outgoing email messages/);
+    $m->content_unlike(qr/unable to sign outgoing email messages/);
 
     $m->get_ok('/'); # ensure that the mail has been processed
 

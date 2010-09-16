@@ -221,7 +221,7 @@ sub create_a_ticket {
     $m->submit;
     is $m->status, 200, "request successful";
 
-    unlike($m->content, qr/unable to sign outgoing email messages/);
+    $m->content_unlike(qr/unable to sign outgoing email messages/);
 
 
     my @mail = RT::Test->fetch_caught_mails;
