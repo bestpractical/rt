@@ -2,12 +2,12 @@
 
 use strict;
 
-use RT::Test tests => 8;
+use RT::Test tests => 83;
 RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 for ( 1 .. 75 ) {
-    $ticket->Create(
+    ok $ticket->Create(
         Subject   => 'Ticket ' . $_,
         Queue     => 'General',
         Owner     => 'root',
