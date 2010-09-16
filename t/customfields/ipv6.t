@@ -66,7 +66,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
             }
         );
 
-        $agent->content_like( qr/$valid{$ip}/, "IP on the page" );
+        $agent->content_contains( $valid{$ip}, "IP on the page" );
         my ($id) = $agent->content =~ /Ticket (\d+) created/;
         ok( $id, "created ticket $id" );
 
@@ -97,11 +97,11 @@ diag "create a ticket and edit IP field using Edit page"
             "Followed 'Basics' link" );
         $agent->form_number(3);
 
-        like( $agent->value($cf_field), qr/^\s*$/, 'IP is empty' );
+        is( $agent->value($cf_field), '', 'IP is empty' );
         $agent->field( $cf_field => $valid{$ip} );
         $agent->click('SubmitTicket');
 
-        $agent->content_like( qr/$valid{$ip}/, "IP on the page" );
+        $agent->content_contains( $valid{$ip}, "IP on the page" );
 
         my $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($id);
@@ -117,12 +117,11 @@ diag "create a ticket and edit IP field using Edit page"
         $agent->follow_link_ok( { text => 'Basics', n => "1" },
             "Followed 'Basics' link" );
         $agent->form_number(3);
-        like( $agent->value($cf_field),
-            qr/^$valid{$ip}$/, 'IP is in input box' );
+        is( $agent->value($cf_field), $valid{$ip}, 'IP is in input box' );
         $agent->field( $cf_field => $new_ip );
         $agent->click('SubmitTicket');
 
-        $agent->content_like( qr/$new_value/, "IP on the page" );
+        $agent->content_contains( $new_value, "IP on the page" );
 
         $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($id);
@@ -147,7 +146,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             }
         );
 
-        $agent->content_like( qr/can not be parsed to IPAddress/,
+        $agent->content_contains( 'can not be parsed to IPAddress',
             'ticket fails to create' );
     }
 }
