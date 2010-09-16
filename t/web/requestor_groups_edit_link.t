@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test tests => 9;
 
 RT->Config->Set( ShowMoreAboutPrivilegedUsers    => 1 );
 
@@ -34,7 +34,7 @@ ok( $id, 'created ticket' );
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login( user_a => 'password' ), 'logged in as user_a' );
 
-$m->get_ok( $url . '/Ticket/Display.html?id=' . $id );
+$m->goto_ticket($id);
 
 ok(
     !$m->find_link( text => 'Edit' ), 'no Edit link without AdminUsers permission'
@@ -50,7 +50,7 @@ ok(
     'add AdminUsers and ShowConfigTab rights for user_a'
 );
 
-$m->get_ok( $url . '/Ticket/Display.html?id=' . $id );
+$m->goto_ticket($id);
 $m->follow_link_ok( { text => 'Edit' }, 'follow the Edit link' );
 is( $m->uri, $url . "/Admin/Users/Memberships.html?id=" . $user_a->id, 'url is right' );
 
