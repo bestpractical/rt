@@ -20,14 +20,13 @@ my $user_b = RT::Test->load_or_create_user(
 ok $user_b && $user_b->id, 'loaded or created user';
 
 RT->Config->Set( AutocompleteOwners => 1 );
-RT::Test->started_ok;
+my ($baseurl, $agent_a) = RT::Test->started_ok;
 
 ok( RT::Test->set_rights(
     { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-my $agent_a = RT::Test::Web->new;
 ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 
 diag "current user has no right to own, nobody selected as owner on create";

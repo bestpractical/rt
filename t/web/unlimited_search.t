@@ -3,7 +3,7 @@
 use strict;
 
 use RT::Test tests => 83;
-RT::Test->started_ok;
+my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 for ( 1 .. 75 ) {
@@ -15,7 +15,6 @@ for ( 1 .. 75 ) {
     );
 }
 
-my $agent = RT::Test::Web->new;
 ok $agent->login('root', 'password'), 'logged in as root';
 
 $agent->get_ok('/Search/Build.html');
