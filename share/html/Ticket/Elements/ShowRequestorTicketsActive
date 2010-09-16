@@ -45,8 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<span class="label"><&|/l, $Rows &>This user's [_1] highest priority active tickets</&>:</span>
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
+<& ShowRequestorTickets, %ARGS, Description => loc('active'), conditions => $conditions, Rows => $Rows  &>
 <%INIT>
 unless ( @$conditions ) {
     foreach (RT::Queue->ActiveStatusArray()) {

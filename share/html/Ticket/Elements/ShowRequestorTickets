@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<span class="label">
+  <a href="<% $url %>"><&|/l, $Rows, $Description &>This user's [_1] highest priority [_2] tickets</&>:</a>
+</span>
 <ul>
 %while (my $w=$tickets->Next) {
 %my $uri = RT::URI->new( $session{'CurrentUser'} );
@@ -61,9 +64,16 @@ my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $tickets->FromSQL( $sql );
 $tickets->RowsPerPage( $Rows );
 $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
+
+my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
+   $url .= $m->comp('/Elements/QueryString',
+                    Query       => $sql,
+                    OrderBy     => 'Priority',
+                    Order       => 'DESC' );
 </%INIT>
 <%ARGS>
 $Requestor => undef
 $conditions
 $Rows => 10
+$Description => ''
 </%ARGS>

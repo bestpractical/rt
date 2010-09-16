@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<span class="label"><&|/l, $Rows &>This user's [_1] highest priority tickets</&>:</span>
 <& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows  &>
 <%ARGS>
 $Requestor => undef
