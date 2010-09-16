@@ -57,6 +57,6 @@
 </form>
 <%INIT>
 # Update the acls.
-my @results = ProcessACLChanges(\%ARGS);
+my @results = ProcessACLs(\%ARGS);
 my @principals = GetPrincipalsMap($RT::System, 'Users');
 </%INIT>

@@ -45,13 +45,50 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%# showing no tickets means doing no work
-% if ( $AsLink ) {
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('all') &>
+<& /Elements/Header, Title => loc("Watching Queues") &>
+<& Elements/Tabs, 
+    current_tab => "Tools/Watching.html", 
+    Title => loc("Watching Queues") &>
+
+<%perl>
+my $count = 0;
+my $Queues = RT::Queues->new($session{CurrentUser});
+$Queues->UnLimit;
+while (my $Queue = $Queues->Next) {
+    my @types;
+
+    for my $type ($Queue->AllRoleGroupTypes) {
+        push @types, $type if $Queue->IsWatcher(
+            PrincipalId => $session{CurrentUser}->id,
+            Type        => $type,
+        );
+    }
+
+    next if !@types;
+
+    my $first = ($count == 0);
+    if ($first) {
+</%perl>
+        <ul class="queue-list">
+<%perl>
+    }
+
+    $count += @types;
+</%perl>
+
+    <li class="queue-roles">
+        <span class="queue-name"><& /Ticket/Elements/ShowQueue, QueueObj => $Queue &></span>
+        <ul class="queue-role-list">
+%           for my $type (@types) {
+                <li class="queue-role"><% $type %></li>
+%           }
+        </ul>
+    </li>
 % }
-<%ARGS>
-$Requestor => undef
-$conditions => []
-$Rows => 10
-$AsLink => undef
-</%ARGS>
+
+% if ($count) {
+    </ul>
+% } else {
+    <p><&|/l&>You are not watching any queues.</&></p>
+% }
+

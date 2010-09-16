@@ -147,7 +147,7 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
     <div id="<% "$id-$category" %>">
     <ul class="rights-list">
-%     for my $right (sort @{$categories{$category}}) {
+%     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
       <li>
         <input type="checkbox" class="checkbox"
                name="SetRights-<% $acldesc %>"

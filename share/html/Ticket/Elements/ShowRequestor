@@ -45,6 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% if ($ShowTickets) {
+<script type="text/javascript">
+    jQuery(function() {
+        jQuery(".more-about-requestor-tickets").tabs({
+            cache: true,
+            collapsible: true,
+            selected: <% $selected %>
+        });
+    });
+</script>
+% }
+
 <%PERL>
 my $people = $Ticket->Requestors->UserMembersObj;
 while ( my $requestor = $people->Next ) {
@@ -56,7 +68,6 @@ while ( my $requestor = $people->Next ) {
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => loc("More about [_1]", $name),
-    titleright_raw => $m->scomp( $TicketsLinkTemplate, AsLink => 1, Requestor => $requestor ),
     class => 'ticket-info-requestor'
 &>
 
@@ -72,8 +83,19 @@ while ( my $requestor = $people->Next ) {
 % }
 
 % if ( $ShowTickets ) {
-<div class="more-about-requestor" id="more-about-requestor-<%$requestor->Id%>">
-  <& $TicketTemplate, Requestor => $requestor &>
+<div class="more-about-requestor-tickets" id="more-about-requestor-tickets-<%$requestor->Id%>">
+  <ul>
+% for my $status ( @$status_order ) {
+% my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
+%  $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
+    <li><a href="<% $url | n %>"><% $status_link_text->{$status} %></a></li>
+% }
+  </ul>
+% for (1 .. scalar @$status_order) {
+  <div id="ui-tabs-<% $_ %>" class="ui-tabs-hide">
+    <span class="label"><&|/l&>Loading...</&></span>
+  </div>
+% }
 </div>
 % }
 
@@ -89,7 +111,6 @@ while ( my $requestor = $people->Next ) {
   <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => RT->Config->Get('MoreAboutRequestorGroupsLimit') &></span>
 </div>
 % }
-
 </&>
 
 % }
@@ -103,17 +124,25 @@ $has_right_adminusers &&= $session{'CurrentUser'}->HasRight(
 
 my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
 
-$TicketTemplate ||= "ShowRequestorTickets".(RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser})||'Active');
-$TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
+# Ticket list tabs
+my $selected = -1;
+$DefaultTicketsTab ||= RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser}) || 'Active';
+my $status_link_text = {Active   => loc('Active Tickets'),
+                        Inactive => loc('Inactive Tickets'),
+                        All      => loc('All Tickets')};
+my $status_order = [qw/Active Inactive All/];
+$m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_text, status_order => \$status_order );
 
-$TicketsLinkTemplate ||= $TicketTemplate;
-$TicketsLinkTemplate = "ShowRequestorTicketsActive"
-    if $TicketsLinkTemplate =~ /None$/;
+unless ( $DefaultTicketsTab eq 'None' ) {
+    for (0 .. (@$status_order - 1)) {
+        $selected = $_ && last
+            if $status_order->[$_] eq $DefaultTicketsTab;
+    }
+}
 </%INIT>
 <%ARGS>
 $Ticket=>undef
-$TicketTemplate=>undef
-$TicketsLinkTemplate => undef
+$DefaultTicketsTab => undef
 $ShowComments => 1
 $ShowTickets => 1
 $ShowGroups => 1

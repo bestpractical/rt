@@ -66,6 +66,10 @@ my $tabs = {
         title => loc('My Day'),
         path  => 'Tools/MyDay.html',
     },
+    e => {
+        title => loc('Watching Queues'),
+        path  => 'Tools/Watching.html',
+    },
 };
 
 my $can_see_dashboards = $session{CurrentUser}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)

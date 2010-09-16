@@ -1382,6 +1382,72 @@ sub ParseDateToISO {
 
 sub ProcessACLChanges {
     my $ARGSref = shift;
+
+    #XXX: why don't we get ARGSref like in other Process* subs?
+
+    my @results;
+
+    foreach my $arg ( keys %$ARGSref ) {
+        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ );
+
+        my ( $method, $principal_id, $object_type, $object_id ) = ( $1, $2, $3, $4 );
+
+        my @rights;
+        if ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
+            @rights = @{ $ARGSref->{$arg} };
+        } else {
+            @rights = $ARGSref->{$arg};
+        }
+        @rights = grep $_, @rights;
+        next unless @rights;
+
+        my $principal = RT::Principal->new( $session{'CurrentUser'} );
+        $principal->Load($principal_id);
+
+        my $obj;
+        if ( $object_type eq 'RT::System' ) {
+            $obj = $RT::System;
+        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+            $obj = $object_type->new( $session{'CurrentUser'} );
+            $obj->Load($object_id);
+            unless ( $obj->id ) {
+                $RT::Logger->error("couldn't load $object_type #$object_id");
+                next;
+            }
+        } else {
+            $RT::Logger->error("object type '$object_type' is incorrect");
+            push( @results, loc("System Error") . ': ' . loc( "Rights could not be granted for [_1]", $object_type ) );
+            next;
+        }
+
+        foreach my $right (@rights) {
+            my ( $val, $msg ) = $principal->$method( Object => $obj, Right => $right );
+            push( @results, $msg );
+        }
+    }
+
+    return (@results);
+}
+
+# }}}
+
+=head2 ProcessACLs
+
+ProcessACLs expects values from a series of checkboxes that describe the full
+set of rights a principal should have on an object.
+
+It expects form inputs with names like SetRights-PrincipalId-ObjType-ObjId
+instead of with the prefixes Grant/RevokeRight.  Each input should be an array
+listing the rights the principal should have, and ProcessACLs will modify the
+current rights to match.  Additionally, the previously unused CheckACL input
+listing PrincipalId-ObjType-ObjId is now used to catch cases when all the
+rights are removed from a principal and as such no SetRights input is
+submitted.
+
+=cut
+
+sub ProcessACLs {
+    my $ARGSref = shift;
     my (%state, @results);
 
     #XXX: why don't we get ARGSref like in other Process* subs?
@@ -1483,7 +1549,7 @@ sub ProcessACLChanges {
             my $missed = join '|', %{$state{$tuple} || {}};
             $RT::Logger->warn(
                "Uh-oh, it looks like we somehow missed a right in "
-              ."ProcessACLChanges.  Here's what was leftover: $missed"
+              ."ProcessACLs.  Here's what was leftover: $missed"
             );
         }
     }
@@ -1491,7 +1557,7 @@ sub ProcessACLChanges {
     return (@results);
 }
 
-# }}}
+
 
 # {{{ sub UpdateRecordObj
 

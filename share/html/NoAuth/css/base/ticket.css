@@ -1,0 +1,42 @@
+.more-about-requestor-tickets {
+    background: none;
+    border: none;
+    font-family: arial,helvetica,sans-serif !important;
+    padding: 0 !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav {
+    background: none;
+    border: none;
+    font-size: 80%;
+    padding: 0;
+    margin: 0;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav li {
+    border: none !important;
+    background: none !important;
+    padding-right: 1em;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a {
+    padding: 0 !important;
+    margin: 0 !important;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a:hover,
+.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-selected a {
+    text-decoration: underline;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel {
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel a {
+    color: black !important;
+}

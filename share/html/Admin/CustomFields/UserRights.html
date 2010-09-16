@@ -58,7 +58,7 @@ Title => $title, &>
   </form>
 <%INIT>
 # Update the acls.
-my @results = ProcessACLChanges( \%ARGS );
+my @results = ProcessACLs( \%ARGS );
 
 if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No Class defined"));

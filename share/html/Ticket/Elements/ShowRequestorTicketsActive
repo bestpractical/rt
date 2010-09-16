@@ -45,11 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% unless ( $AsLink ) {
-<span class="label"><&|/l, $Rows &>This user's [_1] highest priority active tickets</&>:</span>
-<& ShowRequestorToggleLinks, %ARGS, Status => 'Active' &>
-% }
-<& ShowRequestorTickets, %ARGS, conditions => $conditions, Rows => $Rows, Type => loc('open') &>
+<& ShowRequestorTickets, %ARGS, Description => loc('active'), conditions => $conditions, Rows => $Rows  &>
 <%INIT>
 unless ( @$conditions ) {
     foreach (RT::Queue->ActiveStatusArray()) {
@@ -61,5 +57,4 @@ unless ( @$conditions ) {
 $Requestor => undef
 $conditions => []
 $Rows => 10
-$AsLink => undef
 </%ARGS>

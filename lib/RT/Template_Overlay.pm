@@ -611,6 +611,23 @@ sub SetType {
     return $self->_Set( Field => 'Type', Value => $NewType );
 }
 
+=head2 SetContent
+
+If changing content and the type is Perl, require the ExecuteCode right.
+
+=cut
+
+sub SetContent {
+    my $self       = shift;
+    my $NewContent = shift;
+
+    if ($self->Type eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
+
+    return $self->_Set( Field => 'Content', Value => $NewContent );
+}
+
 sub _UpdateAttributes {
     my $self = shift;
     my %args = (
