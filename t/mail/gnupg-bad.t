@@ -7,7 +7,7 @@ plan skip_all => 'GnuPG required.'
     unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-plan tests => 6;
+plan tests => 5;
 
 
 use Cwd 'getcwd';
@@ -28,8 +28,7 @@ RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-$m->get( $baseurl."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+$m->login;
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
