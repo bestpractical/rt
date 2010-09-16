@@ -22,7 +22,7 @@ my $url = $agent->rt_base_url;
     $agent->login('root' => 'password');
     # the field isn't named, so we have to click link 0
     is( $agent->status, 200, "Fetched the page ok");
-    $agent->content_like(qr/Logout/i, "Found a logout link");
+    $agent->content_contains("Logout", "Found a logout link");
 }
 
 {
@@ -33,7 +33,7 @@ my $url = $agent->rt_base_url;
     $agent->field('Subject' => "Ticket with utf8 body");
     $agent->field('Content' => $string);
     ok($agent->submit, "Created new ticket with $string as Content");
-    $agent->content_like( qr{$string} , "Found the content");
+    $agent->content_contains($string, "Found the content");
     ok($agent->{redirected_uri}, "Did redirection");
 
     {
@@ -55,7 +55,7 @@ my $url = $agent->rt_base_url;
     $agent->field('Subject' => $string);
     $agent->field('Content' => "Ticket with utf8 subject");
     ok($agent->submit, "Created new ticket with $string as Content");
-    $agent->content_like( qr{$string} , "Found the content");
+    $agent->content_contains($string, "Found the content");
     ok($agent->{redirected_uri}, "Did redirection");
 
     {
@@ -74,7 +74,7 @@ my $url = $agent->rt_base_url;
         fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
     );
 
-    $agent->content_like(qr/to &#39;300&#39;/, "5 hours is 300 minutes");
+    $agent->content_contains("to &#39;300&#39;", "5 hours is 300 minutes");
 }
 
 # {{{ test an image

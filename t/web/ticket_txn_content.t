@@ -31,7 +31,7 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->field( 'Queue', $qid );
     $m->submit;
     is( $m->status, 200, "request successful" );
-    $m->content_like( qr/Create a new ticket/, 'ticket create page' );
+    $m->content_contains('Create a new ticket', 'ticket create page' );
 
     $m->form_name('TicketCreate');
     $m->field( 'Subject', 'with plain attachment' );
@@ -40,16 +40,16 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->field( 'ContentType', $type ) unless $type eq 'text/plain';
     $m->submit;
     is( $m->status, 200, "request successful" );
-    $m->content_like( qr/with plain attachment/,
+    $m->content_contains('with plain attachment',
         'we have subject on the page' );
-    $m->content_like( qr/this is main content/, 'main content' );
-    $m->content_like( qr/Download $plain_name/, 'download plain file link' );
+    $m->content_contains('this is main content', 'main content' );
+    $m->content_contains("Download $plain_name", 'download plain file link' );
 
     my ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main content/, 'email contains main content' );
     # check the email link in page too
     $m->follow_link_ok( { text => 'Show' }, 'show the email outgoing' );
-    $m->content_like( qr/this is main content/, 'email contains main content');
+    $m->content_contains('this is main content', 'email contains main content');
     $m->back;
 
     $m->follow_link_ok( { text => 'Reply' }, "reply to the ticket" );
@@ -67,13 +67,13 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->click('SubmitTicket');
     is( $m->status, 200, "request successful" );
 
-    $m->content_like( qr/this is main reply content/, 'main reply content' );
-    $m->content_like( qr/Download $html_name/, 'download html file link' );
+    $m->content_contains("this is main reply content", 'main reply content' );
+    $m->content_contains("Download $html_name", 'download html file link' );
 
     ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main reply content/, 'email contains main reply content' );
     # check the email link in page too
     $m->follow_link_ok( { text => 'Show', n => 2 }, 'show the email outgoing' );
-    $m->content_like( qr/this is main reply content/, 'email contains main reply content');
+    $m->content_contains("this is main reply content", 'email contains main reply content');
     $m->back;
 }

@@ -58,8 +58,8 @@ foreach my $test_str ( $ru_test, $l1_test ) {
             qr{<td\s+class="message-header-value"[^>]*>\s*\Q$test_str\E\s*</td>}i,
             'header on the page'
         );
-        $m->content_like( 
-            qr{\Q$support_str\E}i,
+        $m->content_contains(
+            $support_str,
             'content on the page'
         );
 
@@ -81,8 +81,8 @@ foreach my $test_str ( $ru_test, $l1_test ) {
             qr{<td\s+class="message-header-value"[^>]*>\s*\Q$test_str\E\s*</td>}i,
             'header on the page'
         );
-        $m->content_like( 
-            qr{\Q$support_str\E}i,
+        $m->content_contains(
+            $support_str,
             'content on the page'
         );
 

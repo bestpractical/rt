@@ -52,7 +52,7 @@ my ( $cf, $cfid, $tid );
     $m->tick( AddCustomField => $_  => 0 ) for @names; # ...and not any other. ;-)
     $m->click('UpdateCFs');
 
-    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+    $m->content_contains('Object created', 'TCF added to the queue' );
 }
 
 my $tester = RT::Test->load_or_create_user( Name => 'tester', Password => '123456' );
@@ -70,7 +70,7 @@ diag "check that we have no the CF on the create"
         form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
-    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
     my $upload_field = "Object-RT::Ticket--CustomField-$cfid-Upload"; 
@@ -82,9 +82,9 @@ diag "check that we have no the CF on the create"
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
-    $m->content_unlike(qr/img:/, 'has no img field on the page');
+    $m->content_lacks('img:', 'has no img field on the page');
     $m->follow_link( text => 'Custom Fields');
-    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $m->content_lacks('Upload multiple images', 'has no upload image field');
 }
 
 RT::Test->set_rights(
@@ -100,7 +100,7 @@ diag "check that we have no the CF on the create"
         form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
-    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
     my $upload_field = "Object-RT::Ticket--CustomField-$cfid-Upload";
@@ -114,7 +114,7 @@ diag "check that we have no the CF on the create"
     ok $tid, "a ticket is created succesfully";
 
     $m->follow_link( text => 'Custom Fields' );
-    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $m->content_lacks('Upload multiple images', 'has no upload image field');
     $form = $m->form_number(3);
     $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
@@ -132,7 +132,7 @@ diag "create a ticket with an image";
         form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
-    $m->content_like(qr/Upload multiple images/, 'has a upload image field');
+    $m->content_contains('Upload multiple images', 'has a upload image field');
 
     $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
     my $upload_field = "Object-RT::Ticket--CustomField-$1-Upload";

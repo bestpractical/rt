@@ -30,7 +30,7 @@ my $sid;
     $m->field('Scrip-new-CustomPrepareCode' => 'return 1;');
     $m->field('Scrip-new-CustomCommitCode' => 'return 1;');
     $m->submit;
-    $m->content_like( qr/Scrip Created/ );
+    $m->content_contains("Scrip Created");
 
     ($sid) = ($m->content =~ /Scrip\s*#(\d+)/);
 

@@ -62,10 +62,10 @@ diag "user B adds a message, we check that user A see notification and can clear
     ok( $reply_id, 'got correspond txn id' );
 
     $agent_a->goto_ticket($tid);
-    $agent_a->content_like(qr/bla-bla/ims, 'the message on the page');
+    $agent_a->content_contains('bla-bla', 'the message on the page');
 
-    $agent_a->content_like(
-        qr/unread message/ims,
+    $agent_a->content_contains(
+        'unread message',
         'we have not seen something'
     );
 
@@ -76,20 +76,20 @@ diag "user B adds a message, we check that user A see notification and can clear
     like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
 
     $agent_a->follow_link_ok({text => 'jump to the first unread message and mark all messages as seen'}, 'try to mark all as seen');
-    $agent_a->content_like(
-        qr/Marked all messages as seen/ims,
+    $agent_a->content_contains(
+        'Marked all messages as seen',
         'see success message'
     );
     like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
 
-    $agent_a->content_like(
-        qr/Marked all messages as seen/ims,
+    $agent_a->content_contains(
+        'Marked all messages as seen',
         'see success message'
     );
 
     $agent_a->goto_ticket($tid);
-    $agent_a->content_unlike(
-        qr/unread message/ims,
+    $agent_a->content_lacks(
+        'unread message',
         'we have seen everything, so no messages'
     );
 }

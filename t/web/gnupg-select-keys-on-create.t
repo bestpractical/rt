@@ -55,8 +55,8 @@ diag "check that signing doesn't work if there is no key";
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/unable to sign outgoing email messages/i,
+    $m->content_contains(
+        'unable to sign outgoing email messages',
         'problems with passphrase'
     );
     $m->warning_like(qr/signing failed: secret key not available/);
@@ -82,12 +82,12 @@ diag "check that things don't work if there is no key";
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There is no key suitable for encryption/i,
+    $m->content_contains(
+        'There is no key suitable for encryption',
         'problems with keys'
     );
 
@@ -120,12 +120,12 @@ diag "check that things still doesn't work if key is not trusted";
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There is one suitable key, but trust level is not set/i,
+    $m->content_contains(
+        'There is one suitable key, but trust level is not set',
         'problems with keys'
     );
 
@@ -135,12 +135,12 @@ diag "check that things still doesn't work if key is not trusted";
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/Selected key either is not trusted/i,
+    $m->content_contains(
+        'Selected key either is not trusted',
         'problems with keys'
     );
 
@@ -169,12 +169,12 @@ diag "check that things still doesn't work if two keys are not trusted";
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There are several keys suitable for encryption/i,
+    $m->content_contains(
+        'There are several keys suitable for encryption',
         'problems with keys'
     );
 
@@ -184,12 +184,12 @@ diag "check that things still doesn't work if two keys are not trusted";
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/Selected key either is not trusted/i,
+    $m->content_contains(
+        'Selected key either is not trusted',
         'problems with keys'
     );
 
@@ -216,12 +216,12 @@ diag "check that we see key selector even if only one key is trusted but there a
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There are several keys suitable for encryption/i,
+    $m->content_contains(
+        'There are several keys suitable for encryption',
         'problems with keys'
     );
 
@@ -245,12 +245,12 @@ diag "check that key selector works and we can select trusted key";
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There are several keys suitable for encryption/i,
+    $m->content_contains(
+        'There are several keys suitable for encryption',
         'problems with keys'
     );
 
@@ -280,12 +280,12 @@ diag "check encrypting of attachments";
     $m->field( Content => 'Some content' );
     $m->field( Attach => $0 );
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
+    $m->content_contains(
+        'You are going to encrypt outgoing email messages',
         'problems with keys'
     );
-    $m->content_like(
-        qr/There are several keys suitable for encryption/i,
+    $m->content_contains(
+        'There are several keys suitable for encryption',
         'problems with keys'
     );
 

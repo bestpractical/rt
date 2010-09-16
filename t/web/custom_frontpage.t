@@ -29,7 +29,7 @@ $m->field ( "SavedSearchDescription" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 
 $m->get ( $url.'Prefs/MyRT.html' );
-$m->content_like (qr/stupid tickets/, 'saved search listed in rt at a glance items');
+$m->content_contains('stupid tickets', 'saved search listed in rt at a glance items');
 
 ok $m->login('root', 'password', logout => 1), 'we did log in as root';
 
@@ -58,4 +58,4 @@ $m->click_button (name => 'movedown');
 $m->form_name ('SelectionBox-body');
 #$m->click_button (name => 'body-Save');
 $m->get ( $url );
-$m->content_like (qr'highest priority tickets', 'adds them back');
+$m->content_contains('highest priority tickets', 'adds them back');

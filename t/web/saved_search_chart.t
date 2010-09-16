@@ -35,7 +35,7 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 
-$m->content_like( qr/Chart first chart saved/, 'saved first chart' );
+$m->content_contains("Chart first chart saved", 'saved first chart' );
 
 my ( $search_uri, $id ) = $m->content =~ /value="(RT::User-\d+-SavedSearch-(\d+))"/;
 $m->submit_form(
@@ -64,8 +64,8 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 
-$m->content_like( qr/Chart first chart updated/, 'found updated message' );
-$m->content_like( qr/id=2/,                      'Query is updated' );
+$m->content_contains("Chart first chart updated", 'found updated message' );
+$m->content_contains("id=2",                      'Query is updated' );
 $m->content_like( qr/value="Status"\s+selected="selected"/,
     'PrimaryGroupBy is updated' );
 $m->content_like( qr/value="pie"\s+selected="selected"/,
@@ -81,6 +81,6 @@ $m->submit_form(
     form_name => 'SaveSearch',
     button    => 'SavedSearchDelete',
 );
-$m->content_like( qr/Chart first chart deleted/, 'found deleted message' );
+$m->content_contains("Chart first chart deleted", 'found deleted message' );
 $m->content_unlike( qr/value="RT::User-\d+-SavedSearch-\d+"/,
     'no saved search' );

@@ -116,7 +116,7 @@ diag "Can not move up the top most clause";
     $agent->select("clauses", ["0"]);
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
+    $agent->content_contains("error: can&#39;t move up", "i shouldn't have been able to hit up");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
@@ -124,7 +124,7 @@ diag "Can not move left the left most clause";
 {
     $agent->click("Left");
     ok($agent->form_name('BuildQuery'), "found the form again");
-    $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
+    $agent->content_contains("error: can&#39;t move left", "i shouldn't have been able to hit left");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 

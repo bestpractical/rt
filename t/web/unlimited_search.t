@@ -27,7 +27,7 @@ $agent->form_name('BuildQuery');
 $agent->field('RowsPerPage', '0');
 $agent->submit('DoSearch');
 $agent->follow_link_ok({text=>'Show Results'});
-$agent->content_like(qr/Ticket 75/);
+$agent->content_contains("Ticket 75");
 
 $agent->follow_link_ok({text=>'New Search'});
 $agent->form_name('BuildQuery');
@@ -38,4 +38,4 @@ $agent->form_name('BuildQuery');
 $agent->field('RowsPerPage', '50');
 $agent->submit('DoSearch');
 $agent->follow_link_ok({text=>'Bulk Update'});
-$agent->content_unlike(qr/Ticket 51/);
+$agent->content_lacks("Ticket 51");

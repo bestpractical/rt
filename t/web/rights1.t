@@ -42,7 +42,7 @@ ok($grantid,$grantmsg);
 
 $agent->reload;
 
-$agent->content_like(qr/Logout/i, "Reloaded page successfully");
+$agent->content_contains('Logout', "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/Admin/",
 		       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
@@ -50,7 +50,7 @@ ok ($revokeid,$revokemsg);
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 ok ($grantid,$grantmsg);
 $agent->reload();
-$agent->content_like(qr/Logout/i, "Reloaded page successfully");
+$agent->content_contains('Logout', "Reloaded page successfully");
 ok($agent->find_link( 
 		       text => 'Preferences'), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
@@ -59,21 +59,20 @@ ok ($revokeid,$revokemsg);
 $agent->follow_link( url => "$RT::WebPath/Search/Build.html",
 		     text => 'Tickets');
 is($agent->status, 200, "Fetched search builder page");
-$agent->content_unlike(qr/Load saved search/i, "No search loading box");
-$agent->content_unlike(qr/Saved searches/i, "No saved searches box");
+$agent->content_lacks("Load saved search", "No search loading box");
+$agent->content_lacks("Saved searches", "No saved searches box");
 
 ($grantid,$grantmsg) = $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
 ok($grantid,$grantmsg);
 $agent->reload();
-$agent->content_like(qr/Load saved search/i, "Search loading box exists");
+$agent->content_contains("Load saved search", "Search loading box exists");
 $agent->content_unlike(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i,
    "Still no saved searches box");
 
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 ok ($grantid,$grantmsg);
 $agent->reload();
-$agent->content_like(qr/Load saved search/i,
-   "Search loading box still exists");
+$agent->content_contains("Load saved search", "Search loading box still exists");
 $agent->content_like(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i,
    "Saved searches box exists");
 
