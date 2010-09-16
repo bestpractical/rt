@@ -91,6 +91,11 @@ while ( my $requestor = $people->Next ) {
     <li><a href="<% $url | n %>"><% $status_link_text->{$status} %></a></li>
 % }
   </ul>
+% for (1 .. scalar @$status_order) {
+  <div id="ui-tabs-<% $_ %>" class="ui-tabs-hide">
+    <span class="label"><&|/l&>Loading...</&></span>
+  </div>
+% }
 </div>
 % }
 
