@@ -156,7 +156,7 @@ diag 'check search build page';
         Right  => 'SuperUser',
         Object => $RT::System,
     ));
-    $m->login( 'shanghai', 'password' );
+    $m->login( 'shanghai', 'password', logout => 1 );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
     $m->form_number(3);

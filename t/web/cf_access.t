@@ -61,7 +61,7 @@ RT::Test->set_rights(
       Right => [qw(SeeQueue ShowTicket CreateTicket)],
     },
 );
-ok $m->login( $tester->Name, 123456), 'logged in';
+ok $m->login( $tester->Name, 123456, logout => 1), 'logged in';
 
 diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right";

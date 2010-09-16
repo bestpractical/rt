@@ -64,7 +64,7 @@ my $user_b = RT::Test->load_or_create_user(
     Name => 'user_b', Password => 'password',
 );
 ok $user_b && $user_b->id, 'loaded or created user';
-$agent_b->login('user_b', 'password', 'logged in as user B');
+$agent_b->login('user_b', 'password');
 $agent_b->get_ok($noauth_uri);
 is( $agent_b->content_type, 'application/rss+xml', 'content type' );
 is( $agent_b->content, $rss_content, 'content' );

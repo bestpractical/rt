@@ -31,7 +31,7 @@ $m->click_button (name => 'SavedSearchSave');
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->content_like (qr/stupid tickets/, 'saved search listed in rt at a glance items');
 
-ok $m->login, 'we did log in as root';
+ok $m->login('root', 'password', logout => 1), 'we did log in as root';
 
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->form_name ('SelectionBox-body');

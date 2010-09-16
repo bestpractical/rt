@@ -76,8 +76,9 @@ sub login {
     my $self = shift;
     my $user = shift || 'root';
     my $pass = shift || 'password';
+    my %args = @_;
     
-    $self->logout;
+    $self->logout if $args{logout};
 
     my $url = $self->rt_base_url;
     $self->get($url . "?user=$user;pass=$pass");
