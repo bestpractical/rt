@@ -8,7 +8,16 @@ use RT::FM::Test tests => 21;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
-use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+my $logo;
+BEGIN {
+    $logo =
+      -e $RT::MasonComponentRoot . '/NoAuth/images/bpslogo.png'
+      ? 'bpslogo.png'
+      : 'bplogo.gif';
+}
+
+use constant ImageFile => $RT::MasonComponentRoot . "/NoAuth/images/$logo";
+
 use constant ImageFileContent => do {
     local $/;
     open my $fh, '<', ImageFile or die ImageFile.$!;
@@ -80,5 +89,5 @@ my $id = $1 if $m->content =~ /Article (\d+) created/;
 
 $m->title_like(qr/Modify article #$id/, "Editing article $id");
 
-$m->follow_link( text => 'bplogo.gif' );
+$m->follow_link( text => $logo );
 $m->content_is(ImageFileContent, "it links to the uploaded image");
