@@ -26,7 +26,7 @@ my $url = $agent->rt_base_url;
 }
 
 {
-    $agent->get($url."Ticket/Create.html?Queue=1");
+    $agent->goto_create_ticket(1);
     is ($agent->{'status'}, 200, "Loaded Create.html");
     $agent->form_number(3);
     my $string = Encode::decode_utf8("I18N Web Testing æøå");
@@ -47,7 +47,7 @@ my $url = $agent->rt_base_url;
 }
 
 {
-    $agent->get($url."Ticket/Create.html?Queue=1");
+    $agent->goto_create_ticket(1);
     is ($agent->{'status'}, 200, "Loaded Create.html");
     $agent->form_number(3);
 
