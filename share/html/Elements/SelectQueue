@@ -92,7 +92,7 @@ if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
     delete $session{$cache_key};
 }
 if ( defined $session{$cache_key} &&
-     $session{$cache_key}{lastupdated} < $RT::System->QueueCacheNeedsUpdate ) {
+     $session{$cache_key}{lastupdated} < RT->System->QueueCacheNeedsUpdate ) {
     delete $session{$cache_key};
 }
 
