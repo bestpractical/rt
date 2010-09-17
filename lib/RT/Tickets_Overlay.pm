@@ -981,14 +981,14 @@ sub _RoleGroupsJoin {
 
 sub _GroupMembersJoin {
     my $self = shift;
-    my %args = (New => 1, GroupsAlias => undef, @_);
+    my %args = (New => 1, GroupsAlias => undef, Left => 1, @_);
 
     return $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
         if $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
             && !$args{'New'};
 
     my $alias = $self->Join(
-        TYPE            => 'LEFT',
+        $args{'Left'} ? (TYPE            => 'LEFT') : (),
         ALIAS1          => $args{'GroupsAlias'},
         FIELD1          => 'id',
         TABLE2          => 'CachedGroupMembers',
