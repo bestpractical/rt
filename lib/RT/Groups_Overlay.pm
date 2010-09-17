@@ -168,29 +168,6 @@ sub LimitToUserDefinedGroups {
 
 # }}}
 
-# {{{ LimitToPersonalGroupsFor
-
-=head2 LimitToPersonalGroupsFor PRINCIPAL_ID
-
-Return only Personal Groups for the user whose principal id 
-is PRINCIPAL_ID
-
-=cut
-
-
-sub LimitToPersonalGroupsFor {
-    my $self = shift;
-    my $princ = shift;
-
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
-    $self->Limit(   FIELD => 'Instance',   
-                    OPERATOR => '=', 
-                    VALUE => $princ);
-}
-
-
-# }}}
-
 # {{{ LimitToRolesForQueue
 
 =head2 LimitToRolesForQueue QUEUE_ID

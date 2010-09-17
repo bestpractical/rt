@@ -77,10 +77,6 @@ use RT::ACL;
 # XXX TODO Can't localize these outside of having an object around.
 our $RIGHTS = {
     SuperUser              => 'Do anything and everything',           # loc_pair
-    AdminAllPersonalGroups =>
-      "Create, delete and modify the members of any user's personal groups", # loc_pair
-    AdminOwnPersonalGroups =>
-      'Create, delete and modify the members of personal groups',     # loc_pair
     AdminUsers     => 'Create, delete and modify users',              # loc_pair
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
     ShowConfigTab => "Show Configuration tab",     # loc_pair
@@ -93,8 +89,6 @@ our $RIGHTS = {
 
 our $RIGHT_CATEGORIES = {
     SuperUser              => 'Admin',
-    AdminAllPersonalGroups => 'Admin',
-    AdminOwnPersonalGroups => 'Admin',
     AdminUsers             => 'Admin',
     ModifySelf             => 'Staff',
     ShowConfigTab          => 'Admin',

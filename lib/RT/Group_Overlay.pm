@@ -192,11 +192,6 @@ sub SelfDescription {
 	elsif ($self->Domain eq 'UserDefined') {
 		return $self->loc("group '[_1]'",$self->Name);
 	}
-	elsif ($self->Domain eq 'Personal') {
-		my $user = RT::User->new($self->CurrentUser);
-		$user->Load($self->Instance);
-		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
-	}
 	elsif ($self->Domain eq 'RT::System-Role') {
 		return $self->loc("system [_1]",$self->Type);
 	}
@@ -299,27 +294,6 @@ sub LoadACLEquivalenceGroup {
 
 # }}}
 
-# {{{ sub LoadPersonalGroup 
-
-=head2 LoadPersonalGroup {Name => NAME, User => USERID}
-
-Loads a personal group from the database. 
-
-=cut
-
-sub LoadPersonalGroup {
-    my $self       = shift;
-    my %args =  (   Name => undef,
-                    User => undef,
-                    @_);
-
-        $self->LoadByCols( "Domain" => 'Personal',
-                           "Instance" => $args{'User'},
-                           "Type" => '',
-                           "Name" => $args{'Name'} );
-}
-
-# }}}
 
 # {{{ sub LoadSystemInternalGroup 
 
@@ -583,57 +557,6 @@ sub _CreateACLEquivalenceGroup {
 
 # }}}
 
-# {{{ CreatePersonalGroup
-
-=head2 CreatePersonalGroup { PrincipalId => PRINCIPAL_ID, Name => "name", Description => "Description"}
-
-A helper subroutine which creates a personal group. Generally,
-personal groups are used for ACL delegation and adding to ticket roles
-PrincipalId defaults to the current user's principal id.
-
-Returns a tuple of (Id, Message).  If id is 0, the create failed
-
-=cut
-
-sub CreatePersonalGroup {
-    my $self = shift;
-    my %args = (
-        Name        => undef,
-        Description => undef,
-        PrincipalId => $self->CurrentUser->PrincipalId,
-        @_
-    );
-
-    if ( $self->CurrentUser->PrincipalId == $args{'PrincipalId'} ) {
-
-        unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
-                  . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
-        }
-
-    }
-    else {
-        unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
-                  . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
-        }
-
-    }
-
-    return (
-        $self->_Create(
-            Domain      => 'Personal',
-            Type        => '',
-            Instance    => $args{'PrincipalId'},
-            Name        => $args{'Name'},
-            Description => $args{'Description'}
-        )
-    );
-}
-
-# }}}
 
 # {{{ CreateRoleGroup 
 
@@ -713,21 +636,8 @@ This routine finds all the cached group members that are members of this group  
  sub SetDisabled {
      my $self = shift;
      my $val = shift;
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
-        unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-                 return (0, $self->loc('Permission Denied'));
-    }
+     unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+        return (0, $self->loc('Permission Denied'));
     }
     $RT::Handle->BeginTransaction();
     $self->PrincipalObj->SetDisabled($val);
@@ -838,7 +748,7 @@ By default returns groups including all subgroups, but
 could be changed with C<Recursively> named argument.
 
 B<Note> that groups are not filtered by type and result
-may contain as well system groups, personal and other.
+may contain as well system groups and others.
 
 =cut
 
@@ -968,19 +878,6 @@ sub AddMember {
 
 
 
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	
-	else {	
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
@@ -991,7 +888,6 @@ sub AddMember {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-  	} 
     $self->_AddMember(PrincipalId => $new_member);
 }
 
@@ -1166,25 +1062,12 @@ sub DeleteMember {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
 
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
     unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
 	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
 	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
-	}
     $self->_DeleteMember($member_id);
 }
 
@@ -1237,21 +1120,8 @@ sub _Set {
         @_
     );
 
-	if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
-    	unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-        	return ( 0, $self->loc('Permission Denied') );
-    	}
+    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+      	return ( 0, $self->loc('Permission Denied') );
 	}
 
     my $Old = $self->SUPER::_Value("$args{'Field'}");
