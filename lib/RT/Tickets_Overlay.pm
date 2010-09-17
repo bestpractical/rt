@@ -836,6 +836,8 @@ sub _WatcherLimit {
 
     $self->_OpenParen;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
+        # is [not] empty case
+
         my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
@@ -855,6 +857,8 @@ sub _WatcherLimit {
         );
     }
     elsif ( $op =~ /^!=$|^NOT\s+/i ) {
+        # negative condition case
+
         # reverse op
         $op =~ s/!|NOT\s+//i;
 
