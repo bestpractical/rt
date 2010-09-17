@@ -832,7 +832,7 @@ sub _WatcherLimit {
     }
     $rest{SUBKEY} ||= 'EmailAddress';
 
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class );
+    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
 
     $self->_OpenParen;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
