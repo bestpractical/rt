@@ -921,48 +921,25 @@ sub _WatcherLimit {
             );
         }
     } else {
+        # positive condition case
+
         my $group_members = $self->_GroupMembersJoin(
-            GroupsAlias => $groups,
-            New => 0,
+            GroupsAlias => $groups, New => 1, Left => 0
         );
-
-        my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
-        unless ( $users ) {
-            $users = $self->{'_sql_u_watchers_aliases'}{$group_members} = 
-                $self->NewAlias('Users');
-            $self->SUPER::Limit(
-                LEFTJOIN      => $group_members,
-                ALIAS         => $group_members,
-                FIELD         => 'MemberId',
-                VALUE         => "$users.id",
-                QUOTEVALUE    => 0,
-            );
-        }
-
-        # we join users table without adding some join condition between tables,
-        # the only conditions we have are conditions on the table iteslf,
-        # for example Users.EmailAddress = 'x'. We should add this condition to
-        # the top level of the query and bundle it with another similar conditions,
-        # for example "Users.EmailAddress = 'x' OR Users.EmailAddress = 'Y'".
-        # To achive this goal we use own SUBCLAUSE for conditions on the users table.
-        $self->SUPER::Limit(
+        my $users = $self->Join(
+            TYPE            => 'LEFT',
+            ALIAS1          => $group_members,
+            FIELD1          => 'MemberId',
+            TABLE2          => 'Users',
+            FIELD2          => 'id',
+        );
+        $self->_SQLLimit(
             %rest,
-            SUBCLAUSE       => '_sql_u_watchers_'. $users,
             ALIAS           => $users,
             FIELD           => $rest{'SUBKEY'},
             VALUE           => $value,
             OPERATOR        => $op,
             CASESENSITIVE   => 0,
-        );
-        # A condition which ties Users and Groups (role groups) is a left join condition
-        # of CachedGroupMembers table. To get correct results of the query we check
-        # if there are matches in CGM table or not using 'cgm.id IS NOT NULL'.
-        $self->_SQLLimit(
-            %rest,
-            ALIAS           => $group_members,
-            FIELD           => 'id',
-            OPERATOR        => 'IS NOT',
-            VALUE           => 'NULL',
         );
     }
     $self->_CloseParen;
