@@ -115,9 +115,9 @@ sub Init {
     my %import;
     foreach my $l ( @lang ) {
         $import{$l} = [
-            Gettext => (substr(__FILE__, 0, -3) . "/$l.po"),
-            Gettext => "$RT::LocalLexiconPath/*/$l.po",
-            Gettext => "$RT::LocalLexiconPath/$l.po",
+            Gettext => $RT::LexiconPath."/$l.po",
+            Gettext => $RT::LocalLexiconPath."/*/$l.po",
+            Gettext => $RT::LocalLexiconPath."/$l.po",
         ];
         push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
     }
