@@ -107,6 +107,7 @@ RT_MAN_PATH		=	@RT_MAN_PATH_R@
 RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
 RT_FONT_PATH		=	@RT_FONT_PATH_R@
+RT_LEXICON_PATH		=	@RT_LEXICON_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
 LOCAL_PLUGIN_PATH	=	@RT_LOCAL_PATH_R@/plugins
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH_R@
@@ -289,7 +290,7 @@ upgrade-instruct:
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
-upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install font-install fixperms
+upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install po-install font-install fixperms
 
 
 # {{{ dependencies
@@ -333,14 +334,20 @@ fixperms:
 	# Make the system binaries executable also
 	cd $(DESTDIR)$(RT_SBIN_PATH) && ( chmod 0755 $(SYSTEM_BINARIES) ; chown $(BIN_OWNER) $(SYSTEM_BINARIES);  chgrp $(RTGROUP) $(SYSTEM_BINARIES))
 
+
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(MASON_HTML_PATH) \
 					$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
+					$(DESTDIR)$(RT_LEXICON_PATH) \
 					$(DESTDIR)$(LOCAL_LEXICON_PATH)
 	chown -R $(LIBS_OWNER) 	$(DESTDIR)$(MASON_HTML_PATH) \
-				$(DESTDIR)$(MASON_LOCAL_HTML_PATH)
+				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
+				$(DESTDIR)$(RT_LEXICON_PATH) \
+				$(DESTDIR)$(LOCAL_LEXICON_PATH)
 	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)$(MASON_HTML_PATH) \
-				$(DESTDIR)$(MASON_LOCAL_HTML_PATH)
+				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
+				$(DESTDIR)$(RT_LEXICON_PATH) \
+				$(DESTDIR)$(LOCAL_LEXICON_PATH)
 
 	# Make the web ui's data dir writable
 	chmod 0770  	$(DESTDIR)$(MASON_DATA_PATH) \
@@ -355,6 +362,7 @@ fixperms:
 dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/cache
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/etc
@@ -436,6 +444,17 @@ font-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/fonts/$$file" "$(DESTDIR)$(RT_FONT_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 # }}}
+
+
+# {{{ po-install
+po-install:
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LEXICON_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
+@COMMENT_INPLACE_LAYOUT@	-( cd share/po && find . -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/po/$$file" "$(DESTDIR)$(RT_LEXICON_PATH)/$$file" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+# }}}
+
+
 
 # {{{ doc-install
 doc-install:
