@@ -176,28 +176,30 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 }
  
 
-if (!length $ARGS{'UserString'}) {
-$user_msg = loc("No principals selected.");
- }
-else {
-    $Users = RT::Users->new($session{'CurrentUser'});
-    $Users->Limit(FIELD => $ARGS{'UserField'},
-                 VALUE => $ARGS{'UserString'},
-                 OPERATOR => $ARGS{'UserOp'});
-     }
+if ( $ARGS{'UserString'} ) {
+    $Users = RT::Users->new( $session{'CurrentUser'} );
+    $Users->Limit( FIELD    => $ARGS{'UserField'},
+                   VALUE    => $ARGS{'UserString'},
+                   OPERATOR => $ARGS{'UserOp'}
+                 );
+} else {
+    $user_msg = loc("No principals selected.");
+    }
 
-if (!length $ARGS{'GroupString'}) {
-$group_msg = loc("No principals selected.");
- }
-else {
-$Groups = RT::Groups->new($session{'CurrentUser'});
-$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-$Groups->Limit(FIELD => $ARGS{'GroupField'},
-		VALUE => $ARGS{'GroupString'},
-		OPERATOR => $ARGS{'GroupOp'});
-     }
-
-$current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
+if ( $ARGS{'GroupString'} ) {
+    $Groups = RT::Groups->new( $session{'CurrentUser'} );
+    $Groups->Limit( FIELD    => 'Domain',
+                    OPERATOR => '=',
+                    VALUE    => 'UserDefined'
+                  );
+    $Groups->Limit( FIELD    => $ARGS{'GroupField'},
+                    VALUE    => $ARGS{'GroupString'},
+                    OPERATOR => $ARGS{'GroupOp'}
+                  );
+} else {
+    $group_msg = loc("No principals selected.");
+}
+$current_tab = 'Admin/Queues/People.html?id=' . $QueueObj->id;
 </%INIT>
 
 <%ARGS>
