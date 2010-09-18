@@ -164,9 +164,7 @@ CREATE TABLE ACL (
   PrincipalId INTEGER,
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
-  DelegatedBy integer NOT NULL default 0, 
-  DelegatedFrom integer NOT NULL default 0
+  ObjectId INTEGER default 0
   
 ) ;
 

@@ -85,16 +85,8 @@ sub __DependsOn
         my $acl = RT::ACL->new( $self->CurrentUser );
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
-        # look into all rights that have group
-        while( my $ace = $acl->Next ) {
-            my $delegations = RT::ACL->new( $self->CurrentUser );
-            $delegations->DelegatedFrom( Id => $ace->Id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
-            push( @$list, $delegations );
-        }
     }
 
-# XXX: Do we need to delete records if user lost right 'DelegateRights'?
 
     $deps->_PushDependencies(
             BaseObject => $self,

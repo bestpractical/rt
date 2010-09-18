@@ -87,8 +87,6 @@ $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
     AdminGroupMembership =>
       'Modify membership roster for this group',                      # loc_pair
-    DelegateRights =>
-        "Delegate specific rights which have been granted to you.",   # loc_pair
     ModifyOwnMembership => 'Join or leave this group',                 # loc_pair
     EditSavedSearches => 'Edit saved searches for this group',        # loc_pair
     ShowSavedSearches => 'Display saved searches for this group',        # loc_pair
@@ -103,7 +101,6 @@ $RIGHTS = {
 $RIGHT_CATEGORIES = {
     AdminGroup              => 'Admin',
     AdminGroupMembership    => 'Admin',
-    DelegateRights          => 'Staff',
     ModifyOwnMembership     => 'Staff',
     EditSavedSearches       => 'Admin',
     ShowSavedSearches       => 'Staff',
@@ -194,11 +191,6 @@ sub SelfDescription {
 	}
 	elsif ($self->Domain eq 'UserDefined') {
 		return $self->loc("group '[_1]'",$self->Name);
-	}
-	elsif ($self->Domain eq 'Personal') {
-		my $user = RT::User->new($self->CurrentUser);
-		$user->Load($self->Instance);
-		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
 	}
 	elsif ($self->Domain eq 'RT::System-Role') {
 		return $self->loc("system [_1]",$self->Type);
@@ -302,27 +294,6 @@ sub LoadACLEquivalenceGroup {
 
 # }}}
 
-# {{{ sub LoadPersonalGroup 
-
-=head2 LoadPersonalGroup {Name => NAME, User => USERID}
-
-Loads a personal group from the database. 
-
-=cut
-
-sub LoadPersonalGroup {
-    my $self       = shift;
-    my %args =  (   Name => undef,
-                    User => undef,
-                    @_);
-
-        $self->LoadByCols( "Domain" => 'Personal',
-                           "Instance" => $args{'User'},
-                           "Type" => '',
-                           "Name" => $args{'Name'} );
-}
-
-# }}}
 
 # {{{ sub LoadSystemInternalGroup 
 
@@ -586,57 +557,6 @@ sub _CreateACLEquivalenceGroup {
 
 # }}}
 
-# {{{ CreatePersonalGroup
-
-=head2 CreatePersonalGroup { PrincipalId => PRINCIPAL_ID, Name => "name", Description => "Description"}
-
-A helper subroutine which creates a personal group. Generally,
-personal groups are used for ACL delegation and adding to ticket roles
-PrincipalId defaults to the current user's principal id.
-
-Returns a tuple of (Id, Message).  If id is 0, the create failed
-
-=cut
-
-sub CreatePersonalGroup {
-    my $self = shift;
-    my %args = (
-        Name        => undef,
-        Description => undef,
-        PrincipalId => $self->CurrentUser->PrincipalId,
-        @_
-    );
-
-    if ( $self->CurrentUser->PrincipalId == $args{'PrincipalId'} ) {
-
-        unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
-                  . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
-        }
-
-    }
-    else {
-        unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
-                  . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
-        }
-
-    }
-
-    return (
-        $self->_Create(
-            Domain      => 'Personal',
-            Type        => '',
-            Instance    => $args{'PrincipalId'},
-            Name        => $args{'Name'},
-            Description => $args{'Description'}
-        )
-    );
-}
-
-# }}}
 
 # {{{ CreateRoleGroup 
 
@@ -716,21 +636,8 @@ This routine finds all the cached group members that are members of this group  
  sub SetDisabled {
      my $self = shift;
      my $val = shift;
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
-        unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-                 return (0, $self->loc('Permission Denied'));
-    }
+     unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+        return (0, $self->loc('Permission Denied'));
     }
     $RT::Handle->BeginTransaction();
     $self->PrincipalObj->SetDisabled($val);
@@ -841,7 +748,7 @@ By default returns groups including all subgroups, but
 could be changed with C<Recursively> named argument.
 
 B<Note> that groups are not filtered by type and result
-may contain as well system groups, personal and other.
+may contain as well system groups and others.
 
 =cut
 
@@ -971,19 +878,6 @@ sub AddMember {
 
 
 
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	
-	else {	
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
@@ -994,7 +888,6 @@ sub AddMember {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-  	} 
     $self->_AddMember(PrincipalId => $new_member);
 }
 
@@ -1169,25 +1062,12 @@ sub DeleteMember {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
 
-    if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
     unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
 	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
 	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
-	}
     $self->_DeleteMember($member_id);
 }
 
@@ -1227,58 +1107,6 @@ sub _DeleteMember {
 
 # }}}
 
-# {{{ sub _CleanupInvalidDelegations
-
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
-
-Revokes all ACE entries delegated by members of this group which are
-inconsistent with their current delegation rights.  Does not perform
-permission checks.  Should only ever be called from inside the RT
-library.
-
-If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# XXX Currently there is a _CleanupInvalidDelegations method in both
-# RT::User and RT::Group.  If the recursive cleanup call for groups is
-# ever unrolled and merged, this code will probably want to be
-# factored out into RT::Principal.
-
-sub _CleanupInvalidDelegations {
-    my $self = shift;
-    my %args = ( InsideTransaction => undef,
-		  @_ );
-
-    unless ( $self->Id ) {
-	$RT::Logger->warning("Group not loaded.");
-	return (undef);
-    }
-
-    my $in_trans = $args{InsideTransaction};
-
-    # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
-    my $members = $self->DeepMembersObj();
-    $members->LimitToUsers();
-    $RT::Handle->BeginTransaction() unless $in_trans;
-    while ( my $member = $members->Next()) {
-	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
-								 Object => $args{Object});
-	unless ($ret) {
-	    $RT::Handle->Rollback() unless $in_trans;
-	    return (undef);
-	}
-    }
-    $RT::Handle->Commit() unless $in_trans;
-    return(1);
-}
-
-# }}}
-
 # {{{ ACL Related routines
 
 # {{{ sub _Set
@@ -1292,21 +1120,8 @@ sub _Set {
         @_
     );
 
-	if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
-    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
-    		}
-    	} else {
-        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
-    		}
-    	}
-	}
-	else {
-    	unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-        	return ( 0, $self->loc('Permission Denied') );
-    	}
+    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+      	return ( 0, $self->loc('Permission Denied') );
 	}
 
     my $Old = $self->SUPER::_Value("$args{'Field'}");
