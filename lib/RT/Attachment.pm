@@ -177,6 +177,7 @@ sub Create {
 
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
+            return ($id);
         }
 
         foreach my $part ( $Attachment->parts ) {
@@ -188,6 +189,7 @@ sub Create {
             );
             unless ($id) {
                 $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+                return ($id);
             }
         }
         return ($id);
