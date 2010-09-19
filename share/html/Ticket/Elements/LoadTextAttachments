@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-# DON'T USE IT. it's here for backwards
+# DON'T USE IT. it's here for backwards compatibility
 
 return $Ticket->TextAttachments;
 </%INIT>

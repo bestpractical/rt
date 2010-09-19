@@ -220,7 +220,7 @@ MaybeRedirectForResults(
 # Get the transactoins before the attachments, for great ACL justice
 my $transactions = $m->comp('Elements/FindTransactions',Ticket => $TicketObj, Tickets => $Tickets || undef);
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
+my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
 if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {

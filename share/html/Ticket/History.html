@@ -77,9 +77,8 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket =>
-$Ticket);
+my $attachments = $Ticket->Attachments;
+my $attachment_content = $Ticket->TextAttachments;
 
 
 </%INIT>
