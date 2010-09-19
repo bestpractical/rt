@@ -1635,7 +1635,7 @@ sub ProcessTicketBasics {
 
     my $OrigOwner = $TicketObj->Owner;
 
-    # {{{ Set basic fields
+    # Set basic fields
     my @attribs = qw(
         Subject
         FinalPriority
@@ -2004,7 +2004,7 @@ sub ProcessTicketDates {
 
     my (@results);
 
-    # {{{ Set date fields
+    # Set date fields
     my @date_fields = qw(
         Told
         Resolved

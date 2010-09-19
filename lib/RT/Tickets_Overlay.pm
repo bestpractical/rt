@@ -1117,7 +1117,7 @@ sub _WatcherMembershipLimit {
         );
     }
 
-    # {{{ Tie to groups for tickets we care about
+    # Tie to groups for tickets we care about
     $self->_SQLLimit(
         ALIAS           => $groups,
         FIELD           => 'Domain',

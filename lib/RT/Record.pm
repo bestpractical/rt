@@ -1282,7 +1282,7 @@ sub _AddLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    # {{{ Check if the link already exists - we don't want duplicates
+    # Check if the link already exists - we don't want duplicates
     use RT::Link;
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},

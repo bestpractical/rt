@@ -330,7 +330,7 @@ sub Create {
     $args{'Priority'} = $args{'InitialPriority'}
         unless defined $args{'Priority'};
 
-    # {{{ Dates
+    # Dates
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
 
@@ -383,7 +383,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Dealing with time fields
+    # Dealing with time fields
 
     $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
     $args{'TimeWorked'}    = 0 unless defined $args{'TimeWorked'};
@@ -391,7 +391,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Deal with setting the owner
+    # Deal with setting the owner
 
     my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
@@ -545,7 +545,7 @@ sub Create {
 
 
 
-    # {{{ Deal with setting up watchers
+    # Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
         # we know it's an array ref
@@ -576,7 +576,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Add all the custom fields
+    # Add all the custom fields
 
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
@@ -602,7 +602,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Deal with setting up links
+    # Deal with setting up links
 
     # TODO: Adding link may fire scrips on other end and those scrips
     # could create transactions on this ticket before 'Create' transaction.
@@ -672,7 +672,7 @@ sub Create {
 
     if ( $args{'_RecordTransaction'} ) {
 
-        # {{{ Add a transaction for the create
+        # Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type         => "Create",
             TimeTaken    => $args{'TimeWorked'},
@@ -848,7 +848,7 @@ sub Import {
               , $QueueObj->Name));
     }
 
-    # {{{ Deal with setting the owner
+    # Deal with setting the owner
 
     # Attempt to take user object, user name or user id.
     # Assign to nobody if lookup fails.
@@ -1216,7 +1216,7 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Group not found") );
     }
 
-    # {{{ Check ACLS
+    # Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 

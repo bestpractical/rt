@@ -289,7 +289,7 @@ sub HasRight {
         unless $self->can('_IsOverrideGlobalACL')
                && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
-    # {{{ If we've cached a win or loss for this lookup say so
+    # If we've cached a win or loss for this lookup say so
 
     # Construct a hashkeys to cache decisions:
     # 1) full_hashkey - key for any result and for full combination of uid, right and objects

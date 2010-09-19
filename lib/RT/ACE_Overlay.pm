@@ -223,7 +223,7 @@ sub Create {
 	return ( 0, $self->loc("System error. Right not granted.") );
     }
 
-    # {{{ Validate the principal
+    # Validate the principal
     my $princ_obj;
     ( $princ_obj, $args{'PrincipalType'} ) =
       $self->_CanonicalizePrincipal( $args{'PrincipalId'},
@@ -237,7 +237,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Check the ACL
+    # Check the ACL
 
     if (ref( $args{'Object'}) eq 'RT::Group' ) {
         unless ( $self->CurrentUser->HasRight( Object => $args{'Object'},
@@ -254,7 +254,7 @@ sub Create {
     }
     # }}}
 
-    # {{{ Canonicalize and check the right name
+    # Canonicalize and check the right name
     my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
     unless ( $canonic_name ) {
         return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) );

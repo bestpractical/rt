@@ -144,7 +144,7 @@ sub Create {
         $target_id = $object->Id if UNIVERSAL::isa($object, 'RT::Ticket');
     }
 
-    # {{{ We don't want references to ourself
+    # We don't want references to ourself
     if ( $base->URI eq $target->URI ) {
         return ( 0, $self->loc("Can't link a ticket to itself") );
     }
@@ -159,7 +159,7 @@ sub Create {
     return ( $id, $msg );
 }
 
- # {{{ sub LoadByParams
+ # sub LoadByParams
 
 =head2 LoadByParams
 

@@ -247,7 +247,7 @@ sub SetMIMEEntityToEncoding {
         Encode::_utf8_off($string);
         my $orig_string = $string;
 
-        # {{{ Convert the body
+        # Convert the body
         eval {
             $RT::Logger->debug( "Converting '$charset' to '$enc' for "
                   . $head->mime_type . " - "

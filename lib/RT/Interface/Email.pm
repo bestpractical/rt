@@ -1359,7 +1359,7 @@ sub Gateway {
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
     
-    # {{{ Lets check for mail loops of various sorts.
+    # Lets check for mail loops of various sorts.
     my ($should_store_machine_generated_message, $IsALoop, $result);
     ( $should_store_machine_generated_message, $ErrorsTo, $result, $IsALoop ) =
       _HandleMachineGeneratedMail(
@@ -1404,7 +1404,7 @@ sub Gateway {
         SystemQueue   => $SystemQueueObj,
     );
 
-    # {{{ If authentication fails and no new user was created, get out.
+    # If authentication fails and no new user was created, get out.
     if ( !$CurrentUser || !$CurrentUser->id || $AuthStat == -1 ) {
 
         # If the plugins refused to create one, they lose.
