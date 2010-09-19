@@ -88,7 +88,6 @@ WEB_GROUP		=	@WEB_GROUP@
 
 APACHECTL		=	@APACHECTL@
 
-# {{{ Files and directories 
 
 # DESTDIR allows you to specify that RT be installed somewhere other than
 # where it will eventually reside. DESTDIR _must_ have a trailing slash
@@ -126,7 +125,6 @@ RT_READABLE_DIR_MODE	=	0755
 
 
 
-# {{{ all these define the places that RT's binaries should get installed
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	webmux.pl
@@ -147,7 +145,6 @@ RT_MAILGATE_BIN		=	rt-mailgate
 # RT's cron tool
 RT_CRON_BIN		=	rt-crontool
 
-# }}}
 
 
 BINARIES		=	$(RT_MODPERL_HANDLER) \
@@ -191,15 +188,11 @@ ETC_FILES		=	acl.Informix \
 				schema.SQLite \
 				initialdata
 
-# }}}
 
-# {{{ Web frontend
 
 WEB_HANDLER		=	@WEB_HANDLER@
 
-# }}}
 
-# {{{ Database setup
 
 #
 # DB_TYPE defines what sort of database RT trys to talk to
@@ -249,7 +242,6 @@ DB_DATABASE		=	@DB_DATABASE@
 DB_RT_USER		=	@DB_RT_USER@
 DB_RT_PASS		=	@DB_RT_PASS@
 
-# }}}
 
 
 TEST_FILES = t/*.t t/*/*.t
@@ -293,7 +285,6 @@ upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install po-install font-install fixperms
 
 
-# {{{ dependencies
 
 my_with_web_handlers= $(shell $(PERL) -e 'print join " ", map "--with-$$_", grep defined && length, split /,/, "$(WEB_HANDLER)"')
 testdeps:
@@ -306,7 +297,6 @@ fixdeps:
 
 #}}}
 
-# {{{ fixperms
 fixperms:
 	# Make the libraries readable
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_PATH)
@@ -356,9 +346,7 @@ fixperms:
 				$(DESTDIR)$(MASON_SESSION_PATH)
 	chgrp -R $(WEB_GROUP) 	$(DESTDIR)$(MASON_DATA_PATH) \
 				$(DESTDIR)$(MASON_SESSION_PATH)
-# }}}
 
-# {{{ dirs
 dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
@@ -374,7 +362,6 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LIB_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_PLUGIN_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)
-# }}}
 
 install: testdeps config-install dirs files-install fixperms instruct
 
@@ -397,7 +384,6 @@ test-parallel:
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)$(CONFIG_FILE)
 
-# {{{ database-installation
 
 regression-reset-db: force-dropdb
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
@@ -413,9 +399,7 @@ dropdb:
 force-dropdb: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 
-# }}}
 
-# {{{ libs-install
 libs-install: 
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
 @COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type d -print ) | while read dir ; do \
@@ -424,9 +408,7 @@ libs-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	     $(INSTALL) -m 0644 "lib/$$file" "$(DESTDIR)$(RT_LIB_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-# }}}
 
-# {{{ html-install
 html-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
 @COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type d -print ) | while read dir ; do \
@@ -435,45 +417,35 @@ html-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/html/$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-# }}}
 
-# {{{ font-install
 font-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_FONT_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
 @COMMENT_INPLACE_LAYOUT@	-( cd share/fonts && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/fonts/$$file" "$(DESTDIR)$(RT_FONT_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-# }}}
 
 
-# {{{ po-install
 po-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LEXICON_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
 @COMMENT_INPLACE_LAYOUT@	-( cd share/po && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/po/$$file" "$(DESTDIR)$(RT_LEXICON_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-# }}}
 
 
 
-# {{{ doc-install
 doc-install:
 @COMMENT_INPLACE_LAYOUT@	# RT 3.0.0 - RT 3.0.2 would accidentally create a file instead of a dir
 @COMMENT_INPLACE_LAYOUT@	-[ -f $(DESTDIR)$(RT_DOC_PATH) ] && rm $(DESTDIR)$(RT_DOC_PATH) 
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_DOC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_DOC_PATH)
 @COMMENT_INPLACE_LAYOUT@	-$(INSTALL) -m 0644 ./README $(DESTDIR)$(RT_DOC_PATH)/
-# }}}
 
-# {{{ etc-install
 
 etc-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_ETC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
 @COMMENT_INPLACE_LAYOUT@	for file in $(ETC_FILES) ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(RT_ETC_PATH)/" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-# }}}
 
-# {{{ sbin-install
 
 sbin-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_SBIN_PATH)
@@ -481,9 +453,7 @@ sbin-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "sbin/$$file" "$(DESTDIR)$(RT_SBIN_PATH)/" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
-# }}}
 
-# {{{ bin-install
 
 bin-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_BIN_PATH)
@@ -491,7 +461,6 @@ bin-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "bin/$$file" "$(DESTDIR)$(RT_BIN_PATH)/" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
-# {{{ local-install
 local-install:
 	-( cd local/html && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$dir" ; \
@@ -511,9 +480,7 @@ local-install:
 	-( cd local/etc && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(LOCAL_ETC_PATH)/$$file" ; \
 	done
-# }}}
 
-# {{{ Best Practical Build targets -- no user servicable parts inside
 
 regenerate-catalogs:
 	$(PERL) sbin/extract-message-catalog
@@ -549,4 +516,3 @@ snapshot:
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	rm -fr "$(SNAPSHOT)/"
 
-# }}}
