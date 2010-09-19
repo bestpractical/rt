@@ -169,7 +169,6 @@ sub LoadConfig {
         $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
     
-    RT::I18N->Init;
     return $Config;
 }
 
@@ -192,6 +191,7 @@ sub Init {
     InitClasses();
     InitLogging(); 
     InitPlugins();
+    RT::I18N->Init;
     RT->Config->PostLoadCheck;
 
 }

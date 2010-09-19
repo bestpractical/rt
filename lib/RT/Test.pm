@@ -168,6 +168,8 @@ sub import {
     $class->bootstrap_plugins( %args );
 
     RT::InitPlugins();
+    
+    RT::I18N->Init();
     RT->Config->PostLoadCheck;
 
     $class->set_config_wrapper;
