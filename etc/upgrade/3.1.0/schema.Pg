@@ -1,4 +1,4 @@
--- {{{ Attributes
+
 
 CREATE SEQUENCE attributes_id_seq;
 
@@ -21,5 +21,5 @@ CREATE TABLE Attributes (
 CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
--- }}}
+
 
