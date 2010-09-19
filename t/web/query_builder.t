@@ -22,7 +22,6 @@ ok $queue && $queue->id, 'loaded or created queue';
 my $url = $agent->rt_base_url;
 ok $agent->login, "logged in";
 
-# {{{ Query Builder tests
 
 my $response = $agent->get($url."Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
@@ -193,7 +192,6 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 # - clears entire query
 # - clears it from the session, too
 
-# }}}
 
 # create a custom field with nonascii name and try to add a condition
 {

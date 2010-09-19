@@ -77,7 +77,6 @@ my $url = $agent->rt_base_url;
     $agent->content_contains("to &#39;300&#39;", "5 hours is 300 minutes");
 }
 
-# {{{ test an image
 
 TODO: {
     todo_skip("Need to handle mason trying to compile images",1);
@@ -93,9 +92,7 @@ is(
     "got a file of the correct size ($file)",
 );
 }
-# }}}
 
-# {{{ Query Builder tests
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder
 # TODO: move everything about QB there

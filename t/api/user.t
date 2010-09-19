@@ -210,7 +210,6 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
  ok ($id,$msg);
 ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket without group membership");
 
-# }}}
 
 
 my ($usrid, $usrmsg) =  $subgroup->DeleteMember($new_user->PrincipalId);
@@ -222,7 +221,6 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 ok(($gv,$gm) = $group->PrincipalObj->RevokeRight( Object => $q, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
 ok($gv,"revoke succeeed - $gm");
 
-# {{{ Test the user's right to modify a ticket as a _queue_ admincc for a right granted at the _queue_ level
 
 # Grant queue admin cc the right to modify ticket in the queue 
 ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight( Object => $q_as_system, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
@@ -240,9 +238,7 @@ ok (my ($del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', Prin
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
-# }}}
 
-# {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the right granted at the _queue_ level
 
 # Add the user as a ticket admincc
 ok (my( $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
@@ -262,11 +258,9 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight( Object => $q_as_system, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
-# }}}
 
 
 
-# {{{ Test the user's right to modify a ticket as a _queue_ admincc for a right granted at the _system_ level
 
 # Before we start Make sure the user does not have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can not modify the ticket without it being granted");
@@ -294,9 +288,7 @@ ok (($del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', Princip
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket'), "User can't modify tickets in the queue without group membership");
 
-# }}}
 
-# {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the right granted at the _queue_ level
 
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can not modify the ticket without being an admincc");
 ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket'), "User can not modify tickets in the queue obj without being an admincc");
@@ -322,7 +314,6 @@ ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket
 ok(($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight( Object => $RT::System, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
-# }}}
 
 
 
