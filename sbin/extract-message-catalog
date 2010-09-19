@@ -100,7 +100,6 @@ foreach my $dict (@ARGV) {
 }
 
 
-# {{{ pull strings out of the code.
 
 sub extract_strings_from_code {
     my $file = $_;
@@ -233,7 +232,6 @@ sub extract_strings_from_code {
 
     close (_);
 }
-# }}} extract from strings
 
 sub update {
     my $lang = shift;
