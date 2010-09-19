@@ -97,6 +97,7 @@ sub rewrite_rtconfig
     config_set( '$LogToFile'      , 'debug' );
     my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
     config_set( '$LogToFileNamed' , $fname );
+    config_set('@LexiconLanguages', qw(en));
 }
 
 =head3 config_set
