@@ -186,7 +186,7 @@ my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
-# {{{ Try to find if we're adding a clause
+# Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
     next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
@@ -246,7 +246,6 @@ foreach my $arg ( keys %ARGS ) {
     }
 }
 
-# }}}
 
 push @actions, $m->comp('Elements/EditQuery:Process',
     %ARGS,
@@ -255,7 +254,7 @@ push @actions, $m->comp('Elements/EditQuery:Process',
     New      => \@new_values,
 );
 
-# {{{ Rebuild $Query based on the additions / movements
+# Rebuild $Query based on the additions / movements
 
 my $optionlist_arrayref;
 ($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
@@ -264,11 +263,10 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
-# }}}
 
 my $queues = $tree->GetReferencedQueues;
 
-# {{{ Deal with format changes
+# Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
@@ -277,12 +275,11 @@ my ( $AvailableColumns, $CurrentFormat );
     Format => $query{'Format'},
 );
 
-# }}}
 
 # if we're asked to save the current search, save it
 push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
-# {{{ Push the updates into the session so we don't lose 'em
+# Push the updates into the session so we don't lose 'em
 
 $session{'CurrentSearchHash'} = {
     %query,
@@ -291,9 +288,8 @@ $session{'CurrentSearchHash'} = {
     Description => $saved_search{'Description'},
 };
 
-# }}}
 
-# {{{ Show the results, if we were asked.
+# Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
     $m->comp( 'Results.html', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'}, );
@@ -301,9 +297,8 @@ if ( $ARGS{'DoSearch'} ) {
     $m->abort;
 }
 
-# }}}
 
-# {{{ Build a querystring for the tabs
+# Build a querystring for the tabs
 
 my $QueryString = '';
 if ($NewQuery) {
@@ -313,7 +308,6 @@ elsif ( $query{'Query'} ) {
     $QueryString = $m->comp('/Elements/QueryString', %query );
 }
 
-# }}}
 
 </%INIT>
 

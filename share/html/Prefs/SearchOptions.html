@@ -67,7 +67,7 @@
 <%INIT>
 my @actions;
 
-# {{{ If we're saving search preferences, do that now
+# If we're saving search preferences, do that now
 $Order = join '|', grep defined && /\S/, (ref $Order)? @{$Order}: $Order;
 $OrderBy = join '|', grep defined && /\S/, (ref $OrderBy)? @{$OrderBy}: $OrderBy;
 
@@ -84,7 +84,6 @@ if ($ARGS{'SavePreferences'}) {
     push @actions, $ok ? loc("Preferences saved.") : $msg;
 }
 
-# }}}
 
 # Read from user preferences
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};

@@ -233,16 +233,15 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
                      $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
 
 
-# {{{ deal with deleting uploaded attachments
+# deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
         delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
-# }}}
 
-# {{{ store the uploaded attachment in session
+# store the uploaded attachment in session
 if ($ARGS{'Attach'}) {            # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
@@ -254,13 +253,11 @@ if ($ARGS{'Attach'}) {            # attachment?
         $file_path => $attachment,
     };
 }
-# }}}
 
 # delete temporary storage entry to make WebUI clean
 unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
     delete $session{'Attachments'};
 }
-# }}}
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
