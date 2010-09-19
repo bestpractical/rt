@@ -293,7 +293,6 @@ sub get_template {
     return $cache->{ $queue } = $res;
 } }
 
-# {{{ load_module 
 
 # =head2 load_module
 # 
@@ -310,9 +309,7 @@ sub load_module {
 
 }
 
-# }}}
 
-# {{{ loc 
 
 # =head2 loc LIST
 # 
@@ -324,7 +321,6 @@ sub loc {
     $CurrentUser->loc(@_);
 }
 
-# }}}
 
 sub help {
 
