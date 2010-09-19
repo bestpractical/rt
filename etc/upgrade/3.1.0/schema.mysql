@@ -1,4 +1,3 @@
-# {{{ Attributes
 
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -18,4 +17,3 @@ CREATE TABLE Attributes (
 CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
-# }}}

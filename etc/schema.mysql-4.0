@@ -1,4 +1,3 @@
-# {{{ Attachments
 
 CREATE TABLE Attachments (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -18,9 +17,7 @@ CREATE TABLE Attachments (
 
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
-# }}}
 
-# {{{ Queues
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NOT NULL  ,
@@ -40,9 +37,7 @@ CREATE TABLE Queues (
 CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
 CREATE INDEX Queues2 ON Queues (Disabled) ;
 
-# }}}
 
-# {{{ Links
 
 CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -62,9 +57,7 @@ CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
 CREATE INDEX Links4 ON Links (Type,LocalBase);
 
-# }}}
 
-# {{{ Principals
 
 CREATE TABLE Principals (
         id INTEGER  AUTO_INCREMENT not null,
@@ -76,9 +69,7 @@ CREATE TABLE Principals (
 
 CREATE INDEX Principals2 ON Principals (ObjectId);
 
-# }}}
 
-# {{{ Groups
 
 CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -93,9 +84,7 @@ CREATE TABLE Groups (
 CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
 CREATE INDEX Groups2 On Groups (Type, Instance);   
 
-# }}}
 
-# {{{ ScripConditions
 
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -112,9 +101,7 @@ CREATE TABLE ScripConditions (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   ObjectType varchar(64) NOT NULL,
@@ -135,9 +122,7 @@ CREATE TABLE Transactions (
 ) TYPE=InnoDB;
 CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
-# }}}
 
-# {{{ Scrips 
 
 CREATE TABLE Scrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -159,9 +144,7 @@ CREATE TABLE Scrips (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ ACL
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   PrincipalType varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
@@ -175,9 +158,7 @@ CREATE TABLE ACL (
 
 CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
-# }}}
 
-# {{{ GroupMembers 
 
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -188,9 +169,7 @@ CREATE TABLE GroupMembers (
 CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
 
 
-# }}}
 
-# {{{ GroupMembersCache
 
 create table CachedGroupMembers (
         id int auto_increment,
@@ -211,9 +190,7 @@ create table CachedGroupMembers (
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
 
-# }}}
 
-# {{{ Users
 
 CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -259,9 +236,7 @@ CREATE UNIQUE INDEX Users1 ON Users (Name) ;
 CREATE INDEX Users4 ON Users (EmailAddress);
 
 
-# }}}
 
-# {{{ Tickets
 
 CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -298,9 +273,7 @@ CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
-# }}}
 
-# {{{ ScripActions
 
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -315,9 +288,7 @@ CREATE TABLE ScripActions (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ Templates
 
 CREATE TABLE Templates (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -335,9 +306,7 @@ CREATE TABLE Templates (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ ObjectCustomFieldValues 
 
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -362,9 +331,7 @@ CREATE TABLE ObjectCustomFieldValues (
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
-# }}}
 
-# {{{ CustomFields
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -385,9 +352,7 @@ CREATE TABLE CustomFields (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ ObjectCustomFields 
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -402,9 +367,7 @@ CREATE TABLE ObjectCustomFields (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
 
-# {{{ CustomFieldValues 
 
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -422,10 +385,8 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
  
-# }}}
 
 
-# {{{ Attributes
 
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
@@ -445,9 +406,7 @@ CREATE TABLE Attributes (
 CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
-# }}}
 
-# {{{ Sessions
 
 # sessions is used by Apache::Session to keep sessions in the database.
 # We should have a reaper script somewhere.
@@ -459,4 +418,3 @@ CREATE TABLE sessions (
     PRIMARY KEY (id)
 );
 
-# }}}
