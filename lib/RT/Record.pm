@@ -106,7 +106,7 @@ C<id> is an alias to C<Id> and is the preferred way to call this method.
 =cut
 
 sub Id {
-    return shift->{values}->{id};
+    return shift->{'values'}->{id};
 }
 
 *id = \&Id;
