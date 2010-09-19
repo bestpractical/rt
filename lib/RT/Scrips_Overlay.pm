@@ -69,7 +69,6 @@ package RT::Scrips;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub LimitToQueue 
 
 =head2 LimitToQueue
 
@@ -89,9 +88,7 @@ sub LimitToQueue  {
       if defined $queue;
   
 }
-# }}}
 
-# {{{ sub LimitToGlobal
 
 =head2 LimitToGlobal
 
@@ -110,17 +107,13 @@ sub LimitToGlobal  {
 		VALUE => 0);
   
 }
-# }}}
 
-# {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
   
   return(RT::Scrip->new($self->CurrentUser));
 }
-# }}}
 
-# {{{ sub Next 
 
 =head2 Next
 
@@ -150,7 +143,6 @@ sub Next {
     }	
     
 }
-# }}}
 
 =head2 Apply
 
@@ -261,7 +253,6 @@ sub Prepared {
 }
 
 
-# {{{ sup _SetupSourceObjects
 
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
 
@@ -305,9 +296,7 @@ sub _SetupSourceObjects {
     }
 } 
 
-# }}}
 
-# {{{ sub _FindScrips;
 
 =head2 _FindScrips
 
@@ -376,7 +365,6 @@ sub _FindScrips {
     );
 }
 
-# }}}
 
 1;
 

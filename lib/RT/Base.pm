@@ -68,7 +68,6 @@ RT::Base
 
 =cut
 
-# {{{ sub CurrentUser 
 
 =head2 CurrentUser
 
@@ -102,7 +101,6 @@ sub CurrentUser {
     return ( $self->{'user'} );
 }
 
-# }}}
 
 sub OriginalUser {
     my $self = shift;

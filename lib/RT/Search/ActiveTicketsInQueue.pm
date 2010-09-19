@@ -69,14 +69,11 @@ use strict;
 use base qw(RT::Search);
 
 
-# {{{ sub Describe 
 sub Describe  {
   my $self = shift;
   return ($self->loc("No description for [_1]", ref $self));
 }
-# }}}
 
-# {{{ sub Prepare
 sub Prepare  {
   my $self = shift;
 
@@ -88,7 +85,6 @@ sub Prepare  {
 
   return(1);
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

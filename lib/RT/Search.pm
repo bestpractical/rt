@@ -76,7 +76,6 @@ package RT::Search;
 
 use strict;
 
-# {{{ sub new 
 sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -85,9 +84,7 @@ sub new  {
   $self->_Init(@_);
   return $self;
 }
-# }}}
 
-# {{{ sub _Init 
 sub _Init  {
   my $self = shift;
   my %args = ( 
@@ -98,9 +95,7 @@ sub _Init  {
   $self->{'TicketsObj'} = $args{'TicketsObj'}; 
   $self->{'Argument'} = $args{'Argument'};
 }
-# }}}
 
-# {{{ sub Argument 
 
 =head2 Argument
 
@@ -112,7 +107,6 @@ sub Argument  {
   my $self = shift;
   return($self->{'Argument'});
 }
-# }}}
 
 
 =head2 TicketsObj 
@@ -126,19 +120,15 @@ sub TicketsObj {
     return($self->{'TicketsObj'});
 }
 
-# {{{ sub Describe 
 sub Describe  {
   my $self = shift;
   return ($self->loc("No description for [_1]", ref $self));
 }
-# }}}
 
-# {{{ sub Prepare
 sub Prepare  {
   my $self = shift;
   return(1);
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

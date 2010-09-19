@@ -81,16 +81,12 @@ sub _Init {
     $self->{'Queues'} = delete($args{'Queues'}) || [];
     $self->SUPER::_Init(%args);
 }
-# }}}
 
-# {{{ sub Describe 
 sub Describe  {
   my $self = shift;
   return ($self->loc("No description for [_1]", ref $self));
 }
-# }}}
 
-# {{{ sub QueryToSQL
 sub QueryToSQL {
     my $self     = shift;
     my $query    = shift || $self->Argument;
@@ -188,9 +184,7 @@ sub QueryToSQL {
     @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
     return join " AND ", sort @tql_clauses;
 }
-# }}}
 
-# {{{ sub Prepare
 sub Prepare  {
   my $self = shift;
   my $tql = $self->QueryToSQL($self->Argument);
@@ -200,7 +194,6 @@ sub Prepare  {
   $self->TicketsObj->FromSQL($tql);
   return(1);
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

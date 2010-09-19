@@ -52,7 +52,6 @@ use strict;
 use warnings;
 no warnings qw(redefine);
 
-# {{{ sub LimitToCustomField
 
 =head2 LimitToCustomField FIELD
 
@@ -70,6 +69,5 @@ sub LimitToCustomField {
     );
 }
 
-# }}}
 
 1;

@@ -69,7 +69,6 @@ package RT::Queues;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub _Init
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Queues";
@@ -83,18 +82,14 @@ sub _Init {
 
   return ($self->SUPER::_Init(@_));
 }
-# }}}
 
-# {{{ sub Limit 
 sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
 	       @_);
   $self->SUPER::Limit(%args);
 }
-# }}}
 
-# {{{ sub AddRecord
 
 =head2 AddRecord
 
@@ -111,7 +106,6 @@ sub AddRecord {
     push @{$self->{'items'}}, $Queue;
     $self->{'rows'}++;
 }
-# }}}
 
 1;
 

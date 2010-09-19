@@ -124,7 +124,6 @@ sub CleanEnv {
 
     my $CurrentUser; # shared betwen GetCurrentUser and loc
 
-# {{{ sub GetCurrentUser 
 
 =head2 GetCurrentUser
 
@@ -153,10 +152,8 @@ sub GetCurrentUser  {
 
     return($CurrentUser);
 }
-# }}}
 
 
-# {{{ sub loc 
 
 =head2 loc
 
@@ -168,12 +165,10 @@ sub loc {
     die "No current user yet" unless $CurrentUser ||= RT::CurrentUser->new;
     return $CurrentUser->loc(@_);
 }
-# }}}
 
 }
 
 
-# {{{ sub GetMessageContent
 
 =head2 GetMessageContent
 
@@ -235,9 +230,7 @@ sub GetMessageContent {
     
 }
 
-# }}}
 
-# {{{ sub debug
 
 sub debug {
     my $val = shift;
@@ -253,7 +246,6 @@ sub debug {
     }	
 }
 
-# }}}
 
 
 RT::Base->_ImportOverlays();

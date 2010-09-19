@@ -69,7 +69,6 @@ package RT::Users;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub _Init 
 sub _Init {
     my $self = shift;
     $self->{'table'} = 'Users';
@@ -97,7 +96,6 @@ sub _Init {
     return (@result);
 }
 
-# }}}
 
 =head2 PrincipalsAlias
 
@@ -149,7 +147,6 @@ sub LimitToDeleted {
 }
 
 
-# {{{ LimitToEmail
 
 =head2 LimitToEmail
 
@@ -164,9 +161,7 @@ sub LimitToEmail {
     $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
 }
 
-# }}}
 
-# {{{ MemberOfGroup
 
 =head2 MemberOfGroup PRINCIPAL_ID
 
@@ -195,9 +190,7 @@ sub MemberOfGroup {
                   OPERATOR => "=" );
 }
 
-# }}}
 
-# {{{ LimitToPrivileged
 
 =head2 LimitToPrivileged
 
@@ -216,9 +209,7 @@ sub LimitToPrivileged {
     $self->MemberOfGroup( $priv->PrincipalId );
 }
 
-# }}}
 
-# {{{ WhoHaveRight
 
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
 
@@ -388,7 +379,6 @@ sub WhoHaveRight {
 
     return;
 }
-# }}}
 
 # XXX: should be generalized
 sub WhoHaveRoleRight
@@ -521,7 +511,6 @@ sub WhoHaveGroupRight
     return $group_members;
 }
 
-# {{{ WhoBelongToGroups
 
 =head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
 
@@ -549,7 +538,6 @@ sub WhoBelongToGroups {
                     );
     }
 }
-# }}}
 
 
 1;

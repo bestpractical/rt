@@ -190,7 +190,6 @@ sub DeleteEntry {
 }
 
 
-# {{{ LimitToObject 
 
 =head2 LimitToObject $object
 
@@ -209,6 +208,5 @@ sub LimitToObject {
 
 }
 
-# }}}
 
 1;

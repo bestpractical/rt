@@ -58,20 +58,16 @@ use strict;
 
 #What does this type of Action does
 
-# {{{ sub Describe 
 sub Describe  {
   my $self = shift;
   return $self->loc("[_1] will resolve all members of a resolved group ticket.", ref $self);
 }
-# }}}
 
 
-# {{{ sub Prepare 
 sub Prepare  {
     # nothing to prepare
     return 1;
 }
-# }}}
 
 sub Commit {
     my $self = shift;
@@ -94,13 +90,11 @@ sub Commit {
 
 # Applicability checked in Commit.
 
-# {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
   1;  
   return 1;
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

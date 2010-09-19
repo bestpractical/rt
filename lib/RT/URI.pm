@@ -92,7 +92,6 @@ sub new {
 
 
 
-# {{{ FromObject
 
 =head2 FromObject <Object>
 
@@ -109,9 +108,7 @@ sub FromObject {
     return $self->FromURI($obj->URI);
 }
 
-# }}}
 
-# {{{ FromURI
 
 =head2 FromURI <URI>
 
@@ -157,9 +154,7 @@ sub FromURI {
 
 }
 
-# }}}
 
-# {{{ _GetResolver
 
 =head2 _GetResolver <scheme>
 
@@ -189,9 +184,7 @@ sub _GetResolver {
 
 }
 
-# }}}
 
-# {{{ Scheme
 
 =head2 Scheme
 
@@ -205,8 +198,6 @@ sub Scheme {
     return ($self->Resolver->Scheme);
 
 }
-# }}}
-# {{{ URI
 
 =head2 URI
 
@@ -220,9 +211,7 @@ sub URI {
     return ($self->Resolver->URI);
 
 }
-# }}}
 
-# {{{ Object
 
 =head2 Object
 
@@ -238,9 +227,7 @@ sub Object {
 }
 
 
-# }}}
 
-# {{{ IsLocal
 
 =head2 IsLocal
 
@@ -254,7 +241,6 @@ sub IsLocal {
 }
 
 
-# }}}
 
 =head2 AsHREF
 

@@ -77,7 +77,6 @@ use strict;
 no warnings qw(redefine);
 use RT::CachedGroupMembers;
 
-# {{{ sub Create
 
 =head2 Create { Group => undef, Member => undef }
 
@@ -212,9 +211,7 @@ sub Create {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub _StashUser
 
 =head2 _StashUser PRINCIPAL
 
@@ -272,9 +269,7 @@ sub _StashUser {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -343,9 +338,7 @@ sub Delete {
 
 }
 
-# }}}
 
-# {{{ sub MemberObj
 
 =head2 MemberObj
 
@@ -362,9 +355,7 @@ sub MemberObj {
     return ( $self->{'Member_obj'} );
 }
 
-# }}}
 
-# {{{ sub GroupObj
 
 =head2 GroupObj
 
@@ -381,6 +372,5 @@ sub GroupObj {
     return ( $self->{'Group_obj'} );
 }
 
-# }}}
 
 1;

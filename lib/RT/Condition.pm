@@ -82,7 +82,6 @@ use warnings;
 
 use base qw/RT::Base/;
 
-# {{{ sub new 
 sub new  {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -91,9 +90,7 @@ sub new  {
   $self->_Init(@_);
   return $self;
 }
-# }}}
 
-# {{{ sub _Init 
 sub _Init  {
   my $self = shift;
   my %args = ( TransactionObj => undef,
@@ -112,11 +109,9 @@ sub _Init  {
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
   $self->CurrentUser($args{'CurrentUser'});
 }
-# }}}
 
 # Access Scripwide data
 
-# {{{ sub Argument 
 
 =head2 Argument
 
@@ -128,9 +123,7 @@ sub Argument  {
   my $self = shift;
   return($self->{'Argument'});
 }
-# }}}
 
-# {{{ sub TicketObj
 
 =head2 TicketObj
 
@@ -142,9 +135,7 @@ sub TicketObj  {
   my $self = shift;
   return($self->{'TicketObj'});
 }
-# }}}
 
-# {{{ sub ScripObj
 
 =head2 ScripObj
 
@@ -156,8 +147,6 @@ sub ScripObj  {
   my $self = shift;
   return($self->{'ScripObj'});
 }
-# }}}
-# {{{ sub TransactionObj
 
 =head2 TransactionObj
 
@@ -169,9 +158,7 @@ sub TransactionObj  {
   my $self = shift;
   return($self->{'TransactionObj'});
 }
-# }}}
 
-# {{{ sub Type
 
 =head2 Type 
 
@@ -183,7 +170,6 @@ sub ApplicableTransTypes  {
   my $self = shift;
   return($self->{'ApplicableTransTypes'});
 }
-# }}}
 
 
 # Scrip methods
@@ -191,26 +177,21 @@ sub ApplicableTransTypes  {
 
 #What does this type of Action does
 
-# {{{ sub Describe 
 sub Describe  {
   my $self = shift;
   return ($self->loc("No description for [_1]", ref $self));
 }
-# }}}
 
 
 #Parse the templates, get things ready to go.
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
   return(undef);
 }
-# }}}
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
 
@@ -223,7 +204,6 @@ sub DESTROY {
      
 }
 
-# }}}
 
 RT::Base->_ImportOverlays();
 

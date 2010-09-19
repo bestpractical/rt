@@ -76,7 +76,6 @@ use Carp;
 use RT::URI;
 
 
-# {{{ sub Create 
 
 =head2 Create PARAMHASH
 
@@ -160,7 +159,6 @@ sub Create {
     return ( $id, $msg );
 }
 
-# }}}
  # {{{ sub LoadByParams
 
 =head2 LoadByParams
@@ -203,8 +201,6 @@ sub LoadByParams {
     }
 }
 
-# }}}
-# {{{ sub Load 
 
 =head2 Load
 
@@ -232,10 +228,8 @@ sub Load {
     }
 }
 
-# }}}
 
 
-# {{{ TargetURI
 
 =head2 TargetURI
 
@@ -250,8 +244,6 @@ sub TargetURI {
     return ($URI);
 }
 
-# }}}
-# {{{ sub TargetObj 
 
 =head2 TargetObj
 
@@ -261,9 +253,7 @@ sub TargetObj {
     my $self = shift;
     return $self->TargetURI->Object;
 }
-# }}}
 
-# {{{ BaseURI
 
 =head2 BaseURI
 
@@ -278,8 +268,6 @@ sub BaseURI {
     return ($URI);
 }
 
-# }}}
-# {{{ sub BaseObj
 
 =head2 BaseObj
 
@@ -289,7 +277,6 @@ sub BaseObj {
   my $self = shift;
   return $self->BaseURI->Object;
 }
-# }}}
 
 1;
  

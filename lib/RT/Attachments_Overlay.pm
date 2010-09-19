@@ -213,14 +213,11 @@ sub LimitByTicket {
     return;
 }
 
-# {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
   return RT::Attachment->new( $self->CurrentUser );
 }
-# }}}
 
-# {{{ sub Next
 sub Next {
     my $self = shift;
 
@@ -237,6 +234,5 @@ sub Next {
     # If the user doesn't have the right to show this ticket
     return $self->Next;
 }
-# }}}
 
 1;

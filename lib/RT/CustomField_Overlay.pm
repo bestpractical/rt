@@ -370,7 +370,6 @@ sub Load {
 }
 
 
-# {{{ sub LoadByName
 
 =head2 LoadByName (Queue => QUEUEID, Name => NAME)
 
@@ -443,9 +442,7 @@ sub LoadByName {
     return $self->LoadById( $first->id );
 }
 
-# }}}
 
-# {{{ Dealing with custom field values 
 
 
 =head2 Custom field values
@@ -473,7 +470,6 @@ sub Values {
     return ($cf_values);
 }
 
-# {{{ AddValue
 
 =head3 AddValue HASH
 
@@ -499,9 +495,7 @@ sub AddValue {
 }
 
 
-# }}}
 
-# {{{ DeleteValue
 
 =head3 DeleteValue ID
 
@@ -534,7 +528,6 @@ sub DeleteValue {
     return ($retval, $self->loc("Custom field value deleted"));
 }
 
-# }}}
 
 
 =head2 ValidateQueue Queue
@@ -558,7 +551,6 @@ sub ValidateQueue {
 }
 
 
-# {{{ Types
 
 =head2 Types 
 
@@ -570,7 +562,6 @@ sub Types {
     return (keys %FieldTypes);
 }
 
-# }}}
 
 =head2 HasRenderTypes [TYPE_COMPOSITE]
 
@@ -588,7 +579,6 @@ sub HasRenderTypes {
     return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
 }
 
-# {{{ IsSelectionType
 
 =head2 IsSelectionType 
 
@@ -604,7 +594,6 @@ sub IsSelectionType {
     return $FieldTypes{$type}->{selection_type};
 }
 
-# }}}
 
 
 =head2 IsExternalValues
@@ -750,7 +739,6 @@ sub _IsValidRegex {
     return (0, $err);
 }
 
-# {{{ SingleValue
 
 =head2 SingleValue
 
@@ -779,7 +767,6 @@ sub UnlimitedValues {
     }
 }
 
-# }}}
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -830,7 +817,6 @@ sub ContextObject {
     return $self->{'context_object'};
 }
   
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
@@ -842,9 +828,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -868,8 +852,6 @@ sub _Value {
     return $self->__Value( @_ );
 }
 
-# }}}
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -879,7 +861,6 @@ Takes a boolean.
 
 =cut
 
-# }}}
 
 =head2 SetTypeComposite
 
@@ -1277,7 +1258,6 @@ sub RemoveFromObject {
     return ( $oid, $msg );
 }
 
-# {{{ AddValueForObject
 
 =head2 AddValueForObject HASH
 
@@ -1366,7 +1346,6 @@ sub AddValueForObject {
 
 }
 
-# }}}
 
 
 sub _CanonicalizeValueDateTime {
@@ -1392,7 +1371,6 @@ sub _CanonicalizeValueDate {
                  );
     $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
 }
-# {{{ MatchPattern
 
 =head2 MatchPattern STRING
 
@@ -1409,9 +1387,7 @@ sub MatchPattern {
 }
 
 
-# }}}
 
-# {{{ FriendlyPattern
 
 =head2 FriendlyPattern
 
@@ -1434,9 +1410,7 @@ sub FriendlyPattern {
 }
 
 
-# }}}
 
-# {{{ DeleteValueForObject
 
 =head2 DeleteValueForObject HASH
 

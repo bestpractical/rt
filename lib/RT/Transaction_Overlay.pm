@@ -83,7 +83,6 @@ use RT::Ruleset;
 use HTML::FormatText;
 use HTML::TreeBuilder;
 
-# {{{ sub Create 
 
 =head2 Create
 
@@ -193,7 +192,6 @@ sub Create {
     return ( $id, $self->loc("Transaction Created") );
 }
 
-# }}}
 
 =head2 Scrips
 
@@ -227,7 +225,6 @@ sub Rules {
 }
 
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -259,11 +256,8 @@ sub Delete {
     return ($id,$msg);
 }
 
-# }}}
 
-# {{{ Routines dealing with Attachments
 
-# {{{ sub Message 
 
 =head2 Message
 
@@ -291,9 +285,7 @@ sub Message {
     return $self->{'message'};
 }
 
-# }}}
 
-# {{{ sub Content
 
 =head2 Content PARAMHASH
 
@@ -382,7 +374,6 @@ sub Content {
     return ($content);
 }
 
-# }}}
 
 
 =head2 Addresses
@@ -404,7 +395,6 @@ sub Addresses {
 }
 
 
-# {{{ ContentObj
 
 =head2 ContentObj 
 
@@ -466,9 +456,7 @@ sub ContentObj {
     return (undef);
 }
 
-# }}}
 
-# {{{ sub Subject
 
 =head2 Subject
 
@@ -483,9 +471,7 @@ sub Subject {
     return $first->Subject;
 }
 
-# }}}
 
-# {{{ sub Attachments 
 
 =head2 Attachments
 
@@ -522,9 +508,7 @@ sub Attachments {
     return $self->{'attachments'};
 }
 
-# }}}
 
-# {{{ sub _Attach 
 
 =head2 _Attach
 
@@ -549,9 +533,7 @@ sub _Attach {
     return ( $Attachment, $msg || $self->loc("Attachment created") );
 }
 
-# }}}
 
-# }}}
 
 sub ContentAsMIME {
     my $self = shift;
@@ -596,9 +578,7 @@ sub ContentAsMIME {
     return $entity;
 }
 
-# {{{ Routines dealing with Transaction Attributes
 
-# {{{ sub Description 
 
 =head2 Description
 
@@ -620,9 +600,7 @@ sub Description {
     return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
 }
 
-# }}}
 
-# {{{ sub BriefDescription 
 
 =head2 BriefDescription
 
@@ -935,11 +913,8 @@ sub BriefDescription {
     }
 );
 
-# }}}
 
-# {{{ Utility methods
 
-# {{{ sub IsInbound
 
 =head2 IsInbound
 
@@ -954,9 +929,7 @@ sub IsInbound {
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
-# }}}
 
-# }}}
 
 sub _OverlayAccessible {
     {
@@ -967,20 +940,15 @@ sub _OverlayAccessible {
     }
 };
 
-# }}}
 
-# }}}
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
     return ( 0, $self->loc('Transactions are immutable') );
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -1005,9 +973,7 @@ sub _Value {
     return $self->SUPER::_Value( $field );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -1073,7 +1039,6 @@ sub CurrentUserCanSee {
     return 1;
 }
 
-# }}}
 
 sub Ticket {
     my $self = shift;
@@ -1207,9 +1172,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues($field);
 }
 
-# }}}
 
-# {{{ sub CustomFieldLookupType
 
 =head2 CustomFieldLookupType
 
@@ -1218,7 +1181,6 @@ be passed to RT::CustomField->Create() via the 'LookupType' hash key.
 
 =cut
 
-# }}}
 
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";

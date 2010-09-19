@@ -69,7 +69,6 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 
-# {{{ EscapeUTF8
 
 =head2 EscapeUTF8 SCALARREF
 
@@ -90,9 +89,7 @@ sub EscapeUTF8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-# }}}
 
-# {{{ EscapeURI
 
 =head2 EscapeURI SCALARREF
 
@@ -108,9 +105,7 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
-# }}}
 
-# {{{ WebCanonicalizeInfo
 
 =head2 WebCanonicalizeInfo();
 
@@ -124,9 +119,7 @@ sub WebCanonicalizeInfo {
     return $ENV{'REMOTE_USER'} ? lc $ENV{'REMOTE_USER'} : $ENV{'REMOTE_USER'};
 }
 
-# }}}
 
-# {{{ WebExternalAutoInfo
 
 =head2 WebExternalAutoInfo($user);
 
@@ -163,7 +156,6 @@ sub WebExternalAutoInfo {
     return {%user_info};
 }
 
-# }}}
 
 sub HandleRequest {
     my $ARGS = shift;
@@ -808,7 +800,6 @@ package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
 
-# {{{ loc
 
 =head2 loc ARRAY
 
@@ -839,9 +830,7 @@ sub loc {
     }
 }
 
-# }}}
 
-# {{{ loc_fuzzy
 
 =head2 loc_fuzzy STRING
 
@@ -866,9 +855,7 @@ sub loc_fuzzy {
     }
 }
 
-# }}}
 
-# {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
     my $why  = shift;
@@ -886,9 +873,7 @@ sub Abort {
     }
 }
 
-# }}}
 
-# {{{ sub CreateTicket
 
 =head2 CreateTicket ARGS
 
@@ -1073,9 +1058,7 @@ sub CreateTicket {
 
 }
 
-# }}}
 
-# {{{ sub LoadTicket - loads a ticket
 
 =head2  LoadTicket id
 
@@ -1105,9 +1088,7 @@ sub LoadTicket {
     return $Ticket;
 }
 
-# }}}
 
-# {{{ sub ProcessUpdateMessage
 
 =head2 ProcessUpdateMessage
 
@@ -1272,9 +1253,7 @@ sub _ProcessUpdateMessageRecipients {
     }
 }
 
-# }}}
 
-# {{{ sub MakeMIMEEntity
 
 =head2 MakeMIMEEntity PARAMHASH
 
@@ -1354,9 +1333,7 @@ sub MakeMIMEEntity {
 
 }
 
-# }}}
 
-# {{{ sub ParseDateToISO
 
 =head2 ParseDateToISO
 
@@ -1376,9 +1353,7 @@ sub ParseDateToISO {
     return ( $date_obj->ISO );
 }
 
-# }}}
 
-# {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
     my $ARGSref = shift;
@@ -1429,7 +1404,6 @@ sub ProcessACLChanges {
     return (@results);
 }
 
-# }}}
 
 =head2 ProcessACLs
 
@@ -1559,7 +1533,6 @@ sub ProcessACLs {
 
 
 
-# {{{ sub UpdateRecordObj
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
 
@@ -1588,9 +1561,7 @@ sub UpdateRecordObject {
     return (@results);
 }
 
-# }}}
 
-# {{{ Sub ProcessCustomFieldUpdates
 
 sub ProcessCustomFieldUpdates {
     my %args = (
@@ -1643,9 +1614,7 @@ sub ProcessCustomFieldUpdates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketBasics
 
 =head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1719,7 +1688,6 @@ sub ProcessTicketBasics {
     return (@results);
 }
 
-# }}}
 
 sub ProcessTicketCustomFieldUpdates {
     my %args = @_;
@@ -1935,7 +1903,6 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
-# {{{ sub ProcessTicketWatchers
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -2017,9 +1984,7 @@ sub ProcessTicketWatchers {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketDates
 
 =head2 ProcessTicketDates ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -2075,9 +2040,7 @@ sub ProcessTicketDates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketLinks
 
 =head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -2107,7 +2070,6 @@ sub ProcessTicketLinks {
     return (@results);
 }
 
-# }}}
 
 sub ProcessRecordLinks {
     my %args = (

@@ -158,7 +158,6 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 sub encoding { 'utf-8' }
 
-# {{{ SetMIMEEntityToUTF8
 
 =head2 SetMIMEEntityToUTF8 $entity
 
@@ -171,9 +170,7 @@ sub SetMIMEEntityToUTF8 {
     RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
 }
 
-# }}}
 
-# {{{ IsTextualContentType
 
 =head2 IsTextualContentType $type
 
@@ -185,7 +182,6 @@ Currently, it returns true iff $type matches this regular expression
 
     ^(?:text/(?:plain|html)|message/rfc822)\b
 
-# }}}
 
 =cut
 
@@ -194,7 +190,6 @@ sub IsTextualContentType {
     ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
 }
 
-# {{{ SetMIMEEntityToEncoding
 
 =head2 SetMIMEEntityToEncoding $entity, $encoding
 
@@ -304,9 +299,7 @@ sub SetMIMEEntityToEncoding {
 # Not turning off the UTF-8 flag in the string will prevent the string
 # from conversion.
 
-# }}}
 
-# {{{ DecodeMIMEWordsToUTF8
 
 =head2 DecodeMIMEWordsToUTF8 $raw
 
@@ -424,9 +417,7 @@ sub DecodeMIMEWordsToEncoding {
     return ($str)
 }
 
-# }}}
 
-# {{{ _FindOrGuessCharset
 
 =head2 _FindOrGuessCharset MIME::Entity, $head_only
 
@@ -455,9 +446,7 @@ sub _FindOrGuessCharset {
     }
 }
 
-# }}}
 
-# {{{ _GuessCharset
 
 =head2 _GuessCharset STRING
 
@@ -511,9 +500,7 @@ sub _GuessCharset {
     return ($charset || $fallback);
 }
 
-# }}}
 
-# {{{ SetMIMEHeadToEncoding
 
 =head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
 
@@ -570,7 +557,6 @@ sub SetMIMEHeadToEncoding {
     }
 
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

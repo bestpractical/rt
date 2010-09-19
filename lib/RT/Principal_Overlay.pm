@@ -64,7 +64,6 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
-# {{{ IsGroup
 
 =head2 IsGroup
 
@@ -82,9 +81,7 @@ sub IsGroup {
     return undef;
 }
 
-# }}}
 
-# {{{ IsUser
 
 =head2 IsUser 
 
@@ -103,9 +100,7 @@ sub IsUser {
     }
 }
 
-# }}}
 
-# {{{ Object
 
 =head2 Object
 
@@ -133,11 +128,8 @@ sub Object {
 
 
 }
-# }}} 
 
-# {{{ ACL Related routines
 
-# {{{ GrantRight 
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
@@ -172,9 +164,7 @@ sub GrantRight {
         PrincipalId   => $self->Id,
     );
 }
-# }}}
 
-# {{{ RevokeRight
 
 =head2 RevokeRight { Right => "RightName", Object => "object" }
 
@@ -220,9 +210,7 @@ sub RevokeRight {
     return $ace->Delete;
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 sub HasRight (Right => 'right' Object => undef)
 
@@ -534,14 +522,10 @@ sub RolesWithRight {
     return @$roles;
 }
 
-# }}}
-
-# }}}
-
-# {{{ ACL caching
 
 
-# {{{ InvalidateACLCache
+
+
 
 =head2 InvalidateACLCache
 
@@ -556,12 +540,9 @@ sub InvalidateACLCache {
     $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ _GetPrincipalTypeForACL
+
 
 =head2 _GetPrincipalTypeForACL
 
@@ -583,9 +564,7 @@ sub _GetPrincipalTypeForACL {
     return($type);
 }
 
-# }}}
 
-# {{{ _ReferenceId
 
 =head2 _ReferenceId
 
@@ -608,6 +587,5 @@ sub _ReferenceId {
     return(ref($scalar)."-". $scalar->id);
 }
 
-# }}}
 
 1;

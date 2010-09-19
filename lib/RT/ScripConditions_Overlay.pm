@@ -70,16 +70,13 @@ package RT::ScripConditions;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub _Init
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "ScripConditions";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
 }
-# }}}
 
-# {{{ sub LimitToType 
 sub LimitToType  {
   my $self = shift;
   my $type = shift;
@@ -96,14 +93,11 @@ sub LimitToType  {
 		VALUE => 'any');
   
 }
-# }}}
 
-# {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
   return(RT::ScripCondition->new($self->CurrentUser));
 }
-# }}}
 
 
 1;

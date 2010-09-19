@@ -73,15 +73,12 @@ use strict;
 no warnings qw(redefine);
 
 
-# {{{  sub _Init 
 sub _Init  {
     my $self = shift; 
     $self->{'table'} = "ScripConditions";
     return ($self->SUPER::_Init(@_));
 }
-# }}}
 
-# {{{ sub _Accessible 
 sub _Accessible  {
     my $self = shift;
     my %Cols = ( Name  => 'read',
@@ -96,9 +93,7 @@ sub _Accessible  {
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));
 }
-# }}}
 
-# {{{ sub Create 
 
 =head2 Create
   
@@ -111,9 +106,7 @@ sub Create  {
     my $self = shift;
     return($self->SUPER::Create(@_));
 }
-# }}}
 
-# {{{ sub Delete 
 
 =head2 Delete
 
@@ -125,9 +118,7 @@ sub Delete  {
     my $self = shift;
     return(0, $self->loc('Unimplemented'));
 }
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load IDENTIFIER
 
@@ -150,9 +141,7 @@ sub Load  {
 	return ($self->LoadByCol('Name', $identifier));
     }
 }
-# }}}
 
-# {{{ sub LoadCondition 
 
 =head2 LoadCondition  HASH
 
@@ -184,12 +173,9 @@ sub LoadCondition  {
                      CurrentUser => $self->CurrentUser 
 				       );
 }
-# }}}
-
-# {{{ The following methods call the Condition object
 
 
-# {{{ sub Describe 
+
 
 =head2 Describe 
 
@@ -202,9 +188,7 @@ sub Describe  {
     return ($self->{'Condition'}->Describe());
     
 }
-# }}}
 
-# {{{ sub IsApplicable 
 
 =head2 IsApplicable
 
@@ -217,16 +201,12 @@ sub IsApplicable  {
     return ($self->{'Condition'}->IsApplicable());
     
 }
-# }}}
 
-# }}}
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self=shift;
     $self->{'Condition'} = undef;
 }
-# }}}
 
 
 1;

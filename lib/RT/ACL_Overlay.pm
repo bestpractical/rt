@@ -77,7 +77,6 @@ Hand out the next ACE that was found
 =cut
 
 
-# {{{ LimitToObject 
 
 =head2 LimitToObject $object
 
@@ -111,9 +110,7 @@ sub LimitToObject {
 
 }
 
-# }}}
 
-# {{{ LimitNotObject
 
 =head2 LimitNotObject $object
 
@@ -147,9 +144,7 @@ sub LimitNotObject {
 		);
 }
 
-# }}}
 
-# {{{ LimitToPrincipal 
 
 =head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
 
@@ -206,11 +201,9 @@ sub LimitToPrincipal {
     }
 }
 
-# }}}
 
 
 
-# {{{ sub Next 
 sub Next {
     my $self = shift;
 
@@ -238,7 +231,6 @@ sub Next {
 
 }
 
-# }}}
 
 
 
@@ -275,7 +267,6 @@ sub _BuildHash {
 }
 
 
-# {{{ HasEntry
 
 =head2 HasEntry
 
@@ -307,5 +298,4 @@ sub HasEntry {
     }
 }
 
-# }}}
 1;

@@ -243,7 +243,6 @@ sub RightCategories {
 }
 
 
-# {{{ ActiveStatusArray
 
 sub lifecycle {
     my $self = shift;
@@ -336,7 +335,6 @@ sub IsInactiveStatus {
 }
 
 
-# {{{ sub Create
 
 
 
@@ -418,9 +416,7 @@ sub Create {
     return ( $id, $self->loc("Queue created") );
 }
 
-# }}}
 
-# {{{ sub Delete 
 
 sub Delete {
     my $self = shift;
@@ -428,9 +424,7 @@ sub Delete {
         $self->loc('Deleting this object would break referential integrity') );
 }
 
-# }}}
 
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -463,9 +457,7 @@ sub SetDisabled {
 
 }
 
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load
 
@@ -492,9 +484,7 @@ sub Load {
 
 }
 
-# }}}
 
-# {{{ sub ValidateName
 
 =head2 ValidateName NAME
 
@@ -522,7 +512,6 @@ sub ValidateName {
 
 }
 
-# }}}
 
 =head2 SetSign
 
@@ -612,7 +601,6 @@ sub SetSubjectTag {
     ))
 }
 
-# {{{ sub Templates
 
 =head2 Templates
 
@@ -632,11 +620,8 @@ sub Templates {
     return ($templates);
 }
 
-# }}}
 
-# {{{ Dealing with custom fields
 
-# {{{  CustomField
 
 =head2 CustomField NAME
 
@@ -653,7 +638,6 @@ sub CustomField {
 }
 
 
-# {{{ TicketCustomFields
 
 =head2 TicketCustomFields
 
@@ -675,9 +659,7 @@ sub TicketCustomFields {
     return ($cfs);
 }
 
-# }}}
 
-# {{{ TicketTransactionCustomFields
 
 =head2 TicketTransactionCustomFields
 
@@ -698,14 +680,10 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ Routines dealing with watchers.
 
-# {{{ AllRoleGroupTypes
+
 =head2 AllRoleGroupTypes
 
 Returns a list of the names of the various role group types that this queue
@@ -718,9 +696,7 @@ sub AllRoleGroupTypes {
     my $self = shift;
     return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
 }
-# }}}
 
-# {{{ IsRoleGroupType
 =head2 IsRoleGroupType
 
 Returns whether the passed-in type is a role group type.
@@ -737,9 +713,7 @@ sub IsRoleGroupType {
 
     return 0;
 }
-# }}}
 
-# {{{ ManageableRoleGroupTypes
 =head2 ManageableRoleGroupTypes
 
 Returns a list of the names of the various role group types that this queue
@@ -750,9 +724,7 @@ has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
 sub ManageableRoleGroupTypes {
     return qw(Cc AdminCc);
 }
-# }}}
 
-# {{{ IsManageableRoleGroupType
 =head2 IsManageableRoleGroupType
 
 Returns whether the passed-in type is a manageable role group type.
@@ -769,9 +741,7 @@ sub IsManageableRoleGroupType {
 
     return 0;
 }
-# }}}
 
-# {{{ _CreateQueueGroups 
 
 =head2 _CreateQueueGroups
 
@@ -816,7 +786,6 @@ sub _CreateQueueRoleGroup {
 }
 
 
-# }}}
 
 # _HasModifyWatcherRight {{{
 sub _HasModifyWatcherRight {
@@ -846,9 +815,7 @@ sub _HasModifyWatcherRight {
 
     return ( 0, $self->loc("Permission Denied") );
 }
-# }}}
 
-# {{{ sub AddWatcher
 
 =head2 AddWatcher
 
@@ -973,9 +940,7 @@ sub _AddWatcher {
     return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -1057,9 +1022,7 @@ sub DeleteWatcher {
     return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ AdminCcAddresses
 
 =head2 AdminCcAddresses
 
@@ -1078,9 +1041,7 @@ sub AdminCcAddresses {
     
 }   
 
-# }}}
 
-# {{{ CcAddresses
 
 =head2 CcAddresses
 
@@ -1098,10 +1059,8 @@ sub CcAddresses {
     return ( $self->Cc->MemberEmailAddressesAsString);
 
 }
-# }}}
 
 
-# {{{ sub Cc
 
 =head2 Cc
 
@@ -1122,9 +1081,7 @@ sub Cc {
 
 }
 
-# }}}
 
-# {{{ sub AdminCc
 
 =head2 AdminCc
 
@@ -1145,11 +1102,8 @@ sub AdminCc {
 
 }
 
-# }}}
 
-# {{{ IsWatcher, IsCc, IsAdminCc
 
-# {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
@@ -1187,10 +1141,8 @@ sub IsWatcher {
     return ($group->HasMemberRecursively($principal));
 }
 
-# }}}
 
 
-# {{{ sub IsCc
 
 =head2 IsCc PRINCIPAL_ID
 
@@ -1208,9 +1160,7 @@ sub IsCc {
 
 }
 
-# }}}
 
-# {{{ sub IsAdminCc
 
 =head2 IsAdminCc PRINCIPAL_ID
 
@@ -1227,20 +1177,15 @@ sub IsAdminCc {
 
 }
 
-# }}}
-
-
-# }}}
 
 
 
 
 
-# }}}
 
-# {{{ ACCESS CONTROL
 
-# {{{ sub _Set
+
+
 sub _Set {
     my $self = shift;
 
@@ -1250,9 +1195,7 @@ sub _Set {
     return ( $self->SUPER::_Set(@_) );
 }
 
-# }}}
 
-# {{{ sub _Value
 
 sub _Value {
     my $self = shift;
@@ -1264,9 +1207,7 @@ sub _Value {
     return ( $self->__Value(@_) );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -1289,9 +1230,7 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 HasRight
 
@@ -1322,8 +1261,6 @@ sub HasRight {
     );
 }
 
-# }}}
 
-# }}}
 
 1;

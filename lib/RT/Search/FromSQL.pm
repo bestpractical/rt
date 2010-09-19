@@ -74,12 +74,10 @@ Returns a localized string describing the module's function.
 
 =cut
 
-# {{{ sub Describe 
 sub Describe  {
     my $self = shift;
     return ($self->loc("TicketSQL search module", ref $self));
 }
-# }}}
 
 =head2 Prepare
 
@@ -89,14 +87,12 @@ is reduced to those tickets matching the SQL query.
 
 =cut
 
-# {{{ sub Prepare
 sub Prepare  {
     my $self = shift;
 
     $self->TicketsObj->FromSQL($self->Argument);
     return(1);
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

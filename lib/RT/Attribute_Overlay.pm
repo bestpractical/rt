@@ -189,7 +189,6 @@ sub Create {
 }
 
 
-# {{{ sub LoadByNameAndObject
 
 =head2  LoadByNameAndObject (Object => OBJECT, Name => NAME)
 
@@ -215,7 +214,6 @@ sub LoadByNameAndObject {
 
 }
 
-# }}}
 
 
 =head2 _DeserializeContent

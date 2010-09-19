@@ -73,7 +73,6 @@ use strict;
 no warnings qw(redefine);
 use RT::Template;
 
-# {{{ sub _Accessible 
 sub _Accessible  {
     my $self = shift;
     my %Cols = ( Name  => 'read',
@@ -87,9 +86,7 @@ sub _Accessible  {
        );
     return($self->SUPER::_Accessible(@_, %Cols));
 }
-# }}}
 
-# {{{ sub Create 
 
 =head2 Create
 
@@ -103,17 +100,13 @@ sub Create  {
     #TODO check these args and do smart things.
     return($self->SUPER::Create(@_));
 }
-# }}}
 
-# {{{ sub Delete 
 sub Delete  {
     my $self = shift;
     
     return (0, "ScripAction->Delete not implemented");
 }
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load IDENTIFIER
 
@@ -147,9 +140,7 @@ sub Load  {
     }
     return ($self->Id, ($self->loc('[_1] ScripAction loaded', $self->Id)));
 }
-# }}}
 
-# {{{ sub LoadAction 
 
 =head2 LoadAction HASH
 
@@ -181,9 +172,7 @@ sub LoadAction  {
                                       TransactionObj => $args{'TransactionObj'},
 				    );
 }
-# }}}
 
-# {{{ sub TemplateObj
 
 =head2 TemplateObj
 
@@ -218,11 +207,9 @@ sub TemplateObj {
 
     return ( $self->{'TemplateObj'} );
 }
-# }}}
 
 # The following methods call the action object
 
-# {{{ sub Prepare 
 
 sub Prepare  {
     my $self = shift;
@@ -230,24 +217,19 @@ sub Prepare  {
     return ($self->Action->Prepare());
   
 }
-# }}}
 
-# {{{ sub Commit 
 sub Commit  {
     my $self = shift;
     return($self->Action->Commit());
     
     
 }
-# }}}
 
-# {{{ sub Describe 
 sub Describe  {
     my $self = shift;
     return ($self->Action->Describe());
     
 }
-# }}}
 
 =head2 Action
 
@@ -260,14 +242,12 @@ sub Action {
     return ($self->{'Action'});
 }
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self=shift;
     $self->{'_TicketObj'} = undef;
     $self->{'Action'} = undef;
     $self->{'TemplateObj'} = undef;
 }
-# }}}
 
 =head2 TODO
 

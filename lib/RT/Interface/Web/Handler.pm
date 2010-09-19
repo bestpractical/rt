@@ -82,7 +82,6 @@ sub DefaultHandlerArgs  { (
     named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
 
-# {{{ sub new 
 
 =head2 new
 
@@ -127,9 +126,7 @@ sub InitSessionDir {
 
 }
 
-# }}}
 
-# {{{ sub NewApacheHandler 
 
 =head2 NewApacheHandler
 
@@ -143,9 +140,7 @@ sub NewApacheHandler {
     return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
 }
 
-# }}}
 
-# {{{ sub NewCGIHandler 
 
 =head2 NewCGIHandler
 
@@ -231,6 +226,5 @@ sub CleanupRequest {
     # filehandles.
     File::Temp::cleanup;
 }
-# }}}
 
 1;

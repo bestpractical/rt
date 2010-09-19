@@ -71,7 +71,6 @@ use strict;
 no warnings qw(redefine);
 use RT::URI;
 
-# {{{ sub Limit 
 sub Limit  {
     my $self = shift;
     my %args = ( ENTRYAGGREGATOR => 'AND',
@@ -108,9 +107,7 @@ sub Limit  {
 
     $self->SUPER::Limit(%args);
 }
-# }}}
 
-# {{{ LimitRefersTo 
 
 =head2 LimitRefersTo URI
 
@@ -126,8 +123,6 @@ sub LimitRefersTo {
     $self->Limit(FIELD => 'Target', VALUE => $URI);
 }
 
-# }}}
-# {{{ LimitReferredToBy
 
 =head2 LimitReferredToBy URI
 
@@ -143,10 +138,8 @@ sub LimitReferredToBy {
     $self->Limit(FIELD => 'Base', VALUE => $URI);
 }
 
-# }}}
 
 
-# {{{ Next
 sub Next {
     my $self = shift;
  	
@@ -169,6 +162,5 @@ sub Next {
     }
 }
 
-# }}}
 1;
 

@@ -174,7 +174,6 @@ sub AddRightCategories {
 }
 
 
-# {{{ sub SelfDescription
 
 =head2 SelfDescription
 
@@ -211,9 +210,7 @@ sub SelfDescription {
 	}
 }
 
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load ID
 
@@ -236,9 +233,7 @@ sub Load {
     }
 }
 
-# }}}
 
-# {{{ sub LoadUserDefinedGroup 
 
 =head2 LoadUserDefinedGroup NAME
 
@@ -265,9 +260,7 @@ sub LoadUserDefinedGroup {
     }
 }
 
-# }}}
 
-# {{{ sub LoadACLEquivalenceGroup 
 
 =head2 LoadACLEquivalenceGroup PRINCIPAL
 
@@ -292,10 +285,8 @@ sub LoadACLEquivalenceGroup {
     );
 }
 
-# }}}
 
 
-# {{{ sub LoadSystemInternalGroup 
 
 =head2 LoadSystemInternalGroup NAME
 
@@ -315,9 +306,7 @@ sub LoadSystemInternalGroup {
     );
 }
 
-# }}}
 
-# {{{ sub LoadTicketRoleGroup 
 
 =head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
 
@@ -342,9 +331,7 @@ sub LoadTicketRoleGroup {
                            );
 }
 
-# }}}
 
-# {{{ sub LoadQueueRoleGroup 
 
 =head2 LoadQueueRoleGroup  { Queue => Queue_ID, Type => TYPE }
 
@@ -369,9 +356,7 @@ sub LoadQueueRoleGroup {
                            );
 }
 
-# }}}
 
-# {{{ sub LoadSystemRoleGroup 
 
 =head2 LoadSystemRoleGroup  Type
 
@@ -392,9 +377,7 @@ sub LoadSystemRoleGroup {
                            );
 }
 
-# }}}
 
-# {{{ sub Create
 
 =head2 Create
 
@@ -409,9 +392,7 @@ sub Create {
     return(0,$self->loc('Permission Denied'));
 }
 
-# }}}
 
-# {{{ sub _Create
 
 =head2 _Create
 
@@ -486,9 +467,7 @@ sub _Create {
     return ( $id, $self->loc("Group created") );
 }
 
-# }}}
 
-# {{{ CreateUserDefinedGroup
 
 =head2 CreateUserDefinedGroup { Name => "name", Description => "Description"}
 
@@ -510,9 +489,7 @@ sub CreateUserDefinedGroup {
     return($self->_Create( Domain => 'UserDefined', Type => '', Instance => '', @_));
 }
 
-# }}}
 
-# {{{ _CreateACLEquivalenceGroup
 
 =head2 _CreateACLEquivalenceGroup { Principal }
 
@@ -555,10 +532,8 @@ sub _CreateACLEquivalenceGroup {
     return ($id);
 }
 
-# }}}
 
 
-# {{{ CreateRoleGroup 
 
 =head2 CreateRoleGroup { Domain => DOMAIN, Type =>  TYPE, Instance => ID }
 
@@ -591,9 +566,7 @@ sub CreateRoleGroup {
                              InsideTransaction => 1 ) );
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -620,7 +593,6 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
-# }}}
 
 =head2 SetDisabled BOOL
 
@@ -684,7 +656,6 @@ This routine finds all the cached group members that are members of this group  
 
 }
 
-# }}}
 
 
 
@@ -694,7 +665,6 @@ sub Disabled {
 }
 
 
-# {{{ DeepMembersObj
 
 =head2 DeepMembersObj
 
@@ -715,9 +685,7 @@ sub DeepMembersObj {
 
 }
 
-# }}}
 
-# {{{ MembersObj
 
 =head2 MembersObj
 
@@ -737,9 +705,7 @@ sub MembersObj {
 
 }
 
-# }}}
 
-# {{{ GroupMembersObj
 
 =head2 GroupMembersObj [Recursively => 1]
 
@@ -779,9 +745,7 @@ sub GroupMembersObj {
     return $groups;
 }
 
-# }}}
 
-# {{{ UserMembersObj
 
 =head2 UserMembersObj
 
@@ -821,9 +785,7 @@ sub UserMembersObj {
     return ( $users);
 }
 
-# }}}
 
-# {{{ MemberEmailAddresses
 
 =head2 MemberEmailAddresses
 
@@ -843,9 +805,7 @@ sub MemberEmailAddresses {
     return(sort keys %addresses);
 }
 
-# }}}
 
-# {{{ MemberEmailAddressesAsString
 
 =head2 MemberEmailAddressesAsString
 
@@ -860,9 +820,7 @@ sub MemberEmailAddressesAsString {
     return (join(', ', $self->MemberEmailAddresses));
 }
 
-# }}}
 
-# {{{ AddMember
 
 =head2 AddMember PRINCIPAL_ID
 
@@ -951,9 +909,7 @@ sub _AddMember {
         return(0, $self->loc("Couldn't add member to group"));
     }
 }
-# }}}
 
-# {{{ HasMember
 
 =head2 HasMember RT::Principal|id
 
@@ -995,9 +951,7 @@ sub HasMember {
     }
 }
 
-# }}}
 
-# {{{ HasMemberRecursively
 
 =head2 HasMemberRecursively RT::Principal|id
 
@@ -1039,9 +993,7 @@ sub HasMemberRecursively {
     }
 }
 
-# }}}
 
-# {{{ DeleteMember
 
 =head2 DeleteMember PRINCIPAL_ID
 
@@ -1105,11 +1057,8 @@ sub _DeleteMember {
     }
 }
 
-# }}}
 
-# {{{ ACL Related routines
 
-# {{{ sub _Set
 sub _Set {
     my $self = shift;
     my %args = (
@@ -1149,7 +1098,6 @@ sub _Set {
     }
 }
 
-# }}}
 
 
 
@@ -1183,12 +1131,10 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
 
 
 
-# {{{ Principal related routines
 
 =head2 PrincipalObj
 
@@ -1227,7 +1173,6 @@ sub PrincipalId {
     return $self->Id;
 }
 
-# }}}
 
 sub BasicColumns {
     (

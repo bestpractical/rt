@@ -75,7 +75,6 @@ our $_TABLE_ATTR = { };
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
 
-# {{{ sub _Init 
 
 sub _Init {
     my $self = shift;
@@ -83,7 +82,6 @@ sub _Init {
     $self->CurrentUser(@_);
 }
 
-# }}}
 
 
 =head2 _PrimaryKeys
@@ -247,12 +245,9 @@ sub FirstAttribute {
 }
 
 
-# {{{ sub _Handle 
 sub _Handle { return $RT::Handle }
 
-# }}}
 
-# {{{ sub Create 
 
 =head2  Create PARAMHASH
 
@@ -344,9 +339,7 @@ sub Create {
 
 }
 
-# }}}
 
-# {{{ sub LoadByCols
 
 =head2 LoadByCols
 
@@ -382,13 +375,10 @@ sub LoadByCols {
     return $self->SUPER::LoadByCols( %hash );
 }
 
-# }}}
 
-# {{{ Datehandling
 
 # There is room for optimizations in most of those subs:
 
-# {{{ LastUpdatedObj
 
 sub LastUpdatedObj {
     my $self = shift;
@@ -398,9 +388,7 @@ sub LastUpdatedObj {
     return $obj;
 }
 
-# }}}
 
-# {{{ CreatedObj
 
 sub CreatedObj {
     my $self = shift;
@@ -411,9 +399,7 @@ sub CreatedObj {
     return $obj;
 }
 
-# }}}
 
-# {{{ AgeAsString
 #
 # TODO: This should be deprecated
 #
@@ -422,9 +408,7 @@ sub AgeAsString {
     return ( $self->CreatedObj->AgeAsString() );
 }
 
-# }}}
 
-# {{{ LastUpdatedAsString
 
 # TODO this should be deprecated
 
@@ -439,9 +423,7 @@ sub LastUpdatedAsString {
     }
 }
 
-# }}}
 
-# {{{ CreatedAsString
 #
 # TODO This should be deprecated 
 #
@@ -450,9 +432,7 @@ sub CreatedAsString {
     return ( $self->CreatedObj->AsString() );
 }
 
-# }}}
 
-# {{{ LongSinceUpdateAsString
 #
 # TODO This should be deprecated
 #
@@ -468,11 +448,8 @@ sub LongSinceUpdateAsString {
     }
 }
 
-# }}}
 
-# }}} Datehandling
 
-# {{{ sub _Set 
 #
 sub _Set {
     my $self = shift;
@@ -520,9 +497,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _SetLastUpdated
 
 =head2 _SetLastUpdated
 
@@ -551,9 +526,7 @@ sub _SetLastUpdated {
     }
 }
 
-# }}}
 
-# {{{ sub CreatorObj 
 
 =head2 CreatorObj
 
@@ -571,9 +544,7 @@ sub CreatorObj {
     return ( $self->{'CreatorObj'} );
 }
 
-# }}}
 
-# {{{ sub LastUpdatedByObj
 
 =head2 LastUpdatedByObj
 
@@ -590,9 +561,7 @@ sub LastUpdatedByObj {
     return $self->{'LastUpdatedByObj'};
 }
 
-# }}}
 
-# {{{ sub URI 
 
 =head2 URI
 
@@ -606,7 +575,6 @@ sub URI {
     return($uri->URIForObject($self));
 }
 
-# }}}
 
 =head2 ValidateName NAME
 
@@ -975,11 +943,8 @@ sub _UpdateAttributes {
     return @results;
 }
 
-# {{{ Routines dealing with Links
 
-# {{{ Link Collections
 
-# {{{ sub Members
 
 =head2 Members
 
@@ -993,9 +958,7 @@ sub Members {
     return ( $self->_Links( 'Target', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ sub MemberOf
 
 =head2 MemberOf
 
@@ -1009,9 +972,7 @@ sub MemberOf {
     return ( $self->_Links( 'Base', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ RefersTo
 
 =head2 RefersTo
 
@@ -1024,9 +985,7 @@ sub RefersTo {
     return ( $self->_Links( 'Base', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ ReferredToBy
 
 =head2 ReferredToBy
 
@@ -1039,9 +998,7 @@ sub ReferredToBy {
     return ( $self->_Links( 'Target', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ DependedOnBy
 
 =head2 DependedOnBy
 
@@ -1054,7 +1011,6 @@ sub DependedOnBy {
     return ( $self->_Links( 'Target', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
@@ -1094,7 +1050,6 @@ sub HasUnresolvedDependencies {
 }
 
 
-# {{{ UnresolvedDependencies 
 
 =head2 UnresolvedDependencies
 
@@ -1119,9 +1074,7 @@ sub UnresolvedDependencies {
 
 }
 
-# }}}
 
-# {{{ AllDependedOnBy
 
 =head2 AllDependedOnBy
 
@@ -1194,9 +1147,7 @@ sub _AllLinkedTickets {
     }
 }
 
-# }}}
 
-# {{{ DependsOn
 
 =head2 DependsOn
 
@@ -1209,12 +1160,10 @@ sub DependsOn {
     return ( $self->_Links( 'Base', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
 
-# {{{ sub _Links 
 
 =head2 Links DIRECTION [TYPE]
 
@@ -1250,11 +1199,8 @@ sub _Links {
     return ( $self->{"$field$type"} );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub FormatType
 
 =head2 FormatType
 
@@ -1273,9 +1219,7 @@ sub FormatType{
 }
 
 
-# }}}
 
-# {{{ sub FormatLink
 
 =head2 FormatLink
 
@@ -1296,9 +1240,7 @@ sub FormatLink {
     return $text;
 }
 
-# }}}
 
-# {{{ sub _AddLink
 
 =head2 _AddLink
 
@@ -1375,9 +1317,7 @@ sub _AddLink {
     return ( $linkid, $TransString ) ;
 }
 
-# }}}
 
-# {{{ sub _DeleteLink 
 
 =head2 _DeleteLink
 
@@ -1447,13 +1387,9 @@ sub _DeleteLink {
     }
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with transactions
 
-# {{{ sub _NewTransaction
 
 =head2 _NewTransaction  PARAMHASH
 
@@ -1527,9 +1463,7 @@ sub _NewTransaction {
     return ( $transaction, $msg, $trans );
 }
 
-# }}}
 
-# {{{ sub Transactions 
 
 =head2 Transactions
 
@@ -1556,10 +1490,7 @@ sub Transactions {
     return ($transactions);
 }
 
-# }}}
-# }}}
 #
-# {{{ Routines dealing with custom fields
 
 sub CustomFields {
     my $self = shift;
@@ -1604,7 +1535,6 @@ sub CustomFieldLookupType {
     return ref($self);
 }
 
-# {{{ AddCustomFieldValue
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1813,9 +1743,7 @@ sub _AddCustomFieldValue {
     }
 }
 
-# }}}
 
-# {{{ DeleteCustomFieldValue
 
 =head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1880,9 +1808,7 @@ sub DeleteCustomFieldValue {
     );
 }
 
-# }}}
 
-# {{{ FirstCustomFieldValue
 
 =head2 FirstCustomFieldValue FIELD
 
@@ -1924,7 +1850,6 @@ sub CustomFieldValuesAsString {
 }
 
 
-# {{{ CustomFieldValues
 
 =head2 CustomFieldValues FIELD
 

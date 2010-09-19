@@ -69,7 +69,6 @@ package RT::CachedGroupMembers;
 use strict;
 no warnings qw(redefine);
 
-# {{{ LimitToUsers
 
 =head2 LimitToUsers
 
@@ -93,10 +92,8 @@ sub LimitToUsers {
                          );
 }
 
-# }}}
 
 
-# {{{ LimitToGroups
 
 =head2 LimitToGroups
 
@@ -120,9 +117,7 @@ sub LimitToGroups {
                          );
 }
 
-# }}}
 
-# {{{ sub LimitToMembersOfGroup
 
 =head2 LimitToMembersOfGroup PRINCIPAL_ID
 
@@ -143,9 +138,7 @@ sub LimitToMembersOfGroup {
                          ));
 
 }
-# }}}
 
-# {{{ sub LimitToGroupsWithMember
 
 =head2 LimitToGroupsWithMember PRINCIPAL_ID
 
@@ -169,5 +162,4 @@ sub LimitToGroupsWithMember {
                          ));
 
 }
-# }}}
 1;

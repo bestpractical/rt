@@ -69,7 +69,6 @@ use strict;
 no warnings qw(redefine);
 
 
-# {{{ sub _Init
 
 =head2 _Init
 
@@ -84,9 +83,7 @@ sub _Init {
     $self->{'primary_key'} = "id";
     return ($self->SUPER::_Init(@_));
 }
-# }}}
 
-# {{{ LimitToNotInQueue
 
 =head2 LimitToNotInQueue
 
@@ -103,9 +100,7 @@ sub LimitToNotInQueue {
                  OPERATOR => '!='
                 );
 }
-# }}}
 
-# {{{ LimitToGlobal
 
 =head2 LimitToGlobal
 
@@ -122,9 +117,7 @@ sub LimitToGlobal {
                  OPERATOR => '='
                 );
 }
-# }}}
 
-# {{{ LimitToQueue
 
 =head2 LimitToQueue
 
@@ -141,9 +134,7 @@ sub LimitToQueue {
                  OPERATOR => '='
                 );
 }
-# }}}
 
-# {{{ sub NewItem 
 
 =head2 NewItem
 
@@ -158,9 +149,7 @@ sub NewItem  {
   my $item = RT::Template->new($self->CurrentUser);
   return($item);
 }
-# }}}
 
-# {{{ sub Next 
 
 =head2 Next
 
@@ -194,7 +183,6 @@ sub Next {
     }	
     
 }
-# }}}
 
 1;
 

@@ -46,7 +46,6 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-# {{{ Front Material 
 
 =head1 SYNOPSIS
 
@@ -85,7 +84,6 @@ use MIME::Entity;
 use Devel::GlobalDestruction;
 
 
-# {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -113,9 +111,7 @@ our %LINKTYPEMAP = (
 
 );
 
-# }}}
 
-# {{{ LINKDIRMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -131,7 +127,6 @@ our %LINKDIRMAP = (
 
 );
 
-# }}}
 
 sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
 sub LINKDIRMAP   { return \%LINKDIRMAP   }
@@ -141,7 +136,6 @@ our %MERGE_CACHE = (
     merged => {},
 );
 
-# {{{ sub Load
 
 =head2 Load
 
@@ -196,9 +190,7 @@ sub Load {
     return $self->Id;
 }
 
-# }}}
 
-# {{{ sub Create
 
 =head2 Create (ARGS)
 
@@ -725,9 +717,7 @@ sub Create {
 }
 
 
-# }}}
 
-# {{{ _Parse822HeadersForAttributes Content
 
 =head2 _Parse822HeadersForAttributes Content
 
@@ -788,9 +778,7 @@ sub _Parse822HeadersForAttributes {
     return (%args);
 }
 
-# }}}
 
-# {{{ sub Import
 
 =head2 Import PARAMHASH
 
@@ -984,11 +972,8 @@ sub Import {
     return ( $self->Id, $ErrStr );
 }
 
-# }}}
 
-# {{{ Routines dealing with watchers.
 
-# {{{ _CreateTicketGroups 
 
 =head2 _CreateTicketGroups
 
@@ -1023,9 +1008,7 @@ sub _CreateTicketGroups {
     
 }
 
-# }}}
 
-# {{{ sub OwnerGroup
 
 =head2 OwnerGroup
 
@@ -1040,10 +1023,8 @@ sub OwnerGroup {
     return ($owner_obj);
 }
 
-# }}}
 
 
-# {{{ sub AddWatcher
 
 =head2 AddWatcher
 
@@ -1182,10 +1163,8 @@ sub _AddWatcher {
         return ( 1, $self->loc('Added principal as a [_1] for this ticket', $self->loc($args{'Type'})) );
 }
 
-# }}}
 
 
-# {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -1312,7 +1291,6 @@ sub DeleteWatcher {
 
 
 
-# }}}
 
 
 =head2 SquelchMailTo [EMAIL]
@@ -1374,7 +1352,6 @@ sub UnsquelchMailTo {
 }
 
 
-# {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
 =head2 RequestorAddresses
 
@@ -1426,11 +1403,8 @@ sub CcAddresses {
 
 }
 
-# }}}
 
-# {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
 
-# {{{ sub Requestors
 
 =head2 Requestors
 
@@ -1450,9 +1424,7 @@ sub Requestors {
 
 }
 
-# }}}
 
-# {{{ sub Cc
 
 =head2 Cc
 
@@ -1473,9 +1445,7 @@ sub Cc {
 
 }
 
-# }}}
 
-# {{{ sub AdminCc
 
 =head2 AdminCc
 
@@ -1496,13 +1466,9 @@ sub AdminCc {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ IsWatcher,IsRequestor,IsCc, IsAdminCc
 
-# {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL }
@@ -1551,9 +1517,7 @@ sub IsWatcher {
     return $group->HasMember( $args{'PrincipalId'} );
 }
 
-# }}}
 
-# {{{ sub IsRequestor
 
 =head2 IsRequestor PRINCIPAL_ID
   
@@ -1571,9 +1535,7 @@ sub IsRequestor {
 
 };
 
-# }}}
 
-# {{{ sub IsCc
 
 =head2 IsCc PRINCIPAL_ID
 
@@ -1591,9 +1553,7 @@ sub IsCc {
 
 }
 
-# }}}
 
-# {{{ sub IsAdminCc
 
 =head2 IsAdminCc PRINCIPAL_ID
 
@@ -1610,9 +1570,7 @@ sub IsAdminCc {
 
 }
 
-# }}}
 
-# {{{ sub IsOwner
 
 =head2 IsOwner
 
@@ -1643,11 +1601,8 @@ sub IsOwner {
     }
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
 
 =head2 TransactionAddresses
@@ -1690,9 +1645,7 @@ sub TransactionAddresses {
 
 
 
-# {{{ Routines dealing with queues 
 
-# {{{ sub ValidateQueue
 
 sub ValidateQueue {
     my $self  = shift;
@@ -1714,9 +1667,7 @@ sub ValidateQueue {
     }
 }
 
-# }}}
 
-# {{{ sub SetQueue  
 
 sub SetQueue {
     my $self     = shift;
@@ -1824,9 +1775,7 @@ sub SetQueue {
     return ($status, $msg);
 }
 
-# }}}
 
-# {{{ sub QueueObj
 
 =head2 QueueObj
 
@@ -1847,13 +1796,9 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
-# }}}
 
-# }}}
 
-# {{{ Date printing routines
 
-# {{{ sub DueObj
 
 =head2 DueObj
 
@@ -1877,9 +1822,7 @@ sub DueObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub DueAsString 
 
 =head2 DueAsString
 
@@ -1892,9 +1835,7 @@ sub DueAsString {
     return $self->DueObj->AsString();
 }
 
-# }}}
 
-# {{{ sub ResolvedObj
 
 =head2 ResolvedObj
 
@@ -1910,9 +1851,7 @@ sub ResolvedObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub SetStarted
 
 =head2 SetStarted
 
@@ -1956,9 +1895,7 @@ sub SetStarted {
 
 }
 
-# }}}
 
-# {{{ sub StartedObj
 
 =head2 StartedObj
 
@@ -1975,9 +1912,7 @@ sub StartedObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub StartsObj
 
 =head2 StartsObj
 
@@ -1994,9 +1929,7 @@ sub StartsObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub ToldObj
 
 =head2 ToldObj
 
@@ -2013,9 +1946,7 @@ sub ToldObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub ToldAsString
 
 =head2 ToldAsString
 
@@ -2035,9 +1966,7 @@ sub ToldAsString {
     }
 }
 
-# }}}
 
-# {{{ sub TimeWorkedAsString
 
 =head2 TimeWorkedAsString
 
@@ -2058,9 +1987,7 @@ sub TimeWorkedAsString {
         ->DurationAsString( $value * 60 );
 }
 
-# }}}
 
-# {{{ sub TimeLeftAsString
 
 =head2  TimeLeftAsString
 
@@ -2076,11 +2003,8 @@ sub TimeLeftAsString {
         ->DurationAsString( $value * 60 );
 }
 
-# }}}
 
-# {{{ Routines dealing with correspondence/comments
 
-# {{{ sub Comment
 
 =head2 Comment
 
@@ -2128,9 +2052,7 @@ sub Comment {
 
     return(@results);
 }
-# }}}
 
-# {{{ sub Correspond
 
 =head2 Correspond
 
@@ -2185,9 +2107,7 @@ sub Correspond {
 
 }
 
-# }}}
 
-# {{{ sub _RecordNote
 
 =head2 _RecordNote
 
@@ -2275,7 +2195,6 @@ sub _RecordNote {
     return ( $Trans, $self->loc("Message recorded"), $TransObj );
 }
 
-# }}}
 
 =head2 DryRun
 
@@ -2360,9 +2279,7 @@ sub DryRunCreate {
     return $Object;
 }
 
-# }}}
 
-# {{{ sub _Links 
 
 sub _Links {
     my $self = shift;
@@ -2403,9 +2320,7 @@ sub _Links {
     return $links;
 }
 
-# }}}
 
-# {{{ sub DeleteLink 
 
 =head2 DeleteLink
 
@@ -2502,9 +2417,7 @@ sub DeleteLink {
     return ( $val, $Msg );
 }
 
-# }}}
 
-# {{{ sub AddLink
 
 =head2 AddLink
 
@@ -2633,10 +2546,8 @@ sub _AddLink {
     return ( $val, $msg );
 }
 
-# }}}
 
 
-# {{{ sub MergeInto
 
 =head2 MergeInto
 
@@ -2847,13 +2758,9 @@ sub Merged {
         = map $_->id, @{ $mergees->ItemsArrayRef || [] };
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ownership
 
-# {{{ sub OwnerObj
 
 =head2 OwnerObj
 
@@ -2876,9 +2783,7 @@ sub OwnerObj {
     return ($owner);
 }
 
-# }}}
 
-# {{{ sub OwnerAsString 
 
 =head2 OwnerAsString
 
@@ -2892,9 +2797,7 @@ sub OwnerAsString {
 
 }
 
-# }}}
 
-# {{{ sub SetOwner
 
 =head2 SetOwner
 
@@ -3043,9 +2946,7 @@ sub SetOwner {
     return ( $val, $msg );
 }
 
-# }}}
 
-# {{{ sub Take
 
 =head2 Take
 
@@ -3058,9 +2959,7 @@ sub Take {
     return ( $self->SetOwner( $self->CurrentUser->Id, 'Take' ) );
 }
 
-# }}}
 
-# {{{ sub Untake
 
 =head2 Untake
 
@@ -3073,9 +2972,7 @@ sub Untake {
     return ( $self->SetOwner( $RT::Nobody->UserObj->Id, 'Untake' ) );
 }
 
-# }}}
 
-# {{{ sub Steal 
 
 =head2 Steal
 
@@ -3097,13 +2994,9 @@ sub Steal {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with status
 
-# {{{ sub ValidateStatus 
 
 =head2 ValidateStatus STATUS
 
@@ -3127,9 +3020,7 @@ sub ValidateStatus {
     return 0;
 }
 
-# }}}
 
-# {{{ sub SetStatus
 
 =head2 SetStatus STATUS
 
@@ -3209,9 +3100,7 @@ sub SetStatus {
     return ($val, $msg);
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -3226,9 +3115,7 @@ sub Delete {
     # TODO: garbage collection
 }
 
-# }}}
 
-# {{{ sub Stall
 
 =head2 Stall
 
@@ -3241,9 +3128,7 @@ sub Stall {
     return ( $self->SetStatus('stalled') );
 }
 
-# }}}
 
-# {{{ sub Reject
 
 =head2 Reject
 
@@ -3256,9 +3141,7 @@ sub Reject {
     return ( $self->SetStatus('rejected') );
 }
 
-# }}}
 
-# {{{ sub Open
 
 =head2 Open
 
@@ -3271,9 +3154,7 @@ sub Open {
     return ( $self->SetStatus('open') );
 }
 
-# }}}
 
-# {{{ sub Resolve
 
 =head2 Resolve
 
@@ -3286,14 +3167,10 @@ sub Resolve {
     return ( $self->SetStatus('resolved') );
 }
 
-# }}}
 
-# }}}
 
     
-# {{{ Actions + Routines dealing with transactions
 
-# {{{ sub SetTold and _SetTold
 
 =head2 SetTold ISO  [TIMETAKEN]
 
@@ -3367,7 +3244,6 @@ sub SeenUpTo {
     return $txns->First;
 }
 
-# }}}
 
 =head2 TransactionBatch
 
@@ -3457,11 +3333,8 @@ sub DESTROY {
     return $self->_ApplyTransactionBatch;
 }
 
-# }}}
 
-# {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
-# {{{ sub _OverlayAccessible
 
 sub _OverlayAccessible {
     {
@@ -3491,9 +3364,7 @@ sub _OverlayAccessible {
 
 }
 
-# }}}
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
@@ -3552,9 +3423,7 @@ sub _Set {
     }
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -3585,9 +3454,7 @@ sub _Value {
 
 }
 
-# }}}
 
-# {{{ sub _UpdateTimeTaken
 
 =head2 _UpdateTimeTaken
 
@@ -3611,13 +3478,9 @@ sub _UpdateTimeTaken {
     return ($Total);
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub CurrentUserHasRight 
 
 =head2 CurrentUserHasRight
 
@@ -3636,9 +3499,7 @@ sub CurrentUserHasRight {
     )
 }
 
-# }}}
 
-# {{{ sub HasRight 
 
 =head2 HasRight
 
@@ -3673,9 +3534,7 @@ sub HasRight {
     );
 }
 
-# }}}
 
-# }}}
 
 =head2 Reminders
 
@@ -3697,7 +3556,6 @@ sub Reminders {
 
 
 
-# {{{ sub Transactions 
 
 =head2 Transactions
 
@@ -3743,10 +3601,8 @@ sub Transactions {
     return ($transactions);
 }
 
-# }}}
 
 
-# {{{ TransactionCustomFields
 
 =head2 TransactionCustomFields
 
@@ -3759,9 +3615,7 @@ sub TransactionCustomFields {
     return $self->QueueObj->TicketTransactionCustomFields;
 }
 
-# }}}
 
-# {{{ sub CustomFieldValues
 
 =head2 CustomFieldValues
 
@@ -3791,9 +3645,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues( $cf->id );
 }
 
-# }}}
 
-# {{{ sub CustomFieldLookupType
 
 =head2 CustomFieldLookupType
 
@@ -3802,7 +3654,6 @@ RT::CustomField->Create() via the 'LookupType' hash key.
 
 =cut
 
-# }}}
 
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket";

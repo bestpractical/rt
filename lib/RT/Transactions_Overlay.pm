@@ -69,7 +69,6 @@ package RT::Transactions;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub _Init  
 sub _Init   {
   my $self = shift;
   
@@ -84,7 +83,6 @@ sub _Init   {
 
   return ( $self->SUPER::_Init(@_));
 }
-# }}}
 
 =head2 LimitToTicket TICKETID 
 
@@ -126,7 +124,6 @@ sub LimitToTicket {
 }
 
 
-# {{{ sub Next
 sub Next {
     my $self = shift;
  	
@@ -149,7 +146,6 @@ sub Next {
 	return(undef);
     }	
 }
-# }}}
 
 
 

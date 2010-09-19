@@ -51,7 +51,6 @@ package RT::ObjectCustomFieldValues;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub LimitToCustomField
 
 =head2 LimitToCustomField FIELD
 
@@ -68,9 +67,7 @@ sub LimitToCustomField {
     );
 }
 
-# }}}
 
-# {{{ sub LimitToObject
 
 =head2 LimitToObject OBJECT
 
@@ -92,7 +89,6 @@ sub LimitToObject {
 
 }
 
-# }}}
 
 =head2 HasEntry VALUE
 

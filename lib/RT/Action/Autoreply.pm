@@ -66,7 +66,6 @@ sub Prepare {
     $self->SUPER::Prepare();
 }
 
-# {{{ sub SetRecipients
 
 =head2 SetRecipients
 
@@ -83,10 +82,8 @@ sub SetRecipients {
     return(1);
 }
 
-# }}}
 
 
-# {{{ sub SetReturnAddress 
 
 =head2 SetReturnAddress
 
@@ -108,9 +105,7 @@ sub SetReturnAddress {
     
 }
   
-# }}}
 
-# {{{{ sub SetRTSpecialHeaders
 
 =head2 SetRTSpecialHeaders
 
@@ -125,7 +120,6 @@ sub SetRTSpecialHeaders {
     $self->SetHeader( 'Auto-Submitted', 'auto-replied' );
 }
 
-# }}}
 
 RT::Base->_ImportOverlays();
 

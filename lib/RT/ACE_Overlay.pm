@@ -77,7 +77,6 @@ use vars qw (
 );
 
 
-# {{{ Descriptions of rights
 
 =head1 Rights
 
@@ -91,9 +90,7 @@ use vars qw (
 
 
 
-# }}}
 
-# {{{ Descriptions of principals
 
 %TICKET_METAPRINCIPALS = (
     Owner     => 'The owner of a ticket',                             # loc_pair
@@ -102,10 +99,8 @@ use vars qw (
     AdminCc   => 'The administrative CC of a ticket',                 # loc_pair
 );
 
-# }}}
 
 
-# {{{ sub LoadByValues
 
 =head2 LoadByValues PARAMHASH
 
@@ -176,9 +171,7 @@ sub LoadByValues {
 
 }
 
-# }}}
 
-# {{{ sub Create
 
 =head2 Create <PARAMS>
 
@@ -310,9 +303,7 @@ sub Create {
     }
 }
 
-# }}}
 
-# {{{ sub Delete 
 
 =head2 Delete { InsideTransaction => undef}
 
@@ -363,9 +354,7 @@ sub _Delete {
     return ( 0, $self->loc('Right could not be revoked') );
 }
 
-# }}}
 
-# {{{ sub _BootstrapCreate 
 
 =head2 _BootstrapCreate
 
@@ -403,9 +392,7 @@ sub _BootstrapCreate {
 
 }
 
-# }}}
 
-# {{{ sub CanonicalizeRightName
 
 sub RightName {
     my $self = shift;
@@ -433,10 +420,8 @@ sub CanonicalizeRightName {
     return $LOWERCASERIGHTNAMES{ lc shift };
 }
 
-# }}}
 
 
-# {{{ sub Object
 
 =head2 Object
 
@@ -472,9 +457,7 @@ sub Object {
     }
 }
 
-# }}}
 
-# {{{ sub PrincipalObj
 
 =head2 PrincipalObj
 
@@ -496,20 +479,15 @@ sub PrincipalObj {
 
 }
 
-# }}}
 
-# {{{ ACL related methods
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
     return ( 0, $self->loc("ACEs can only be created and deleted.") );
 }
 
-# }}}
 
-# {{{ sub _Value
 
 sub _Value {
     my $self = shift;
@@ -529,12 +507,9 @@ sub _Value {
     }
 }
 
-# }}}
 
 
-# }}}
 
-# {{{ _CanonicalizePrincipal 
 
 =head2 _CanonicalizePrincipal (PrincipalId, PrincipalType)
 
@@ -603,5 +578,4 @@ sub _ParseObjectArg {
 }
 
 
-# }}}
 1;

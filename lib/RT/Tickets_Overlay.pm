@@ -215,7 +215,6 @@ sub can_bundle { return \%can_bundle }
 # Bring in the clowns.
 require RT::Tickets_Overlay_SQL;
 
-# {{{ sub SortFields
 
 our @SORTFIELDS = qw(id Status
     Queue Subject
@@ -234,7 +233,6 @@ sub SortFields {
     return (@SORTFIELDS);
 }
 
-# }}}
 
 # BEGIN SQL STUFF *********************************
 
@@ -1625,7 +1623,6 @@ sub _HasAttributeLimit {
 
 # End of SQL Stuff -------------------------------------------------
 
-# {{{ Allow sorting on watchers
 
 =head2 OrderByCols ARRAY
 
@@ -1761,11 +1758,8 @@ sub OrderByCols {
     return $self->SUPER::OrderByCols(@res);
 }
 
-# }}}
 
-# {{{ Limit the result set based on content
 
-# {{{ sub Limit
 
 =head2 Limit
 
@@ -1814,11 +1808,8 @@ sub Limit {
     return ($index);
 }
 
-# }}}
 
-# {{{ Limit by enum or foreign key
 
-# {{{ sub LimitQueue
 
 =head2 LimitQueue
 
@@ -1860,9 +1851,7 @@ sub LimitQueue {
 
 }
 
-# }}}
 
-# {{{ sub LimitStatus
 
 =head2 LimitStatus
 
@@ -1893,9 +1882,7 @@ sub LimitStatus {
     );
 }
 
-# }}}
 
-# {{{ sub IgnoreType
 
 =head2 IgnoreType
 
@@ -1916,9 +1903,7 @@ sub IgnoreType {
     $self->{looking_at_type} = 1;
 }
 
-# }}}
 
-# {{{ sub LimitType
 
 =head2 LimitType
 
@@ -1946,13 +1931,9 @@ sub LimitType {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Limit by string field
 
-# {{{ sub LimitSubject
 
 =head2 LimitSubject
 
@@ -1974,14 +1955,10 @@ sub LimitSubject {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Limit based on ticket numerical attributes
 # Things that can be > < = !=
 
-# {{{ sub LimitId
 
 =head2 LimitId
 
@@ -2007,9 +1984,7 @@ sub LimitId {
     );
 }
 
-# }}}
 
-# {{{ sub LimitPriority
 
 =head2 LimitPriority
 
@@ -2032,9 +2007,7 @@ sub LimitPriority {
     );
 }
 
-# }}}
 
-# {{{ sub LimitInitialPriority
 
 =head2 LimitInitialPriority
 
@@ -2058,9 +2031,7 @@ sub LimitInitialPriority {
     );
 }
 
-# }}}
 
-# {{{ sub LimitFinalPriority
 
 =head2 LimitFinalPriority
 
@@ -2083,9 +2054,7 @@ sub LimitFinalPriority {
     );
 }
 
-# }}}
 
-# {{{ sub LimitTimeWorked
 
 =head2 LimitTimeWorked
 
@@ -2108,9 +2077,7 @@ sub LimitTimeWorked {
     );
 }
 
-# }}}
 
-# {{{ sub LimitTimeLeft
 
 =head2 LimitTimeLeft
 
@@ -2133,13 +2100,9 @@ sub LimitTimeLeft {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Limiting based on attachment attributes
 
-# {{{ sub LimitContent
 
 =head2 LimitContent
 
@@ -2162,9 +2125,7 @@ sub LimitContent {
     );
 }
 
-# }}}
 
-# {{{ sub LimitFilename
 
 =head2 LimitFilename
 
@@ -2187,8 +2148,6 @@ sub LimitFilename {
     );
 }
 
-# }}}
-# {{{ sub LimitContentType
 
 =head2 LimitContentType
 
@@ -2211,13 +2170,9 @@ sub LimitContentType {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Limiting based on people
 
-# {{{ sub LimitOwner
 
 =head2 LimitOwner
 
@@ -2248,11 +2203,8 @@ sub LimitOwner {
 
 }
 
-# }}}
 
-# {{{ Limiting watchers
 
-# {{{ sub LimitWatcher
 
 =head2 LimitWatcher
 
@@ -2293,15 +2245,10 @@ sub LimitWatcher {
     );
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
-# {{{ Limiting based on links
 
-# {{{ LimitLinkedTo
 
 =head2 LimitLinkedTo
 
@@ -2337,9 +2284,7 @@ sub LimitLinkedTo {
     );
 }
 
-# }}}
 
-# {{{ LimitLinkedFrom
 
 =head2 LimitLinkedFrom
 
@@ -2382,9 +2327,7 @@ sub LimitLinkedFrom {
     );
 }
 
-# }}}
 
-# {{{ LimitMemberOf
 sub LimitMemberOf {
     my $self      = shift;
     my $ticket_id = shift;
@@ -2395,9 +2338,7 @@ sub LimitMemberOf {
     );
 }
 
-# }}}
 
-# {{{ LimitHasMember
 sub LimitHasMember {
     my $self      = shift;
     my $ticket_id = shift;
@@ -2409,9 +2350,7 @@ sub LimitHasMember {
 
 }
 
-# }}}
 
-# {{{ LimitDependsOn
 
 sub LimitDependsOn {
     my $self      = shift;
@@ -2424,9 +2363,7 @@ sub LimitDependsOn {
 
 }
 
-# }}}
 
-# {{{ LimitDependedOnBy
 
 sub LimitDependedOnBy {
     my $self      = shift;
@@ -2439,9 +2376,7 @@ sub LimitDependedOnBy {
 
 }
 
-# }}}
 
-# {{{ LimitRefersTo
 
 sub LimitRefersTo {
     my $self      = shift;
@@ -2454,9 +2389,7 @@ sub LimitRefersTo {
 
 }
 
-# }}}
 
-# {{{ LimitReferredToBy
 
 sub LimitReferredToBy {
     my $self      = shift;
@@ -2468,13 +2401,9 @@ sub LimitReferredToBy {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ limit based on ticket date attribtes
 
-# {{{ sub LimitDate
 
 =head2 LimitDate (FIELD => 'DateField', OPERATOR => $oper, VALUE => $ISODate)
 
@@ -2510,7 +2439,6 @@ sub LimitDate {
 
 }
 
-# }}}
 
 sub LimitCreated {
     my $self = shift;
@@ -2550,7 +2478,6 @@ sub LimitLastUpdated {
 }
 
 #
-# {{{ sub LimitTransactionDate
 
 =head2 LimitTransactionDate (OPERATOR => $oper, VALUE => $ISODate)
 
@@ -2586,12 +2513,8 @@ sub LimitTransactionDate {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ Limit based on custom fields
-# {{{ sub LimitCustomField
 
 =head2 LimitCustomField
 
@@ -2673,10 +2596,7 @@ sub LimitCustomField {
     $self->{'RecalcTicketLimits'} = 1;
 }
 
-# }}}
-# }}}
 
-# {{{ sub _NextIndex
 
 =head2 _NextIndex
 
@@ -2689,13 +2609,9 @@ sub _NextIndex {
     return ( $self->{'restriction_index'}++ );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Core bits to make this a DBIx::SearchBuilder object
 
-# {{{ sub _Init
 sub _Init {
     my $self = shift;
     $self->{'table'}                   = "Tickets";
@@ -2713,27 +2629,21 @@ sub _Init {
 
 }
 
-# }}}
 
-# {{{ sub Count
 sub Count {
     my $self = shift;
     $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::Count() );
 }
 
-# }}}
 
-# {{{ sub CountAll
 sub CountAll {
     my $self = shift;
     $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::CountAll() );
 }
 
-# }}}
 
-# {{{ sub ItemsArrayRef
 
 =head2 ItemsArrayRef
 
@@ -2780,9 +2690,7 @@ sub ItemsArrayRefWindow {
     return \@res;
 }
 
-# }}}
 
-# {{{ sub Next
 sub Next {
     my $self = shift;
 
@@ -3069,13 +2977,9 @@ sub CurrentUserCanSee {
     return $self->{'_sql_current_user_can_see_applied'} = 1;
 }
 
-# }}}
 
-# }}}
 
-# {{{ Deal with storing and restoring restrictions
 
-# {{{ sub LoadRestrictions
 
 =head2 LoadRestrictions
 
@@ -3084,9 +2988,7 @@ TODO It is not yet implemented
 
 =cut
 
-# }}}
 
-# {{{ sub DescribeRestrictions
 
 =head2 DescribeRestrictions
 
@@ -3108,9 +3010,7 @@ sub DescribeRestrictions {
     return (%listing);
 }
 
-# }}}
 
-# {{{ sub RestrictionValues
 
 =head2 RestrictionValues FIELD
 
@@ -3129,9 +3029,7 @@ sub RestrictionValues {
         keys %{ $self->{'TicketRestrictions'} };
 }
 
-# }}}
 
-# {{{ sub ClearRestrictions
 
 =head2 ClearRestrictions
 
@@ -3147,9 +3045,7 @@ sub ClearRestrictions {
     $self->{'RecalcTicketLimits'}      = 1;
 }
 
-# }}}
 
-# {{{ sub DeleteRestriction
 
 =head2 DeleteRestriction
 
@@ -3168,9 +3064,7 @@ sub DeleteRestriction {
     #make the underlying easysearch object forget all its preconceptions
 }
 
-# }}}
 
-# {{{ sub _RestrictionsToClauses
 
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
@@ -3263,9 +3157,7 @@ sub _RestrictionsToClauses {
     return \%clause;
 }
 
-# }}}
 
-# {{{ sub _ProcessRestrictions
 
 =head2 _ProcessRestrictions PARAMHASH
 
@@ -3365,9 +3257,7 @@ sub ItemMap {
 }
 
 
-# }}}
 
-# }}}
 
 =head2 PrepForSerialization
 

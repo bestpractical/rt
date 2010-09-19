@@ -82,7 +82,6 @@ use RT::Users;
 # See comments below for candidats.
 
 
-# {{{ sub _Init
 
 sub _Init { 
   my $self = shift;
@@ -114,7 +113,6 @@ sub _Init {
 
   return (@result);
 }
-# }}}
 
 =head2 PrincipalsAlias
 
@@ -130,7 +128,6 @@ sub PrincipalsAlias {
 }
 
 
-# {{{ LimitToSystemInternalGroups
 
 =head2 LimitToSystemInternalGroups
 
@@ -147,9 +144,7 @@ sub LimitToSystemInternalGroups {
 }
 
 
-# }}}
 
-# {{{ LimitToUserDefinedGroups
 
 =head2 LimitToUserDefinedGroups
 
@@ -166,9 +161,7 @@ sub LimitToUserDefinedGroups {
 }
 
 
-# }}}
 
-# {{{ LimitToRolesForQueue
 
 =head2 LimitToRolesForQueue QUEUE_ID
 
@@ -183,9 +176,7 @@ sub LimitToRolesForQueue {
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
 
-# }}}
 
-# {{{ LimitToRolesForTicket
 
 =head2 LimitToRolesForTicket Ticket_ID
 
@@ -200,9 +191,7 @@ sub LimitToRolesForTicket {
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
 }
 
-# }}}
 
-# {{{ LimitToRolesForSystem
 
 =head2 LimitToRolesForSystem System_ID
 
@@ -215,7 +204,6 @@ sub LimitToRolesForSystem {
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
-# }}}
 
 =head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
 
@@ -344,7 +332,6 @@ sub _GetEquivObjects          { return (shift)->RT::Users::_GetEquivObjects( @_ 
 sub WithGroupRight            { return (shift)->RT::Users::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Users::WhoHaveRoleRight( @_ ) }
 
-# {{{ sub LimitToEnabled
 
 =head2 LimitToEnabled
 
@@ -362,9 +349,7 @@ sub LimitToEnabled {
         VALUE => '0',
     );
 }
-# }}}
 
-# {{{ sub LimitToDisabled
 
 =head2 LimitToDeleted
 
@@ -383,9 +368,7 @@ sub LimitToDeleted {
     );
 }
 
-# }}}
 
-# {{{ sub Next
 
 sub Next {
     my $self = shift;
