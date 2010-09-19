@@ -142,14 +142,12 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
               $m->abort();
         }
 
-        # }}}
 
         # delete temporary storage entry to make WebUI clean
         unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
             delete $session{'Attachments'};
         }
 
-        # }}}
     }
     else {
         unless ( $Ticket->Load( $id[0] ) ) {
@@ -185,7 +183,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
 
-    # }}}
 
     #Update the status
     if (    ( defined $ARGS{'Status'} )
@@ -195,7 +192,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
         push @results, "$msg";
     }
-    # }}}
 
 
     }
