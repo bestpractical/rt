@@ -1330,7 +1330,7 @@ sub AddValueForObject {
 
 
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-    my $val    = $newval->Create(
+    my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
         ObjectId     => $obj->Id,
         Content      => $args{'Content'},
@@ -1341,7 +1341,7 @@ sub AddValueForObject {
 
     unless ($val) {
         $RT::Handle->Rollback();
-        return ($val, $self->loc("Couldn't create record"));
+        return ($val, $self->loc("Couldn't create record: [_1]", $msg));
     }
 
     $RT::Handle->Commit();
