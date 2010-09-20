@@ -96,7 +96,7 @@ sub _BuildAccessTable {
 
 sub _AttrHash {
     my $self = shift;
-    $self->_DoSearch if ($self->{'must_redo_search'});
+    $self->_DoSearch if ($self->{'must_redo_search'} && $self->{'is_limited'});
     unless ($self->{'attr'}) {
         $self->{'attr'}->{'__none'} = RT::Attribute->new($self->CurrentUser);
     }
