@@ -26,7 +26,6 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
 # are checked and not these as well
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
-# }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Group->new($RT::SystemUser);
 ($ok, $msg) = $inner_group->CreateUserDefinedGroup(Name => "inner", Description => "inner group");
@@ -51,7 +50,6 @@ ok(!$inner_group->HasMember($outer_group->PrincipalId), "inner doesn't have oute
 ok($inner_group->HasMember($user_obj->PrincipalId), "inner has user");
 ok(!$inner_group->HasMemberRecursively($outer_group->PrincipalId), "inner doesn't have outer, even recursively");
 ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user recursively");
-# }}}
 
 ok $m->login(customer => 'customer'), "logged in";
 

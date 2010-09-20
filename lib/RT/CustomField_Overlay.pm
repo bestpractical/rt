@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::CustomField;
@@ -185,10 +185,18 @@ our $RIGHTS = {
     ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
 };
 
+our $RIGHT_CATEGORIES = {
+    SeeCustomField          => 'General',
+    AdminCustomField        => 'Admin',
+    AdminCustomFieldValues  => 'Admin',
+    ModifyCustomField       => 'Staff',
+};
+
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -208,6 +216,30 @@ sub AddRights {
 sub AvailableRights {
     my $self = shift;
     return $RIGHTS;
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 =head1 NAME
@@ -353,7 +385,6 @@ sub Load {
 }
 
 
-# {{{ sub LoadByName
 
 =head2 LoadByName (Queue => QUEUEID, Name => NAME)
 
@@ -426,9 +457,7 @@ sub LoadByName {
     return $self->LoadById( $first->id );
 }
 
-# }}}
 
-# {{{ Dealing with custom field values 
 
 
 =head2 Custom field values
@@ -456,7 +485,6 @@ sub Values {
     return ($cf_values);
 }
 
-# {{{ AddValue
 
 =head3 AddValue HASH
 
@@ -482,9 +510,7 @@ sub AddValue {
 }
 
 
-# }}}
 
-# {{{ DeleteValue
 
 =head3 DeleteValue ID
 
@@ -517,7 +543,6 @@ sub DeleteValue {
     return ($retval, $self->loc("Custom field value deleted"));
 }
 
-# }}}
 
 
 =head2 ValidateQueue Queue
@@ -541,7 +566,6 @@ sub ValidateQueue {
 }
 
 
-# {{{ Types
 
 =head2 Types 
 
@@ -553,7 +577,6 @@ sub Types {
     return (keys %FieldTypes);
 }
 
-# }}}
 
 =head2 HasRenderTypes [TYPE_COMPOSITE]
 
@@ -571,7 +594,6 @@ sub HasRenderTypes {
     return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
 }
 
-# {{{ IsSelectionType
 
 =head2 IsSelectionType 
 
@@ -587,7 +609,6 @@ sub IsSelectionType {
     return $FieldTypes{$type}->{selection_type};
 }
 
-# }}}
 
 
 =head2 IsExternalValues
@@ -733,7 +754,6 @@ sub _IsValidRegex {
     return (0, $err);
 }
 
-# {{{ SingleValue
 
 =head2 SingleValue
 
@@ -762,7 +782,6 @@ sub UnlimitedValues {
     }
 }
 
-# }}}
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -813,7 +832,6 @@ sub ContextObject {
     return $self->{'context_object'};
 }
   
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
@@ -825,9 +843,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -851,8 +867,6 @@ sub _Value {
     return $self->__Value( @_ );
 }
 
-# }}}
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -862,7 +876,6 @@ Takes a boolean.
 
 =cut
 
-# }}}
 
 =head2 SetTypeComposite
 
@@ -1260,7 +1273,6 @@ sub RemoveFromObject {
     return ( $oid, $msg );
 }
 
-# {{{ AddValueForObject
 
 =head2 AddValueForObject HASH
 
@@ -1349,7 +1361,6 @@ sub AddValueForObject {
 
 }
 
-# }}}
 
 
 sub _CanonicalizeValueDateTime {
@@ -1375,7 +1386,6 @@ sub _CanonicalizeValueDate {
                  );
     $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
 }
-# {{{ MatchPattern
 
 =head2 MatchPattern STRING
 
@@ -1392,9 +1402,7 @@ sub MatchPattern {
 }
 
 
-# }}}
 
-# {{{ FriendlyPattern
 
 =head2 FriendlyPattern
 
@@ -1417,9 +1425,7 @@ sub FriendlyPattern {
 }
 
 
-# }}}
 
-# {{{ DeleteValueForObject
 
 =head2 DeleteValueForObject HASH
 

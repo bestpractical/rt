@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -1075,20 +1075,24 @@ sub PrincipalObj {
     my $self = shift;
 
     unless ( $self->id ) {
-        $RT::Logger->error("Couldn't get principal for not loaded object");
+        $RT::Logger->error("Couldn't get principal for an empty user");
         return undef;
     }
 
-    my $obj = RT::Principal->new( $self->CurrentUser );
-    $obj->LoadById( $self->id );
-    unless ( $obj->id ) {
-        $RT::Logger->crit( 'No principal for user #'. $self->id );
-        return undef;
-    } elsif ( $obj->PrincipalType ne 'User' ) {
-        $RT::Logger->crit( 'User #'. $self->id .' has principal of '. $obj->PrincipalType .' type' );
-        return undef;
+    if ( !$self->{_principal_obj} ) {
+
+        my $obj = RT::Principal->new( $self->CurrentUser );
+        $obj->LoadById( $self->id );
+        if (! $obj->id ) {
+            $RT::Logger->crit( 'No principal for user #' . $self->id );
+            return undef;
+        } elsif ( $obj->PrincipalType ne 'User' ) {
+            $RT::Logger->crit(   'User #' . $self->id . ' has principal of ' . $obj->PrincipalType . ' type' );
+            return undef;
+        }
+        $self->{_principal_obj} = $obj;
     }
-    return $obj;
+    return $self->{_principal_obj};
 }
 
 
@@ -1359,73 +1363,6 @@ sub WatchedQueues {
 
 }
 
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
-
-Revokes all ACE entries delegated by this user which are inconsistent
-with their current delegation rights.  Does not perform permission
-checks.  Should only ever be called from inside the RT library.
-
-If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# XXX Currently there is a _CleanupInvalidDelegations method in both
-# RT::User and RT::Group.  If the recursive cleanup call for groups is
-# ever unrolled and merged, this code will probably want to be
-# factored out into RT::Principal.
-
-sub _CleanupInvalidDelegations {
-    my $self = shift;
-    my %args = ( InsideTransaction => undef,
-          @_ );
-
-    unless ( $self->Id ) {
-    $RT::Logger->warning("User not loaded.");
-    return (undef);
-    }
-
-    my $in_trans = $args{InsideTransaction};
-
-    return(1) if ($self->HasRight(Right => 'DelegateRights',
-                  Object => $RT::System));
-
-    # Look up all delegation rights currently posessed by this user.
-    my $deleg_acl = RT::ACL->new($RT::SystemUser);
-    $deleg_acl->LimitToPrincipal(Type => 'User',
-                 Id => $self->PrincipalId,
-                 IncludeGroupMembership => 1);
-    $deleg_acl->Limit( FIELD => 'RightName',
-               OPERATOR => '=',
-               VALUE => 'DelegateRights' );
-    my @allowed_deleg_objects = map {$_->Object()}
-    @{$deleg_acl->ItemsArrayRef()};
-
-    # Look up all rights delegated by this principal which are
-    # inconsistent with the allowed delegation objects.
-    my $acl_to_del = RT::ACL->new($RT::SystemUser);
-    $acl_to_del->DelegatedBy(Id => $self->Id);
-    foreach (@allowed_deleg_objects) {
-    $acl_to_del->LimitNotObject($_);
-    }
-
-    # Delete all disallowed delegations
-    while ( my $ace = $acl_to_del->Next() ) {
-    my $ret = $ace->_Delete(InsideTransaction => 1);
-    unless ($ret) {
-        $RT::Handle->Rollback() unless $in_trans;
-        $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->Id);
-        return (undef);
-    }
-    }
-
-    $RT::Handle->Commit() unless $in_trans;
-    return (1);
-}
-
 sub _Set {
     my $self = shift;
 
@@ -1483,13 +1420,6 @@ sub _Value {
 
     my $self  = shift;
     my $field = shift;
-
-    #If the current user doesn't have ACLs, don't let em at it.  
-
-    my @PublicFields = qw( Name EmailAddress Organization Disabled
-      RealName NickName Gecos ExternalAuthId
-      AuthSystem ExternalContactInfoId
-      ContactInfoSystem );
 
     #if the field is public, return it.
     if ( $self->_Accessible( $field, 'public' ) ) {

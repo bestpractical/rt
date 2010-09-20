@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -83,7 +83,6 @@ use RT::Ruleset;
 use HTML::FormatText;
 use HTML::TreeBuilder;
 
-# {{{ sub Create 
 
 =head2 Create
 
@@ -193,7 +192,6 @@ sub Create {
     return ( $id, $self->loc("Transaction Created") );
 }
 
-# }}}
 
 =head2 Scrips
 
@@ -227,7 +225,6 @@ sub Rules {
 }
 
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -259,11 +256,8 @@ sub Delete {
     return ($id,$msg);
 }
 
-# }}}
 
-# {{{ Routines dealing with Attachments
 
-# {{{ sub Message 
 
 =head2 Message
 
@@ -291,9 +285,7 @@ sub Message {
     return $self->{'message'};
 }
 
-# }}}
 
-# {{{ sub Content
 
 =head2 Content PARAMHASH
 
@@ -382,7 +374,6 @@ sub Content {
     return ($content);
 }
 
-# }}}
 
 
 =head2 Addresses
@@ -404,7 +395,6 @@ sub Addresses {
 }
 
 
-# {{{ ContentObj
 
 =head2 ContentObj 
 
@@ -466,9 +456,7 @@ sub ContentObj {
     return (undef);
 }
 
-# }}}
 
-# {{{ sub Subject
 
 =head2 Subject
 
@@ -483,9 +471,7 @@ sub Subject {
     return $first->Subject;
 }
 
-# }}}
 
-# {{{ sub Attachments 
 
 =head2 Attachments
 
@@ -522,9 +508,7 @@ sub Attachments {
     return $self->{'attachments'};
 }
 
-# }}}
 
-# {{{ sub _Attach 
 
 =head2 _Attach
 
@@ -549,9 +533,7 @@ sub _Attach {
     return ( $Attachment, $msg || $self->loc("Attachment created") );
 }
 
-# }}}
 
-# }}}
 
 sub ContentAsMIME {
     my $self = shift;
@@ -596,9 +578,7 @@ sub ContentAsMIME {
     return $entity;
 }
 
-# {{{ Routines dealing with Transaction Attributes
 
-# {{{ sub Description 
 
 =head2 Description
 
@@ -620,9 +600,7 @@ sub Description {
     return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
 }
 
-# }}}
 
-# {{{ sub BriefDescription 
 
 =head2 BriefDescription
 
@@ -935,11 +913,8 @@ sub BriefDescription {
     }
 );
 
-# }}}
 
-# {{{ Utility methods
 
-# {{{ sub IsInbound
 
 =head2 IsInbound
 
@@ -954,9 +929,7 @@ sub IsInbound {
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
-# }}}
 
-# }}}
 
 sub _OverlayAccessible {
     {
@@ -967,20 +940,15 @@ sub _OverlayAccessible {
     }
 };
 
-# }}}
 
-# }}}
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
     return ( 0, $self->loc('Transactions are immutable') );
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -1005,9 +973,7 @@ sub _Value {
     return $self->SUPER::_Value( $field );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -1073,7 +1039,6 @@ sub CurrentUserCanSee {
     return 1;
 }
 
-# }}}
 
 sub Ticket {
     my $self = shift;
@@ -1168,7 +1133,7 @@ sub UpdateCustomFields {
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
-            next unless length($value);
+            next unless (defined($value) && length($value));
             $self->_AddCustomFieldValue(
                 Field             => $cfid,
                 Value             => $value,
@@ -1207,9 +1172,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues($field);
 }
 
-# }}}
 
-# {{{ sub CustomFieldLookupType
 
 =head2 CustomFieldLookupType
 
@@ -1218,12 +1181,42 @@ be passed to RT::CustomField->Create() via the 'LookupType' hash key.
 
 =cut
 
-# }}}
 
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
+
+=head2 Recipients
+
+Returns the list of email addresses (as L<Email::Address> objects)
+that this transaction would send mail to.  There may be duplicates.
+
+=cut
+
+sub Recipients {
+    my $self = shift;
+    my @recipients;
+    foreach my $scrip ( @{ $self->Scrips->Prepared } ) {
+        my $action = $scrip->ActionObj->Action;
+        next unless $action->isa('RT::Action::SendEmail');
+
+        foreach my $type qw(To Cc Bcc) {
+            push @recipients, $action->$type();
+        }
+    }
+
+    if ( $self->Rules ) {
+        for my $rule (@{$self->Rules}) {
+            next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
+            my $data = $rule->{hints}{recipients};
+            foreach my $type qw(To Cc Bcc) {
+                push @recipients, map {Email::Address->new($_)} @{$data->{$type}};
+            }
+        }
+    }
+    return @recipients;
+}
 
 =head2 DeferredRecipients($freq, $include_sent )
 

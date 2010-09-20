@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -115,9 +115,9 @@ sub Init {
     my %import;
     foreach my $l ( @lang ) {
         $import{$l} = [
-            Gettext => (substr(__FILE__, 0, -3) . "/$l.po"),
-            Gettext => "$RT::LocalLexiconPath/*/$l.po",
-            Gettext => "$RT::LocalLexiconPath/$l.po",
+            Gettext => $RT::LexiconPath."/$l.po",
+            Gettext => $RT::LocalLexiconPath."/*/$l.po",
+            Gettext => $RT::LocalLexiconPath."/$l.po",
         ];
         push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
     }
@@ -158,7 +158,6 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 sub encoding { 'utf-8' }
 
-# {{{ SetMIMEEntityToUTF8
 
 =head2 SetMIMEEntityToUTF8 $entity
 
@@ -171,9 +170,7 @@ sub SetMIMEEntityToUTF8 {
     RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
 }
 
-# }}}
 
-# {{{ IsTextualContentType
 
 =head2 IsTextualContentType $type
 
@@ -185,7 +182,6 @@ Currently, it returns true iff $type matches this regular expression
 
     ^(?:text/(?:plain|html)|message/rfc822)\b
 
-# }}}
 
 =cut
 
@@ -194,7 +190,6 @@ sub IsTextualContentType {
     ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
 }
 
-# {{{ SetMIMEEntityToEncoding
 
 =head2 SetMIMEEntityToEncoding $entity, $encoding
 
@@ -252,7 +247,7 @@ sub SetMIMEEntityToEncoding {
         Encode::_utf8_off($string);
         my $orig_string = $string;
 
-        # {{{ Convert the body
+        # Convert the body
         eval {
             $RT::Logger->debug( "Converting '$charset' to '$enc' for "
                   . $head->mime_type . " - "
@@ -304,9 +299,7 @@ sub SetMIMEEntityToEncoding {
 # Not turning off the UTF-8 flag in the string will prevent the string
 # from conversion.
 
-# }}}
 
-# {{{ DecodeMIMEWordsToUTF8
 
 =head2 DecodeMIMEWordsToUTF8 $raw
 
@@ -424,9 +417,7 @@ sub DecodeMIMEWordsToEncoding {
     return ($str)
 }
 
-# }}}
 
-# {{{ _FindOrGuessCharset
 
 =head2 _FindOrGuessCharset MIME::Entity, $head_only
 
@@ -455,9 +446,7 @@ sub _FindOrGuessCharset {
     }
 }
 
-# }}}
 
-# {{{ _GuessCharset
 
 =head2 _GuessCharset STRING
 
@@ -511,9 +500,7 @@ sub _GuessCharset {
     return ($charset || $fallback);
 }
 
-# }}}
 
-# {{{ SetMIMEHeadToEncoding
 
 =head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
 
@@ -570,7 +557,6 @@ sub SetMIMEHeadToEncoding {
     }
 
 }
-# }}}
 
 RT::Base->_ImportOverlays();
 

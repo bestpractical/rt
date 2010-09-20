@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -119,6 +119,37 @@ our $RIGHTS = {
 
 };
 
+our $RIGHT_CATEGORIES = {
+    SeeQueue            => 'General',
+    AdminQueue          => 'Admin',
+    ShowACL             => 'Admin',
+    ModifyACL           => 'Admin',
+    ModifyQueueWatchers => 'Admin',
+    SeeCustomField      => 'General',
+    ModifyCustomField   => 'Staff',
+    AssignCustomFields  => 'Admin',
+    ModifyTemplate      => 'Admin',
+    ShowTemplate        => 'Admin',
+    ModifyScrips        => 'Admin',
+    ShowScrips          => 'Admin',
+    ShowTicket          => 'General',
+    ShowTicketComments  => 'Staff',
+    ShowOutgoingEmail   => 'Staff',
+    Watch               => 'General',
+    WatchAsAdminCc      => 'Staff',
+    CreateTicket        => 'General',
+    ReplyToTicket       => 'General',
+    CommentOnTicket     => 'General',
+    OwnTicket           => 'Admin',
+    ModifyTicket        => 'Staff',
+    ModifyTicketStatus  => 'Staff',
+    DeleteTicket        => 'Staff',
+    RejectTicket        => 'Staff',
+    TakeTicket          => 'Staff',
+    StealTicket         => 'Staff',
+    ForwardMessage      => 'Staff',
+};
+
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
@@ -126,6 +157,7 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 # stuff the rights into a hash of rights that can exist.
 
 __PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -140,6 +172,19 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 sub AddLink {
@@ -186,7 +231,18 @@ sub AvailableRights {
     return($RIGHTS);
 }
 
-# {{{ ActiveStatusArray
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
+
 
 sub lifecycle {
     my $self = shift;
@@ -279,7 +335,6 @@ sub IsInactiveStatus {
 }
 
 
-# {{{ sub Create
 
 
 
@@ -361,9 +416,7 @@ sub Create {
     return ( $id, $self->loc("Queue created") );
 }
 
-# }}}
 
-# {{{ sub Delete 
 
 sub Delete {
     my $self = shift;
@@ -371,9 +424,7 @@ sub Delete {
         $self->loc('Deleting this object would break referential integrity') );
 }
 
-# }}}
 
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -406,9 +457,7 @@ sub SetDisabled {
 
 }
 
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load
 
@@ -435,9 +484,7 @@ sub Load {
 
 }
 
-# }}}
 
-# {{{ sub ValidateName
 
 =head2 ValidateName NAME
 
@@ -465,7 +512,6 @@ sub ValidateName {
 
 }
 
-# }}}
 
 =head2 SetSign
 
@@ -555,7 +601,6 @@ sub SetSubjectTag {
     ))
 }
 
-# {{{ sub Templates
 
 =head2 Templates
 
@@ -575,11 +620,8 @@ sub Templates {
     return ($templates);
 }
 
-# }}}
 
-# {{{ Dealing with custom fields
 
-# {{{  CustomField
 
 =head2 CustomField NAME
 
@@ -596,7 +638,6 @@ sub CustomField {
 }
 
 
-# {{{ TicketCustomFields
 
 =head2 TicketCustomFields
 
@@ -618,9 +659,7 @@ sub TicketCustomFields {
     return ($cfs);
 }
 
-# }}}
 
-# {{{ TicketTransactionCustomFields
 
 =head2 TicketTransactionCustomFields
 
@@ -641,14 +680,10 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ Routines dealing with watchers.
 
-# {{{ AllRoleGroupTypes
+
 =head2 AllRoleGroupTypes
 
 Returns a list of the names of the various role group types that this queue
@@ -661,9 +696,7 @@ sub AllRoleGroupTypes {
     my $self = shift;
     return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
 }
-# }}}
 
-# {{{ IsRoleGroupType
 =head2 IsRoleGroupType
 
 Returns whether the passed-in type is a role group type.
@@ -680,9 +713,7 @@ sub IsRoleGroupType {
 
     return 0;
 }
-# }}}
 
-# {{{ ManageableRoleGroupTypes
 =head2 ManageableRoleGroupTypes
 
 Returns a list of the names of the various role group types that this queue
@@ -693,9 +724,7 @@ has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
 sub ManageableRoleGroupTypes {
     return qw(Cc AdminCc);
 }
-# }}}
 
-# {{{ IsManageableRoleGroupType
 =head2 IsManageableRoleGroupType
 
 Returns whether the passed-in type is a manageable role group type.
@@ -712,9 +741,7 @@ sub IsManageableRoleGroupType {
 
     return 0;
 }
-# }}}
 
-# {{{ _CreateQueueGroups 
 
 =head2 _CreateQueueGroups
 
@@ -759,7 +786,6 @@ sub _CreateQueueRoleGroup {
 }
 
 
-# }}}
 
 # _HasModifyWatcherRight {{{
 sub _HasModifyWatcherRight {
@@ -789,9 +815,7 @@ sub _HasModifyWatcherRight {
 
     return ( 0, $self->loc("Permission Denied") );
 }
-# }}}
 
-# {{{ sub AddWatcher
 
 =head2 AddWatcher
 
@@ -916,9 +940,7 @@ sub _AddWatcher {
     return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -1000,9 +1022,7 @@ sub DeleteWatcher {
     return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ AdminCcAddresses
 
 =head2 AdminCcAddresses
 
@@ -1021,9 +1041,7 @@ sub AdminCcAddresses {
     
 }   
 
-# }}}
 
-# {{{ CcAddresses
 
 =head2 CcAddresses
 
@@ -1041,10 +1059,8 @@ sub CcAddresses {
     return ( $self->Cc->MemberEmailAddressesAsString);
 
 }
-# }}}
 
 
-# {{{ sub Cc
 
 =head2 Cc
 
@@ -1065,9 +1081,7 @@ sub Cc {
 
 }
 
-# }}}
 
-# {{{ sub AdminCc
 
 =head2 AdminCc
 
@@ -1088,11 +1102,8 @@ sub AdminCc {
 
 }
 
-# }}}
 
-# {{{ IsWatcher, IsCc, IsAdminCc
 
-# {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
@@ -1130,10 +1141,8 @@ sub IsWatcher {
     return ($group->HasMemberRecursively($principal));
 }
 
-# }}}
 
 
-# {{{ sub IsCc
 
 =head2 IsCc PRINCIPAL_ID
 
@@ -1151,9 +1160,7 @@ sub IsCc {
 
 }
 
-# }}}
 
-# {{{ sub IsAdminCc
 
 =head2 IsAdminCc PRINCIPAL_ID
 
@@ -1170,20 +1177,15 @@ sub IsAdminCc {
 
 }
 
-# }}}
-
-
-# }}}
 
 
 
 
 
-# }}}
 
-# {{{ ACCESS CONTROL
 
-# {{{ sub _Set
+
+
 sub _Set {
     my $self = shift;
 
@@ -1193,9 +1195,7 @@ sub _Set {
     return ( $self->SUPER::_Set(@_) );
 }
 
-# }}}
 
-# {{{ sub _Value
 
 sub _Value {
     my $self = shift;
@@ -1207,9 +1207,7 @@ sub _Value {
     return ( $self->__Value(@_) );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -1232,9 +1230,7 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 HasRight
 
@@ -1265,8 +1261,6 @@ sub HasRight {
     );
 }
 
-# }}}
 
-# }}}
 
 1;

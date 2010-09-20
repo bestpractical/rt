@@ -18,14 +18,13 @@ my $user_b = RT::Test->load_or_create_user(
 );
 ok $user_b && $user_b->id, 'loaded or created user';
 
-RT::Test->started_ok;
+my ($baseurl, $agent_a) = RT::Test->started_ok;
 
 ok( RT::Test->set_rights(
     { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-my $agent_a = RT::Test::Web->new;
 ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 
 diag "current user has no right to own, nobody selected as owner on create";
@@ -35,7 +34,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     $agent_a->select( 'Queue', $queue->id );
     $agent_a->submit;
 
-    $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
+    $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), $RT::Nobody->id, 'correct owner selected';
     ok !grep($_ == $user_a->id, $form->find_input('Owner')->possible_values),
@@ -59,7 +58,7 @@ diag "user can chose owner of a new ticket";
     $agent_a->select( 'Queue', $queue->id );
     $agent_a->submit;
 
-    $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
+    $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), $RT::Nobody->id, 'correct owner selected';
 
@@ -101,8 +100,8 @@ diag "user A can not change owner after create";
         $agent->select('Owner', $RT::Nobody->id);
         $agent->submit;
 
-        $agent->content_like(
-            qr/Permission denied/i,
+        $agent->content_contains(
+            'Permission Denied',
             'no way to change owner after create if you have no rights'
         );
 

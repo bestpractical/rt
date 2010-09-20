@@ -1,0 +1,250 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$Context
+$Principals
+$AddPrincipal => undef
+</%args>
+<%init>
+use Scalar::Util qw(blessed);
+
+# Let callbacks get at principals and context before we do anything with them
+$m->callback( Principals => $Principals, Context => $Context );
+
+# Try to detect if we want to include an add user/group box
+unless ( $AddPrincipal ) {
+    my $last = $Principals->[-1];
+    if ( $last->[0] =~ /Groups/i ) {
+        $AddPrincipal = 'group';
+    }
+    elsif ( $last->[0] =~ /Users/i ) {
+        $AddPrincipal = 'user';
+    }
+}
+</%init>
+%# Principals is an array of arrays, where the inner arrays are like:
+%#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
+%# The last value is a boolen determining if the value of DisplayColumn
+%# should be loc()-ed before display.
+
+<script type="text/javascript">
+  jQuery(function() {
+      jQuery(".rights-editor").tabs();
+      jQuery(".rights-editor .category-tabs").tabs();
+  });
+</script>
+
+<div class="rights-editor clearfix">
+  <ul>
+<%perl>
+for my $category (@$Principals) {
+    my ($name, $collection, $col, $loc) = @$category;
+</%perl>
+<li class="category"><% $name %></li>
+<%perl>
+    while ( my $obj = $collection->Next ) {
+        my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
+        my $id = "acl-$name-" . $obj->PrincipalId;
+        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+</%perl>
+<li><a href="#<% $id %>"><% $loc ? loc($display) : $display %></a></li>
+<%perl>
+    }
+}
+</%perl>
+% if ( $AddPrincipal ) {
+    <li class="category"><&|/l&>Add</&> <% loc($AddPrincipal) %></li>
+    <li>
+      <a href="#acl-addprincipal">
+        <input type="text" value=""
+               name="AddPrincipalForRights-<% lc $AddPrincipal %>"
+               id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
+% if (lc $AddPrincipal eq 'group') {
+        <script type="text/javascript">
+            jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").autocomplete({
+                source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
+            });
+        </script>
+% }
+      </a>
+    </li>
+% }
+  </ul>
+
+<%perl>
+# Find all our available rights...
+my (%available_rights, %categories);
+if ( blessed($Context) and $Context->can('AvailableRights') ) { 
+    %available_rights = %{$Context->AvailableRights};
+} else {
+    %available_rights = ( loc('System Error') => loc("No rights found") );
+}
+
+# ...and their categories
+if ( blessed($Context) and $Context->can('RightCategories') ) { 
+    my %right_categories = %{$Context->RightCategories};
+    
+    for my $right (keys %available_rights) {
+        push @{$categories{$right_categories{$right}}}, $right;
+    }
+}
+
+my %category_desc = (
+    'General' => 'General rights',
+    'Staff'   => 'Rights for Staff',
+    'Admin'   => 'Rights for Administrators',
+);
+
+my %catsort = ( General => 1, Staff => 2, Admin => 3, );
+
+# Find all the current rights
+my %current_rights;
+for my $collection (map { $_->[1] } @$Principals) {
+    while (my $group = $collection->Next) {
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $Context );
+        $acls->LimitToPrincipal( Id => $group->PrincipalId );
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+            $current_rights{$group->PrincipalId}->{$right} = 1;
+        }
+    }
+}
+
+# Now generate our rights panels for each principal
+for my $category (@$Principals) {
+    my ($name, $collection, $col, $loc) = @$category;
+    while ( my $obj = $collection->Next ) {
+        my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
+        my $acldesc = join '-', $obj->PrincipalId, ref($Context), $Context->Id;
+        my $id = "acl-$name-" . $obj->PrincipalId;
+        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+</%perl>
+
+  <div id="<% $id %>">
+    <h3>
+      <% $loc ? loc($display) : $display %>
+<%perl>
+if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
+    my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
+    $subgroups->LimitToUserDefinedGroups;
+    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name );
+
+    if ( $subgroups->Count ) {
+        my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};
+</%perl>
+      <span class="subgroups"><&|/l, $inc &>includes [_1]</&></span>\
+<%perl>
+    }
+}
+</%perl>
+    </h3>
+    <div class="category-tabs">
+      <ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+        <li><a href="#<% "$id-$category" %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+% }
+      </ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+    <div id="<% "$id-$category" %>">
+    <ul class="rights-list">
+%     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
+      <li>
+        <input type="checkbox" class="checkbox"
+               name="SetRights-<% $acldesc %>"
+               id="SetRights-<% $acldesc %>-<% $right %>"
+               value="<% $right %>"
+               <% $current_rights{$obj->PrincipalId}->{$right} ? 'checked' : '' %> />
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+          <% loc($available_rights{$right}) %>
+        </label>
+      </li>
+%     }
+    </ul>
+    </div>
+% }
+    </div>
+    <input type="hidden" name="CheckACL" value="<% $acldesc %>" />
+  </div>
+<%perl>
+    }
+}
+
+if ( $AddPrincipal ) {
+    my $acldesc = join '-', 'addprincipal', ref($Context), $Context->Id;
+</%perl>
+  <div id="acl-addprincipal">
+    <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
+    <div class="category-tabs">
+      <ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+        <li><a href="#acl-addprincipal-<% $category %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+% }
+      </ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+    <div id="acl-addprincipal-<% $category %>">
+    <ul class="rights-list">
+%     for my $right (sort @{$categories{$category}}) {
+      <li>
+        <input type="checkbox" class="checkbox"
+               name="SetRights-<% $acldesc %>"
+               id="SetRights-<% $acldesc %>-<% $right %>"
+               value="<% $right %>" />
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+          <% loc($available_rights{$right}) %>
+        </label>
+      </li>
+%     }
+    </ul>
+    </div>
+% }
+  </div>
+  </div>
+% }
+</div>

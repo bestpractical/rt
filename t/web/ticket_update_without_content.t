@@ -30,8 +30,8 @@ $m->submit_form(
     fields      => { Priority => '1', }
 );
 
-$m->content_like(qr/priority changed/i);
-$m->content_unlike(qr/message recorded/i);
+$m->content_contains("Priority changed");
+$m->content_lacks("message recorded");
 
 my $root = RT::User->new( $RT::SystemUser );
 $root->Load('root');
@@ -48,5 +48,5 @@ $m->submit_form(
     form_number => 3,
     fields      => { Priority => '2', }
 );
-$m->content_like(qr/priority changed/i);
-$m->content_unlike(qr/message recorded/i);
+$m->content_contains("Priority changed");
+$m->content_lacks("message recorded");

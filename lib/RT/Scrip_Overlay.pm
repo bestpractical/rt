@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -68,7 +68,6 @@ package RT::Scrip;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub Create
 
 =head2 Create
 
@@ -179,9 +178,7 @@ sub Create {
     }
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -199,9 +196,7 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
-# }}}
 
-# {{{ sub QueueObj
 
 =head2 QueueObj
 
@@ -220,9 +215,7 @@ sub QueueObj {
     return ( $self->{'QueueObj'} );
 }
 
-# }}}
 
-# {{{ sub ActionObj
 
 =head2 ActionObj
 
@@ -245,9 +238,7 @@ sub ActionObj {
     return ( $self->{'ScripActionObj'} );
 }
 
-# }}}
 
-# {{{ sub ConditionObj
 
 =head2 ConditionObj
 
@@ -263,7 +254,6 @@ sub ConditionObj {
     return $res;
 }
 
-# }}}
 
 =head2 LoadModules
 
@@ -278,7 +268,6 @@ sub LoadModules {
     $self->ActionObj->LoadAction;
 }
 
-# {{{ sub TemplateObj
 
 =head2 TemplateObj
 
@@ -297,11 +286,8 @@ sub TemplateObj {
     return ( $self->{'TemplateObj'} );
 }
 
-# }}}
 
-# {{{ Dealing with this instance of a scrip
 
-# {{{ sub Apply
 
 =head2 Apply { TicketObj => undef, TransactionObj => undef}
 
@@ -358,9 +344,7 @@ sub Apply {
 
 }
 
-# }}}
 
-# {{{ sub IsApplicable
 
 =head2 IsApplicable
 
@@ -430,9 +414,7 @@ sub IsApplicable {
 
 }
 
-# }}}
 
-# {{{ SUb Prepare
 
 =head2 Prepare
 
@@ -464,9 +446,7 @@ sub Prepare {
         return ($return);
 }
 
-# }}}
 
-# {{{ sub Commit
 
 =head2 Commit
 
@@ -500,13 +480,9 @@ sub Commit {
     return ($return);
 }
 
-# }}}
 
-# }}}
 
-# {{{ ACL related methods
 
-# {{{ sub _Set
 
 # does an acl check and then passes off the call
 sub _Set {
@@ -536,9 +512,7 @@ sub _Set {
     return $self->__Set(@_);
 }
 
-# }}}
 
-# {{{ sub _Value
 # does an acl check and then passes off the call
 sub _Value {
     my $self = shift;
@@ -553,9 +527,7 @@ sub _Value {
     return $self->__Value(@_);
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -572,9 +544,7 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 HasRight
 
@@ -604,9 +574,7 @@ sub HasRight {
     }
 }
 
-# }}}
 
-# }}}
 
 =head2 CompileCheck
 

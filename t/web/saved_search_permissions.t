@@ -23,7 +23,7 @@ $m->submit_form(
 $m->content_contains( q{name="SavedSearchDescription" value="test"},
     'saved test search' );
 my ($id) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
-ok( $m->login( 'foo', 'foobar' ), 'logged in' );
+ok( $m->login( 'foo', 'foobar', logout => 1 ), 'logged in' );
 $m->get_ok( $url . "/Search/Build.html?SavedSearchLoad=$id" );
 
 my $message = qq{Can not load saved search "$id"};

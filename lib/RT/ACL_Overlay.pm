@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -77,7 +77,6 @@ Hand out the next ACE that was found
 =cut
 
 
-# {{{ LimitToObject 
 
 =head2 LimitToObject $object
 
@@ -111,9 +110,7 @@ sub LimitToObject {
 
 }
 
-# }}}
 
-# {{{ LimitNotObject
 
 =head2 LimitNotObject $object
 
@@ -147,9 +144,7 @@ sub LimitNotObject {
 		);
 }
 
-# }}}
 
-# {{{ LimitToPrincipal 
 
 =head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
 
@@ -206,77 +201,9 @@ sub LimitToPrincipal {
     }
 }
 
-# }}}
 
 
 
-# {{{ ExcludeDelegatedRights
-
-=head2 ExcludeDelegatedRights 
-
-Don't list rights which have been delegated.
-
-=cut
-
-sub ExcludeDelegatedRights {
-    my $self = shift;
-    $self->DelegatedBy(Id => 0);
-    $self->DelegatedFrom(Id => 0);
-}
-# }}}
-
-# {{{ DelegatedBy 
-
-=head2 DelegatedBy { Id => undef }
-
-Limit the ACL to rights delegated by the principal whose Principal Id is
-B<Id>
-
-Id is not optional.
-
-=cut
-
-sub DelegatedBy {
-    my $self = shift;
-    my %args = (
-        Id => undef,
-        @_
-    );
-    $self->Limit(
-        FIELD           => 'DelegatedBy',
-        OPERATOR        => '=',
-        VALUE           => $args{'Id'},
-        ENTRYAGGREGATOR => 'OR'
-    );
-
-}
-
-# }}}
-
-# {{{ DelegatedFrom 
-
-=head2 DelegatedFrom { Id => undef }
-
-Limit the ACL to rights delegate from the ACE which has the Id specified 
-by the Id parameter.
-
-Id is not optional.
-
-=cut
-
-sub DelegatedFrom {
-    my $self = shift;
-    my %args = (
-                 Id => undef,
-                 @_);
-    $self->Limit(FIELD => 'DelegatedFrom', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
-
-}
-
-# }}}
-
-
-# {{{ sub Next 
 sub Next {
     my $self = shift;
 
@@ -304,7 +231,6 @@ sub Next {
 
 }
 
-# }}}
 
 
 
@@ -341,7 +267,6 @@ sub _BuildHash {
 }
 
 
-# {{{ HasEntry
 
 =head2 HasEntry
 
@@ -373,5 +298,4 @@ sub HasEntry {
     }
 }
 
-# }}}
 1;

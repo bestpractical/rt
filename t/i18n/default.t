@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test noinitialdata => 1, tests => 8;
+use RT::Test nodata => 1, tests => 8;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->get_ok('/');

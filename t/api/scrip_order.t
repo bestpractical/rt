@@ -6,7 +6,6 @@ use RT;
 use RT::Test tests => 7;
 
 
-# {{{ test scrip ordering based on description
 
 my $scrip_queue = RT::Queue->new($RT::SystemUser);
 my ($queue_id, $msg) = $scrip_queue->Create( Name => "ScripOrdering-$$", 
@@ -51,5 +50,4 @@ isnt($ticket->Priority , 0, "Ticket shouldn't be priority 0");
 isnt($ticket->Priority , 5, "Ticket shouldn't be priority 5");
 is  ($ticket->Priority , 10, "Ticket should be priority 10");
 
-# }}}
 

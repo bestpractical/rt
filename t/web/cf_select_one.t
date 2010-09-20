@@ -26,7 +26,7 @@ diag "Create a CF";
             LookupType    => 'RT::Queue-RT::Ticket',
         },
     );
-    $m->content_like( qr/Object created/, 'created CF sucessfully' );
+    $m->content_contains('Object created', 'created CF sucessfully' );
     $cfid = $m->form_name('ModifyCustomField')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
@@ -41,11 +41,11 @@ diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF";
             },
             button => 'Update',
         );
-        $m->content_like( qr/Object created/, 'added a value to the CF' ); # or diag $m->content;
+        $m->content_contains('Object created', 'added a value to the CF' ); # or diag $m->content;
         my $v = $value;
         $v =~ s/^\s+$//;
         $v =~ s/\s+$//;
-        $m->content_like( qr/value="$v"/, 'the added value is right' );
+        $m->content_contains("value=\"$v\"", 'the added value is right' );
     }
 }
 
@@ -65,7 +65,7 @@ diag "apply the CF to General queue";
     $m->tick( "AddCustomField" => $cfid );
     $m->click('UpdateCFs');
 
-    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+    $m->content_contains('Object created', 'TCF added to the queue' );
 }
 
 my $tid;
@@ -93,7 +93,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)";
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
-    $m->content_like(qr/\Q$cf_name/, 'CF on the page');
+    $m->content_contains($cf_name, 'CF on the page');
 
     my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
@@ -115,14 +115,14 @@ diag "check that 0 is ok value of the CF";
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
-    $m->content_like(qr/\Q$cf_name/, 'CF on the page');
+    $m->content_contains($cf_name, 'CF on the page');
 
     my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => 0 );
     $m->submit;
     $m->content_like(qr/\Q$cf_name\E.*?changed/mi, 'field is changed');
-    $m->content_unlike(qr/0 is no longer a value for custom field/mi, 'no bad message in results');
+    $m->content_lacks('0 is no longer a value for custom field', 'no bad message in results');
 
     $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'new value is selected';
@@ -139,13 +139,13 @@ diag "check that we can set empty value when the current is 0";
     ok $m->goto_ticket( $tid ), "opened ticket's page";
     $m->follow_link( text => 'Custom Fields' );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
-    $m->content_like(qr/\Q$cf_name/, 'CF on the page');
+    $m->content_contains($cf_name, 'CF on the page');
 
     my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => '' );
     $m->submit;
-    $m->content_like(qr/0 is no longer a value for custom field/mi, '0 is no longer a value');
+    $m->content_contains('0 is no longer a value for custom field', '0 is no longer a value');
 
     $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is $value, '', '(no value) is selected';

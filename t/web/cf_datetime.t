@@ -29,7 +29,7 @@ diag "Create a CF";
             LookupType    => 'RT::Queue-RT::Ticket',
         },
     );
-    $m->content_like( qr/Object created/, 'created CF sucessfully' );
+    $m->content_contains('Object created', 'created CF sucessfully' );
     $cfid = $m->form_name('ModifyCustomField')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
@@ -50,7 +50,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->tick( "AddCustomField" => $cfid );
     $m->click('UpdateCFs');
 
-    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+    $m->content_contains('Object created', 'TCF added to the queue' );
 }
 
 diag 'check valid inputs with various timezones in ticket create page';
@@ -61,7 +61,7 @@ diag 'check valid inputs with various timezones in ticket create page';
         form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
-    $m->content_like(qr/Select datetime/, 'has cf field');
+    $m->content_contains('Select datetime', 'has cf field');
 
     $m->submit_form(
         form_name => "TicketCreate",
@@ -82,13 +82,13 @@ diag 'check valid inputs with various timezones in ticket create page';
         'date in db is in UTC'
     );
 
-    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
-    $m->content_like(qr/Tue May 04 13:00:01 2010/, 'has cf datetime value on the page');
+    $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
+    $m->content_contains('Tue May 04 13:00:01 2010', 'has cf datetime value on the page');
 
     $root->SetTimezone( 'Asia/Shanghai' );
     # interesting that $m->reload doesn't work
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Wed May 05 01:00:01 2010/, 'cf datetime value respects user timezone');
+    $m->content_contains('Wed May 05 01:00:01 2010', 'cf datetime value respects user timezone');
 
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -112,11 +112,11 @@ diag 'check valid inputs with various timezones in ticket create page';
         'date in db is in UTC'
     );
 
-    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
-    $m->content_like(qr/Thu May 06 07:00:01 2010/, 'cf datetime input respects user timezone');
+    $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
+    $m->content_contains('Thu May 06 07:00:01 2010', 'cf datetime input respects user timezone');
     $root->SetTimezone( 'EST5EDT' ); # back to -04:00
     $m->get_ok( $m->uri );
-    $m->content_like(qr/Wed May 05 19:00:01 2010/, 'cf datetime value respects user timezone');
+    $m->content_contains('Wed May 05 19:00:01 2010', 'cf datetime value respects user timezone');
 }
 
 
@@ -156,7 +156,7 @@ diag 'check search build page';
         Right  => 'SuperUser',
         Object => $RT::System,
     ));
-    $m->login( 'shanghai', 'password' );
+    $m->login( 'shanghai', 'password', logout => 1 );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
     $m->form_number(3);
@@ -232,6 +232,6 @@ diag 'check invalid inputs';
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
-    $m->content_like(qr/test cf datetime:/, 'has no cf datetime field on the page');
-    $m->content_unlike(qr/foodate/, 'invalid dates not set');
+    $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
+    $m->content_lacks('foodate', 'invalid dates not set');
 }

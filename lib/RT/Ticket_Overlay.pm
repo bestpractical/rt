@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,10 +43,8 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
-
-# {{{ Front Material 
 
 =head1 SYNOPSIS
 
@@ -82,9 +80,9 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
+use Devel::GlobalDestruction;
 
 
-# {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -112,9 +110,7 @@ our %LINKTYPEMAP = (
 
 );
 
-# }}}
 
-# {{{ LINKDIRMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -130,7 +126,6 @@ our %LINKDIRMAP = (
 
 );
 
-# }}}
 
 sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
 sub LINKDIRMAP   { return \%LINKDIRMAP   }
@@ -140,7 +135,6 @@ our %MERGE_CACHE = (
     merged => {},
 );
 
-# {{{ sub Load
 
 =head2 Load
 
@@ -195,9 +189,7 @@ sub Load {
     return $self->Id;
 }
 
-# }}}
 
-# {{{ sub Create
 
 =head2 Create (ARGS)
 
@@ -337,7 +329,7 @@ sub Create {
     $args{'Priority'} = $args{'InitialPriority'}
         unless defined $args{'Priority'};
 
-    # {{{ Dates
+    # Dates
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
 
@@ -390,7 +382,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Dealing with time fields
+    # Dealing with time fields
 
     $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
     $args{'TimeWorked'}    = 0 unless defined $args{'TimeWorked'};
@@ -398,7 +390,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Deal with setting the owner
+    # Deal with setting the owner
 
     my $Owner;
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
@@ -552,7 +544,7 @@ sub Create {
 
 
 
-    # {{{ Deal with setting up watchers
+    # Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
         # we know it's an array ref
@@ -583,7 +575,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Add all the custom fields
+    # Add all the custom fields
 
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
@@ -609,7 +601,7 @@ sub Create {
 
     # }}}
 
-    # {{{ Deal with setting up links
+    # Deal with setting up links
 
     # TODO: Adding link may fire scrips on other end and those scrips
     # could create transactions on this ticket before 'Create' transaction.
@@ -679,7 +671,7 @@ sub Create {
 
     if ( $args{'_RecordTransaction'} ) {
 
-        # {{{ Add a transaction for the create
+        # Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type         => "Create",
             TimeTaken    => $args{'TimeWorked'},
@@ -724,9 +716,7 @@ sub Create {
 }
 
 
-# }}}
 
-# {{{ _Parse822HeadersForAttributes Content
 
 =head2 _Parse822HeadersForAttributes Content
 
@@ -787,9 +777,7 @@ sub _Parse822HeadersForAttributes {
     return (%args);
 }
 
-# }}}
 
-# {{{ sub Import
 
 =head2 Import PARAMHASH
 
@@ -859,7 +847,7 @@ sub Import {
               , $QueueObj->Name));
     }
 
-    # {{{ Deal with setting the owner
+    # Deal with setting the owner
 
     # Attempt to take user object, user name or user id.
     # Assign to nobody if lookup fails.
@@ -983,11 +971,8 @@ sub Import {
     return ( $self->Id, $ErrStr );
 }
 
-# }}}
 
-# {{{ Routines dealing with watchers.
 
-# {{{ _CreateTicketGroups 
 
 =head2 _CreateTicketGroups
 
@@ -1022,9 +1007,7 @@ sub _CreateTicketGroups {
     
 }
 
-# }}}
 
-# {{{ sub OwnerGroup
 
 =head2 OwnerGroup
 
@@ -1039,10 +1022,8 @@ sub OwnerGroup {
     return ($owner_obj);
 }
 
-# }}}
 
 
-# {{{ sub AddWatcher
 
 =head2 AddWatcher
 
@@ -1181,10 +1162,8 @@ sub _AddWatcher {
         return ( 1, $self->loc('Added principal as a [_1] for this ticket', $self->loc($args{'Type'})) );
 }
 
-# }}}
 
 
-# {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -1236,7 +1215,7 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Group not found") );
     }
 
-    # {{{ Check ACLS
+    # Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->CurrentUser->PrincipalId == $principal->id ) {
 
@@ -1311,7 +1290,6 @@ sub DeleteWatcher {
 
 
 
-# }}}
 
 
 =head2 SquelchMailTo [EMAIL]
@@ -1373,7 +1351,6 @@ sub UnsquelchMailTo {
 }
 
 
-# {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
 =head2 RequestorAddresses
 
@@ -1425,11 +1402,8 @@ sub CcAddresses {
 
 }
 
-# }}}
 
-# {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
 
-# {{{ sub Requestors
 
 =head2 Requestors
 
@@ -1449,9 +1423,7 @@ sub Requestors {
 
 }
 
-# }}}
 
-# {{{ sub Cc
 
 =head2 Cc
 
@@ -1472,9 +1444,7 @@ sub Cc {
 
 }
 
-# }}}
 
-# {{{ sub AdminCc
 
 =head2 AdminCc
 
@@ -1495,13 +1465,9 @@ sub AdminCc {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ IsWatcher,IsRequestor,IsCc, IsAdminCc
 
-# {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL }
@@ -1550,9 +1516,7 @@ sub IsWatcher {
     return $group->HasMember( $args{'PrincipalId'} );
 }
 
-# }}}
 
-# {{{ sub IsRequestor
 
 =head2 IsRequestor PRINCIPAL_ID
   
@@ -1570,9 +1534,7 @@ sub IsRequestor {
 
 };
 
-# }}}
 
-# {{{ sub IsCc
 
 =head2 IsCc PRINCIPAL_ID
 
@@ -1590,9 +1552,7 @@ sub IsCc {
 
 }
 
-# }}}
 
-# {{{ sub IsAdminCc
 
 =head2 IsAdminCc PRINCIPAL_ID
 
@@ -1609,9 +1569,7 @@ sub IsAdminCc {
 
 }
 
-# }}}
 
-# {{{ sub IsOwner
 
 =head2 IsOwner
 
@@ -1642,11 +1600,8 @@ sub IsOwner {
     }
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
 
 =head2 TransactionAddresses
@@ -1689,9 +1644,7 @@ sub TransactionAddresses {
 
 
 
-# {{{ Routines dealing with queues 
 
-# {{{ sub ValidateQueue
 
 sub ValidateQueue {
     my $self  = shift;
@@ -1713,9 +1666,7 @@ sub ValidateQueue {
     }
 }
 
-# }}}
 
-# {{{ sub SetQueue  
 
 sub SetQueue {
     my $self     = shift;
@@ -1823,9 +1774,7 @@ sub SetQueue {
     return ($status, $msg);
 }
 
-# }}}
 
-# {{{ sub QueueObj
 
 =head2 QueueObj
 
@@ -1846,13 +1795,9 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
-# }}}
 
-# }}}
 
-# {{{ Date printing routines
 
-# {{{ sub DueObj
 
 =head2 DueObj
 
@@ -1876,9 +1821,7 @@ sub DueObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub DueAsString 
 
 =head2 DueAsString
 
@@ -1891,9 +1834,7 @@ sub DueAsString {
     return $self->DueObj->AsString();
 }
 
-# }}}
 
-# {{{ sub ResolvedObj
 
 =head2 ResolvedObj
 
@@ -1909,9 +1850,7 @@ sub ResolvedObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub SetStarted
 
 =head2 SetStarted
 
@@ -1955,9 +1894,7 @@ sub SetStarted {
 
 }
 
-# }}}
 
-# {{{ sub StartedObj
 
 =head2 StartedObj
 
@@ -1974,9 +1911,7 @@ sub StartedObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub StartsObj
 
 =head2 StartsObj
 
@@ -1993,9 +1928,7 @@ sub StartsObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub ToldObj
 
 =head2 ToldObj
 
@@ -2012,9 +1945,7 @@ sub ToldObj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub ToldAsString
 
 =head2 ToldAsString
 
@@ -2034,9 +1965,7 @@ sub ToldAsString {
     }
 }
 
-# }}}
 
-# {{{ sub TimeWorkedAsString
 
 =head2 TimeWorkedAsString
 
@@ -2057,9 +1986,7 @@ sub TimeWorkedAsString {
         ->DurationAsString( $value * 60 );
 }
 
-# }}}
 
-# {{{ sub TimeLeftAsString
 
 =head2  TimeLeftAsString
 
@@ -2075,11 +2002,8 @@ sub TimeLeftAsString {
         ->DurationAsString( $value * 60 );
 }
 
-# }}}
 
-# {{{ Routines dealing with correspondence/comments
 
-# {{{ sub Comment
 
 =head2 Comment
 
@@ -2127,9 +2051,7 @@ sub Comment {
 
     return(@results);
 }
-# }}}
 
-# {{{ sub Correspond
 
 =head2 Correspond
 
@@ -2184,9 +2106,7 @@ sub Correspond {
 
 }
 
-# }}}
 
-# {{{ sub _RecordNote
 
 =head2 _RecordNote
 
@@ -2274,11 +2194,91 @@ sub _RecordNote {
     return ( $Trans, $self->loc("Message recorded"), $TransObj );
 }
 
-# }}}
 
-# }}}
+=head2 DryRun
 
-# {{{ sub _Links 
+Builds a MIME object from the given C<UpdateSubject> and
+C<UpdateContent>, then calls L</Comment> or L</Correspond> with
+C<< DryRun => 1 >>, and returns the transaction so produced.
+
+=cut
+
+sub DryRun {
+    my $self = shift;
+    my %args = @_;
+    my $action;
+    if ($args{'UpdateType'} || $args{Action} =~ /^respon(d|se)$/i ) {
+        $action = 'Correspond';
+    } else {
+        $action = 'Comment';
+    }
+
+    my $Message = MIME::Entity->build(
+        Type    => 'text/plain',
+        Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
+        Charset => 'UTF-8',
+        Data    => $args{'UpdateContent'} || "",
+    );
+
+    my ( $Transaction, $Description, $Object ) = $self->$action(
+        CcMessageTo  => $args{'UpdateCc'},
+        BccMessageTo => $args{'UpdateBcc'},
+        MIMEObj      => $Message,
+        TimeTaken    => $args{'UpdateTimeWorked'},
+        DryRun       => 1,
+    );
+    unless ( $Transaction ) {
+        $RT::Logger->error("Couldn't fire '$action' action: $Description");
+    }
+
+    return $Object;
+}
+
+=head2 DryRunCreate
+
+Prepares a MIME mesage with the given C<Subject>, C<Cc>, and
+C<Content>, then calls L</Create> with C<< DryRun => 1 >> and returns
+the resulting L<RT::Transaction>.
+
+=cut
+
+sub DryRunCreate {
+    my $self = shift;
+    my %args = @_;
+    my $Message = MIME::Entity->build(
+        Type    => 'text/plain',
+        Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
+        (defined $args{'Cc'} ?
+             ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
+        Charset => 'UTF-8',
+        Data    => $args{'Content'} || "",
+    );
+
+    my ( $Transaction, $Object, $Description ) = $self->Create(
+        Type            => $args{'Type'} || 'ticket',
+        Queue           => $args{'Queue'},
+        Owner           => $args{'Owner'},
+        Requestor       => $args{'Requestors'},
+        Cc              => $args{'Cc'},
+        AdminCc         => $args{'AdminCc'},
+        InitialPriority => $args{'InitialPriority'},
+        FinalPriority   => $args{'FinalPriority'},
+        TimeLeft        => $args{'TimeLeft'},
+        TimeEstimated   => $args{'TimeEstimated'},
+        TimeWorked      => $args{'TimeWorked'},
+        Subject         => $args{'Subject'},
+        Status          => $args{'Status'},
+        MIMEObj         => $Message,
+        DryRun          => 1,
+    );
+    unless ( $Transaction ) {
+        $RT::Logger->error("Couldn't fire Create action: $Description");
+    }
+
+    return $Object;
+}
+
+
 
 sub _Links {
     my $self = shift;
@@ -2319,9 +2319,7 @@ sub _Links {
     return $links;
 }
 
-# }}}
 
-# {{{ sub DeleteLink 
 
 =head2 DeleteLink
 
@@ -2418,9 +2416,7 @@ sub DeleteLink {
     return ( $val, $Msg );
 }
 
-# }}}
 
-# {{{ sub AddLink
 
 =head2 AddLink
 
@@ -2549,10 +2545,8 @@ sub _AddLink {
     return ( $val, $msg );
 }
 
-# }}}
 
 
-# {{{ sub MergeInto
 
 =head2 MergeInto
 
@@ -2763,13 +2757,9 @@ sub Merged {
         = map $_->id, @{ $mergees->ItemsArrayRef || [] };
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ownership
 
-# {{{ sub OwnerObj
 
 =head2 OwnerObj
 
@@ -2792,9 +2782,7 @@ sub OwnerObj {
     return ($owner);
 }
 
-# }}}
 
-# {{{ sub OwnerAsString 
 
 =head2 OwnerAsString
 
@@ -2808,9 +2796,7 @@ sub OwnerAsString {
 
 }
 
-# }}}
 
-# {{{ sub SetOwner
 
 =head2 SetOwner
 
@@ -2959,9 +2945,7 @@ sub SetOwner {
     return ( $val, $msg );
 }
 
-# }}}
 
-# {{{ sub Take
 
 =head2 Take
 
@@ -2974,9 +2958,7 @@ sub Take {
     return ( $self->SetOwner( $self->CurrentUser->Id, 'Take' ) );
 }
 
-# }}}
 
-# {{{ sub Untake
 
 =head2 Untake
 
@@ -2989,9 +2971,7 @@ sub Untake {
     return ( $self->SetOwner( $RT::Nobody->UserObj->Id, 'Untake' ) );
 }
 
-# }}}
 
-# {{{ sub Steal 
 
 =head2 Steal
 
@@ -3013,13 +2993,9 @@ sub Steal {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with status
 
-# {{{ sub ValidateStatus 
 
 =head2 ValidateStatus STATUS
 
@@ -3043,9 +3019,7 @@ sub ValidateStatus {
     return 0;
 }
 
-# }}}
 
-# {{{ sub SetStatus
 
 =head2 SetStatus STATUS
 
@@ -3125,9 +3099,7 @@ sub SetStatus {
     return ($val, $msg);
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -3142,9 +3114,7 @@ sub Delete {
     # TODO: garbage collection
 }
 
-# }}}
 
-# {{{ sub Stall
 
 =head2 Stall
 
@@ -3157,9 +3127,7 @@ sub Stall {
     return ( $self->SetStatus('stalled') );
 }
 
-# }}}
 
-# {{{ sub Reject
 
 =head2 Reject
 
@@ -3172,9 +3140,7 @@ sub Reject {
     return ( $self->SetStatus('rejected') );
 }
 
-# }}}
 
-# {{{ sub Open
 
 =head2 Open
 
@@ -3187,9 +3153,7 @@ sub Open {
     return ( $self->SetStatus('open') );
 }
 
-# }}}
 
-# {{{ sub Resolve
 
 =head2 Resolve
 
@@ -3202,14 +3166,10 @@ sub Resolve {
     return ( $self->SetStatus('resolved') );
 }
 
-# }}}
 
-# }}}
 
     
-# {{{ Actions + Routines dealing with transactions
 
-# {{{ sub SetTold and _SetTold
 
 =head2 SetTold ISO  [TIMETAKEN]
 
@@ -3283,7 +3243,6 @@ sub SeenUpTo {
     return $txns->First;
 }
 
-# }}}
 
 =head2 TransactionBatch
 
@@ -3356,17 +3315,25 @@ sub DESTROY {
     # when an object's refcount is changed in its destructor.
     return if $self->{_Destroyed}++;
 
+    if (in_global_destruction()) {
+       unless ($ENV{'HARNESS_ACTIVE'}) {
+            warn "Too late to safely run transaction-batch scrips!"
+                ." This is typically caused by using ticket objects"
+                ." at the top-level of a script which uses the RT API."
+               ." Be sure to explicitly undef such ticket objects,"
+                ." or put them inside of a lexical scope.";
+        }
+        return;
+    }
+
     my $batch = $self->TransactionBatch;
     return unless $batch && @$batch;
 
     return $self->_ApplyTransactionBatch;
 }
 
-# }}}
 
-# {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
-# {{{ sub _OverlayAccessible
 
 sub _OverlayAccessible {
     {
@@ -3396,9 +3363,7 @@ sub _OverlayAccessible {
 
 }
 
-# }}}
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
@@ -3457,9 +3422,7 @@ sub _Set {
     }
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -3490,9 +3453,7 @@ sub _Value {
 
 }
 
-# }}}
 
-# {{{ sub _UpdateTimeTaken
 
 =head2 _UpdateTimeTaken
 
@@ -3516,13 +3477,9 @@ sub _UpdateTimeTaken {
     return ($Total);
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub CurrentUserHasRight 
 
 =head2 CurrentUserHasRight
 
@@ -3541,9 +3498,7 @@ sub CurrentUserHasRight {
     )
 }
 
-# }}}
 
-# {{{ sub HasRight 
 
 =head2 HasRight
 
@@ -3578,9 +3533,7 @@ sub HasRight {
     );
 }
 
-# }}}
 
-# }}}
 
 =head2 Reminders
 
@@ -3602,7 +3555,6 @@ sub Reminders {
 
 
 
-# {{{ sub Transactions 
 
 =head2 Transactions
 
@@ -3648,10 +3600,8 @@ sub Transactions {
     return ($transactions);
 }
 
-# }}}
 
 
-# {{{ TransactionCustomFields
 
 =head2 TransactionCustomFields
 
@@ -3664,9 +3614,7 @@ sub TransactionCustomFields {
     return $self->QueueObj->TicketTransactionCustomFields;
 }
 
-# }}}
 
-# {{{ sub CustomFieldValues
 
 =head2 CustomFieldValues
 
@@ -3696,9 +3644,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues( $cf->id );
 }
 
-# }}}
 
-# {{{ sub CustomFieldLookupType
 
 =head2 CustomFieldLookupType
 
@@ -3707,7 +3653,6 @@ RT::CustomField->Create() via the 'LookupType' hash key.
 
 =cut
 
-# }}}
 
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket";

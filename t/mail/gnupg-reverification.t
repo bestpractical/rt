@@ -2,13 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 214;
-
+use RT::Test tests => undef;
 plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
+    unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-
+plan tests => 214;
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
@@ -81,8 +80,8 @@ foreach my $file ( @files ) {
     is $ticket->Subject, "Test Email ID:$eid", "$eid: correct subject";
 
     $m->goto_ticket( $id );
-    $m->content_like(
-        qr/Not possible to check the signature, the reason is missing public key/is,
+    $m->content_contains(
+        "Not possible to check the signature, the reason is missing public key",
         "$eid: signature is not verified",
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
@@ -106,8 +105,8 @@ foreach my $id ( @ticket_ids ) {
     diag "testing ticket #$id";
 
     $m->goto_ticket( $id );
-    $m->content_like(
-        qr/The signature is good/is,
+    $m->content_contains(
+        "The signature is good",
         "signature is re-verified and now good",
     );
 

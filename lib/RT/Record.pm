@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -75,7 +75,6 @@ our $_TABLE_ATTR = { };
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
 
-# {{{ sub _Init 
 
 sub _Init {
     my $self = shift;
@@ -83,7 +82,6 @@ sub _Init {
     $self->CurrentUser(@_);
 }
 
-# }}}
 
 
 =head2 _PrimaryKeys
@@ -106,7 +104,7 @@ C<id> is an alias to C<Id> and is the preferred way to call this method.
 =cut
 
 sub Id {
-    return shift->{values}->{id};
+    return shift->{'values'}->{id};
 }
 
 *id = \&Id;
@@ -247,12 +245,9 @@ sub FirstAttribute {
 }
 
 
-# {{{ sub _Handle 
 sub _Handle { return $RT::Handle }
 
-# }}}
 
-# {{{ sub Create 
 
 =head2  Create PARAMHASH
 
@@ -344,9 +339,7 @@ sub Create {
 
 }
 
-# }}}
 
-# {{{ sub LoadByCols
 
 =head2 LoadByCols
 
@@ -382,13 +375,10 @@ sub LoadByCols {
     return $self->SUPER::LoadByCols( %hash );
 }
 
-# }}}
 
-# {{{ Datehandling
 
 # There is room for optimizations in most of those subs:
 
-# {{{ LastUpdatedObj
 
 sub LastUpdatedObj {
     my $self = shift;
@@ -398,9 +388,7 @@ sub LastUpdatedObj {
     return $obj;
 }
 
-# }}}
 
-# {{{ CreatedObj
 
 sub CreatedObj {
     my $self = shift;
@@ -411,9 +399,7 @@ sub CreatedObj {
     return $obj;
 }
 
-# }}}
 
-# {{{ AgeAsString
 #
 # TODO: This should be deprecated
 #
@@ -422,9 +408,7 @@ sub AgeAsString {
     return ( $self->CreatedObj->AgeAsString() );
 }
 
-# }}}
 
-# {{{ LastUpdatedAsString
 
 # TODO this should be deprecated
 
@@ -439,9 +423,7 @@ sub LastUpdatedAsString {
     }
 }
 
-# }}}
 
-# {{{ CreatedAsString
 #
 # TODO This should be deprecated 
 #
@@ -450,9 +432,7 @@ sub CreatedAsString {
     return ( $self->CreatedObj->AsString() );
 }
 
-# }}}
 
-# {{{ LongSinceUpdateAsString
 #
 # TODO This should be deprecated
 #
@@ -468,11 +448,8 @@ sub LongSinceUpdateAsString {
     }
 }
 
-# }}}
 
-# }}} Datehandling
 
-# {{{ sub _Set 
 #
 sub _Set {
     my $self = shift;
@@ -520,9 +497,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _SetLastUpdated
 
 =head2 _SetLastUpdated
 
@@ -551,9 +526,7 @@ sub _SetLastUpdated {
     }
 }
 
-# }}}
 
-# {{{ sub CreatorObj 
 
 =head2 CreatorObj
 
@@ -571,9 +544,7 @@ sub CreatorObj {
     return ( $self->{'CreatorObj'} );
 }
 
-# }}}
 
-# {{{ sub LastUpdatedByObj
 
 =head2 LastUpdatedByObj
 
@@ -590,9 +561,7 @@ sub LastUpdatedByObj {
     return $self->{'LastUpdatedByObj'};
 }
 
-# }}}
 
-# {{{ sub URI 
 
 =head2 URI
 
@@ -606,7 +575,6 @@ sub URI {
     return($uri->URIForObject($self));
 }
 
-# }}}
 
 =head2 ValidateName NAME
 
@@ -644,19 +612,22 @@ sub SQLType {
 sub __Value {
     my $self  = shift;
     my $field = shift;
-    my %args = ( decode_utf8 => 1, @_ );
+    my %args  = ( decode_utf8 => 1, @_ );
 
-    unless ( $field ) {
+    unless ($field) {
         $RT::Logger->error("__Value called with undef field");
     }
 
-    my $value = $self->SUPER::__Value( $field );
-    if( $args{'decode_utf8'} ) {
-        return Encode::decode_utf8( $value ) unless Encode::is_utf8( $value );
-    } else {
-        return Encode::encode_utf8( $value ) if Encode::is_utf8( $value );
+    my $value = $self->SUPER::__Value($field);
+
+    if ( $args{'decode_utf8'} && !utf8::is_utf8($value) ) {
+        utf8::decode($value);
+    } elsif ( utf8::is_utf8($value) ) {
+        utf8::encode($value);
     }
+
     return $value;
+
 }
 
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
@@ -972,11 +943,8 @@ sub _UpdateAttributes {
     return @results;
 }
 
-# {{{ Routines dealing with Links
 
-# {{{ Link Collections
 
-# {{{ sub Members
 
 =head2 Members
 
@@ -990,9 +958,7 @@ sub Members {
     return ( $self->_Links( 'Target', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ sub MemberOf
 
 =head2 MemberOf
 
@@ -1006,9 +972,7 @@ sub MemberOf {
     return ( $self->_Links( 'Base', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ RefersTo
 
 =head2 RefersTo
 
@@ -1021,9 +985,7 @@ sub RefersTo {
     return ( $self->_Links( 'Base', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ ReferredToBy
 
 =head2 ReferredToBy
 
@@ -1036,9 +998,7 @@ sub ReferredToBy {
     return ( $self->_Links( 'Target', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ DependedOnBy
 
 =head2 DependedOnBy
 
@@ -1051,7 +1011,6 @@ sub DependedOnBy {
     return ( $self->_Links( 'Target', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
@@ -1091,7 +1050,6 @@ sub HasUnresolvedDependencies {
 }
 
 
-# {{{ UnresolvedDependencies 
 
 =head2 UnresolvedDependencies
 
@@ -1116,9 +1074,7 @@ sub UnresolvedDependencies {
 
 }
 
-# }}}
 
-# {{{ AllDependedOnBy
 
 =head2 AllDependedOnBy
 
@@ -1191,9 +1147,7 @@ sub _AllLinkedTickets {
     }
 }
 
-# }}}
 
-# {{{ DependsOn
 
 =head2 DependsOn
 
@@ -1206,12 +1160,10 @@ sub DependsOn {
     return ( $self->_Links( 'Base', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
 
-# {{{ sub _Links 
 
 =head2 Links DIRECTION [TYPE]
 
@@ -1247,11 +1199,8 @@ sub _Links {
     return ( $self->{"$field$type"} );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub FormatType
 
 =head2 FormatType
 
@@ -1270,9 +1219,7 @@ sub FormatType{
 }
 
 
-# }}}
 
-# {{{ sub FormatLink
 
 =head2 FormatLink
 
@@ -1293,9 +1240,7 @@ sub FormatLink {
     return $text;
 }
 
-# }}}
 
-# {{{ sub _AddLink
 
 =head2 _AddLink
 
@@ -1337,7 +1282,7 @@ sub _AddLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    # {{{ Check if the link already exists - we don't want duplicates
+    # Check if the link already exists - we don't want duplicates
     use RT::Link;
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},
@@ -1372,9 +1317,7 @@ sub _AddLink {
     return ( $linkid, $TransString ) ;
 }
 
-# }}}
 
-# {{{ sub _DeleteLink 
 
 =head2 _DeleteLink
 
@@ -1444,13 +1387,9 @@ sub _DeleteLink {
     }
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with transactions
 
-# {{{ sub _NewTransaction
 
 =head2 _NewTransaction  PARAMHASH
 
@@ -1524,9 +1463,7 @@ sub _NewTransaction {
     return ( $transaction, $msg, $trans );
 }
 
-# }}}
 
-# {{{ sub Transactions 
 
 =head2 Transactions
 
@@ -1553,10 +1490,7 @@ sub Transactions {
     return ($transactions);
 }
 
-# }}}
-# }}}
 #
-# {{{ Routines dealing with custom fields
 
 sub CustomFields {
     my $self = shift;
@@ -1601,7 +1535,6 @@ sub CustomFieldLookupType {
     return ref($self);
 }
 
-# {{{ AddCustomFieldValue
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1810,9 +1743,7 @@ sub _AddCustomFieldValue {
     }
 }
 
-# }}}
 
-# {{{ DeleteCustomFieldValue
 
 =head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1877,9 +1808,7 @@ sub DeleteCustomFieldValue {
     );
 }
 
-# }}}
 
-# {{{ FirstCustomFieldValue
 
 =head2 FirstCustomFieldValue FIELD
 
@@ -1921,7 +1850,6 @@ sub CustomFieldValuesAsString {
 }
 
 
-# {{{ CustomFieldValues
 
 =head2 CustomFieldValues FIELD
 

@@ -7,7 +7,6 @@ use RT::Test nodata => 1, tests => 38;
 
 {
 
-# {{{ Tests
 ok (require RT::Group);
 
 ok (my $group = RT::Group->new($RT::SystemUser), "instantiated a group object");
@@ -81,7 +80,6 @@ is($group_2->HasMemberRecursively($principal_2), undef, "group 2 doesn't have me
 is($ng->HasMember($principal_2), undef, "group 1 doesn't have member 2");
 is($group_3->HasMemberRecursively($principal_2), undef, "group 3 has member 2 recursively");
 
-# }}}
 
 
 }

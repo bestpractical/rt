@@ -1,0 +1,462 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+body {
+    font-family: helvetica, arial, sans-serif;
+    background-color: #ccf;
+    margin: 0;
+}
+
+h1 { 
+    font-size: 1.2em;
+    padding-top: 0.5em;
+    padding-left: 0.2em;
+    display: block; 
+    background-color: #fff;
+
+}
+
+div.buttons {
+    text-align: right;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.titlebox-title {
+    font-size: 1.1em;
+    margin-left: 0.5em;
+    margin-top: -1.2em;
+    top: -0.5em;
+    padding: 0.5em;
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    background-color: #fff;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -webkit-box-shadow: #333 0px 0px 5px;
+    -moz-box-shadow: #333 0px 0px 5px;
+    box-shadow: #333 0px 0px 5px;
+}
+
+ul.menu
+{
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin: -0.6em;
+    left: 0;
+}
+
+ul.menu li
+{
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+ul.ticketlist li:active, ul.ticketlist li:hover,
+ul.menu li:active, ul.menu li:hover {
+    background-color: #eee;
+}
+
+
+ul.menu li
+{
+    display: block;
+    padding: 1em;
+    margin: 0;
+    border:0;
+    border-top-width: 1px;
+    border-top-color: #666;
+    border-style: solid;
+    text-decoration: none;
+}
+
+ul.menu li:first-child{
+    border: none;
+}
+
+ul.menu li#active a
+{
+    color: #800000;
+}
+
+div.titlebox, #bpscredits, .ticket_menu{
+    -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
+    margin: 0.5em;
+    background-color: #fff;
+    padding-top: 1em;
+    padding-bottom: 0.8em;
+    margin-top: 1.25em;
+    -webkit-box-shadow: #333 0px 0px 5px;
+    -moz-box-shadow: #333 0px 0px 5px;
+    box-shadow: #333 0px 0px 5px;
+    margin-bottom: 1em;
+}
+
+div .titlebox-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+hr.clear {
+    display: none;
+}
+
+
+.label, .labeltop {
+    font-weight: normal;
+}
+.value { 
+    font-weight: bold;
+    display:inline-block;
+}
+
+ul.ticketlist {
+    list-style: none;
+    padding-left: -0.5em;
+    padding-right: -0.5em; /* to counteract the titlebox and get shading to the end*/
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+    padding: 0em;
+    padding-bottom: 1em;
+}
+
+ul.ticketlist li.ticket {
+    padding: 0.5em;
+    font-weight: bold;
+    border-bottom: 1px solid #999;
+    
+}
+ul.ticketlist li.ticket:first-child {
+    border-top: 1px solid #999;
+}
+
+ul.ticketlist li.ticket a.ticket{
+    display: inline-block;
+    font-size: 1em;
+    width: 100%;
+    padding: 0.5em;
+    padding-bottom: 5em;
+    margin-bottom: -5em;
+}
+ul.ticketlist li.ticket div.metadata {
+}
+
+
+ul.ticketlist li.ticket div.metadata div {
+    padding: 0.2em;
+    font-size:0.8em;
+    display: block;
+}
+
+ul.ticketlist li.ticket div.metadata .label {
+    display: inline-block;
+    width: 6em;
+    font-size: 0.8em;
+    text-align: right;
+    color: #666;
+}
+
+div#paging {
+    text-align: center;
+}
+
+.ticket-reply .titlebox-title, .titlebox.search .titlebox-title, .titlebox.menu .titlebox-title, .ticket_menu .titlebox-title, .history .titlebox-title, #ticket-create-basics .titlebox-title{
+    display: none;
+}
+
+a {
+    color: #000;
+}
+
+.ticket_menu a, .menu a {
+    text-decoration: none;
+}
+
+ul.menu a {
+    padding: 0.5em;
+    margin-top: -0.5em;
+    margin-bottom: -0.5em;
+    display: inline-block;
+    width: 100%;
+}
+
+ul.menu a:after {
+    color: #666;
+    float: right;
+    content: ">";
+    font-size: 1.5em;
+    padding: 0;
+    margin: 0;
+    padding-right: 1em;
+
+}
+
+ul.menu form {
+    display: inline;
+}
+
+ul.menu form * {
+    display: inline;
+}
+
+
+ul.menu form input[type=text] { 
+    width: 7em;
+}
+
+ul.menu form input{ 
+
+    width: auto;
+    padding: 0.5em;
+    margin: -0.5em;
+    margin-left: 1em;
+}
+
+.ticket_menu {
+    text-align: center;
+}
+
+.ticket_menu ul {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.ticket_menu ul li {
+
+    display: inline-block;
+    text-align: center;
+    padding-bottom: 0.25em;
+    padding-top: 0.25em;
+    font-size: 1em;
+    width: 28%;
+    padding-right: 0.3em;
+    padding-left: 0.2em;
+    border-right: 1px solid #000;
+}
+.ticket_menu ul li:last-child {
+    padding-right: 0;
+    border-right: 0; 
+}
+
+.ticket-info-reminders table {
+
+    width: 100%;
+}
+
+#ticket-create .label:after {
+   content: ": "; 
+    padding-right: 0.25em;
+
+}
+
+#ticket-create .content-label {
+    width: auto;
+    display: block;
+    text-align: left;
+    
+}
+
+#ticket-show .label, .login-body .label {
+    display: inline-block;
+    text-align: right;
+    width: 6em;
+    padding-right: 0.25em;
+    font-size: 0.8em;
+}
+
+.login-body .value {
+    width: auto;
+}
+
+.history ul.history-list {
+    padding: 0;
+    margin: 0;
+    padding-bottom: 2em;
+}
+
+
+.history ul.history-list li:first-child {
+    border-top: 1px solid #ccc;
+}
+
+.history ul.history-list li {
+    list-style: none;
+    border-bottom: 1px solid #ccc;
+    padding: 0.5em;
+}
+
+.history .age {
+    display: inline-block;
+    min-width: 8em;
+    text-align: right;
+
+}
+
+div#login-box div.titlebox {
+    width: 100%;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+div#login-box input[type=text], div#login-box input[type=password] {
+    width: 100%;
+}
+
+#bpscredits img {
+    padding-bottom: 1em;
+}
+
+
+
+#bpscredits {
+    float: right;
+    text-align: right;
+    width: auto;
+    font-size: 0.8em;
+    padding: 1em;
+}
+
+
+:focus {
+    background-color: #ffc;
+    border-color: #000;
+    border-weight: 3px;
+}
+
+input[type=submit], input[type=button], button, #paging a {
+    border: 2px outset;
+    margin: 0.3em;
+    padding: 0.3em;
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    background-color: #006699;
+    color: #fff;
+}
+
+form { 
+
+    margin:0;
+}
+
+#gohome {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    -moz-border-radius-bottomleft: 1em;
+    -webkit-border-bottom-left-radius: 1em;
+    padding: 0.5em;
+    background-color: #fff;
+}
+
+#gohome a {
+    font-size: 1em;
+    padding: 0.25em;
+    color: #000;
+}
+
+div.txn-content {
+    
+    font-size:0.8em;
+    padding-left:1em;
+    padding-top:0.5em;
+    margin-top: 0.5em;
+    margin-left: 2em;
+    padding-bottom: 0.5em;
+    border-left: 5px solid #00c;
+
+}
+
+.label {
+    text-align: left;
+    width: 10em;
+    color: #666;
+    display: block;
+    padding-bottom: 0.2em;
+    padding-right: 0.2em;
+    
+}
+
+div.entry, tr.input-row {
+    margin-bottom: 0.25em;
+    padding-bottom: 0.25em;
+    border-bottom: 1px solid #ccc;
+    display: block;
+    width: 100%;
+    min-height: 1em;
+}
+
+
+input, input[type=text], input[type=password], select {
+    width: 100%;
+}
+
+.timefield input {
+    width: 5em;
+}
+
+.timefield select {
+    width: auto;
+}
+
+
+textarea {
+    width: 100%;
+}
+
+a#fullsite {
+    padding-left: 1em;
+}

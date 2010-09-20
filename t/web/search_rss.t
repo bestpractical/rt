@@ -3,7 +3,7 @@
 use strict;
 
 use RT::Test tests => 36;
-RT::Test->started_ok;
+my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 for ( 1 .. 5 ) {
@@ -15,7 +15,6 @@ for ( 1 .. 5 ) {
     );
 }
 
-my $agent = RT::Test::Web->new;
 ok $agent->login('root', 'password'), 'logged in as root';
 
 $agent->get_ok('/Search/Build.html');
@@ -64,7 +63,7 @@ my $user_b = RT::Test->load_or_create_user(
     Name => 'user_b', Password => 'password',
 );
 ok $user_b && $user_b->id, 'loaded or created user';
-$agent_b->login('user_b', 'password', 'logged in as user B');
+$agent_b->login('user_b', 'password');
 $agent_b->get_ok($noauth_uri);
 is( $agent_b->content_type, 'application/rss+xml', 'content type' );
 is( $agent_b->content, $rss_content, 'content' );

@@ -164,9 +164,7 @@ CREATE TABLE ACL (
   PrincipalId INTEGER,
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
-  DelegatedBy integer NOT NULL default 0, 
-  DelegatedFrom integer NOT NULL default 0
+  ObjectId INTEGER default 0
   
 ) ;
 
@@ -333,7 +331,6 @@ CREATE TABLE Templates (
 
 
 
-# {{{ ObjectCustomFieldValues 
 
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  ,
@@ -358,9 +355,7 @@ CREATE TABLE ObjectCustomFieldValues (
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
-# }}}
 
-# {{{ CustomFields
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
@@ -381,9 +376,7 @@ CREATE TABLE CustomFields (
   PRIMARY KEY (id)
 ) ;
 
-# }}}
 
-# {{{ ObjectCustomFields 
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  ,
@@ -398,9 +391,7 @@ CREATE TABLE ObjectCustomFields (
   PRIMARY KEY (id)
 ) ;
 
-# }}}
 
-# {{{ CustomFieldValues 
 
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  ,
@@ -418,7 +409,6 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
  
-# }}}
 
 --- {{{ Attributes
 CREATE TABLE Attributes (

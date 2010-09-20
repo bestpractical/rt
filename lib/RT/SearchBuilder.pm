@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -119,96 +119,6 @@ Find all matching rows, regardless of whether they are disabled or not
 
 sub FindAllRows {
     shift->{'find_disabled_rows'} = 1;
-}
-
-=head2 LimitAttribute PARAMHASH
-
-Takes NAME, OPERATOR and VALUE to find records that has the
-matching Attribute.
-
-If EMPTY is set, also select rows with an empty string as
-Attribute's Content.
-
-If NULL is set, also select rows without the named Attribute.
-
-=cut
-
-my %Negate = (
-    '='        => '!=',
-    '!='       => '=',
-    '>'        => '<=',
-    '<'        => '>=',
-    '>='       => '<',
-    '<='       => '>',
-    'LIKE'     => 'NOT LIKE',
-    'NOT LIKE' => 'LIKE',
-    'IS'       => 'IS NOT',
-    'IS NOT'   => 'IS',
-);
-
-sub LimitAttribute {
-    my ($self, %args) = @_;
-    my $clause = 'ALIAS';
-    my $operator = ($args{OPERATOR} || '=');
-    
-    if ($args{NULL} and exists $args{VALUE}) {
-	$clause = 'LEFTJOIN';
-	$operator = $Negate{$operator};
-    }
-    elsif ($args{NEGATE}) {
-	$operator = $Negate{$operator};
-    }
-    
-    my $alias = $self->Join(
-	TYPE   => 'left',
-	ALIAS1 => $args{ALIAS} || 'main',
-	FIELD1 => 'id',
-	TABLE2 => 'Attributes',
-	FIELD2 => 'ObjectId'
-    );
-
-    my $type = ref($self);
-    $type =~ s/(?:s|Collection)$//; # XXX - Hack!
-
-    $self->Limit(
-	$clause	   => $alias,
-	FIELD      => 'ObjectType',
-	OPERATOR   => '=',
-	VALUE      => $type,
-    );
-    $self->Limit(
-	$clause	   => $alias,
-	FIELD      => 'Name',
-	OPERATOR   => '=',
-	VALUE      => $args{NAME},
-    ) if exists $args{NAME};
-
-    return unless exists $args{VALUE};
-
-    $self->Limit(
-	$clause	   => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => $operator,
-	VALUE      => $args{VALUE},
-    );
-
-    # Capture rows with the attribute defined as an empty string.
-    $self->Limit(
-	$clause    => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => '=',
-	VALUE      => '',
-	ENTRYAGGREGATOR => $args{NULL} ? 'AND' : 'OR',
-    ) if $args{EMPTY};
-
-    # Capture rows without the attribute defined
-    $self->Limit(
-	%args,
-	ALIAS      => $alias,
-	FIELD	   => 'id',
-	OPERATOR   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
-	VALUE      => 'NULL',
-    ) if $args{NULL};
 }
 
 =head2 LimitCustomField

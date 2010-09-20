@@ -1,0 +1,215 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<&|/m/_elements/wrapper, title => loc('Update ticket #[_1]', $t->id) &>
+<& /m/_elements/ticket_menu, ticket => $t &>
+<& /Elements/ListActions, actions => \@results &>
+<div class="ticket-reply">
+<&|/Widgets/TitleBox &>
+<form action="reply" id="update"
+    method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
+<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+
+<div class="entry"><span class="label"><&|/l&>Status</&>:</span>
+<div class="value">
+<& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($t->Status)), Default => $ARGS{'Status'} || ($t->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+</div></div>
+
+<div class="entry"><span class="label"><&|/l&>Owner</&>:</span>
+<div class="value">
+<& /Elements/SelectOwner,
+    Name         => "Owner",
+    TicketObj    => $t,
+    QueueObj     => $t->QueueObj,
+    DefaultLabel => loc("[_1] (Unchanged)", $t->OwnerObj->Name),
+    Default      => $ARGS{'Owner'}
+&>
+</div></div>
+<div class="entry timefield"><span class="label"><&|/l&>Worked</&>:</span><span class="value">
+<& /Elements/EditTimeValue,
+    Name => 'UpdateTimeWorked',
+    Default => $ARGS{UpdateTimeWorked}||'',
+    InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
+&>
+</span></div>
+<input type="hidden" class="hidden" name="id" value="<%$t->Id%>" /><br />
+<div class="entry"><span class="label"><&|/l&>Update Type</&>:</span>
+<div class="value"><select name="UpdateType">
+% if ($CanComment) {
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
+% }
+% if ($CanRespond) {
+<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$ResponseDefault |n %>><&|/l&>Reply to requestors</&></option>
+% }
+</select> 
+</div></div>
+<div class="entry"><span class="label"><&|/l&>Subject</&>:</span><div class="value"> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $t->Subject()%>" />
+% $m->callback( %ARGS, CallbackName => 'AfterSubject' );
+</div></div>
+
+<div class="entry"><span class="label"><&|/l&>One-time Cc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateCc', Size => '60', Default => $ARGS{UpdateCc} &></span></div>
+
+<div class="entry"><span class="label"><&|/l&>One-time Bcc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &></span></div>
+
+<div class="entry"><span class="label" ><&|/l&>Message</&>:</span><div class="value">
+% if (exists $ARGS{UpdateContent}) {
+% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
+% my $temp = $ARGS{'QuoteTransaction'};
+% delete $ARGS{'QuoteTransaction'};
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+% $ARGS{'QuoteTransaction'} = $temp;
+% } else {
+% my $IncludeSignature = 1;
+% $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
+<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
+% }
+</div></div>
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
+</form>
+</&>
+</div>
+</&>
+<%INIT>
+my $CanRespond = 0;
+my $CanComment = 0;
+my $checks_failure = 0;
+my $title;
+
+my $t = LoadTicket($id);
+
+my @results;
+
+$m->callback( Ticket => $t, ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
+
+unless($DefaultStatus){
+    $DefaultStatus=($ARGS{'Status'} ||$t->Status());
+}
+
+if ($DefaultStatus eq 'new'){
+    $DefaultStatus='open';
+}
+
+if ($DefaultStatus eq 'resolved') {
+    $title = loc("Resolve ticket #[_1] ([_2])", $t->id, $t->Subject);
+} else {
+    $title = loc("Update ticket #[_1] ([_2])", $t->id, $t->Subject);
+}
+
+# Things needed in the template - we'll do the processing here, just
+# for the convenience:
+
+my ($CommentDefault, $ResponseDefault);
+if ($Action ne 'Respond') {
+    $CommentDefault = qq[ selected="selected"]; 
+    $ResponseDefault = "";
+} else {
+    $CommentDefault = ""; 
+    $ResponseDefault = qq[ selected="selected"];
+}
+
+
+
+$CanRespond = 1 if ( $t->CurrentUserHasRight('ReplyToTicket') or
+                     $t->CurrentUserHasRight('ModifyTicket') ); 
+
+$CanComment = 1 if ( $t->CurrentUserHasRight('CommentOnTicket') or
+                     $t->CurrentUserHasRight('ModifyTicket') ); 
+
+
+# deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+        delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+
+# store the uploaded attachment in session
+if ($ARGS{'Attach'}) {            # attachment?
+    my $attachment = MakeMIMEEntity(
+        AttachmentFieldName => 'Attach'
+    );
+
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+        $file_path => $attachment,
+    };
+}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+
+# check email addresses for RT's
+{
+    foreach my $field ( qw(UpdateCc UpdateBcc) ) {
+        my $value = $ARGS{ $field };
+        next unless defined $value && length $value;
+
+        my @emails = Email::Address->parse( $value );
+        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
+            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
+            $checks_failure = 1;
+            $email = undef;
+        }
+        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+    }
+}
+
+if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+    return $m->comp('/m/ticket/show', TicketObj => $t, %ARGS);
+}
+</%INIT>
+
+<%ARGS>
+$id => undef
+$Action => undef
+$DefaultStatus => undef
+</%ARGS>

@@ -25,7 +25,6 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
 
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
-# }}}
 
 ok $m->login(customer => 'customer'), "logged in";
 

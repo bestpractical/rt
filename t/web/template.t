@@ -9,13 +9,12 @@ my $user_a = RT::Test->load_or_create_user(
 );
 ok $user_a && $user_a->id, 'loaded or created user';
 
-RT::Test->started_ok;
+my ($baseurl, $m) = RT::Test->started_ok;
 
 ok( RT::Test->set_rights(
     { Principal => $user_a, Right => [qw(ShowConfigTab ShowTemplate ModifyTemplate)] },
 ), 'set rights');
 
-my $m = RT::Test::Web->new;
 ok $m->login('user_a', 'password'), 'logged in as user A';
 
 # get to the templates screen

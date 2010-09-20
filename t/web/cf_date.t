@@ -28,7 +28,7 @@ diag "Create a CF";
             LookupType    => 'RT::Queue-RT::Ticket',
         },
     );
-    $m->content_like( qr/Object created/, 'created CF sucessfully' );
+    $m->content_contains('Object created', 'created CF sucessfully' );
     $cfid = $m->form_name('ModifyCustomField')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
@@ -51,7 +51,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->tick( "AddCustomField" => $cfid );
     $m->click('UpdateCFs');
 
-    $m->content_like( qr/Object created/, 'TCF added to the queue' );
+    $m->content_contains('Object created', 'TCF added to the queue' );
 }
 
 diag 'check valid inputs with various timezones in ticket create page';
@@ -62,7 +62,7 @@ diag 'check valid inputs with various timezones in ticket create page';
         form_name => "CreateTicketInQueue",
         fields    => { Queue => 'General' },
     );
-    $m->content_like( qr/Select date/, 'has cf field' );
+    $m->content_contains('Select date', 'has cf field' );
 
     $m->submit_form(
         form_name => "TicketCreate",
@@ -79,8 +79,8 @@ diag 'check valid inputs with various timezones in ticket create page';
     is( $ticket->CustomFieldValues($cfid)->First->Content,
         '2010-05-04', 'date in db' );
 
-    $m->content_like( qr/test cf date:/, 'has no cf date field on the page' );
-    $m->content_like( qr/Tue May 04 2010/,
+    $m->content_contains('test cf date:', 'has no cf date field on the page' );
+    $m->content_contains('Tue May 04 2010',
         'has cf date value on the page' );
 }
 
@@ -186,6 +186,6 @@ diag 'check invalid inputs';
     $m->content_like( qr/Ticket \d+ created/,
         "a ticket is created succesfully" );
 
-    $m->content_like( qr/test cf date:/, 'has no cf date field on the page' );
-    $m->content_unlike( qr/foodate/, 'invalid dates not set' );
+    $m->content_contains('test cf date:', 'has no cf date field on the page' );
+    $m->content_lacks('foodate', 'invalid dates not set' );
 }

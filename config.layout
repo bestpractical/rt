@@ -28,6 +28,7 @@
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
+  lexdir:		${datadir}/po
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -50,6 +51,7 @@
   libdir:		${prefix}/lib
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
+  lexdir:		${datadir}/po
   fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
@@ -76,6 +78,7 @@
 # FIXME: no such directory in FHS; shouldn't go to somewhere in "${datadir}/rt/"?
   plugindir:		${datadir}/plugins
   htmldir:		${datadir}/html
+  lexdir:		${datadir}/po
   fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	/var
@@ -101,6 +104,7 @@
   libdir:		${prefix}/lib+
   datadir:		${prefix}/share+
   htmldir:		${datadir}/html
+  lexdir:		${datadir}/po
   fontdir:		${datadir}/fonts
   manualdir:		${prefix}/share/doc+
   logfiledir:		/var/log
@@ -126,6 +130,7 @@
   datadir:		${prefix}
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
+  lexdir:		${datadir}/po
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -150,6 +155,7 @@
   datadir:		/var/rt
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
+  lexdir:		${datadir}/po
   manualdir:		${datadir}/doc
   plugindir:		${datadir}/plugins
   localstatedir:	/var
@@ -175,6 +181,7 @@
   datadir:		share
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
+  lexdir:		${datadir}/po
   manualdir:	${datadir}/doc
   localstatedir:	var
   logfiledir:		${localstatedir}/log

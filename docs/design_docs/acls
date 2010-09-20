@@ -4,7 +4,6 @@ Does principal baz have right foo for object bar
 
 What rights does user baz have for object bar
 
-# {{{ Which principals have right foo for object bar
 
 
 if ($args{'ObjectType'} eq 'Ticket') {
@@ -44,7 +43,6 @@ my $query = "SELECT Users.*  from ACL, Groups, Users, Principals, Principals Use
            $or_check_roles
         )";
 
-# }}}
 
 What objects does principal baz have right foo for
 ;

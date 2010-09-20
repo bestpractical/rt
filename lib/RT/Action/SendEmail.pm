@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
@@ -864,35 +864,66 @@ sub SetReturnAddress {
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        if ( RT->Config->Get('UseFriendlyFromLine') ) {
-            my $friendly_name = $args{friendly_name};
-
-            unless ( $friendly_name ) {
-                $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
-                if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-                    $friendly_name = $1;
-                }
-            }
-
-            $friendly_name =~ s/"/\\"/g;
-            $self->SetHeader(
-                'From',
-                sprintf(
-                    RT->Config->Get('FriendlyFromLineFormat'),
-                    $self->MIMEEncodeString(
-                        $friendly_name, RT->Config->Get('EmailOutputEncoding')
-                    ),
-                    $replyto
-                ),
-            );
-        } else {
-            $self->SetHeader( 'From', $replyto );
-        }
+        $self->SetFrom( %args, From => $replyto );
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
         $self->SetHeader( 'Reply-To', "$replyto" );
     }
+
+}
+
+=head2 SetFrom ( From => emailaddress )
+
+Set the From: address for outgoing email
+
+=cut
+
+sub SetFrom {
+    my $self = shift;
+    my %args = @_;
+
+    if ( RT->Config->Get('UseFriendlyFromLine') ) {
+        my $friendly_name = $self->GetFriendlyName(%args);
+        $self->SetHeader(
+            'From',
+            sprintf(
+                RT->Config->Get('FriendlyFromLineFormat'),
+                $self->MIMEEncodeString(
+                    $friendly_name, RT->Config->Get('EmailOutputEncoding')
+                ),
+                $args{From}
+            ),
+        );
+    } else {
+        $self->SetHeader( 'From', $args{From} );
+    }
+}
+
+=head2 GetFriendlyName
+
+Calculate the proper Friendly Name based on the creator of the transaction
+
+=cut
+
+sub GetFriendlyName {
+    my $self = shift;
+    my %args = (
+        is_comment => 0,
+        friendly_name => '',
+        @_
+    );
+    my $friendly_name = $args{friendly_name};
+
+    unless ( $friendly_name ) {
+        $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
+        if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+            $friendly_name = $1;
+        }
+    }
+
+    $friendly_name =~ s/"/\\"/g;
+    return $friendly_name;
 
 }
 

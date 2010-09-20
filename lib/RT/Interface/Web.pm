@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 ## Portions Copyright 2000 Tobias Brox <tobix@fsck.com>
@@ -69,7 +69,6 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 
-# {{{ EscapeUTF8
 
 =head2 EscapeUTF8 SCALARREF
 
@@ -90,9 +89,7 @@ sub EscapeUTF8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-# }}}
 
-# {{{ EscapeURI
 
 =head2 EscapeURI SCALARREF
 
@@ -108,9 +105,7 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
-# }}}
 
-# {{{ WebCanonicalizeInfo
 
 =head2 WebCanonicalizeInfo();
 
@@ -124,9 +119,7 @@ sub WebCanonicalizeInfo {
     return $ENV{'REMOTE_USER'} ? lc $ENV{'REMOTE_USER'} : $ENV{'REMOTE_USER'};
 }
 
-# }}}
 
-# {{{ WebExternalAutoInfo
 
 =head2 WebExternalAutoInfo($user);
 
@@ -163,7 +156,6 @@ sub WebExternalAutoInfo {
     return {%user_info};
 }
 
-# }}}
 
 sub HandleRequest {
     my $ARGS = shift;
@@ -656,6 +648,21 @@ sub SendStaticFile {
     close $fh;
 }
 
+
+
+sub MobileClient {
+    my $self = shift;
+
+
+if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
+    return 1;
+} else {
+    return undef;
+}
+
+}
+
+
 sub StripContent {
     my %args    = @_;
     my $content = $args{Content};
@@ -793,7 +800,6 @@ package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
 
-# {{{ loc
 
 =head2 loc ARRAY
 
@@ -824,9 +830,7 @@ sub loc {
     }
 }
 
-# }}}
 
-# {{{ loc_fuzzy
 
 =head2 loc_fuzzy STRING
 
@@ -851,9 +855,7 @@ sub loc_fuzzy {
     }
 }
 
-# }}}
 
-# {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
     my $why  = shift;
@@ -871,9 +873,7 @@ sub Abort {
     }
 }
 
-# }}}
 
-# {{{ sub CreateTicket
 
 =head2 CreateTicket ARGS
 
@@ -1058,9 +1058,7 @@ sub CreateTicket {
 
 }
 
-# }}}
 
-# {{{ sub LoadTicket - loads a ticket
 
 =head2  LoadTicket id
 
@@ -1090,9 +1088,7 @@ sub LoadTicket {
     return $Ticket;
 }
 
-# }}}
 
-# {{{ sub ProcessUpdateMessage
 
 =head2 ProcessUpdateMessage
 
@@ -1257,9 +1253,7 @@ sub _ProcessUpdateMessageRecipients {
     }
 }
 
-# }}}
 
-# {{{ sub MakeMIMEEntity
 
 =head2 MakeMIMEEntity PARAMHASH
 
@@ -1339,9 +1333,7 @@ sub MakeMIMEEntity {
 
 }
 
-# }}}
 
-# {{{ sub ParseDateToISO
 
 =head2 ParseDateToISO
 
@@ -1361,9 +1353,7 @@ sub ParseDateToISO {
     return ( $date_obj->ISO );
 }
 
-# }}}
 
-# {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
     my $ARGSref = shift;
@@ -1414,9 +1404,135 @@ sub ProcessACLChanges {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub UpdateRecordObj
+=head2 ProcessACLs
+
+ProcessACLs expects values from a series of checkboxes that describe the full
+set of rights a principal should have on an object.
+
+It expects form inputs with names like SetRights-PrincipalId-ObjType-ObjId
+instead of with the prefixes Grant/RevokeRight.  Each input should be an array
+listing the rights the principal should have, and ProcessACLs will modify the
+current rights to match.  Additionally, the previously unused CheckACL input
+listing PrincipalId-ObjType-ObjId is now used to catch cases when all the
+rights are removed from a principal and as such no SetRights input is
+submitted.
+
+=cut
+
+sub ProcessACLs {
+    my $ARGSref = shift;
+    my (%state, @results);
+
+    #XXX: why don't we get ARGSref like in other Process* subs?
+
+    my $CheckACL = $ARGSref->{'CheckACL'};
+    my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
+
+    # Check if we want to grant rights to a previously rights-less user
+    for my $type (qw(user group)) {
+        my $key = "AddPrincipalForRights-$type";
+
+        next unless $ARGSref->{$key};
+
+        my $principal;
+        if ( $type eq 'user' ) {
+            $principal = RT::User->new( $session{'CurrentUser'} );
+            $principal->Load( $ARGSref->{$key} );
+        }
+        else {
+            $principal = RT::Group->new( $session{'CurrentUser'} );
+            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+        }
+
+        unless ($principal->PrincipalId) {
+            push @results, loc("Couldn't load the specified principal");
+            next;
+        }
+
+        my $principal_id = $principal->PrincipalId;
+
+        # Turn our addprincipal rights spec into a real one
+        for my $arg (keys %$ARGSref) {
+            next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
+            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
+            push @check, "$principal_id-$1";
+        }
+    }
+
+    # Build our rights state for each Principal-Object tuple
+    foreach my $arg ( keys %$ARGSref ) {
+        next unless $arg =~ /^SetRights-(\d+-.+?-\d+)$/;
+
+        my $tuple  = $1;
+        my $value  = $ARGSref->{$arg};
+        my @rights = grep { $_ } (ref $value eq 'ARRAY' ? @$value : $value);
+        next unless @rights;
+
+        $state{$tuple} = { map { $_ => 1 } @rights };
+    }
+
+    foreach my $tuple (@check) {
+        next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
+
+        my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
+
+        my $principal = RT::Principal->new( $session{'CurrentUser'} );
+        $principal->Load($principal_id);
+
+        my $obj;
+        if ( $object_type eq 'RT::System' ) {
+            $obj = $RT::System;
+        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+            $obj = $object_type->new( $session{'CurrentUser'} );
+            $obj->Load($object_id);
+            unless ( $obj->id ) {
+                $RT::Logger->error("couldn't load $object_type #$object_id");
+                next;
+            }
+        } else {
+            $RT::Logger->error("object type '$object_type' is incorrect");
+            push( @results, loc("System Error") . ': ' . loc( "Rights could not be granted for [_1]", $object_type ) );
+            next;
+        }
+
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $obj );
+        $acls->LimitToPrincipal( Id => $principal_id );
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+
+            # Has right and should have right
+            next if delete $state{$tuple}->{$right};
+
+            # Has right and shouldn't have right
+            my ($val, $msg) = $principal->RevokeRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # For everything left, they don't have the right but they should
+        for my $right (keys %{ $state{$tuple} || {} }) {
+            delete $state{$tuple}->{$right};
+            my ($val, $msg) = $principal->GrantRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # Check our state for leftovers
+        if ( keys %{ $state{$tuple} || {} } ) {
+            my $missed = join '|', %{$state{$tuple} || {}};
+            $RT::Logger->warn(
+               "Uh-oh, it looks like we somehow missed a right in "
+              ."ProcessACLs.  Here's what was leftover: $missed"
+            );
+        }
+    }
+
+    return (@results);
+}
+
+
+
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
 
@@ -1445,9 +1561,7 @@ sub UpdateRecordObject {
     return (@results);
 }
 
-# }}}
 
-# {{{ Sub ProcessCustomFieldUpdates
 
 sub ProcessCustomFieldUpdates {
     my %args = (
@@ -1500,9 +1614,7 @@ sub ProcessCustomFieldUpdates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketBasics
 
 =head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1523,7 +1635,7 @@ sub ProcessTicketBasics {
 
     my $OrigOwner = $TicketObj->Owner;
 
-    # {{{ Set basic fields
+    # Set basic fields
     my @attribs = qw(
         Subject
         FinalPriority
@@ -1576,7 +1688,6 @@ sub ProcessTicketBasics {
     return (@results);
 }
 
-# }}}
 
 sub ProcessTicketCustomFieldUpdates {
     my %args = @_;
@@ -1792,7 +1903,6 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
-# {{{ sub ProcessTicketWatchers
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1874,9 +1984,7 @@ sub ProcessTicketWatchers {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketDates
 
 =head2 ProcessTicketDates ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1896,7 +2004,7 @@ sub ProcessTicketDates {
 
     my (@results);
 
-    # {{{ Set date fields
+    # Set date fields
     my @date_fields = qw(
         Told
         Resolved
@@ -1932,9 +2040,7 @@ sub ProcessTicketDates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketLinks
 
 =head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1964,7 +2070,6 @@ sub ProcessTicketLinks {
     return (@results);
 }
 
-# }}}
 
 sub ProcessRecordLinks {
     my %args = (
@@ -2096,6 +2201,89 @@ sub ProcessColumnMapValue {
 
     return $m->interp->apply_escapes( $value, 'h' ) if $args{'Escape'};
     return $value;
+}
+
+=head2 GetPrincipalsMap OBJECT, CATEGORIES
+
+Returns an array suitable for passing to /Admin/Elements/EditRights with the
+principal collections mapped from the categories given.
+
+=cut
+
+sub GetPrincipalsMap {
+    my $object = shift;
+    my @map;
+    for (@_) {
+        if (/System/) {
+            my $system = RT::Groups->new($session{'CurrentUser'});
+            $system->LimitToSystemInternalGroups();
+            $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            push @map, ['System' => $system => 'Type' => 1];
+        }
+        elsif (/Groups/) {
+            my $groups = RT::Groups->new($session{'CurrentUser'});
+            $groups->LimitToUserDefinedGroups();
+            $groups->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show groups who have rights granted on this object
+            $groups->WithGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
+            );
+
+            push @map, ['User Groups' => $groups => 'Name' => 0];
+        }
+        elsif (/Roles/) {
+            my $roles = RT::Groups->new($session{'CurrentUser'});
+
+            if ($object->isa('RT::System')) {
+                $roles->LimitToRolesForSystem();
+            }
+            elsif ($object->isa('RT::Queue')) {
+                $roles->LimitToRolesForQueue($object->Id);
+            }
+            else {
+                $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
+                next;
+            }
+            $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            push @map, ['Roles' => $roles => 'Type' => 1];
+        }
+        elsif (/Users/) {
+            my $Privileged = RT::Group->new($session{'CurrentUser'});
+            $Privileged->LoadSystemInternalGroup('Privileged');
+            my $Users = $Privileged->UserMembersObj();
+            $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show users who have rights granted on this object
+            my $group_members = $Users->WhoHaveGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
+            );
+
+            # Limit to UserEquiv groups
+            my $groups = $Users->NewAlias('Groups');
+            $Users->Join(
+                ALIAS1 => $groups,
+                FIELD1 => 'id',
+                ALIAS2 => $group_members,
+                FIELD2 => 'GroupId'
+            );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
+
+
+            my $display = sub {
+                $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
+            };
+            push @map, ['Users' => $Users => $display => 0];
+        }
+    }
+    return @map;
 }
 
 =head2 _load_container_object ( $type, $id );

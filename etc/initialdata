@@ -487,7 +487,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 },
 );
-# }}}
 
 @Scrips = (
     {  Description    => 'On Correspond Open Tickets',

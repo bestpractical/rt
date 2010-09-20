@@ -149,8 +149,6 @@ CREATE TABLE ACL (
 	RightName	VARCHAR(25) NOT NULL,
 	ObjectType	VARCHAR(25) NOT NULL,
 	ObjectId	INTEGER DEFAULT 0 NOT NULL,
-	DelegatedBy	INTEGER DEFAULT 0 NOT NULL,
-	DelegatedFrom	INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
 CREATE INDEX ACL1 ON ACL(RightName, ObjectType, ObjectId, PrincipalType, PrincipalId);

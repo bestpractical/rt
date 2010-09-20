@@ -38,7 +38,7 @@ $m->submit_form(
     fields    => { Name => 'bar' },
 );
 
-$m->content_like( qr/Saved dashboard bar/i, 'dashboard saved' );
+$m->content_contains('Saved dashboard bar', 'dashboard saved' );
 my $dashboard_queries_link = $m->find_link( text_regex => qr/Queries/ );
 my ( $dashboard_id ) = $dashboard_queries_link->url =~ /id=(\d+)/;
 
@@ -53,7 +53,7 @@ $m->submit_form(
     button => 'add',
 );
 
-$m->content_like( qr/Dashboard updated/i, 'added search foo to dashboard bar' );
+$m->content_contains('Dashboard updated', 'added search foo to dashboard bar' );
 
 # delete the created search
 
@@ -72,7 +72,7 @@ $m->content_lacks( $search_uri, 'deleted search foo' );
 # here is what we really want to test
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
-$m->content_like( qr/Deleted queries/i, 'found deleted message' );
+$m->content_contains('Deleted queries', 'found deleted message' );
 
 # Update button shows so we can update the deleted search easily
 $m->content_contains( 'value="Update"', 'found update button' );
@@ -82,7 +82,7 @@ $m->submit_form(
     button    => 'update',
 );
 
-$m->content_unlike( qr/Deleted queries/i, 'deleted message is gone' );
+$m->content_lacks('Deleted queries', 'deleted message is gone' );
 $m->content_lacks( 'value="Update"', 'update button is gone too' );
 
 $m->get_warnings; # we'll get a lot of warnings because the deleted search

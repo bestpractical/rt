@@ -647,7 +647,6 @@ my $queue = RT::Queue->new($RT::SystemUser);
 my ($qid) = $queue->Create( Name => 'ext-mailgate');
 ok( $qid, 'queue created for ext-mailgate tests' );
 
-# {{{ Check take and resolve actions
 
 # create ticket that is owned by nobody
 use RT::Ticket;
@@ -850,6 +849,5 @@ is( $tick->Transactions->Count, 5, "transactions added" );
 
 $m->no_warnings_ok;
 
-# }}}
 };
 

@@ -22,7 +22,6 @@ ok $queue && $queue->id, 'loaded or created queue';
 my $url = $agent->rt_base_url;
 ok $agent->login, "logged in";
 
-# {{{ Query Builder tests
 
 my $response = $agent->get($url."Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
@@ -116,7 +115,7 @@ diag "Can not move up the top most clause";
     $agent->select("clauses", ["0"]);
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
+    $agent->content_contains("error: can&#39;t move up", "i shouldn't have been able to hit up");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
@@ -124,7 +123,7 @@ diag "Can not move left the left most clause";
 {
     $agent->click("Left");
     ok($agent->form_name('BuildQuery'), "found the form again");
-    $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
+    $agent->content_contains("error: can&#39;t move left", "i shouldn't have been able to hit left");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
@@ -193,7 +192,6 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 # - clears entire query
 # - clears it from the session, too
 
-# }}}
 
 # create a custom field with nonascii name and try to add a condition
 {

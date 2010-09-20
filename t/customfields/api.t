@@ -86,16 +86,13 @@ for (@custom_fields) {
 	is( $ticket->FirstCustomFieldValue( $_->id ), undef );
 	is( $ticket->FirstCustomFieldValue( $_->Name ), undef );
 }
-# }}}
 
 # try to add field value with fields that do not exist {{{
 my ($status, $msg) = $ticket->AddCustomFieldValue( Field => -1 , Value => 'foo' );
 ok(!$status, "shouldn't add value" );
 ($status, $msg) = $ticket->AddCustomFieldValue( Field => 'SomeUnexpedCustomFieldName' , Value => 'foo' );
 ok(!$status, "shouldn't add value" );
-# }}}
 
-# {{{
 SKIP: {
 
 	skip "TODO: We want fields that are not allowed to set unexpected values", 10;

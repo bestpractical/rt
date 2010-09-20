@@ -115,7 +115,7 @@ diag "check that we have no the CF on the create";
     );
     my ($tid) = ($m->content =~ /Ticket (\d+) created/i);
     ok $tid, "created a ticket succesfully";
-    $m->content_unlike(qr/$cf_name/, "don't see CF");
+    $m->content_lacks($cf_name, "don't see CF");
 
     $m->follow_link( text => 'Custom Fields' );
     $form = $m->form_number(3);
@@ -130,7 +130,7 @@ diag "check that we see CF as Cc";
     ok $tid, "created ticket";
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "see CF");
+    $m->content_contains($cf_name, "see CF");
 }
 
 diag "check that owner can see and edit CF";
@@ -140,7 +140,7 @@ diag "check that owner can see and edit CF";
     ok $tid, "created ticket";
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "see CF");
+    $m->content_contains($cf_name, "see CF");
 
     $m->follow_link( text => 'Custom Fields' );
     my $form = $m->form_number(3);
@@ -155,6 +155,6 @@ diag "check that owner can see and edit CF";
     );
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "changed cf");
+    $m->content_contains($cf_name, "changed cf");
 }
 

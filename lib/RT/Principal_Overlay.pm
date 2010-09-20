@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 #
@@ -64,7 +64,6 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
-# {{{ IsGroup
 
 =head2 IsGroup
 
@@ -82,9 +81,7 @@ sub IsGroup {
     return undef;
 }
 
-# }}}
 
-# {{{ IsUser
 
 =head2 IsUser 
 
@@ -103,9 +100,7 @@ sub IsUser {
     }
 }
 
-# }}}
 
-# {{{ Object
 
 =head2 Object
 
@@ -133,11 +128,8 @@ sub Object {
 
 
 }
-# }}} 
 
-# {{{ ACL Related routines
 
-# {{{ GrantRight 
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
@@ -172,9 +164,7 @@ sub GrantRight {
         PrincipalId   => $self->Id,
     );
 }
-# }}}
 
-# {{{ RevokeRight
 
 =head2 RevokeRight { Right => "RightName", Object => "object" }
 
@@ -210,48 +200,17 @@ sub RevokeRight {
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );
+
+    if ( not $status and $msg =~ /Invalid right/ ) {
+        $RT::Logger->warn("Tried to revoke the invalid right '$args{Right}', ignoring it.");
+        return (1);
+    }
+
     return ($status, $msg) unless $status;
     return $ace->Delete;
 }
 
-# }}}
 
-# {{{ sub _CleanupInvalidDelegations
-
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
-
-Revokes all ACE entries delegated by this principal which are
-inconsistent with this principal's current delegation rights.  Does
-not perform permission checks, but takes no action and returns success
-if this principal still retains DelegateRights.  Should only ever be
-called from inside the RT library.
-
-If this principal is a group, recursively calls this method on each
-cached user member of itself.
-
-If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# This is currently just a stub for the methods of the same name in
-# RT::User and RT::Group.
-
-sub _CleanupInvalidDelegations {
-    my $self = shift;
-    unless ( $self->Id ) {
-	$RT::Logger->warning("Principal not loaded.");
-	return (undef);
-    }
-    return ($self->Object->_CleanupInvalidDelegations(@_));
-}
-
-# }}}
-
-# {{{ sub HasRight
 
 =head2 sub HasRight (Right => 'right' Object => undef)
 
@@ -330,7 +289,7 @@ sub HasRight {
         unless $self->can('_IsOverrideGlobalACL')
                && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
-    # {{{ If we've cached a win or loss for this lookup say so
+    # If we've cached a win or loss for this lookup say so
 
     # Construct a hashkeys to cache decisions:
     # 1) full_hashkey - key for any result and for full combination of uid, right and objects
@@ -563,14 +522,10 @@ sub RolesWithRight {
     return @$roles;
 }
 
-# }}}
-
-# }}}
-
-# {{{ ACL caching
 
 
-# {{{ InvalidateACLCache
+
+
 
 =head2 InvalidateACLCache
 
@@ -585,12 +540,9 @@ sub InvalidateACLCache {
     $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ _GetPrincipalTypeForACL
+
 
 =head2 _GetPrincipalTypeForACL
 
@@ -612,9 +564,7 @@ sub _GetPrincipalTypeForACL {
     return($type);
 }
 
-# }}}
 
-# {{{ _ReferenceId
 
 =head2 _ReferenceId
 
@@ -637,6 +587,5 @@ sub _ReferenceId {
     return(ref($scalar)."-". $scalar->id);
 }
 
-# }}}
 
 1;
