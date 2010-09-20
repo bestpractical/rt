@@ -4,14 +4,13 @@ use RT::Test tests => undef;
 BEGIN {
     plan skip_all => 'Email::Abstract and Test::Email required.'
         unless eval { require Email::Abstract; require Test::Email; 1 };
-    plan tests => 39;
+    plan tests => 38;
 }
 
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( UseTransactionBatch => 1 );
-my ($baseurl, $m) = RT::Test->started_ok;
 
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Load('___Approvals');
