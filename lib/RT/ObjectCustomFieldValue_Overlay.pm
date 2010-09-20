@@ -85,7 +85,7 @@ sub Create {
         unless ( defined $args{'Content'} ) {
             return
               wantarray
-              ? ( 0, $self->loc("Content can't be empty for IPAddress") )
+              ? ( 0, $self->loc("Content is an invalid IP address") )
               : 0;
         }
     }
@@ -99,7 +99,7 @@ sub Create {
         unless ( defined $args{'Content'} ) {
             return
               wantarray
-              ? ( 0, $self->loc("Content can't be empty for IPAddressRange") )
+              ? ( 0, $self->loc("Content is an invalid IP address range") )
               : 0;
         }
     }
