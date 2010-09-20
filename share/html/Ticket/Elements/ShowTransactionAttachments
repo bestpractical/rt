@@ -48,7 +48,7 @@
 <%PERL>
 # Find all the attachments which have parent $Parent
 # For each of these attachments
-foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
+foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 
     if (RT->Config->Get('GnuPG')->{'Enable'}) {
         $m->comp( 'ShowGnuPGStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
@@ -73,7 +73,7 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
 </div>
 %   }
 %# If there is sub-messages, open a dedicated div
-% if ( scalar ( grep $_->__Value('Parent') == $message->id, @$Attachments ) ) {
+% if ( $Attachments->{ $message->id } ) {
 <div class="messageattachments">
 % } else {
 <div class="messagebody">

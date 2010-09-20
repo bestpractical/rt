@@ -90,7 +90,8 @@ for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
 }
 
 for my $attachment (@{$Attachments->ItemsArrayRef()}) {
-    push (@{$trans_attachments->{$attachment->TransactionId}}, $attachment)
+    my $tmp = $trans_attachments->{ $attachment->TransactionId } ||= {};
+    push @{ $tmp->{ $attachment->Parent || 0 } ||= [] }, $attachment;
 }
 
 my $i = 1;
@@ -118,7 +119,7 @@ while ( my $Transaction = $Transactions->Next ) {
         Transaction          => $Transaction,
         ShowHeaders          => $ShowHeaders,
         RowNum               => $i,
-        Attachments          => $trans_attachments->{$Transaction->id},
+        Attachments          => $trans_attachments->{$Transaction->id} || {},
         AttachmentContent    => $trans_content,
         LastTransaction      => $IsLastTransaction
     );

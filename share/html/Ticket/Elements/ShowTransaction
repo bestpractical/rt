@@ -121,7 +121,10 @@ $TimeTaken = $Transaction->TimeTaken . " min"
 unless ($Attachments) { 
     my $attachments = $Transaction->Attachments;
     $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
-    $ARGS{'Attachments'} = $Attachments = $attachments->ItemsArrayRef();
+    $ARGS{'Attachments'} = $Attachments = {};
+
+    push @{ $Attachments->{ $_->Parent || 0 } ||= [] }, $_
+        foreach $attachments->ItemsArrayRef();
 }
 my $titlebar_commands = '';
 
@@ -140,7 +143,7 @@ if ( $type =~ /EmailRecord$/ ) {
       . "&Transaction="
       . $Transaction->Id
       . "&Attachment="
-      . ( $Attachments->[0] && $Attachments->[0]->id )
+      . ( $Attachments->{0}[0] && $Attachments->{0}[0]->id )
       . '">' . loc('Show') . "</a>]&nbsp;";
     $ShowBody = 0;
 }
@@ -149,7 +152,7 @@ if ( $type =~ /EmailRecord$/ ) {
 # If the transaction has anything attached to it at all
 else {
 
-    if ( $Attachments->[0] && $ShowTitleBarCommands ) {
+    if ( keys %$Attachments && $ShowTitleBarCommands ) {
         my $ticket = $Transaction->TicketObj;
         my $can_modify = $ticket->CurrentUserHasRight('ModifyTicket');
         if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {

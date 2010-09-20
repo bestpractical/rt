@@ -132,6 +132,8 @@ $time = loc('[quant,_1,min,min]', $Transaction->TimeTaken)
     if $Transaction->TimeTaken;
 
 if ( $ShowBody && !$Attachments ) {
+    $ARGS{'Attachments'} = $Attachments = {};
+
     my $attachments = $Transaction->Attachments;
     $attachments->Columns( qw(
         Id TransactionId Parent MessageId
@@ -139,7 +141,8 @@ if ( $ShowBody && !$Attachments ) {
         ContentEncoding ContentType
         Creator Created
     ) );
-    $ARGS{'Attachments'} = $Attachments = $attachments->ItemsArrayRef;
+    push @{ $Attachments->{ $_->Parent || 0 } ||= [] }, $_
+        foreach @{ $attachments->ItemsArrayRef };
 }
 
 my @actions = ();
