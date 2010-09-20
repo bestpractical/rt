@@ -81,7 +81,7 @@ div#page-navigation {
 }
 
 
-.ticket-transaction .messagebody img {
+.transaction .messagebody img {
     /* ie6 does not support max-width */
     width: expression(this.width > 401 ? 400 : true);
 }

@@ -89,8 +89,8 @@ div#header h1 {
 .ticket-info-links .titlebox-title .right,
 .ticket-info-links .titlebox-content .create,
 .history .titlebox .titlebox-title .right,
-.ticket-transaction .metadata .actions,
-.ticket-transaction .content .downloadattachment,
+.transaction .metadata .actions,
+.transaction .content .downloadattachment,
 #comp-Search-Results #body .refresh,
 .search-result-actions,
 #comp-Search-Chart #body div,
@@ -113,7 +113,7 @@ a:link, a:visited {
     font-weight: bold !important;
 }
 
-div.ticket-transaction .metadata .type {
+div.transaction .metadata .type {
     display: none;
 }
 
@@ -162,11 +162,11 @@ div.titlebox-title {
     border: 0 !important;
 }
 
-#ticket-history, div.ticket-transaction {
+.history-container, div.transaction {
     border: 0 !important;
 }
 
-div.ticket-transaction {
+div.transaction {
     page-break-inside: avoid;
 }
 

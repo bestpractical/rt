@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-div#ticket-history div.ticket-transaction {
+div.history-container div.transaction {
  border-top: 1px solid #ccc;
  padding-bottom: 0.25em;
     position: relative; /* gives us a container for position: absolute */
 }
 
-div#ticket-history div.odd {
+div.history-container div.odd {
  background-color: #fff;
 }
 
-div#ticket-history {
+div.history-container {
 
  margin-top: 0.75em;
  border-left: 1px solid #ccc;
@@ -65,7 +65,7 @@ div#ticket-history {
 
 }
 
-.ticket-transaction div.metadata span.actions {
+.transaction div.metadata span.actions {
  position: absolute;
  top: 0;
  right: 0;
@@ -81,7 +81,7 @@ div#ticket-history {
  white-space: nowrap;
 }
 
-.ticket-transaction div.metadata  span.type {
+.transaction div.metadata  span.type {
  text-align: center;
  float: left;
  margin: 0.25em 0.70em 0.25em 0.25em;
@@ -95,32 +95,32 @@ div#ticket-history {
  border-bottom-right-radius: 0.25em;
 }
 
-div#ticket-history span.type a {
+div.history-container span.type a {
  color: #fff;
 }
 
 
-div#ticket-history span.date {
+div.history-container span.date {
  width: 10em;
 }
 
 
-div#ticket-history span.description {
+div.history-container span.description {
  margin-left: 1em;
  font-weight: bold;
 }
 
-div#ticket-history span.time-taken {
+div.history-container span.time-taken {
  margin-left: 1em;
 }
 
-div#ticket-history div.content {
+div.history-container div.content {
  padding-right: 1em;
  padding-bottom: 0.7em;
  margin-left: 1.5em;
 }
 
-.ticket-transaction .messagebody {
+.transaction .messagebody {
  font-size: 1em;
  padding-left: 1em;
  margin-top: 0.5em;
@@ -133,11 +133,11 @@ div#ticket-history div.content {
  word-wrap: break-word;
 }
 
-.ticket-transaction .messagebody img {
+.transaction .messagebody img {
  max-width: 100%;
 }
 
-div#ticket-history div.downloadattachment {
+div.history-container div.downloadattachment {
 float: right;
 clear: both;
 font-size: 0.9em;
@@ -156,20 +156,20 @@ border-radius: 0.5em;
 
 }
 
-div#ticket-history div.downloadattachment .downloadcontenttype{
+div.history-container div.downloadattachment .downloadcontenttype{
 color: #666;
 padding-right:0.25em;
 }
 
 
-div#ticket-history .message-header-key {
+div.history-container .message-header-key {
   width: 7em;
   font-weight: bold;
   color: #666;
 }
 
 
-div#ticket-history .messagebody .messagebody{
+div.history-container .messagebody .messagebody{
  font-size: 1em;
  padding: 0; 
  border: 0;
@@ -178,14 +178,14 @@ div#ticket-history .messagebody .messagebody{
 
 
 
-.ticket-transaction.basics .type { background: #b32; }
-.ticket-transaction.cfs .type { background: #b32; }
-.ticket-transaction.people .type { background: #48c; }
-.ticket-transaction.links .type { background: #316531; }
-.ticket-transaction.dates .type { background: #633063; }
-.ticket-transaction.message .type { background: #069; }
-.ticket-transaction.reminders .type { background: #369; }
-.ticket-transaction.other .type { background: #abc; }
+.transaction.basics .type { background: #b32; }
+.transaction.cfs .type { background: #b32; }
+.transaction.people .type { background: #48c; }
+.transaction.links .type { background: #316531; }
+.transaction.dates .type { background: #633063; }
+.transaction.message .type { background: #069; }
+.transaction.reminders .type { background: #369; }
+.transaction.other .type { background: #abc; }
 
 
 
