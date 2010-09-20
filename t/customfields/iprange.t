@@ -198,7 +198,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             }
         );
 
-        $agent->content_like( qr/can not be parsed to IPAddressRange/, 'ticket fails to create' );
+        $agent->content_like( qr/can not be parsed as an IP address range/, 'ticket fails to create' );
     }
 
 }

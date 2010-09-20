@@ -88,7 +88,7 @@ while ( my $CF = $CustomFields->Next ) {
                 my $ip = RT::ObjectCustomFieldValue->ParseIP( $value );
                 unless ( $ip ) {
                     my $msg =
-                      loc( "Input can not be parsed to " . loc( $CF->Type ) );
+                      loc( "Input can not be parsed as an IP address" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
                     push @res, $msg;
                     $valid = 0;
@@ -99,7 +99,7 @@ while ( my $CF = $CustomFields->Next ) {
                   RT::ObjectCustomFieldValue->ParseIPRange($value);
                 unless ( $start_ip && $end_ip ) {
                     my $msg =
-                      loc( "Input can not be parsed to " . loc( $CF->Type ) );
+                      loc( "Input can not be parsed as an IP address range" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
                     push @res, $msg;
                     $valid = 0;
