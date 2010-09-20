@@ -18,7 +18,9 @@ my $mime           = MIME::Entity->build(
 $mime->head->mime_attr( "Content-Type.charset" => 'utf8' );
 warnings_are {
     RT::I18N::SetMIMEEntityToEncoding( $mime, 'iso-8859-1' );
-} ['Encoding error: "\x{fffd}" does not map to iso-8859-1'], " We can't encode something into the wrong encoding without Encode complaining";
+}
+[ ('Encoding error: "\x{fffd}" does not map to iso-8859-1') x 2, ],
+" We can't encode something into the wrong encoding without Encode complaining";
 
 
 my $subject = decode( 'iso-8859-1', $mime->head->get('Subject') );
