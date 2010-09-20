@@ -89,9 +89,9 @@ our %FieldTypes = (
     IPAddress => {
         selection_type => 0,
 
-        labels => [ 'Enter multiple ip addresses',       # loc
-                    'Enter one ip address',             # loc
-                    'Enter up to [_1] ip addresses',     # loc
+        labels => [ 'Enter multiple IP addresses',       # loc
+                    'Enter one IP address',             # loc
+                    'Enter up to [_1] IP addresses',     # loc
                   ]
                 },
     IPAddressRange => {
