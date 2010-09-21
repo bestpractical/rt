@@ -11,18 +11,18 @@ ok $m->login, 'logged in';
 # the attribute cache hangs on to an old dbh
 delete $RT::System->{attributes};
 
-diag("Check for 2 existing queues being visible") if $ENV{TEST_VERBOSE};
+diag("Check for 2 existing queues being visible");
 {
     check_queues();
 }
 
-diag("Add a new queue, which won't show up until we fix the cache") if $ENV{TEST_VERBOSE};
+diag("Add a new queue, which won't show up until we fix the cache");
 {
     new_queue("New Test $$");
     check_queues();
 }
 
-diag("Disable an existing queue, it should stop appearing in the list") if $ENV{TEST_VERBOSE};
+diag("Disable an existing queue, it should stop appearing in the list");
 {
     sleep(1); # so the cache will actually invalidate
     ok($original_test_queue->SetDisabled(1));
