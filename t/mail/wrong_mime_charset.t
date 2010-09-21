@@ -29,7 +29,7 @@ RT::I18N::SetMIMEEntityToEncoding( $mime, 'iso-8859-1' );
 # but 5.8 and 5.10 warns only once.
 ok( @warnings == 1 || @warnings == 2, "1 or 2 warnings are ok" );
 ok(
-    @warnings == 1 || $warnings[1] == $warnings[0],
+    @warnings == 1 || $warnings[1] eq $warnings[0],
     'if there are 2 warnings, they should be same'
 );
 
