@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 17;
+use RT::Test tests => 34;
 
 # make an initial queue, so we have more than 1
 my $original_test_queue = new_queue("Test$$");
@@ -27,6 +27,38 @@ diag("Disable an existing queue, it should stop appearing in the list");
     sleep(1); # so the cache will actually invalidate
     ok($original_test_queue->SetDisabled(1));
     check_queues($m);
+}
+
+diag("Bring back a disabled queue");
+{
+    ok($original_test_queue->SetDisabled(0));
+    check_queues($m);
+}
+
+diag("Test a user who has more limited rights Queues");
+{
+
+my $user_a = RT::Test->load_or_create_user(
+    Name => 'user_a', Password => 'password',
+);
+ok $user_a && $user_a->id, 'loaded or created user';
+
+ok( RT::Test->set_rights(
+        { Principal => $user_a, Right => [qw(SeeQueue CreateTicket)], Object => $original_test_queue },
+), 'Allow user a to see the testing queue');
+
+my $a_m = RT::Test::Web->new;
+ok $a_m->login('user_a', 'password'), 'logged in as user A';
+
+# check that they see a single queue
+check_queues($a_m,[$original_test_queue->Id]);
+
+ok( RT::Test->add_rights(
+        { Principal => $user_a, Right => [qw(SeeQueue CreateTicket)] },
+), 'add global queue viewing rights');
+
+check_queues($a_m);
+
 }
 
 sub new_queue {
