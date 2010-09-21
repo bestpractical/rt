@@ -24,7 +24,6 @@ diag("Add a new queue, which won't show up until we fix the cache");
 
 diag("Disable an existing queue, it should stop appearing in the list");
 {
-    sleep(1); # so the cache will actually invalidate
     ok($original_test_queue->SetDisabled(1));
     check_queues($m);
 }
@@ -63,7 +62,6 @@ check_queues($a_m);
 
 sub new_queue {
     my $name = shift;
-    sleep(1); # so the cache will actually invalidate
     my $new_queue = RT::Queue->new($RT::SystemUser);
     ok($new_queue->Create( Name => $name, Description => "Testing for $name queue" ), "Created queue ".$new_queue->Name);
     return $new_queue;
