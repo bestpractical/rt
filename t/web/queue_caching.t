@@ -13,20 +13,20 @@ delete $RT::System->{attributes};
 
 diag("Check for 2 existing queues being visible");
 {
-    check_queues();
+    check_queues($m);
 }
 
 diag("Add a new queue, which won't show up until we fix the cache");
 {
     new_queue("New Test $$");
-    check_queues();
+    check_queues($m);
 }
 
 diag("Disable an existing queue, it should stop appearing in the list");
 {
     sleep(1); # so the cache will actually invalidate
     ok($original_test_queue->SetDisabled(1));
-    check_queues();
+    check_queues($m);
 }
 
 sub new_queue {
@@ -47,12 +47,17 @@ sub internal_queues {
     return $queuelist;
 }
 
+
+# takes a WWW::Mech object and an optional arrayref of queue ids
+# compares the list of ids to the dropdown of Queues for the New Ticket In form
 sub check_queues {
-    $m->get_ok($baseurl,"Navigated to homepage");
-    ok(my $form = $m->form_name('CreateTicketInQueue'), "Found New Ticket In form");
+    my $browser = shift;
+    my $queue_list = shift;
+    $browser->get_ok($baseurl,"Navigated to homepage");
+    ok(my $form = $browser->form_name('CreateTicketInQueue'), "Found New Ticket In form");
     ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
     my @queues = $queuelist->possible_values;
 
-    my $queue_list = internal_queues();
-    is_deeply([sort @queues],[sort keys %$queue_list], "Queue list contains the expected queues");
+    $queue_list = [keys %{internal_queues()}] unless $queue_list;
+    is_deeply([sort @queues],[sort @$queue_list], "Queue list contains the expected queues");
 }
