@@ -8,9 +8,6 @@ my $original_test_queue = new_queue("Test$$");
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-# the attribute cache hangs on to an old dbh
-delete $RT::System->{attributes};
-
 diag("Check for 2 existing queues being visible");
 {
     check_queues($m);
