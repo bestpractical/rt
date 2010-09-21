@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 64;
+use RT::Test tests => 67;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -246,5 +246,30 @@ diag "create two tickets with different IPs and check several searches"
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->FirstCustomFieldValue('IP'),
         '192.168.22.10', "correct value" );
+}
+
+diag "create a ticket with an IP of 10.0.0.1 and search for doesn't match '10.0.0.'."
+  if $ENV{'TEST_VERBOSE'};
+{
+    ok $agent->goto_create_ticket($q), "go to create ticket";
+    my $cf_field = "Object-RT::Ticket--CustomField-$cf_id-Values";
+    $agent->submit_form(
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject   => 'local',
+            $cf_field => '10.0.0.1',
+        }
+    );
+
+    my ($id) = $agent->content =~ /Ticket (\d+) created/;
+    ok( $id, "created first ticket $id" );
+
+    my $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE '10.0.0.'");
+
+    TODO: {
+        local $TODO = "the ticket is matched because we fail to parse '10.0.0.' as an IP address so it's not canonicalized to '010.000.000.' which is what we would need to do for LIKE";
+        is( $tickets->Count, 0, "should not have found the ticket" );
+    }
 }
 
