@@ -60,6 +60,17 @@
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399", class=>'ticket-info-people' &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
 </&>
+<&| /Widgets/TitleBox, title => loc("Modify who receives mail for ticket #[_1]", $Ticket->Id),   width => "100%", color=> "#333399", class=>'ticket-info-squelch' &>
+<p><em>The checked addresses will possibly receive e-mail related to
+actions on this ticket, depending on the action taken. To prevent an
+address from receiving e-mail for this ticket, uncheck the
+address.</em></p>
+
+% for my $addr (sort keys %recips) {
+  <input type="hidden" name="autorecipient" value="<% $addr %>">
+  <input type="checkbox" name="checked_recipient" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>> <%$addr%><br />
+% }
+</&>
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 
@@ -70,12 +81,44 @@ my @results;
 my $Ticket = LoadTicket($id);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+# Update the squelch list
+my %squelched = map {$_->Content => 1} $Ticket->SquelchMailTo;
+my %checked = map {$_ => 1} grep {defined}
+    (ref $ARGS{'checked_recipient'} eq "ARRAY" ? @{$ARGS{'checked_recipient'}}
+         : defined $ARGS{'checked_recipient'} ? ($ARGS{'checked_recipient'}) : ());
+my @all = grep {defined}
+    (ref $ARGS{'autorecipient'} eq "ARRAY" ? @{$ARGS{'autorecipient'}}
+         : defined $ARGS{'autorecipient'} ? ($ARGS{'autorecipient'}) : ());
+$Ticket->UnsquelchMailTo($_)
+    for grep {$squelched{$_}} keys %checked;
+$Ticket->SquelchMailTo($_)
+    for grep {!$squelched{$_} and !$checked{$_}} @all;
+
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     $Ticket->ApplyTransactionBatch;
 }
+
+# Use the ticket's scrips to figure out the new list of recipients.
+my @txns = map {$Ticket->DryRun( Action => $_ )} qw/comment respond/;
+my %recips=();
+for my $scrip (map {@{$_->Scrips->Prepared}} @txns) {
+    next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
+    for my $type qw(To Cc Bcc) {
+        $recips{$_->address} = 1 for $scrip->ActionObj->Action->$type();
+    }
+}
+for my $rule (map {@{$_->Rules}} @txns) {
+    next unless $rule->{hints} && $rule->{hints}{class} eq "SendEmail";
+    for my $type qw(To Cc Bcc) {
+        $recips{$_} = 1 for @{$rule->{hints}{recips}{$type}};
+    }
+}
+
+# Use tkt squelch list to get recipients who will NOT get mail:
+$recips{$_->Content} = 0 for $Ticket->SquelchMailTo;
 </%INIT>
 
 
