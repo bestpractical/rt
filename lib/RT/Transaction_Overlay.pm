@@ -109,12 +109,13 @@ sub Create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
-        CommitScrips => 1,
-	ObjectType => 'RT::Ticket',
-	ObjectId => 0,
-	ReferenceType => undef,
-        OldReference       => undef,
-        NewReference       => undef,
+        CommitScrips   => 1,
+        ObjectType     => 'RT::Ticket',
+        ObjectId       => 0,
+        ReferenceType  => undef,
+        OldReference   => undef,
+        NewReference   => undef,
+        SquelchMailTo  => undef,
         @_
     );
 
@@ -157,6 +158,10 @@ sub Create {
         }
     }
 
+    $self->AddAttribute(
+        Name    => 'SquelchMailTo',
+        Content => RT::User->CanonicalizeEmailAddress($_)
+    ) for @{$args{'SquelchMailTo'} || []};
 
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
@@ -1186,6 +1191,20 @@ sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
+
+=head2 SquelchMailTo
+
+Similar to Ticket class SquelchMailTo method - returns a list of
+transaction's squelched addresses.  As transactions are immutable, the
+list of squelched recipients cannot be modified after creation.
+
+=cut
+
+sub SquelchMailTo {
+    my $self = shift;
+    return () unless $self->CurrentUserCanSee;
+    return $self->Attributes->Named('SquelchMailTo');
+}
 
 =head2 Recipients
 

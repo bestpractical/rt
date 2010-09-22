@@ -245,6 +245,7 @@ sub Create {
         Cc                 => undef,
         AdminCc            => undef,
         SquelchMailTo      => undef,
+        TransSquelchMailTo => undef,
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
@@ -677,6 +678,7 @@ sub Create {
             TimeTaken    => $args{'TimeWorked'},
             MIMEObj      => $args{'MIMEObj'},
             CommitScrips => !$args{'DryRun'},
+            SquelchMailTo => $args{'TransSquelchMailTo'},
         );
 
         if ( $self->Id && $Trans ) {
@@ -2128,6 +2130,7 @@ sub _RecordNote {
         NoteType     => 'Correspond',
         TimeTaken    => 0,
         CommitScrips => 1,
+        SquelchMailTo => undef,
         @_
     );
 
@@ -2184,6 +2187,7 @@ sub _RecordNote {
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
              CommitScrips => $args{'CommitScrips'},
+             SquelchMailTo => $args{'SquelchMailTo'},
     );
 
     unless ($Trans) {

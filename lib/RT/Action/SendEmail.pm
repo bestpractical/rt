@@ -80,13 +80,12 @@ RT::Action::SendEmail.
 
 =head2 CleanSlate
 
-Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
+Cleans class-wide options, like L</AttachTickets>.
 
 =cut
 
 sub CleanSlate {
     my $self = shift;
-    $self->SquelchMailTo(undef);
     $self->AttachTickets(undef);
 }
 
@@ -729,26 +728,15 @@ sub RecordDeferredRecipients {
     return ($ret,$msg);
 }
 
-=head2 SquelchMailTo [@ADDRESSES]
+=head2 SquelchMailTo
 
-Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
-To empty list pass undefined argument.
-
-B<Note> that this method can be called as class method and works globaly. Don't forget to
-clean this list when blocking is not required anymore, pass undef to do this.
+Returns list of the addresses to squelch on this transaction.
 
 =cut
 
-{
-    my $squelch = [];
-
-    sub SquelchMailTo {
-        my $self = shift;
-        if (@_) {
-            $squelch = [ grep defined, @_ ];
-        }
-        return @$squelch;
-    }
+sub SquelchMailTo {
+    my $self = shift;
+    return map $_->Content, $self->TransactionObj->SquelchMailTo;
 }
 
 =head2 RemoveInappropriateRecipients
@@ -806,9 +794,8 @@ sub RemoveInappropriateRecipients {
         }
     }
 
-# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
-    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo;
-    push @blacklist, $self->SquelchMailTo;
+    # Let's grab the SquelchMailTo attributes and push those entries into the @blacklisted
+    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo, $self->TransactionObj->SquelchMailTo;
 
     # Cycle through the people we're sending to and pull out anyone on the
     # system blacklist
