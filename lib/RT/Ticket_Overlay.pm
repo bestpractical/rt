@@ -1306,11 +1306,11 @@ sub SquelchMailTo {
     my $self = shift;
     if (@_) {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return undef;
+            return ();
         }
     } else {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return undef;
+            return ();
         }
 
     }
