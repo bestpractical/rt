@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 186;
+use RT::Test tests => 189;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -245,5 +245,30 @@ diag "create two tickets with different IPs and check several searches"
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->FirstCustomFieldValue('IP'),
         'bbcd' . ':0000' x 7, "correct value" );
+}
+
+diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd:23'."
+  if $ENV{'TEST_VERBOSE'};
+{
+    ok $agent->goto_create_ticket($q), "go to create ticket";
+    my $cf_field = "Object-RT::Ticket--CustomField-$cf_id-Values";
+    $agent->submit_form(
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject   => 'local',
+            $cf_field => 'abcd:23::',
+        }
+    );
+
+    my ($id) = $agent->content =~ /Ticket (\d+) created/;
+    ok( $id, "created first ticket $id" );
+
+    my $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE 'abcd:23'");
+
+    SKIP: {
+        skip "partical ip parse can causes ambiguity", 1;
+        is( $tickets->Count, 0, "should not have found the ticket" );
+    }
 }
 
