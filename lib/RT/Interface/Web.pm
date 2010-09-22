@@ -1229,6 +1229,7 @@ sub _ProcessUpdateMessageRecipients {
         push @txn_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
 
+    push @txn_squelch, @{$args{ARGSRef}{SquelchMailTo}} if $args{ARGSRef}{SquelchMailTo};
     $message_args->{SquelchMailTo} = \@txn_squelch
         if @txn_squelch;
 
