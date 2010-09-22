@@ -45,14 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header,
-    Title  => $title,
-    onload => "function () { hide(document.getElementById('Ticket-Update-squelch')) }" &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
-    Title=> $title,
-    actions => $actions &>
-    
+<& /Elements/Header, Title  => $title &>
+<& /Ticket/Elements/Tabs,
+    Ticket => $TicketObj,
+    Title => $title &>
+
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
@@ -64,9 +61,6 @@
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
-
-<div id="Ticket-Update-basics">
-<a name="basics"></a>
 
 <div id="ticket-update-metadata">
   <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
@@ -170,18 +164,14 @@
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
   </table>
 </&>
-  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 
-</div>
-</div>
-
-<div id="Ticket-Update-squelch">
-<a name="squelch"></a>
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
   <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips' &>
     <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
   </&>
 % }
+
+  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 </div>
 
 </form>
@@ -307,15 +297,6 @@ if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
-
-my $actions = {
-    A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Update-basics','Ticket-Update-squelch');">] . loc('Show basics') . q[</a>],
-    },
-    B => {
-        html => q[<a href="#squelch" onclick="return switchVisibility('Ticket-Update-squelch','Ticket-Update-basics');">] . loc('Squelch recipients') . q[</a>],
-    },
-};
 </%INIT>
 
 <%ARGS>
