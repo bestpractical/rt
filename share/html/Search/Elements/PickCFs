@@ -86,6 +86,13 @@ while ( my $CustomField = $CustomFields->Next ) {
             Path => '/Elements/SelectDateRelation',
             Arguments => {},
         };
+    }
+    elsif ($CustomField->Type =~ /^IPAddress(Range)?$/ ) {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectIPRelation',
+            Arguments => {},
+        };
     } else {
         $line{'Op'} = {
             Type => 'component',
