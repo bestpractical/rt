@@ -2101,7 +2101,7 @@ sub Correspond {
     unless ( $self->IsRequestor($self->CurrentUser->id) ) {
         my %squelch;
         $squelch{$_}++ for map {$_->Content} $self->SquelchMailTo, $results[2]->SquelchMailTo;
-        $self->_SetLastUpdated
+        $self->_SetTold
             if grep {not $squelch{$_}} $self->Requestors->MemberEmailAddresses;
     }
 
