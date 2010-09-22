@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 67;
+use RT::Test tests => 71;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -273,3 +273,13 @@ diag "create a ticket with an IP of 10.0.0.1 and search for doesn't match '10.0.
     }
 }
 
+
+diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->get_ok( $baseurl . "/Search/Build.html?Query=Queue='General'" );
+    $agent->content_contains('CF.{IP}', 'got CF.{IP}');
+    my $form = $agent->form_number(3);
+    my $op = $form->find_input("'CF.{IP}'Op");
+    ok( $op, "found 'CF.{IP}'Op" );
+    is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );
+}
