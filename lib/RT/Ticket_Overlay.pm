@@ -2098,7 +2098,12 @@ sub Correspond {
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->_SetTold unless ( $self->IsRequestor($self->CurrentUser->id));
+    unless ( $self->IsRequestor($self->CurrentUser->id) ) {
+        my %squelch;
+        $squelch{$_}++ for map {$_->Content} $self->SquelchMailTo, $results[2]->SquelchMailTo;
+        $self->_SetLastUpdated
+            if grep {not $squelch{$_}} $self->Requestors->MemberEmailAddresses;
+    }
 
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
