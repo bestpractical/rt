@@ -7,6 +7,7 @@ use RT::Test tests => 11;
 
 RT->Config->Set( ShowMoreAboutPrivilegedUsers    => 1 );
 
+my ( $url, $m ) = RT::Test->started_ok;
 my $user_a = RT::Test->load_or_create_user(
     Name     => 'user_a',
     Password => 'password',
@@ -31,7 +32,6 @@ my ($id) = $ticket->Create(
 ok( $id, 'created ticket' );
 
 
-my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login( user_a => 'password' ), 'logged in as user_a' );
 
 $m->get_ok( $url . '/Ticket/Display.html?id=' . $id );
