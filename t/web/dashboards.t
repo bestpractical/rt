@@ -93,7 +93,7 @@ $m->content_contains("Modify the dashboard different dashboard");
 $m->follow_link_ok({text => "Queries"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
+$m->field('Searches-body-Available' => ["search-3-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -111,7 +111,7 @@ is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ["search-1-RT::System-1"]);
+$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -225,7 +225,7 @@ $m->content_contains("Saved dashboard system dashboard");
 $m->follow_link_ok({text => 'Queries'});
 
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-7-RT::User-22']); # XXX: :( :(
+$m->field('Searches-body-Available' => ['search-8-RT::User-22']); # XXX: :( :(
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
