@@ -54,8 +54,7 @@
     font-weight: normal;
 }
 
-#ticket-create-message .messagedetails,
-#ticket-update-message .messagedetails {
+#ticket-create-message .messagedetails, #previewscrips {
     margin-bottom: 0.5em;
 }
 
@@ -67,6 +66,10 @@
 #ticket-create-message #SubmitTicket,
 #ticket-update-message #SubmitTicket {
     padding-bottom: 2em;
+}
+
+.ticket-info-squelch ul, #previewscrips ul {
+    list-style: none;
 }
 
 /*
