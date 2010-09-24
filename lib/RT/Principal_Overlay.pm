@@ -155,6 +155,8 @@ sub GrantRight {
 
     my $type = $self->_GetPrincipalTypeForACL();
 
+    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
+
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
     return $ace->Create(
@@ -206,6 +208,7 @@ sub RevokeRight {
         return (1);
     }
 
+    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
     return ($status, $msg) unless $status;
     return $ace->Delete;
 }

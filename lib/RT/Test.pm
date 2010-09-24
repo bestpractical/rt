@@ -1121,6 +1121,8 @@ sub start_standalone_server {
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
 
+    # the attribute cache holds on to a stale dbh
+    delete $RT::System->{attributes};
     return ($ret, RT::Test::Web->new);
 }
 

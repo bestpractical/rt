@@ -413,6 +413,8 @@ sub Create {
             unless $status;
     }
 
+    RT->System->QueueCacheNeedsUpdate(1);
+
     return ( $id, $self->loc("Queue created") );
 }
 
@@ -448,6 +450,8 @@ sub SetDisabled {
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
 
     $RT::Handle->Commit();
+
+    RT->System->QueueCacheNeedsUpdate(1);
 
     if ( $val == 1 ) {
         return (1, $self->loc("Queue disabled"));
