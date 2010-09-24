@@ -964,17 +964,13 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
 
-    my @temp_squelch;
+    my @txn_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @temp_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
+        push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
             if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
-
     }
-
-    if (@temp_squelch) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
-    }
+    $create_args{TransSquelchMailTo} = \@txn_squelch
+        if @txn_squelch;
 
     if ( $ARGS{'AttachTickets'} ) {
         require RT::Action::SendEmail;
@@ -1220,23 +1216,22 @@ sub _ProcessUpdateMessageRecipients {
     $message_args->{CcMessageTo} = $cc;
     $message_args->{BccMessageTo} = $bcc;
 
-    my @temp_squelch;
+    my @txn_squelch;
     foreach my $type (qw(Cc AdminCc)) {
         if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
-            push @temp_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
-            push @temp_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
+            push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
+            push @txn_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
+            push @txn_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
     }
     if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
-            push @temp_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
+        push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
+        push @txn_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
 
-    if (@temp_squelch) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
-    }
+    push @txn_squelch, @{$args{ARGSRef}{SquelchMailTo}} if $args{ARGSRef}{SquelchMailTo};
+    $message_args->{SquelchMailTo} = \@txn_squelch
+        if @txn_squelch;
 
     unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {

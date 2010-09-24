@@ -245,6 +245,7 @@ sub Create {
         Cc                 => undef,
         AdminCc            => undef,
         SquelchMailTo      => undef,
+        TransSquelchMailTo => undef,
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
@@ -677,6 +678,7 @@ sub Create {
             TimeTaken    => $args{'TimeWorked'},
             MIMEObj      => $args{'MIMEObj'},
             CommitScrips => !$args{'DryRun'},
+            SquelchMailTo => $args{'TransSquelchMailTo'},
         );
 
         if ( $self->Id && $Trans ) {
@@ -1306,11 +1308,11 @@ sub SquelchMailTo {
     my $self = shift;
     if (@_) {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return undef;
+            return ();
         }
     } else {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return undef;
+            return ();
         }
 
     }
@@ -2096,7 +2098,12 @@ sub Correspond {
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->_SetTold unless ( $self->IsRequestor($self->CurrentUser->id));
+    unless ( $self->IsRequestor($self->CurrentUser->id) ) {
+        my %squelch;
+        $squelch{$_}++ for map {$_->Content} $self->SquelchMailTo, $results[2]->SquelchMailTo;
+        $self->_SetTold
+            if grep {not $squelch{$_}} $self->Requestors->MemberEmailAddresses;
+    }
 
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
@@ -2128,6 +2135,7 @@ sub _RecordNote {
         NoteType     => 'Correspond',
         TimeTaken    => 0,
         CommitScrips => 1,
+        SquelchMailTo => undef,
         @_
     );
 
@@ -2184,6 +2192,7 @@ sub _RecordNote {
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
              CommitScrips => $args{'CommitScrips'},
+             SquelchMailTo => $args{'SquelchMailTo'},
     );
 
     unless ($Trans) {

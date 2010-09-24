@@ -1412,6 +1412,7 @@ sub _NewTransaction {
         MIMEObj   => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
+        SquelchMailTo => undef,
         @_
     );
 
@@ -1445,6 +1446,7 @@ sub _NewTransaction {
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
         CommitScrips => $args{'CommitScrips'},
+        SquelchMailTo => $args{'SquelchMailTo'},
     );
 
     # Rationalize the object since we may have done things to it during the caching.
