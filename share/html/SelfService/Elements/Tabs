@@ -54,6 +54,7 @@
     title => $Title
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
+% $m->callback( %ARGS, tabs => $tabs, actions => $actions, CallbackName => "AfterNav");
 <%INIT>
 my $queues = RT::Queues->new($session{'CurrentUser'});
 $queues->UnLimit;
