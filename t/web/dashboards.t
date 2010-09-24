@@ -92,8 +92,12 @@ $m->content_contains("Modify the dashboard different dashboard");
 
 $m->follow_link_ok({text => "Queries"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
-$m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ["search-3-RT::System-1"]);
+my $form = $m->form_name('Dashboard-Searches-body');
+my @input = $form->find_input('Searches-body-Available');
+my ($unowned) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: Unowned Tickets' } @input;
+$form->value('Searches-body-Available' => $unowned );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -110,7 +114,12 @@ my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
-$m->form_name('Dashboard-Searches-body');
+$form = $m->form_name('Dashboard-Searches-body');
+@input = $form->find_input('Searches-body-Available');
+my ($my_tickets) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: My Tickets' } @input;
+$form->value('Searches-body-Available' => $my_tickets );
 $m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
@@ -224,8 +233,12 @@ $m->content_contains("Saved dashboard system dashboard");
 
 $m->follow_link_ok({text => 'Queries'});
 
-$m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-8-RT::User-22']); # XXX: :( :(
+$form = $m->form_name('Dashboard-Searches-body');
+@input = $form->find_input('Searches-body-Available');
+my ($personal) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: personal search' } @input;
+$form->value('Searches-body-Available' => $personal );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
