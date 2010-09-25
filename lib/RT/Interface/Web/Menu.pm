@@ -47,24 +47,269 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::Menu;
-use warnings;
+
 use strict;
+use warnings;
+
+
+use base qw/Class::Accessor::Fast/;
+use URI;
+use Scalar::Util qw(weaken);
+
+__PACKAGE__->mk_accessors(qw(
+    label sort_order link target escape_label class render_children_inline
+    raw_html
+));
+
+=head1 NAME
+
+RT::Interface::Web::Menu - Handle the API for menu navigation
+
+=head1 METHODS
+
+=head2 new PARAMHASH
+
+Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
+I<PARAMHASH> are L</label>, L</parent>, L</sort_order>, L</url>, and
+L</active>.  See the subroutines with the respective name below for
+each option's use.
+
+=cut
 
 sub new {
-    my $class = shift;
-    my $self = bless {}, $class;
-    $self->{'root_node'} = RT::Interface::Web::Menu::Item->new();
+    my $package = shift;
+    my $args = ref($_[0]) eq 'HASH' ? shift @_ : {@_};
+
+    my $parent = delete $args->{'parent'};
+    $args->{sort_order} ||= 0;
+
+    # Class::Accessor only wants a hashref;
+    my $self = $package->SUPER::new( $args );
+
+    # make sure our reference is weak
+    $self->parent($parent) if defined $parent;
+
     return $self;
 }
 
 
-sub as_hash_of_hashes {
+=head2 label [STRING]
 
+Sets or returns the string that the menu item will be displayed as.
+
+=cut
+
+=head2 parent [MENU]
+
+Gets or sets the parent L<RT::Interface::Web::Menu> of this item; this defaults
+to null. This ensures that the reference is weakened.
+
+=head2 raw_html [STRING]
+
+Sets the content of this menu item to a raw blob of HTML. When
+asked or output, rather than constructing a link, Jifty will return
+this raw content. No escaping is done.
+
+=cut
+
+sub parent {
+    my $self = shift;
+    if (@_) {
+        $self->{parent} = shift;
+        weaken $self->{parent};
+    }
+
+    return $self->{parent};
 }
 
-sub root {
+
+=head2 sort_order [NUMBER]
+
+Gets or sets the sort order of the item, as it will be displayed under
+the parent.  This defaults to adding onto the end.
+
+=head2 link
+
+Gets or set a L<Jifty::Web::Form::Link> object that represents this
+menu item. If you're looking to do complex ajaxy things with menus,
+this is likely the option you want.
+
+=head2 target [STRING]
+
+Get or set the frame or pseudo-target for this link. something like L<_blank>
+
+=cut
+
+=head2 class [STRING]
+
+Gets or sets the CSS class the link should have in addition to the default
+classes.  This is only used if L</link> isn't specified.
+
+=head2 render_children_inline [BOOLEAN]
+
+Gets or sets whether children are rendered inline as a menu "group" instead
+of a true submenu.  Only used when rendering with YUI for now.
+Defaults to false.
+
+Note that YUI doesn't support rendering nested menu groups, so having direct
+parent/children render_children_inline is likely not going to do what you
+want or expect.
+
+=head2 url
+
+Gets or sets the URL that the menu's link goes to.  If the link
+provided is not absolute (does not start with a "/"), then is is
+treated as relative to it's parent's url, and made absolute.
+
+=cut
+
+sub url {
     my $self = shift;
-    return $self->{'root_node'};
+    if (@_) {
+        $self->{url} = shift;
+        $self->{url} = URI->new_abs($self->{url}, $self->parent->url . "/")->as_string
+            if defined $self->{url} and $self->parent and $self->parent->url;
+        $self->{url} =~ s!///!/! if $self->{url};
+    }
+    return $self->{url};
+}
+
+=head2 active [BOOLEAN]
+
+Gets or sets if the menu item is marked as active.  Setting this
+cascades to all of the parents of the menu item.
+
+=cut
+
+sub active {
+    my $self = shift;
+    if (@_) {
+        $self->{active} = shift;
+        $self->parent->active($self->{active}) if defined $self->parent;
+    }
+    return $self->{active};
+}
+
+=head2 child KEY [, PARAMHASH]
+
+If only a I<KEY> is provided, returns the child with that I<KEY>.
+
+Otherwise, creates or overwrites the child with that key, passing the
+I<PARAMHASH> to L<RT::Interface::Web::Menu/new>.  Additionally, the paramhash's
+L</label> defaults to the I<KEY>, and the L</sort_order> defaults to the
+pre-existing child's sort order (if a C<KEY> is being over-written) or
+the end of the list, if it is a new C<KEY>.
+
+If the paramhash contains a key called C<menu>, that will be used instead
+of creating a new RT::Interface::Web::Menu.
+
+
+=cut
+
+sub child {
+    my $self  = shift;
+    my $key   = shift;
+    my $proto = ref $self || $self;
+
+    if ( my %args = @_ ) {
+
+        # Clear children ordering cache
+        delete $self->{children_list};
+
+        my $child;
+        if ( $child = $args{menu} ) {
+            $child->parent($self);
+        } else {
+            $child = $proto->new(
+                {   parent     => $self,
+                    label        => $key,
+                    escape_label => 1,
+                    %args
+                }
+            );
+        }
+        $self->{children}{$key} = $child;
+
+        $child->sort_order( $args{sort_order} || (scalar values %{ $self->{children} })  )
+            unless ($child->sort_order());
+
+        # URL is relative to parents, and cached, so set it up now
+        $child->url( $child->{url} );
+
+        # Figure out the URL
+        my $url
+            = (     defined $child->link
+                and ref $child->link
+                and $child->link->can('url') )
+            ? $child->link->url
+            : $child->url;
+
+        # Activate it
+        if ( defined $url and length $url and Jifty->web->request ) {
+
+            # XXX TODO cleanup for mod_perl
+            my $base_path = Jifty->web->request->path;
+            chomp($base_path);
+
+            $base_path =~ s/index\.html$//;
+            $base_path =~ s/\/+$//;
+            $url       =~ s/\/+$//;
+
+            if ( $url eq $base_path ) {
+                $self->{children}{$key}->active(1);
+            }
+        }
+    }
+
+    return $self->{children}{$key};
+}
+
+=head2 active_child
+
+Returns the first active child node, or C<undef> is there is none.
+
+=cut
+
+sub active_child {
+    my $self = shift;
+    foreach my $kid ($self->children) {
+        return $kid if $kid->active;
+    }
+    return undef;
+}
+
+
+=head2 delete KEY
+
+Removes the child with the provided I<KEY>.
+
+=cut
+
+sub delete {
+    my $self = shift;
+    my $key = shift;
+    delete $self->{children_list};
+    delete $self->{children}{$key};
+}
+
+=head2 children
+
+Returns the children of this menu item in sorted order; as an array in
+array context, or as an array reference in scalar context.
+
+=cut
+
+sub children {
+    my $self = shift;
+    my @kids;
+    if ($self->{children_list}) {
+        @kids = @{$self->{children_list}};
+    } else {
+        @kids = values %{$self->{children} || {}};
+        @kids = sort {$a->{sort_order} <=> $b->{sort_order}} @kids;
+        $self->{children_list} = \@kids;
+    }
+    return wantarray ? @kids : \@kids;
 }
 
 1;
