@@ -580,8 +580,11 @@ sub _StringLimit {
         && (!defined $value || !length $value)
         && lc($op) ne 'is' && lc($op) ne 'is not'
     ) {
-        my $negative = 1 if $op eq '!=' || $op =~ /^NOT\s/;
-        $op = $negative? 'IS NOT': 'IS';
+        if ($op eq '!=' || $op =~ /^NOT\s/i) {
+            $op = 'IS NOT';
+        } else {
+            $op = 'IS';
+        }
         $value = 'NULL';
     }
 
