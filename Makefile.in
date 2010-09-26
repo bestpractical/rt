@@ -400,6 +400,8 @@ dropdb:
 force-dropdb: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 
+critic:
+	perlcritic --quiet sbin bin lib
 
 libs-install: 
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
