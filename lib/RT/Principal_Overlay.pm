@@ -251,6 +251,11 @@ sub HasRight {
         @_,
     );
 
+    # RT's SystemUser always has all rights
+    if ($self->id == RT->SystemUser->id) {
+        return 1;
+    }
+
     unless ( $args{'Right'} ) {
         $RT::Logger->crit("HasRight called without a right");
         return (undef);
