@@ -576,9 +576,9 @@ sub _StringLimit {
     # FIXME:
     # Valid Operators:
     #  =, !=, LIKE, NOT LIKE
-    if ( (!defined $value || !length $value)
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle'
+        && (!defined $value || !length $value)
         && lc($op) ne 'is' && lc($op) ne 'is not'
-        && RT->Config->Get('DatabaseType') eq 'Oracle'
     ) {
         my $negative = 1 if $op eq '!=' || $op =~ /^NOT\s/;
         $op = $negative? 'IS NOT': 'IS';
