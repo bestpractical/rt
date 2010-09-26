@@ -276,7 +276,15 @@ Handle ID field.
 sub _IdLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
-    return $sb->_IntLimit( $field, $op, $value, @rest ) unless $value eq '__Bookmarked__';
+    if ( $value eq '__Bookmarked__' ) {
+        return $sb->_BookmarkLimit( $field, $op, $value, @rest );
+    } else {
+        return $sb->_IntLimit( $field, $op, $value, @rest );
+    }
+}
+
+sub _BookmarkLimit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
     die "Invalid operator $op for __Bookmarked__ search on $field"
         unless $op =~ /^(=|!=)$/;
