@@ -605,15 +605,15 @@ sub InsertInitialData {
 
     # init RT::SystemUser and RT::System objects
     RT::InitSystemObjects();
-    unless ( $RT::SystemUser->id ) {
+    unless ( RT->SystemUser->id ) {
         return (0, "Couldn't load system user");
     }
 
     # grant SuperUser right to system user
     {
-        my $test_ace = RT::ACE->new( $RT::SystemUser );
+        my $test_ace = RT::ACE->new( RT->SystemUser );
         $test_ace->LoadByCols(
-            PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+            PrincipalId   => ACLEquivGroupId( RT->SystemUser->Id ),
             PrincipalType => 'Group',
             RightName     => 'SuperUser',
             ObjectType    => 'RT::System',
@@ -622,9 +622,9 @@ sub InsertInitialData {
         if ( $test_ace->id ) {
             push @warns, "System user has global SuperUser right.";
         } else {
-            my $ace = RT::ACE->new( $RT::SystemUser );
+            my $ace = RT::ACE->new( RT->SystemUser );
             my ( $val, $msg ) = $ace->_BootstrapCreate(
-                PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+                PrincipalId   => ACLEquivGroupId( RT->SystemUser->Id ),
                 PrincipalType => 'Group',
                 RightName     => 'SuperUser',
                 ObjectType    => 'RT::System',
@@ -640,14 +640,14 @@ sub InsertInitialData {
     # $self->loc('Privileged'); # For the string extractor to get a string to localize
     # $self->loc('Unprivileged'); # For the string extractor to get a string to localize
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         $group->LoadSystemInternalGroup( $name );
         if ( $group->id ) {
             push @warns, "System group '$name' already exists.";
             next;
         }
 
-        $group = RT::Group->new( $RT::SystemUser );
+        $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->_Create(
             Type        => $name,
             Domain      => 'SystemInternal',
@@ -660,7 +660,7 @@ sub InsertInitialData {
 
     # nobody
     {
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         $user->Load('Nobody');
         if ( $user->id ) {
             push @warns, "Found 'Nobody' user in the DB.";
@@ -692,14 +692,14 @@ sub InsertInitialData {
 
     # system role groups
     foreach my $name (qw(Owner Requestor Cc AdminCc)) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         $group->LoadSystemRoleGroup( $name );
         if ( $group->id ) {
             push @warns, "System role '$name' already exists.";
             next;
         }
 
-        $group = RT::Group->new( $RT::SystemUser );
+        $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->_Create(
             Type        => $name,
             Domain      => 'RT::System-Role',
@@ -749,7 +749,7 @@ sub InsertData {
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
-            my $new_entry = RT::Group->new( $RT::SystemUser );
+            my $new_entry = RT::Group->new( RT->SystemUser );
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             unless ( $return ) {
@@ -761,7 +761,7 @@ sub InsertData {
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
-                    my $parent = RT::Group->new($RT::SystemUser);
+                    my $parent = RT::Group->new(RT->SystemUser);
                     if ( ref $_ eq 'HASH' ) {
                         $parent->LoadByCols( %$_ );
                     }
@@ -798,7 +798,7 @@ sub InsertData {
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
-            my $new_entry = RT::User->new( $RT::SystemUser );
+            my $new_entry = RT::User->new( RT->SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -811,7 +811,7 @@ sub InsertData {
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
-            my $new_entry = RT::Queue->new($RT::SystemUser);
+            my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -824,7 +824,7 @@ sub InsertData {
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
-            my $new_entry = RT::CustomField->new( $RT::SystemUser );
+            my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
             my @queues;
@@ -847,18 +847,18 @@ sub InsertData {
 
             # apply by default
             if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
-                my $ocf = RT::ObjectCustomField->new($RT::SystemUser);
+                my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
                 $ocf->Create( CustomField => $new_entry->Id );
             }
 
             for my $q (@queues) {
-                my $q_obj = RT::Queue->new($RT::SystemUser);
+                my $q_obj = RT::Queue->new(RT->SystemUser);
                 $q_obj->Load($q);
                 unless ( $q_obj->Id ) {
                     $RT::Logger->error("Could not find queue ". $q );
                     next;
                 }
-                my $OCF = RT::ObjectCustomField->new($RT::SystemUser);
+                my $OCF = RT::ObjectCustomField->new(RT->SystemUser);
                 ( $return, $msg ) = $OCF->Create(
                     CustomField => $new_entry->Id,
                     ObjectId    => $q_obj->Id,
@@ -877,12 +877,12 @@ sub InsertData {
 
             # Global rights or Queue rights?
             if ( $item->{'CF'} ) {
-                $object = RT::CustomField->new( $RT::SystemUser );
+                $object = RT::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
                 $object->LoadByName( @columns );
             } elsif ( $item->{'Queue'} ) {
-                $object = RT::Queue->new($RT::SystemUser);
+                $object = RT::Queue->new(RT->SystemUser);
                 $object->Load( $item->{'Queue'} );
             } else {
                 $object = $RT::System;
@@ -892,7 +892,7 @@ sub InsertData {
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
-                $princ = RT::Group->new($RT::SystemUser);
+                $princ = RT::Group->new(RT->SystemUser);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
@@ -908,7 +908,7 @@ sub InsertData {
                   $princ->Load( $item->{'GroupId'} );
                 }
             } else {
-                $princ = RT::User->new($RT::SystemUser);
+                $princ = RT::User->new(RT->SystemUser);
                 $princ->Load( $item->{'UserId'} );
             }
 
@@ -931,7 +931,7 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripActions...");
 
         for my $item (@ScripActions) {
-            my $new_entry = RT::ScripAction->new($RT::SystemUser);
+            my $new_entry = RT::ScripAction->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -948,7 +948,7 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripConditions...");
 
         for my $item (@ScripConditions) {
-            my $new_entry = RT::ScripCondition->new($RT::SystemUser);
+            my $new_entry = RT::ScripCondition->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -965,7 +965,7 @@ sub InsertData {
         $RT::Logger->debug("Creating templates...");
 
         for my $item (@Templates) {
-            my $new_entry = RT::Template->new($RT::SystemUser);
+            my $new_entry = RT::Template->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -980,7 +980,7 @@ sub InsertData {
         $RT::Logger->debug("Creating scrips...");
 
         for my $item (@Scrips) {
-            my $new_entry = RT::Scrip->new($RT::SystemUser);
+            my $new_entry = RT::Scrip->new(RT->SystemUser);
 
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
@@ -999,7 +999,7 @@ sub InsertData {
     }
     if ( @Attributes ) {
         $RT::Logger->debug("Creating predefined searches...");
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {
             my $obj = delete $item->{Object}; # XXX: make this something loadable
@@ -1045,7 +1045,7 @@ Given a userid, return that user's acl equivalence group
 sub ACLEquivGroupId {
     my $id = shift;
 
-    my $cu = $RT::SystemUser;
+    my $cu = RT->SystemUser;
     unless ( $cu ) {
         require RT::CurrentUser;
         $cu = RT::CurrentUser->new;

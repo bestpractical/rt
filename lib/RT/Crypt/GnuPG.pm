@@ -2000,7 +2000,7 @@ sub CheckRecipients {
             # good, one suitable and trusted key 
             next;
         }
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         $user->LoadByEmail( $address );
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
@@ -2262,7 +2262,7 @@ sub _ParseDate {
     return $value unless $value;
 
     require RT::Date;
-    my $obj = RT::Date->new( $RT::SystemUser );
+    my $obj = RT::Date->new( RT->SystemUser );
     # unix time
     if ( $value =~ /^\d+$/ ) {
         $obj->Set( Value => $value );

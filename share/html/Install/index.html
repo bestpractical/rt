@@ -129,7 +129,7 @@ elsif ( $Run ) {
 }
 my $lang_handle = do { local $@;
     eval {
-        ($session{'CurrentUser'} || RT::CurrentUser->new($RT::SystemUser->Id))
+        ($session{'CurrentUser'} || RT::CurrentUser->new(RT->SystemUser->Id))
             ->LanguageHandle
     }
 };

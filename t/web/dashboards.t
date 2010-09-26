@@ -6,7 +6,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
 
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer');
@@ -15,14 +15,14 @@ $user_obj->SetPrivileged(1);
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
-my $onlooker = RT::User->new($RT::SystemUser);
+my $onlooker = RT::User->new(RT->SystemUser);
 ($ret, $msg) = $onlooker->LoadOrCreateByEmail('onlooker@example.com');
 ok($ret, 'ACL test user creation');
 $onlooker->SetName('onlooker');
 $onlooker->SetPrivileged(1);
 ($ret, $msg) = $onlooker->SetPassword('onlooker');
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
 
 for my $user ($user_obj, $onlooker) {
@@ -133,7 +133,7 @@ is(@searches, 2, "two saved searches in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
 like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(
     Queue     => $queue->Id,
 	Requestor => [ $user_obj->Name ],

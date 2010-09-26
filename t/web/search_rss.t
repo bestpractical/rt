@@ -5,7 +5,7 @@ use strict;
 use RT::Test tests => 36;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 for ( 1 .. 5 ) {
     $ticket->Create(
         Subject   => 'Ticket ' . $_,

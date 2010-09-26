@@ -51,7 +51,7 @@ use warnings;
 
 package RT::Lifecycle;
 
-sub loc { return $RT::SystemUser->loc( @_ ) }
+sub loc { return RT->SystemUser->loc( @_ ) }
 
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
@@ -727,7 +727,7 @@ sub no_maps {
 sub queues {
     my $self = shift;
     require RT::Queues;
-    my $queues = RT::Queues->new( $RT::SystemUser );
+    my $queues = RT::Queues->new( RT->SystemUser );
     $queues->limit( column => 'lifecycle', value => $self->name );
     return $queues;
 }

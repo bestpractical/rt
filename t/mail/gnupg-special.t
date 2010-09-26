@@ -43,7 +43,7 @@ ok( $m->login, 'we did log in' );
     $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 }
 
-ok(my $user = RT::User->new($RT::SystemUser));
+ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
@@ -55,7 +55,7 @@ RT::Test->set_rights(
 {
     my $id = send_via_mailgate('quoted_inline_signature.txt');
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 

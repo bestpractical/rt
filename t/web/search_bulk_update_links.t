@@ -13,7 +13,7 @@ use RT::Ticket;
 
 my ( @link_tickets, @search_tickets );
 for ( 1 .. 3 ) {
-    my $link_ticket = RT::Ticket->new($RT::SystemUser);
+    my $link_ticket = RT::Ticket->new(RT->SystemUser);
     my ( $ret, $msg ) = $link_ticket->Create(
         Subject   => "link ticket $_",
         Queue     => 'general',
@@ -25,7 +25,7 @@ for ( 1 .. 3 ) {
 }
 
 for ( 1 .. 3 ) {
-    my $ticket = RT::Ticket->new($RT::SystemUser);
+    my $ticket = RT::Ticket->new(RT->SystemUser);
     my ( $ret, $msg ) = $ticket->Create(
         Subject   => "search ticket $_",
         Queue     => 'general',

@@ -7,7 +7,7 @@ use RT::Test tests => 35;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
-my $root = RT::User->new($RT::SystemUser);
+my $root = RT::User->new(RT->SystemUser);
 ok( $root->Load('root'), 'load root user' );
 
 my $cf_name = 'test cf date';
@@ -74,7 +74,7 @@ diag 'check valid inputs with various timezones in ticket create page';
     );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/, "created ticket $id" );
 
-    $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket = RT::Ticket->new(RT->SystemUser);
     $ticket->Load($id);
     is( $ticket->CustomFieldValues($cfid)->First->Content,
         '2010-05-04', 'date in db' );

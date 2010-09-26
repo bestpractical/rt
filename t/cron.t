@@ -9,7 +9,7 @@ use RT::Test nodata => 1, tests => 18;
 ### Set up some testing data.  Test the testing data because why not?
 
 # Create a user with rights, a queue, and some tickets.
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('tara@example.com');
 ok($ret, 'record test user creation');
 $user_obj->SetName('tara');

@@ -65,7 +65,7 @@ if (my $re = RT->Config->Get('RTAddressRegexp')) {
 }
 
 use RT::Queues;
-my $queues = RT::Queues->new( $RT::SystemUser );
+my $queues = RT::Queues->new( RT->SystemUser );
 $queues->UnLimit;
 $queues->RowsPerPage(100);
 

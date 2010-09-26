@@ -501,7 +501,7 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = RT::Queue->new($RT::SystemUser);
+    my $tempqueue = RT::Queue->new(RT->SystemUser);
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
@@ -898,7 +898,7 @@ sub _AddWatcher {
             $principal->Load( $user->PrincipalId );
         } else {
             # if the user doesn't exist, we need to create a new user
-            my $new_user = RT::User->new($RT::SystemUser);
+            my $new_user = RT::User->new(RT->SystemUser);
 
             my ( $Address, $Name ) =  
                RT::Interface::Email::ParseAddressFromHeader($args{'Email'});

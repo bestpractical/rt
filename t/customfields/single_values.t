@@ -7,11 +7,11 @@ use RT::Test nodata => 1, tests => 8;
 
 
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 my ($id,$msg) =$q->Create(Name => "CF-Single-".$$);
 ok($id,$msg);
 
-my $cf = RT::CustomField->new($RT::SystemUser);
+my $cf = RT::CustomField->new(RT->SystemUser);
 ($id,$msg) = $cf->Create(Name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
 ok($id,$msg);
 
@@ -23,7 +23,7 @@ ok($id,$msg);
 ok($id,$msg);
 
 
-my $t = RT::Ticket->new($RT::SystemUser);
+my $t = RT::Ticket->new(RT->SystemUser);
 ($id,undef,$msg) = $t->Create(Queue => $q->id,
           Subject => 'CF Test');
 

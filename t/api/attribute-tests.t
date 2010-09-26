@@ -11,7 +11,7 @@ my $attribute = "squelch-$runid";
 
 ok(require RT::Attributes);
 
-my $user = RT::User->new($RT::SystemUser);
+my $user = RT::User->new(RT->SystemUser);
 ok (UNIVERSAL::isa($user, 'RT::User'));
 my ($id,$msg)  = $user->Create(Name => 'attrtest-'.$runid);
 ok ($id, $msg);

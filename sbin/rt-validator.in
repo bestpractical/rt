@@ -199,7 +199,7 @@ sub m2t($) {
     my $model = shift;
     return $cache{$model} if $cache{$model};
     my $class = "RT::$model";
-    my $object = $class->new( $RT::SystemUser );
+    my $object = $class->new( RT->SystemUser );
     return $cache{$model} = $object->Table;
 } }
 
@@ -394,7 +394,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 "Found a record in GroupMembers that has no direct duplicate in CachedGroupMembers table."
             );
 
-            my $gm = RT::GroupMember->new( $RT::SystemUser );
+            my $gm = RT::GroupMember->new( RT->SystemUser );
             $gm->Load( $id );
             die "Couldn't load GM record #$id" unless $gm->id;
             my $cgm = create_record( 'CachedGroupMembers',
@@ -434,7 +434,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 ." duplicate in CachedGroupMembers table."
             );
 
-            my $g = RT::Group->new( $RT::SystemUser );
+            my $g = RT::Group->new( RT->SystemUser );
             $g->Load( $id );
             die "Couldn't load group #$id" unless $g->id;
             die "Loaded group by $id has id ". $g->id  unless $g->id == $id;
@@ -795,7 +795,7 @@ push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
     my %fix = ();
     foreach my $model ( @models ) {
         my $class = "RT::$model";
-        my $object = $class->new( $RT::SystemUser );
+        my $object = $class->new( RT->SystemUser );
         foreach my $column ( qw(LastUpdatedBy Creator) ) {
             next unless $object->_Accessible( $column, 'auto' );
 
@@ -848,7 +848,7 @@ END
 push @CHECKS, 'LastUpdatedBy and Creator' => sub {
     foreach my $model ( @models ) {
         my $class = "RT::$model";
-        my $object = $class->new( $RT::SystemUser );
+        my $object = $class->new( RT->SystemUser );
         my $table = $object->Table;
         foreach my $column ( qw(LastUpdatedBy Creator) ) {
             next unless $object->_Accessible( $column, 'auto' );

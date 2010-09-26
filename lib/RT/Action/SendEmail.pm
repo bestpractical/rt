@@ -348,7 +348,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Attachments->new($RT::SystemUser);
+    my $attachments = RT::Attachments->new(RT->SystemUser);
     $attachments->Limit(
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
@@ -467,7 +467,7 @@ sub AddTicket {
     my $tid  = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs   = RT::Attachments->new($RT::SystemUser);
+    my $attachs   = RT::Attachments->new(RT->SystemUser);
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(
@@ -659,7 +659,7 @@ sub DeferDigestRecipients {
         $RT::Logger->debug( $self->TemplateObj->MIMEObj->head->as_string );
         foreach my $rcpt ( map { $_->address } $self->AddressesFromHeader($mailfield) ) {
             next unless $rcpt;
-            my $user_obj = RT::User->new($RT::SystemUser);
+            my $user_obj = RT::User->new(RT->SystemUser);
             $user_obj->LoadByEmail($rcpt);
             if  ( ! $user_obj->id ) {
                 # If there's an email address in here without an associated
@@ -777,7 +777,7 @@ sub RemoveInappropriateRecipients {
                 # Only send to "privileged" watchers.
                 foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
                     foreach my $addr ( @{ $self->{$type} } ) {
-                        my $user = RT::User->new($RT::SystemUser);
+                        my $user = RT::User->new(RT->SystemUser);
                         $user->LoadByEmail($addr);
                         push @blacklist, $addr if ( !$user->Privileged );
                     }

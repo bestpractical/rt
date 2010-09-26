@@ -6,7 +6,7 @@ use RT::Test nodata => 1, tests => 29;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 # Create a user with basically no rights, to start.
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer-'.$$.'@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer-'.$$);
@@ -79,11 +79,11 @@ $agent->content_like(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave
 # Create a group, and a queue, so we can test limited user visibility
 # via SelectOwner.
 
-my $queue_obj = RT::Queue->new($RT::SystemUser);
+my $queue_obj = RT::Queue->new(RT->SystemUser);
 ($ret, $msg) = $queue_obj->Create(Name => 'CustomerQueue-'.$$, 
 				  Description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
-my $group_obj = RT::Group->new($RT::SystemUser);
+my $group_obj = RT::Group->new(RT->SystemUser);
 ($ret, $msg) = $group_obj->CreateUserDefinedGroup(Name => 'CustomerGroup-'.$$,
 			      Description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");

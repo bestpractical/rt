@@ -3,9 +3,9 @@
     # 3.7.82 upgrade script still was creating 'My Bookmarks', try to fix it
     sub {
         $RT::Logger->debug("Going to rename 'My Bookmarks' to 'Bookmarked Tickets'");
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
 
-        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        my $attrs = RT::Attributes->new( RT->SystemUser );
         $attrs->LimitToObject( $sys );
         my ($attr) = $attrs->Named( 'Search - My Bookmarks' );
         unless ($attr) {

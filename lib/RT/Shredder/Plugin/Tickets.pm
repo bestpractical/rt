@@ -92,7 +92,7 @@ sub TestArgs
     my %args = @_;
     my $queue;
     if( $args{'query'} ) {
-        my $objs = RT::Tickets->new( $RT::SystemUser );
+        my $objs = RT::Tickets->new( RT->SystemUser );
         $objs->{'allow_deleted_search'} = 1;
         my ($status, $msg) = $objs->FromSQL( $args{'query'} );
         return( 0, "Bad query argument, error: $msg" ) unless $status;
@@ -138,7 +138,7 @@ sub GetLinked
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( ". $self->{'opt'}{'query'} ." )";
     }
-    my $objs = RT::Tickets->new( $RT::SystemUser );
+    my $objs = RT::Tickets->new( RT->SystemUser );
     $objs->{'allow_deleted_search'} = 1;
     $objs->FromSQL( $query );
     $self->FetchNext( $objs, 1 );

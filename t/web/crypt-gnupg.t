@@ -48,7 +48,7 @@ RT::Test->import_gnupg_key('general@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com.2', 'public');
 RT::Test->import_gnupg_key('general@example.com.2', 'secret');
 
-ok(my $user = RT::User->new($RT::SystemUser));
+ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
@@ -110,7 +110,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -178,7 +178,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -250,7 +250,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -316,7 +316,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -358,12 +358,12 @@ my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'noke
 $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
-my $tick = RT::Ticket->new( $RT::SystemUser );
+my $tick = RT::Ticket->new( RT->SystemUser );
 $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
-$tick = RT::Ticket->new( $RT::SystemUser );
+$tick = RT::Ticket->new( RT->SystemUser );
 $tick->Create(Subject => 'owner has pubkey', Queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
@@ -389,7 +389,7 @@ is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
 like($warnings, qr/nokey\@example.com: skipped: public key not found/);
 
-$tick = RT::Ticket->new( $RT::SystemUser );
+$tick = RT::Ticket->new( RT->SystemUser );
 $tick->Load( $id );
 ok ($tick->id, "loaded ticket #$id");
 
@@ -402,7 +402,7 @@ is ($tick->Subject,
 my $key1 = "EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2";
 my $key2 = "75E156271DCCF02DDD4A7A8CDF651FA0632C4F50";
 
-ok($user = RT::User->new($RT::SystemUser));
+ok($user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key1, "preferred key is set correctly");
 $m->get("$baseurl/Prefs/Other.html");
@@ -417,7 +417,7 @@ $m->form_number(3);
 $m->select("PreferredKey" => $key2);
 $m->submit;
 
-ok($user = RT::User->new($RT::SystemUser));
+ok($user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
 

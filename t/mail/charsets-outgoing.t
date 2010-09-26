@@ -35,7 +35,7 @@ diag "make sure queue has no subject tag";
 
 diag "set intial simple autoreply template";
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
@@ -51,7 +51,7 @@ diag "set intial simple autoreply template";
 
 diag "basic test of autoreply";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -63,7 +63,7 @@ diag "basic test of autoreply";
 
 diag "non-ascii Subject with ascii prefix set in the template";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},
@@ -92,7 +92,7 @@ diag "set non-ascii subject tag for the queue";
 
 diag "ascii subject with non-ascii subject tag";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -113,7 +113,7 @@ diag "ascii subject with non-ascii subject tag";
 
 diag "non-ascii subject with non-ascii subject tag";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},
@@ -147,7 +147,7 @@ foreach my $prefix_set ( 'ru', 'latin1' ) {
 
 diag "add non-ascii subject prefix in the autoreply template";
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
@@ -162,7 +162,7 @@ diag "add non-ascii subject prefix in the autoreply template";
 
 diag "ascii subject with non-ascii subject prefix in template";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -183,7 +183,7 @@ diag "ascii subject with non-ascii subject prefix in template";
 
 diag "non-ascii subject with non-ascii subject prefix in template";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},
@@ -213,7 +213,7 @@ diag "set non-ascii subject tag for the queue";
 
 diag "non-ascii subject, non-ascii prefix in template and non-ascii tag";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},
@@ -251,7 +251,7 @@ diag "don't change subject via template";
 # clean DB has autoreply that always changes subject in template,
 # we should test situation when subject is not changed from template
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
@@ -266,7 +266,7 @@ diag "don't change subject via template";
 
 diag "non-ascii Subject without changes in template";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},
@@ -294,7 +294,7 @@ diag "set non-ascii subject tag for the queue";
 
 diag "non-ascii Subject without changes in template and with non-ascii subject tag";
 foreach my $set ( 'ru', 'latin1' ) {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => $string{$set}{test},

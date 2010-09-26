@@ -159,7 +159,7 @@ sub __Relates
         $rec->{'Description'} = "Have no related ACL equivalence Group object";
     }
 
-    $obj = RT::Group->new( $RT::SystemUser );
+    $obj = RT::Group->new( RT->SystemUser );
     $obj->LoadACLEquivalenceGroup( $self->PrincipalObj );
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );

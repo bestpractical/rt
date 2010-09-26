@@ -14,7 +14,7 @@ my @_outgoing_messages;
 my @scrips_fired;
 
 #We're not testing acls here.
-my $everyone = RT::Group->new($RT::SystemUser);
+my $everyone = RT::Group->new(RT->SystemUser);
 $everyone->LoadSystemInternalGroup('Everyone');
 $everyone->PrincipalObj->GrantRight( Right =>'SuperUser' );
 
@@ -53,7 +53,7 @@ use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');
 my ($status, $msg) = RT::Interface::Email::Gateway(\%args);
 ok($status, "successfuly used Email::Gateway interface") or diag("error: $msg");
-my $tickets = RT::Tickets->new($RT::SystemUser);
+my $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick= $tickets->First();
@@ -80,10 +80,10 @@ Foob!');
                                   
 use Data::Dumper;
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my  ($id,  undef, $create_msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
 ok ($id,$create_msg);
-$tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -116,7 +116,7 @@ use RT::Interface::Email;
                            
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -158,7 +158,7 @@ use RT::Interface::Email;
                                   
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -257,7 +257,7 @@ $parser->ParseMIMEEntityFromScalar($content);
     %args = (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
     # TODO: following 5 lines should replaced by get_latest_ticket_ok()
-    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
     $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
     $tick = $tickets->First();
@@ -282,7 +282,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -326,7 +326,7 @@ warnings_like {
 "The badly formed Russian spam we have isn't actually well-formed UTF8, which makes Encode (correctly) warn";
 
 
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -351,7 +351,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_russian_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
@@ -392,7 +392,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_nested_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
@@ -438,7 +438,7 @@ $parser->ParseMIMEEntityFromScalar($content);
     local *RT::Action::SendEmail::SendMessage = sub { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
-    $tickets = RT::Tickets->new($RT::SystemUser);
+    $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
     $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
     $tick= $tickets->First();
@@ -463,7 +463,7 @@ no warnings qw/redefine/;
 local *RT::Action::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();
@@ -487,7 +487,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick= $tickets->First();

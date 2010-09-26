@@ -10,7 +10,7 @@ RT->Config->Set('LogToScreen' => 'debug');
 RT::Init();
 
 use RT::Transactions;
-my $txns = RT::Transactions->new( $RT::SystemUser );
+my $txns = RT::Transactions->new( RT->SystemUser );
 $txns->Limit(
     FIELD => 'ObjectType',
     OPERATOR => '=',

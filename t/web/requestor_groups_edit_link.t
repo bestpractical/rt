@@ -23,7 +23,7 @@ ok(
     'set rights for user_a'
 );
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ($id) = $ticket->Create(
     Subject   => 'groups limit',
     Queue     => 'General',

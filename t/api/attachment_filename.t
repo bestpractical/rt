@@ -1,6 +1,6 @@
 use RT::Test tests => 5;
 use MIME::Entity;
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my $mime   = MIME::Entity->build(
     From => 'test@example.com',
     Type => 'text/html',
@@ -27,7 +27,7 @@ $mime->attach(
 my $id = $ticket->Create( MIMEObj => $mime, Queue => 'General' );
 ok( $id, "created ticket $id" );
 
-my $atts = RT::Attachments->new( $RT::SystemUser );
+my $atts = RT::Attachments->new( RT->SystemUser );
 $atts->Limit( FIELD => 'ContentType', VALUE => 'image/png' );
 is( $atts->Count, 3, 'got 3 png files' );
 

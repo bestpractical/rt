@@ -82,7 +82,7 @@ if ( $Run ) {
     system( 'chmod -w ' . RT::Installer->ConfigFile ) &&
         $RT::Logger->error(
                 'failed to make ' . RT::Installer->ConfigFile . ' readonly' );
-    my $root = RT::User->new( $RT::SystemUser );
+    my $root = RT::User->new( RT->SystemUser );
     $root->Load('root');
     $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
 

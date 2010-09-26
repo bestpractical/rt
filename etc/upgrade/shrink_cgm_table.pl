@@ -10,7 +10,7 @@ RT->Config->Set('LogToScreen' => 'debug');
 RT::Init();
 
 use RT::CachedGroupMembers;
-my $cgms = RT::CachedGroupMembers->new( $RT::SystemUser );
+my $cgms = RT::CachedGroupMembers->new( RT->SystemUser );
 $cgms->Limit(
     FIELD => 'id',
     OPERATOR => '!=',

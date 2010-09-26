@@ -84,15 +84,15 @@ TODO: {
 
 
 # Set up a custom field for editing tests
-my $cf = RT::CustomField->new($RT::SystemUser);
+my $cf = RT::CustomField->new(RT->SystemUser);
 my ($val,$msg) = $cf->Create(Name => 'MyCF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
-my $othercf = RT::CustomField->new($RT::SystemUser);
+my $othercf = RT::CustomField->new(RT->SystemUser);
 ($val,$msg) = $othercf->Create(Name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
-my $multiple_cf = RT::CustomField->new($RT::SystemUser);
+my $multiple_cf = RT::CustomField->new(RT->SystemUser);
 ($val,$msg) = $multiple_cf->Create(Name => 'MultipleCF'.$$, Type =>
         'FreeformMultiple', Queue => $queue_id);
 ok($val,$msg);
@@ -391,14 +391,14 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     # create a user; give them privileges to take and steal
     ### TODO: implement 'grant' in the CLI tool; use that here instead.
     ###       this breaks the abstraction barrier, like, a lot.
-    my $steal_user = RT::User->new($RT::SystemUser);
+    my $steal_user = RT::User->new(RT->SystemUser);
     my ($steal_user_id, $msg) = $steal_user->Create( Name => "fooser$$",
                                           EmailAddress => "fooser$$\@localhost",
                                           Privileged => 1,
                                           Password => 'foobar',
                                         );
     ok($steal_user_id, "Created the user? $msg");
-    my $steal_queue = RT::Queue->new($RT::SystemUser);
+    my $steal_queue = RT::Queue->new(RT->SystemUser);
     my $steal_queue_id;
     ($steal_queue_id, $msg) = $steal_queue->Create( Name => "Steal$$" );
     ok($steal_queue_id, "Got the queue? $msg");

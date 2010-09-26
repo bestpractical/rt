@@ -72,7 +72,7 @@ foreach my $queue_set ( @variants ) {
 
 my $tid;
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     ($tid) = $ticket->Create(
         Subject   => 'test',
         Queue     => $queue->id,
@@ -112,7 +112,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -133,7 +133,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -157,7 +157,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -180,7 +180,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 

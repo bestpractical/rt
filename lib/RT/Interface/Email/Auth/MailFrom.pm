@@ -77,14 +77,14 @@ sub GetCurrentUser {
     }
 
     # If the user can't be loaded, we may need to create one. Figure out the acl situation.
-    my $unpriv = RT::Group->new( $RT::SystemUser );
+    my $unpriv = RT::Group->new( RT->SystemUser );
     $unpriv->LoadSystemInternalGroup('Unprivileged');
     unless ( $unpriv->Id ) {
         $RT::Logger->crit("Couldn't find the 'Unprivileged' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    my $everyone = RT::Group->new( $RT::SystemUser );
+    my $everyone = RT::Group->new( RT->SystemUser );
     $everyone->LoadSystemInternalGroup('Everyone');
     unless ( $everyone->Id ) {
         $RT::Logger->crit("Couldn't find the 'Everyone' internal group");

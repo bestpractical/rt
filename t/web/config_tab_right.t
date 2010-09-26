@@ -6,7 +6,7 @@ use RT::Test nodata => 1, tests => 8;
 
 my ($uname, $upass, $user) = ('tester', 'tester');
 {
-    $user = RT::User->new($RT::SystemUser);
+    $user = RT::User->new(RT->SystemUser);
     my ($status, $msg) = $user->Create(
         Name => $uname,
         Password => $upass,

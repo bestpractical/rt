@@ -10,7 +10,7 @@ use RT::Test tests => 63;
 
 
 #Get the current user all loaded
-my $CurrentUser = $RT::SystemUser;
+my $CurrentUser = RT->SystemUser;
 
 my $queue = RT::Queue->new($CurrentUser);
 $queue->Load('General') || Abort(loc("Queue could not be loaded."));

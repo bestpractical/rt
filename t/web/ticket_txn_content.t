@@ -19,7 +19,7 @@ my $html_name = (File::Spec->splitpath($html_file))[-1];
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-my $queue = RT::Queue->new($RT::Nobody);
+my $queue = RT::Queue->new(RT->Nobody);
 my $qid = $queue->Load('General');
 ok( $qid, "Loaded General queue" );
 

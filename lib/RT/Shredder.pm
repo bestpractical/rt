@@ -176,7 +176,7 @@ example from L</SYNOPSIS>:
 
   use RT::Shredder;
   RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Tickets->new( $RT::SystemUser );
+  my $deleted = RT::Tickets->new( RT->SystemUser );
   $deleted->{'allow_deleted_search'} = 1;
   $deleted->LimitQueue( VALUE => 'general' );
   $deleted->LimitStatus( VALUE => 'deleted' );
@@ -352,7 +352,7 @@ sub CastObjectsToRecords
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
         eval "require $class";
         die "Couldn't load '$class' module" if $@;
-        my $obj = $class->new( $RT::SystemUser );
+        my $obj = $class->new( RT->SystemUser );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->Load( $id );
         unless ( $obj->id ) {

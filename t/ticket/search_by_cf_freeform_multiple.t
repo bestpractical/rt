@@ -13,7 +13,7 @@ my $queue = $q->Name;
 diag "create a CF";
 my ($cf_name, $cf_id, $cf) = ("Test", 0, undef);
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => $cf_name,
         Queue => $q->id,
@@ -31,7 +31,7 @@ sub add_tix_from_data {
         my %args = %{ shift(@data) };
         my @cf_value = $args{'Subject'} ne '-'? (split /(?=.)/, $args{'Subject'}) : ();
         diag "vals: ". join ', ', @cf_value;
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Ticket->new(RT->SystemUser);
         my ( $id, undef $msg ) = $t->Create(
             Queue => $q->id,
             %args,
@@ -56,7 +56,7 @@ sub add_tix_from_data {
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Tickets->new($RT::SystemUser);
+        my $tix = RT::Tickets->new(RT->SystemUser);
         $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -144,7 +144,7 @@ sub run_tests {
 );
 @tickets = add_tix_from_data();
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     is($tix->Count, $total, "found $total tickets");
 }

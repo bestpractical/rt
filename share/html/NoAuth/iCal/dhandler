@@ -65,7 +65,7 @@ $_ =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei for $name, $search;
 # convert to perl strings
 $_ = Encode::decode_utf8( $_ ) for $name, $search;
 
-my $user = RT::User->new( $RT::SystemUser );
+my $user = RT::User->new( RT->SystemUser );
 $user->Load( $name );
 $notfound->() unless $user->id;
 

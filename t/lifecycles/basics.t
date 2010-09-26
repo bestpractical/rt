@@ -13,7 +13,7 @@ ok $general && $general->id, 'loaded or created a queue';
 
 my $tstatus = sub {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $_[0] );
     return $ticket->Status;
 };
@@ -55,7 +55,7 @@ diag "check status input on create";
 diag "create a ticket";
 my $tid;
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     ($tid) = $ticket->Create( Queue => $general->id, Subject => 'test' );
     ok $tid, "created a ticket #$tid";
     is $ticket->Status, 'new', 'correct status';
@@ -180,7 +180,7 @@ diag "deleted -> X via modify, only open is available";
 diag "check illegal values and transitions";
 {
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -189,7 +189,7 @@ diag "check illegal values and transitions";
         ok !$id, 'have not created a ticket';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -198,7 +198,7 @@ diag "check illegal values and transitions";
         ok $id, 'created a ticket';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',

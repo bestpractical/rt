@@ -18,11 +18,11 @@ init_db();
 create_savepoint();
 
 use RT::Tickets;
-my $ticket = RT::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Ticket->new( RT->SystemUser );
 my ($id) = $ticket->Create( Subject => 'test', Queue => 1 );
 ok( $id, "created new ticket" );
 
-$ticket = RT::Ticket->new( $RT::SystemUser );
+$ticket = RT::Ticket->new( RT->SystemUser );
 my ($status, $msg) = $ticket->Load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 

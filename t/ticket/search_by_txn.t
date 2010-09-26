@@ -11,13 +11,13 @@ use RT::Test tests => 10;
 my $SUBJECT = "Search test - ".$$;
 
 use_ok('RT::Tickets');
-my $tix = RT::Tickets->new($RT::SystemUser);
+my $tix = RT::Tickets->new(RT->SystemUser);
 can_ok($tix, 'FromSQL');
 $tix->FromSQL('Updated = "2005-08-05" AND Subject = "$SUBJECT"');
 
 ok(! $tix->Count, "Searching for tickets updated on a random date finds nothing" . $tix->Count);
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(Queue => 'General', Subject => $SUBJECT);
 ok ($ticket->id, "We created a ticket");
 my ($id, $txnid, $txnobj) =  $ticket->Comment( Content => 'A comment that happend on 2004-01-01');

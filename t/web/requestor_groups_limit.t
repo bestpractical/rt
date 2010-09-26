@@ -9,7 +9,7 @@ diag "set groups limit to 1";
 RT->Config->Set( ShowMoreAboutPrivilegedUsers    => 1 );
 RT->Config->Set( MoreAboutRequestorGroupsLimit => 1 );
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ($id) = $ticket->Create(
     Subject   => 'groups limit',
     Queue     => 'General',

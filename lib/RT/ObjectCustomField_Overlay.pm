@@ -79,7 +79,7 @@ sub Create {
     }
 
     unless ( defined $args{'SortOrder'} ) {
-        my $ObjectCFs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        my $ObjectCFs = RT::ObjectCustomFields->new( RT->SystemUser );
         $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
         $ObjectCFs->LimitToObjectId( 0 ) if $args{'ObjectId'};
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
@@ -174,7 +174,7 @@ sub MoveUp {
         }
     }
     elsif ( $above[1] && $above[0]->SortOrder == $above[1]->SortOrder + 1 ) {
-        my $move_ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        my $move_ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
         $move_ocfs->LimitToLookupType( $cf->LookupType );
         $move_ocfs->Limit(
             FIELD => 'SortOrder',
@@ -238,7 +238,7 @@ sub MoveDown {
         }
     }
     elsif ( $below[1] && $below[0]->SortOrder + 1 == $below[1]->SortOrder ) {
-        my $move_ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        my $move_ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
         $move_ocfs->LimitToLookupType( $cf->LookupType );
         $move_ocfs->Limit(
             FIELD => 'SortOrder',

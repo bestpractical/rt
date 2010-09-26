@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => 10;
-my $user = RT::User->new($RT::SystemUser);
+my $user = RT::User->new(RT->SystemUser);
 ok(
     $user->Create(
         Name       => 'foo',

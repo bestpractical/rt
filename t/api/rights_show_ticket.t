@@ -228,7 +228,7 @@ sub create_tickets_set{
     my @res;
     foreach my $q ($queue_a, $queue_b) {
         foreach my $n (1 .. 2) {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            my $ticket = RT::Ticket->new( RT->SystemUser );
             my ($tid) = $ticket->Create(
                 Queue => $q->id, Subject => $q->Name .' - '. $n
             );
@@ -242,7 +242,7 @@ sub create_tickets_set{
 sub cleanup { delete_tickets(); delete_watchers() }; 
 
 sub delete_tickets {
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->FromSQL( "Queue = $qa_id OR Queue = $qb_id" );
     while ( my $ticket = $tickets->Next ) {
         $ticket->Delete;

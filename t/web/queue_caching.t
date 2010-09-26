@@ -59,13 +59,13 @@ check_queues($a_m);
 
 sub new_queue {
     my $name = shift;
-    my $new_queue = RT::Queue->new($RT::SystemUser);
+    my $new_queue = RT::Queue->new(RT->SystemUser);
     ok($new_queue->Create( Name => $name, Description => "Testing for $name queue" ), "Created queue ".$new_queue->Name);
     return $new_queue;
 }
 
 sub internal_queues {
-    my $internal_queues = RT::Queues->new($RT::SystemUser);
+    my $internal_queues = RT::Queues->new(RT->SystemUser);
     $internal_queues->Limit(FIELD => 'Disabled', VALUE => 0);
     my $queuelist;
     while ( my $q = $internal_queues->Next ) {

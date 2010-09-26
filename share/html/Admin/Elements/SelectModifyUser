@@ -52,7 +52,7 @@
 my ($user);
 my $users = RT::Users->new($session{'CurrentUser'});
 $users->Limit(FIELD => 'id',
-              VALUE => $RT::SystemUser->id,
+              VALUE => RT->SystemUser->id,
               OPERATOR => '!=' );
 
 if (defined $IdLike) {

@@ -17,16 +17,16 @@ init_db();
 
 create_savepoint('clean');
 
-my $queue = RT::Queue->new( $RT::SystemUser );
+my $queue = RT::Queue->new( RT->SystemUser );
 my ($qid) = $queue->Load( 'General' );
 ok( $qid, "loaded queue" );
 
-my $ticket = RT::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Ticket->new( RT->SystemUser );
 my ($tid) = $ticket->Create( Queue => $qid, Subject => 'test' );
 ok( $tid, "ticket created" );
 
 create_savepoint('bucreate'); # berfore user create
-my $user = RT::User->new( $RT::SystemUser );
+my $user = RT::User->new( RT->SystemUser );
 my ($uid, $msg) = $user->Create( Name => 'new user', Privileged => 1, Disabled => 0 );
 ok( $uid, "created new user" ) or diag "error: $msg";
 is( $user->id, $uid, "id is correct" );
@@ -38,7 +38,7 @@ create_savepoint('aucreate'); # after user create
     my $resolver = sub {
         my %args = (@_);
         my $t =	$args{'TargetObject'};
-        my $resolver_uid = $RT::SystemUser->id;
+        my $resolver_uid = RT->SystemUser->id;
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
             next unless $t->_Accessible( $method => 'read' );
             $t->__Set( Field => $method, Value => $resolver_uid );
@@ -52,7 +52,7 @@ create_savepoint('aucreate'); # after user create
 
 {
     restore_savepoint('aucreate');
-    my $user = RT::User->new( $RT::SystemUser );
+    my $user = RT::User->new( RT->SystemUser );
     $user->Load($uid);
     ok($user->id, "loaded user after restore");
     my $shredder = shredder_new();

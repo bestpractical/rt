@@ -166,7 +166,7 @@ sub Create {
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
-       $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
+       $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
@@ -178,7 +178,7 @@ sub Create {
         );
 
        # Entry point of the rule system
-       my $ticket = RT::Ticket->new($RT::SystemUser);
+       my $ticket = RT::Ticket->new(RT->SystemUser);
        $ticket->Load($args{'ObjectId'});
        my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
             Stage       => 'TransactionCreate',

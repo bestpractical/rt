@@ -62,7 +62,7 @@ $| = 1;
 $RT::Handle->BeginTransaction();
 
 use RT::CustomFields;
-my $CFs = RT::CustomFields->new( $RT::SystemUser );
+my $CFs = RT::CustomFields->new( RT->SystemUser );
 $CFs->UnLimit;
 $CFs->Limit( FIELD => 'Type', VALUE => 'Select' );
 
@@ -96,7 +96,7 @@ while (my $cf  = $CFs->Next ) {
     $cf->SetSortOrder( ($cf->SortOrder || 0) + 1 );
 
     # ..and add a new CF before it
-    my $new = RT::CustomField->new( $RT::SystemUser );
+    my $new = RT::CustomField->new( RT->SystemUser );
     my ($id, $msg) = $new->Create(
         Name => $newname,
         Type => 'Select',
@@ -111,10 +111,10 @@ while (my $cf  = $CFs->Next ) {
 
     # Apply it to all of the same things
     {
-        my $ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
         $ocfs->LimitToCustomField( $cf->Id );
         while (my $ocf = $ocfs->Next) {
-            my $newocf = RT::ObjectCustomField->new( $RT::SystemUser );
+            my $newocf = RT::ObjectCustomField->new( RT->SystemUser );
             ($id, $msg) = $newocf->Create(
                 SortOrder => $ocf->SortOrder,
                 CustomField => $new->Id,
@@ -126,10 +126,10 @@ while (my $cf  = $CFs->Next ) {
 
     # Copy over all of the rights
     {
-        my $acl = RT::ACL->new( $RT::SystemUser );
+        my $acl = RT::ACL->new( RT->SystemUser );
         $acl->LimitToObject( $cf );
         while (my $ace = $acl->Next) {
-            my $newace = RT::ACE->new( $RT::SystemUser );
+            my $newace = RT::ACE->new( RT->SystemUser );
             ($id, $msg) = $newace->Create(
                 PrincipalId => $ace->PrincipalId,
                 PrincipalType => $ace->PrincipalType,
@@ -152,11 +152,11 @@ while (my $cf  = $CFs->Next ) {
     # Grovel through all ObjectCustomFieldValues, and add the
     # appropriate category
     {
-        my $ocfvs = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
+        my $ocfvs = RT::ObjectCustomFieldValues->new( RT->SystemUser );
         $ocfvs->LimitToCustomField( $cf->Id );
         while (my $ocfv = $ocfvs->Next) {
             next unless exists $mapping{$ocfv->Content};
-            my $newocfv = RT::ObjectCustomFieldValue->new( $RT::SystemUser );
+            my $newocfv = RT::ObjectCustomFieldValue->new( RT->SystemUser );
             ($id, $msg) = $newocfv->Create(
                 CustomField => $new->Id,
                 ObjectType => $ocfv->ObjectType,

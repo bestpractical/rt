@@ -38,7 +38,7 @@ diag "current user has no right to own, nobody selected as owner on create";
 
     $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), $RT::Nobody->Name, 'correct owner selected';
+    is $form->value('Owner'), RT->Nobody->Name, 'correct owner selected';
     autocomplete_lacks( 'RT::Queue-'.$queue->id, 'user_a' );
     $agent_a->submit;
 
@@ -46,10 +46,10 @@ diag "current user has no right to own, nobody selected as owner on create";
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
     ok $id, 'found id of the ticket';
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->Nobody->id, 'correct owner';
 }
 
 diag "user can chose owner of a new ticket";
@@ -61,7 +61,7 @@ diag "user can chose owner of a new ticket";
 
     $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), $RT::Nobody->Name, 'correct owner selected';
+    is $form->value('Owner'), RT->Nobody->Name, 'correct owner selected';
 
     autocomplete_contains( 'RT::Queue-'.$queue->id, 'user_b' );
     $form->value('Owner', $user_b->Name);
@@ -71,7 +71,7 @@ diag "user can chose owner of a new ticket";
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
     ok $id, 'found id of the ticket';
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -97,7 +97,7 @@ diag "user A can not change owner after create";
         $agent->get("/Ticket/Modify.html?id=$id");
         my $form = $agent->form_number(3);
         is $form->value('Owner'), $user_b->Name, 'correct owner selected';
-        $form->value('Owner', $RT::Nobody->Name);
+        $form->value('Owner', RT->Nobody->Name);
         $agent->submit;
 
         $agent->content_contains(
@@ -105,7 +105,7 @@ diag "user A can not change owner after create";
             'no way to change owner after create if you have no rights'
         );
 
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         $ticket->Load( $id );
         ok $ticket->id, 'loaded the ticket';
         is $ticket->Owner, $user_b->id, 'correct owner';
@@ -134,7 +134,7 @@ diag "on reply correct owner is selected";
     is $form->value('Owner'), '', 'empty value selected';
     $agent_a->submit;
 
-    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';

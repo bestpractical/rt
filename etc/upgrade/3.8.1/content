@@ -1,9 +1,9 @@
 @Final = (
     sub {
         $RT::Logger->debug("Going to adjust 'Bookmarked Tickets'");
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
 
-        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        my $attrs = RT::Attributes->new( RT->SystemUser );
         $attrs->LimitToObject( $sys );
         my ($attr) = $attrs->Named( 'Search - Bookmarked Tickets' );
         unless ($attr) {

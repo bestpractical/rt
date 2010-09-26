@@ -25,7 +25,7 @@ sub get_rights {
 diag "load Everyone group";
 my ($everyone, $everyone_gid);
 {
-    $everyone = RT::Group->new( $RT::SystemUser );
+    $everyone = RT::Group->new( RT->SystemUser );
     $everyone->LoadSystemInternalGroup('Everyone');
     ok($everyone_gid = $everyone->id, "loaded 'everyone' group");
 }

@@ -25,22 +25,22 @@ use Test::Warn;
 
 use_ok('RT::Date');
 {
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     isa_ok($date, 'RT::Date', "constructor returned RT::Date oject");
-    $date = $date->new($RT::SystemUser);
+    $date = $date->new(RT->SystemUser);
     isa_ok($date, 'RT::Date', "constructor returned RT::Date oject");
 }
 
 {
     # set timezone in all places to UTC
-    $RT::SystemUser->UserObj->__Set(Field => 'Timezone', Value => 'UTC')
-                                if $RT::SystemUser->UserObj->Timezone;
+    RT->SystemUser->UserObj->__Set(Field => 'Timezone', Value => 'UTC')
+                                if RT->SystemUser->UserObj->Timezone;
     RT->Config->Set( Timezone => 'UTC' );
 }
 
 my $current_user;
 {
-    my $user = RT::User->new($RT::SystemUser);
+    my $user = RT::User->new(RT->SystemUser);
     my($uid, $msg) = $user->Create(
         Name       => "date_api". rand(200),
         Lang       => 'en',
@@ -97,7 +97,7 @@ my $current_user;
 }
 
 {
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     is($date->Unix, 0, "new date returns 0 in Unix format");
     is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
     is($date->Get(Format =>'SomeBadFormat'),
@@ -250,14 +250,14 @@ my $current_user;
 
 warning_like
 { # bad format
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Format => 'bad' );
     is($date->Unix, 0, "bad format");
 } qr'Unknown Date format: bad';
 
 
 { # setting value via Unix method
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Unix(1);
     is($date->ISO, '1970-01-01 00:00:01', "correct value");
 
@@ -274,7 +274,7 @@ warning_like
 my $year = (localtime(time))[5] + 1900;
 
 { # set+ISO format
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     warning_like {
         $date->Set(Format => 'ISO', Value => 'weird date');
     } qr/Couldn't parse date 'weird date' as a ISO format/;
@@ -318,7 +318,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # set+datemanip format(Time::ParseDate)
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Set(Format => 'unknown', Value => 'weird date');
     is($date->Unix, 0, "date was wrong");
 
@@ -337,7 +337,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # set+unknown format(Time::ParseDate)
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Set(Format => 'unknown', Value => 'weird date');
     is($date->Unix, 0, "date was wrong");
 
@@ -374,7 +374,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # SetToMidnight
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
     $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
@@ -408,7 +408,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # SetToNow
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     my $time = time;
     $date->SetToNow;
     ok($date->Unix >= $time, 'close enough');
@@ -416,7 +416,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 {
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     
     $date->Unix(0);
     $date->AddSeconds;
@@ -478,7 +478,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # DurationAsString
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
 
     is($date->DurationAsString(1), '1 sec', '1 sec');
     is($date->DurationAsString(59), '59 sec', '59 sec');
@@ -499,7 +499,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # DiffAsString
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     is($date->DiffAsString(1), '', 'no diff, wrong input');
     is($date->DiffAsString(-1), '', 'no diff, wrong input');
     is($date->DiffAsString('qwe'), '', 'no diff, wrong input');
@@ -510,14 +510,14 @@ my $year = (localtime(time))[5] + 1900;
     is($date->DiffAsString(3), '1 sec ago', 'diff: 1 sec ago');
     is($date->DiffAsString(1), '1 sec', 'diff: 1 sec');
 
-    my $ndate = RT::Date->new($RT::SystemUser);
+    my $ndate = RT::Date->new(RT->SystemUser);
     is($date->DiffAsString($ndate), '', 'no diff, wrong input');
     $ndate->Unix(3);
     is($date->DiffAsString($ndate), '1 sec ago', 'diff: 1 sec ago');
 }
 
 { # Diff
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->SetToNow;
     my $diff = $date->Diff;
     ok($diff <= 0, 'close enought');
@@ -525,14 +525,14 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # AgeAsString
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->SetToNow;
     my $diff = $date->AgeAsString;
     like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
 }
 
 { # GetWeekday
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     is($date->GetWeekday(7),  '',    '7 and greater are invalid');
     is($date->GetWeekday(6),  'Sat', '6 is Saturday');
     is($date->GetWeekday(0),  'Sun', '0 is Sunday');
@@ -542,7 +542,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 { # GetMonth
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     is($date->GetMonth(12),  '',     '12 and greater are invalid');
     is($date->GetMonth(11),  'Dec', '11 is December');
     is($date->GetMonth(0),   'Jan', '0 is January');
@@ -553,7 +553,7 @@ my $year = (localtime(time))[5] + 1900;
 
 {
     # set unknown format: edge cases
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Value => 0, Format => 'unknown' );
     is( $date->Unix(), 0, "unix is 0 with Value => 0, Format => 'unknown'" );
 

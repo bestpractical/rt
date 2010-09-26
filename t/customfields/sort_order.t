@@ -14,7 +14,7 @@ ok($queue && $queue->id, "$queue_name - test queue creation");
 diag "create multiple CFs: B, A and C";
 my @cfs = ();
 {
-    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => "CF B",
         Queue => $queue->id,
@@ -24,7 +24,7 @@ my @cfs = ();
     push @cfs, $cf;
 }
 {
-    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => "CF A",
         Queue => $queue->id,
@@ -34,7 +34,7 @@ my @cfs = ();
     push @cfs, $cf;
 }
 {
-    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => "CF C",
         Queue => $queue->id,

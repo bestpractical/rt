@@ -3,12 +3,12 @@ use warnings;
 use RT;
 use RT::Test tests => 6;
 
-my $t1 = RT::Ticket->new($RT::SystemUser);
+my $t1 = RT::Ticket->new(RT->SystemUser);
 my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
 use_ok("RT::URI::t");
-my $uri = RT::URI::t->new($RT::SystemUser);
+my $uri = RT::URI::t->new(RT->SystemUser);
 ok(ref($uri), "URI object exists");
 
 my $uristr = "t:1";

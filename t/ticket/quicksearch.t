@@ -8,12 +8,12 @@ use RT::Test tests => 10;
 use_ok('RT');
 
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 my $queue = 'SearchTests-'.$$;
 $q->Create(Name => $queue);
 ok ($q->id, "Created the queue");
 
-my $t1 = RT::Ticket->new($RT::SystemUser);
+my $t1 = RT::Ticket->new(RT->SystemUser);
 my ( $id, undef, $msg ) = $t1->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest1',
@@ -25,7 +25,7 @@ use_ok("RT::Search::Googleish");
 
 my $active_statuses = join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
 
-my $tickets = RT::Tickets->new($RT::SystemUser);
+my $tickets = RT::Tickets->new(RT->SystemUser);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (

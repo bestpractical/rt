@@ -58,14 +58,14 @@ RT::LoadConfig();
 RT::Init();
 
 use RT::Attributes;
-my $attrs = RT::Attributes->new( $RT::SystemUser );
+my $attrs = RT::Attributes->new( RT->SystemUser );
 $attrs->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => 'RT::User');
 $attrs->Limit(FIELD => 'Name', OPERATOR=> '=', VALUE => 'ical-auth-token');
 while ( my $attr = $attrs->Next ) {
     my $uid = $attr->ObjectId;
     print "Processing auth token of user #". $uid ."...\n";
 
-    my $user = RT::User->new( $RT::SystemUser );
+    my $user = RT::User->new( RT->SystemUser );
     $user->Load( $uid );
     unless ( $user->id ) {
         print STDERR "\tERROR. Couldn't load user record\n";

@@ -296,7 +296,7 @@ sub Next {
 
 sub NewItem {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->CurrentUser);
+    return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
 }
 
 

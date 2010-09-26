@@ -35,7 +35,7 @@ $m->submit_form( form_number => 3,
          fields      => { CorrespondAddress => 'rt@example.com' } );
 $m->content_like(qr/rt\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::User->new($RT::SystemUser));
+ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('rt@example.com');
 

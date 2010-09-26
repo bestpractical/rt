@@ -12,7 +12,7 @@
     sub {
         $RT::Logger->debug("Going to correct descriptions of notify actions in the DB");
 
-        my $actions = RT::ScripActions->new( $RT::SystemUser );
+        my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
             FIELD => 'ExecModule',
             VALUE => 'Notify',
@@ -31,7 +31,7 @@
                 unless $status;
         }
 
-        $actions = RT::ScripActions->new( $RT::SystemUser );
+        $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
             FIELD => 'ExecModule',
             VALUE => 'NotifyAsComment',
@@ -59,7 +59,7 @@
 {
 $RT::Logger->debug("Going to add in Extract Subject Tag actions if they were missed during a previous upgrade");
 
-$actions = RT::ScripActions->new( $RT::SystemUser );
+$actions = RT::ScripActions->new( RT->SystemUser );
 $actions->Limit(
     FIELD => 'ExecModule',
     VALUE => 'ExtractSubjectTag',

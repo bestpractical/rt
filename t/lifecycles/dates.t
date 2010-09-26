@@ -18,7 +18,7 @@ ok $delivery && $delivery->id, 'loaded or created a queue';
 
 my $tstatus = sub {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $_[0] );
     return $ticket->Status;
 };
@@ -40,7 +40,7 @@ diag "check basic API";
 diag "dates on create for default schema";
 {
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -51,7 +51,7 @@ diag "dates on create for default schema";
         ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -62,7 +62,7 @@ diag "dates on create for default schema";
         ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -75,7 +75,7 @@ diag "dates on create for default schema";
 
     my $test_date = '2008-11-28 12:00:00';
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -88,7 +88,7 @@ diag "dates on create for default schema";
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -101,7 +101,7 @@ diag "dates on create for default schema";
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -118,7 +118,7 @@ diag "dates on create for default schema";
 diag "dates on create for delivery schema";
 {
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -130,7 +130,7 @@ diag "dates on create for delivery schema";
 
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $txn, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -145,7 +145,7 @@ diag "dates on create for delivery schema";
     }
     exit;
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -164,7 +164,7 @@ diag "dates on create for delivery schema";
 
     my $test_date = '2008-11-28 12:00:00';
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $statusmsg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -177,7 +177,7 @@ diag "dates on create for delivery schema";
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -192,7 +192,7 @@ diag "dates on create for delivery schema";
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $delivery->id,
             Subject => 'test',
@@ -211,7 +211,7 @@ diag "dates on create for delivery schema";
 
 diag "dates on status change for default schema";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $msg) = $ticket->Create(
         Queue => $general->id,
         Subject => 'test',
@@ -246,7 +246,7 @@ diag "dates on status change for default schema";
 
 diag "dates on status change for delivery schema";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $msg) = $ticket->Create(
         Queue => $delivery->id,
         Subject => 'test',
@@ -290,7 +290,7 @@ diag "add partial map between general->delivery";
 
 diag "check date changes on moving a ticket";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $msg) = $ticket->Create(
         Queue => $general->id,
         Subject => 'test',

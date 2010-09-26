@@ -187,10 +187,10 @@ sub LimitToPrincipal {
     # to their ACL equivalence group. The machinations we're going through
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
-    my $princ = RT::Principal->new($RT::SystemUser);
+    my $princ = RT::Principal->new(RT->SystemUser);
     $princ->Load($args{'Id'});
     if ($princ->PrincipalType eq 'User') {
-    my $group = RT::Group->new($RT::SystemUser);
+    my $group = RT::Group->new(RT->SystemUser);
         $group->LoadACLEquivalenceGroup($princ);
         $args{'Id'} = $group->PrincipalId;
     }

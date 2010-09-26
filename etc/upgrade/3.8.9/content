@@ -10,7 +10,7 @@
             my $found;
             do {
                 $found = 0;
-                my $links = RT::Links->new( $RT::SystemUser );
+                my $links = RT::Links->new( RT->SystemUser );
                 $links->Limit( FIELD => $dir, OPERATOR => 'STARTSWITH', VALUE => $prefix );
                 $links->Limit( FIELD => 'Local'.$dir, VALUE => 0 );
                 $links->Limit(

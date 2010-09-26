@@ -484,7 +484,7 @@ sub InitClasses {
 
     if ( $args{'Heavy'} ) {
         # load scrips' modules
-        my $scrips = RT::Scrips->new($RT::SystemUser);
+        my $scrips = RT::Scrips->new(RT->SystemUser);
         $scrips->Limit( FIELD => 'Stage', OPERATOR => '!=', VALUE => 'Disabled' );
         while ( my $scrip = $scrips->Next ) {
             $scrip->LoadModules;
@@ -503,8 +503,8 @@ sub InitClasses {
 
 =head2 InitSystemObjects
 
-Initializes system objects: C<$RT::System>, C<$RT::SystemUser>
-and C<$RT::Nobody>.
+Initializes system objects: C<$RT::System>, C<RT->SystemUser>
+and C<RT->Nobody>.
 
 =cut
 

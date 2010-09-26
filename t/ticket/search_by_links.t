@@ -14,7 +14,7 @@ my ($total, @data, @tickets, %test) = (0, ());
 sub add_tix_from_data {
     my @res = ();
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
         $args{$_} = $res[ $args{$_} ]->id foreach grep $args{$_}, keys %RT::Ticket::LINKTYPEMAP;
         my ( $id, undef $msg ) = $t->Create(
@@ -31,7 +31,7 @@ sub add_tix_from_data {
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Tickets->new($RT::SystemUser);
+        my $tix = RT::Tickets->new(RT->SystemUser);
         $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -82,7 +82,7 @@ sub run_tests {
     'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }
@@ -124,7 +124,7 @@ my $pid = $tickets[1]->id;
     "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }

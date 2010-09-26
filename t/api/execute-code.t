@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Test tests => 17;
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 ok(
     $ticket->Create(
         Subject => 'blue lines',
@@ -10,7 +10,7 @@ ok(
     )
 );
 
-my $attacker = RT::User->new($RT::SystemUser);
+my $attacker = RT::User->new(RT->SystemUser);
 ok(
     $attacker->Create(
         Name       => 'attacker',
@@ -52,7 +52,7 @@ ok($ok, 'created template now that we have ModifyTemplate');
 ($ok, $msg) = $template_as_attacker->SetType('Perl');
 ok(!$ok, 'permission to update type to Perl denied');
 
-my $template_as_root = RT::Template->new($RT::SystemUser);
+my $template_as_root = RT::Template->new(RT->SystemUser);
 $template_as_root->Load('Harmless, honest!');
 is($template_as_root->Content, "\nhello ;)");
 is($template_as_root->Type, 'Simple');
@@ -66,7 +66,7 @@ is($template_as_root->MIMEObj->stringify_body, "hello ;)");
 ($ok, $msg) = $template_as_attacker->SetContent("\nYou are { (my \$message = 'bjarq') =~ tr/a-z/n-za-m/; \$message }!");
 ok($ok, 'updating Content permitted since the template is Simple');
 
-$template_as_root = RT::Template->new($RT::SystemUser);
+$template_as_root = RT::Template->new(RT->SystemUser);
 $template_as_root->Load('Harmless, honest!');
 
 is($template_as_root->Content, "\nYou are { (my \$message = 'bjarq') =~ tr/a-z/n-za-m/; \$message }!");
@@ -82,7 +82,7 @@ ok(!$ok, 'permission to update type to Perl denied');
 
 
 # now root will change the template to genuine code
-$template_as_root = RT::Template->new($RT::SystemUser);
+$template_as_root = RT::Template->new(RT->SystemUser);
 $template_as_root->Load('Harmless, honest!');
 $template_as_root->SetType('Perl');
 $template_as_root->SetContent("\n{ scalar reverse \$Ticket->Subject }");
@@ -99,7 +99,7 @@ $template_as_attacker->Load('Harmless, honest!');
 ok(!$ok, 'updating Content forbidden since the template is Perl');
 
 # try again just to be absolutely sure it doesn't work
-$template_as_root = RT::Template->new($RT::SystemUser);
+$template_as_root = RT::Template->new(RT->SystemUser);
 $template_as_root->Load('Harmless, honest!');
 $template_as_root->SetType('Perl');
 $template_as_root->SetContent("\n{ scalar reverse \$Ticket->Subject }");

@@ -72,7 +72,7 @@ sub Prepare  {
 sub Commit {
     my $self = shift;
 
-    my $Links=RT::Links->new($RT::SystemUser);
+    my $Links=RT::Links->new(RT->SystemUser);
     $Links->Limit(FIELD => 'Type', VALUE => 'MemberOf');
     $Links->Limit(FIELD => 'Target', VALUE => $self->TicketObj->id);
 

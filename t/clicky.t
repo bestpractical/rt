@@ -24,7 +24,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 use_ok('MIME::Entity');
 
-my $CurrentUser = $RT::SystemUser;
+my $CurrentUser = RT->SystemUser;
 
 my $queue = RT::Queue->new($CurrentUser);
 $queue->Load('General') || Abort(loc("Queue could not be loaded."));

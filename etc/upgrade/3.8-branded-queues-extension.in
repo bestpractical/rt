@@ -59,7 +59,7 @@ RT::Init();
 
 use RT::Queues;
 
-my $queues = RT::Queues->new( $RT::SystemUser );
+my $queues = RT::Queues->new( RT->SystemUser );
 $queues->UnLimit();
 while ( my $queue = $queues->Next ) {
     print "Processing queue ". ($queue->Name || $queue->id) ."...\n";

@@ -407,7 +407,7 @@ sub WhoHaveRoleRight
     $self->Limit( ALIAS => $self->PrincipalsAlias,
                   FIELD => 'id',
                   OPERATOR => '!=',
-                  VALUE => $RT::SystemUser->id
+                  VALUE => RT->SystemUser->id
                 );
 
     $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Type = '$_'", @roles ) .")" );
@@ -506,7 +506,7 @@ sub WhoHaveGroupRight
     $self->Limit( ALIAS => $self->PrincipalsAlias,
                   FIELD => 'id',
                   OPERATOR => '!=',
-                  VALUE => $RT::SystemUser->id
+                  VALUE => RT->SystemUser->id
                 );
     return $group_members;
 }

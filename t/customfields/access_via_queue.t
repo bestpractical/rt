@@ -15,7 +15,7 @@ diag "create a CF";
 my $cf_name = "Rights$$";
 my $cf;
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => $cf_name,
         Queue => $queue->id,

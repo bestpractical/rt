@@ -187,9 +187,9 @@ sub _DoSearch {
             customfield => $self->{'__external_cf'},
             sortorder => 0,
             description => '',
-            creator => $RT::SystemUser->id,
+            creator => RT->SystemUser->id,
             created => undef,
-            lastupdatedby => $RT::SystemUser->id,
+            lastupdatedby => RT->SystemUser->id,
             lastupdated => undef,
     );
 

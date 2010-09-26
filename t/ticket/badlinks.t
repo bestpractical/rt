@@ -9,7 +9,7 @@ ok($m->login, "Logged in");
 my $queue = RT::Test->load_or_create_queue(Name => 'General');
 ok($queue->Id, "loaded the General queue");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ($tid, $txn, $msg) = $ticket->Create(
         Queue => $queue->id,
         Subject => 'test links',

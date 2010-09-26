@@ -235,7 +235,7 @@ if ($Ticket) {
         }
     }
     if ( $can{OwnTicket} ) {
-        if ($Ticket->OwnerObj->Id == $RT::Nobody->id
+        if ($Ticket->OwnerObj->Id == RT->Nobody->id
             && (   $can{'ModifyTicket'} or $can{'TakeTicket'})
             )
         {
@@ -244,7 +244,7 @@ if ($Ticket) {
                 title => loc('Take'),
                 }
 
-        } elsif ( $Ticket->OwnerObj->id != $RT::Nobody->id
+        } elsif ( $Ticket->OwnerObj->id != RT->Nobody->id
                     && $Ticket->OwnerObj->id != $session{CurrentUser}->id
                     && ( $can{'ModifyTicket'} or $can{'StealTicket'})
                 )

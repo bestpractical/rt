@@ -5,8 +5,8 @@ use warnings;
 use RT::Test tests => 19;
 my ( $url, $m ) = RT::Test->started_ok;
 use RT::Attribute;
-my $search = RT::Attribute->new($RT::SystemUser);
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $search = RT::Attribute->new(RT->SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ( $ret, $msg ) = $ticket->Create(
     Subject   => 'base ticket' . $$,
     Queue     => 'general',

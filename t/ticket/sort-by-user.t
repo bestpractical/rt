@@ -18,7 +18,7 @@ diag "Create a queue to test with.";
 my $queue_name = "OwnerSortQueue$$";
 my $queue;
 {
-    $queue = RT::Queue->new( $RT::SystemUser );
+    $queue = RT::Queue->new( RT->SystemUser );
     my ($ret, $msg) = $queue->Create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
@@ -31,7 +31,7 @@ my @users;
 # create them in reverse order to avoid false positives
 foreach my $u (qw(Z A)) {
     my $name = $u ."-user-to-test-ordering-$$";
-    my $user = RT::User->new( $RT::SystemUser );
+    my $user = RT::User->new( RT->SystemUser );
     my ($uid) = $user->Create(
         Name => $name,
         Privileged => 1,
@@ -53,7 +53,7 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
 
         my ( $id, undef, $msg ) = $t->Create( %args, Queue => $queue->id );
@@ -82,7 +82,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Tickets->new( RT->SystemUser );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 

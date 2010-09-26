@@ -7,7 +7,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 # create user and queue {{{
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ok, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ok, 'ACL test user creation');
 $user_obj->SetName('customer');
@@ -16,7 +16,7 @@ $user_obj->SetPrivileged(1);
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
 
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
@@ -27,11 +27,11 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
 # create and test groups (outer < inner < user) {{{
-my $inner_group = RT::Group->new($RT::SystemUser);
+my $inner_group = RT::Group->new(RT->SystemUser);
 ($ok, $msg) = $inner_group->CreateUserDefinedGroup(Name => "inner", Description => "inner group");
 ok($ok, "created inner group: $msg");
 
-my $outer_group = RT::Group->new($RT::SystemUser);
+my $outer_group = RT::Group->new(RT->SystemUser);
 ($ok, $msg) = $outer_group->CreateUserDefinedGroup(Name => "outer", Description => "outer group");
 ok($ok, "created outer group: $msg");
 

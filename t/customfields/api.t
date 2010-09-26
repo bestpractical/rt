@@ -7,21 +7,21 @@ use RT::Test nodata => 1, tests => 139;
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;
-my $object_cfs = RT::ObjectCustomFields->new($RT::SystemUser);
+my $object_cfs = RT::ObjectCustomFields->new(RT->SystemUser);
 $object_cfs->UnLimit();
 while (my $ocf = $object_cfs->Next) {
 	$ocf->Delete();
 }
 
 
-my $queue = RT::Queue->new( $RT::SystemUser );
+my $queue = RT::Queue->new( RT->SystemUser );
 $queue->Create( Name => 'RecordCustomFields-'.$$ );
 ok ($queue->id, "Created the queue");
 
-my $queue2 = RT::Queue->new( $RT::SystemUser );
+my $queue2 = RT::Queue->new( RT->SystemUser );
 $queue2->Create( Name => 'RecordCustomFields2' );
 
-my $ticket = RT::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Ticket->new( RT->SystemUser );
 $ticket->Create(
 	Queue => $queue->Id,
 	Requestor => 'root@localhost',
@@ -36,22 +36,22 @@ my $cfvs = $ticket->CustomFieldValues;
 is( $cfvs->Count, 0 );
 is( $ticket->FirstCustomFieldValue, undef );
 
-my $local_cf1 = RT::CustomField->new( $RT::SystemUser );
+my $local_cf1 = RT::CustomField->new( RT->SystemUser );
 $local_cf1->Create( Name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 $local_cf1->AddValue( Name => 'RecordCustomFieldValues11' );
 $local_cf1->AddValue( Name => 'RecordCustomFieldValues12' );
 
-my $local_cf2 = RT::CustomField->new( $RT::SystemUser );
+my $local_cf2 = RT::CustomField->new( RT->SystemUser );
 $local_cf2->Create( Name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues21' );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues22' );
 
-my $global_cf3 = RT::CustomField->new( $RT::SystemUser );
+my $global_cf3 = RT::CustomField->new( RT->SystemUser );
 $global_cf3->Create( Name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues31' );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues32' );
 
-my $local_cf4 = RT::CustomField->new( $RT::SystemUser );
+my $local_cf4 = RT::CustomField->new( RT->SystemUser );
 $local_cf4->Create( Name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
 $local_cf4->AddValue( Name => 'RecordCustomFieldValues41' );
 $local_cf4->AddValue( Name => 'RecordCustomFieldValues42' );
@@ -192,12 +192,12 @@ is( $ticket->FirstCustomFieldValue( 'RecordCustomFields4' ), undef, "No first cu
     ($status, $msg) = $global_cf3->SetDisabled(1);
     ok($status, "Disabled CF named $cfname");
 
-    my $load = RT::CustomField->new( $RT::SystemUser );
+    my $load = RT::CustomField->new( RT->SystemUser );
     $load->LoadByName( Name => $cfname);
     ok($load->Id, "Loaded CF named $cfname");
     is($load->Id, $global_cf3->Id, "Can load disabled CFs");
 
-    my $dup = RT::CustomField->new( $RT::SystemUser );
+    my $dup = RT::CustomField->new( RT->SystemUser );
     $dup->Create( Name => $cfname, Type => 'SelectSingle', Queue => 0 );
     ok($dup->Id, "Created CF with duplicate name");
 

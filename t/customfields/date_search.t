@@ -5,10 +5,10 @@ use strict;
 
 use RT::Test nodata => 1, tests => 13;
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 ok( $q->Create( Name => 'DateCFTest' . $$ ), 'create queue' );
 
-my $cf = RT::CustomField->new($RT::SystemUser);
+my $cf = RT::CustomField->new(RT->SystemUser);
 ok(
     $cf->Create(
         Name       => 'date-' . $$,
@@ -20,7 +20,7 @@ ok(
 );
 ok( $cf->AddToObject($q), 'date cf apply to queue' );
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 
 ok(
     $ticket->Create(
@@ -35,7 +35,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
 {
 
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '=',
@@ -46,7 +46,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 }
 
 {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '>',
@@ -57,7 +57,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 }
 
 {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '<',
@@ -69,7 +69,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
 {
 
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '=',
@@ -81,7 +81,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
 {
 
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '<',
@@ -93,7 +93,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
 {
 
-    my $tickets = RT::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '>',
@@ -103,7 +103,7 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
     is( $tickets->Count, 0, 'did not find the ticket with > 2010-05-05' );
 }
 
-$ticket = RT::Ticket->new($RT::SystemUser);
+$ticket = RT::Ticket->new(RT->SystemUser);
 
 ok(
     $ticket->Create(

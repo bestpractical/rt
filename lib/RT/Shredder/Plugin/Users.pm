@@ -129,7 +129,7 @@ sub TestArgs
         $args{'name'} = $self->ConvertMaskToSQL( $args{'name'} );
     }
     if( $args{'member_of'} ) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         if ( $args{'member_of'} =~ /^(Everyone|Privileged|Unprivileged)$/i ) {
             $group->LoadSystemInternalGroup( $args{'member_of'} );
         }
@@ -145,7 +145,7 @@ sub TestArgs
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
         # XXX: it's possible that SystemUser is not available
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         $user->Load( $uid );
         unless( $user->id ) {
             return (0, "Couldn't load user '$uid'" );
@@ -159,7 +159,7 @@ sub Run
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
-    my $objs = RT::Users->new( $RT::SystemUser );
+    my $objs = RT::Users->new( RT->SystemUser );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
     # $objs->Columns(qw(id Name EmailAddress Lang Timezone
@@ -241,7 +241,7 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records

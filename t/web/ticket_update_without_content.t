@@ -6,7 +6,7 @@ use RT::Test tests => 10;
 my ( $url, $m ) = RT::Test->started_ok;
 
 # merged tickets still show up in search
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ( $ret, $msg ) = $ticket->Create(
     Subject   => 'base ticket' . $$,
     Queue     => 'general',
@@ -33,7 +33,7 @@ $m->submit_form(
 $m->content_contains("Priority changed");
 $m->content_lacks("message recorded");
 
-my $root = RT::User->new( $RT::SystemUser );
+my $root = RT::User->new( RT->SystemUser );
 $root->Load('root');
 ( $ret, $msg ) = $root->SetSignature(<<EOF);
 best wishes

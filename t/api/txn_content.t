@@ -3,7 +3,7 @@ use strict;
 
 use RT::Test tests => 3;
 use MIME::Entity;
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my $mime   = MIME::Entity->build(
     From => 'test@example.com',
     Type => 'text/html',

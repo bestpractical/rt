@@ -15,7 +15,7 @@ use Test::Warn;
 
 # Set up some infrastructure.  These calls are tested elsewhere.
 
-my $searchuser = RT::User->new($RT::SystemUser);
+my $searchuser = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $searchuser->Create(Name => 'searchuser'.$$,
 		    Privileged => 1,
 		    EmailAddress => "searchuser\@p$$.example.com",
@@ -26,7 +26,7 @@ $searchuser->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 $searchuser->PrincipalObj->GrantRight(Right => 'ModifySelf');
 
 # This is the group whose searches searchuser should be able to see.
-my $ingroup = RT::Group->new($RT::SystemUser);
+my $ingroup = RT::Group->new(RT->SystemUser);
 $ingroup->CreateUserDefinedGroup(Name => 'searchgroup1'.$$);
 $ingroup->AddMember($searchuser->Id);
 $searchuser->PrincipalObj->GrantRight(Right => 'EditSavedSearches',
@@ -35,18 +35,18 @@ $searchuser->PrincipalObj->GrantRight(Right => 'ShowSavedSearches',
 				      Object => $ingroup);
 
 # This is the group whose searches searchuser should not be able to see.
-my $outgroup = RT::Group->new($RT::SystemUser);
+my $outgroup = RT::Group->new(RT->SystemUser);
 $outgroup->CreateUserDefinedGroup(Name => 'searchgroup2'.$$);
-$outgroup->AddMember($RT::SystemUser->Id);
+$outgroup->AddMember(RT->SystemUser->Id);
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
 $searchuser->PrincipalObj->GrantRight(Right => 'SeeQueue', Object => $queue);
 $searchuser->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
 $searchuser->PrincipalObj->GrantRight(Right => 'OwnTicket', Object => $queue);
 
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(Queue => $queue->Id,
 		Requestor => [ $searchuser->Name ],
 		Owner => $searchuser,
@@ -99,7 +99,7 @@ my $othersearch = RT::SavedSearch->new($curruser);
 ok(!$ret, "othersearch NOT created");
 like($msg, qr/Failed to load object for/, "...for the right reason");
 
-$othersearch = RT::SavedSearch->new($RT::SystemUser);
+$othersearch = RT::SavedSearch->new(RT->SystemUser);
 ($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
 				  Type => 'Ticket',
 				  Name => 'searchuser requested',

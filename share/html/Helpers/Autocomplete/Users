@@ -107,8 +107,8 @@ while (my ($name, $op) = each %fields) {
 my @suggestions;
 
 while ( my $user = $users->Next ) {
-    next if $user->id == $RT::SystemUser->id
-         or $user->id == $RT::Nobody->id;
+    next if $user->id == RT->SystemUser->id
+         or $user->id == RT->Nobody->id;
 
     my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
     $formatted =~ s/\n//g;

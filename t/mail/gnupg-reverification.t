@@ -27,7 +27,7 @@ RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 diag "load Everyone group";
 my $everyone;
 {
-    $everyone = RT::Group->new( $RT::SystemUser );
+    $everyone = RT::Group->new( RT->SystemUser );
     $everyone->LoadSystemInternalGroup('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
@@ -74,7 +74,7 @@ foreach my $file ( @files ) {
     like($warnings, qr/Had a problem during decrypting and verifying/);
     like($warnings, qr/public key not found/);
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, "$eid: loaded ticket #$id";
     is $ticket->Subject, "Test Email ID:$eid", "$eid: correct subject";

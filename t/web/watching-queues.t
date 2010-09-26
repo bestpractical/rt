@@ -7,26 +7,26 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
-my $user = RT::User->new($RT::SystemUser);
+my $user = RT::User->new(RT->SystemUser);
 $user->LoadByEmail('root@localhost');
 
-my $other_queue = RT::Queue->new($RT::SystemUser);
+my $other_queue = RT::Queue->new(RT->SystemUser);
 $other_queue->Create(
     Name => 'Fancypants',
 );
 
-my $loopy_queue = RT::Queue->new($RT::SystemUser);
+my $loopy_queue = RT::Queue->new(RT->SystemUser);
 $loopy_queue->Create(
     Name => 'Loopy',
 );
 
-my $group = RT::Group->new($RT::SystemUser);
+my $group = RT::Group->new(RT->SystemUser);
 $group->CreateUserDefinedGroup(
     Name => 'Groupies',
     Description => 'for the Metallica Speed of Sound tour',
 );
 
-my $outer_group = RT::Group->new($RT::SystemUser);
+my $outer_group = RT::Group->new(RT->SystemUser);
 $outer_group->CreateUserDefinedGroup(
     Name => 'Groupies 2.0',
     Description => 'for the Metallica Ride The Lightning tour',
@@ -88,7 +88,7 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
 
     $m->title_is('Modify people related to queue General', 'caught the right form! :)');
 
-    my $queue = RT::Queue->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load('General');
     ok($queue->IsWatcher(Type => 'AdminCc', PrincipalId => $user->PrincipalId), 'added root as AdminCc on General');
 }
@@ -143,7 +143,7 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
 
     $m->title_is('Modify people related to queue General', 'caught the right form! :)');
 
-    my $queue = RT::Queue->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load('General');
     ok($queue->IsWatcher(Type => 'Cc', PrincipalId => $user->PrincipalId), 'added root as Cc on General');
 }

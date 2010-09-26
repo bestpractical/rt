@@ -8,7 +8,7 @@ use RT::Test nodata => 1, tests => 11;
 
 sub new (*) {
     my $class = shift;
-    return $class->new($RT::SystemUser);
+    return $class->new(RT->SystemUser);
 }
 
 use constant VALUES_CLASS => 'RT::CustomFieldValues::Groups';
@@ -35,7 +35,7 @@ isa_ok( $cf, 'RT::CustomField' );
 
 {
     # create at least on group for the tests
-    my $group = RT::Group->new( $RT::SystemUser );
+    my $group = RT::Group->new( RT->SystemUser );
     my ($ret, $msg) = $group->CreateUserDefinedGroup( Name => $q->Name );
     ok $ret, 'created group' or diag "error: $msg";
 }

@@ -1740,7 +1740,7 @@ sub OrderByCols {
            # Unowned Tickets 0 1 X
            # Else            0 0 X
 
-           foreach my $uid ( $self->CurrentUser->Id, $RT::Nobody->Id ) {
+           foreach my $uid ( $self->CurrentUser->Id, RT->Nobody->Id ) {
                if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
                    my $f = ($row->{'ALIAS'} || 'main') .'.Owner';
                    push @res, { %$row, ALIAS => '', FIELD => "CASE WHEN $f=$uid THEN 1 ELSE 0 END", ORDER => $order } ;
@@ -2742,7 +2742,7 @@ sub _RolesCanSee {
         return %$cached;
     }
 
-    my $ACL = RT::ACL->new( $RT::SystemUser );
+    my $ACL = RT::ACL->new( RT->SystemUser );
     $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
     $ACL->Limit( FIELD => 'PrincipalType', OPERATOR => '!=', VALUE => 'Group' );
     my $principal_alias = $ACL->Join(
@@ -2781,7 +2781,7 @@ sub _DirectlyCanSeeIn {
         return @$cached;
     }
 
-    my $ACL = RT::ACL->new( $RT::SystemUser );
+    my $ACL = RT::ACL->new( RT->SystemUser );
     $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
     my $principal_alias = $ACL->Join(
         ALIAS1 => 'main',
@@ -2857,7 +2857,7 @@ sub CurrentUserCanSee {
 # then we have to check in advance
     if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
 
-        my $groups = RT::Groups->new( $RT::SystemUser );
+        my $groups = RT::Groups->new( RT->SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
         foreach ( @tmp ) {
             $groups->Limit( FIELD => 'Type', VALUE => $_ );

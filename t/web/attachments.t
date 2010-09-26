@@ -9,7 +9,7 @@ use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-my $queue = RT::Queue->new($RT::Nobody);
+my $queue = RT::Queue->new(RT->Nobody);
 my $qid = $queue->Load('General');
 ok( $qid, "Loaded General queue" );
 

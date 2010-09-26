@@ -28,10 +28,10 @@ use_ok('RT::Ticket');
 use_ok('RT::Tickets');
 
 { # create parent and child and check functionality of 'with_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Ticket->new( RT->SystemUser );
     my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
-    my $child = RT::Ticket->new( $RT::SystemUser );
+    my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
 
@@ -66,11 +66,11 @@ use_ok('RT::Tickets');
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and link them reqursively to check that we don't hang
-    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Ticket->new( RT->SystemUser );
     my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
 
-    my $child = RT::Ticket->new( $RT::SystemUser );
+    my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
 
@@ -108,15 +108,15 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and check functionality of 'apply_query_to_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Ticket->new( RT->SystemUser );
     my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
     $parent->SetStatus('resolved');
 
-    my $child1 = RT::Ticket->new( $RT::SystemUser );
+    my $child1 = RT::Ticket->new( RT->SystemUser );
     my ($cid1) = $child1->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid1, "created new ticket" );
-    my $child2 = RT::Ticket->new( $RT::SystemUser );
+    my $child2 = RT::Ticket->new( RT->SystemUser );
     my ($cid2) = $child2->Create( Subject => 'child', Queue => 1, MemberOf => $pid);
     ok( $cid2, "created new ticket" );
     $child2->SetStatus('resolved');
@@ -141,7 +141,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $cid1 );
     is($ticket->id, $cid1, 'loaded ticket');
 

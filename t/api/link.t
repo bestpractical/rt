@@ -6,7 +6,7 @@ use RT::Test nodata => 1, tests => 83;
 use RT::Test::Web;
 
 use RT::Link;
-my $link = RT::Link->new($RT::SystemUser);
+my $link = RT::Link->new(RT->SystemUser);
 
 use RT::Test::Web;
 
@@ -19,14 +19,14 @@ isa_ok( $link, 'DBIx::SearchBuilder::Record');
 my $queue = RT::Test->load_or_create_queue(Name => 'General');
 ok($queue->Id, "loaded the General queue");
 
-my $parent = RT::Ticket->new($RT::SystemUser);
+my $parent = RT::Ticket->new(RT->SystemUser);
 my ($pid, undef, $msg) = $parent->Create(
     Queue   => $queue->id,
     Subject => 'parent',
 );
 ok $pid, 'created a ticket #'. $pid or diag "error: $msg";
 
-my $child = RT::Ticket->new($RT::SystemUser);
+my $child = RT::Ticket->new(RT->SystemUser);
 ((my $cid), undef, $msg) = $child->Create(
     Queue   => $queue->id,
     Subject => 'child',
@@ -210,7 +210,7 @@ ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
 }
 
 sub clean_links {
-    my $links = RT::Links->new( $RT::SystemUser );
+    my $links = RT::Links->new( RT->SystemUser );
     while ( my $link = $links->Next ) {
         my ($status, $msg) = $link->Delete;
         $RT::Logger->error("Couldn't delete a link: $msg")

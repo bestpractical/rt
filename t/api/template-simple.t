@@ -3,17 +3,17 @@ use warnings;
 use RT;
 use RT::Test tests => 199;
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Load("General");
 
-my $ticket_cf = RT::CustomField->new($RT::SystemUser);
+my $ticket_cf = RT::CustomField->new(RT->SystemUser);
 $ticket_cf->Create(
     Name        => 'Department',
     Queue       => '0',
     Type        => 'FreeformSingle',
 );
 
-my $txn_cf = RT::CustomField->new($RT::SystemUser);
+my $txn_cf = RT::CustomField->new(RT->SystemUser);
 $txn_cf->Create(
     Name        => 'Category',
     LookupType  => RT::Transaction->CustomFieldLookupType,
@@ -21,7 +21,7 @@ $txn_cf->Create(
 );
 $txn_cf->AddToObject($queue);
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ($id, $msg) = $ticket->Create(
     Subject   => "template testing",
     Queue     => "General",
@@ -167,7 +167,7 @@ SimpleTemplateTest(
 is($ticket->Status, 'new', "simple templates can't call ->Resolve");
 
 # Make sure changing the template's type works
-my $template = RT::Template->new($RT::SystemUser);
+my $template = RT::Template->new(RT->SystemUser);
 $template->Create(
     Name    => "type chameleon",
     Type    => "Perl",
@@ -177,7 +177,7 @@ ok($id = $template->id, "Created template");
 $template->Parse;
 is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 
-$template = RT::Template->new($RT::SystemUser);
+$template = RT::Template->new(RT->SystemUser);
 $template->Load($id);
 is($template->Name, "type chameleon");
 
@@ -185,7 +185,7 @@ $template->SetType('Simple');
 $template->Parse;
 is($template->MIMEObj->stringify_body, "test { 10 * 7 }", "Simple output");
 
-$template = RT::Template->new($RT::SystemUser);
+$template = RT::Template->new(RT->SystemUser);
 $template->Load($id);
 is($template->Name, "type chameleon");
 
@@ -210,7 +210,7 @@ sub IndividualTemplateTest {
         $warnings .= "@_";
     } if $args{Warnings};
 
-    my $t = RT::Template->new($RT::SystemUser);
+    my $t = RT::Template->new(RT->SystemUser);
     $t->Create(
         Name    => $args{Name},
         Type    => $args{Type},

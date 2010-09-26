@@ -151,7 +151,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
     my $count;
     my $class = 'RT::' . $type;
     $class =~ s/Privileged|Unprivileged//;
-    my $collection = $class->new($RT::SystemUser);
+    my $collection = $class->new(RT->SystemUser);
     $collection->UnLimit;
     if ($type =~ /PrivilegedUsers/) {
         $user_count = $collection->CountAll;

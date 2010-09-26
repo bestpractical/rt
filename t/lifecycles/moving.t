@@ -18,14 +18,14 @@ ok $delivery && $delivery->id, 'loaded or created a queue';
 
 my $tstatus = sub {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $_[0] );
     return $ticket->Status;
 };
 
 diag "check moving without a map";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $msg) = $ticket->Create(
         Queue => $general->id,
         Subject => 'test',
@@ -52,7 +52,7 @@ diag "add partial map";
 diag "check moving with a partial map";
 {
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -66,7 +66,7 @@ diag "check moving with a partial map";
         is $ticket->Status, 'ordered', 'status has been changed';
     }
     {
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($id, $msg) = $ticket->Create(
             Queue => $general->id,
             Subject => 'test',
@@ -82,7 +82,7 @@ diag "check moving with a partial map";
 
 diag "one way map doesn't work backwards";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $msg) = $ticket->Create(
         Queue => $delivery->id,
         Subject => 'test',

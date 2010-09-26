@@ -9,7 +9,7 @@ sub load_or_create_group {
     my $name = shift;
     my %args = (@_);
 
-    my $group = RT::Group->new( $RT::SystemUser );
+    my $group = RT::Group->new( RT->SystemUser );
     $group->LoadUserDefinedGroup( $name );
     unless ( $group->id ) {
         my ($id, $msg) = $group->CreateUserDefinedGroup(

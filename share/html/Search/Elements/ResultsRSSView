@@ -70,7 +70,7 @@ if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     # convert to perl strings
     $name = Encode::decode_utf8($name);
 
-    my $user = RT::User->new($RT::SystemUser);
+    my $user = RT::User->new(RT->SystemUser);
     $user->Load($name);
     $notfound->("Invalid user: $user") unless $user->id;
 

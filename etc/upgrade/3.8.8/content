@@ -1,7 +1,7 @@
 @Initial = (
     sub {
         # make sure global CFs are not applied to local objects
-        my $ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
         $ocfs->Limit( FIELD => 'ObjectId', OPERATOR => '!=', VALUE => 0 );
         my $alias = $ocfs->Join(
             FIELD1 => 'CustomField',
@@ -26,7 +26,7 @@
         my ($i, $prev_type) = (0, '');
         while ( my ($lt, $id) = $sth->fetchrow_array ) {
             $i = 0 if $prev_type ne $lt;
-            my $ocf = RT::ObjectCustomField->new( $RT::SystemUser );
+            my $ocf = RT::ObjectCustomField->new( RT->SystemUser );
             $ocf->Load( $id );
             my ($status, $msg) = $ocf->SetSortOrder( $i++ );
             $RT::Logger->warning("Couldn't set SortOrder: $msg")

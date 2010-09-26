@@ -300,7 +300,7 @@ $showrows->(
         "/Elements/SelectOwner",
         Name         => "Owner",
         QueueObj     => $QueueObj,
-        Default      => $ARGS{Owner} || $RT::Nobody->Id,
+        Default      => $ARGS{Owner} || RT->Nobody->Id,
         DefaultValue => 0
         ),
 

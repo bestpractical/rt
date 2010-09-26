@@ -162,8 +162,8 @@ sub Create {
     }
 
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
-    if ($RT::SystemUser) {   #This only works if RT::SystemUser has been defined
-        my $TempUser = RT::User->new($RT::SystemUser);
+    if (RT->SystemUser) {   #This only works if RT::SystemUser has been defined
+        my $TempUser = RT::User->new(RT->SystemUser);
         $TempUser->Load( $args{'Name'} );
         return ( 0, $self->loc('Name in use') ) if ( $TempUser->Id );
 
@@ -545,7 +545,7 @@ sub ValidateEmailAddress {
     }
 
 
-    my $TempUser = RT::User->new($RT::SystemUser);
+    my $TempUser = RT::User->new(RT->SystemUser);
     $TempUser->LoadByEmail($Value);
 
     if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
@@ -608,8 +608,8 @@ sub EmailFrequency {
         Ticket => undef,
         @_
     );
-    return '' unless $self->id && $self->id != $RT::Nobody->id
-        && $self->id != $RT::SystemUser->id;
+    return '' unless $self->id && $self->id != RT->Nobody->id
+        && $self->id != RT->SystemUser->id;
     return 'no email' unless my $email = $self->EmailAddress;
     return 'squelched' if $args{'Ticket'} &&
         grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
@@ -959,7 +959,7 @@ sub AuthToken {
     return $secret->Content if $secret;
 
     my $id = $self->id;
-    $self = RT::User->new( $RT::SystemUser );
+    $self = RT::User->new( RT->SystemUser );
     $self->Load( $id );
     $secret = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
     my ($status, $msg) = $self->SetAttribute( Name => "AuthToken", Content => $secret );
@@ -1376,8 +1376,8 @@ sub _Set {
 
     # Nobody is allowed to futz with RT_System or Nobody 
 
-    if ( ($self->Id == $RT::SystemUser->Id )  || 
-         ($self->Id == $RT::Nobody->Id)) {
+    if ( ($self->Id == RT->SystemUser->Id )  || 
+         ($self->Id == RT->Nobody->Id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
     unless ( $self->CurrentUserCanModify( $args{'Field'} ) ) {

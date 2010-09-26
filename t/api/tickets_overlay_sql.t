@@ -8,7 +8,7 @@ use RT::Test tests => 7;
 use RT::Tickets;
 use strict;
 
-my $tix = RT::Tickets->new($RT::SystemUser);
+my $tix = RT::Tickets->new(RT->SystemUser);
 {
     my $query = "Status = 'open'";
     my ($status, $msg)  = $tix->FromSQL($query);
@@ -19,7 +19,7 @@ my $tix = RT::Tickets->new($RT::SystemUser);
 my (@created,%created);
 my $string = 'subject/content SQL test';
 {
-    my $t = RT::Ticket->new($RT::SystemUser);
+    my $t = RT::Ticket->new(RT->SystemUser);
     ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
     $created{ $t->Id }++; push @created, $t->Id;
 }
@@ -31,7 +31,7 @@ my $string = 'subject/content SQL test';
                      Data        => [ $string ],
             );
 
-    my $t = RT::Ticket->new($RT::SystemUser);
+    my $t = RT::Ticket->new(RT->SystemUser);
     ok( $t->Create( Queue => 'General',
                     Subject => 'another ticket',
                     MIMEObj => $Message,

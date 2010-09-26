@@ -9,11 +9,11 @@ use_ok('RT');
 use_ok('RT::Transactions');
 
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 my ($id,$msg) = $q->Create( Name => 'TxnCFTest'.$$);
 ok($id,$msg);
 
-my $cf = RT::CustomField->new($RT::SystemUser);
+my $cf = RT::CustomField->new(RT->SystemUser);
 ($id,$msg) = $cf->Create(Name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Transaction->CustomFieldLookupType );
 
 ok($id,$msg);
@@ -23,7 +23,7 @@ ok($id,$msg);
 ok($id,$msg);
 
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 
 my $transid;
 ($id,$transid, $msg) = $ticket->Create(Queue => $q->id,
@@ -31,7 +31,7 @@ my $transid;
             );
 ok($id,$msg);
 
-my $trans = RT::Transaction->new($RT::SystemUser);
+my $trans = RT::Transaction->new(RT->SystemUser);
 $trans->Load($transid);
 
 is($trans->ObjectId,$id);

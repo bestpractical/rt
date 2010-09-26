@@ -74,7 +74,7 @@ sub email_ok {
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
     ok ($id, "$eid: got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "$eid: loaded ticket #$id");
 

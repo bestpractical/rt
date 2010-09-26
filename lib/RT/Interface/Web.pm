@@ -349,7 +349,7 @@ sub AttemptExternalAuth {
         if ( RT->Config->Get('WebExternalAuto') and not _UserLoggedIn() ) {
 
             # Create users on-the-fly
-            my $UserObj = RT::User->new($RT::SystemUser);
+            my $UserObj = RT::User->new(RT->SystemUser);
             my ( $val, $msg ) = $UserObj->Create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
                 Name  => $user,
@@ -536,7 +536,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
 
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
@@ -850,7 +850,7 @@ sub loc_fuzzy {
     {
         return ( $session{'CurrentUser'}->loc_fuzzy($msg) );
     } else {
-        my $u = RT::CurrentUser->new( $RT::SystemUser->Id );
+        my $u = RT::CurrentUser->new( RT->SystemUser->Id );
         return ( $u->loc_fuzzy($msg) );
     }
 }
@@ -1645,7 +1645,7 @@ sub ProcessTicketBasics {
     for my $field (qw(Queue Owner)) {
         if ( $ARGSRef->{$field} and ( $ARGSRef->{$field} !~ /^(\d+)$/ ) ) {
             my $class = $field eq 'Owner' ? "RT::User" : "RT::$field";
-            my $temp = $class->new($RT::SystemUser);
+            my $temp = $class->new(RT->SystemUser);
             $temp->Load( $ARGSRef->{$field} );
             if ( $temp->id ) {
                 $ARGSRef->{$field} = $temp->id;

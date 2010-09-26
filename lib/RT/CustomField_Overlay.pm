@@ -544,7 +544,7 @@ sub ValidateQueue {
     # 0 means "Global" null would _not_ be ok.
     return 1 if $id eq '0';
 
-    my $q = RT::Queue->new( $RT::SystemUser );
+    my $q = RT::Queue->new( RT->SystemUser );
     $q->Load( $id );
     return undef unless $q->id;
     return 1;

@@ -7,7 +7,7 @@ use RT::Test nodata => 1, tests => 7;
 
 {
 
-my $s = RT::System->new($RT::SystemUser);
+my $s = RT::System->new(RT->SystemUser);
 my $rights = $s->AvailableRights;
 ok ($rights, "Rights defined");
 ok ($rights->{'AdminUsers'},"AdminUsers right found");

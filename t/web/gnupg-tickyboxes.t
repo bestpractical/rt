@@ -83,7 +83,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     # to avoid encryption/signing during create
     set_queue_crypt_options();
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id) = $ticket->Create(
         Subject   => 'test',
         Queue     => $queue->id,

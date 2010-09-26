@@ -142,7 +142,7 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^$cf_spec/) {
-                my $cf = RT::CustomField->new( $RT::SystemUser );
+                my $cf = RT::CustomField->new( RT->SystemUser );
                 my $cfk = $1 || $2;
                 unless($cf->LoadByName( Name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
@@ -341,7 +341,7 @@ else {
         }
         # Set custom field
         elsif ($key =~ /^$cf_spec/) {
-            my $cf = RT::CustomField->new( $RT::SystemUser );
+            my $cf = RT::CustomField->new( RT->SystemUser );
             $key = $1 || $2;
             if (not $cf->LoadByName( Name => $key )) {
                 $n = 0;

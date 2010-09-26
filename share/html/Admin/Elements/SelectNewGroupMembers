@@ -79,13 +79,13 @@ my $users = RT::Users->new($session{'CurrentUser'});
 
 $users->Limit(
     FIELD           => 'id',
-    VALUE           => $RT::SystemUser->id,
+    VALUE           => RT->SystemUser->id,
     OPERATOR        => '!=',
     ENTRYAGGREGATOR => 'AND'
 );
 $users->Limit(
     FIELD           => 'id',
-    VALUE           => $RT::Nobody->id,
+    VALUE           => RT->Nobody->id,
     OPERATOR        => '!=',
     ENTRYAGGREGATOR => 'AND'
 );

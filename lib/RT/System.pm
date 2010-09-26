@@ -124,9 +124,9 @@ use RT::Group;
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Queue->new($RT::SystemUser);
-    my $group = RT::Group->new($RT::SystemUser);
-    my $cf    = RT::CustomField->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
+    my $group = RT::Group->new(RT->SystemUser);
+    my $cf    = RT::CustomField->new(RT->SystemUser);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
@@ -148,9 +148,9 @@ values are the category (General, Staff, Admin) the right falls into.
 sub RightCategories {
     my $self = shift;
 
-    my $queue = RT::Queue->new($RT::SystemUser);
-    my $group = RT::Group->new($RT::SystemUser);
-    my $cf    = RT::CustomField->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
+    my $group = RT::Group->new(RT->SystemUser);
+    my $cf    = RT::CustomField->new(RT->SystemUser);
 
     my $qr = $queue->RightCategories();
     my $gr = $group->RightCategories();

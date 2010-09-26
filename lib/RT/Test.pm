@@ -524,7 +524,7 @@ sub load_or_create_user {
     $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
     $MemberOf ||= [];
 
-    my $obj = RT::User->new( $RT::SystemUser );
+    my $obj = RT::User->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
     } elsif ( $args{'EmailAddress'} ) {
@@ -546,7 +546,7 @@ sub load_or_create_user {
     # clean group membership
     {
         require RT::GroupMembers;
-        my $gms = RT::GroupMembers->new( $RT::SystemUser );
+        my $gms = RT::GroupMembers->new( RT->SystemUser );
         my $groups_alias = $gms->Join(
             FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
         );
@@ -575,7 +575,7 @@ sub load_or_create_user {
 sub load_or_create_queue {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::Queue->new( $RT::SystemUser );
+    my $obj = RT::Queue->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
     } else {
@@ -607,7 +607,7 @@ sub load_or_create_queue {
 sub load_or_create_custom_field {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::CustomField->new( $RT::SystemUser );
+    my $obj = RT::CustomField->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
     } else {
@@ -624,7 +624,7 @@ sub load_or_create_custom_field {
 sub last_ticket {
     my $self = shift;
     my $current = shift;
-    $current = $current ? RT::CurrentUser->new($current) : $RT::SystemUser;
+    $current = $current ? RT::CurrentUser->new($current) : RT->SystemUser;
     my $tickets = RT::Tickets->new( $current );
     $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
     $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
@@ -637,17 +637,17 @@ sub store_rights {
 
     require RT::ACE;
     # fake construction
-    RT::ACE->new( $RT::SystemUser );
+    RT::ACE->new( RT->SystemUser );
     my @fields = keys %{ RT::ACE->_ClassAccessible };
 
     require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
+    my $acl = RT::ACL->new( RT->SystemUser );
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
 
     my @res;
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
 
@@ -664,7 +664,7 @@ sub restore_rights {
     my $self = shift;
     my @entries = @_;
     foreach my $entry ( @entries ) {
-        my $ace = RT::ACE->new( $RT::SystemUser );
+        my $ace = RT::ACE->new( RT->SystemUser );
         my ($status, $msg) = $ace->RT::Record::Create( %$entry );
         unless ( $status ) {
             Test::More::diag "couldn't create a record: $msg";
@@ -676,11 +676,11 @@ sub set_rights {
     my $self = shift;
 
     require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
+    my $acl = RT::ACL->new( RT->SystemUser );
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
         $ace->Delete;
@@ -697,10 +697,10 @@ sub add_rights {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
-                $principal = RT::Group->new( $RT::SystemUser );
+                $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadSystemInternalGroup($1);
             } elsif ( $principal =~ /^(Owner|Requestor|(?:Admin)?Cc)$/i ) {
-                $principal = RT::Group->new( $RT::SystemUser );
+                $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadByCols(
                     Domain => (ref($e->{'Object'})||'RT::System').'-Role',
                     Type => $1,

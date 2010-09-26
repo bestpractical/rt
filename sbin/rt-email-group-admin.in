@@ -232,7 +232,7 @@ sub _list {
 
     print "Members: \n";
     foreach( @princ ) {
-        my $obj = RT::Principal->new( $RT::SystemUser );
+        my $obj = RT::Principal->new( RT->SystemUser );
         $obj->Load( $_ );
         next unless $obj->id;
 
@@ -253,7 +253,7 @@ recipient list. Would be notify as comment if --comment specified.
 =cut
 
 sub create {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit(
         FIELD => 'Name',
         VALUE => $opts->{'name'},
@@ -282,7 +282,7 @@ sub __create_empty {
     my $name = shift;
     my $as_comment = shift || 0;
     require RT::ScripAction;
-    my $action = RT::ScripAction->new( $RT::SystemUser );
+    my $action = RT::ScripAction->new( RT->SystemUser );
     $action->Create(
         Name => $name,
         Description => "Created with rt-email-group-admin script",
@@ -303,7 +303,7 @@ sub __check_group
 {
     my $instance = shift;
     require RT::Group;
-    my $obj = RT::Group->new( $RT::SystemUser );
+    my $obj = RT::Group->new( RT->SystemUser );
     $obj->LoadUserDefinedGroup( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -318,7 +318,7 @@ sub __check_user
 {
     my $instance = shift;
     require RT::User;
-    my $obj = RT::User->new( $RT::SystemUser );
+    my $obj = RT::User->new( RT->SystemUser );
     $obj->Load( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -379,7 +379,7 @@ sub delete {
     }
 
     require RT::Scrips;
-    my $scrips = RT::Scrips->new( $RT::SystemUser );
+    my $scrips = RT::Scrips->new( RT->SystemUser );
     $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
     if ( $scrips->Count ) {
         my @sid;
@@ -452,7 +452,7 @@ sub rename {
         exit(-1);
     }
 
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit( FIELD => 'Name', VALUE => $opts->{'newname'} );
     if ( $actions->Count ) {
         print STDERR "ScripAction '". $opts->{'newname'} ."' allready exists\n";
@@ -483,7 +483,7 @@ sub argument_to_list {
 }
 
 sub _get_our_actions {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit(
         FIELD => 'ExecModule',
         VALUE => 'NotifyGroup',

@@ -15,7 +15,7 @@ diag "Create a queue to test with.";
 my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
-    $queue = RT::Queue->new( $RT::SystemUser );
+    $queue = RT::Queue->new( RT->SystemUser );
     my ($ret, $msg) = $queue->Create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
@@ -30,7 +30,7 @@ my $cf_name;
 diag "create a CF";
 {
     $cf_name = $CF{'CF'}{'name'} = "Order$$";
-    $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'CF'}{'obj'} = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $CF{'CF'}{'obj'}->Create(
         Name  => $CF{'CF'}{'name'},
         Queue => $queue->id,
@@ -45,7 +45,7 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
 
         my $subject = '-';
@@ -82,7 +82,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Tickets->new( RT->SystemUser );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
@@ -162,7 +162,7 @@ run_tests();
 diag "create another CF";
 {
     $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
-    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->Create(
         Name  => $CF{'AnotherCF'}{'name'},
         Queue => $queue->id,

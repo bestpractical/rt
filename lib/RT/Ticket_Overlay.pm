@@ -268,7 +268,7 @@ sub Create {
 
     my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Queue->new( $RT::SystemUser );
+    my $QueueObj = RT::Queue->new( RT->SystemUser );
     if ( ref $args{'Queue'} eq 'RT::Queue' ) {
         $QueueObj->Load( $args{'Queue'}->Id );
     }
@@ -425,7 +425,7 @@ sub Create {
     #to own a ticket, scream about it and make them not the owner
    
     my $DeferOwner;  
-    if ( $Owner && $Owner->Id != $RT::Nobody->Id 
+    if ( $Owner && $Owner->Id != RT->Nobody->Id 
         && !$Owner->HasRight( Object => $QueueObj, Right  => 'OwnTicket' ) )
     {
         $DeferOwner = $Owner;
@@ -437,7 +437,7 @@ sub Create {
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) && $Owner->Id ) {
         $Owner = RT::User->new( $self->CurrentUser );
-        $Owner->Load( $RT::Nobody->Id );
+        $Owner->Load( RT->Nobody->Id );
     }
 
     # }}}
@@ -453,7 +453,7 @@ sub Create {
             } else {
                 my @addresses = RT::EmailParser->ParseEmailAddress( $watcher );
                 foreach my $address( @addresses ) {
-                    my $user = RT::User->new( $RT::SystemUser );
+                    my $user = RT::User->new( RT->SystemUser );
                     my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
                     unless ( $uid ) {
                         push @non_fatal_errors,
@@ -761,7 +761,7 @@ sub _Parse822HeadersForAttributes {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new($RT::SystemUser);
+        my $dateobj = RT::Date->new(RT->SystemUser);
         if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
         }
@@ -801,7 +801,7 @@ sub Import {
         Queue           => undef,
         Requestor       => undef,
         Type            => 'ticket',
-        Owner           => $RT::Nobody->Id,
+        Owner           => RT->Nobody->Id,
         Subject         => '[no subject]',
         InitialPriority => undef,
         FinalPriority   => undef,
@@ -816,13 +816,13 @@ sub Import {
     );
 
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Queue->new($RT::SystemUser);
+        $QueueObj = RT::Queue->new(RT->SystemUser);
         $QueueObj->Load( $args{'Queue'} );
 
         #TODO error check this and return 0 if it\'s not loading properly +++
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
-        $QueueObj = RT::Queue->new($RT::SystemUser);
+        $QueueObj = RT::Queue->new(RT->SystemUser);
         $QueueObj->Load( $args{'Queue'}->Id );
     }
     else {
@@ -861,7 +861,7 @@ sub Import {
             $Owner = RT::User->new( $self->CurrentUser );
             $Owner->Load( $args{'Owner'} );
             if ( !defined( $Owner->id ) ) {
-                $Owner->Load( $RT::Nobody->id );
+                $Owner->Load( RT->Nobody->id );
             }
         }
     }
@@ -870,7 +870,7 @@ sub Import {
     #to own a ticket, scream about it and make them not the owner
     if (
         ( defined($Owner) )
-        and ( $Owner->Id != $RT::Nobody->Id )
+        and ( $Owner->Id != RT->Nobody->Id )
         and (
             !$Owner->HasRight(
                 Object => $QueueObj,
@@ -894,7 +894,7 @@ sub Import {
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) ) {
         $Owner = RT::User->new( $self->CurrentUser );
-        $Owner->Load( $RT::Nobody->UserObj->Id );
+        $Owner->Load( RT->Nobody->UserObj->Id );
     }
 
     # }}}
@@ -1112,7 +1112,7 @@ sub _AddWatcher {
         if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
             return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
         }
-        my $user = RT::User->new($RT::SystemUser);
+        my $user = RT::User->new(RT->SystemUser);
         my ($pid, $msg) = $user->LoadOrCreateByEmail( $args{'Email'} );
         $args{'PrincipalId'} = $pid if $pid; 
     }
@@ -1706,17 +1706,17 @@ sub SetQueue {
     }
 
     unless ( $self->OwnerObj->HasRight( Right    => 'OwnTicket', Object => $NewQueueObj)) {
-        my $clone = RT::Ticket->new( $RT::SystemUser );
+        my $clone = RT::Ticket->new( RT->SystemUser );
         $clone->Load( $self->Id );
         unless ( $clone->Id ) {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
         }
-        my ($status, $msg) = $clone->SetOwner( $RT::Nobody->Id, 'Force' );
+        my ($status, $msg) = $clone->SetOwner( RT->Nobody->Id, 'Force' );
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
     if ( $new_status ) {
-        my $clone = RT::Ticket->new( $RT::SystemUser );
+        my $clone = RT::Ticket->new( RT->SystemUser );
         $clone->Load( $self->Id );
         unless ( $clone->Id ) {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
@@ -1886,7 +1886,7 @@ sub SetStarted {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
+    my $TicketAsSystem = RT::Ticket->new(RT->SystemUser);
     $TicketAsSystem->Load( $self->Id );
     if ( $TicketAsSystem->Status eq 'new' ) {
         $TicketAsSystem->Open();
@@ -2651,7 +2651,7 @@ sub _MergeInto {
             $link->Delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Link->new($RT::SystemUser);
+            my $tmp = RT::Link->new(RT->SystemUser);
             $tmp->LoadByCols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
             if ($tmp->id)   {
                     $link->Delete;
@@ -2675,7 +2675,7 @@ sub _MergeInto {
             $link->Delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Link->new($RT::SystemUser);
+            my $tmp = RT::Link->new(RT->SystemUser);
             $tmp->LoadByCols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
             if ($tmp->id)   {
                     $link->Delete;
@@ -2840,7 +2840,7 @@ sub SetOwner {
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
-    if ( $OldOwnerObj->Id == $RT::Nobody->Id ) {
+    if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('TakeTicket') ) {
             $RT::Handle->Rollback();
@@ -2849,7 +2849,7 @@ sub SetOwner {
     }
 
     # see if it's a steal
-    elsif (    $OldOwnerObj->Id != $RT::Nobody->Id
+    elsif (    $OldOwnerObj->Id != RT->Nobody->Id
             && $OldOwnerObj->Id != $self->CurrentUser->id ) {
 
         unless (    $self->CurrentUserHasRight('ModifyTicket')
@@ -2868,7 +2868,7 @@ sub SetOwner {
     # If we're not stealing and the ticket has an owner and it's not
     # the current user
     if ( $Type ne 'Steal' and $Type ne 'Force'
-         and $OldOwnerObj->Id != $RT::Nobody->Id
+         and $OldOwnerObj->Id != RT->Nobody->Id
          and $OldOwnerObj->Id != $self->CurrentUser->Id )
     {
         $RT::Handle->Rollback();
@@ -2977,7 +2977,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub Untake {
     my $self = shift;
-    return ( $self->SetOwner( $RT::Nobody->UserObj->Id, 'Untake' ) );
+    return ( $self->SetOwner( RT->Nobody->UserObj->Id, 'Untake' ) );
 }
 
 
@@ -3074,7 +3074,7 @@ sub SetStatus {
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
-    my $raw_started = RT::Date->new($RT::SystemUser);
+    my $raw_started = RT::Date->new(RT->SystemUser);
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
     #If we're changing the status from new, record that we've started
@@ -3294,7 +3294,7 @@ sub _ApplyTransactionBatch {
     my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
     require RT::Scrips;
-    RT::Scrips->new($RT::SystemUser)->Apply(
+    RT::Scrips->new(RT->SystemUser)->Apply(
         Stage          => 'TransactionBatch',
         TicketObj      => $self,
         TransactionObj => $batch->[0],

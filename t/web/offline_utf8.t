@@ -44,7 +44,7 @@ $m->submit_form(
 $m->content_like( qr/Ticket \d+ created/, 'found ticket created message' );
 my ( $ticket_id ) = $m->content =~ /Ticket (\d+) created/;
 
-my $ticket = RT::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Ticket->new( RT->SystemUser );
 $ticket->Load( $ticket_id );
 is( $ticket->Subject, '标题', 'subject in $ticket is right' );
 

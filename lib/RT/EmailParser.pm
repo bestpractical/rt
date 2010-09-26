@@ -305,7 +305,7 @@ sub ParseCcAddressesFromHead {
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
-        my $user = RT::User->new($RT::SystemUser);
+        my $user = RT::User->new(RT->SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
         next if lc $args{'CurrentUser'}->EmailAddress eq lc $Address;
         next if $self->IsRTAddress($Address);
@@ -341,7 +341,7 @@ sub IsRTAddress {
         return 1 if lc $comment_address eq lc $address;
     }
 
-    my $queue = RT::Queue->new( $RT::SystemUser );
+    my $queue = RT::Queue->new( RT->SystemUser );
     $queue->LoadByCols( CorrespondAddress => $address );
     return 1 if $queue->id;
 
@@ -545,7 +545,7 @@ sub ParseEmailAddress {
     my @addresses;
     # if it looks like a username / local only email
     if ($address_string !~ /@/ && $address_string =~ /^\w+$/) {
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         my ($id, $msg) = $user->Load($address_string);
         if ($id) {
             push @addresses, Email::Address->new($user->Name,$user->EmailAddress);

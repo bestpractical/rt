@@ -61,7 +61,7 @@ sub FindAllRules {
     my ($class, %args) = @_;
     return [
         grep { $_->Prepare }
-        map { $_->new(CurrentUser => $RT::SystemUser, %args) }
+        map { $_->new(CurrentUser => RT->SystemUser, %args) }
         grep { $_->_Stage eq $args{Stage} }
         map { @{$_->Rules} } @RULE_SETS
     ];

@@ -25,7 +25,7 @@ diag "Set Subject Tag";
     is(RT->System->SubjectTag($queue), $subject_tag, "Set Subject Tag to $subject_tag");
 }
 
-my $original_ticket = RT::Ticket->new( $RT::SystemUser );
+my $original_ticket = RT::Ticket->new( RT->SystemUser );
 diag "Create a ticket and make sure it has the subject tag";
 {
     $original_ticket->Create(
@@ -61,7 +61,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticketid, "Replied to ticket $id correctly");
 
-    my $freshticket = RT::Ticket->new( $RT::SystemUser );
+    my $freshticket = RT::Ticket->new( RT->SystemUser );
     $freshticket->LoadById($id);
     is($original_ticket->Subject,$freshticket->Subject,'Stripped Queue Subject Tag correctly');
 
@@ -81,7 +81,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticketid, "Replied to ticket $id correctly");
 
-    my $freshticket = RT::Ticket->new( $RT::SystemUser );
+    my $freshticket = RT::Ticket->new( RT->SystemUser );
     $freshticket->LoadById($id);
     like($freshticket->Subject,qr/\[remote-rt-system #79\]/,"Kept remote rt's subject tag");
     unlike($freshticket->Subject,qr/\[\Q$subject_tag\E #$ticketid\]/,'Stripped Queue Subject Tag correctly');

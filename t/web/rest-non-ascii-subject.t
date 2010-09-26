@@ -42,7 +42,7 @@ $m->post("$baseurl/REST/1.0/ticket/new", [
 my ($id) = $m->content =~ /Ticket (\d+) created/;
 ok($id, "got ticket #$id");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Load($id);
 is($ticket->Id, $id, "loaded the REST-created ticket");
 is($ticket->Subject, $subject, "ticket subject successfully set");

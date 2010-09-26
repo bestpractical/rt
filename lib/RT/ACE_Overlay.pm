@@ -525,7 +525,7 @@ sub _CanonicalizePrincipal {
     my $princ_id   = shift;
     my $princ_type = shift || '';
 
-    my $princ_obj = RT::Principal->new($RT::SystemUser);
+    my $princ_obj = RT::Principal->new(RT->SystemUser);
     $princ_obj->Load($princ_id);
 
     unless ( $princ_obj->Id ) {
@@ -542,7 +542,7 @@ sub _CanonicalizePrincipal {
         $equiv_group->LoadACLEquivalenceGroup($princ_obj);
         unless ( $equiv_group->Id ) {
             $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
-            return ( RT::Principal->new($RT::SystemUser), undef );
+            return ( RT::Principal->new(RT->SystemUser), undef );
         }
         $princ_obj  = $equiv_group->PrincipalObj();
         $princ_type = 'Group';

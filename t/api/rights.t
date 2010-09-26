@@ -54,7 +54,7 @@ use warnings;
 
 # clear all global right
 {
-    my $acl = RT::ACL->new($RT::SystemUser);
+    my $acl = RT::ACL->new(RT->SystemUser);
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     $acl->LimitToObject( $RT::System );
     while( my $ace = $acl->Next ) {
@@ -81,11 +81,11 @@ ok $user && $user->id, 'loaded or created user';
 }
 
 {
-    my $group = RT::Group->new( $RT::SystemUser );
+    my $group = RT::Group->new( RT->SystemUser );
     ok( $group->LoadQueueRoleGroup( Queue => $queue->id, Type=> 'Owner' ),
         "load queue owners role group"
     );
-    my $ace = RT::ACE->new( $RT::SystemUser );
+    my $ace = RT::ACE->new( RT->SystemUser );
     my ($ace_id, $msg) = $group->PrincipalObj->GrantRight(
         Right => 'ReplyToTicket', Object => $queue
     );
@@ -101,10 +101,10 @@ ok $user && $user->id, 'loaded or created user';
 my $ticket;
 {
     # new ticket
-    $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket = RT::Ticket->new(RT->SystemUser);
     my ($ticket_id) = $ticket->Create( Queue => $queue->id, Subject => 'test');
     ok( $ticket_id, 'new ticket created' );
-    is( $ticket->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
+    is( $ticket->Owner, RT->Nobody->Id, 'owner of the new ticket is nobody' );
 
     ok( !$user->HasRight( Right => 'OwnTicket', Object => $ticket ),
         "user can't reply to ticket"
@@ -136,11 +136,11 @@ my $ticket;
 
 {
     # Testing of EquivObjects
-    my $group = RT::Group->new( $RT::SystemUser );
+    my $group = RT::Group->new( RT->SystemUser );
     ok( $group->LoadQueueRoleGroup( Queue => $queue->id, Type=> 'AdminCc' ),
         "load queue AdminCc role group"
     );
-    my $ace = RT::ACE->new( $RT::SystemUser );
+    my $ace = RT::ACE->new( RT->SystemUser );
     my ($ace_id, $msg) = $group->PrincipalObj->GrantRight(
         Right => 'ModifyTicket', Object => $queue
     );
@@ -165,7 +165,7 @@ my $ticket;
 
 my $ticket2;
 {
-    $ticket2 = RT::Ticket->new($RT::SystemUser);
+    $ticket2 = RT::Ticket->new(RT->SystemUser);
     my ($id) = $ticket2->Create( Queue => $queue->id, Subject => 'test2');
     ok( $id, 'new ticket created' );
     ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket2 ),

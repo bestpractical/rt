@@ -19,7 +19,7 @@ my @qids;
 my @queues;
 # create them in reverse order to avoid false positives
 foreach my $name ( qw(sort-by-queue-Z sort-by-queue-A) ) {
-    my $queue = RT::Queue->new( $RT::SystemUser );
+    my $queue = RT::Queue->new( RT->SystemUser );
     my ($ret, $msg) = $queue->Create(
         Name => $name ."-$$",
         Description => 'queue to test sorting by queue'
@@ -35,7 +35,7 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
         my ( $id, undef, $msg ) = $t->Create( %args );
         ok( $id, "ticket created" ) or diag("error: $msg");
@@ -53,7 +53,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Tickets->new( RT->SystemUser );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
