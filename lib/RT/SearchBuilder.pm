@@ -187,11 +187,7 @@ match lower(colname) agaist lc($val);
 =cut
 
 sub Limit {
-    my $self = shift;
-    my %args = ( CASESENSITIVE => 1,
-                 @_ );
-
-    return $self->SUPER::Limit(%args);
+    shift->SUPER::Limit(CASESENSITIVE => 1, @_);
 }
 
 =head2 ItemsOrderBy
