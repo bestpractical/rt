@@ -7,16 +7,16 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ([2.53])
-AC_INIT(RT, 3.9.HEAD, [rt-bugs@bestpractical.com])
+AC_INIT(RT, m4_esyscmd([(git describe --tags || echo "rt-3.9.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
 AC_SUBST([rt_version_major],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\1]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\1]))
 AC_SUBST([rt_version_minor],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\2]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\2]))
 AC_SUBST([rt_version_patch],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\4]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\3]))
 test "x$rt_version_major" = 'x' && rt_version_major=0
 test "x$rt_version_minor" = 'x' && rt_version_minor=0
 test "x$rt_version_patch" = 'x' && rt_version_patch=0
