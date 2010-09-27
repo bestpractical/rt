@@ -209,6 +209,22 @@ sub LimitToPrivileged {
     $self->MemberOfGroup( $priv->PrincipalId );
 }
 
+=head2 LimitToUnprivileged
+
+Limits to unprivileged users only
+
+=cut
+
+sub LimitToUnprivileged {
+    my $self = shift;
+
+    my $unpriv = RT::Group->new( $self->CurrentUser );
+    $unpriv->LoadSystemInternalGroup('Unprivileged');
+    unless ( $unpriv->Id ) {
+        $RT::Logger->crit("Couldn't find an 'Unprivileged' users group");
+    }
+    $self->MemberOfGroup( $unpriv->PrincipalId );
+}
 
 
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }

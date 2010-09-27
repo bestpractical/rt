@@ -99,3 +99,7 @@ fieldset.cfedit {
     margin: 0;
 }
 
+/* jQuery UI overrides */
+.ui-widget {
+    font-family: arial,helvetica,sans-serif !important;
+}
