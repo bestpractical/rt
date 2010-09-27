@@ -59,11 +59,12 @@ use warnings;
 
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
-use base ('Locale::Maketext::Fuzzy');
+use base 'Locale::Maketext::Fuzzy';
 
 use Encode;
 use MIME::Entity;
 use MIME::Head;
+use File::Glob;
 
 # I decree that this project's first language is English.
 
@@ -91,7 +92,6 @@ Initializes the lexicons used for localization.
 =cut
 
 sub Init {
-    require File::Glob;
 
     my @lang = RT->Config->Get('LexiconLanguages');
     @lang = ('*') unless @lang;
