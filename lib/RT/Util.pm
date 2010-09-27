@@ -80,11 +80,15 @@ sub safe_run_child (&) {
         }
         1;
     } or do {
+        my $err = $@;
         if ( $our_pid == $$ ) {
+            $RT::Logger->error( $err );
             $dbh->{'InactiveDestroy'} = 0 if $dbh;
             $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
         }
-        die $@;
+        $err =~ s/^Stack:.*$//ms;
+        #TODO we need to localize this
+        die 'System Error: ' . $err;
     };
     return $want? (@res) : $res[0];
 }

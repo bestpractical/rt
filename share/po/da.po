@@ -629,7 +629,7 @@ msgstr "(kun én sag)"
 #: share/html/Elements/RT__Ticket/ColumnMap:121
 #. ($count)
 msgid "(pending %quant(%1,other ticket))"
-msgstr "afventer %antal(%1,anden sag)"
+msgstr "afventer %quant(%1,anden sag)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:113
 msgid "(pending approval)"

@@ -611,7 +611,7 @@ Set($UseFriendlyToLine, 0);
 
 =item C<$FriendlyToLineFormat>
 
-C<sprintf()> format of the friendly 'From:' header; its arguments
+C<sprintf()> format of the friendly 'To:' header; its arguments
 are WatcherType and TicketId.
 
 =cut

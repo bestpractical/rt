@@ -530,7 +530,7 @@ sub _CanonicalizePrincipal {
 
     unless ( $princ_obj->Id ) {
         use Carp;
-        $RT::Logger->crit(Carp::cluck);
+        $RT::Logger->crit(Carp::longmess);
         $RT::Logger->crit("Can't load a principal for id $princ_id");
         return ( $princ_obj, undef );
     }
