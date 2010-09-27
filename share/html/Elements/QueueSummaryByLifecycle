@@ -45,9 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-% my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
-% next unless @cur_statuses;
+<%perl>
+    foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+    my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
+    next unless @cur_statuses;
+</%perl>
+
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
 
 <tr>
@@ -66,7 +69,7 @@ for my $queue (@queues) {
     my $name = $queue->{Name};
     $name =~ s/'/\\'/g;
     my $queue_cond = "Queue = '$name' AND ";
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->is_valid($_), @statuses ) . ')';
+    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", @cur_statuses ) . ')';
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 

@@ -46,21 +46,29 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
+
 <tr>
-       <th class="collection-as-table"><&|/l&>Queue</&></th>
+    <th class="collection-as-table"><&|/l&>Queue</&></th>
 % for my $condition (@$conditions) {
-       <th class="collection-as-table"><% $condition->{name} %></th>
+    <th class="collection-as-table"><% $condition->{name} %></th>
 % }
 </tr>
-% my $i;
-% for my $queue (@queues) {
-%   $i++;
-%   my $name = $queue->{Name};
-%   $name =~ s/'/\\'/g;
-%   my $queue_cond = "Queue = '$name' AND ";
-%   my $all_q = $queue_cond . "(".join( " OR ", map $_->{cond}, @$conditions).")";
+
+<%perl>
+my $i = 0;
+for my $queue (@queues) {
+    $i++;
+    my $name = $queue->{Name};
+    $name =~ s/'/\\'/g;
+    my $queue_cond = "Queue = '$name' AND ";
+
+    my $all_q = $queue_cond . "(".join( " OR ", map $_->{cond}, @$conditions).")";
+
+</%perl>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+
 <td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
+
 %   for my $condition (@$conditions) {
 %       $Tickets->FromSQL( "Queue = $queue->{id} AND ". $condition->{cond} );
 <td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->Count %></a></td>
