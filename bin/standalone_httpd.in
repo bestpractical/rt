@@ -87,11 +87,6 @@ if ( $opt{help} ) {
 
 require RT;
 RT->LoadConfig();
-RT->InitLogging();
-if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-
-RT::CheckPerlRequirements();
-RT->InitPluginPaths();
 
 my $explicit_port = shift @ARGV;
 my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
@@ -129,15 +124,10 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->ConnectToDatabase();
-    RT->InitSystemObjects();
-    RT->InitClasses( Heavy => 1 );
-    RT->InitPlugins();
-    RT->Config->PostLoadCheck();
+    RT->Init();
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    my ($status, $msg) = RT::Handle->CheckCompatibility(
-        $RT::Handle->dbh, 'post'
-    );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post');
     unless ( $status ) {
         print STDERR $msg, "\n\n";
         exit -1;
