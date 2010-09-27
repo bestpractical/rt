@@ -2197,7 +2197,9 @@ production:
   edit RT's web ui components on the fly and have RT magically pick up
   your changes. (It's a big performance hit)
 
- * More to come
+* Turns on SQL query logging available under Configuration -> Global -> Queries
+
+* More to come
 
 =cut
 
