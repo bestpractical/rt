@@ -1339,6 +1339,10 @@ Meta Data:
 
 =cut
 
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::Common::net::CIDR;
+
+
 sub _CustomFieldLimit {
     my ( $self, $_field, $op, $value, %rest ) = @_;
 
@@ -1365,6 +1369,47 @@ sub _CustomFieldLimit {
         return 'NOT MATCHES' if $op eq '!=';
         return $op;
     };
+
+    if ( $cf && $cf->Type eq 'IPAddress' ) {
+        my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
+        if ($parsed) {
+            $value = $parsed;
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddress");
+        }
+    }
+
+    if ( $cf && $cf->Type eq 'IPAddressRange' ) {
+
+        if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
+
+            # convert incomplete 192.168/24 to 192.168.0.0/24 format
+            $value =
+              join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
+              || $value;
+        }
+
+        my ( $start_ip, $end_ip ) =
+          RT::ObjectCustomFieldValue->ParseIPRange($value);
+        if ( $start_ip && $end_ip ) {
+            if ( $op =~ /^([<>])=?$/ ) {
+                my $is_less = $1 eq '<' ? 1 : 0;
+                if ( $is_less ) {
+                    $value = $start_ip;
+                }
+                else {
+                    $value = $end_ip;
+                }
+            }
+            else {
+                $value = join '-', $start_ip, $end_ip;
+            }
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddressRange");
+        }
+    }
 
     my $single_value = !$cf || !$cfid || $cf->SingleValue;
 
@@ -1393,6 +1438,48 @@ sub _CustomFieldLimit {
         ) if $CFs;
         $self->_CloseParen;
     }
+    elsif ( $op !~ /^[<>]=?$/ && (  $cf && $cf->Type eq 'IPAddressRange')) {
+    
+        my ($start_ip, $end_ip) = split /-/, $value;
+        
+        $self->_OpenParen;
+        if ( $op !~ /NOT|!=|<>/i ) { # positive equation
+            $self->_CustomFieldLimit(
+                'CF', '<=', $end_ip, %rest,
+                SUBKEY => $rest{'SUBKEY'}. '.Content',
+            );
+            $self->_CustomFieldLimit(
+                'CF', '>=', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'AND',
+            ); 
+            # as well limit borders so DB optimizers can use better
+            # estimations and scan less rows
+# have to disable this tweak because of ipv6
+#            $self->_CustomFieldLimit(
+#                $field, '>=', '000.000.000.000', %rest,
+#                SUBKEY          => $rest{'SUBKEY'}. '.Content',
+#                ENTRYAGGREGATOR => 'AND',
+#            );
+#            $self->_CustomFieldLimit(
+#                $field, '<=', '255.255.255.255', %rest,
+#                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+#                ENTRYAGGREGATOR => 'AND',
+#            );  
+        }       
+        else { # negative equation
+            $self->_CustomFieldLimit($field, '>', $end_ip, %rest);
+            $self->_CustomFieldLimit(
+                $field, '<', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'OR',
+            );  
+            # TODO: as well limit borders so DB optimizers can use better
+            # estimations and scan less rows, but it's harder to do
+            # as we have OR aggregator
+        }
+        $self->_CloseParen;
+    } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
         my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
@@ -1412,6 +1499,9 @@ sub _CustomFieldLimit {
                 VALUE      => $value,
                 %rest
             );
+            $self->_CloseParen;
+            $self->_CloseParen;
+            $self->_CloseParen;
         }
         else {
             my $cf = RT::CustomField->new( $self->CurrentUser );

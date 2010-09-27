@@ -55,7 +55,6 @@ use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
 
-
 our %FieldTypes = (
     Select => {
         selection_type => 1,
@@ -85,6 +84,22 @@ our %FieldTypes = (
         labels => [ 'Enter multiple values',       # loc
                     'Enter one value',             # loc
                     'Enter up to [_1] values',     # loc
+                  ]
+                },
+    IPAddress => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP addresses',       # loc
+                    'Enter one IP address',             # loc
+                    'Enter up to [_1] IP addresses',     # loc
+                  ]
+                },
+    IPAddressRange => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP address ranges',       # loc
+                    'Enter one IP address range',             # loc
+                    'Enter up to [_1] IP address ranges',     # loc
                   ]
                 },
     Text => {
@@ -1327,7 +1342,7 @@ sub AddValueForObject {
 
 
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-    my $val    = $newval->Create(
+    my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
         ObjectId     => $obj->Id,
         Content      => $args{'Content'},
@@ -1338,7 +1353,7 @@ sub AddValueForObject {
 
     unless ($val) {
         $RT::Handle->Rollback();
-        return ($val, $self->loc("Couldn't create record"));
+        return ($val, $self->loc("Couldn't create record: [_1]", $msg));
     }
 
     $RT::Handle->Commit();

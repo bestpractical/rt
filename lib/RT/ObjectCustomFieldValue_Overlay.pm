@@ -51,6 +51,11 @@ package RT::ObjectCustomFieldValue;
 use strict;
 use warnings;
 use RT::Interface::Web;
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::IPv6 qw($IPv6_re);
+use Regexp::Common::net::CIDR;
+require Net::CIDR;
+
 
 no warnings qw(redefine);
 
@@ -67,6 +72,37 @@ sub Create {
         ContentEncoding => '',
         @_,
     );
+
+
+    my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
+    $cf_as_sys->Load($args{'CustomField'});
+
+    if($cf_as_sys->Type eq 'IPAddress') {
+        if ( $args{'Content'} ) {
+            $args{'Content'} = $self->ParseIP( $args{'Content'} );
+        }
+
+        unless ( defined $args{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content is an invalid IP address") )
+              : 0;
+        }
+    }
+
+    if($cf_as_sys->Type eq 'IPAddressRange') {
+        if ($args{'Content'}) {
+            ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
+        }
+        $args{'ContentType'} = 'text/plain';
+
+        unless ( defined $args{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content is an invalid IP address range") )
+              : 0;
+        }
+    }
 
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
@@ -103,6 +139,32 @@ sub LargeContent {
         $self->ContentEncoding,
         $self->_Value( 'LargeContent', decode_utf8 => 0 )
     );
+}
+
+
+=head2 LoadByCols
+
+=cut
+
+sub LoadByCols {
+    my $self = shift;
+    my %args = (@_);
+    my $cf;
+    if ( $args{CustomField} ) {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load( $args{CustomField} );
+        if ( $cf->Type eq 'IPAddressRange' ) {
+
+            my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
+            if ( $sIP && $eIP ) {
+                $self->SUPER::LoadByCols( %args,
+                                          Content      => $sIP,
+                                          LargeContent => $eIP
+                                        );
+            }
+        }
+    }
+    return $self->SUPER::LoadByCols(%args);
 }
 
 =head2 LoadByTicketContentAndCustomField { Ticket => TICKET, CustomField => CUSTOMFIELD, Content => CONTENT }
@@ -172,9 +234,47 @@ content, try "LargeContent"
 
 =cut
 
+my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
+my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
+
 sub Content {
     my $self = shift;
+
     my $content = $self->_Value('Content');
+    if (   $self->CustomFieldObj->Type eq 'IPAddress'
+        || $self->CustomFieldObj->Type eq 'IPAddressRange' )
+    {
+
+        if ( $content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+            $content = sprintf "%d.%d.%d.%d", split /\./, $1;
+        }
+
+        return $content if $self->CustomFieldObj->Type eq 'IPAddress';
+
+        my $large_content = $self->__Value('LargeContent');
+        if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+            my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+            if ( $content eq $eIP ) {
+                return $content;
+            }
+            else {
+                return $content . "-" . $eIP;
+            }
+        }
+        elsif ( $large_content =~ /^\s*($IPv6_re)\s*$/o ) {
+            my $eIP = $1;
+            if ( $content eq $eIP ) {
+                return $content;
+            }
+            else {
+                return $content . "-" . $eIP;
+            }
+        }
+        else {
+            return $content;
+        }
+    }
+
     if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {
@@ -305,6 +405,96 @@ a IncludeContentForValue
 sub IncludeContentForValue {
     my $self = shift;
     return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
+}
+
+
+sub ParseIPRange {
+    my $self = shift;
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
+    
+    if ( $value =~ /^$RE{net}{CIDR}{IPv4}{-keep}$/go ) {
+        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        $value = (Net::CIDR::cidr2range( $cidr ))[0] || $value;
+    }
+    elsif ( $value =~ /^$IPv6_re(?:\/\d+)?$/o ) {
+        $value = (Net::CIDR::cidr2range( $value ))[0] || $value;
+    }
+    
+    my ($sIP, $eIP);
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
+        $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $value =~ /^($RE{net}{IPv4})-($RE{net}{IPv4})$/o ) {
+        $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+        $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
+    }
+    elsif ( $value =~ /^($IPv6_re)$/o ) {
+        $sIP = $self->ParseIP( $1 );
+        $eIP = $sIP;
+    }
+    elsif ( $value =~ /^($IPv6_re)-($IPv6_re)$/o ) {
+        ($sIP, $eIP) = ( $1, $2 );
+        $sIP = $self->ParseIP( $sIP );
+        $eIP = $self->ParseIP( $eIP );
+    }
+    else {
+        return;
+    }
+
+    ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
+    
+    return $sIP, $eIP;
+}
+
+sub ParseIP {
+    my $self = shift;
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
+
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
+        return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $value =~ /^$IPv6_re$/o ) {
+
+        # up_fields are before '::'
+        # low_fields are after '::' but without v4
+        # v4_fields are the v4
+        my ( @up_fields, @low_fields, @v4_fields );
+        my $v6;
+        if ( $value =~ /(.*:)(\d+\..*)/ ) {
+            ( $v6, my $v4 ) = ( $1, $2 );
+            chop $v6 unless $v6 =~ /::$/;
+            while ( $v4 =~ /(\d+)\.(\d+)/g ) {
+                push @v4_fields, sprintf '%.2x%.2x', $1, $2;
+            }
+        }
+        else {
+            $v6 = $value;
+        }
+
+        my ( $up, $low );
+        if ( $v6 =~ /::/ ) {
+            ( $up, $low ) = split /::/, $v6;
+        }
+        else {
+            $up = $v6;
+        }
+
+        @up_fields = split /:/, $up;
+        @low_fields = split /:/, $low if $low;
+
+        my @zero_fields =
+          ('0000') x ( 8 - @v4_fields - @up_fields - @low_fields );
+        my @fields = ( @up_fields, @zero_fields, @low_fields, @v4_fields );
+
+        return join ':', map { sprintf "%.4x", hex "0x$_" } @fields;
+    }
+    return;
 }
 
 1;
