@@ -3034,9 +3034,10 @@ sub ValidateStatus {
 
 Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
 
-Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE).  If FORCE is true, ignore unresolved dependencies and force a status change.
-
-
+Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE, SetStarted => SETSTARTED ).
+If FORCE is true, ignore unresolved dependencies and force a status change.
+if SETSTARTED is true( it's the default value), set Started to current datetime if Started 
+is not set and the status is changed from initial to not initial. 
 
 =cut
 
@@ -3049,6 +3050,11 @@ sub SetStatus {
     else {
         %args = (@_);
     }
+
+    # this only allows us to SetStarted, not we must SetStarted.
+    # this option was added for rtir initially
+    $args{SetStarted} = 1 unless exists $args{SetStarted};
+
 
     my $lifecycle = $self->QueueObj->lifecycle;
 
@@ -3078,7 +3084,7 @@ sub SetStatus {
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
     #If we're changing the status from new, record that we've started
-    if ( $lifecycle->is_initial($old) && !$lifecycle->is_initial($new) && !$raw_started->Unix) {
+    if ( $args{SetStarted} && $lifecycle->is_initial($old) && !$lifecycle->is_initial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
