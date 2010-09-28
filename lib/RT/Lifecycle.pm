@@ -390,6 +390,7 @@ sub register_rights {
             . ( (grep $_ eq '*', @to  )? '' : ' to '. join ', ', @from );
 
         $RIGHTS->{ $right } = $description;
+        RT::Queue->AddRightCategories( $right => 'Status' );
         $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
     }
 }
