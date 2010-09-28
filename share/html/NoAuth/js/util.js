@@ -315,3 +315,26 @@ function checkboxToInput(target,checkbox,val){
     }
 }
 
+function toggleTicketBookmark( id, url ) {
+    var elements = $$("span.toggle-"+id);
+    if ( elements.length ) {
+        if ( elements.length == 1 ) {
+            new Ajax.Request(url, {
+                onSuccess: function(response) {
+                    $(elements[0]).replace(response.responseText);
+                }
+                }
+            );
+        }
+        else {
+            new Ajax.Request(url);
+            new Ajax.Request(url+'&Toggle=0', {
+                onSuccess: function(response) {
+                    elements.each( function( item ) {
+                        item.replace(response.responseText);
+                    })
+                }
+            });
+        }
+    }
+}
