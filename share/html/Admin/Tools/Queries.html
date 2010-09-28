@@ -74,7 +74,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %                      my $i = 0;
 %                      $sql =~ s{\?}{$RT::Handle->Quote($bind->[$i++])}eg;
                        <li>
-                           <tt><% $sql %></tt>
+                           <tt><i><% sprintf '%.4f', $duration %>s</i> - <% $sql %></tt>
                        </li>
 %                 }
               </ol>
