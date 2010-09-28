@@ -84,39 +84,38 @@ our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 
 
 our $RIGHTS = {
-    SeeQueue            => 'Can this principal see this queue',       # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    SeeCustomField     => 'See custom field values',                 # loc_pair
-    ModifyCustomField  => 'Modify custom field values',              # loc_pair
-    AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
-    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+    SeeQueue            => 'View queue',                                                # loc_pair
+    AdminQueue          => 'Create, modify and delete queue',                           # loc_pair
+    ShowACL             => 'Display Access Control List',                               # loc_pair
+    ModifyACL           => 'Create, modify and delete Access Control List entries',     # loc_pair
+    ModifyQueueWatchers => 'Modify queue watchers',                                     # loc_pair
+    SeeCustomField      => 'View custom field values',                                  # loc_pair
+    ModifyCustomField   => 'Modify custom field values',                                # loc_pair
+    AssignCustomFields  => 'Assign and remove queue custom fields',                     # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates',                                    # loc_pair
+    ShowTemplate        => 'View Scrip templates',                                      # loc_pair
 
-    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+    ModifyScrips        => 'Modify Scrips',                                             # loc_pair
+    ShowScrips          => 'View Scrips',                                               # loc_pair
 
-    ShowTicket         => 'See ticket summaries',                    # loc_pair
-    ShowTicketComments => 'See ticket private commentary',           # loc_pair
-    ShowOutgoingEmail => 'See exact outgoing email messages and their recipients',           # loc_pair
+    ShowTicket          => 'View ticket summaries',                                     # loc_pair
+    ShowTicketComments  => 'View ticket private commentary',                            # loc_pair
+    ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients',   # loc_pair
 
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
-    CreateTicket    => 'Create tickets in this queue',                # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    CommentOnTicket => 'Comment on tickets',                          # loc_pair
-    OwnTicket       => 'Own tickets',                                 # loc_pair
-    ModifyTicket    => 'Modify tickets',                              # loc_pair
-    ModifyTicketStatus    => 'Modify ticket status',                              # loc_pair
-    DeleteTicket    => 'Delete tickets',                              # loc_pair
-    RejectTicket    => 'Reject tickets',                              # loc_pair
-    TakeTicket      => 'Take tickets',                                # loc_pair
-    StealTicket     => 'Steal tickets',                               # loc_pair
+    Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc',       # loc_pair
+    WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc',                      # loc_pair
+    CreateTicket        => 'Create tickets',                                            # loc_pair
+    ReplyToTicket       => 'Reply to tickets',                                          # loc_pair
+    CommentOnTicket     => 'Comment on tickets',                                        # loc_pair
+    OwnTicket           => 'Own tickets',                                               # loc_pair
+    ModifyTicket        => 'Modify tickets',                                            # loc_pair
+    ModifyTicketStatus  => 'Modify ticket status',                                      # loc_pair
+    DeleteTicket        => 'Delete tickets',                                            # loc_pair
+    RejectTicket        => 'Reject tickets',                                            # loc_pair
+    TakeTicket          => 'Take tickets',                                              # loc_pair
+    StealTicket         => 'Steal tickets',                                             # loc_pair
 
-    ForwardMessage  => 'Forward messages outside of RT',         # loc_pair
-
+    ForwardMessage      => 'Forward messages outside of RT',                            # loc_pair
 };
 
 our $RIGHT_CATEGORIES = {
