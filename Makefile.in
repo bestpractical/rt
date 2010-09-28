@@ -515,7 +515,7 @@ apachectl:
 SNAPSHOT=$(shell git describe --tags)
 snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
-	( cd $(SNAPSHOT) && autoconf && ./configure )
+	( cd $(SNAPSHOT) && echo "$(SNAPSHOT)" > .tag && autoconf && ./configure )
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	gpg --clearsign "$(SNAPSHOT).tar.gz"
 	sha1sum "$(SNAPSHOT).tar.gz*"
