@@ -71,6 +71,8 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
               <ol>
 %                 for my $statement (@{ $request->{Queries} }) {
 %                      my ( $time, $sql, $bind, $duration ) = @$statement;
+%                      my $i = 0;
+%                      $sql =~ s{\?}{$RT::Handle->Quote($bind->[$i++])}eg;
                        <li>
                            <tt><% $sql %></tt>
                        </li>
