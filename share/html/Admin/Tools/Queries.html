@@ -69,6 +69,14 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
           <li>
               <tt><% $request->{Path} %></tt>
               <table>
+                  <thead>
+                      <tr>
+                          <th>index</th>
+                          <th>duration</th>
+                          <th>statement</th>
+                      </tr>
+                  </thead>
+                  <tbody>
 %                 my $s = 0;
 %                 for my $statement (@{ $request->{Queries} }) {
 %                      my ( $time, $sql, $bind, $duration ) = @$statement;
@@ -81,6 +89,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                            <td><tt><% $sql %></tt></td>
                        </tr>
 %                 }
+                  </tbody>
               </table>
           </li>
 %     }
