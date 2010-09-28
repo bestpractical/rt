@@ -58,8 +58,13 @@ my %recips;
 </p>
 
 % if ( $Object and $Object->Scrips ) {
-%     for my $scrip (@{$Object->Scrips->Prepared}) {
-%         next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
+%     # Sort scrips with recipients before those without
+%     my @scrips = map { $_->[0] }
+%                  sort { ($b->[1]?1:0) <=> ($a->[1]?1:0) }
+%                  map { [$_, $_->ActionObj->Action->To + $_->ActionObj->Action->Cc + $_->ActionObj->Action->Bcc] }
+%                  grep {$_->ActionObj->Action->isa('RT::Action::SendEmail')}
+%                  @{$Object->Scrips->Prepared};
+%     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
           <br />
