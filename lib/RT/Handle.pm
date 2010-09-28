@@ -1058,6 +1058,31 @@ sub ACLEquivGroupId {
     return $equiv_group->Id;
 }
 
+=head2 QueryHistory
+
+Returns the SQL query history associated with this handle. The top level array
+represents a lists of request. Each request is a hash with metadata about the
+request (such as the URL) and a list of queries. You'll probably not be using this.
+
+=cut
+
+sub QueryHistory {
+    my $self = shift;
+
+    return $self->{QueryHistory};
+}
+
+=head2 AddRequestToHistory
+
+=cut
+
+sub AddRequestToHistory {
+    my $self    = shift;
+    my $request = shift;
+
+    push @{ $self->{QueryHistory} }, $request;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
