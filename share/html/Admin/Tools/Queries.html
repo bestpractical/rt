@@ -58,4 +58,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
     Title => $title &>
 
 <&|/Widgets/TitleBox, title => loc('SQL Queries') &>
+% if (!RT->Config->Get('StatementLog')) {
+    <p><&|/l&>You must set StatementLog to true to enable this query history page.</&></p>
+% }
 </&>
