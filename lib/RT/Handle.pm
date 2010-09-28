@@ -1102,6 +1102,26 @@ sub Quote {
     return $self->dbh->quote($value);
 }
 
+=head2 FillIn
+
+Takes a SQL query and an array reference of bind parameters and fills in the
+query's C<?> parameters.
+
+=cut
+
+sub FillIn {
+    my $self = shift;
+    my $sql  = shift;
+    my $bind = shift;
+
+    my $b = 0;
+
+    # is this regex sufficient?
+    $sql =~ s{\?}{$RT::Handle->Quote($bind->[$b++])}eg;
+
+    return $sql;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
