@@ -68,16 +68,20 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %     for my $request (@$history) {
           <li>
               <tt><% $request->{Path} %></tt>
-              <ol>
+              <table>
+%                 my $s = 0;
 %                 for my $statement (@{ $request->{Queries} }) {
 %                      my ( $time, $sql, $bind, $duration ) = @$statement;
-%                      my $i = 0;
-%                      $sql =~ s{\?}{$RT::Handle->Quote($bind->[$i++])}eg;
-                       <li>
-                           <tt><i><% sprintf '%.4f', $duration %>s</i> - <% $sql %></tt>
-                       </li>
+%                      my $b = 0;
+%                      $sql =~ s{\?}{$RT::Handle->Quote($bind->[$b++])}eg;
+
+                       <tr>
+                           <td><% ++$s %></td>
+                           <td><i><% sprintf '%.4f', $duration %>s</i></td>
+                           <td><tt><% $sql %></tt></td>
+                       </tr>
 %                 }
-              </ol>
+              </table>
           </li>
 %     }
     </ol>
