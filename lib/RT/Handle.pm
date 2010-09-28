@@ -1074,6 +1074,10 @@ sub QueryHistory {
 
 =head2 AddRequestToHistory
 
+Adds a web request to the query history. It must be a hash with keys Path (a
+string) and Queries (an array reference of arrays, where elements are time,
+sql, bind parameters, and duration).
+
 =cut
 
 sub AddRequestToHistory {
