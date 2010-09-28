@@ -1117,7 +1117,7 @@ sub FillIn {
     my $b = 0;
 
     # is this regex sufficient?
-    $sql =~ s{\?}{$RT::Handle->Quote($bind->[$b++])}eg;
+    $sql =~ s{\?}{$self->Quote($bind->[$b++])}eg;
 
     return $sql;
 }
