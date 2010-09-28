@@ -53,7 +53,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 </%init>
 <& /Admin/Elements/Header,
     Title => $title,
-    onload => 'function () { jQuery(".sortable-table").tablesorter(); }',
+    onload => 'function () { jQuery(".tablesorter").tablesorter(); }',
 &>
 <& /Admin/Elements/ToolTabs, 
     current_tab => 'Admin/Tools/Queries.html',
@@ -71,7 +71,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %     for my $request (@$history) {
           <li>
               <tt><% $request->{Path} %></tt>
-              <table class="sortable-table">
+              <table class="tablesorter">
                   <thead>
                       <tr>
                           <th><&|/l&>index</&></th>
