@@ -518,5 +518,5 @@ snapshot:
 	( cd $(SNAPSHOT) && echo "$(SNAPSHOT)" > .tag && autoconf && ./configure )
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	gpg --clearsign "$(SNAPSHOT).tar.gz"
-	sha1sum "$(SNAPSHOT).tar.gz*"
+	sha1sum $(SNAPSHOT).tar.gz*
 	rm -fr "$(SNAPSHOT)/"
