@@ -1087,6 +1087,21 @@ sub AddRequestToHistory {
     push @{ $self->{QueryHistory} }, $request;
 }
 
+=head2 Quote
+
+Returns the parameter quoted by DBI. B<You almost certainly do not need this.>
+Use bind parameters (C<?>) instead. This is used only outside the scope of interacting
+with the database.
+
+=cut
+
+sub Quote {
+    my $self = shift;
+    my $value = shift;
+
+    return $self->dbh->quote($value);
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
