@@ -51,7 +51,10 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
  Abort(loc('This feature is only available to system administrators'));
 }
 </%init>
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header,
+    Title => $title,
+    onload => 'function () { jQuery(".sortable-table").tablesorter(); }',
+&>
 <& /Admin/Elements/ToolTabs, 
     current_tab => 'Admin/Tools/Queries.html',
     current_subtab => 'Admin/Tools/Queries.html', 
@@ -68,7 +71,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %     for my $request (@$history) {
           <li>
               <tt><% $request->{Path} %></tt>
-              <table>
+              <table class="sortable-table">
                   <thead>
                       <tr>
                           <th><&|/l&>index</&></th>
