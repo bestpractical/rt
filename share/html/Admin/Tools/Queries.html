@@ -58,7 +58,26 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
     Title => $title &>
 
 <&|/Widgets/TitleBox, title => loc('SQL Queries') &>
+% my $history = $RT::Handle->QueryHistory;
 % if (!RT->Config->Get('StatementLog')) {
     <p><&|/l&>You must set StatementLog to true to enable this query history page.</&></p>
+% } elsif (!$history) {
+    <p><&|/l&>This server process has recorded no SQL queries.</&></p>
+% } else {
+    <ol>
+%     for my $request (@$history) {
+          <li>
+              <tt><% $request->{Path} %></tt>
+              <ol>
+%                 for my $statement (@{ $request->{Queries} }) {
+%                      my ( $time, $sql, $bind, $duration ) = @$statement;
+                       <li>
+                           <tt><% $sql %></tt>
+                       </li>
+%                 }
+              </ol>
+          </li>
+%     }
+    </ol>
 % }
 </&>
