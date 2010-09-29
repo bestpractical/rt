@@ -214,7 +214,8 @@ See also </valid>.
 sub is_valid {
     my $self  = shift;
     my $value = lc shift;
-    return scalar grep lc($_) eq $value, $self->valid( @_ );
+    return 1 if grep lc($_) eq $value, $self->valid( @_ );
+    return 0;
 }
 
 =head3 initial
@@ -238,7 +239,8 @@ Otherwise, returns false.
 sub is_initial {
     my $self  = shift;
     my $value = lc shift;
-    return scalar grep lc($_) eq $value, $self->valid('initial');
+    return 1 if grep lc($_) eq $value, $self->valid('initial');
+    return 0;
 }
 
 
@@ -275,7 +277,8 @@ Otherwise, returns false.
 sub is_active {
     my $self  = shift;
     my $value = lc shift;
-    return scalar grep lc($_) eq $value, $self->valid('active');
+    return 1 if grep lc($_) eq $value, $self->valid('active');
+    return 0;
 }
 
 =head3 inactive
@@ -299,7 +302,8 @@ Otherwise, returns false.
 sub is_inactive {
     my $self  = shift;
     my $value = lc shift;
-    return scalar grep lc($_) eq $value, $self->valid('inactive');
+    return 1 if grep lc($_) eq $value, $self->valid('inactive');
+    return 0;
 }
 
 =head2 Transitions, rights, labels and actions.
@@ -337,7 +341,8 @@ sub is_transition {
     my $self = shift;
     my $from = shift or return 0;
     my $to   = shift or return 0;
-    return scalar grep lc($_) eq lc($to), $self->transitions($from);
+    return 1 if grep lc($_) eq lc($to), $self->transitions($from);
+    return 0;
 }
 
 =head3 check_right
