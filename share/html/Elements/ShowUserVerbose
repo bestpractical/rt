@@ -48,7 +48,9 @@
 %# Released under the terms of version 2 of the GNU Public License
 <% $display |n %>\
 <%INIT>
-my ($phrase, $address, $comment);
+my $phrase = '';
+my $address = '';
+my  $comment = '';
 
 if ($User) {
     $address = $User->EmailAddress;
