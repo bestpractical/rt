@@ -279,10 +279,7 @@ sub HasRight {
         return (undef);
     }
 
-    if (   defined( $args{'Object'} )
-        && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id ) {
-
+    if (  eval { $args{'Object'}->id} ) {
         push @{ $args{'EquivObjects'} }, $args{'Object'};
     }
     else {
@@ -391,7 +388,7 @@ sub _HasGroupRight
         my $type = ref( $obj ) || $obj;
         my $clause = "ACL.ObjectType = '$type'";
 
-        if ( ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id ) {
+        if ( defined eval { $obj->id }) { # it might be 0
             $clause .= " AND ACL.ObjectId = ". $obj->id;
         }
 
@@ -449,7 +446,7 @@ sub _HasRoleRight
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = eval {$obj->id};
 
         my $clause = "Groups.Domain = '$type-Role'";
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
@@ -513,7 +510,7 @@ sub RolesWithRight {
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = eval {$obj->id};
 
         my $object_clause = "ObjectType = '$type'";
         $object_clause   .= " AND ObjectId = $id" if $id;

@@ -200,8 +200,8 @@ Limit the Attributes to rights for the object $object. It needs to be an RT::Rec
 sub LimitToObject {
     my $self = shift;
     my $obj = shift;
-    unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id) {
-    return undef;
+    unless (eval { $obj->id} ){
+        return undef;
     }
     $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => ref($obj), ENTRYAGGREGATOR => 'OR');
     $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $obj->id, ENTRYAGGREGATOR => 'OR', QUOTEVALUE => 0);
