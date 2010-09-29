@@ -244,15 +244,14 @@ Returns undef if no ACE was found.
 sub HasRight {
 
     my $self = shift;
-    my %args = (
-        Right        => undef,
-        Object       => undef,
-        EquivObjects => undef,
-        @_,
-    );
+    my %args = ( Right        => undef,
+                 Object       => undef,
+                 EquivObjects => undef,
+                 @_,
+               );
 
     # RT's SystemUser always has all rights
-    if ($self->id == RT->SystemUser->id) {
+    if ( $self->id == RT->SystemUser->id ) {
         return 1;
     }
 
@@ -272,27 +271,23 @@ sub HasRight {
         if $args{'EquivObjects'};
 
     if ( $self->__Value('Disabled') ) {
-        $RT::Logger->debug( "Disabled User #"
-              . $self->id
-              . " failed access check for "
-              . $args{'Right'} );
+        $RT::Logger->debug("Disabled User #" . $self->id." failed access check for " . $args{'Right'} );
         return (undef);
     }
 
     if (  eval { $args{'Object'}->id} ) {
         push @{ $args{'EquivObjects'} }, $args{'Object'};
-    }
-    else {
+    } else {
         $RT::Logger->crit("HasRight called with no valid object");
         return (undef);
     }
 
-
-    unshift @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects;
+    unshift @{ $args{'EquivObjects'} },
+        $args{'Object'}->ACLEquivalenceObjects;
 
     unshift @{ $args{'EquivObjects'} }, $RT::System
         unless $self->can('_IsOverrideGlobalACL')
-               && $self->_IsOverrideGlobalACL( $args{'Object'} );
+            && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
     # If we've cached a win or loss for this lookup say so
 
@@ -316,10 +311,9 @@ sub HasRight {
         return $cached_answer > 0 if defined $cached_answer;
     }
 
+    my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
-    my ($hitcount, $via_obj) = $self->_HasRight( %args );
-
-    $_ACL_CACHE->set( $full_hashkey => $hitcount? 1: -1 );
+    $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
     $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
         if $via_obj && $hitcount;
 
