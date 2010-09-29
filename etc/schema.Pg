@@ -135,6 +135,10 @@ CREATE TABLE Groups (
   Domain varchar(64),
   Type varchar(64),
   Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -254,6 +258,10 @@ CREATE TABLE ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId integer NOT NULL DEFAULT 0,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -277,6 +285,10 @@ CREATE TABLE GroupMembers (
   id INTEGER DEFAULT nextval('groupmembers_id_seq'),
   GroupId integer NOT NULL DEFAULT 0,
   MemberId integer NOT NULL DEFAULT 0,  
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );

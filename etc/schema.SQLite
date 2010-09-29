@@ -82,7 +82,11 @@ CREATE TABLE Groups (
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
-  Instance integer
+  Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 
@@ -164,7 +168,11 @@ CREATE TABLE ACL (
   PrincipalId INTEGER,
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0
+  ObjectId INTEGER default 0,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 
@@ -176,7 +184,11 @@ CREATE TABLE ACL (
 CREATE TABLE GroupMembers (
   id INTEGER PRIMARY KEY  ,
   GroupId integer NULL,
-  MemberId integer NULL
+  MemberId integer NULL,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 

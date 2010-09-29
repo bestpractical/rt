@@ -79,6 +79,10 @@ CREATE TABLE Groups (
   Domain varchar(64) CHARACTER SET ascii NULL,
   Type varchar(64) CHARACTER SET ascii NULL,
   Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 
@@ -155,6 +159,10 @@ CREATE TABLE ACL (
   RightName varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectType varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectId integer NOT NULL default 0,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 
@@ -166,6 +174,10 @@ CREATE TABLE GroupMembers (
   id INTEGER NOT NULL AUTO_INCREMENT,
   GroupId integer NOT NULL DEFAULT 0,
   MemberId integer NOT NULL DEFAULT 0,  #Foreign key to Principals
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
