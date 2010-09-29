@@ -89,9 +89,9 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'CustomField'.
   varchar(200) 'Name'.
-  varchar(255) 'Category'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'Category'.
 
 =cut
 
@@ -104,16 +104,16 @@ sub Create {
                 CustomField => '',
                 Name => '',
                 Description => '',
-                Category => '',
                 SortOrder => '0',
+                Category => '',
 
 		  @_);
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
                          Name => $args{'Name'},
-                         Category => $args{'Category'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         Category => $args{'Category'},
 );
 
 }
@@ -179,26 +179,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-
-=head2 Category
-
-Returns the current value of Category.
-(In the database, Category is stored as varchar(255).)
-
-
-
-=head2 SetCategory VALUE
-
-
-Set Category to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Category will be stored as a varchar(255).)
-
-
-=cut
-
-
-
 =head2 Description
 
 Returns the current value of Description. 
@@ -230,6 +210,24 @@ Returns the current value of SortOrder.
 Set SortOrder to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Category
+
+Returns the current value of Category.
+(In the database, Category is stored as varchar(255).)
+
+
+
+=head2 SetCategory VALUE
+
+
+Set Category to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Category will be stored as a varchar(255).)
 
 
 =cut
@@ -281,12 +279,12 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Name => 
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
-        Category =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Description => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Category =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
