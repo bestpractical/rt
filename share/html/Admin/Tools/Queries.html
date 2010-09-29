@@ -76,7 +76,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %         }
 
           <li>
-              <tt><% $request->{Path} %></tt> - <i><% sprintf '%.4f', $total %>s</i>
+              <&|/l, $request->{Path}, sprintf('%.4f', $total) &><tt>[_1]</tt> - <i>[_2]s</i></&>
               <table class="tablesorter">
                   <thead>
                       <tr>
@@ -93,7 +93,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
                        <tr>
                            <td><% ++$s %></td>
-                           <td><i><% sprintf '%.4f', $duration %>s</i></td>
+                           <td><&|/l, sprintf('%.4f', $duration) &><i>[_1]s</i></&></td>
                            <td><tt><% $sql %></tt></td>
                        </tr>
 %                 }
