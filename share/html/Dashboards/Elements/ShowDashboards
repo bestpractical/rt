@@ -49,10 +49,10 @@
 $Dashboards => undef
 $Verbose => 1
 $Title => loc("Dashboards"),
-$title_href => undef
-$bodyclass => undef
-$titleright => undef
-$titleright_href => undef
+$title_href => ""
+$bodyclass => ""
+$titleright => ""
+$titleright_href => ""
 </%ARGS>
 <%INIT>
 # map each subscription to a dashboard ID
