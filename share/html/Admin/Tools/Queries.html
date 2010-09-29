@@ -93,13 +93,20 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                   <tbody>
 %                 my $s = 0;
 %                 for my $statement (@{ $request->{Queries} }) {
-%                      my ( $time, $sql, $bind, $duration ) = @$statement;
+%                      my ( $time, $sql, $bind, $duration, $trace ) = @$statement;
 %                      $sql = $RT::Handle->FillIn($sql, $bind);
 
                        <tr>
                            <td><% ++$s %></td>
                            <td><&|/l, sprintf('%.4f', $duration) &><i>[_1]s</i></&></td>
-                           <td><tt><% $sql %></tt></td>
+                           <td>
+                               <tt><% $sql %></tt>
+%                              if ($trace) {
+                                   <a href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
+                                   <pre id="trace-<%$r%>-<%$s%>" class="hidden"><% $trace %></pre>
+
+%                              }
+                           </td>
                        </tr>
 %                 }
                   </tbody>
