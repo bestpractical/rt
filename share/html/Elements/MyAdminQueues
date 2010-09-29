@@ -46,9 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
-<& /Elements/QueueSummary,
-   cache => 'my_admin_queues',
+<& /Elements/QueueSummaryByStatus,
    queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
-   conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
-		   {cond => "Status = 'open'", name => loc ('open') }] &>
+&>
 </&>

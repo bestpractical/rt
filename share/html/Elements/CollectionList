@@ -109,9 +109,8 @@ $Class ||= ref $Collection;
 $Class =~ s/s$//;
 $Class =~ s/:/_/g;
 
-$m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
-	' width="100%" class="' . 
-	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . '">');
+$m->out('<table class="' .
+	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
 
 if ( $ShowHeader ) {
   $m->comp('/Elements/CollectionAsTable/Header',

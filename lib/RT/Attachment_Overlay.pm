@@ -425,6 +425,11 @@ sub ContentAsMIME {
         my ($h_key, $h_val) = split /:/, $header, 2;
         $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );
     }
+    
+    # since we want to return original content, let's use original encoding
+    $entity->head->mime_attr(
+        "Content-Type.charset" => $self->OriginalEncoding )
+      if $self->OriginalEncoding;
 
     use MIME::Body;
     $entity->bodyhandle(

@@ -225,26 +225,12 @@ warn "Begin listening on $ENV{'FCGI_SOCKET_PATH'}\n";
 require CGI::Fast;
 
 RT::Init();
-$Handler ||= RT::Interface::Web::Handler->new(
-    RT->Config->Get('MasonParameters')
-);
+$Handler ||= RT::Interface::Web::Handler->new( RT->Config->Get('MasonParameters'));
 
 
 # Response loop
 while( my $cgi = CGI::Fast->new ) {
-    my $comp = $ENV{'PATH_INFO'};
-
-    $comp = $1 if ($comp =~ /^(.*)$/);
-    my $web_path = RT->Config->Get('WebPath');
-    $comp =~ s|^\Q$web_path\E\b||i;
-    $comp .= "index.html" if ($comp =~ /\/$/);
-    $comp =~ s/.pl$/.html/g;
-    
-    warn "Serving $comp\n";
-
-    $Handler->handle_cgi($comp);
-    RT::Interface::Web::Handler->CleanupRequest();
-    # _should_ always be tied
+    $Handler->HandleRequest($cgi);
 }
 
 1;

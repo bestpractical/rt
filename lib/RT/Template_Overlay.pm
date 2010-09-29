@@ -566,8 +566,10 @@ sub _DowngradeFromHTML {
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
+    require Encode;
+    # need to decode_utf8, see the doc of MIMEObj method
     my $tree = HTML::TreeBuilder->new_from_content(
-        $new_entity->bodyhandle->as_string
+        Encode::decode_utf8($new_entity->bodyhandle->as_string)
     );
     $new_entity->bodyhandle(MIME::Body::InCore->new(
         \(scalar HTML::FormatText->new(

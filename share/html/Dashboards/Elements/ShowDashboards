@@ -45,17 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $Title &>
-<& SELF:table, %ARGS &>
-</&>
-<%ARGS>
-$Title   => undef
-</%ARGS>
-
-<%METHOD table>
 <%ARGS>
 $Dashboards => undef
 $Verbose => 1
+$Title => loc("Dashboards"),
+$title_href => ""
+$bodyclass => ""
+$titleright => ""
+$titleright_href => ""
 </%ARGS>
 <%INIT>
 # map each subscription to a dashboard ID
@@ -65,6 +62,13 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
     $subscription_for{$attr->SubValue('DashboardId')} = $attr;
 }
 </%INIT>
+<&| /Widgets/TitleBox, title => $Title,
+    title_href => $title_href,
+    bodyclass => $bodyclass,
+    titleright => $titleright,
+    titleright_href => $titleright_href
+
+ &>
 
 % if (@$Dashboards == 0) {
 %   if ($Verbose) {
@@ -82,11 +86,7 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
 
 %   my $i = 0;
 %   for my $dashboard (@$Dashboards) {
-%       my $url = sprintf '%s/Dashboards/%d/%s',
-%                 RT->Config->Get('WebPath'),
-%                 $dashboard->Id,
-%                 $dashboard->Name;
-
+%       my $url = sprintf '%s/Dashboards/%d/%s', RT->Config->Get('WebPath'), $dashboard->Id, $dashboard->Name;
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
 % if ($Verbose) {
             <td class="collection-as-table">
@@ -108,5 +108,5 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
 
     </table>
 % }
-</%METHOD>
+</&>
 

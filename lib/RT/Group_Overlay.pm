@@ -84,18 +84,16 @@ use RT::ACL;
 use vars qw/$RIGHTS $RIGHT_CATEGORIES/;
 
 $RIGHTS = {
-    AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
-    AdminGroupMembership =>
-      'Modify membership roster for this group',                      # loc_pair
-    ModifyOwnMembership => 'Join or leave this group',                 # loc_pair
-    EditSavedSearches => 'Edit saved searches for this group',        # loc_pair
-    ShowSavedSearches => 'Display saved searches for this group',        # loc_pair
-    SeeGroup => 'Make this group visible to user',                    # loc_pair
-
-    SeeGroupDashboard       => 'View dashboards for this group', #loc_pair
-    CreateGroupDashboard    => 'Create dashboards for this group', #loc_pair
-    ModifyGroupDashboard    => 'Modify dashboards for this group', #loc_pair
-    DeleteGroupDashboard    => 'Delete dashboards for this group', #loc_pair
+    AdminGroup              => 'Modify group metadata or delete group',     # loc_pair
+    AdminGroupMembership    => 'Modify group membership roster',            # loc_pair
+    ModifyOwnMembership     => 'Join or leave group',                       # loc_pair
+    EditSavedSearches       => 'Create, modify and delete saved searches',  # loc_pair
+    ShowSavedSearches       => 'View saved searches',                       # loc_pair
+    SeeGroup                => 'View group',                                # loc_pair
+    SeeGroupDashboard       => 'View group dashboards',                     # loc_pair
+    CreateGroupDashboard    => 'Create group dashboards',                   # loc_pair
+    ModifyGroupDashboard    => 'Modify group dashboards',                   # loc_pair
+    DeleteGroupDashboard    => 'Delete group dashboards',                   # loc_pair
 };
 
 $RIGHT_CATEGORIES = {

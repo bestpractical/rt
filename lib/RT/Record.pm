@@ -1131,7 +1131,7 @@ sub _AllLinkedTickets {
 	    $args{_found}{$obj->Id} = $obj;
 	    $obj->_AllLinkedTickets( %args, _top => 0 );
 	}
-	elsif ($obj->Type eq $args{Type}) {
+	elsif ($obj->Type and $obj->Type eq $args{Type}) {
 	    $args{_found}{$obj->Id} = $obj;
 	}
 	else {

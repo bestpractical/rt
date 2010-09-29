@@ -368,7 +368,9 @@ sub _HasGroupRight
       "FROM ACL, Principals, CachedGroupMembers WHERE " .
 
       # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR ACL.RightName = '$right') "
+      "(ACL.RightName = 'SuperUser' "
+      . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '')
+      .") "
 
       # Never find disabled groups.
       . "AND Principals.id = ACL.PrincipalId "

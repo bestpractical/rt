@@ -146,12 +146,11 @@ if ($tix->Count == 0) {
 }
 
 if ($chart_class eq "GD::Graph::bars") {
+    my $count = keys %data;
     $chart->set(
         x_label => $tix->Label( $PrimaryGroupBy ),
         y_label => loc('Tickets'),
         show_values => 1,
-        bar_spacing => 5,
-        bargroup_spacing => 10,
         x_label_position => 0.6,
         y_label_position => 0.6,
         values_space => -1,
@@ -160,7 +159,10 @@ if ($chart_class eq "GD::Graph::bars") {
 # the following line to make sure there's enough space for values to show
         y_max_value => 5*(int($max_value/5) + 2),
 # if there're too many bars or at least one key is too long, use vertical
-        x_labels_vertical => ( keys(%data) * $max_key_length > 60 ) ? 1 : 0,
+        x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
+        $count > 30 ? ( bar_spacing => 1 ) : ( $count > 20 ? ( bar_spacing => 2 ) : 
+            ( $count > 10 ? ( bar_spacing => 3 ) : ( bar_spacing => 5 ) )
+        ),
     );
 }
 

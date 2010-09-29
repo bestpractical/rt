@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-table.ticket-list, table.queue-summary, table.collection {
+table.queue-summary, table.collection-as-table {
   margin-top: 0.75em;
   font-size: 0.9em;
   border: 1px solid #aaa;
   border-bottom: 2px solid #999;
   border-right: 2px solid #999;
-
+  border-spacing: 0;
+  width: 100%;
 
 }
 
@@ -66,12 +67,12 @@ table.queue-summary tr>*:last-child {
 
 }
 
-table.ticket-list a, table.queue-summary a, table.collection a  {
+table.queue-summary a, table.collection-as-table a  {
   font-weight: bold;
 }
 
 
-table.ticket-list th.collection-as-table, table.collection th.collection-as-table {
+table.collection-as-table th.collection-as-table {
   background: #ddd;
  font-size: 0.9em;
   margin-bottom: 0.5em;
@@ -130,11 +131,12 @@ tr.evenline+tr.evenline td, tr.oddline+tr.oddline td{
 
 
 
-table.ticket-list td:first-child, table.ticket-list th:first-child {
+table.collection-as-table td:first-child,
+table.collection-as-table th:first-child {
   padding-left: 1em;
 }
 
-table.ticket-list td:last-child, table.ticket-list th:last-child {
+table.collection-as-table td:last-child, table.collection-as-table th:last-child {
   padding-right: 1em;
 }
 
@@ -164,7 +166,7 @@ padding-bottom: 1em;
 
  
 /* full-page ticket lists */
-#body>table.ticket-list {
+#body>table.collection-as-table {
     margin-bottom: 2em;
 
 }

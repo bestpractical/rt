@@ -174,7 +174,7 @@ div#nav li.last {
     padding-top: 2.2em;
 }
 
-.titlebox table.ticket-list, .titlebox table.queue-summary {
+.titlebox table.collection-as-table, .titlebox table.queue-summary {
     width: 95%;
     padding: 0.5em;
     margin-left: auto;

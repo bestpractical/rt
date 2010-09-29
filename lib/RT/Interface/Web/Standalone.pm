@@ -71,12 +71,12 @@ sub default_mason_config {
 } 
 
 sub handle_request {
-
     my $self = shift;
     my $cgi = shift;
 
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
     RT::ConnectToDatabase() unless RT->InstallMode;
+
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if $@ && $RT::Logger;
     warn $@ if $@ && !$RT::Logger;

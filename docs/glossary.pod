@@ -1,0 +1,30 @@
+=head1 RT Glossary
+
+This document is intended to be a glossary of terms used in RT.  Currently it
+doesn't even scratch the surface, but with time it should be expanded.
+
+=head2 Right names
+
+RT uses a handful of (mostly) standard prefixes to create right names of the
+form "<action><object>".  The prefixes and their meanings (if not apparent)
+are explained here.
+
+=over 4
+
+=item Admin - Create, modify, and delete
+
+=item Create 
+
+=item Delete
+
+=item Edit - Create, modify, and delete
+
+=item Load - See/show
+
+=item Modify - Change the content, details and/or metadata
+
+=item See - Allow viewing of
+
+=item Show - Allow viewing of, or display in the interface
+
+=back

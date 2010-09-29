@@ -179,10 +179,10 @@ RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                   
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
 our $RIGHTS = {
-    SeeCustomField            => 'See custom fields',       # loc_pair
-    AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
-    AdminCustomFieldValues    => 'Create, delete and modify custom fields values',        # loc_pair
-    ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
+    SeeCustomField            => 'View custom fields',                                    # loc_pair
+    AdminCustomField          => 'Create, modify and delete custom fields',               # loc_pair
+    AdminCustomFieldValues    => 'Create, modify and delete custom fields values',        # loc_pair
+    ModifyCustomField         => 'Add, modify and delete custom field values for objects' # loc_pair
 };
 
 our $RIGHT_CATEGORIES = {

@@ -60,12 +60,10 @@
     }
 
     my $content_type = 'text/plain';
-    my $enc = $AttachmentObj->OriginalEncoding;
-    if ( $enc ) {
-        my $iana = Encode::find_encoding($enc);
-        $iana = $iana ? $iana->mime_name : $enc;
-        $content_type .= ";charset=$iana";
-    }
+    my $enc = $AttachmentObj->OriginalEncoding || 'utf-8';
+    my $iana = Encode::find_encoding($enc);
+    $iana = $iana ? $iana->mime_name : $enc;
+    $content_type .= ";charset=$iana";
 
     # XXX: should we check handle html here and integrate headers into html?
     $r->content_type( $content_type );

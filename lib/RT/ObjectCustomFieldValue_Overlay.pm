@@ -153,7 +153,7 @@ sub LoadByCols {
     if ( $args{CustomField} ) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $args{CustomField} );
-        if ( $cf->Type eq 'IPAddressRange' ) {
+        if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
 
             my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
             if ( $sIP && $eIP ) {

@@ -114,7 +114,7 @@ if ( $ARGS{'QuickCreate'} ) {
         my ($t, $msg) = CreateTicket( 
                         Queue => $ARGS{'Queue'},
                         Owner => $ARGS{'Owner'},
-                        Status => 'new',
+                        Status => $ARGS{'Status'}||'new',
                         # yes! it's Requestors, not Requestor
                         Requestors => $ARGS{'Requestors'},
                         From => $session{'CurrentUser'}->EmailAddress,

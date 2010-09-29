@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 189;
+use RT::Test tests => 96;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -75,6 +75,10 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         ok( $ticket->id, 'loaded ticket' );
         is( $ticket->FirstCustomFieldValue('IP'), $valid{$ip},
             'correct value' );
+
+        my $tickets = RT::Tickets->new($RT::SystemUser);
+        $tickets->FromSQL("id = $id AND CF.{IP} = '$ip'");
+        ok( $tickets->Count, "found tickets" );
     }
 }
 
@@ -82,52 +86,51 @@ diag "create a ticket and edit IP field using Edit page"
   if $ENV{'TEST_VERBOSE'};
 
 {
-    for my $ip ( keys %valid ) {
-        ok $agent->goto_create_ticket($q), "go to create ticket";
-        $agent->submit_form(
-            form_name => 'TicketCreate',
-            fields    => { Subject => 'test ip', }
-        );
+    my $ip = 'abcd::034';
 
-        my ($id) = $agent->content =~ /Ticket (\d+) created/;
-        ok( $id, "created ticket $id" );
-        my $cf_field = "Object-RT::Ticket-$id-CustomField-$cf_id-Values";
+    ok $agent->goto_create_ticket($q), "go to create ticket";
+    $agent->submit_form(
+        form_name => 'TicketCreate',
+        fields    => { Subject => 'test ip', }
+    );
 
-        $agent->follow_link_ok( { text => 'Basics', n => "1" },
-            "Followed 'Basics' link" );
-        $agent->form_number(3);
+    my ($id) = $agent->content =~ /Ticket (\d+) created/;
+    ok( $id, "created ticket $id" );
+    my $cf_field = "Object-RT::Ticket-$id-CustomField-$cf_id-Values";
 
-        is( $agent->value($cf_field), '', 'IP is empty' );
-        $agent->field( $cf_field => $valid{$ip} );
-        $agent->click('SubmitTicket');
+    $agent->follow_link_ok( { text => 'Basics', n => "1" },
+        "Followed 'Basics' link" );
+    $agent->form_number(3);
 
-        $agent->content_contains( $valid{$ip}, "IP on the page" );
+    is( $agent->value($cf_field), '', 'IP is empty' );
+    $agent->field( $cf_field => $valid{$ip} );
+    $agent->click('SubmitTicket');
 
-        my $ticket = RT::Ticket->new($RT::SystemUser);
-        $ticket->Load($id);
-        ok( $ticket->id, 'loaded ticket' );
-        my $values = $ticket->CustomFieldValues('IP');
-        is( $ticket->FirstCustomFieldValue('IP'), $valid{$ip},
-            'correct value' );
+    $agent->content_contains( $valid{$ip}, "IP on the page" );
 
-        diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
-        my $new_ip = '::3141';
-        my $new_value = '0000:' x 7 . '3141';
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($id);
+    ok( $ticket->id, 'loaded ticket' );
+    my $values = $ticket->CustomFieldValues('IP');
+    is( $ticket->FirstCustomFieldValue('IP'), $valid{$ip}, 'correct value' );
 
-        $agent->follow_link_ok( { text => 'Basics', n => "1" },
-            "Followed 'Basics' link" );
-        $agent->form_number(3);
-        is( $agent->value($cf_field), $valid{$ip}, 'IP is in input box' );
-        $agent->field( $cf_field => $new_ip );
-        $agent->click('SubmitTicket');
+    diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
+    my $new_ip    = '::3141';
+    my $new_value = '0000:' x 7 . '3141';
 
-        $agent->content_contains( $new_value, "IP on the page" );
+    $agent->follow_link_ok( { text => 'Basics', n => "1" },
+        "Followed 'Basics' link" );
+    $agent->form_number(3);
+    is( $agent->value($cf_field), $valid{$ip}, 'IP is in input box' );
+    $agent->field( $cf_field => $new_ip );
+    $agent->click('SubmitTicket');
 
-        $ticket = RT::Ticket->new($RT::SystemUser);
-        $ticket->Load($id);
-        ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('IP'), $new_value, 'correct value' );
-    }
+    $agent->content_contains( $new_value, "IP on the page" );
+
+    $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($id);
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->FirstCustomFieldValue('IP'), $new_value, 'correct value' );
 }
 
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
@@ -148,32 +151,6 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
 
         $agent->content_contains( 'can not be parsed as an IP address',
             'ticket fails to create' );
-    }
-}
-
-diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
-{
-    for my $ip ( keys %valid ) {
-        ok $agent->goto_create_ticket($q), "go to create ticket";
-        my $cf_field = "Object-RT::Ticket--CustomField-$cf_id-Values";
-        $agent->submit_form(
-            form_name => 'TicketCreate',
-            fields    => {
-                Subject   => 'test ip',
-                $cf_field => $ip,
-            }
-        );
-
-        my ($id) = $agent->content =~ /Ticket (\d+) created/;
-        ok( $id, "created ticket $id" );
-
-        my $ticket = RT::Ticket->new($RT::SystemUser);
-        $ticket->Load($id);
-        ok( $ticket->id, 'loaded ticket' );
-
-        my $tickets = RT::Tickets->new($RT::SystemUser);
-        $tickets->FromSQL("id = $id AND CF.{IP} = '$ip'");
-        ok( $tickets->Count, "found tickets" );
     }
 }
 

@@ -45,9 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-% my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
-% next unless @cur_statuses;
+<%perl>
+    foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+    my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
+    next unless @cur_statuses;
+</%perl>
+
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
 
 <tr>
@@ -66,59 +69,72 @@ for my $queue (@queues) {
     my $name = $queue->{Name};
     $name =~ s/'/\\'/g;
     my $queue_cond = "Queue = '$name' AND ";
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->is_valid($_), @statuses ) . ')';
+    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", @cur_statuses ) . ')';
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
-<td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
+<td>
+    <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+</td>
 
 %   for my $status (@cur_statuses) {
-%       $Tickets->FromSQL( "Queue = $queue->{id} AND Status = '$status'" );
-<td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond ."Status = '$status'" |u,n %>"><% $Tickets->Count %></a></td>
+<td align="right">
+    <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond ."Status = '$status'" |u,n %>"><% $data->{$queue->{id}}->{$status } || '-' %></a>
+</td>
 %   }
 </tr>
 % }
 </table>
 % }
 <%INIT>
+
+my $data     = {};
+my $statuses = {};
+
+use RT::Report::Tickets;
+my $report = RT::Report::Tickets->new( RT->SystemUser );
+$report->SetupGroupings( Query => 'id > 0', GroupBy => [qw(Status Queue)] );
+
+while ( my $entry = $report->Next ) {
+    $data->{ $entry->__Value("Queue") }->{ $entry->__Value("Status") }
+        = $entry->__Value('id');
+    $statuses->{ $entry->__Value("Status") } = 1;
+}
+
+
+
+
 my @queues;
-if ($cache && exists $session{$cache}) {
-    @queues = @{$session{$cache}};
+my $Queues = RT::Queues->new( $session{'CurrentUser'} );
+$Queues->UnLimit();
+@queues = grep $queue_filter->($_), @{ $Queues->ItemsArrayRef };
 
-}
-else {
-    my $Queues = RT::Queues->new($session{'CurrentUser'});
-    $Queues->UnLimit();
-    @queues = grep $queue_filter->($_), @{$Queues->ItemsArrayRef};
+$m->callback( CallbackName => 'Filter', Queues => \@queues );
 
-    $m->callback( CallbackName => 'Filter', Queues => \@queues );
-
-    @queues = map { {
-        id          => $_->Id,
-        Name        => $_->Name,
-        Description => $_->Description,
-        Lifecycle      => $_->lifecycle->name,
-    } } grep $_, @queues;
-
-    $session{$cache} = \@queues if $cache;
-}
+@queues = map {
+    {  id          => $_->Id,
+       Name        => $_->Name,
+       Description => $_->Description,
+       Lifecycle   => $_->lifecycle->name,
+    }
+} grep $_, @queues;
 
 my %lifecycle;
-$lifecycle{ lc $_->name } = $_ foreach
-    grep $_, map RT::Lifecycle->load($_),
-    map $_->{'Lifecycle'}, @queues;
 
+for my $queue (@queues) {
+    my $cycle = RT::Lifecycle->load( $queue->{'Lifecycle'} );
+    $lifecycle{ lc $cycle->name } = $cycle;
+}
 
-unless ( @statuses ) {
+unless (@statuses) {
     my %seen;
-    foreach my $set('initial', 'active') {
+    foreach my $set ( 'initial', 'active' ) {
         foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-            push @statuses, grep !$seen{lc $_}++, $lifecycle->$set();
+            push @statuses, grep !$seen{ lc $_ }++, $lifecycle->$set();
         }
     }
 }
 
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 </%INIT>
 <%ARGS>
 $cache => undef

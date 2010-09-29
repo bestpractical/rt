@@ -77,7 +77,7 @@ use RT::ACL;
 # XXX TODO Can't localize these outside of having an object around.
 our $RIGHTS = {
     SuperUser              => 'Do anything and everything',           # loc_pair
-    AdminUsers     => 'Create, delete and modify users',              # loc_pair
+    AdminUsers     => 'Create, modify and delete users',              # loc_pair
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
     ShowConfigTab => "Show Configuration tab",     # loc_pair
     ShowApprovalsTab => "Show Approvals tab",     # loc_pair

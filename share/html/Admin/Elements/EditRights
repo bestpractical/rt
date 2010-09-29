@@ -138,9 +138,10 @@ my %category_desc = (
     'General' => 'General rights',
     'Staff'   => 'Rights for Staff',
     'Admin'   => 'Rights for Administrators',
+    'Status'  => 'Status changes',
 );
 
-my %catsort = ( General => 1, Staff => 2, Admin => 3, );
+my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
 
 # Find all the current rights
 my %current_rights;

@@ -46,19 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="dashboards">
-<&|/Widgets/TitleBox,
-    title => loc("Dashboards"),
+<& /Dashboards/Elements/ShowDashboards,
+    Dashboards => \@dashboards,
+    Verbose => 0,
+    Title => loc("Dashboards"),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
     bodyclass => "",
     titleright => loc("Edit"),
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/',
 &>
-
-<& /Dashboards/Elements/ShowDashboards:table,
-    Dashboards => \@dashboards,
-    Verbose => 0,
-&>
-</&>
 </div>
 <%INIT>
 my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
