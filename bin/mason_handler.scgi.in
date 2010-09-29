@@ -48,8 +48,8 @@
 # END BPS TAGGED BLOCK }}}
 package RT::Mason;
 
+use warnings;
 use strict;
-use vars '$Handler';
 use File::Basename;
 
 require (dirname(__FILE__) . '/webmux.pl');
@@ -57,12 +57,5 @@ require (dirname(__FILE__) . '/webmux.pl');
 require CGI;
 
 my $cgi = CGI->new;
-if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
-    && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
-    $cgi->path_info( $cgi->path_info . "/index.html" );
-}
-
-RT::ConnectToDatabase();
-$Handler->handle_cgi_object($cgi);
-RT::Interface::Web::Handler->CleanupRequest();
+RT::Interface::Web::Handler->HandleRequest($cgi);
 1;

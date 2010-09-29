@@ -165,6 +165,36 @@ sub NewHandler {
     return($handler);
 }
 
+
+=head2 HandleRequest
+
+
+=cut
+
+sub HandleRequest {
+    my $self = shift;
+    my $cgi = shift;
+
+    Module::Refresh->refresh if RT->Config->Get('DevelMode');
+    RT::ConnectToDatabase() unless RT->InstallMode;
+
+    my $interp = $RT::Mason::Handler->interp;
+    if (   !$interp->comp_exists( $cgi->path_info )
+         && $interp->comp_exists( $cgi->path_info . "/index.html" ) )
+    {
+        $cgi->path_info( $cgi->path_info . "/index.html" );
+    }
+
+    local $@;
+    eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
+    if ($@) {
+        $RT::Logger->crit($@);
+    }
+    $self->CleanupRequest();
+
+}
+
+
 =head2 CleanupRequest
 
 Clean ups globals, caches and other things that could be still
