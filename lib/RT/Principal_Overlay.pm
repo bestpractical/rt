@@ -260,12 +260,11 @@ sub HasRight {
         return (undef);
     }
 
-    my $canonic_name = RT::ACE->CanonicalizeRightName( $args{'Right'} );
-    unless ( $canonic_name ) {
-        $RT::Logger->error("Invalid right. Couldn't canonicalize right '$args{'Right'}'");
+    $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
+    unless ($args{'Right'}) {
+        $RT::Logger->error( "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;
     }
-    $args{'Right'} = $canonic_name;
 
     $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
         if $args{'EquivObjects'};
