@@ -69,8 +69,13 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % } else {
     <ol>
 %     for my $request (@$history) {
+%         my $total = 0;
+%         for my $statement (@{ $request->{Queries} }) {
+%             $total += $statement->[3];
+%         }
+
           <li>
-              <tt><% $request->{Path} %></tt>
+              <tt><% $request->{Path} %></tt> - <i><% sprintf '%.4f', $total %>s</i>
               <table class="tablesorter">
                   <thead>
                       <tr>
