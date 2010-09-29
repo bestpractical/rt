@@ -319,6 +319,7 @@ CREATE TABLE ObjectCustomFieldValues (
   LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
   ContentType varchar(80) NULL,		    # New -- only text/* gets searched
   ContentEncoding varchar(80) NULL  ,	    # New -- for binary Content
+  Category VARCHAR(255) NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,

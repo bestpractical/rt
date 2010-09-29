@@ -85,57 +85,9 @@ sub Create {
 
     my ($id, $msg) = $self->SUPER::Create(
         CustomField => $cf_id,
-        map { $_ => $args{$_} } qw(Name Description SortOrder)
+        map { $_ => $args{$_} } qw(Name Description SortOrder Category)
     );
-    return ($id, $msg) unless $id;
-
-    if ( defined $args{'Category'} && length $args{'Category'} ) {
-        # $self would be loaded at this stage
-        my ($status, $msg) = $self->SetCategory( $args{'Category'} );
-        unless ( $status ) {
-            $RT::Logger->error("Couldn't set category: $msg");
-        }
-    }
-
     return ($id, $msg);
-}
-
-=head2 Category
-
-Returns the Category assigned to this Value
-Returns udef if there is no Category
-
-=cut
-
-sub Category {
-    my $self = shift;
-    my $attr = $self->FirstAttribute('Category') or return undef;
-    return $attr->Content;
-}
-
-=head2 SetCategory Category
-
-Takes a string Category and stores it as an attribute of this CustomFieldValue
-
-=cut
-
-sub SetCategory {
-    my $self = shift;
-    my $category = shift;
-    if ( defined $category && length $category ) {
-        return $self->SetAttribute(
-            Name    => 'Category',
-            Content => $category,
-        );
-    }
-    else {
-        my ($status, $msg) = $self->DeleteAttribute( 'Category' );
-        unless ( $status ) {
-            $RT::Logger->warning("Couldn't delete atribute: $msg");
-        }
-        # return true even if there was no category
-        return (1, $self->loc('Category unset'));
-    }
 }
 
 sub ValidateName {

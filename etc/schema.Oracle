@@ -361,6 +361,7 @@ CREATE TABLE CustomFieldValues (
 	Name		VARCHAR2(200),
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+    Category    VARCHAR2(255),
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created		DATE,
 	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
