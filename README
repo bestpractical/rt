@@ -25,8 +25,8 @@ o   Perl 5.8.3 or later (http://www.perl.org).
 
 o   A supported SQL database
 
-        Currently supported:  Mysql 4.0.13 or later with InnoDB support.
-                              Postgres 7.2 or later.
+        Currently supported:  Mysql 4.1 or later with InnoDB support.
+                              Postgres 8.1 or later.
                               Oracle 9iR2 or later.
                               SQLite 3.0. (Not recommended for production)
 
