@@ -69,7 +69,7 @@
   </div>
 
     <div class="content">
-% if ( $type_class eq 'message' && $Transaction->ObjectType eq 'RT::Ticket' ) {
+% if ( $type_class eq 'message' ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
@@ -100,7 +100,6 @@ $WarnUnsigned => undef
 <%ONCE>
 
 my %class = (
-    Create     => 'message',
     Correspond => 'message',
     Comment    => 'message',
 
@@ -124,6 +123,9 @@ $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
 my $type_class = $class{ $type };
+if ( $type eq 'Create' && $Transaction->ObjectType eq 'RT::Ticket' ) {
+    $type_class = 'message';
+}
 
 unless ( $type_class ) {
     if ( $field eq 'Owner' ) {
