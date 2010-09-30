@@ -317,7 +317,7 @@ sub HasRight {
     my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
     $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
-    $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
+    $_ACL_CACHE->set( join(';:;',  $self->id, $args{'Right'},$via_obj) => 1 )
         if $via_obj && $hitcount;
 
     return ($hitcount);
