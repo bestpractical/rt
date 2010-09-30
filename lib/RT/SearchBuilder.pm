@@ -85,6 +85,37 @@ sub _Init  {
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
+sub CleanSlate {
+    my $self = shift;
+    $self->{'_sql_aliases'} = {};
+    return $self->SUPER::CleanSlate(@_);
+}
+
+sub JoinTransactions {
+    my $self = shift;
+    my %args = ( New => 0, @_ );
+
+    return $self->{'_sql_aliases'}{'transactions'}
+        if !$args{'New'} && $self->{'_sql_aliases'}{'transactions'};
+
+    my $alias = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'ObjectId',
+    );
+    $self->Limit(
+        LEFTJOIN => $alias,
+        ALIAS    => $alias,
+        FIELD    => 'ObjectType',
+        VALUE    => ref $self->NewItem,
+    );
+    $self->{'_sql_aliases'}{'transactions'} = $alias
+        unless $args{'New'};
+
+    return $alias;
+}
+
 =head2 LimitToEnabled
 
 Only find items that haven't been disabled
