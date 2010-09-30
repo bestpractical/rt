@@ -568,21 +568,23 @@ sub _GetPrincipalTypeForACL {
 
 Returns a list uniquely representing an object or normal scalar.
 
-For scalars, its string value is returned; for objects that has an
-id() method, its class name and Id are returned as a string separated by a "-".
+For a scalar, its string value is returned.
+For an object that has an id() method which returns a value, its class name and id are returned as a string separated by a "-".
+For an object that has an id() method which returns false, its class name is returned.
 
 =cut
 
 sub _ReferenceId {
+    my $self = shift;
     my $scalar = shift;
-
-    # just return the value for non-objects
-    return $scalar unless UNIVERSAL::can( $scalar, 'id' );
-
-    return ref($scalar) unless $scalar->id;
-
-    # an object -- return the class and id
-    return ( ref($scalar) . "-" . $scalar->id );
+    my $id = eval { $scalar->id };
+    if ($@) {
+        return $scalar;
+    } elsif ($id) {
+        return ref($scalar) . "-" . $id;
+    } else {
+        return ref($scalar);
+    }
 }
 
 
