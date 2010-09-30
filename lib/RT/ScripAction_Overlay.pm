@@ -124,11 +124,12 @@ sub Load  {
 	return (0, $self->loc('Input error'));
     }	    
     
+    my ($ok, $msg);
     if ($identifier !~ /\D/) {
-	$self->SUPER::Load($identifier);
+	($ok, $msg) = $self->SUPER::Load($identifier);
     }
     else {
-	$self->LoadByCol('Name', $identifier);
+	($ok, $msg) = $self->LoadByCol('Name', $identifier);
 	
     }
 
@@ -138,7 +139,8 @@ sub Load  {
 	
 	$self->{'Template'} = $template;
     }
-    return ($self->Id, ($self->loc('[_1] ScripAction loaded', $self->Id)));
+
+    return ($ok, $msg);
 }
 
 
