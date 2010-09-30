@@ -60,11 +60,9 @@ sub run_tests {
 
 sub run_test {
     my ($query, %checks) = @_;
-    my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
 
     my $tix = RT::Tickets->new(RT->SystemUser);
-    $tix->FromSQL( "( $query_prefix ) AND ( $query )" );
-
+    $tix->FromSQL($query);
     my $error = 0;
 
     my $count = 0;
