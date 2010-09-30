@@ -508,10 +508,10 @@ SNAPSHOT=$(shell git describe --tags)
 snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
 	( cd $(SNAPSHOT) &&\
-	   	echo "$(SNAPSHOT)" > .tag &&\
-	   	autoconf &&\
-	  	INSTALL=install-sh PERL=/usr/bin/perl ./configure --with-db-type=SQLite\
-   		--enable-layout=relative --with-web-handler=standalone ./configure \
+	        echo "$(SNAPSHOT)" > .tag &&\
+	        autoconf &&\
+	        INSTALL=install-sh PERL=/usr/bin/perl ./configure --with-db-type=SQLite\
+	        --enable-layout=relative --with-web-handler=standalone ./configure \
 	)
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	gpg --clearsign "$(SNAPSHOT).tar.gz"
