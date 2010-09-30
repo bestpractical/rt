@@ -102,7 +102,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                            <td>
                                <tt><% $sql %></tt>
 %                              if ($trace) {
-                                   <a href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
+                                   <a class="query-stacktrace-toggle" href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
                                    <pre id="trace-<%$r%>-<%$s%>" class="hidden"><% $trace %></pre>
 
 %                              }
