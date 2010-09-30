@@ -219,8 +219,6 @@ sub HandleRequest {
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements();
 
-    $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
-
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 }
