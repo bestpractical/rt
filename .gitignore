@@ -40,6 +40,7 @@ config.pld
 *.swp
 *.swo
 .prove
+nytprof.out*
 
 # RT4 junk
 META.yml
