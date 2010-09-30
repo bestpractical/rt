@@ -294,7 +294,12 @@ sub action_upgrade {
     return (1, "The version $upgrading_to you're upgrading to is up to date")
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
 
-    my @versions = get_versions_from_to($base_dir, $upgrading_from, $upgrading_to);
+    my @versions = get_versions_from_to($base_dir, $upgrading_from, undef);
+    if (RT::Handle::cmp_version($versions[-1], $upgrading_to) > 0) {
+        print "\n***** There are upgrades for $versions[-1], which is later than $upgrading_to,\n";
+        print   "***** which you are nominally upgrading to.  Upgrading to $versions[-1] instead.\n";
+        $upgrading_to = $versions[-1];
+    }
 
     return (1, "No DB changes between $upgrading_from and $upgrading_to")
         unless @versions;
@@ -369,7 +374,7 @@ sub get_versions_from_to {
     closedir $dh;
 
     return
-        grep RT::Handle::cmp_version($_, $to) <= 0,
+        grep defined $to ? RT::Handle::cmp_version($_, $to) <= 0 : 1,
         grep RT::Handle::cmp_version($_, $from) > 0,
         sort RT::Handle::cmp_version @versions;
 }

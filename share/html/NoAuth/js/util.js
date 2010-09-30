@@ -212,7 +212,6 @@ function doOnLoad( js ) {
     jQuery(js);
 }
 
-
 jQuery(function() {
 		jQuery(".ui-datepicker:not(.withtime)").datepicker( {
             dateFormat: 'yy-mm-dd',
@@ -257,8 +256,7 @@ jQuery(function() {
 
         for (var i=0; i < allTextAreas.length; i++) {
             var textArea = allTextAreas[i];
-            if ( (textArea.getAttribute('class') == 'messagebox')
-              || (textArea.getAttribute('className') == 'messagebox')) {
+            if (jQuery(textArea).hasClass("messagebox")) {
                 // Turn the original plain text content into HTML
                 // if (encoded == 0) textArea.value = textArea.value .replace( /&/g, "&amp;") .replace( /</g, "&lt;") .replace( />/g, "&gt;") .replace( /\n/g, "\n<br />");
                 var FCKeditorEncoded = document.createElement('input');

@@ -1,0 +1,25 @@
+<%INIT>
+my $Transactions = RT::Transactions->new($session{'CurrentUser'});
+if ($Tickets) {
+    while (my $t = $Tickets->Next) {
+        $Transactions->LimitToTicket($t->id);
+    }
+} else {
+    $Transactions = $Ticket->Transactions;
+}
+
+
+my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
+my $SortOrder = $OldestFirst? 'ASC': 'DESC';
+$Transactions->OrderByCols( { FIELD => 'Created',
+                              ORDER => $SortOrder },
+                            { FIELD => 'id',
+                              ORDER => $SortOrder },
+                          );
+$Transactions->Next(); $Transactions->GotoFirstItem(); # actually do the search
+return ($Transactions);
+</%INIT>
+<%ARGS>
+$Ticket => undef
+$Tickets => undef
+</%ARGS>

@@ -54,7 +54,9 @@
     font-weight: normal;
 }
 
-#ticket-create-message .messagedetails, #previewscrips {
+#ticket-create-message .messagedetails,
+#ticket-update-message .messagedetails
+{
     margin-bottom: 0.5em;
 }
 
@@ -71,6 +73,16 @@
 .ticket-info-squelch ul, #previewscrips ul {
     list-style: none;
 }
+
+.messagebox-container iframe {
+    background-color: white !important;
+}
+
+.messagebox-container.action-response textarea,
+.messagebox-container.action-response iframe
+{
+    background-color: #fcc !important;
+} 
 
 /*
 % if ( RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ) {

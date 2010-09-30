@@ -1622,20 +1622,36 @@ sub TransactionAddresses {
     my $txns = $self->Transactions;
 
     my %addresses = ();
-    foreach my $type (qw(Create Comment Correspond)) {
-    $txns->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => $type , ENTRYAGGREGATOR => 'OR', CASESENSITIVE => 1);
-        }
 
-    while (my $txn = $txns->Next) {
-        my $txnaddrs = $txn->Addresses; 
-        foreach my $addrlist ( values %$txnaddrs ) {
-                foreach my $addr (@$addrlist) {
-                    # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
-                    next if ($addresses{$addr->address} && $addresses{$addr->address}->phrase && not $addr->phrase);
-                    # skips "comment-only" addresses
-                    next unless ($addr->address);
-                    $addresses{$addr->address} = $addr;
-                }
+    my $attachments = RT::Attachments->new( $self->CurrentUser );
+    $attachments->LimitByTicket( $self->id );
+    $attachments->Columns( qw( id Headers TransactionId));
+
+
+    foreach my $type (qw(Create Comment Correspond)) {
+        $attachments->Limit( ALIAS    => $attachments->TransactionAlias,
+                             FIELD    => 'Type',
+                             OPERATOR => '=',
+                             VALUE    => $type,
+                             ENTRYAGGREGATOR => 'OR',
+                             CASESENSITIVE   => 1
+                           );
+    }
+
+    while ( my $att = $attachments->Next ) {
+        foreach my $addrlist ( values %{$att->Addresses } ) {
+            foreach my $addr (@$addrlist) {
+
+# Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
+                next
+                    if (    $addresses{ $addr->address }
+                         && $addresses{ $addr->address }->phrase
+                         && not $addr->phrase );
+
+                # skips "comment-only" addresses
+                next unless ( $addr->address );
+                $addresses{ $addr->address } = $addr;
+            }
         }
     }
 

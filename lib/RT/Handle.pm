@@ -201,10 +201,6 @@ sub SystemDSN {
         # with postgres, you want to connect to template1 database
         $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
     }
-    elsif ( $db_type eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:\Q$db_name/Informix:/;
-    }
     return $dsn;
 }
 
@@ -341,10 +337,6 @@ sub CreateDatabase {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0")
             || $dbh->do("CREATE DATABASE $db_name TEMPLATE template0");
     }
-    elsif ( $db_type eq 'Informix' ) {
-        local $ENV{'DB_LOCALE'} = 'en_us.utf8';
-        $status = $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
-    }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
     }
@@ -370,7 +362,7 @@ sub DropDatabase {
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
 
-    if ( $db_type eq 'Oracle' || $db_type eq 'Informix' ) {
+    if ( $db_type eq 'Oracle' ) {
         my $db_user = RT->Config->Get('DatabaseUser');
         my $status = $dbh->do( "DROP USER $db_user CASCADE" );
         unless ( $status ) {

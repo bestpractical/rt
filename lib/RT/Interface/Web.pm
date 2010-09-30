@@ -217,9 +217,6 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
     ShowRequestedPage($ARGS);
-
-    $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
-
     LogRecordedSQLStatements(RequestData => {
         Path => $HTML::Mason::Commands::m->request_comp->path,
     });
