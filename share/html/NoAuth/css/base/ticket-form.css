@@ -72,6 +72,16 @@
     list-style: none;
 }
 
+.messagebox-container iframe {
+    background-color: white !important;
+}
+
+.messagebox-container.action-response textarea,
+.messagebox-container.action-response iframe
+{
+    background-color: #fcc !important;
+} 
+
 /*
 % if ( RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ) {
 */

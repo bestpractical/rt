@@ -73,7 +73,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
 % }
 <tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
+<td><select name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -81,6 +81,17 @@
 <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$ResponseDefault |n %>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
+
+<script type="text/javascript">
+    jQuery(function() {
+        jQuery("#UpdateType").change(function(ev) {
+            jQuery(".messagebox-container")
+                .removeClass("action-response action-private")
+                .addClass("action-"+ev.target.value);
+        });
+    });
+</script>
+
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
 </td></tr>
 
@@ -146,7 +157,8 @@
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </td></tr>
 
-<tr><td class="label" valign="top"><&|/l&>Message</&>:</td><td>
+<tr><td class="label" valign="top"><&|/l&>Message</&>:</td>
+<td class="messagebox-container action-<% $type %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
@@ -214,6 +226,10 @@ if ($Action ne 'Respond') {
     $ResponseDefault = qq[ selected="selected"];
 }
 
+my $type =             $ARGS{'UpdateType'} ? $ARGS{'UpdateType'} :
+           lc $ARGS{'Action'} eq 'respond' ? 'response'          :
+           lc $ARGS{'Action'} eq 'comment' ? 'private'           :
+                                             'none'              ;
 
 
 $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
