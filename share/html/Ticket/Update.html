@@ -177,13 +177,13 @@
   </table>
 </&>
 
+  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
   <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips' &>
     <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
   </&>
 % }
-
-  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 </div>
 
 </form>

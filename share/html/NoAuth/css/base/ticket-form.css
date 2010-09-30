@@ -54,7 +54,9 @@
     font-weight: normal;
 }
 
-#ticket-create-message .messagedetails, #previewscrips {
+#ticket-create-message .messagedetails,
+#ticket-update-message .messagedetails
+{
     margin-bottom: 0.5em;
 }
 
