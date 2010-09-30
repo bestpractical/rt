@@ -245,7 +245,6 @@ sub CleanSlate {
         _sql_group_members_aliases
         _sql_object_cfv_alias
         _sql_role_group_aliases
-        _sql_transalias
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
@@ -622,20 +621,7 @@ sub _TransDateLimit {
 
     # See the comments for TransLimit, they apply here too
 
-    unless ( $sb->{_sql_transalias} ) {
-        $sb->{_sql_transalias} = $sb->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Transactions',
-            FIELD2 => 'ObjectId',
-        );
-        $sb->SUPER::Limit(
-            ALIAS           => $sb->{_sql_transalias},
-            FIELD           => 'ObjectType',
-            VALUE           => 'RT::Ticket',
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
+    my $txn_alias = $sb->JoinTransactions;
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -653,7 +639,7 @@ sub _TransDateLimit {
         my $dayend = $date->ISO;
 
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => ">=",
             VALUE         => $daystart,
@@ -661,7 +647,7 @@ sub _TransDateLimit {
             @rest
         );
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => "<=",
             VALUE         => $dayend,
@@ -677,7 +663,7 @@ sub _TransDateLimit {
 
         #Search for the right field
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => $op,
             VALUE         => $date->ISO,
@@ -734,24 +720,11 @@ sub _TransLimit {
 
     my ( $self, $field, $op, $value, %rest ) = @_;
 
-    unless ( $self->{_sql_transalias} ) {
-        $self->{_sql_transalias} = $self->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Transactions',
-            FIELD2 => 'ObjectId',
-        );
-        $self->SUPER::Limit(
-            ALIAS           => $self->{_sql_transalias},
-            FIELD           => 'ObjectType',
-            VALUE           => 'RT::Ticket',
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
+    my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
         $self->{_sql_trattachalias} = $self->_SQLJoin(
             TYPE   => 'LEFT', # not all txns have an attachment
-            ALIAS1 => $self->{_sql_transalias},
+            ALIAS1 => $txn_alias,
             FIELD1 => 'id',
             TABLE2 => 'Attachments',
             FIELD2 => 'TransactionId',
