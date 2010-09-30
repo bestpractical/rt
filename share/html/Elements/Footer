@@ -76,6 +76,15 @@
 </pre>
 % }
 
+% if (RT->Config->Get('StatementLog') && $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+<!--
+SQL queries:
+% for my $statement ($RT::Handle->SQLStatementLog) {
+% my ( $time, $sql, $bind, $duration ) = @$statement;
+<% sprintf '%0.4f', $duration %> - <% $RT::Handle->FillIn($sql, $bind) %>
+% }
+-->
+% }
   </body>
 </html>
 
