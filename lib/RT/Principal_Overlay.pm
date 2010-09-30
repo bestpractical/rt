@@ -501,12 +501,12 @@ sub RolesWithRight {
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        my $type = ref($obj)? ref($obj): $obj;
-        my $id;
-        $id = eval {$obj->id};
+        my $type = ref($obj) ? ref($obj) : $obj;
 
         my $object_clause = "ObjectType = '$type'";
-        $object_clause   .= " AND ObjectId = $id" if $id;
+        if ( my $id = eval { $obj->id } ) {
+            $object_clause .= " AND ObjectId = $id";
+        }
         push @object_clauses, "($object_clause)";
     }
     # find ACLs that are related to our objects only
