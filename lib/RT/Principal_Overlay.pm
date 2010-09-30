@@ -298,13 +298,12 @@ sub HasRight {
 # 1) full_hashkey - key for any result and for full combination of uid, right and objects
 # 2) short_hashkey - one key for each object to store positive results only, it applies
 # only to direct group rights and partly to role rights
-    my $self_id = $self->id;
-    my $full_hashkey = join ";:;", $self_id, $args{'Right'};
+    my $full_hashkey = join (";:;", $self->id, $args{'Right'});
     foreach ( @{ $args{'EquivObjects'} } ) {
-        my $ref_id = _ReferenceId($_);
+        my $ref_id = $self->_ReferenceId($_);
         $full_hashkey .= ";:;$ref_id";
 
-        my $short_hashkey = join ";:;", $self_id, $args{'Right'}, $ref_id;
+        my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
         my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
         return $cached_answer > 0 if defined $cached_answer;
     }
