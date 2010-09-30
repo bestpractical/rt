@@ -1105,12 +1105,15 @@ sub start_standalone_server {
 
     require RT::Interface::Web::Standalone;
 
-    require Test::HTTP::Server::Simple::StashWarnings;
-    unshift @RT::Interface::Web::Standalone::ISA,
-        'Test::HTTP::Server::Simple::StashWarnings';
-    *RT::Interface::Web::Standalone::test_warning_path = sub {
-        "/__test_warnings";
-    };
+    # this may happen if we start two servers in the same test process
+    unless (RT::Interface::Web::Standalone->can('test_warning_path')) {
+        require Test::HTTP::Server::Simple::StashWarnings;
+        unshift @RT::Interface::Web::Standalone::ISA,
+            'Test::HTTP::Server::Simple::StashWarnings';
+        *RT::Interface::Web::Standalone::test_warning_path = sub {
+            "/__test_warnings";
+        };
+    }
 
     my $s = RT::Interface::Web::Standalone->new($port);
 
