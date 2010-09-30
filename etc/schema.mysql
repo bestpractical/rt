@@ -79,11 +79,15 @@ CREATE TABLE Groups (
   Domain varchar(64) CHARACTER SET ascii NULL,
   Type varchar(64) CHARACTER SET ascii NULL,
   Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
-CREATE INDEX Groups2 On Groups (Type, Instance);   
+CREATE INDEX Groups2 On Groups (Type, Instance);
 
 
 
@@ -155,6 +159,10 @@ CREATE TABLE ACL (
   RightName varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectType varchar(25) CHARACTER SET ascii NOT NULL,
   ObjectId integer NOT NULL default 0,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 
@@ -166,6 +174,10 @@ CREATE TABLE GroupMembers (
   id INTEGER NOT NULL AUTO_INCREMENT,
   GroupId integer NOT NULL DEFAULT 0,
   MemberId integer NOT NULL DEFAULT 0,  #Foreign key to Principals
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
@@ -178,7 +190,7 @@ create table CachedGroupMembers (
         GroupId int, # foreign key to Principals
         MemberId int, # foreign key to Principals
         Via int, #foreign key to CachedGroupMembers. (may point to $self->id)
-        ImmediateParentId int, #foreign key to prinicpals.         
+        ImmediateParentId int, #foreign key to prinicpals.
                                # this points to the group that the member is
                                # a member of, for ease of deletes.
         Disabled int2 NOT NULL DEFAULT 0 , # if this cached group member is a member of this group by way of a disabled
@@ -330,8 +342,8 @@ CREATE TABLE ObjectCustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content);
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId);
 
 
 
@@ -377,6 +389,7 @@ CREATE TABLE CustomFieldValues (
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
+  Category VARCHAR(255) NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -386,7 +399,7 @@ CREATE TABLE CustomFieldValues (
 ) TYPE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
- 
+
 
 
 
@@ -419,4 +432,3 @@ CREATE TABLE sessions (
     LastUpdated TIMESTAMP,
     PRIMARY KEY (id)
 );
-

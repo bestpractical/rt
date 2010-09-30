@@ -244,15 +244,14 @@ Returns undef if no ACE was found.
 sub HasRight {
 
     my $self = shift;
-    my %args = (
-        Right        => undef,
-        Object       => undef,
-        EquivObjects => undef,
-        @_,
-    );
+    my %args = ( Right        => undef,
+                 Object       => undef,
+                 EquivObjects => undef,
+                 @_,
+               );
 
     # RT's SystemUser always has all rights
-    if ($self->id == RT->SystemUser->id) {
+    if ( $self->id == RT->SystemUser->id ) {
         return 1;
     }
 
@@ -261,41 +260,33 @@ sub HasRight {
         return (undef);
     }
 
-    my $canonic_name = RT::ACE->CanonicalizeRightName( $args{'Right'} );
-    unless ( $canonic_name ) {
-        $RT::Logger->error("Invalid right. Couldn't canonicalize right '$args{'Right'}'");
+    $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
+    unless ($args{'Right'}) {
+        $RT::Logger->error( "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;
     }
-    $args{'Right'} = $canonic_name;
 
     $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
         if $args{'EquivObjects'};
 
     if ( $self->__Value('Disabled') ) {
-        $RT::Logger->debug( "Disabled User #"
-              . $self->id
-              . " failed access check for "
-              . $args{'Right'} );
+        $RT::Logger->debug("Disabled User #" . $self->id." failed access check for " . $args{'Right'} );
         return (undef);
     }
 
-    if (   defined( $args{'Object'} )
-        && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id ) {
-
+    if (  eval { $args{'Object'}->id} ) {
         push @{ $args{'EquivObjects'} }, $args{'Object'};
-    }
-    else {
+    } else {
         $RT::Logger->crit("HasRight called with no valid object");
         return (undef);
     }
 
-
-    unshift @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects;
+    unshift @{ $args{'EquivObjects'} },
+        $args{'Object'}->ACLEquivalenceObjects;
 
     unshift @{ $args{'EquivObjects'} }, $RT::System
         unless $self->can('_IsOverrideGlobalACL')
-               && $self->_IsOverrideGlobalACL( $args{'Object'} );
+            && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
     # If we've cached a win or loss for this lookup say so
 
@@ -319,10 +310,9 @@ sub HasRight {
         return $cached_answer > 0 if defined $cached_answer;
     }
 
+    my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
-    my ($hitcount, $via_obj) = $self->_HasRight( %args );
-
-    $_ACL_CACHE->set( $full_hashkey => $hitcount? 1: -1 );
+    $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
     $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
         if $via_obj && $hitcount;
 
@@ -391,7 +381,7 @@ sub _HasGroupRight
         my $type = ref( $obj ) || $obj;
         my $clause = "ACL.ObjectType = '$type'";
 
-        if ( ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id ) {
+        if ( defined eval { $obj->id }) { # it might be 0
             $clause .= " AND ACL.ObjectId = ". $obj->id;
         }
 
@@ -449,7 +439,7 @@ sub _HasRoleRight
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = eval {$obj->id};
 
         my $clause = "Groups.Domain = '$type-Role'";
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
@@ -513,7 +503,7 @@ sub RolesWithRight {
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = eval {$obj->id};
 
         my $object_clause = "ObjectType = '$type'";
         $object_clause   .= " AND ObjectId = $id" if $id;

@@ -79,7 +79,11 @@ CREATE TABLE Groups (
 	Description 	VARCHAR2(255),
 	Domain		VARCHAR2(64),
 	Type		VARCHAR2(64),
-	Instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
+	Instance	NUMBER(11,0) DEFAULT 0, -- NOT NULL
+	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created		DATE,
+	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated	DATE
 --	Instance	VARCHAR2(64)
 );
 CREATE INDEX Groups1 ON Groups (LOWER(Domain), Instance, LOWER(Type), id);
@@ -153,7 +157,11 @@ CREATE TABLE ACL (
 	PrincipalId 	NUMBER(11,0) NOT NULL,
 	RightName	VARCHAR2(25) NOT NULL,
 	ObjectType	VARCHAR2(25) NOT NULL,
-	ObjectId	NUMBER(11,0) DEFAULT 0 NOT NULL
+	ObjectId	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator 	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created 	DATE,
+	LastUpdatedBy 	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated 	DATE
 );
 CREATE INDEX ACL1 ON ACL(RightName, ObjectType, ObjectId, PrincipalType, PrincipalId);
 
@@ -163,7 +171,11 @@ CREATE TABLE GroupMembers (
 	id 		NUMBER(11,0) 
 		CONSTRAINT GroupMembers_Key PRIMARY KEY,
 	GroupId 	NUMBER(11,0) DEFAULT 0 NOT NULL,
-	MemberId 	NUMBER(11,0) DEFAULT 0 NOT NULL
+	MemberId 	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created		DATE,
+	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated	DATE
 );
 CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, MemberId);
 
@@ -361,6 +373,7 @@ CREATE TABLE CustomFieldValues (
 	Name		VARCHAR2(200),
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+    Category    VARCHAR2(255),
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created		DATE,
 	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,

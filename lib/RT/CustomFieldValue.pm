@@ -91,6 +91,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Name'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'Category'.
 
 =cut
 
@@ -104,6 +105,7 @@ sub Create {
                 Name => '',
                 Description => '',
                 SortOrder => '0',
+                Category => '',
 
 		  @_);
     $self->SUPER::Create(
@@ -111,6 +113,7 @@ sub Create {
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         Category => $args{'Category'},
 );
 
 }
@@ -212,6 +215,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 Category
+
+Returns the current value of Category.
+(In the database, Category is stored as varchar(255).)
+
+
+
+=head2 SetCategory VALUE
+
+
+Set Category to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Category will be stored as a varchar(255).)
+
+
+=cut
+
+
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -262,6 +283,8 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Category =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 

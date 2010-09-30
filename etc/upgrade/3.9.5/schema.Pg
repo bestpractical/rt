@@ -1,0 +1,20 @@
+alter Table CustomFieldValues ADD Column Category varchar(255);
+
+UPDATE CustomFieldValues SET Category = (SELECT Content FROM Attributes WHERE
+Name = 'Category' AND  ObjectType = 'RT::CustomFieldValue'
+AND CustomFieldValues.id = Attributes.ObjectId);
+
+DELETE FROM Attributes WHERE Name = 'Category' AND ObjectType = 'RT::CustomFieldValue';
+
+ALTER TABLE Groups ADD COLUMN Creator integer NOT NULL DEFAULT 0;
+ALTER TABLE Groups ADD COLUMN Created TIMESTAMP NULL;
+ALTER TABLE Groups ADD COLUMN LastUpdatedBy integer NOT NULL DEFAULT 0;
+ALTER TABLE Groups ADD COLUMN LastUpdated TIMESTAMP NULL;
+ALTER TABLE GroupMembers ADD COLUMN Creator integer NOT NULL DEFAULT 0;
+ALTER TABLE GroupMembers ADD COLUMN Created TIMESTAMP NULL;
+ALTER TABLE GroupMembers ADD COLUMN LastUpdatedBy integer NOT NULL DEFAULT 0;
+ALTER TABLE GroupMembers ADD COLUMN LastUpdated TIMESTAMP NULL;
+ALTER TABLE ACL ADD COLUMN Creator integer NOT NULL DEFAULT 0;
+ALTER TABLE ACL ADD COLUMN Created TIMESTAMP NULL;
+ALTER TABLE ACL ADD COLUMN LastUpdatedBy integer NOT NULL DEFAULT 0;
+ALTER TABLE ACL ADD COLUMN LastUpdated TIMESTAMP NULL;

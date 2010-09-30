@@ -91,8 +91,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(25) 'RightName'.
   varchar(25) 'ObjectType'.
   int(11) 'ObjectId'.
-  int(11) 'DelegatedBy'.
-  int(11) 'DelegatedFrom'.
 
 =cut
 
@@ -107,8 +105,6 @@ sub Create {
                 RightName => '',
                 ObjectType => '',
                 ObjectId => '0',
-                DelegatedBy => '0',
-                DelegatedFrom => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -117,8 +113,6 @@ sub Create {
                          RightName => $args{'RightName'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
-                         DelegatedBy => $args{'DelegatedBy'},
-                         DelegatedFrom => $args{'DelegatedFrom'},
 );
 
 }
@@ -224,37 +218,37 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 DelegatedBy
+=head2 Creator
 
-Returns the current value of DelegatedBy. 
-(In the database, DelegatedBy is stored as int(11).)
-
-
-
-=head2 SetDelegatedBy VALUE
-
-
-Set DelegatedBy to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, DelegatedBy will be stored as a int(11).)
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
 
 
 =cut
 
 
-=head2 DelegatedFrom
+=head2 Created
 
-Returns the current value of DelegatedFrom. 
-(In the database, DelegatedFrom is stored as int(11).)
-
-
-
-=head2 SetDelegatedFrom VALUE
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
 
 
-Set DelegatedFrom to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, DelegatedFrom will be stored as a int(11).)
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
 
 
 =cut
@@ -276,10 +270,14 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         ObjectId => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        DelegatedBy => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        DelegatedFrom => 
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

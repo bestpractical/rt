@@ -103,13 +103,12 @@ while ( my $ace = $ACLObj->Next ) {
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
     $ACLObj->OrderBy(FIELD=>'RightName'); 
 
-    if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
+    eval {
         %Rights = %{$Object->AvailableRights};
-    } 
-
-        else {
-                %Rights = ( loc('System Error') => loc("No rights found") );
-        }
+    };
+    if ($@) {
+        %Rights = ( loc('System Error') => loc("No rights found") );
+    }
         
     $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;
 </%INIT>
