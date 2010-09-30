@@ -551,15 +551,11 @@ return that. if it has no type, return group.
 
 sub _GetPrincipalTypeForACL {
     my $self = shift;
-    my $type;    
     if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
-        $type = $self->Object->Type;
+        return $self->Object->Type;
+    } else {
+        return $self->PrincipalType;
     }
-    else {
-        $type = $self->PrincipalType;
-    }
-
-    return($type);
 }
 
 
