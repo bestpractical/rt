@@ -76,6 +76,7 @@
     <& /Ticket/Elements/ShowHistory ,
           Ticket => $TicketObj,
           Tickets => $Tickets,
+          Transactions => $transactions,
           Collapsed => $ARGS{'Collapsed'},
           ShowHeaders => $ARGS{'ShowHeaders'},
           Attachments => $attachments,
@@ -202,6 +203,8 @@ $m->comp(
     ARGSRef     => \%ARGS
 );
 
+# Get the transactoins before the attachments, for great ACL justice
+my $transactions = $m->comp('Elements/FindTransactions',Ticket => $TicketObj, Tickets => $Tickets || undef);
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
 

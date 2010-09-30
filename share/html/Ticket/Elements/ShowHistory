@@ -104,7 +104,7 @@ while ( my $Transaction = $Transactions->Next ) {
 
    
     my $IsLastTransaction = 0;
-    if ( $OldestFirst ) {
+    if ( RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} )){
         $IsLastTransaction = $Transactions->IsLast;
     } else {
         $IsLastTransaction = 1 if ( $i == 1 );
@@ -135,25 +135,9 @@ $m->flush_buffer();
 </div>
 % }
 <%INIT>
-my $Transactions = RT::Transactions->new($session{'CurrentUser'});
-if ($Tickets) {
-    while (my $t = $Tickets->Next) {
-        $Transactions->LimitToTicket($t->id);
-    }
-} else {
-    $Transactions = $Ticket->Transactions;
-}
-
-
-my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
-my $SortOrder = $OldestFirst? 'ASC': 'DESC';
-$Transactions->OrderByCols( { FIELD => 'Created',
-                              ORDER => $SortOrder },
-                            { FIELD => 'id',
-                              ORDER => $SortOrder },
-                          );
 
 my $i;
+$Transactions ||= $m->comp('/Ticket/Elements/FindTransactions',Ticket => $Ticket, Tickets => $Tickets || undef);
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
@@ -162,6 +146,7 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 $URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
 $Tickets => undef
+$Transactions => undef
 $Attachments => undef
 $AttachmentContent => undef
 $ShowHeaders => undef
