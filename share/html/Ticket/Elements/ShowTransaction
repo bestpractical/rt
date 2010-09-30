@@ -69,7 +69,7 @@
   </div>
 
     <div class="content">
-% if ( $type_class eq 'message') {
+% if ( $type_class eq 'message' && $Transaction->ObjectType eq 'RT::Ticket' ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
