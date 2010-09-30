@@ -481,12 +481,11 @@ sub RolesWithRight {
         EquivObjects        => [],
         @_
     );
-    my $right = $args{'Right'};
 
     my $query =
         "SELECT DISTINCT PrincipalType FROM ACL"
-        # Only find superuser or rights with the name $right
-        ." WHERE ( RightName = '$right' "
+        # Only find superuser or rights with the requested right
+        ." WHERE ( RightName = '".$args{'Right'}."' "
         # Check SuperUser if we were asked to
         . ($args{'IncludeSuperusers'}? "OR RightName = 'SuperUser' " : '' )
         .")"
