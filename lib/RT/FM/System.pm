@@ -99,7 +99,7 @@ sub AvailableRights {
     my $classrights = $class->AvailableRights();
     my $CustomField = RT::CustomField->new($RT::SystemUser);
     my $cfrights = $CustomField->AvailableRights();
-    my %rights = (%{$cfrights}, %{$classrights});
+    my %rights = (%{$RIGHTS}, %{$cfrights}, %{$classrights});
     
     return(\%rights);
 }
