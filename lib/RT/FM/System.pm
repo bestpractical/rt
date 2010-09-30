@@ -82,10 +82,22 @@ $RIGHTS = {
 };
 
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
+__PACKAGE__->AddRights(%$RIGHTS);
 
+=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
+
+Adds the given rights to the list of possible rights.  This method
+should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRights {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHTS = { %$RIGHTS, %new };
+    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
+                                      map { lc($_) => $_ } keys %new);
+}
 
 =head2 AvailableRights
 
