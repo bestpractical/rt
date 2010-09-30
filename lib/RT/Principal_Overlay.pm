@@ -513,10 +513,9 @@ sub RolesWithRight {
     $query .= " AND (". join( ' OR ', @object_clauses ) .")"
         if @object_clauses;
 
-    my $dbh = $RT::Handle->dbh;
-    my $roles = $dbh->selectcol_arrayref($query);
+    my $roles = $RT::Handle->dbh->selectcol_arrayref($query);
     unless ( $roles ) {
-        $RT::Logger->warning( $dbh->errstr );
+        $RT::Logger->warning( $RT::Handle->dbh->errstr );
         return ();
     }
     return @$roles;
