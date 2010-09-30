@@ -123,7 +123,7 @@ our %FIELD_METADATA = (
     LastUpdated      => [ 'DATE'            => 'LastUpdated', ], #loc_left_pair
     Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
     Subject          => [ 'STRING', ], #loc_left_pair
-    Content          => [ 'TRANSFIELD', ], #loc_left_pair
+    Content          => [ 'TRANSCONTENT', ], #loc_left_pair
     ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
     Filename         => [ 'TRANSFIELD', ], #loc_left_pair
     TransactionDate  => [ 'TRANSDATE', ], #loc_left_pair
@@ -156,6 +156,7 @@ our %dispatch = (
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
     TRANSFIELD      => \&_TransLimit,
+    TRANSCONTENT    => \&_TransContentLimit,
     TRANSDATE       => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
@@ -677,16 +678,43 @@ sub _TransDateLimit {
 
 =head2 _TransLimit
 
-Limit based on the Content of a transaction or the ContentType.
-
-Meta Data:
-  none
+Limit based on the ContentType or the Filename of a transaction.
 
 =cut
 
 sub _TransLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
 
-    # Content, ContentType, Filename
+    my $txn_alias = $self->JoinTransactions;
+    unless ( defined $self->{_sql_trattachalias} ) {
+        $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
+            ALIAS1 => $txn_alias,
+            FIELD1 => 'id',
+            TABLE2 => 'Attachments',
+            FIELD2 => 'TransactionId',
+        );
+    }
+
+    $self->_SQLLimit(
+        %rest,
+        ALIAS         => $self->{_sql_trattachalias},
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+    );
+}
+
+=head2 _TransContentLimit
+
+Limit based on the Content of a transaction.
+
+=cut
+
+sub _TransContentLimit {
+
+    # Content search
 
     # If only this was this simple.  We've got to do something
     # complicated here:
@@ -732,36 +760,25 @@ sub _TransLimit {
     }
 
     #Search for the right field
-    if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
-        $self->_OpenParen;
+    $self->_OpenParen;
+    $self->_SQLLimit(
+        %rest,
+        ALIAS         => $self->{_sql_trattachalias},
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+    );
+    if ( RT->Config->Get('DontSearchFileAttachments') ) {
         $self->_SQLLimit(
-			%rest,
-			ALIAS         => $self->{_sql_trattachalias},
-			FIELD         => $field,
-			OPERATOR      => $op,
-			VALUE         => $value,
-			CASESENSITIVE => 0,
-		       );
-        $self->_SQLLimit(
-			ENTRYAGGREGATOR => 'AND',
-			ALIAS           => $self->{_sql_trattachalias},
-			FIELD           => 'Filename',
-			OPERATOR        => 'IS',
-			VALUE           => 'NULL',
-		       );
-        $self->_CloseParen;
-    } else {
-        $self->_SQLLimit(
-			%rest,
-			ALIAS         => $self->{_sql_trattachalias},
-			FIELD         => $field,
-			OPERATOR      => $op,
-			VALUE         => $value,
-			CASESENSITIVE => 0,
+            ENTRYAGGREGATOR => 'AND',
+            ALIAS           => $self->{_sql_trattachalias},
+            FIELD           => 'Filename',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
         );
     }
-
-
+    $self->_CloseParen;
 }
 
 =head2 _WatcherLimit
