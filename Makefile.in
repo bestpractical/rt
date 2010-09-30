@@ -175,17 +175,12 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-validator
 
 
-ETC_FILES		=	acl.Informix \
-				acl.Pg \
+ETC_FILES		=	acl.Pg \
 				acl.Oracle \
 				acl.mysql \
-				acl.Sybase \
-				schema.Informix \
 				schema.Pg \
 				schema.Oracle \
-				schema.mysql-4.0 \
-				schema.mysql-4.1 \
-				schema.Sybase \
+				schema.mysql \
 				schema.SQLite \
 				initialdata
 
@@ -197,9 +192,7 @@ WEB_HANDLER		=	@WEB_HANDLER@
 
 #
 # DB_TYPE defines what sort of database RT trys to talk to
-# "mysql" is known to work.
-# "Pg" is known to work
-# "Informix" is known to work
+# "mysql", "Oracle", "Pg", and "SQLite" are known to work.
 
 DB_TYPE			=	@DB_TYPE@
 
@@ -211,7 +204,6 @@ DB_TYPE			=	@DB_TYPE@
 # For mysql, you probably want 'root'
 # For Pg, you probably want 'postgres' 
 # For Oracle, you want 'system'
-# For Informix, you want 'informix'
 
 DB_DBA			=	@DB_DBA@
 
