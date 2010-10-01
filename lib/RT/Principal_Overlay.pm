@@ -411,8 +411,6 @@ sub _HasRoleRight {
     my @roles = $self->RolesWithRight(%args);
     return 0 unless @roles;
 
-    my $right = $args{'Right'};
-
     my $query = "SELECT Groups.id "
         . "FROM Groups, Principals, CachedGroupMembers WHERE "
 
