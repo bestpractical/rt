@@ -147,3 +147,13 @@ li.category ~ li.category {
     border-color: #aaa !important;
 }
 
+.rights-editor .rightname {
+    color: #888;
+    font-size: 0.9em;
+
+    position: absolute;
+    right: 1em;
+    margin-top: 0.3em;
+
+    text-align: right;
+}

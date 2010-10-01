@@ -71,6 +71,7 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
         <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
           <% loc($available_rights{$right}) %>
         </label>
+        <span class="rightname"><% $right %></span>
       </li>
 %     }
     </ul>
