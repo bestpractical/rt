@@ -160,44 +160,49 @@ if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal d
 
 sub LimitToPrincipal {
     my $self = shift;
-    my %args = ( Type                               => undef,
-                 Id                                 => undef,
+    my %args = ( Type                   => undef,
+                 Id                     => undef,
                  IncludeGroupMembership => undef,
-                 @_ );
+                 @_
+               );
     if ( $args{'IncludeGroupMembership'} ) {
         my $cgm = $self->NewAlias('CachedGroupMembers');
         $self->Join( ALIAS1 => 'main',
                      FIELD1 => 'PrincipalId',
                      ALIAS2 => $cgm,
-                     FIELD2 => 'GroupId' );
+                     FIELD2 => 'GroupId'
+                   );
         $self->Limit( ALIAS           => $cgm,
                       FIELD           => 'MemberId',
                       OPERATOR        => '=',
                       VALUE           => $args{'Id'},
-                      ENTRYAGGREGATOR => 'OR' );
-    }
-    else {
+                      ENTRYAGGREGATOR => 'OR'
+                    );
+    } else {
         if ( defined $args{'Type'} ) {
             $self->Limit( FIELD           => 'PrincipalType',
                           OPERATOR        => '=',
                           VALUE           => $args{'Type'},
-                          ENTRYAGGREGATOR => 'OR' );
+                          ENTRYAGGREGATOR => 'OR'
+                        );
         }
-    # if the principal id points to a user, we really want to point
-    # to their ACL equivalence group. The machinations we're going through
-    # lead me to start to suspect that we really want users and groups
-    # to just be the same table. or _maybe_ that we want an object db.
-    my $princ = RT::Principal->new(RT->SystemUser);
-    $princ->Load($args{'Id'});
-    if ($princ->PrincipalType eq 'User') {
-    my $group = RT::Group->new(RT->SystemUser);
-        $group->LoadACLEquivalenceGroup($princ);
-        $args{'Id'} = $group->PrincipalId;
-    }
+
+        # if the principal id points to a user, we really want to point
+        # to their ACL equivalence group. The machinations we're going through
+        # lead me to start to suspect that we really want users and groups
+        # to just be the same table. or _maybe_ that we want an object db.
+        my $princ = RT::Principal->new( RT->SystemUser );
+        $princ->Load( $args{'Id'} );
+        if ( $princ->PrincipalType eq 'User' ) {
+            my $group = RT::Group->new( RT->SystemUser );
+            $group->LoadACLEquivalenceGroup($princ);
+            $args{'Id'} = $group->PrincipalId;
+        }
         $self->Limit( FIELD           => 'PrincipalId',
                       OPERATOR        => '=',
                       VALUE           => $args{'Id'},
-                      ENTRYAGGREGATOR => 'OR' );
+                      ENTRYAGGREGATOR => 'OR'
+                    );
     }
 }
 
