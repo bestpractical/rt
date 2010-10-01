@@ -122,6 +122,7 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <div>
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
+</div>
 <%method NewReminder>
 <%args>
 $Ticket
