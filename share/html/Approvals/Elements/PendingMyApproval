@@ -102,6 +102,7 @@ foreach ($tickets, $group_tickets) {
 	$created_after->Set( Format => 'unknown', Value => $ARGS{'CreatedAfter'} );
 	$_->LimitCreated( OPERATOR => ">=", VALUE => $created_after->ISO );
     }
+    $_->OrderBy( FIELD => 'id' );
 }
 
 </%init>
