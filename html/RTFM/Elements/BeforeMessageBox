@@ -133,6 +133,10 @@
 </table>
 
 <%init>
+my $skip = 0;
+$m->comp('/Elements/Callback', _CallbackName => "Init", skip => \$skip, Queue => $ARGS{QueueObj});
+return if $skip;
+
 my $name_prefix = '';
 if ( $ARGS{'MessageBoxName'} ) {
     $name_prefix = $ARGS{'MessageBoxName'} .'-';
