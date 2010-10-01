@@ -74,7 +74,11 @@ unless ( $AddPrincipal ) {
 
 <script type="text/javascript">
   jQuery(function() {
-      jQuery(".rights-editor").tabs();
+      jQuery(".rights-editor").tabs({
+          select: function(ev, ui) {
+              window.location.hash = ui.tab.hash;
+          }
+      });
       jQuery(".rights-editor .category-tabs").tabs();
   });
 </script>
