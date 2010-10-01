@@ -461,11 +461,11 @@ set of objects. Takes Right, EquiveObjects,
 IncludeSystemRights and IncludeSuperusers arguments.
 
 IncludeSystemRights is true by default, rights
-granted on system level are not accouned when option
-is set to false value.
+granted systemwide are ignored when IncludeSystemRights
+is set to a false value.
 
 IncludeSuperusers is true by default, SuperUser right
-is not checked if it's set to false value.
+is not checked if it's set to a false value.
 
 =cut
 
