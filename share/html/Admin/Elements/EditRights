@@ -104,7 +104,7 @@ for my $category (@$Principals) {
 % if ( $AddPrincipal ) {
     <li class="category"><&|/l&>Add</&> <% loc($AddPrincipal) %></li>
     <li>
-      <a href="#acl-addprincipal">
+      <a href="#acl-AddPrincipal">
         <input type="text" value=""
                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
@@ -224,16 +224,16 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 if ( $AddPrincipal ) {
     my $acldesc = join '-', 'addprincipal', ref($Context), $Context->Id;
 </%perl>
-  <div id="acl-addprincipal">
+  <div id="acl-AddPrincipal">
     <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
     <div class="category-tabs">
       <ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#acl-addprincipal-<% $category %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+        <li><a href="#acl-AddPrincipal-<% $category %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
 % }
       </ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-    <div id="acl-addprincipal-<% $category %>">
+    <div id="acl-AddPrincipal-<% $category %>">
     <ul class="rights-list">
 %     for my $right (sort @{$categories{$category}}) {
       <li>
