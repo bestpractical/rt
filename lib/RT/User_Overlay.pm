@@ -56,10 +56,7 @@
 
 =head1 DESCRIPTION
 
-
 =head1 METHODS
-
-
 
 =cut
 
@@ -143,15 +140,11 @@ sub Create {
     if ($args{'CryptedPassword'} ) {
         $args{'Password'} = $args{'CryptedPassword'};
         delete $args{'CryptedPassword'};
-    }
-    elsif ( !$args{'Password'} ) {
+    } elsif ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
-    }
-    elsif ( length( $args{'Password'} ) < RT->Config->Get('MinimumPasswordLength') ) {
+    } elsif ( length( $args{'Password'} ) < RT->Config->Get('MinimumPasswordLength') ) {
         return ( 0, $self->loc("Password needs to be at least [_1] characters long",RT->Config->Get('MinimumPasswordLength')) );
-    }
-
-    else {
+    } else {
         $args{'Password'} = $self->_GeneratePassword($args{'Password'});
     }
 
@@ -169,8 +162,7 @@ sub Create {
 
         my ($val, $message) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
         return (0, $message) unless ( $val );
-    }
-    else {
+    } else {
         $RT::Logger->warning( "$self couldn't check for pre-existing users");
     }
 
@@ -246,7 +238,7 @@ sub Create {
     }
 
 
-    my ($ac_id, $ac_msg) = $access_class->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
+    my ($ac_id, $ac_msg) = $access_class->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);
 
     unless ($ac_id) {
         $RT::Logger->crit("Could not add user to Privileged or Unprivileged group on user creation. Aborted");
@@ -257,7 +249,7 @@ sub Create {
 
 
     if ( $record_transaction ) {
-    $self->_NewTransaction( Type => "Create" );
+        $self->_NewTransaction( Type => "Create" );
     }
 
     $RT::Handle->Commit;
@@ -268,7 +260,7 @@ sub Create {
 =head2 SetPrivileged BOOL
 
 If passed a true value, makes this user a member of the "Privileged"  PseudoGroup.
-Otherwise, makes this user a member of the "Unprivileged" pseudogroup. 
+Otherwise, makes this user a member of the "Unprivileged" pseudogroup.
 
 Returns a standard RT tuple of (val, msg);
 
@@ -319,14 +311,13 @@ sub _SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);  
+        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
             return (1, $self->loc("That user is now privileged"));
         } else {
             return (0, $msg);
         }
-    }
-    else {
+    } else {
         if ($unpriv->HasMember($principal)) {
             #$RT::Logger->debug("That user is already unprivileged");
             return (0,$self->loc("That user is already unprivileged"));
@@ -340,7 +331,7 @@ sub _SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);  
+        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
             return (1, $self->loc("That user is now unprivileged"));
         } else {
@@ -361,8 +352,7 @@ sub Privileged {
     $priv->LoadSystemInternalGroup('Privileged');
     if ( $priv->HasMember( $self->PrincipalId ) ) {
         return(1);
-    }
-    else {
+    } else {
         return(undef);
     }
 }
@@ -379,14 +369,14 @@ sub _BootstrapCreate {
     $args{'Password'} = '*NO-PASSWORD*';
 
 
-    $RT::Handle->BeginTransaction(); 
+    $RT::Handle->BeginTransaction();
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal Id for it.
     my $principal = RT::Principal->new($self->CurrentUser);
     my $principal_id = $principal->Create(PrincipalType => 'User', ObjectId => '0');
     $principal->__Set(Field => 'ObjectId', Value => $principal_id);
-   
+
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
@@ -410,7 +400,6 @@ sub _BootstrapCreate {
         return ( 0, $self->loc('Could not create user') );
     }
 
-                                    
     $RT::Handle->Commit();
 
     return ( $id, 'User created' );
@@ -439,11 +428,9 @@ sub Load {
 
     if ( $identifier !~ /\D/ ) {
         return $self->SUPER::LoadById( $identifier );
-    }
-    elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
+    } elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
         return $self->SUPER::LoadById( $identifier->Id );
-    }
-    else {
+    } else {
         return $self->LoadByCol( "Name", $identifier );
     }
 }
@@ -514,8 +501,7 @@ sub LoadOrCreateByEmail {
             if ( $self->Id ) {
                 $RT::Logger->error("Recovered from creation failure due to race condition");
                 $message = $self->loc("User loaded");
-            }
-            else {
+            } else {
                 $RT::Logger->crit("Failed to create user ". $email .": " .$message);
             }
         }
@@ -526,8 +512,8 @@ sub LoadOrCreateByEmail {
 
 =head2 ValidateEmailAddress ADDRESS
 
-Returns true if the email address entered is not in use by another user or is 
-undef or ''. Returns false if it's in use. 
+Returns true if the email address entered is not in use by another user or is
+undef or ''. Returns false if it's in use.
 
 =cut
 
@@ -552,8 +538,7 @@ sub ValidateEmailAddress {
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
         return ( 0, $self->loc('Email address in use') );
-    }
-    else {    #it's a valid email address
+    } else {    #it's a valid email address
         return (1);
     }
 }
@@ -686,7 +671,7 @@ sub SetRandomPassword {
 
     my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
-    # If we have "notify user on 
+    # If we have "notify user on
 
     my ( $val, $msg ) = $self->SetPassword($pass);
 
@@ -700,10 +685,10 @@ sub SetRandomPassword {
 
 =head3 ResetPassword
 
-Returns status, [ERROR or new password].  Resets this user\'s password to
-a randomly generated pronouncable password and emails them, using a 
+Returns status, [ERROR or new password].  Resets this user's password to
+a randomly generated pronouncable password and emails them, using a
 global template called "RT_PasswordChange", which can be overridden
-with global templates "RT_PasswordChange_Privileged" or "RT_PasswordChange_NonPrivileged" 
+with global templates "RT_PasswordChange_Privileged" or "RT_PasswordChange_NonPrivileged"
 for privileged and Non-privileged users respectively.
 
 =cut
@@ -726,12 +711,11 @@ sub ResetPassword {
         Arguments => {
             NewPassword => $pass,
         },
-        );
+    );
 
     if ($ret) {
         return ( 1, $self->loc('New password notification sent') );
-    }
-    else {
+    } else {
         return ( 0, $self->loc('Notification could not be sent') );
     }
 
@@ -764,12 +748,11 @@ sub SafeSetPassword {
         return (0, $self->loc('You can not set password.') .' '. $cond{'Reason'} );
     }
 
-    my $error = '';    
+    my $error = '';
     if ( $cond{'RequireCurrent'} && !$self->CurrentUser->IsPassword($args{'Current'}) ) {
         if ( defined $args{'Current'} && length $args{'Current'} ) {
             $error = $self->loc("Please enter your current password correctly.");
-        }
-        else {
+        } else {
             $error = $self->loc("Please enter your current password.");
         }
     } elsif ( $args{'New'} ne $args{'Confirmation'} ) {
@@ -786,7 +769,7 @@ sub SafeSetPassword {
 
 =head3 SetPassword
 
-Takes a string. Checks the string's length and sets this user's password 
+Takes a string. Checks the string's length and sets this user's password
 to that string.
 
 =cut
@@ -801,19 +784,16 @@ sub SetPassword {
 
     if ( !$password ) {
         return ( 0, $self->loc("No password set") );
-    }
-    elsif ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
+    } elsif ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
         return ( 0, $self->loc("Password needs to be at least [_1] characters long", RT->Config->Get('MinimumPasswordLength')) );
-    }
-    else {
+    } else {
         my $new = !$self->HasPassword;
         $password = $self->_GeneratePassword($password);
         my ( $val, $msg ) = $self->_Set(Field => 'Password', Value => $password);
         if ($val) {
             return ( 1, $self->loc("Password set") ) if $new;
             return ( 1, $self->loc("Password changed") );
-        }
-        else {
+        } else {
             return ( $val, $msg );
         }
     }
@@ -854,9 +834,9 @@ sub _GeneratePasswordBase64 {
 }
 
 =head3 HasPassword
-                                                                                
-Returns true if the user has a valid password, otherwise returns false.         
-                                                                               
+
+Returns true if the user has a valid password, otherwise returns false.
+
 =cut
 
 sub HasPassword {
@@ -881,7 +861,7 @@ sub IsPassword {
 
     #TODO there isn't any apparent way to legitimately ACL this
 
-    # RT does not allow null passwords 
+    # RT does not allow null passwords
     if ( ( !defined($value) ) or ( $value eq '' ) ) {
         return (undef);
     }
@@ -896,7 +876,7 @@ sub IsPassword {
         return(undef);
      }
 
-    # generate an md5 password 
+    # generate an md5 password
     if ($self->_GeneratePassword($value) eq $self->__Value('Password')) {
         return(1);
     }
@@ -929,13 +909,11 @@ sub CurrentUserRequireToSetPassword {
     ) {
         $res{'CanSet'} = 0;
         $res{'Reason'} = $self->loc("External authentication enabled.");
-    }
-    elsif ( !$self->CurrentUser->HasPassword ) {
+    } elsif ( !$self->CurrentUser->HasPassword ) {
         if ( $self->CurrentUser->id == ($self->id||0) ) {
             # don't require current password if user has no
             $res{'RequireCurrent'} = 0;
-        }
-        else {
+        } else {
             $res{'CanSet'} = 0;
             $res{'Reason'} = $self->loc("Your password is not set.");
         }
@@ -1024,7 +1002,7 @@ If this flag is
 set, all password checks for this user will fail. All ACL checks for this
 user will fail. The user will appear in no user listings.
 
-=cut 
+=cut
 
 sub SetDisabled {
     my $self = shift;
@@ -1063,10 +1041,10 @@ sub Disabled {
     return $self->PrincipalObj->Disabled(@_);
 }
 
-=head2 PrincipalObj 
+=head2 PrincipalObj
 
 Returns the principal object for this user. returns an empty RT::Principal
-if there's no principal object matching this user. 
+if there's no principal object matching this user.
 The response is cached. PrincipalObj should never ever change.
 
 =cut
@@ -1096,7 +1074,7 @@ sub PrincipalObj {
 }
 
 
-=head2 PrincipalId  
+=head2 PrincipalId
 
 Returns this user's PrincipalId
 
@@ -1112,7 +1090,7 @@ sub PrincipalId {
 Takes a paramhash which can contain
 these items:
     GroupObj => RT::Group or Group => integer
-    Right => 'Right' 
+    Right => 'Right'
 
 
 Returns 1 if this user has the right specified in the paramhash for the Group
@@ -1162,8 +1140,10 @@ sub OwnGroups {
     my $self = shift;
     my $groups = RT::Groups->new($self->CurrentUser);
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember(PrincipalId => $self->Id, 
-            Recursively => 1);
+    $groups->WithMember(
+        PrincipalId => $self->Id,
+        Recursively => 1
+    );
     return $groups;
 }
 
@@ -1181,7 +1161,7 @@ sub HasRight {
 =head2 CurrentUserCanModify RIGHT
 
 If the user has rights for this object, either because
-he has 'AdminUsers' or (if he\'s trying to edit himself and the right isn\'t an 
+he has 'AdminUsers' or (if he's trying to edit himself and the right isn't an
 admin right) 'ModifySelf', return 1. otherwise, return undef.
 
 =cut
@@ -1194,8 +1174,8 @@ sub CurrentUserCanModify {
         return (1);
     }
 
-    #If the field is marked as an "administrators only" field, 
-    # don\'t let the user touch it.
+    #If the field is marked as an "administrators only" field,
+    # don't let the user touch it.
     elsif ( $self->_Accessible( $right, 'admin' ) ) {
         return (undef);
     }
@@ -1207,7 +1187,7 @@ sub CurrentUserCanModify {
         return (1);
     }
 
-    #If we don\'t have a good reason to grant them rights to modify
+    #If we don't have a good reason to grant them rights to modify
     # by now, they lose
     else {
         return (undef);
@@ -1216,7 +1196,7 @@ sub CurrentUserCanModify {
 }
 
 =head2 CurrentUserHasRight
-  
+
 Takes a single argument. returns 1 if $Self->CurrentUser
 has the requested right. returns undef otherwise
 
@@ -1263,8 +1243,7 @@ sub Preferences {
         for (keys %$default) {
             exists $content->{$_} or $content->{$_} = $default->{$_};
         }
-    }
-    elsif (defined $default) {
+    } elsif (defined $default) {
         $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
     }
     return $content;
@@ -1288,8 +1267,7 @@ sub SetPreferences {
     $attr->LoadByNameAndObject( Object => $self, Name => $name );
     if ( $attr->Id ) {
         return $attr->SetContent( $value );
-    }
-    else {
+    } else {
         return $self->AddAttribute( Name => $name, Content => $value );
     }
 }
@@ -1320,7 +1298,7 @@ sub WatchedQueues {
                                              FIELD2 => 'Instance',
                                            );
 
-    $watched_queues->Limit( 
+    $watched_queues->Limit(
                             ALIAS => $group_alias,
                             FIELD => 'Domain',
                             VALUE => 'RT::Queue-Role',
@@ -1358,7 +1336,7 @@ sub WatchedQueues {
                           );
 
     $RT::Logger->debug("WatchedQueues got " . $watched_queues->Count . " queues");
-    
+
     return $watched_queues;
 
 }
@@ -1374,9 +1352,9 @@ sub _Set {
         @_
     );
 
-    # Nobody is allowed to futz with RT_System or Nobody 
+    # Nobody is allowed to futz with RT_System or Nobody
 
-    if ( ($self->Id == RT->SystemUser->Id )  || 
+    if ( ($self->Id == RT->SystemUser->Id )  ||
          ($self->Id == RT->Nobody->Id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
@@ -1385,10 +1363,10 @@ sub _Set {
     }
 
     my $Old = $self->SUPER::_Value("$args{'Field'}");
-    
+
     my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
                       Value => $args{'Value'} );
-    
+
     #If we can't actually set the field to the value, don't record
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
@@ -1403,8 +1381,7 @@ sub _Set {
                                                TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->BriefDescription );
-    }
-    else {
+    } else {
         return ( $ret, $msg );
     }
 }
@@ -1429,15 +1406,14 @@ sub _Value {
 
     #If the user wants to see their own values, let them
     # TODO figure ouyt a better way to deal with this
-   elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
+    elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
         return ( $self->SUPER::_Value($field) );
     }
 
     #If the user has the admin users right, return the field
     elsif ( $self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
         return ( $self->SUPER::_Value($field) );
-    }
-    else {
+    } else {
         return (undef);
     }
 
@@ -1480,8 +1456,7 @@ sub PreferredKey
 
     if (@keys == 1) {
         $prefkey = $keys[0]->{'Fingerprint'};
-    }
-    else {
+    } else {
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
         $prefkey = $keys[0]->{'Fingerprint'};
@@ -1522,7 +1497,7 @@ sub SetPrivateKey {
         Name => 'PrivateKey',
         Content => $key,
     );
-    return ($status, $self->loc("Couldn't set private key"))    
+    return ($status, $self->loc("Couldn't set private key"))
         unless $status;
     return ($status, $self->loc("Unset private key"));
 }
@@ -1537,5 +1512,3 @@ sub BasicColumns {
 }
 
 1;
-
-
