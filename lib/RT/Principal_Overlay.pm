@@ -426,23 +426,22 @@ sub _HasRoleRight {
 # also, check to see if the right is being granted _directly_ to this principal,
 #  as is the case when we want to look up group rights
         . "AND Principals.id = CachedGroupMembers.GroupId "
-        . "AND CachedGroupMembers.MemberId = "
-        . $self->Id . " "
+        . "AND CachedGroupMembers.MemberId = " . $self->Id . " "
 
         . "AND (" . join( ' OR ', map "Groups.Type = '$_'", @roles ) . ")";
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj) ? ref($obj) : $obj;
-        my $id;
-        $id = eval { $obj->id };
 
         my $clause = "Groups.Domain = '$type-Role'";
 
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
         # if we want mysql 4.0 use indexes here. we MUST convert that
         # field to integer and drop this quotes.
-        $clause .= " AND Groups.Instance = '$id'" if $id;
+        if ( my $id = eval { $obj->id } ) {
+            $clause .= " AND Groups.Instance = '$id'";
+        }
         push @object_clauses, "($clause)";
     }
     $query .= " AND (" . join( ' OR ', @object_clauses ) . ")";
