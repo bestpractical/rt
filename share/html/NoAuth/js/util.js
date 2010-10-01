@@ -277,3 +277,8 @@ function ReplaceAllTextareas(encoded) {
         }
     }
 };
+
+function update_addprincipal_title(ev, ui) {
+    var h3 = jQuery("#acl-AddPrincipal h3");
+    h3.html( h3.text().replace(/: .+$/,'') + ": " + ui.item.value );
+}

@@ -112,6 +112,7 @@ for my $category (@$Principals) {
         <script type="text/javascript">
             jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").autocomplete({
                 source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
+                select: update_addprincipal_title
             });
         </script>
 % }
