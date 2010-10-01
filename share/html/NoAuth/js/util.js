@@ -213,67 +213,67 @@ function doOnLoad( js ) {
 }
 
 jQuery(function() {
-		jQuery(".ui-datepicker:not(.withtime)").datepicker( {
-            dateFormat: 'yy-mm-dd',
-            constrainInput: false
-        } );
+    jQuery(".ui-datepicker:not(.withtime)").datepicker( {
+        dateFormat: 'yy-mm-dd',
+        constrainInput: false
+    } );
 
-		jQuery(".ui-datepicker.withtime").datepicker( {
-            dateFormat: 'yy-mm-dd',
-            constrainInput: false,
-            onSelect: function( dateText, inst ) {
-                // trigger timepicker to get time
-                var button = document.createElement('input');
-                button.setAttribute('type',  'button');
-                jQuery(button).width('5em');
-                jQuery(button).insertAfter(this);
-                jQuery(button).timepickr({val: '00:00'});
-                var date_input = this;
+    jQuery(".ui-datepicker.withtime").datepicker( {
+        dateFormat: 'yy-mm-dd',
+        constrainInput: false,
+        onSelect: function( dateText, inst ) {
+            // trigger timepicker to get time
+            var button = document.createElement('input');
+            button.setAttribute('type',  'button');
+            jQuery(button).width('5em');
+            jQuery(button).insertAfter(this);
+            jQuery(button).timepickr({val: '00:00'});
+            var date_input = this;
 
-                jQuery(button).blur( function() {
-                    var time = jQuery(button).val();
-                    if ( ! time.match(/\d\d:\d\d/) ) {
-                        time = '00:00';
-                    }
-                    jQuery(date_input).val(  dateText + ' ' + time + ':00' );
-                    jQuery(button).remove();
-                } );
+            jQuery(button).blur( function() {
+                var time = jQuery(button).val();
+                if ( ! time.match(/\d\d:\d\d/) ) {
+                    time = '00:00';
+                }
+                jQuery(date_input).val(  dateText + ' ' + time + ':00' );
+                jQuery(button).remove();
+            } );
 
-                jQuery(button).focus();
-            }
-        } );
-	});
-
-    function ReplaceAllTextareas(encoded) {
-        var sAgent = navigator.userAgent.toLowerCase();
-        if (!FCKeditor_IsCompatibleBrowser() ||
-            sAgent.indexOf('iphone') != -1 ||
-            sAgent.indexOf('android') != -1 )
-            return false;
-
-        // replace all content and signature message boxes
-        var allTextAreas = document.getElementsByTagName("textarea");
-
-        for (var i=0; i < allTextAreas.length; i++) {
-            var textArea = allTextAreas[i];
-            if (jQuery(textArea).hasClass("messagebox")) {
-                // Turn the original plain text content into HTML
-                // if (encoded == 0) textArea.value = textArea.value .replace( /&/g, "&amp;") .replace( /</g, "&lt;") .replace( />/g, "&gt;") .replace( /\n/g, "\n<br />");
-                var FCKeditorEncoded = document.createElement('input');
-                FCKeditorEncoded.setAttribute('type', 'hidden');
-                FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-                FCKeditorEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(FCKeditorEncoded);
-
-                var typeField = document.createElement('input');
-                typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + 'Type');
-                typeField.setAttribute('value', 'text/html');
-                textArea.parentNode.appendChild(typeField);
-
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
-                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
-                oFCKeditor.ReplaceTextarea();
-            }
+            jQuery(button).focus();
         }
-    };
+    } );
+});
+
+function ReplaceAllTextareas(encoded) {
+    var sAgent = navigator.userAgent.toLowerCase();
+    if (!FCKeditor_IsCompatibleBrowser() ||
+        sAgent.indexOf('iphone') != -1 ||
+        sAgent.indexOf('android') != -1 )
+        return false;
+
+    // replace all content and signature message boxes
+    var allTextAreas = document.getElementsByTagName("textarea");
+
+    for (var i=0; i < allTextAreas.length; i++) {
+        var textArea = allTextAreas[i];
+        if (jQuery(textArea).hasClass("messagebox")) {
+            // Turn the original plain text content into HTML
+            // if (encoded == 0) textArea.value = textArea.value .replace( /&/g, "&amp;") .replace( /</g, "&lt;") .replace( />/g, "&gt;") .replace( /\n/g, "\n<br />");
+            var FCKeditorEncoded = document.createElement('input');
+            FCKeditorEncoded.setAttribute('type', 'hidden');
+            FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
+            FCKeditorEncoded.setAttribute('value', '1');
+            textArea.parentNode.appendChild(FCKeditorEncoded);
+
+            var typeField = document.createElement('input');
+            typeField.setAttribute('type', 'hidden');
+            typeField.setAttribute('name', textArea.name + 'Type');
+            typeField.setAttribute('value', 'text/html');
+            textArea.parentNode.appendChild(typeField);
+
+            var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
+            oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
+            oFCKeditor.ReplaceTextarea();
+        }
+    }
+};
