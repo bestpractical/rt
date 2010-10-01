@@ -87,26 +87,30 @@ Limit the ACL to rights for the object $object. It needs to be an RT::Record cla
 sub LimitToObject {
     my $self = shift;
     my $obj  = shift;
-    unless ( defined($obj)
-        && ref($obj)
-        && UNIVERSAL::can( $obj, 'id' )
-        && $obj->id )
-    {
-        return undef;
-    }
+
+    my $obj_type = ref($obj)||$obj;
+    my $obj_id = eval { $obj->id};
+
+    my $object_clause = 'possible_objects';
+    $self->_OpenParen($object_clause);
     $self->Limit(
+        SUBCLAUSE       => $object_clause,
         FIELD           => 'ObjectType',
         OPERATOR        => '=',
-        VALUE           => ref($obj),
-        ENTRYAGGREGATOR => 'OR'
+        VALUE           => (ref($obj)||$obj),
+        ENTRYAGGREGATOR => 'OR' # That "OR" applies to the separate objects we're searching on, not "Type Or ID"
     );
+    if ($obj_id) {
     $self->Limit(
+        SUBCLAUSE       => $object_clause,
         FIELD           => 'ObjectId',
         OPERATOR        => '=',
-        VALUE           => $obj->id,
-        ENTRYAGGREGATOR => 'OR',
+        VALUE           => $obj_id,
+        ENTRYAGGREGATOR => 'AND',
         QUOTEVALUE      => 0
     );
+    }
+    $self->_CloseParen($object_clause);
 
 }
 
