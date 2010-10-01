@@ -413,6 +413,7 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-email-group-admin
                  sbin/rt-server
+                 sbin/rt-fts-oracle
                  bin/fastcgi_server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi

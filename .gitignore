@@ -24,6 +24,7 @@ sbin/rt-dump-database
 sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin
+sbin/rt-fts-oracle
 sbin/rt-server
 sbin/rt-session-viewer
 sbin/rt-setup-database

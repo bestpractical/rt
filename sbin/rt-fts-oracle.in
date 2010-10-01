@@ -1,0 +1,420 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+no warnings 'once';
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            unless ($bin_path) {
+                if ( File::Spec->file_name_is_absolute(__FILE__) ) {
+                    $bin_path = ( File::Spec->splitpath(__FILE__) )[1];
+                }
+                else {
+                    require FindBin;
+                    no warnings "once";
+                    $bin_path = $FindBin::Bin;
+                }
+            }
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+=head1 NAME
+
+rt-fts-oracle - setup Oracle Text index for full text search
+
+=head1 USAGE
+
+    rt-fts-oracle --help
+    rt-fts-oracle --dba sysdba --dba-password 'secret'
+
+=head1 DESCRIPTION
+
+This utility grants CTXAPP role to RT's user and rights to execute functions
+from CTX_DDL package. Also, it creates several prefernces, functions and triggers
+all starting with 'rt_fts_' prefix in the name. After all an index is created.
+
+=cut
+
+use RT;
+RT::LoadConfig();
+
+my %DB = (
+    user           => $RT::DatabaseUser,
+    admin          => undef,
+    admin_password => undef,
+);
+
+my %OPT = (
+    help        => 0,
+);
+
+use Getopt::Long qw(GetOptions);
+GetOptions(
+    'h|help!'        => \$OPT{'help'},
+    'dba=s'          => \$DB{'admin'},
+    'dba-password=s' => \$DB{'admin_password'},
+);
+
+if ( $OPT{'help'} || !$DB{'admin'}) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage(
+        -message => "",
+        -exitval => $OPT{'help'}? 0 : 1,
+        -verbose => 99,
+        -sections => $OPT{'help'}? 'NAME|USAGE|DESCRIPTION|OPTIONS' : 'NAME|USAGE',
+    );
+}
+
+RT::Init();
+
+{
+    my $dbah = dba_handle();
+    do_print_error( $dbah => 'GRANT CTXAPP TO '. $DB{'user'} );
+    do_print_error( $dbah => 'GRANT EXECUTE ON CTXSYS.CTX_DDL TO '. $DB{'user'} );
+}
+
+my $dbh = $RT::Handle->dbh;
+$dbh->{'RaiseError'} = 1;
+$dbh->{'PrintError'} = 1;
+
+my $prefix = 'rt_fts_';
+
+our %PREFERENCES = (
+    datastore => {
+        type => 'DIRECT_DATASTORE',
+    },
+    filter => {
+        type => 'AUTO_FILTER',
+#        attributes => {
+#            timeout => 120, # seconds
+#            timeout_type => 'HEURISTIC', # or 'FIXED'
+#        },
+    },
+    lexer => {
+        type => 'WORLD_LEXER',
+    },
+    word_list => {
+        type => 'BASIC_WORDLIST',
+        attributes => {
+            stemmer => 'AUTO',
+            fuzzy_match => 'AUTO',
+#            fuzzy_score => undef,
+#            fuzzy_numresults => undef,
+#            substring_index => undef,
+#            prefix_index => undef,
+#            prefix_length_min => undef,
+#            prefix_length_max => undef,
+#            wlidcard_maxterms => undef,
+        },
+    },
+    'section_group' => {
+        type => 'NULL_SECTION_GROUP',
+    },
+
+    storage => {
+        type => 'BASIC_STORAGE',
+        attributes => {
+            R_TABLE_CLAUSE => 'lob (data) store as (cache)',
+            I_INDEX_CLAUSE => 'compress 2',
+        },
+    },
+);
+
+my @params = ();
+push @params, create_datastore();
+push @params, create_filter();
+push @params, create_lexer();
+push @params, create_word_list();
+push @params, create_stop_list();
+push @params, create_section_group();
+push @params, create_storage();
+
+my $index_params = join "\n", @params;
+do_error_is_ok( $dbh => "DROP INDEX ${prefix}index" );
+$dbh->do(
+    "CREATE INDEX ${prefix}index ON Attachments(Content)
+    indextype is ctxsys.context parameters('
+        $index_params
+    ')",
+);
+
+sub create_datastore {
+    return sprintf 'datastore %s', create_preference(
+        %{ $PREFERENCES{'datastore'} },
+        name => 'datastore',
+    );
+}
+
+sub create_filter {
+    my $res = '';
+    $res .= sprintf "format column %s\n", create_format_column();
+    $res .= sprintf 'filter %s', create_preference(
+        %{ $PREFERENCES{'filter'} },
+        name => 'filter',
+    );
+    return $res;
+}
+
+sub create_lexer {
+    return sprintf 'lexer %s', create_preference(
+        %{ $PREFERENCES{'lexer'} },
+        name => 'lexer',
+    );
+}
+
+sub create_word_list {
+    return sprintf 'wordlist %s', create_preference(
+        %{ $PREFERENCES{'word_list'} },
+        name => 'word_list',
+    );
+}
+
+sub create_stop_list {
+    my $file = shift || 'etc/stopwords/en.txt';
+
+    my $name = $prefix .'stop_list';
+    do_error_is_ok( $dbh => 'begin ctx_ddl.drop_stoplist(?); end;', $name );
+    
+    $dbh->do(
+        'begin ctx_ddl.create_stoplist(?, ?);  end;',
+        undef, $name, 'BASIC_STOPLIST'
+    );
+
+    open my $fh, '<:utf8', $file
+        or die "couldn't open file '$file': $!";
+    while ( my $word = <$fh> ) {
+        chomp $word;
+        $dbh->do(
+            'begin ctx_ddl.add_stopword(?, ?); end;',
+            undef, $name, $word
+        );
+    }
+    close $fh;
+    return sprintf 'stoplist %s', $name;
+}
+
+sub create_section_group {
+    my $name = $prefix .'section_group';
+    do_error_is_ok( $dbh => 'begin ctx_ddl.drop_section_group(?); end;', $name );
+    $dbh->do(
+        'begin ctx_ddl.create_section_group(?, ?);  end;',
+        undef, $name, $PREFERENCES{'section_group'}{'type'}
+    );
+    return sprintf 'section group %s', $name;
+}
+
+sub create_storage {
+    return sprintf 'storage %s', create_preference(
+        %{ $PREFERENCES{'storage'} },
+        name => 'storage',
+    );
+}
+
+sub create_format_column {
+    my $column_name = 'ContentOracleFormat';
+    unless (
+        $dbh->column_info(
+            undef, undef, uc('Attachments'), uc( $column_name )
+        )->fetchrow_array
+    ) {
+        $dbh->do(qq{
+            ALTER TABLE Attachments ADD $column_name VARCHAR2(10)
+        });
+    }
+
+    my $detect_format = qq{
+        CREATE OR REPLACE FUNCTION ${prefix}detect_format_simple(
+            parent IN NUMBER,
+            type IN VARCHAR2,
+            encoding IN VARCHAR2,
+            fname IN VARCHAR2
+        )
+        RETURN VARCHAR2
+        AS
+            format VARCHAR2(10);
+        BEGIN
+            format := CASE
+    };
+    if ( $RT::DontSearchFileAttachments ) {
+        $detect_format .= qq{
+                WHEN fname IS NOT NULL THEN 'ignore'
+        };
+    }
+    my $binary = $RT::DontSearchBinaryAttachments? 'ignore' : 'binary';
+    $detect_format .= qq{
+                WHEN type = 'text' THEN 'text'
+                WHEN type = 'text/rtf' THEN '$binary'
+                WHEN type LIKE 'text/%' THEN 'text'
+                WHEN type LIKE 'message/%' THEN 'text'
+                WHEN type LIKE 'multipart/%' THEN 'ignore'
+                WHEN type LIKE 'image/%' THEN 'ignore'
+                WHEN type LIKE 'audio/%' THEN 'ignore'
+                WHEN type LIKE 'video/%' THEN 'ignore'
+                WHEN type LIKE '%signature%' THEN 'ignore'
+                WHEN type LIKE '%pkcs7%' THEN 'ignore'
+                WHEN type LIKE '%compress%' THEN 'ignore'
+                WHEN type LIKE '%zip%' THEN 'ignore'
+                WHEN type LIKE '%tar%' THEN 'ignore'
+                WHEN type LIKE '%/octet-stream' THEN 'ignore'
+                ELSE '$binary'
+            END;
+            RETURN format;
+        END;
+    };
+    create_procedure( $detect_format );
+
+    $dbh->do(qq{
+        UPDATE Attachments
+        SET $column_name = ${prefix}detect_format_simple(
+            Parent,
+            ContentType, ContentEncoding,
+            Filename
+        )
+        WHERE $column_name IS NULL
+    });
+    $dbh->do(qq{
+        CREATE OR REPLACE TRIGGER ${prefix}set_format
+        BEFORE INSERT
+        ON Attachments
+        FOR EACH ROW
+        BEGIN
+            :new.$column_name := ${prefix}detect_format_simple(
+                :new.Parent,
+                :new.ContentType, :new.ContentEncoding,
+                :new.Filename
+            );
+        END;
+    });
+    return $column_name;
+}
+
+sub create_preference {
+    my %info = @_;
+    my $name = $prefix . $info{'name'};
+    do_error_is_ok( $dbh => 'begin ctx_ddl.drop_preference(?); end;', $name );
+    $dbh->do(
+        'begin ctx_ddl.create_preference(?, ?);  end;',
+        undef, $name, $info{'type'}
+    );
+    return $name unless $info{'attributes'};
+
+    while ( my ($attr, $value) = each %{ $info{'attributes'} } ) {
+        $dbh->do(
+            'begin ctx_ddl.set_attribute(?, ?, ?);  end;',
+            undef, $name, $attr, $value
+        );
+    }
+
+    return $name;
+}
+
+sub create_procedure {
+    my $text = shift;
+
+    my $status = $dbh->do($text, { RaiseError => 0 });
+
+    # Statement succeeded
+    return if $status;
+
+    if ( 6550 != $dbh->err ) {
+        # Utter failure
+        die $dbh->errstr;
+    }
+    else {
+        my $msg = $dbh->func( 'plsql_errstr' );
+        die $dbh->errstr if !defined $msg;
+        die $msg if $msg;
+    }
+}
+
+sub dba_handle {
+    $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
+    $ENV{'NLS_NCHAR'} = "AL32UTF8";
+    my $dsn = do { my $h = new RT::Handle; $h->BuildDSN; $h->DSN };
+    my $dbh = DBI->connect(
+        $dsn, $DB{admin}, $DB{admin_password},
+        { RaiseError => 1, PrintError => 1 },
+    );
+    unless ( $dbh ) {
+        die "Failed to connect to $dsn as user '$DB{admin}': ". $DBI::errstr;
+    }
+    return $dbh;
+}
+
+sub do_error_is_ok {
+    my $dbh = shift;
+    local $dbh->{'RaiseError'} = 0;
+    local $dbh->{'PrintError'} = 0;
+    return $dbh->do(shift, undef, @_);
+}
+
+sub do_print_error {
+    my $dbh = shift;
+    local $dbh->{'RaiseError'} = 0;
+    local $dbh->{'PrintError'} = 1;
+    return $dbh->do(shift, undef, @_);
+}
+
+=head1 AUTHOR
+
+Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>
+
+=cut
+
