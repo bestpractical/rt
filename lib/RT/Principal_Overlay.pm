@@ -255,11 +255,6 @@ sub HasRight {
         return 1;
     }
 
-    unless ( $args{'Right'} ) {
-        $RT::Logger->crit("HasRight called without a right");
-        return (undef);
-    }
-
     $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
     unless ( $args{'Right'} ) {
         $RT::Logger->error(
