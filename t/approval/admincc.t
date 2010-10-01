@@ -9,7 +9,7 @@ BEGIN {
 
 
 use RT;
-use RT::Test tests => 58;
+use RT::Test tests => 60;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );
@@ -236,12 +236,16 @@ $m->get_ok( $approval_link );
 $m_coo->get_ok( $approval_link );
 $m_ceo->get_ok( $approval_link );
 
-$m->content_like( qr/first approval.*second approval/s, 'cto: see both approvals' );
-$m_coo->content_like( qr/first approval.*second approval/s, 'coo: see both approvals' );
-$m_ceo->content_like( qr/first approval.*second approval/s, 'ceo: see both approvals' );
+$m->content_contains('first approval',  'cto: see both approvals' );
+$m->content_contains('second approval', 'cto: see both approvals' );
+
+$m_coo->content_contains('first approval',  'coo: see both approvals');
+$m_coo->content_contains('second approval', 'coo: see both approvals');
+
+$m_ceo->content_contains('first approval',  'ceo: see both approvals');
+$m_ceo->content_contains('second approval', 'ceo: see both approvals');
 
 # now let's approve the first one via cto
-$m->content_like( qr/first approval.*second approval/s, 'cto can see both approvals' );
 $m->submit_form(
     form_number => 3,
     fields      => { 'Approval-' . $first_approval->id . '-Action' => 'approve', },
