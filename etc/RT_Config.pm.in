@@ -2151,7 +2151,7 @@ a list of js files to be included in head
 
 Example:
 
-Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js/);
+Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js/);
 
 =cut
 
@@ -2159,6 +2159,7 @@ Set(@JSFilesInHead, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
+    jquery.tablesorter.min.js
     ui.timepickr.js
     titlebox-state.js
     util.js
@@ -2197,7 +2198,7 @@ production:
   edit RT's web ui components on the fly and have RT magically pick up
   your changes. (It's a big performance hit)
 
- * More to come
+* More to come
 
 =cut
 

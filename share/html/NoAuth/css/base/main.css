@@ -53,6 +53,7 @@
 @import "rights-editor.css";
 @import "theme-editor.css";
 @import "ticket.css";
+@import "tablesorter.css";
 
 % $m->callback(CallbackName => 'End');
 

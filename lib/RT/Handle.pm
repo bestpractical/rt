@@ -1050,6 +1050,70 @@ sub ACLEquivGroupId {
     return $equiv_group->Id;
 }
 
+=head2 QueryHistory
+
+Returns the SQL query history associated with this handle. The top level array
+represents a lists of request. Each request is a hash with metadata about the
+request (such as the URL) and a list of queries. You'll probably not be using this.
+
+=cut
+
+sub QueryHistory {
+    my $self = shift;
+
+    return $self->{QueryHistory};
+}
+
+=head2 AddRequestToHistory
+
+Adds a web request to the query history. It must be a hash with keys Path (a
+string) and Queries (an array reference of arrays, where elements are time,
+sql, bind parameters, and duration).
+
+=cut
+
+sub AddRequestToHistory {
+    my $self    = shift;
+    my $request = shift;
+
+    push @{ $self->{QueryHistory} }, $request;
+}
+
+=head2 Quote
+
+Returns the parameter quoted by DBI. B<You almost certainly do not need this.>
+Use bind parameters (C<?>) instead. This is used only outside the scope of interacting
+with the database.
+
+=cut
+
+sub Quote {
+    my $self = shift;
+    my $value = shift;
+
+    return $self->dbh->quote($value);
+}
+
+=head2 FillIn
+
+Takes a SQL query and an array reference of bind parameters and fills in the
+query's C<?> parameters.
+
+=cut
+
+sub FillIn {
+    my $self = shift;
+    my $sql  = shift;
+    my $bind = shift;
+
+    my $b = 0;
+
+    # is this regex sufficient?
+    $sql =~ s{\?}{$self->Quote($bind->[$b++])}eg;
+
+    return $sql;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();

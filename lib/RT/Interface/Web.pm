@@ -217,7 +217,9 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
     ShowRequestedPage($ARGS);
-    LogRecordedSQLStatements();
+    LogRecordedSQLStatements(RequestData => {
+        Path => $HTML::Mason::Commands::m->request_comp->path,
+    });
 
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
@@ -769,12 +771,20 @@ sub MaybeEnableSQLStatementLog {
 }
 
 sub LogRecordedSQLStatements {
+    my %args = @_;
+
     my $log_sql_statements = RT->Config->Get('StatementLog');
 
     return unless ($log_sql_statements);
 
     my @log = $RT::Handle->SQLStatementLog;
     $RT::Handle->ClearSQLStatementLog;
+
+    $RT::Handle->AddRequestToHistory({
+        %{ $args{RequestData} },
+        Queries => \@log,
+    });
+
     for my $stmt (@log) {
         my ( $time, $sql, $bind, $duration ) = @{$stmt};
         my @bind;

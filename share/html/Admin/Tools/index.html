@@ -45,11 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-my $title = loc('System Tools');
-</%init>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/ToolTabs, 
     current_tab => 'Admin/Tools/index.html',
     current_subtab => 'Admin/Tools/Configuration.html', 
     Title => $title &>
+<& /Elements/ListMenu, items => $tabs &>
+<%init>
+my $title = loc('System Tools');
+
+my $tabs = {
+        A => { title => loc('System Configuration'),
+               path => '/Admin/Tools/Configuration.html',
+               text => loc('Detailed information about your RT setup'),
+        },
+        B => { title => loc('SQL Queries'),
+               path => '/Admin/Tools/Queries.html',
+               text => loc('Browse the SQL queries made in this process'),
+        },
+        E => { title => loc('Shredder'),
+               path  => '/Admin/Tools/Shredder/',
+               text  => loc('Permanently wipeout data from RT'),
+        },
+};
+</%init>

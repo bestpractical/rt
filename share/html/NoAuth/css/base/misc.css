@@ -99,7 +99,12 @@ fieldset.cfedit {
     margin: 0;
 }
 
+.query-stacktrace-toggle {
+    float: right;
+}
+
 /* jQuery UI overrides */
 .ui-widget {
     font-family: arial,helvetica,sans-serif !important;
 }
+
