@@ -312,6 +312,7 @@ else {
 }
 
 
+$m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef => \%ARGS, Results => \@results );
 
 
 # If we have a user to modify, lets try. 
