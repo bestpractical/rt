@@ -748,6 +748,12 @@ sub _TransContentLimit {
 
     my ( $self, $field, $op, $value, %rest ) = @_;
 
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    unless ( $config->{'Enable'} ) {
+        $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
+        return;
+    }
+
     my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
         $self->{_sql_trattachalias} = $self->_SQLJoin(
@@ -759,16 +765,73 @@ sub _TransContentLimit {
         );
     }
 
-    #Search for the right field
     $self->_OpenParen;
-    $self->_SQLLimit(
-        %rest,
-        ALIAS         => $self->{_sql_trattachalias},
-        FIELD         => $field,
-        OPERATOR      => $op,
-        VALUE         => $value,
-        CASESENSITIVE => 0,
-    );
+    if ( $config->{'Indexed'} ) {
+        my $db_type = RT->Config->Get('DatabaseType');
+
+        my $alias;
+        if ( $config->{'Table'} ) {
+            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
+                TYPE   => 'LEFT',
+                ALIAS1 => $self->{'_sql_trattachalias'},
+                FIELD1 => 'id',
+                TABLE2 => $config->{'Table'},
+                FIELD2 => 'id',
+            );
+        } else {
+            $alias = $self->{'_sql_trattachalias'};
+        }
+
+        my $field = $config->{'Field'} || 'Content';
+        if ( $db_type eq 'Oracle' ) {
+            my $dbh = $RT::Handle->dbh;
+            $self->_SQLLimit(
+                %rest,
+                # XXX: Nasty hack
+                ALIAS         => 'CONTAINS( '. $self->{_sql_trattachalias},
+                FIELD         => $field . ', '. $dbh->quote($value) .')',
+                OPERATOR      => '>',
+                VALUE         => 0,
+                QUOTEVALUE    => 0,
+                CASESENSITIVE => 1,
+            );
+            # this is required to trick DBIx::SB's LEFT JOINS optimizer
+            # into deciding that join is redundant as it is
+            $self->_SQLLimit(
+                ENTRYAGGREGATOR => 'AND',
+                ALIAS           => $self->{_sql_trattachalias},
+                FIELD           => 'Content',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+            );
+        }
+        elsif ( $db_type eq 'Pg' ) {
+            my $dbh = $RT::Handle->dbh;
+            #XXX: handle negative searches
+            $self->_SQLLimit(
+                %rest,
+                ALIAS       => $alias,
+                FIELD       => $field,
+                OPERATOR    => '@@',
+                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                QUOTEVALUE  => 0,
+            );
+        }
+        else {
+            $RT::Logger->error( "Indexed full text search is not supported for $db_type" );
+            $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
+            return;
+        }
+    } else {
+        $self->_SQLLimit(
+            %rest,
+            ALIAS         => $self->{_sql_trattachalias},
+            FIELD         => $field,
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
+        );
+    }
     if ( RT->Config->Get('DontSearchFileAttachments') ) {
         $self->_SQLLimit(
             ENTRYAGGREGATOR => 'AND',
