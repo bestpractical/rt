@@ -359,7 +359,7 @@ Approver\'s notes: { $Notes }
 
 Greetings,
 
-Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
+Your ticket has been rejected by { eval { $Approver->Name } }.
 
 Approver\'s notes: { $Notes }
 '
