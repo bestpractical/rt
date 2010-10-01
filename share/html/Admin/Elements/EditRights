@@ -122,53 +122,11 @@ for my $category (@$Principals) {
   </ul>
 
 <%perl>
-# Find all our available rights...
-my (%available_rights, %categories);
-if ( blessed($Context) and $Context->can('AvailableRights') ) { 
-    %available_rights = %{$Context->AvailableRights};
-} else {
-    %available_rights = ( loc('System Error') => loc("No rights found") );
-}
-
-# ...and their categories
-if ( blessed($Context) and $Context->can('RightCategories') ) { 
-    my %right_categories = %{$Context->RightCategories};
-    
-    for my $right (keys %available_rights) {
-        push @{$categories{$right_categories{$right}}}, $right;
-    }
-}
-
-my %category_desc = (
-    'General' => 'General rights',
-    'Staff'   => 'Rights for Staff',
-    'Admin'   => 'Rights for Administrators',
-    'Status'  => 'Status changes',
-);
-
-my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
-
-# Find all the current rights
-my %current_rights;
-for my $collection (map { $_->[1] } @$Principals) {
-    while (my $group = $collection->Next) {
-        my $acls = RT::ACL->new($session{'CurrentUser'});
-        $acls->LimitToObject( $Context );
-        $acls->LimitToPrincipal( Id => $group->PrincipalId );
-
-        while ( my $ace = $acls->Next ) {
-            my $right = $ace->RightName;
-            $current_rights{$group->PrincipalId}->{$right} = 1;
-        }
-    }
-}
-
 # Now generate our rights panels for each principal
 for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
     while ( my $obj = $collection->Next ) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
-        my $acldesc = join '-', $obj->PrincipalId, ref($Context), $Context->Id;
         my $id = "acl-$name-" . $obj->PrincipalId;
         $id =~ s/[^a-zA-Z0-9\-]/_/g;
 </%perl>
@@ -191,66 +149,18 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 }
 </%perl>
     </h3>
-    <div class="category-tabs">
-      <ul>
-% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#<% "$id-$category" %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
-% }
-      </ul>
-% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-    <div id="<% "$id-$category" %>">
-    <ul class="rights-list">
-%     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
-      <li>
-        <input type="checkbox" class="checkbox"
-               name="SetRights-<% $acldesc %>"
-               id="SetRights-<% $acldesc %>-<% $right %>"
-               value="<% $right %>"
-               <% $current_rights{$obj->PrincipalId}->{$right} ? 'checked' : '' %> />
-        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
-          <% loc($available_rights{$right}) %>
-        </label>
-      </li>
-%     }
-    </ul>
-    </div>
-% }
-    </div>
-    <input type="hidden" name="CheckACL" value="<% $acldesc %>" />
+    <& EditRightsCategoryTabs, Context => $Context, Principal => $obj, id => $id &>
   </div>
 <%perl>
     }
 }
 
 if ( $AddPrincipal ) {
-    my $acldesc = join '-', 'addprincipal', ref($Context), $Context->Id;
 </%perl>
   <div id="acl-AddPrincipal">
     <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
-    <div class="category-tabs">
-      <ul>
-% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#acl-AddPrincipal-<% $category %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
-% }
-      </ul>
-% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-    <div id="acl-AddPrincipal-<% $category %>">
-    <ul class="rights-list">
-%     for my $right (sort @{$categories{$category}}) {
-      <li>
-        <input type="checkbox" class="checkbox"
-               name="SetRights-<% $acldesc %>"
-               id="SetRights-<% $acldesc %>-<% $right %>"
-               value="<% $right %>" />
-        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
-          <% loc($available_rights{$right}) %>
-        </label>
-      </li>
-%     }
-    </ul>
-    </div>
-% }
-  </div>
+    <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
   </div>
 % }
+
 </div>
