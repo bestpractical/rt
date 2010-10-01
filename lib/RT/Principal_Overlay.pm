@@ -301,7 +301,7 @@ sub HasRight {
     my $full_hashkey = join (";:;", $self->id, $args{'Right'});
     foreach ( @{ $args{'EquivObjects'} } ) {
         my $ref_id = $self->_ReferenceId($_);
-        $full_hashkey .= ";:;$ref_id";
+        $full_hashkey .= ";:;".$ref_id;
 
         my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
         my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
