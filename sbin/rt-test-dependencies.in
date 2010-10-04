@@ -259,7 +259,7 @@ Test::Email
 HTML::Form
 HTML::TokeParser
 WWW::Mechanize 1.52
-Test::WWW::Mechanize 1.16
+Test::WWW::Mechanize 1.30
 Module::Refresh 0.03
 Test::Expect 0.31
 XML::Simple
