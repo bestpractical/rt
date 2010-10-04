@@ -188,7 +188,7 @@ if ($Ticket) {
     $current_tab = "Ticket/Display.html?id=" . $id;
 
     if ( $can{'ModifyTicket'} or $can{'ReplyToTicket'} ) {
-        $actions->{'F'} = {
+        $actions->{'E'} = {
             title => loc('Reply'),
             path  => "Ticket/Update.html?Action=Respond;id=" . $id,
         };
@@ -258,7 +258,7 @@ if ($Ticket) {
     }
 
     if (   $can{'ModifyTicket'} || $can{'CommentOnTicket'}) {
-        $actions->{'E'} = {
+        $actions->{'F'} = {
             title => loc('Comment'),
             path  => "Ticket/Update.html?Action=Comment;id=" . $id,
         };
