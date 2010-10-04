@@ -191,8 +191,9 @@ my $render_attachment = sub {
         {
 
             my $content;
-            if ( $AttachmentContent->{ $message->id } ) {
-                $content = $AttachmentContent->{ $message->id }->Content;
+            # If we've cached the content, use it from there
+            if (my $x = $AttachmentContent->{ $Transaction->id }->{$message->id}) {
+                $content = $x->Content;
             }
             else {
                 $content = $message->Content;
