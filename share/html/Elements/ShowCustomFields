@@ -77,6 +77,7 @@
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object );
 <%INIT>
 $m->callback(
+    %ARGS,
     CallbackName => 'MassageCustomFields',
     Object => $Object,
     CustomFields => $CustomFields,
