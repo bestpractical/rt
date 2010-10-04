@@ -63,6 +63,7 @@
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
 
+% $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
 <br />
 
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>

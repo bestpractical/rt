@@ -108,6 +108,7 @@
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
     </table>
   </&>
+% $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj );
 </div>
 
 <div id="ticket-create-message">
