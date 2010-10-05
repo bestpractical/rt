@@ -69,12 +69,9 @@
 &>
 
 <div id="requestor-accordion">
-<%PERL>
-while ( my $requestor = $people->Next ) {
-    my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
-</%PERL>
 
-  <h3><a href="#"><% $name %></a></h3>
+% while ( my $requestor = $people->Next ) {
+  <h3><a href="#"><& /Elements/ShowUser, User => $requestor &></a></h3>
   <div class="details">
 
 %# Additional information about this user.  Empty by default.
