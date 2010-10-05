@@ -122,7 +122,7 @@ if ($ClassObj->Id()) {
 }
 
 #we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1 or (not defined $Enabled and $Create)) {
+if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 0;
 } else {
     $Disabled = 1;
