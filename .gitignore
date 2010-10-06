@@ -28,6 +28,7 @@ sbin/rt-fts-oracle
 sbin/rt-server
 sbin/rt-session-viewer
 sbin/rt-setup-database
+sbin/rt-setup-fulltext-index
 sbin/rt-shredder
 sbin/rt-test-dependencies
 sbin/rt-validator
