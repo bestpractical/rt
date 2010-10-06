@@ -165,7 +165,7 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 
     # Roll back any dangling transactions from a previous failed connection
-    $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+    $RT::Handle->ForceRollback() if $RT::Handle and $RT::Handle->TransactionDepth;
 
     MaybeEnableSQLStatementLog();
 

@@ -67,7 +67,8 @@ if ( exists $ARGS{'show_name'} ) {
     $ShowName = delete $ARGS{'show_name'};
 }
 
-my $use_user_logo = $RT::System->FirstAttribute('UserLogo');
+use Scalar::Util qw(blessed);
+my $use_user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : 0;
 
 </%INIT>
 <%ARGS>
