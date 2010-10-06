@@ -123,7 +123,16 @@ my @sys_searches;
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+
+        my $SearchType = 'Ticket';
+        if ((ref($search->Content)||'') eq 'HASH') {
+            $SearchType = $search->Content->{'SearchType'}
+                if $search->Content->{'SearchType'};
+        }
+        else {
+            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
+        }
+
         if ($object eq $sys && $SearchType eq 'Ticket') {
             push @items, ["system-$desc", $desc];
             push @sys_searches, [$desc, $search];
