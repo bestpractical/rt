@@ -44,3 +44,15 @@ CREATE TABLE FM_ObjectTopics (
   ObjectId int(11) NOT NULL default '0',
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE FM_ObjectClasses (
+  id int(11) NOT NULL auto_increment,
+  Class int(11) NOT NULL default '0',
+  ObjectType varchar(255) character set ascii NOT NULL default '',
+  ObjectId int(11) NOT NULL default '0',
+  Creator int(11) NOT NULL default '0',
+  Created datetime default NULL,
+  LastUpdatedBy int(11) NOT NULL default '0',
+  LastUpdated datetime default NULL,
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
