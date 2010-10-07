@@ -25,8 +25,6 @@ RT->Config->Set( DefaultSearchResultFormat => qq{
 
 use File::Spec ();
 use Cwd;
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
 
 use_ok('RT::Crypt::GnuPG');
 
@@ -35,7 +33,7 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
+                 homedir => RT::Test->gnupg_homedir,
                  passphrase => 'recipient',
                  'no-permission-warning' => undef,
                  'trust-model' => 'always');

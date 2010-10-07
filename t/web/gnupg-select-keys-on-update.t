@@ -10,7 +10,6 @@ plan skip_all => 'gpg executable is required.'
 plan tests => 85;
 
 use RT::Action::SendEmail;
-use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
@@ -22,7 +21,7 @@ RT->Config->Set( GnuPG =>
 );
 
 RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
+    homedir => RT::Test->gnupg_homedir,
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );

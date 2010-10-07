@@ -10,7 +10,6 @@ plan skip_all => 'gpg executable is required.'
 plan tests => 78;
 
 use RT::Action::SendEmail;
-use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
@@ -22,11 +21,10 @@ RT->Config->Set( GnuPG =>
 );
 
 RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
+    homedir => RT::Test->gnupg_homedir,
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 

@@ -11,15 +11,12 @@ plan tests => 196;
 
 use Digest::MD5 qw(md5_hex);
 
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
-
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
+                 homedir => RT::Test->gnupg_homedir,
                  passphrase => 'rt-test',
                  'no-permission-warning' => undef);
 

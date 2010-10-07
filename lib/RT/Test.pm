@@ -922,6 +922,14 @@ sub get_abs_relocatable_dir {
     }
 }
 
+sub gnupg_homedir {
+    my $self = shift;
+    File::Temp->newdir(
+        DIR => $tmp{directory},
+        CLEANUP => 0,
+    );
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key  = shift;

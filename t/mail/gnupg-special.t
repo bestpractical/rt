@@ -9,9 +9,6 @@ plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 plan tests => 11;
 
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
-
 # catch any outgoing emails
 RT::Test->set_mail_catcher;
 
@@ -20,7 +17,7 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
+                 homedir => RT::Test->gnupg_homedir,
                  'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
