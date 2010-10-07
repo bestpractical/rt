@@ -50,7 +50,6 @@ package RT::Interface::Web::Handler;
 use warnings;
 use strict;
 
-use HTML::Mason::PSGIHandler;
 use CGI qw/-private_tempfiles/;
 use MIME::Entity;
 use Text::Wrapper;
@@ -268,6 +267,8 @@ use Plack::Request;
 use Encode qw(is_utf8 encode_utf8);
 
 sub PSGIApp {
+    require HTML::Mason::CGIHandler;
+    require HTML::Mason::PSGIHandler;
     my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler');
     return sub {
         my $env = shift;
