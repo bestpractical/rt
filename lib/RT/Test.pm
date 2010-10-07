@@ -1110,6 +1110,53 @@ sub started_ok {
     return $self->$function( $variant, @_ );
 }
 
+sub start_plack_server {
+    my $self = shift;
+
+    require Plack::Loader;
+    my $plack_server = Plack::Loader->load
+        ('Standalone',
+         port => $port,
+         server_ready => sub {
+             kill 'USR1' => getppid();
+         });
+
+    my $pid = fork();
+    die "failed to fork" unless defined $pid;
+
+    if ($pid) {
+        # We are expecting a USR1 from the child process after it's
+        # ready to listen.
+        my $handled;
+        $SIG{USR1} = sub { $handled = 1};
+        sleep 15;
+        Test::More::diag "did not get expected USR1 for test server readiness"
+            unless $handled;
+        push @SERVERS, $pid;
+        my $Tester = Test::Builder->new;
+        $Tester->ok(1, @_);
+
+        return ("http://localhost:$port", RT::Test::Web->new);
+    } else {
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase;
+
+        # the attribute cache holds on to a stale dbh
+        delete $RT::System->{attributes};
+    }
+
+    require POSIX;
+    if ( $^O !~ /MSWin32/ ) {
+        POSIX::setsid()
+            or die "Can't start a new session: $!";
+    }
+
+    require RT::Interface::Web::Handler;
+    $plack_server->run(RT::Interface::Web::Handler->PSGIApp);
+    exit;
+}
+
 sub start_inline_server {
     my $self = shift;
 
