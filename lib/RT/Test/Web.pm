@@ -176,7 +176,7 @@ sub get_warnings {
     my $self = shift;
 
     # FIXME: need psgi mw for stashed warnings
-    if ($self->isa('Test::WWW::Mechanize::PSGI') || $ENV{'RT_TEST_WEB_HANDLER'} eq 'plack') {
+    if ($self->isa('Test::WWW::Mechanize::PSGI') || ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'plack') {
         Test::More::ok(1);
         return;
     }

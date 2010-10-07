@@ -1099,7 +1099,7 @@ sub started_ok {
 
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
-        if $rttest_opt{actual_server} && $ENV{'RT_TEST_WEB_HANDLER'} eq 'inline';
+        if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
     my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
     my ($server, $variant) = split /\+/, $which, 2;
 
