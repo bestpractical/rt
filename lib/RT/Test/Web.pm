@@ -174,6 +174,12 @@ sub goto_create_ticket {
 
 sub get_warnings {
     my $self = shift;
+
+    if ($self->isa('Test::WWW::Mechanize::PSGI')) {
+        Test::More::ok(1);
+        return;
+    }
+
     my $server_class = 'RT::Interface::Web::Standalone';
 
     my $url = $server_class->test_warning_path;
