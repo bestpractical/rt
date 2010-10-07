@@ -88,6 +88,7 @@ if ( $args{help} ) {
 # Set up defaults
 my %default = (
     'with-MASON' => 1,
+    'with-PSGI' => 1,
     'with-CORE' => 1,
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
@@ -228,6 +229,11 @@ Devel::StackTrace 1.19
 JSON
 JavaScript::Minifier
 IPC::Run3
+.
+
+$deps{'PSGI'} = [ text_to_hash( << '.') ];
+HTML::Mason::PSGIHandler
+Plack
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
