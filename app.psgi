@@ -56,46 +56,5 @@ if ($@) {
     die "failed to load bin/webmux.pl: $@";
 }
 
-use HTML::Mason::PSGIHandler;
-use RT::Interface::Web::Handler;
-use CGI::Emulate::PSGI;
-use Plack::Request;
+RT::Interface::Web::Handler->PSGIApp;
 
-use Encode qw(is_utf8 encode_utf8);
-
-my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler');
-my $handler = sub {
-    my $env = shift;
-    RT::ConnectToDatabase() unless RT->InstallMode;
-
-    my $req = Plack::Request->new($env);
-
-    unless ( $h->interp->comp_exists( $req->path_info ) ) {
-        my $path = $req->path_info;
-        $path .= '/' unless $path =~ m{/$};
-        $path .= 'index.html';
-        $env->{PATH_INFO} = $path
-            if $h->interp->comp_exists( $path );
-    }
-
-    my $ret;
-    {
-        # XXX: until we get rid of all $ENV stuff.
-        local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
-
-        $ret = $h->handle_psgi($env);
-    }
-    $RT::Logger->crit($@) if $@ && $RT::Logger;
-    warn $@ if $@ && !$RT::Logger;
-    RT::Interface::Web::Handler->CleanupRequest();
-    if ($ret->[2] ) {
-        # XXX: for now.  the out_method for mason can be more careful
-        # and perhaps even streamy.  this should also check for
-        # explicit encoding in Content-Type header.
-        for (@{$ret->[2]}) { 
-            $_ = encode_utf8($_)
-                if is_utf8($_);
-        }
-    }
-    return $ret;
-};

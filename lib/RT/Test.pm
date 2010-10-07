@@ -1099,6 +1099,16 @@ sub started_ok {
     return $self->$function( $variant, @_ );
 }
 
+sub start_inline_server {
+    my $self = shift;
+
+    require Test::WWW::Mechanize::PSGI;
+    unshift @RT::Test::Web::ISA, 'Test::WWW::Mechanize::PSGI';
+
+    Test::More::ok(1, "psgi test server ok");
+    return ("http://localhost:$port", RT::Test::Web->new);
+}
+
 sub start_standalone_server {
     my $self = shift;
 

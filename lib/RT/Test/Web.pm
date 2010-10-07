@@ -56,6 +56,20 @@ use base qw(Test::WWW::Mechanize);
 require RT::Test;
 require Test::More;
 
+sub new {
+    my ($class, @args) = @_;
+
+    if ($class->isa('Test::WWW::Mechanize::PSGI')) {
+        require RT::Interface::Web::Handler;
+        push @args, app => RT::Interface::Web::Handler->PSGIApp;
+    }
+
+    my $self = $class->SUPER::new(@args);
+    $self->cookie_jar(HTTP::Cookies->new);
+
+    return $self;
+}
+
 sub get_ok {
     my $self = shift;
     my $url = shift;

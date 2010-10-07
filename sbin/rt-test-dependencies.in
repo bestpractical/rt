@@ -234,6 +234,8 @@ IPC::Run3
 $deps{'PSGI'} = [ text_to_hash( << '.') ];
 HTML::Mason::PSGIHandler
 Plack
+Test::WWW::Mechanize::PSGI
+CGI::Emulate::PSGI
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
