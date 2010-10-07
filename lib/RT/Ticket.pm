@@ -99,7 +99,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'Priority'.
   int(11) 'TimeEstimated'.
   int(11) 'TimeWorked'.
-  varchar(10) 'Status'.
+  varchar(64) 'Status'.
   int(11) 'TimeLeft'.
   datetime 'Told'.
   datetime 'Starts'.
@@ -407,7 +407,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Status
 
 Returns the current value of Status. 
-(In the database, Status is stored as varchar(10).)
+(In the database, Status is stored as varchar(64).)
 
 
 
@@ -416,7 +416,7 @@ Returns the current value of Status.
 
 Set Status to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Status will be stored as a varchar(10).)
+(In the database, Status will be stored as a varchar(64).)
 
 
 =cut
@@ -615,7 +615,7 @@ sub _CoreAccessible {
         TimeWorked => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Status => 
-		{read => 1, write => 1, sql_type => 12, length => 10,  is_blob => 0,  is_numeric => 0,  type => 'varchar(10)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         TimeLeft => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Told => 
