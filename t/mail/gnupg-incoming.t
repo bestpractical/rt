@@ -7,7 +7,7 @@ plan skip_all => 'GnuPG required.'
     unless eval { require GnuPG::Interface; 1 };
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
-plan tests => 39;
+plan tests => 39, actual_server => 1;
 
 use File::Temp;
 use Cwd 'getcwd';
