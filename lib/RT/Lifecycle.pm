@@ -306,6 +306,17 @@ sub is_inactive {
     return 0;
 }
 
+=head3 default_inactive
+
+Returns the "default" inactive status for this lifecycle
+
+=cut
+
+sub default_inactive {
+    my $self = shift;
+    return $self->{data}->{default_inactive};
+}
+
 =head2 Transitions, rights, labels and actions.
 
 =head3 transitions
@@ -643,7 +654,7 @@ sub _set_defaults {
     my %args = @_;
 
     $LIFECYCLES{ $args{'name'} }{$_ } = $args{ $_ }
-        foreach qw(default_initial);
+        foreach qw(default_initial default_inactive);
 
     return 1;
 }
