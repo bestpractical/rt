@@ -85,12 +85,15 @@ sub DefaultHandlerArgs  { (
 
 =head2 new
 
+DEPRECATED: this method is to be removed as it's not the constructor of the class which is confusing
+
   Constructs a web handler of the appropriate class.
   Takes options to pass to the constructor.
 
 =cut
 
 sub new {
+    Carp::carp "DEPRECATED: call RT::Interface::Handler->Init instead";
     my $class = shift;
     $class->InitSessionDir;
 
@@ -100,6 +103,34 @@ sub new {
     else {
         goto &NewCGIHandler;
     }
+}
+
+=head2 Init
+
+  Initialize and return the mason web handler for current environment.
+
+=cut
+
+my $_handler;
+
+sub Init {
+    my $class = shift;
+    my $handler_class = shift;
+    my @handler_args = @_;
+
+    $class->InitSessionDir;
+
+    unless ($handler_class) {
+        if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
+            $handler_class = 'HTML::Mason::ApacheHandler';
+            unshift @handler_args, args_method => "CGI";
+        }
+        else {
+            $handler_class = 'HTML::Mason::CGIHandler';
+        }
+    }
+
+    $_handler = NewHandler($handler_class, @handler_args);
 }
 
 sub InitSessionDir {
@@ -153,8 +184,10 @@ sub NewCGIHandler {
     return NewHandler('HTML::Mason::CGIHandler', @_);
 }
 
+use UNIVERSAL::require;
 sub NewHandler {
     my $class = shift;
+    $class->require or die $!;
     my $handler = $class->new(
         DefaultHandlerArgs(),
         @_
@@ -192,11 +225,11 @@ sub HandleRequest {
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
     RT::ConnectToDatabase() unless RT->InstallMode;
 
-    my $interp = $RT::Mason::Handler->interp;
+    my $interp = $_handler->interp;
     $cgi->path_info( $self->_mason_dir_index($interp, $cgi->path_info));
 
     local $@;
-    eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
+    eval { $_handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);
     }
@@ -280,8 +313,8 @@ sub PSGIApp {
     my $self = shift;
 
     require HTML::Mason::CGIHandler;
-    require HTML::Mason::PSGIHandler;
     my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler');
+
     return sub {
         my $env = shift;
         RT::ConnectToDatabase() unless RT->InstallMode;
@@ -297,9 +330,10 @@ sub PSGIApp {
 
             $ret = $h->handle_psgi($env);
         }
+
         $RT::Logger->crit($@) if $@ && $RT::Logger;
         warn $@ if $@ && !$RT::Logger;
-        RT::Interface::Web::Handler->CleanupRequest();
+        $self->CleanupRequest();
         if ($ret->[2] ) {
             # XXX: for now.  the out_method for mason can be more careful
             # and perhaps even streamy.  this should also check for
