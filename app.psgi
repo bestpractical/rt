@@ -47,14 +47,30 @@
 # END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
+require RT;
 
-use File::Basename;
-eval {
-    require (dirname(__FILE__) .'/bin/webmux.pl');
-};
-if ($@) {
-    die "failed to load bin/webmux.pl: $@";
+RT::LoadConfig();
+if ( RT->Config->Get('DevelMode') ) {
+    # XXX: hint to use plack -r
 }
+RT::Init();
+
+# check compatibility of the DB
+{
+    my $dbh = $RT::Handle->dbh;
+    if ( $dbh ) {
+        my ($status, $msg) = $RT::Handle->CheckCompatibility( $dbh, 'post' );
+        die $msg unless $status;
+    }
+}
+
+require RT::Interface::Web::Handler;
+RT::Interface::Web::Handler->InitSessionDir;
+
+RT::InitClasses( Heavy => 1 );
+
+$RT::Handle->dbh(undef);
+undef $RT::Handle;
 
 RT::Interface::Web::Handler->PSGIApp;
 
