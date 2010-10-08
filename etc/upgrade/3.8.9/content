@@ -37,4 +37,27 @@
             } while $found == 1000;
         }
     },
+    sub {
+        my $queue = RT::Queue->new( $RT::SystemUser );
+        $queue->Load('___Approvals');
+        return unless $queue->id;
+
+        for my $name (
+            'All Approvals Passed', 'Approval Passed', 'Approval Rejected'
+          )
+        {
+            my $template = RT::Template->new($RT::SystemUser);
+            $template->LoadQueueTemplate( Name => $name, Queue => $queue->id );
+            next unless $template->id;
+            my $content = $template->Content;
+
+            # there is only one OwnerObj->Name normally, so no need /g
+            if ( $content =~
+s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerObj->Name!\$Approver->Name!
+              )
+            {
+                $template->SetContent($content);
+            }
+        }
+    },
 );
