@@ -165,6 +165,20 @@ sub NewHandler {
     return($handler);
 }
 
+=head2 _mason_dir_index
+
+=cut
+
+sub _mason_dir_index {
+    my ($self, $interp, $path) = @_;
+    if (   !$interp->comp_exists( $path )
+         && $interp->comp_exists( $path . "/index.html" ) )
+    {
+        return $path . "/index.html";
+    }
+
+    return $path;
+}
 
 =head2 HandleRequest
 
@@ -179,11 +193,7 @@ sub HandleRequest {
     RT::ConnectToDatabase() unless RT->InstallMode;
 
     my $interp = $RT::Mason::Handler->interp;
-    if (   !$interp->comp_exists( $cgi->path_info )
-         && $interp->comp_exists( $cgi->path_info . "/index.html" ) )
-    {
-        $cgi->path_info( $cgi->path_info . "/index.html" );
-    }
+    $cgi->path_info( $self->_mason_dir_index($interp, $cgi->path_info));
 
     local $@;
     eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
@@ -267,6 +277,8 @@ use Plack::Request;
 use Encode qw(is_utf8 encode_utf8);
 
 sub PSGIApp {
+    my $self = shift;
+
     require HTML::Mason::CGIHandler;
     require HTML::Mason::PSGIHandler;
     my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler');
@@ -276,13 +288,7 @@ sub PSGIApp {
 
         my $req = Plack::Request->new($env);
 
-        unless ( $h->interp->comp_exists( $req->path_info ) ) {
-            my $path = $req->path_info;
-            $path .= '/' unless $path =~ m{/$};
-            $path .= 'index.html';
-            $env->{PATH_INFO} = $path
-                if $h->interp->comp_exists( $path );
-        }
+        $env->{PATH_INFO} = $self->_mason_dir_index( $h->interp, $req->path_info);
 
         my $ret;
         {
