@@ -1,0 +1,70 @@
+BEGIN TRANSACTION;
+CREATE TEMPORARY TABLE Tickets_backup (
+  id INTEGER PRIMARY KEY  ,
+  EffectiveId integer NULL  ,
+  Queue integer NULL  ,
+  Type varchar(16) NULL  ,
+  IssueStatement integer NULL  ,
+  Resolution integer NULL  ,
+  Owner integer NULL  ,
+  Subject varchar(200) NULL DEFAULT '[no subject]' ,
+  InitialPriority integer NULL  ,
+  FinalPriority integer NULL  ,
+  Priority integer NULL  ,
+  TimeEstimated integer NULL  ,
+  TimeWorked integer NULL  ,
+  Status varchar(64) NULL  ,
+  TimeLeft integer NULL  ,
+  Told DATETIME NULL  ,
+  Starts DATETIME NULL  ,
+  Started DATETIME NULL  ,
+  Due DATETIME NULL  ,
+  Resolved DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0
+);
+
+INSERT INTO Tickets_backup SELECT * FROM Tickets;
+DROP TABLE Tickets;
+
+CREATE TABLE Tickets (
+  id INTEGER PRIMARY KEY  ,
+  EffectiveId integer NULL  ,
+  Queue integer NULL  ,
+  Type varchar(16) NULL  ,
+  IssueStatement integer NULL  ,
+  Resolution integer NULL  ,
+  Owner integer NULL  ,
+  Subject varchar(200) NULL DEFAULT '[no subject]' ,
+  InitialPriority integer NULL  ,
+  FinalPriority integer NULL  ,
+  Priority integer NULL  ,
+  TimeEstimated integer NULL  ,
+  TimeWorked integer NULL  ,
+  Status varchar(64) NULL  ,
+  TimeLeft integer NULL  ,
+  Told DATETIME NULL  ,
+  Starts DATETIME NULL  ,
+  Started DATETIME NULL  ,
+  Due DATETIME NULL  ,
+  Resolved DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0
+);
+
+CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+CREATE INDEX Tickets2 ON Tickets (Owner) ;
+CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
+CREATE INDEX Tickets4 ON Tickets (id, Status) ;
+CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
+
+INSERT INTO Tickets SELECT * FROM Tickets_backup;
+DROP TABLE Tickets_backup;
+COMMIT;
+
