@@ -56,6 +56,7 @@ use RT::CustomFields;
 use RT::ACL;
 use RT::FM::ArticleCollection;
 use RT::FM::ObjectClass;
+use RT::FM::ObjectClassCollection;
 
 
 =head2 Load IDENTIFIER
@@ -316,7 +317,8 @@ sub IsApplied {
     my $id = shift;
     return unless defined $id;
     my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
-    $oc->LoadByCols( Class=> $self->id, ObjectId => $id );
+    $oc->LoadByCols( Class=> $self->id, ObjectId => $id,
+                     ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ));
     return undef unless $oc->id;
     return $oc;
 }
@@ -358,8 +360,8 @@ sub AddToObject {
             if $self->IsApplied( 0 );
     }
     else {
-        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
-        $applied->LimitToCustomField( $self->id );
+        my $applied = RT::FM::ObjectClassCollection->new( $self->CurrentUser );
+        $applied->LimitToClass( $self->id );
         while ( my $record = $applied->Next ) {
             $record->Delete;
         }
@@ -367,7 +369,8 @@ sub AddToObject {
 
     my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
     my ( $oid, $msg ) = $oc->Create(
-        ObjectId => $id, Class => $self->id, ObjectType => 'RT::Queue',
+        ObjectId => $id, Class => $self->id,
+        ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ),
     );
     return ( $oid, $msg );
 }
