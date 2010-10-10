@@ -187,13 +187,7 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
 }
 
 my $hotlist = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
-my $classes = $hotlist->Join(
-    ALIAS1 => 'main',
-    FIELD1 => 'Class',
-    TABLE2 => 'FM_Classes',
-    FIELD2 => 'id',
-);
-$hotlist->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
+$hotlist->LimitHotlistClasses;
 
 # By default, order by name
 $hotlist->OrderByCols( {
