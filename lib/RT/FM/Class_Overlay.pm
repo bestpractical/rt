@@ -307,7 +307,7 @@ sub _AppliedTo {
 
 Takes object id and returns corresponding L<RT::ObjectClass>
 record if this Class is applied to the object. Use 0 to check
-if custom field is applied globally.
+if Class is applied globally.
 
 =cut
 
