@@ -74,8 +74,12 @@ BEGIN {
     }
 }
 
-use RT;
-RT::LoadConfig();
+BEGIN {
+    use RT;
+    RT::LoadConfig();
+    RT::Init();
+};
+use RT::Interface::CLI ();
 
 my %DB = (
     type           => scalar RT->Config->Get('DatabaseType'),
@@ -121,7 +125,6 @@ if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
     show_help( !$OPT{'help'} );
 }
 
-RT::Init();
 
 my $dbh = $RT::Handle->dbh;
 $dbh->{'RaiseError'} = 1;
