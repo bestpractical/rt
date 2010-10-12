@@ -579,14 +579,12 @@ sub warning  { $RT::Logger->warning( @_ ); verbose(@_); 1 }
 
 sub show_help {
     my $error = shift;
-    require Pod::Usage;
-    Pod::Usage::pod2usage(
-        -message => "",
-        -exitval => $error || 0, 
-        -verbose => 99,
-        -sections => $error
+    RT::Interface::CLI->ShowHelp(
+        ExitValue => $error,
+        Sections => $error
             ? 'NAME|'. lc($DB{'type'}) .'/USAGE'
-            : 'NAME|'. lc($DB{'type'}),
+            : 'NAME|'. lc($DB{'type'})
+        ,
     );
 }
 
