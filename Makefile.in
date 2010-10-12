@@ -165,6 +165,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-dump-database \
 				rt-setup-database \
 				rt-setup-fulltext-index \
+				rt-fulltext-indexer \
 				rt-email-digest \
 				rt-email-dashboards \
 				rt-email-group-admin \
