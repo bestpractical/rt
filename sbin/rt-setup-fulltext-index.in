@@ -606,14 +606,24 @@ END
 }
 
 sub insert_schema {
+    return _insert_schema( $dbh, "Going to do the following change in the DB:", @_);
+}
+
+sub insert_schema_as_dba {
+    return _insert_schema( dba_handle(), "Going to do the following change in the DB:", @_);
+}
+
+sub _insert_schema {
+    my $dbh = shift;
+    my $message = shift;
     my $schema = shift;
-    print "Going to do the following change in the DB:\n";
+    print "$message\n";
     print $schema;
     return if $OPT{'dryrun'};
 
     my $res = $dbh->do( $schema );
     unless ( $res ) {
-        die "Couldn't create the table: ". $dbh->errstr;
+        die "Couldn't run DDL query: ". $dbh->errstr;
     }
 }
 
