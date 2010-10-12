@@ -223,37 +223,45 @@ elsif ( $DB{'type'} eq 'Pg' ) {
     my $dbh = $RT::Handle->dbh;
 
     my $table = prompt(
-        message => 'Enter name of a DB table that will be used to connect to the sphinx server',
+        message =>
+            'Enter name of a DB table that will be used to store Pg tsvector.'
+            . ' Attachments table can be used.'
+        ,
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
+    my $column = prompt(
+        message => 'Enter name of a column that will be used to store Pg tsvector',
+        default => $DEFAULT{'column'},
+        silent  => !$OPT{'ask'},
+    );
 
-    my $schema = <<END;
-CREATE TABLE $table (
-    id      INTEGER NOT NULL,
-    $DEFAULT{'column'} tsvector
-)
-END
+    my $schema;
+    if ( lc($table) eq 'attachments' ) {
+        $schema = "ALTER TABLE $table ADD COLUMN $column tsvector";
+    } else {
+        $schema = "CREATE TABLE $table ( "
+            ."id INTEGER NOT NULL,"
+            ."$column tsvector )";
+    }
 
-    print_rt_config( table => $table, column => $DEFAULT{'column'} );
+    print_rt_config( table => $table, column => $column );
 
-    insert_schema( $schema );
+    insert_schema_as_dba( $schema );
 
-    print <<END;
-Now you have to create an index on the column. You have choice
-between GiST or GIN, the first is times slower to search, but
-it takes less place and faster to update. Anyway, both are faster
-then searches without them.
-
-Either run:
-
-    CREATE INDEX $DEFAULT{column}_idx ON $table USING gin($DEFAULT{'column'});
-
-or
-
-    CREATE INDEX $DEFAULT{column}_idx ON $table USING gist($DEFAULT{'column'});
-
-END
+    my $index_type;
+    do {
+        $index_type = lc prompt(
+            message =>
+                'You have choice between GiST or GIN index,'
+                .' the first is times slower to search, but'
+                .' it takes less place and faster to update.'
+            ,
+            default => 'GiST',
+            silent  => !$OPT{'ask'},
+        );
+    } while ( $index_type ne 'gist' && $index_type ne 'gin' );
+    insert_schema_as_dba("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
     {
