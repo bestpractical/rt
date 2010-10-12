@@ -368,7 +368,7 @@ sub ora_create_word_list {
 sub ora_create_stop_list {
     my $file = shift || 'etc/stopwords/en.txt';
 
-    my $name = $ora_prefix .'stop_list';
+    my $name = $DEFAULT{'prefix'} .'stop_list';
     do_error_is_ok( $dbh => 'begin ctx_ddl.drop_stoplist(?); end;', $name );
     
     $dbh->do(
@@ -391,7 +391,7 @@ sub ora_create_stop_list {
 
 sub ora_create_section_group {
     my %args = @_;
-    my $name = $ora_prefix .'section_group';
+    my $name = $DEFAULT{'prefix'} .'section_group';
     do_error_is_ok( $dbh => 'begin ctx_ddl.drop_section_group(?); end;', $name );
     $dbh->do(
         'begin ctx_ddl.create_section_group(?, ?);  end;',
@@ -487,7 +487,7 @@ sub ora_create_format_column {
 
 sub ora_create_preference {
     my %info = @_;
-    my $name = $ora_prefix . $info{'name'};
+    my $name = $DEFAULT{'prefix'} . $info{'name'};
     do_error_is_ok( $dbh => 'begin ctx_ddl.drop_preference(?); end;', $name );
     $dbh->do(
         'begin ctx_ddl.create_preference(?, ?);  end;',
