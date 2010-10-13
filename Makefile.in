@@ -275,10 +275,6 @@ upgrade-instruct:
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
-upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install po-install font-install fixperms
-
-
-
 my_with_web_handlers= $(shell $(PERL) -e 'print join " ", map "--with-$$_", grep defined && length, split /,/, "$(WEB_HANDLER)"')
 testdeps:
 	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE) $(my_with_web_handlers)
