@@ -202,11 +202,33 @@ span#display-options .titlebox#sorting {
     float: left;
     width: auto;
     margin-right: 2em;
-    min-width: 40%;
+    min-width: 35%;
 }
 
 span#display-options .titlebox#columns {
     float: left;
+}
+
+span#display-options .titlebox#columns table.edit-columns td {
+    padding: 0.5em;
+}
+
+span#display-options .titlebox#columns table.edit-columns div.row {
+    width: 9em;
+}
+span#display-options .titlebox#columns table.edit-columns span.label {
+    width: 2em;
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value input,
+span#display-options .titlebox#columns table.edit-columns span.value select {
+    width: 7em;
+    padding: 0;
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value {
+    display: inline-block;
+    width:7em;
 }
 
 #BuildQuery #formatbuttons.submit{
