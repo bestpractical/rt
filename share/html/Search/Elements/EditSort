@@ -85,8 +85,8 @@ if ($Order =~ /\|/) {
 </%INIT>
 
 <%ARGS>
-$Order => undef
-$OrderBy => undef
+$Order => ''
+$OrderBy => ''
 $RowsPerPage => undef
 $Format => undef
 $GroupBy => 'id'

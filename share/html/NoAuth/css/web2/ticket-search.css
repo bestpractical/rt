@@ -214,7 +214,7 @@ span#display-options .titlebox#columns table.edit-columns td {
 }
 
 span#display-options .titlebox#columns table.edit-columns div.row {
-    width: 9em;
+    width: 9em; 
 }
 span#display-options .titlebox#columns table.edit-columns span.label {
     width: 2em;
