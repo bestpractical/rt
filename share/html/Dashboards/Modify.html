@@ -60,6 +60,8 @@
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 % }
+
+<&|/Widgets/TitleBox, title => loc('Basics') &>
 <table>
 <tr><td align="right">
 <&|/l&>Name</&>:
@@ -72,11 +74,9 @@
 <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
 </td></tr>
 </table>
-% if ( $Create ) {
-<& /Elements/Submit, Name => 'Save', Label => loc('Create') &>
-% } else {
-<& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-% }
+</&>
+<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+
 % if ($Dashboard->Id && $can_delete) {
 <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
 % }
