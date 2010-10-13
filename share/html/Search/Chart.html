@@ -85,7 +85,6 @@ my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => 
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
-<br />
 <&| /Widgets/TitleBox, title => loc('Graph Properties')&>
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
