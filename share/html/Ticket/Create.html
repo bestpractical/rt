@@ -68,7 +68,7 @@
 <a name="basics"></a>
 
 <div id="ticket-create-metadata">
-  <&| /Widgets/TitleBox, title => loc("Ticket") &>
+    <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
     <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
     <table width="100%" border="0">
     <& /Ticket/Elements/EditBasics,
@@ -452,10 +452,10 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 
 my $actions = {
     A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Show basics') . q[</a>],
+        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>],
     },
     B => {
-        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Show details') . q[</a>],
+        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>],
     },
 };
 </%INIT>
