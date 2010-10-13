@@ -110,9 +110,9 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
     $BasePath = Cwd::realpath( $BasePath );
 
     for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
-            LocalLibPath LocalLexiconPath PluginPath LocalPluginPath 
-            MasonComponentRoot MasonLocalComponentRoot MasonDataDir 
-            MasonSessionDir/ ) {
+            LocalLibPath LexiconPath LocalLexiconPath PluginPath 
+            LocalPluginPath MasonComponentRoot MasonLocalComponentRoot 
+            MasonDataDir MasonSessionDir/ ) {
         no strict 'refs';
         # just change relative ones
         $$path = File::Spec->catfile( $BasePath, $$path )
