@@ -70,8 +70,9 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                <% $current_rights{$right} ? 'checked' : '' %> />
         <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
           <% loc($available_rights{$right}) %>
+          <span class="separator">&mdash;</span>
+          <span class="rightname"><% $right %></span>
         </label>
-        <span class="rightname"><% $right %></span>
       </li>
 %     }
     </ul>
