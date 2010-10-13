@@ -29,6 +29,7 @@ sbin/rt-server
 sbin/rt-session-viewer
 sbin/rt-setup-database
 sbin/rt-setup-fulltext-index
+sbin/rt-fulltext-indexer
 sbin/rt-shredder
 sbin/rt-test-dependencies
 sbin/rt-validator
