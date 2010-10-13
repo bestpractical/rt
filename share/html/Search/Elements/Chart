@@ -106,13 +106,13 @@ my ($i,$total);
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>
 </tr>
-% while (my $key = shift @sorted_keys) {
-<tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
 <%perl>
+ while (my $key = shift @sorted_keys) {
  $i++;
  my $value = shift @sorted_values;
  $total += $value;
 </%perl>
+<tr class="<% $i%2 ? 'evenline' : 'oddline' %>">
 <%perl>
 # TODO sadly we don't have "creator.city is null" or alike support yet
 # so no link if the key is undef for now
@@ -142,7 +142,7 @@ my ($i,$total);
 % }
 
 %$i++;
-<tr class="<%$i%2 ? 'oddline' : 'evenline' %> total">
+<tr class="<%$i%2 ? 'evenline' : 'oddline' %> total">
 <td class="label collection-as-table"><%loc('Total')%></td>
 <td class="value collection-as-table"><%$total||'0'%></td>
 </tr>
