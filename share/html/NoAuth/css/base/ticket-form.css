@@ -74,7 +74,7 @@
     list-style: none;
 }
 
-.messagebox-container iframe {
+iframe.richtext-editor {
     background-color: white !important;
 }
 

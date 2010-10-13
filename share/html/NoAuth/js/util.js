@@ -274,6 +274,8 @@ function ReplaceAllTextareas(encoded) {
             var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
             oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
             oFCKeditor.ReplaceTextarea();
+
+            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }
     }
 };
