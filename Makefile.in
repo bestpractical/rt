@@ -358,7 +358,7 @@ dirs:
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
