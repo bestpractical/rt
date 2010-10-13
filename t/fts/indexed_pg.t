@@ -5,11 +5,11 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not Pg' unless RT->Config->Get('DatabaseType') eq 'Pg';
-plan tests => 100;
-
-setup_indexing();
+plan tests => 9;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1 );
+
+setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
@@ -19,9 +19,18 @@ my ($total, @data, @tickets, @test, @conditions) = (0, ());
 
 sub setup_indexing {
     my %args = (
-        command => $RT::SbinPath .'/rt-setup-fulltext-index',
+        'no-ask'       => 1,
+        command        => $RT::SbinPath .'/rt-setup-fulltext-index',
+        dba            => $ENV{'RT_DBA_USER'},
+        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
     );
     my ($exit_code, $output) = RT::Test->run_and_capture( %args );
+    ok(!$exit_code, "setted up index") or diag "output: $output";
+
+    %args = (
+        command => $RT::SbinPath .'/rt-fulltext-indexer',
+    );
+    ($exit_code, $output) = RT::Test->run_and_capture( %args );
     ok(!$exit_code, "setted up index") or diag "output: $output";
 }
 
@@ -29,9 +38,19 @@ sub add_tix_from_data {
     my @res = ();
     while (@data) {
         my $t = RT::Ticket->new(RT->SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
+        my %args = %{ shift(@data) };
+
+        if ( my $content = delete $args{'Content'} ) {
+            $args{'MIMEObj'} = MIME::Entity->build(
+                From    => $args{'Requestor'},
+                To      => $q->CorrespondAddress,
+                Subject => $args{'Subject'},
+                Data    => $content,
+            );
+        }
+        my ( $id, undef, $msg ) = $t->Create(
             Queue => $q->id,
-            %{ shift(@data) },
+            %args,
         );
         ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
