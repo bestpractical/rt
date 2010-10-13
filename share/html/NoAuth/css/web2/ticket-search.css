@@ -136,7 +136,7 @@
  overflow-x: auto;
 }
 
-#comp-Search-Build .submit {
+#BuildQuery .submit {
  width: 58%;
 }
 
@@ -144,9 +144,6 @@
 #sorting.titlebox {
  width: 55%;
  padding-right: 1em;
-}
-
-#comp-Search-Build #columns {
 }
 
 #display-options .submit {
@@ -191,6 +188,29 @@
     display: inline-block;
     width: 7em;
     font-weight: bold;
+}
+
+span#display-options {
+    display: block;
+    padding-top: 2em;
+    margin-top: 2em;
+    border-top: 1px solid #ccc;
+    clear: both;
+}
+
+span#display-options .titlebox#sorting {
+    float: left;
+    width: auto;
+    margin-right: 2em;
+    min-width: 40%;
+}
+
+span#display-options .titlebox#columns {
+    float: left;
+}
+
+#BuildQuery #formatbuttons.submit{
+    width: 85%;
 }
 
 .refresh {
