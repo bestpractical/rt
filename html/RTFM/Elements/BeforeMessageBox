@@ -180,6 +180,7 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
     $articles_content->LimitCustomField(
         VALUE => $tmp, OPERATOR => 'LIKE'
     );
+    $articles_content->LimitAppliedClasses( Queue => $QueueObj );
 
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Name',
@@ -191,10 +192,12 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
                              OPERATOR        => 'LIKE',
                              VALUE           => $tmp,
                              ENTRYAGGREGATOR => "OR" );
+    $articles_basics->LimitAppliedClasses( Queue => $QueueObj );
 }
 
 my $hotlist = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 $hotlist->LimitHotlistClasses;
+$hotlist->LimitAppliedClasses( Queue => $QueueObj );
 
 # By default, order by name
 $hotlist->OrderByCols( {
