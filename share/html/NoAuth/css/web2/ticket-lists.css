@@ -218,3 +218,19 @@ padding-bottom: 1em;
 .chart-wrapper .query .label {
     font-weight: bold;
 }
+
+.chart-meta {
+    padding-top: 2em;
+    border-top: 1px solid #ccc;
+}
+
+.chart-meta .chart-type {
+    display: inline-block;
+    float: left;
+    padding-right: 2em;
+    clear: both;
+}
+
+.chart-meta .saved-search {
+    display: inline-block;
+}
