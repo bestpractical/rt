@@ -258,13 +258,21 @@ function ReplaceAllTextareas(encoded) {
         var textArea = allTextAreas[i];
         if (jQuery(textArea).hasClass("messagebox")) {
             // Turn the original plain text content into HTML
-            // if (encoded == 0) textArea.value = textArea.value .replace( /&/g, "&amp;") .replace( /</g, "&lt;") .replace( />/g, "&gt;") .replace( /\n/g, "\n<br />");
+            if (encoded == 0) {
+                textArea.value = textArea.value
+                    .replace(/&/g,  "&amp;")
+                    .replace(/</g,  "&lt;")
+                    .replace(/>/g,  "&gt;")
+                    .replace(/\n/g, "\n<br />");
+            }
+            // For this javascript
             var FCKeditorEncoded = document.createElement('input');
             FCKeditorEncoded.setAttribute('type', 'hidden');
             FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
             FCKeditorEncoded.setAttribute('value', '1');
             textArea.parentNode.appendChild(FCKeditorEncoded);
 
+            // For fckeditor
             var typeField = document.createElement('input');
             typeField.setAttribute('type', 'hidden');
             typeField.setAttribute('name', textArea.name + 'Type');
