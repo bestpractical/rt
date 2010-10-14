@@ -144,24 +144,25 @@
   exec_prefix:		${prefix}
   bindir:		${exec_prefix}/bin
   sbindir:		${exec_prefix}/sbin
-  sysconfdir:		/etc/rt
+  sysconfdir:           /etc/rt3
   mandir:		${prefix}/man
-  libdir:		${prefix}/lib/rt
-  datadir:		/var/rt
+  libdir:               ${prefix}/lib/rt3
+  datadir:              /var/rt3
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   plugindir:		${datadir}/plugins
   localstatedir:	/var
-  logfiledir:		${localstatedir}/log/rt
-  masonstatedir:	${localstatedir}/rt/mason_data
-  sessionstatedir:	${localstatedir}/rt/session_data
-  customdir:		${prefix}/local/rt
+  logfiledir:           ${localstatedir}/log/rt3
+  masonstatedir:        ${localstatedir}/rt3/mason_data
+  sessionstatedir:      ${localstatedir}/rt3/session_data
+  customdir:            ${prefix}/local/rt3
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
 </Layout>
+
 
 <Layout relative>
   prefix:		/opt/rt3
