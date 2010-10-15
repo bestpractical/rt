@@ -111,6 +111,16 @@ unless ( $fts_config->{'Indexed'} ) {
 
 my $db_type = RT->Config->Get('DatabaseType');
 
+if ( $db_type eq 'Oracle' ) {
+    my $index = $fts_config->{'IndexName'} || 'rt_fts_index';
+    my $memory = '2M';
+    $RT::Handle->dbh->do(
+        "begin ctx_ddl.sync_index(?, ?); end;", undef,
+        $index, $memory
+    );
+    exit;
+}
+
 my @types = qw(text html);
 foreach my $type ( @types ) {
     my $attaches = attachments($type);

@@ -154,7 +154,7 @@ CREATE TABLE $table (
 ) ENGINE=SPHINX CONNECTION="$url"
 END
 
-    print_rt_config( table => $table, column => $DEFAULT{'column'} );
+    print_rt_config( Table => $table, Column => $DEFAULT{'column'} );
     insert_schema( $schema );
 
     require URI;
@@ -245,7 +245,7 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             ."$column tsvector )";
     }
 
-    print_rt_config( table => $table, column => $column );
+    print_rt_config( Table => $table, Column => $column );
 
     insert_schema_as_dba( $schema );
 
@@ -321,14 +321,16 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
     push @params, ora_create_storage( %{ $PREFERENCES{'storage'} } );
 
     my $index_params = join "\n", @params;
-    do_error_is_ok( $dbh => "DROP INDEX $DEFAULT{prefix}index" );
+    my $index_name = $DEFAULT{prefix} .'index';
+    do_error_is_ok( $dbh => "DROP INDEX $index_name" );
     $dbh->do(
-        "CREATE INDEX $DEFAULT{prefix}index ON Attachments(Content)
+        "CREATE INDEX $index_name ON Attachments(Content)
         indextype is ctxsys.context parameters('
             $index_params
         ')",
     );
 
+    print_rt_config( IndexName => $index_name );
 }
 else {
     die "FTS on $DB{type} is not yet supported"; 
@@ -346,7 +348,7 @@ sub check_sphinx {
 }
 
 sub ora_create_datastore {
-    return sprintf 'datastore %s', create_preference(
+    return sprintf 'datastore %s', ora_create_preference(
         @_,
         name => 'datastore',
     );
@@ -354,8 +356,8 @@ sub ora_create_datastore {
 
 sub ora_create_filter {
     my $res = '';
-    $res .= sprintf "format column %s\n", create_format_column();
-    $res .= sprintf 'filter %s', create_preference(
+    $res .= sprintf "format column %s\n", ora_create_format_column();
+    $res .= sprintf 'filter %s', ora_create_preference(
         @_,
         name => 'filter',
     );
@@ -363,14 +365,14 @@ sub ora_create_filter {
 }
 
 sub ora_create_lexer {
-    return sprintf 'lexer %s', create_preference(
+    return sprintf 'lexer %s', ora_create_preference(
         @_,
         name => 'lexer',
     );
 }
 
 sub ora_create_word_list {
-    return sprintf 'wordlist %s', create_preference(
+    return sprintf 'wordlist %s', ora_create_preference(
         @_,
         name => 'word_list',
     );
@@ -378,6 +380,7 @@ sub ora_create_word_list {
 
 sub ora_create_stop_list {
     my $file = shift || 'etc/stopwords/en.txt';
+    return '' unless -e $file;
 
     my $name = $DEFAULT{'prefix'} .'stop_list';
     do_error_is_ok( $dbh => 'begin ctx_ddl.drop_stoplist(?); end;', $name );
@@ -412,7 +415,7 @@ sub ora_create_section_group {
 }
 
 sub ora_create_storage {
-    return sprintf 'storage %s', create_preference(
+    return sprintf 'storage %s', ora_create_preference(
         @_,
         name => 'storage',
     );
@@ -469,7 +472,7 @@ sub ora_create_format_column {
             RETURN format;
         END;
     };
-    create_procedure( $detect_format );
+    ora_create_procedure( $detect_format );
 
     $dbh->do(qq{
         UPDATE Attachments
@@ -609,8 +612,8 @@ Set( %FullTextSearch,
     Indexed => 1,
 END
 
-    $config .= "    Table   => '$args{'table'}',\n" if $args{'table'};
-    $config .= "    Column  => '$args{'column'}',\n" if $args{'column'};
+    $config .= "    $_   => '$args{$_}',\n"
+        foreach grep defined $args{$_}, keys %args;
     $config .= ");\n";
 
     print $config;
