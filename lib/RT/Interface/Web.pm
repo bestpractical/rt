@@ -207,13 +207,30 @@ sub HandleRequest {
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
-        # If the user is logging in, let's authenticate
-        if ( defined $ARGS->{user} && defined $ARGS->{pass} ) {
-            AttemptPasswordAuthentication($ARGS);
-        } else {
-            # if no credentials then show him login page
-            $HTML::Mason::Commands::m->comp( '/Elements/Login', %$ARGS );
-            $HTML::Mason::Commands::m->abort;
+        # Authenticate if the user is trying to login via user/pass query args
+        my ($authed, $msg) = AttemptPasswordAuthentication($ARGS);
+
+        unless ($authed) {
+            my $m = $HTML::Mason::Commands::m;
+            my $results = $msg ? LoginError($msg) : undef;
+
+            # REST urls get a special 401 response
+            if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
+                $HTML::Mason::Commands::r->content_type("text/plain");
+                $m->error_format("text");
+                $m->out("RT/$RT::VERSION 401 Credentials required\n");
+                $m->out("\n$msg\n") if $msg;
+                $m->abort;
+            }
+            # Specially handle /index.html so that we get a nicer URL
+            elsif ( $m->request_comp->path eq '/index.html' ) {
+                my $next = SetNextPage(RT->Config->Get('WebURL'));
+                $m->comp('/NoAuth/Login.html', next => $next, results => $results);
+                $m->abort;
+            }
+            else {
+                TangentForLogin(results => $results);
+            }
         }
     }
 
@@ -243,6 +260,90 @@ sub _UserLoggedIn {
         return undef;
     }
 
+}
+
+=head2 LoginError ERROR
+
+Pushes a login error into the Actions session store and returns the hash key.
+
+=cut
+
+sub LoginError {
+    my $new = shift;
+    my $key = Digest::MD5::md5_hex( rand(1024) );
+    push @{ $HTML::Mason::Commands::session{"Actions"}->{$key} ||= [] }, $new;
+    $HTML::Mason::Commands::session{'i'}++;
+    return $key;
+}
+
+=head2 SetNextPage [PATH]
+
+Intuits and stashes the next page in the sesssion hash.  If PATH is
+specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
+the hash value.
+
+=cut
+
+sub SetNextPage {
+    my $next = shift || IntuitNextPage();
+    my $hash = Digest::MD5::md5_hex( $next . $$ );
+
+    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
+    $HTML::Mason::Commands::session{'i'}++;  # Cargo culted, do we need this?
+    
+    SendSessionCookie();
+    return $hash;
+}
+
+
+=head2 TangentForLogin [HASH]
+
+Redirects to C</NoAuth/Login.html>, setting the value of L<IntuitNextPage> as
+the next page.  Optionally takes a hash which is dumped into query params.
+
+=cut
+
+sub TangentForLogin {
+    my $hash  = SetNextPage();
+    my %query = (@_, next => $hash);
+    my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
+    $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
+    Redirect($login);
+}
+
+=head2 IntuitNextPage
+
+Attempt to figure out the path to which we should return the user after a
+tangent.  The current request URL is used, or failing that, the C<WebURL>
+configuration variable.
+
+=cut
+
+sub IntuitNextPage {
+    my $req_uri;
+
+    # This includes any query parameters.  Redirect will take care of making
+    # it an absolute URL.
+    $req_uri = $ENV{'REQUEST_URI'} if $ENV{'REQUEST_URI'};
+
+    my $next = defined $req_uri ? $req_uri : RT->Config->Get('WebURL');
+
+    # sanitize $next
+    my $uri = URI->new($next);
+
+    # You get undef scheme with a relative uri like "/Search/Build.html"
+    unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'https') {
+        $next = RT->Config->Get('WebURL');
+    }
+
+    # Make sure we're logging in to the same domain
+    # You can get an undef authority with a relative uri like "index.html"
+    my $uri_base_url = URI->new(RT->Config->Get('WebBaseURL'));
+    unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority) {
+        $next = RT->Config->Get('WebURL');
+    }
+
+    return $next;
 }
 
 =head2 MaybeShowInstallModePage 
@@ -283,6 +384,10 @@ sub MaybeShowNoAuthPage {
     my $m = $HTML::Mason::Commands::m;
 
     return unless $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex');
+
+    # Don't show the login page to logged in users
+    Redirect(RT->Config->Get('WebURL'))
+        if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
     # If it's a noauth file, don't ask for auth.
     SendSessionCookie();
@@ -386,9 +491,15 @@ sub AttemptExternalAuth {
 
                 # we failed to successfully create the user. abort abort abort.
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
-                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc( 'Cannot create user: [_1]', $msg ) )
-                    if RT->Config->Get('WebFallbackToInternalAuth');;
-                $m->abort();
+
+                if (RT->Config->Get('WebFallbackToInternalAuth')) {
+                    my $key = LoginError(
+                        HTML::Mason::Commands::loc('Cannot create user: [_1]', $msg)
+                    );
+                    TangentForLogin( results => $key );
+                } else {
+                    $m->abort();
+                }
             }
         }
 
@@ -399,15 +510,19 @@ sub AttemptExternalAuth {
             $user = $orig_user;
 
             if ( RT->Config->Get('WebExternalOnly') ) {
-                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
-                $m->abort();
+                my $key = LoginError(
+                    HTML::Mason::Commands::loc('You are not an authorized user')
+                );
+                TangentForLogin( results => $key );
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
-            $m->abort();
+            my $key = LoginError(
+                HTML::Mason::Commands::loc('You are not an authorized user')
+            );
+            TangentForLogin( results => $key );
         }
     } else {
 
@@ -420,7 +535,9 @@ sub AttemptExternalAuth {
 }
 
 sub AttemptPasswordAuthentication {
-    my $ARGS     = shift;
+    my $ARGS = shift;
+    return unless defined $ARGS->{user} && defined $ARGS->{pass};
+
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
 
@@ -428,15 +545,34 @@ sub AttemptPasswordAuthentication {
 
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
-        $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('Your username or password is incorrect'), );
         $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
-        $m->abort;
+        return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
     }
+    else {
+        $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
 
-    $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
-    InstantiateNewSession();
-    $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
-    $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
+        # It's important to nab the next page from the session before we blow
+        # the session away
+        my $next = $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
+
+        InstantiateNewSession();
+        $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+        SendSessionCookie();
+
+        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
+
+        # Really the only time we don't want to redirect here is if we were
+        # passed user and pass as query params in the URL.
+        if ($next) {
+            Redirect($next);
+        }
+        elsif ($ARGS->{'next'}) {
+            # Invalid hash, but still wants to go somewhere, take them to /
+            Redirect(RT->Config->Get('WebURL'));
+        }
+
+        return (1, HTML::Mason::Commands::loc('Logged in'));
+    }
 }
 
 =head2 LoadSessionFromCookie
@@ -503,6 +639,10 @@ sub Redirect {
     untie $HTML::Mason::Commands::session;
     my $uri        = URI->new($redir_to);
     my $server_uri = URI->new( RT->Config->Get('WebURL') );
+    
+    # Make relative URIs absolute from the server host and scheme
+    $uri->scheme($server_uri->scheme) if not defined $uri->scheme;
+    $uri->host($server_uri->host)     if not defined $uri->host;
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
