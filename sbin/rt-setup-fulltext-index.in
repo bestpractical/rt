@@ -596,8 +596,8 @@ sub show_help {
     RT::Interface::CLI->ShowHelp(
         ExitValue => $error,
         Sections => $error
-            ? 'NAME|'. lc($DB{'type'}) .'/USAGE'
-            : 'NAME|'. lc($DB{'type'})
+            ? 'NAME|'. uc($DB{'type'}) .'/USAGE'
+            : 'NAME|'. uc($DB{'type'})
         ,
     );
 }
@@ -645,6 +645,15 @@ sub _insert_schema {
 
 rt-setup-fulltext-index - Helps create indexes for full text search
 
+=head1 DESCRIPTION
+
+Full text search is very database specific. This script setups indexing
+for Oracle, Pg and mysql. Below you can find specifics for your current
+DB.
+
+At the end script prints piece that you should put into RT config to enable
+created index. Don't forget to restart the web-server after changing config.
+
 =head1 ORACLE
 
 =head2 USAGE
@@ -654,17 +663,25 @@ rt-setup-fulltext-index - Helps create indexes for full text search
 
 =head2 DESCRIPTION
 
-This utility grants CTXAPP role to RT's user and rights to execute functions
-from CTX_DDL package. Also, it creates several prefernces, functions and triggers
-all starting with 'rt_fts_' prefix in the name. After all an index is created.
+Creates Oracle CONTEXT index on the Content column in the Attachments table.
+As well, it creates several preferences, functions and triggers to support
+this index.
+
+CONTEXT index needs periodic synchronization after any updates. Either use
+F<sbin/rt-fulltext-indexer> or read its documentation for alternatives.
 
 =head1 PG
 
 =head2 USAGE
 
     rt-setup-fulltext-index --help
+    rt-setup-fulltext-index --dba postgres --dba-password 'secrete'
 
 =head2 DESCRIPTION
+
+Creates an additional column to store a ts_vector and then creates either
+GiN or GiST index on it. Use F<sbin/rt-fulltext-indexer> to keep index in
+sync.
 
 =head1 MYSQL
 
@@ -673,6 +690,10 @@ all starting with 'rt_fts_' prefix in the name. After all an index is created.
     rt-setup-fulltext-index --help
 
 =head2 DESCRIPTION
+
+Full text search in mysql implemented through Sphinx and MySQL storage
+engine (SphinxSE), so you need mysql compiled with it. Use
+F<sbin/rt-fulltext-indexer> to keep index in sync.
 
 =head1 AUTHOR
 
