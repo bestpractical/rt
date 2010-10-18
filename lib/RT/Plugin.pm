@@ -80,13 +80,17 @@ sub new {
     else {
         push @INC, $add;
     }
+    $self->{_added_inc_path} = $add;
 
     return $self;
 }
 
 sub DESTROY {
     my $self = shift;
-
+    my $inc_path = first_index { Cwd::realpath($_) eq $self->{_added_inc_path} } @INC;
+    if ($inc_path >= 0 ) {
+        splice(@INC, $inc_path, 1);
+    }
 }
 
 =head2 Name

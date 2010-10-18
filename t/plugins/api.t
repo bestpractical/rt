@@ -5,7 +5,7 @@ use File::Basename qw(basename dirname);
 require RT;
 $RT::PluginPath = abs_path(dirname($0)).'/_plugins';
 
-use RT::Test nodb => 1, tests => 5;
+use RT::Test nodb => 1, tests => 7;
 
 is_deeply([RT->PluginDirs('lib')], []);
 ok(!grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
@@ -20,3 +20,9 @@ require RT::Interface::Web::Handler;
 
 is_deeply({RT::Interface::Web::Handler->DefaultHandlerArgs}->{comp_root}[1],
           ['plugin-Hello', $RT::PluginPath.'/Hello/html']);
+
+# reset
+RT->Config->Set('Plugins',qw());
+RT->InitPluginPaths;
+ok(!grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);
+is({RT::Interface::Web::Handler->DefaultHandlerArgs}->{comp_root}[1][0],'standard');
