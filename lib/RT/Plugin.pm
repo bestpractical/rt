@@ -97,22 +97,24 @@ See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
 sub Path {
     my $self   = shift;
     my $subdir = shift;
-    my $res = $self->_BasePath;
+    my $res = $self->BasePathFor($self->{'name'});
     $res .= "/$subdir" if defined $subdir && length $subdir;
     return $res;
 }
 
-sub _BasePath {
-    my $self = shift;
-    $self->BasePathFor($self->{'name'});
-}
+=head2 $class->BasePathFor($name)
+
+Takes a name of a given plugin and return its base path.
+
+=cut
+
 
 sub BasePathFor {
-    my ($class, $base) = @_;
+    my ($class, $name) = @_;
 
-    $base =~ s/::/-/g;
-    my $local_base = $RT::LocalPluginPath."/".$base;
-    my $base_base = $RT::PluginPath."/".$base;
+    $name =~ s/::/-/g;
+    my $local_base = $RT::LocalPluginPath."/".$name;
+    my $base_base = $RT::PluginPath."/".$name;
 
     return -d $local_base ? $local_base : $base_base;
 }
