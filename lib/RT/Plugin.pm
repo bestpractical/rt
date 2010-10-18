@@ -104,7 +104,12 @@ sub Path {
 
 sub _BasePath {
     my $self = shift;
-    my $base = $self->{'name'};
+    $self->BasePathFor($self->{'name'});
+}
+
+sub BasePathFor {
+    my ($class, $base) = @_;
+
     $base =~ s/::/-/g;
     my $local_base = $RT::LocalPluginPath."/".$base;
     my $base_base = $RT::PluginPath."/".$base;

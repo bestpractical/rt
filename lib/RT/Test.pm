@@ -420,10 +420,10 @@ sub bootstrap_plugins {
         $cwd = Cwd::getcwd();
     }
 
-    my $old_func = \&RT::Plugin::_BasePath;
+    my $old_func = \&RT::Plugin::BasePathFor;
     no warnings 'redefine';
-    *RT::Plugin::_BasePath = sub {
-        my $name = $_[0]->{'name'};
+    *RT::Plugin::BasePathFor = sub {
+        my $name = $_[1];
 
         return $cwd if $args{'testing'} && $name eq $args{'testing'};
 

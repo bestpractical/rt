@@ -14,12 +14,9 @@ RT->InitPluginPaths;
 
 ok(grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
 
-is_deeply([RT->PluginDirs('lib')], ["$RT::PluginPath/Hello/lib"]);
+is_deeply([RT->PluginDirs('lib')], ["$RT::PluginPath/Hello/lib"], 'plugin lib dir found');
 
 require RT::Interface::Web::Handler;
 
-
 is_deeply({RT::Interface::Web::Handler->DefaultHandlerArgs}->{comp_root}[1],
           ['plugin-Hello', $RT::PluginPath.'/Hello/html']);
-
-

@@ -591,7 +591,17 @@ In case F<local/lib> isn't in @INC, append them to @INC
 sub InitPluginPaths {
     my $self = shift || __PACKAGE__;
 
-    my @lib_dirs = $self->PluginDirs('lib');
+    if ($PLUGINS) {
+        Carp::carp "reinitializing plugin paths";
+        $PLUGINS = undef;
+    }
+
+    my @lib_dirs;
+    foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
+        my $path = RT::Plugin->BasePathFor( $plugin_name ) . '/lib';
+        next unless -d $path;
+        push @lib_dirs, $path;
+    }
 
     my @tmp_inc;
     my $added;
