@@ -81,8 +81,15 @@ if ( $Run ) {
         push @errors, loc("Invalid [_1]: it should be a number", 'WebPort');
     }
 
-    unless ( $ARGS{Password} ) {
+    if ( !$ARGS{Password} ) {
         push @errors, loc("You must enter an Administrative password");
+    }
+    else {
+        my $dummy_user = RT::User->new($session{CurrentUser});
+        my ($ok, $msg) = $dummy_user->ValidatePassword($ARGS{Password});
+        unless ($ok) {
+            push @errors, $msg;
+        }
     }
 
     if ( $Back ) {
