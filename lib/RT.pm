@@ -139,8 +139,6 @@ sub Init {
 
     CheckPerlRequirements();
 
-    InitPluginPaths();
-
     #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
