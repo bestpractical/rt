@@ -79,7 +79,7 @@ div.button-row {
 }
 
 
-input[type=reset], input[type=submit], input[class=button] {
+input[type=reset], input[type=submit], input[class=button], button {
    color: #fff;
    background: #3858a3;
    padding: 0.25em;
