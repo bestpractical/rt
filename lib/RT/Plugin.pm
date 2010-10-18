@@ -128,7 +128,6 @@ Takes a name of a given plugin and return its base path.
 
 =cut
 
-
 sub BasePathFor {
     my ($class, $name) = @_;
 
@@ -137,6 +136,23 @@ sub BasePathFor {
     my $base_base = $RT::PluginPath."/".$name;
 
     return -d $local_base ? $local_base : $base_base;
+}
+
+=head2 AvailablePlugins($plugin_path)
+
+=cut
+
+sub AvailablePlugins {
+    my ($class, $plugin_path) = @_;
+    my @res;
+    my @paths = $plugin_path ? ($plugin_path) : ($RT::LocalPluginPath, $RT::PluginPath);
+    for my $abs_path (map { <$_/*> } @paths) {
+        my ($dir, $name) = $abs_path =~ m|(.*)/([^/]+)$|;
+        # ensure no cascading
+        next if $class->BasePathFor($name) ne $abs_path;
+        push @res, $name;
+    }
+    return \@res;
 }
 
 =head2 ComponentRoot
