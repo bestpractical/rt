@@ -236,6 +236,7 @@ HTML::Mason::PSGIHandler
 Plack
 Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
+Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];

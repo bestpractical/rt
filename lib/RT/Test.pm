@@ -1152,8 +1152,18 @@ sub start_plack_server {
             or die "Can't start a new session: $!";
     }
 
-    require RT::Interface::Web::Handler;
-    $plack_server->run(RT::Interface::Web::Handler->PSGIApp);
+    # stick this in a scope so that when $app is garbage collected,
+    # StashWarnings can complain about unhandled warnings
+    do {
+        require RT::Interface::Web::Handler;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
+
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+        $plack_server->run($app);
+    };
+
     exit;
 }
 
