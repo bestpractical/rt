@@ -597,7 +597,7 @@ sub show_help {
         ExitValue => $error,
         Sections => $error
             ? 'NAME|'. uc($DB{'type'}) .'/USAGE'
-            : 'NAME|'. uc($DB{'type'})
+            : 'NAME|DESCRIPTION|'. uc($DB{'type'})
         ,
     );
 }
