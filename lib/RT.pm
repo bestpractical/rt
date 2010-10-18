@@ -547,14 +547,14 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 
 =cut
 
-our @PLUGINS = ();
+my $PLUGINS;
 sub Plugins {
     my $self = shift;
-    unless (@PLUGINS) {
+    unless ($PLUGINS) {
         $self->InitPluginPaths;
-        @PLUGINS = $self->InitPlugins;
+        $PLUGINS = [$self->InitPlugins];
     }
-    return \@PLUGINS;
+    return $PLUGINS;
 }
 
 =head2 PluginDirs
