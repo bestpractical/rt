@@ -140,8 +140,6 @@ sub import {
 
     $class->bootstrap_db( %args );
 
-    RT::InitPluginPaths();
-
     RT::ConnectToDatabase()
         unless $args{nodb};
 

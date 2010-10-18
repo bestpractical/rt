@@ -11,7 +11,7 @@ is_deeply([RT->PluginDirs('lib')], []);
 ok(!grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
 RT->Config->Set('Plugins',qw(Hello));
 RT->InitPluginPaths;
-
+RT->Plugins;
 ok(grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
 
 is_deeply([RT->PluginDirs('lib')], ["$RT::PluginPath/Hello/lib"], 'plugin lib dir found');

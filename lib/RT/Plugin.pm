@@ -65,13 +65,29 @@ it cares about is 'name', the name of this plugin.
 
 =cut
 
+use List::MoreUtils qw(first_index);
+
 sub new {
     my $class = shift;
     my $args ={@_};
     my $self = bless $args, $class;
+
+    my $add = $self->Path("lib");
+    my $local_path = first_index { Cwd::realpath($_) eq $RT::LocalLibPath } @INC;
+    if ($local_path >= 0 ) {
+        splice(@INC, $local_path+1, 0, $add);
+    }
+    else {
+        push @INC, $add;
+    }
+
     return $self;
 }
 
+sub DESTROY {
+    my $self = shift;
+
+}
 
 =head2 Name
 

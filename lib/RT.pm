@@ -573,8 +573,8 @@ sub PluginDirs {
     require RT::Plugin;
 
     my @res;
-    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
-        my $path = RT::Plugin->new( name => $plugin )->Path( $subdir );
+    foreach my $plugin (@{ RT->Plugins }) {
+        my $path = $plugin->Path($subdir);
         next unless -d $path;
         push @res, $path;
     }
@@ -595,30 +595,6 @@ sub InitPluginPaths {
         Carp::carp "reinitializing plugin paths";
         $PLUGINS = undef;
     }
-
-    my @lib_dirs;
-    foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
-        my $path = RT::Plugin->BasePathFor( $plugin_name ) . '/lib';
-        next unless -d $path;
-        push @lib_dirs, $path;
-    }
-
-    my @tmp_inc;
-    my $added;
-    for (@INC) {
-        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
-            push @tmp_inc, $_, @lib_dirs;
-            $added = 1;
-        } else {
-            push @tmp_inc, $_;
-        }
-    }
-
-    # append @lib_dirs in case $RT::LocalLibPath isn't in @INC
-    push @tmp_inc, @lib_dirs unless $added;
-
-    my %seen;
-    @INC = grep !$seen{$_}++, @tmp_inc;
 }
 
 =head2 InitPlugins
@@ -631,10 +607,11 @@ sub InitPlugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
-    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
-        $plugin->require;
+    foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
+        my $plugin = RT::Plugin->new(name => $plugin_name);
+        $plugin_name->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
-        push @plugins, RT::Plugin->new(name =>$plugin);
+        push @plugins, $plugin;
     }
     return @plugins;
 }
