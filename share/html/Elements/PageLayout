@@ -55,7 +55,7 @@
 </div>
 
 % if ( $show_menu ) {
-<div id="nav"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
+<div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 
 <div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }

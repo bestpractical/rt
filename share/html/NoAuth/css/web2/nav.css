@@ -45,19 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-#nav {
-    background: #fff;
+#main-navigation {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: auto;
+    z-index: 9999;
 }
 
 #page-navigation {
     position: absolute;
-    top: 7.8em;
+    top: 5.5em;
     right: 0em;
     left: auto;
-    z-index: 9999;
+    z-index: 9995;
 }
 .sf-menu {
-    z-index: 9999;
     width: 100%;
 }
 
@@ -70,5 +73,5 @@
 }
 
 .sf-menu li, .sf-menu li li, .sf-menu li li li {
-    background-color: #ccc;
+    background-color: #eee;
 }

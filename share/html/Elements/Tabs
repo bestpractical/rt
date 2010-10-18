@@ -68,15 +68,6 @@ my $query_string = sub {
     return $u->query;
 };
 
-my $PREFS_NAV = RT::Interface::Web::Menu->new(
-               { title => loc('Preferences'), path => '/Prefs/Other.html' } );
-$PREFS_NAV->child( loc('Settings'), path => '/Prefs/Other.html', );
-$PREFS_NAV->child( loc('About me'), path => '/User/Prefs.html', );
-$PREFS_NAV->child( loc('Search options'),
-                   path => '/Prefs/SearchOptions.html', );
-$PREFS_NAV->child( loc('RT at a glance'), path => '/Prefs/MyRT.html', );
-$PREFS_NAV->child( 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html' );
-
 if ( $request_path =~ qr{.*} ) {
     Menu->child( home => title =>  loc('HomePage'), path => '/' );
     my $tickets = Menu->child( search => title => loc('Tickets'),
@@ -198,22 +189,29 @@ if ( $request_path =~ qr{.*} ) {
         $admin_tools->child( loc('Shredder'),
                              path => '/Admin/Tools/Shredder', );
     }
+    my $about_me =  Menu->child( 'preferences' => title => loc("Logged in as [_1]", $session{'CurrentUser'}->Name), sort_rder => 99 );
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf',
                                                Object => $RT::System )
        )
     {
+$about_me->child( loc('Settings'), path => '/Prefs/Other.html', );
+$about_me->child( loc('About me'), path => '/User/Prefs.html', );
+$about_me->child( loc('Search options'),
+                   path => '/Prefs/SearchOptions.html', );
+$about_me->child( loc('RT at a glance'), path => '/Prefs/MyRT.html', );
+$about_me->child( 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html' );
 
-        if ( $session{'CurrentUser'}
-             ->HasRight( Right => 'ModifySelf', Object => $RT::System ) )
-        {
 
-            Menu->child( 'Preferences' => menu => $PREFS_NAV, Order => 99 );
-        }
+if ( $session{'CurrentUser'}->Name
+    && ( !RT->Config->Get('WebExternalAuth')
+        || RT->Config->Get('WebFallbackToInternalAuth')
+    )
+) {
+  $about_me->child(logout => title => loc('Logout'),  path =>'/NoAuth/Logout.html');
     }
-
 }
-
+}
 if ( $request_path =~ qr'Dashboards/(\d+)?' ) {
     if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
         my $obj = RT::Dashboard->new( $session{'CurrentUser'} );

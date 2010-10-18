@@ -69,7 +69,7 @@ div#body {
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
     margin-left: 1em;
-    margin-top: 5.6em;
+    margin-top: 3em;
     margin-right: 0;
     margin-bottom: 0em;
     min-height: 10%;
@@ -219,7 +219,7 @@ div#header h1 {
  position: absolute;
  left: 0.5em;
  right: 20em;
- top: 3em;
+ top: 1.6em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;
