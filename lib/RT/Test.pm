@@ -150,8 +150,6 @@ sub import {
 
     $class->bootstrap_plugins( %args );
 
-    RT->Plugins;
-    
     RT::I18N->Init();
     RT->Config->PostLoadCheck;
 
@@ -407,7 +405,9 @@ sub bootstrap_plugins {
     my $self = shift;
     my %args = @_;
 
-    return unless $args{'requires'};
+    unless ($args{'requires'}) {
+        return RT->Plugins;
+    }
 
     my @plugins = @{ $args{'requires'} };
     push @plugins, $args{'testing'}
@@ -445,8 +445,8 @@ sub bootstrap_plugins {
     ) if @plugins;
 
     require File::Spec;
-    foreach my $name ( @plugins ) {
-        my $plugin = RT::Plugin->new( name => $name );
+    foreach my $plugin ( @{ RT->Plugins } ) {
+        my $name = $plugin->Name;
         Test::More::diag( "Initializing DB for the $name plugin" )
             if $ENV{'TEST_VERBOSE'};
 
@@ -479,6 +479,7 @@ sub bootstrap_plugins {
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
     $dba_dbh->disconnect if $dba_dbh;
+    return RT->Plugins;
 }
 
 sub _get_dbh {

@@ -146,7 +146,7 @@ sub Init {
     InitSystemObjects();
     InitClasses();
     InitLogging();
-    InitPlugins();
+    RT->Plugins();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
 
