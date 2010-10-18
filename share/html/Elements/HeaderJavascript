@@ -59,7 +59,7 @@ $onload => undef
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/ckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
 	jQuery( loadTitleBoxStates );
@@ -71,6 +71,6 @@ $onload => undef
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'FCKeditorEncoded'} || 0 %>') });
+    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
 % }
 --></script>

@@ -246,7 +246,7 @@ jQuery(function() {
 
 function ReplaceAllTextareas(encoded) {
     var sAgent = navigator.userAgent.toLowerCase();
-    if (!FCKeditor_IsCompatibleBrowser() ||
+    if (!CKEDITOR.env.isCompatible ||
         sAgent.indexOf('iphone') != -1 ||
         sAgent.indexOf('android') != -1 )
         return false;
@@ -266,11 +266,11 @@ function ReplaceAllTextareas(encoded) {
                     .replace(/\n/g, "\n<br />");
             }
             // For this javascript
-            var FCKeditorEncoded = document.createElement('input');
-            FCKeditorEncoded.setAttribute('type', 'hidden');
-            FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-            FCKeditorEncoded.setAttribute('value', '1');
-            textArea.parentNode.appendChild(FCKeditorEncoded);
+            var CKeditorEncoded = document.createElement('input');
+            CKeditorEncoded.setAttribute('type', 'hidden');
+            CKeditorEncoded.setAttribute('name', 'CKeditorEncoded');
+            CKeditorEncoded.setAttribute('value', '1');
+            textArea.parentNode.appendChild(CKeditorEncoded);
 
             // For fckeditor
             var typeField = document.createElement('input');
@@ -279,9 +279,9 @@ function ReplaceAllTextareas(encoded) {
             typeField.setAttribute('value', 'text/html');
             textArea.parentNode.appendChild(typeField);
 
-            var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
-            oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
-            oFCKeditor.ReplaceTextarea();
+
+            CKEDITOR.replace(textArea.name,{width:'100%',height:'<% RT->Config->Get('MessageBoxRichTextHeight') %>'});
+            CKEDITOR.basePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
 
             jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }

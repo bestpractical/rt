@@ -1,4 +1,0 @@
-The files editor/css/fck_editorarea.css and editor/skins/default/fck_editor.css
-are modified, as there is no other way to effect the iframe styles FCKeditor
-uses.  Any updates to FCKeditor should preserve these changes, so check the
-history.
