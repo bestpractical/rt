@@ -513,7 +513,7 @@ sub Redirect {
         }
 
         # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
-        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} );
+        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'});
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
