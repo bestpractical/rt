@@ -5,7 +5,7 @@ use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
-use RT::Test tests => 42;
+use RT::Test tests => 44;
 
 my $cookie_jar = HTTP::Cookies->new;
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -246,4 +246,13 @@ diag "input a condition, select (several conditions), click delete"
     );
 }
 
-1;
+diag "send query with not quoted negative number";
+{
+    my $response = $agent->get($url."Search/Build.html?Query=Priority%20>%20-2");
+    ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
+
+    is( getQueryFromForm,
+        "Priority > -2",
+        "query is the same"
+    );
+}
