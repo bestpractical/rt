@@ -342,7 +342,7 @@ AC_SUBST([LOCAL_LIB_PATH],		${exp_customlibdir})
 AC_SUBST([LOCAL_PLUGIN_PATH],		${exp_customplugindir})
 AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
-if test ${exp_sysconfdir} = "etc"; then
+if test ${exp_sysconfdir} = "etc" -o ${exp_sysconfdir} = "etc/rt"; then
 AC_SUBST([RT_PATH_R],			${exp_prefix})
 AC_SUBST([RT_DOC_PATH_R],			${exp_prefix}/${exp_manualdir})
 AC_SUBST([RT_LOCAL_PATH_R],		${exp_prefix}/${exp_customdir})
