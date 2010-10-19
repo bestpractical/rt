@@ -262,4 +262,75 @@ sub no_leftover_warnings_ok {
     return @warnings == 0 ? 1 : 0;
 }
 
+sub ticket_status {
+    my $self = shift;
+    my $id = shift;
+    
+    $self->display_ticket( $id);
+    my ($got) = ($self->content =~ qr{Status:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    unless ( $got ) {
+        Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
+    }
+    return $got;
+}
+
+sub ticket_status_is {
+    my $self = shift;
+    my $id = shift;
+    my $status = shift;
+    my $desc = shift || "Status of the ticket #$id is '$status'";
+    return Test::More::is($self->ticket_status( $id), $status, $desc);
+}
+
+sub get_ticket_id {
+    my $self = shift;
+    my $content = $self->content;
+    my $id = 0;
+    if ($content =~ /.*Ticket (\d+) created.*/g) {
+        $id = $1;
+    }
+    elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
+        Test::More::diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
+        $id = $1;
+    }
+    return $id;
+}
+
+sub set_custom_field {
+    my $self   = shift;
+    my $queue   = shift;
+    my $cf_name = shift;
+    my $val     = shift;
+    
+    my $field_name = $self->custom_field_input( $queue, $cf_name )
+        or return 0;
+
+    $self->field($field_name, $val);
+    return 1;
+}
+
+sub custom_field_input {
+    my $self   = shift;
+    my $queue   = shift;
+    my $cf_name = shift;
+
+    my $cf_obj = RT::CustomField->new( $RT::SystemUser );
+    $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
+    unless ( $cf_obj->id ) {
+        Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
+        return undef;
+    }
+    my $cf_id = $cf_obj->id;
+    
+    my ($res) =
+        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        map $_->name,
+        $self->current_form->inputs;
+    unless ( $res ) {
+        Test::More::diag("Can not find input for custom field '$cf_name' #$cf_id");
+        return undef;
+    }
+    return $res;
+}
+
 1;

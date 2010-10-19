@@ -57,7 +57,7 @@
 </p>
 
 <p>
-<&|/l&>If you've change the Port that RT runs on, you'll need to restart the server in order to log in.</&>
+<&|/l&>If you've changed the Port that RT runs on, you'll need to restart the server in order to log in.</&>
 </p>
 
 <p>
@@ -84,7 +84,8 @@ if ( $Run ) {
                 'failed to make ' . RT::Installer->ConfigFile . ' readonly' );
     my $root = RT::User->new( RT->SystemUser );
     $root->Load('root');
-    $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
+    my ($ok, $val) = $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
+    $RT::Logger->warning("Unable to set root password: $val") if !$ok;
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
 }

@@ -69,30 +69,16 @@ if ( $DashboardObj and $DashboardObj->Id ) {
     $current_subtab = $render;
 
     $actions = {
-        a_Basics => {
-            title => loc('Basics'),
-            path  => $modify,
-        },
-
-        b_Queries => {
-            title => loc('Queries'),
-            path  => $queries,
-        },
-
-        c_Subscription => {
-            title => loc('Subscription'),
-            path  => $subscribe,
-        },
+        a_Show => { title => loc('Show'), path  => $render, },
+        b_Basics => { title => loc('Basics'), path  => $modify, },
+        c_Queries => { title => loc('Queries'), path  => $queries, },
+        d_Subscription => { title => loc('Subscription'), path  => $subscribe, },
     };
 
-    delete $actions->{"c_Subscription"}
-        unless $DashboardObj->CurrentUserCanSubscribe;
+    delete $actions->{"d_Subscription"} unless $DashboardObj->CurrentUserCanSubscribe;
 }
 else {
-    $subtabs->{"a_Select"} = {
-        title => loc('Select'),
-        path  => "Dashboards/index.html",
-    };
+    $subtabs->{"a_Select"} = { title => loc('Select'), path  => "Dashboards/index.html", };
 
     my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
     my @objects = $dashboard->ObjectsForCreating;

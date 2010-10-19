@@ -1,0 +1,93 @@
+<table valign="top">
+
+% for my $o (0..3) {
+% $Order[$o] ||= ''; $OrderBy[$o] ||= '';
+<tr>
+<td class="label">
+% if ($o == 0) {
+<&|/l&>Order by</&>:
+% }
+</td>
+<td class="value">
+<select name="OrderBy">
+% if ($o > 0) {
+<option value=""><&|/l&>~[none~]</&></option>
+% }
+% # %fields maps display name to SQL column/function
+% foreach my $field (sort keys %fields) {
+%    next unless $field;
+%    my $fieldval = $fields{$field};
+<option value="<%$fieldval%>"
+% if (defined $OrderBy[$o] and $fieldval eq $OrderBy[$o]) {
+selected="selected"
+% }
+><% loc($field) %></option>
+% }
+</select>
+<select name="Order">
+<option value="ASC"
+% unless ( ($Order[$o]||'') eq "DESC" ) {
+selected="selected"
+% }
+><&|/l&>Asc</&></option>
+<option value="DESC"
+% if ( ($Order[$o]||'') eq "DESC" ) {
+selected="selected"
+% }
+><&|/l&>Desc</&></option>
+</select>
+</td>
+</tr>
+% }
+<tr>
+<td class="label">
+<&|/l&>Rows per page</&>:
+</td><td class="value">
+<& /Elements/SelectResultsPerPage, 
+    Name => "RowsPerPage", 
+    Default => $RowsPerPage &>
+</td>
+</tr>
+</table>
+
+<%INIT>
+my $tickets = RT::Tickets->new($session{'CurrentUser'});
+my %FieldDescriptions = %{$tickets->FIELDS};
+my %fields;
+
+for my $field (keys %FieldDescriptions) {
+    next if $field eq 'EffectiveId';
+    next unless $FieldDescriptions{$field}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/;
+    $fields{$field} = $field;
+}
+
+$fields{'Owner'} = 'Owner';
+$fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress'
+    for qw(Requestor Cc AdminCc);
+
+# Add all available CustomFields to the list of sortable columns.
+my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
+$fields{$_} = $_ for @cfs;
+
+# Add PAW sort
+$fields{'Custom.Ownership'} = 'Custom.Ownership';
+
+$m->callback(CallbackName => 'MassageSortFields', Fields => \%fields );
+
+my @Order = split /\|/, $Order;
+my @OrderBy = split /\|/, $OrderBy;
+if ($Order =~ /\|/) {
+    @Order = split /\|/, $Order;
+} else {
+    @Order = ( $Order );
+}
+
+</%INIT>
+
+<%ARGS>
+$Order => ''
+$OrderBy => ''
+$RowsPerPage => undef
+$Format => undef
+$GroupBy => 'id'
+</%ARGS>

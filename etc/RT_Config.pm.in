@@ -1829,6 +1829,7 @@ For example:
         initial  => ['new'],
         active   => ['open', 'stalled'],
         inactive => ['resolved', 'rejected', 'deleted'],
+        default_inactive => 'resolved',
         ...
     },
 
@@ -1878,6 +1879,14 @@ changed from an B<Initial> or B<Active> status to an B<Inactive> status.
 B<deleted> is still a special status and protected by the B<DeleteTicket>
 right. If you don't want to allow ticket deletion at any time simply
 don't include it in your lifecycle.
+
+=item default_inactive
+
+you can specify a set of statuses which
+RT will treat as valid "inactive" statuses for tickets.
+
+If you (or your code) doesn't specify a status when resolving a
+ticket, RT will use the L<"default_inactive"> status.
 
 =back
 
@@ -1997,6 +2006,7 @@ Set(%Lifecycles,
         initial         => [ 'new', 'open' ],
         active          => [ 'open', 'stalled' ],
         inactive        => [ 'resolved', 'rejected', 'deleted' ],
+        default_inactive => 'resolved',
 
         transitions => {
 
@@ -2244,5 +2254,11 @@ This option is exists for backwards compatibility.  Don't use it.
 =back
 
 =cut
+
+=head1 DON'T MESS WITH THE STUFF BELOW
+
+=cut
+
+
 
 1;

@@ -74,7 +74,7 @@
     SavedChartSearchId => $ARGS{SavedChartSearchId},
 &>
 
-<form method="post" action="Build.html" name="BuildQuery">
+<form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $ARGS{'SavedChartSearchId'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
@@ -108,8 +108,8 @@
     AvailableColumns => $AvailableColumns,
     CurrentFormat    => $CurrentFormat,
 &>
-<& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </span>
+<& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </form>
 
 <%INIT>

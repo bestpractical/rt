@@ -202,7 +202,6 @@ Regexp::Common
 Scalar::Util
 Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
-Calendar::Simple
 Encode 2.39
 CSS::Squish 0.06
 File::Glob

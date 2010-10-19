@@ -50,12 +50,12 @@ use strict;
 
 # As we specify that XML is UTF-8 and we output it to STDOUT, we must be sure
 # it is UTF-8 so further XMLin will not break
-binmode(STDOUT, ":utf8");
+binmode( STDOUT, ":utf8" );
 
 # fix lib paths, some may be relative
 BEGIN {
     require File::Spec;
-    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my @libs = ( "@RT_LIB_PATH@", "@LOCAL_LIB_PATH@" );
     my $bin_path;
 
     for my $lib (@libs) {
@@ -63,8 +63,7 @@ BEGIN {
             unless ($bin_path) {
                 if ( File::Spec->file_name_is_absolute(__FILE__) ) {
                     $bin_path = ( File::Spec->splitpath(__FILE__) )[1];
-                }
-                else {
+                } else {
                     require FindBin;
                     no warnings "once";
                     $bin_path = $FindBin::Bin;
@@ -97,99 +96,115 @@ my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 
 my %RV;
 my %Ignore = (
-    All => [qw(
-	id Created Creator LastUpdated LastUpdatedBy
-    )],
-    Templates => [qw(
-	TranslationOf
-    )],
+    All => [
+        qw(
+            id Created Creator LastUpdated LastUpdatedBy
+            )
+           ],
+    Templates => [
+        qw(
+            TranslationOf
+            )
+    ],
 );
 
 my $SystemUserId = RT->SystemUser->Id;
-my @classes = qw(
+my @classes      = qw(
     Users Groups Queues ScripActions ScripConditions
     Templates Scrips ACL CustomFields
-);
+    );
 foreach my $class (@classes) {
     require "RT/$class.pm";
-    my $objects = "RT::$class"->new(RT->SystemUser);
+    my $objects = "RT::$class"->new( RT->SystemUser );
     $objects->{find_disabled_rows} = 1;
     $objects->UnLimit;
 
-    if ($class eq 'CustomFields') {
+    if ( $class eq 'CustomFields' ) {
         $objects->OrderByCols(
             { FIELD => 'LookupType' },
             { FIELD => 'SortOrder' },
             { FIELD => 'Id' },
         );
-    }
-    else {
+    } else {
         $objects->OrderBy( FIELD => 'Id' );
     }
 
     if ($LocalOnly) {
-        next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
-	$objects->Limit( FIELD => 'LastUpdatedBy', OPERATOR => '!=', VALUE => $SystemUserId )
-	    unless $class eq 'Groups';
-	$objects->Limit( FIELD => 'Id', OPERATOR => '!=', VALUE => $SystemUserId )
-	    if $class eq 'Users';
-	$objects->Limit( FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined' )
-	    if $class eq 'Groups';
+        next if $class eq 'ACL';    # XXX - would go into infinite loop - XXX
+        $objects->Limit(
+            FIELD    => 'LastUpdatedBy',
+            OPERATOR => '!=',
+            VALUE    => $SystemUserId
+        ) unless $class eq 'Groups';
+        $objects->Limit(
+            FIELD    => 'Id',
+            OPERATOR => '!=',
+            VALUE    => $SystemUserId
+        ) if $class eq 'Users';
+        $objects->Limit(
+            FIELD    => 'Domain',
+            OPERATOR => '=',
+            VALUE    => 'UserDefined'
+        ) if $class eq 'Groups';
     }
 
     my %fields;
-    while (my $obj = $objects->Next) {
-	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $SystemUserId;
+    while ( my $obj = $objects->Next ) {
+        next
+            if $obj->can('LastUpdatedBy')
+                and $obj->LastUpdatedBy == $SystemUserId;
 
-	if (!%fields) {
-	    %fields = map { $_ => 1 } keys %{$obj->_ClassAccessible};
-	    delete @fields{
-		@{$Ignore{$class}||=[]},
-		@{$Ignore{All}||=[]},
-	    };
-	}
+        if ( !%fields ) {
+            %fields = map { $_ => 1 } keys %{ $obj->_ClassAccessible };
+            delete @fields{ @{ $Ignore{$class} ||= [] },
+                @{ $Ignore{All} ||= [] }, };
+        }
 
-	my $rv;
-	# next if $obj-> # skip default names
-	foreach my $field (sort keys %fields) {
-	    my $value = $obj->__Value($field);
-	    $rv->{$field} = $value if ( defined ($value) && length($value) );
-	}
-	delete $rv->{Disabled} unless $rv->{Disabled};
+        my $rv;
 
-	foreach my $record (map { /ACL/ ? 'ACE' : substr($_, 0, -1) } @classes) {
-	    foreach my $key (map "$record$_", ('', 'Id')) {
-		next unless exists $rv->{$key};
-		my $id = $rv->{$key} or next;
-		my $obj = "RT::$record"->new(RT->SystemUser);
-		$obj->LoadByCols( Id => $id ) or next;
-		$rv->{$key} = $obj->__Value('Name') || 0;
-	    }
-	}
+        # next if $obj-> # skip default names
+        foreach my $field ( sort keys %fields ) {
+            my $value = $obj->__Value($field);
+            $rv->{$field} = $value if ( defined($value) && length($value) );
+        }
+        delete $rv->{Disabled} unless $rv->{Disabled};
 
-	if ($class eq 'Users' and defined $obj->Privileged) {
-	    $rv->{Privileged} = int($obj->Privileged);
-	}
-	elsif ($class eq 'CustomFields') {
-	    my $values = $obj->Values;
-	    while (my $value = $values->Next) {
-		push @{$rv->{Values}}, {
-		    map { ($_ => $value->__Value($_)) } qw(
-			Name Description SortOrder
-		    ),
-		};
-	    }
-	}
+        foreach my $record ( map { /ACL/ ? 'ACE' : substr( $_, 0, -1 ) }
+            @classes )
+        {
+            foreach my $key ( map "$record$_", ( '', 'Id' ) ) {
+                next unless exists $rv->{$key};
+                my $id = $rv->{$key} or next;
+                my $obj = "RT::$record"->new( RT->SystemUser );
+                $obj->LoadByCols( Id => $id ) or next;
+                $rv->{$key} = $obj->__Value('Name') || 0;
+            }
+        }
 
-	if (eval { require RT::Attributes; 1 }) {
-	    my $attributes = $obj->Attributes;
-	    while (my $attribute = $attributes->Next) {
-		my $content = $attribute->Content;
-		$rv->{Attributes}{$attribute->Name} = $content if length($content);
-	    }
-	}
+        if ( $class eq 'Users' and defined $obj->Privileged ) {
+            $rv->{Privileged} = int( $obj->Privileged );
+        } elsif ( $class eq 'CustomFields' ) {
+            my $values = $obj->Values;
+            while ( my $value = $values->Next ) {
+                push @{ $rv->{Values} }, {
+                    map { ( $_ => $value->__Value($_) ) }
+                        qw(
+                        Name Description SortOrder
+                        ),
+                };
+            }
+        }
 
-	push @{$RV{$class}}, $rv;
+        if ( eval { require RT::Attributes; 1 } ) {
+            my $attributes = $obj->Attributes;
+            while ( my $attribute = $attributes->Next ) {
+                my $content = $attribute->Content;
+                $rv->{Attributes}{ $attribute->Name } = $content
+                    if length($content);
+            }
+        }
+
+        push @{ $RV{$class} }, $rv;
     }
 }
 
@@ -201,11 +216,11 @@ __DATA__
 .
 
 print XML::Simple::XMLout(
-    { map { ($_ => ($RV{$_} || [])) } @classes },
-    RootName => 'InitialData',
-    NoAttr => 1,
+    { map { ( $_ => ( $RV{$_} || [] ) ) } @classes },
+    RootName      => 'InitialData',
+    NoAttr        => 1,
     SuppressEmpty => '',
-    XMLDecl => '<?xml version="1.0" encoding="UTF-8"?>',
+    XMLDecl       => '<?xml version="1.0" encoding="UTF-8"?>',
 );
 
 __END__

@@ -171,4 +171,66 @@ padding-bottom: 1em;
 
 }
 
+.chart.image {
+    margin-top: -1em;
+    padding-right: 2em;
+    float: left;
+    clear: both;
+}
 
+.chart-wrapper {
+    display: block;
+    width: auto;
+}
+
+.chart-wrapper .collection-as-table {
+    width: auto;
+    font-size: 1em;
+}
+
+.chart-wrapper .collection-as-table th.collection-as-table {
+    text-align: center;
+    padding: 0.5em;
+    padding-right: 1em;
+    padding-left:  1em;
+}
+
+.chart-wrapper .collection-as-table tr.total td {
+    border-top: 1px solid #ccc;
+}
+
+.chart-wrapper .collection-as-table td.value {
+    padding-left: 0.5em;
+}
+
+.chart-wrapper .query {
+    clear: both;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 1em;
+}
+
+.chart-wrapper .collection-as-table .label {
+    font-weight: bold;
+}
+
+
+.chart-wrapper .query .label {
+    font-weight: bold;
+}
+
+.chart-meta {
+    padding-top: 2em;
+    border-top: 1px solid #ccc;
+}
+
+.chart-meta .chart-type {
+    display: inline-block;
+    float: left;
+    padding-right: 2em;
+    clear: both;
+}
+
+.chart-meta .saved-search {
+    display: inline-block;
+}

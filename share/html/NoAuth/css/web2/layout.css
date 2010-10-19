@@ -62,12 +62,15 @@ body {
 div#body {
     position: relative;
     padding: 1em;
+    padding-right: 0.5em;
     padding-top: 1.8em;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
+    -moz-border-radius-topleft: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
     margin-left: 10.5em;
     margin-top: 5.6em;
-    margin-right: 1em;
+    margin-right: 0;
     margin-bottom: 0em;
     min-height: 10%;
     background: #fff;

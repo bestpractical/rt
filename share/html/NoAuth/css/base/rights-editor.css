@@ -147,6 +147,10 @@ li.category ~ li.category {
     border-color: #aaa !important;
 }
 
+.rights-editor .separator {
+    display: none;
+}
+
 .rights-editor .rightname {
     color: #888;
     font-size: 0.9em;

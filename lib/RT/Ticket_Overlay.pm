@@ -2637,10 +2637,10 @@ sub _MergeInto {
     }
 
 
-    if ( $self->__Value('Status') ne 'resolved' ) {
-
+    my $default_inactive = $self->QueueObj->lifecycle->default_inactive;
+    if ( $default_inactive ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
-            = $self->__Set( Field => 'Status', Value => 'resolved' );
+            = $self->__Set( Field => 'Status', Value => $default_inactive );
 
         unless ($status_val) {
             $RT::Handle->Rollback();

@@ -136,7 +136,7 @@
  overflow-x: auto;
 }
 
-#comp-Search-Build .submit {
+#BuildQuery .submit {
  width: 58%;
 }
 
@@ -144,9 +144,6 @@
 #sorting.titlebox {
  width: 55%;
  padding-right: 1em;
-}
-
-#comp-Search-Build #columns {
 }
 
 #display-options .submit {
@@ -187,6 +184,56 @@
 
 }
 
+.edit-saved-searches .label {
+    display: inline-block;
+    width: 10em;
+    font-weight: bold;
+}
+
+span#display-options {
+    display: block;
+    padding-top: 2em;
+    margin-top: 2em;
+    border-top: 1px solid #ccc;
+    clear: both;
+}
+
+span#display-options .titlebox#sorting {
+    float: left;
+    width: auto;
+    margin-right: 2em;
+    min-width: 35%;
+}
+
+span#display-options .titlebox#columns {
+    float: left;
+}
+
+span#display-options .titlebox#columns table.edit-columns td {
+    padding: 0.5em;
+}
+
+span#display-options .titlebox#columns table.edit-columns div.row {
+    width: 9em; 
+}
+span#display-options .titlebox#columns table.edit-columns span.label {
+    width: 2em;
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value input,
+span#display-options .titlebox#columns table.edit-columns span.value select {
+    width: 7em;
+    padding: 0;
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value {
+    display: inline-block;
+    width:7em;
+}
+
+#BuildQuery #formatbuttons.submit{
+    width: 85%;
+}
 
 .refresh {
     float: left;

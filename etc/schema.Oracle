@@ -256,7 +256,7 @@ CREATE TABLE Tickets (
   	Priority 		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	TimeEstimated		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	TimeWorked 		NUMBER(11,0) DEFAULT 0 NOT NULL,
-  	Status 			VARCHAR2(10), 		
+  	Status 			VARCHAR2(64), 		
 	TimeLeft 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Told 			DATE,
 	Starts			DATE,

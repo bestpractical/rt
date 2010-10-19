@@ -266,7 +266,7 @@ CREATE TABLE Tickets (
   Priority integer NOT NULL DEFAULT 0  ,
   TimeEstimated integer NOT NULL DEFAULT 0  ,
   TimeWorked integer NOT NULL DEFAULT 0  ,
-  Status varchar(10) NULL  ,
+  Status varchar(64) NULL  ,
   TimeLeft integer NOT NULL DEFAULT 0  ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,

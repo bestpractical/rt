@@ -55,10 +55,6 @@
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
 
-<form method="post" action="MyRT.html">
-<input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<% loc('Reset to default') %>">
-</form>
 
 <br />
 
@@ -78,6 +74,13 @@
 <input type="submit" class="button" name="UpdateSummaryRows" value="<% loc('Save') %>" />
 </form>
 </&>
+<&|/Widgets/TitleBox, title => loc("Reset RT at a glance") &>
+<form method="post" action="MyRT.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
+</form>
+</&>
+
 
 <%INIT>
 my @results;

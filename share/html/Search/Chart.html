@@ -85,14 +85,19 @@ my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => 
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
-<br />
+<div class="chart-meta">
+<div class="chart-type">
 <&| /Widgets/TitleBox, title => loc('Graph Properties')&>
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
+
 <&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy) 
 &>[_1] chart by [_2]</&><input type="submit" class="button" value="<%loc('Update Graph')%>" />
 </form>
 </&>
-
-<& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+</div>
+<div class="saved-search">
+    <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+</div>
+</div>

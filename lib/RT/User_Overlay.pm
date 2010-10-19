@@ -142,9 +142,10 @@ sub Create {
         delete $args{'CryptedPassword'};
     } elsif ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
-    } elsif ( length( $args{'Password'} ) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [_1] characters long",RT->Config->Get('MinimumPasswordLength')) );
     } else {
+        my ($ok, $msg) = $self->ValidatePassword($args{'Password'});
+        return ($ok, $msg) if !$ok;
+
         $args{'Password'} = $self->_GeneratePassword($args{'Password'});
     }
 
@@ -255,6 +256,24 @@ sub Create {
     $RT::Handle->Commit;
 
     return ( $id, $self->loc('User created') );
+}
+
+=head2 ValidatePassword STRING
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+password is valid.
+
+=cut
+
+sub ValidatePassword {
+    my $self = shift;
+    my $password = shift;
+
+    if ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
+        return ( 0, $self->loc("Password needs to be at least [_1] characters long", RT->Config->Get('MinimumPasswordLength')) );
+    }
+
+    return 1;
 }
 
 =head2 SetPrivileged BOOL
@@ -784,12 +803,14 @@ sub SetPassword {
 
     if ( !$password ) {
         return ( 0, $self->loc("No password set") );
-    } elsif ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [_1] characters long", RT->Config->Get('MinimumPasswordLength')) );
     } else {
+        my ($val, $msg) = $self->ValidatePassword($password);
+        return ($val, $msg) if !$val;
+
         my $new = !$self->HasPassword;
         $password = $self->_GeneratePassword($password);
-        my ( $val, $msg ) = $self->_Set(Field => 'Password', Value => $password);
+
+        ( $val, $msg ) = $self->_Set(Field => 'Password', Value => $password);
         if ($val) {
             return ( 1, $self->loc("Password set") ) if $new;
             return ( 1, $self->loc("Password changed") );
