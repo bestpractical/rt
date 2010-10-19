@@ -140,6 +140,16 @@ my @args = @ARGV;
 push @args, '--port', $port unless grep { m/port/ } @args;
 
 $r->parse_options(@args);
+
+unless ($r->{env} eq 'development') {
+    push @{$r->{options}}, server_ready => sub {
+        my($args) = @_;
+        my $name  = $args->{server_software} || ref($args); # $args is $server
+        my $host  = $args->{host} || 0;
+        my $proto = $args->{proto} || 'http';
+        print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
+    };
+}
 eval { $r->run(RT::Interface::Web::Handler->PSGIApp) };
 if (my $err = $@) {
     handle_startup_error($err);
