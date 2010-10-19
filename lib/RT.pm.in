@@ -92,33 +92,7 @@ our $MasonDataDir = '@MASON_DATA_PATH@';
 # via the web interface)
 our $MasonSessionDir = '@MASON_SESSION_PATH@';
 
-unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
-
-# if BasePath exists and is absolute, we won't infer it from $INC{'RT.pm'}.
-# otherwise RT.pm will make src dir(where we configure RT) be the BasePath 
-# instead of the --prefix one
-    unless ( -d $BasePath && File::Spec->file_name_is_absolute($BasePath) ) {
-        my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
-
-       # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
-       # is not always absolute
-        $BasePath =
-          File::Spec->rel2abs(
-            File::Spec->catdir( $pm_path, File::Spec->updir ) );
-    }
-
-    $BasePath = Cwd::realpath( $BasePath );
-
-    for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
-            LocalLibPath LexiconPath LocalLexiconPath PluginPath 
-            LocalPluginPath MasonComponentRoot MasonLocalComponentRoot 
-            MasonDataDir MasonSessionDir/ ) {
-        no strict 'refs';
-        # just change relative ones
-        $$path = File::Spec->catfile( $BasePath, $$path )
-          unless File::Spec->file_name_is_absolute( $$path );
-    }
-}
+CanonicalizePaths();
 
 
 =head1 NAME
@@ -686,6 +660,41 @@ sub InstallMode {
     return $_INSTALL_MODE;
 }
 
+sub CanonicalizePaths {
+    unless ( File::Spec->file_name_is_absolute($EtcPath) ) {
+
+   # if BasePath exists and is absolute, we won't infer it from $INC{'RT.pm'}.
+   # otherwise RT.pm will make the source dir(where we configure RT) be the
+   # BasePath instead of the one specified by --prefix
+        unless ( -d $BasePath
+                 && File::Spec->file_name_is_absolute($BasePath) )
+        {
+            my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+
+     # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
+     # is not always absolute
+            $BasePath = File::Spec->rel2abs(
+                          File::Spec->catdir( $pm_path, File::Spec->updir ) );
+        }
+
+        $BasePath = Cwd::realpath($BasePath);
+
+        for my $path (
+                    qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
+                    LocalLibPath LexiconPath LocalLexiconPath PluginPath
+                    LocalPluginPath MasonComponentRoot MasonLocalComponentRoot
+                    MasonDataDir MasonSessionDir/
+                     )
+        {
+            no strict 'refs';
+
+            # just change relative ones
+            $$path = File::Spec->catfile( $BasePath, $$path )
+                unless File::Spec->file_name_is_absolute($$path);
+        }
+    }
+
+}
 
 =head1 BUGS
 
