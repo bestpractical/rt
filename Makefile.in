@@ -517,3 +517,17 @@ build-snapshot:
 clearsign-snapshot:
 	gpg --clearsign "$(SNAPSHOT).tar.gz"
 	sha1sum $(SNAPSHOT).tar.gz*
+
+vessel-import: build-snapshot
+	[ -d $(VESSEL) ] || (echo "VESSEL isn't a path to your shipwright vessel" && exit -1)
+	cp $(VESSEL)/scripts/RT/build.pl /tmp/build.pl
+	./sbin/rt-test-dependencies --with-standalone --with-fastcgi --with-sqlite --list > /tmp/rt.yml
+	shipwright import file:$(SNAPSHOT).tar.gz \
+    --require-yml /tmp/rt.yml \
+    --build-script /tmp/build.pl \
+    --name RT \
+	--repository fs:$(VESSEL) \
+     --log-level=info \
+     --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-NoWarnings,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
+	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
+
