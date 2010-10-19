@@ -538,6 +538,22 @@ also L</InitSystemObjects>.
 
 sub Nobody { return $Nobody }
 
+my $PLUGINS;
+my $LOADED_PLUGINS;
+
+=head2 ProbePlugins($reprobe)
+
+Probe for available plugins.  By default RT caches the plugins found, use C<$reprobe> to override the behaviour.
+
+=cut
+
+sub ProbePlugins {
+    my $self = shift;
+    my $reprobe = shift;
+    undef $PLUGINS if $reprobe;
+    $PLUGINS ||= RT::Plugin->AvailablePlugins;
+}
+
 =head2 Plugins
 
 Returns a listref of all Plugins currently configured for this RT instance.
@@ -545,14 +561,14 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 
 =cut
 
-my $PLUGINS;
 sub Plugins {
     my $self = shift;
-    unless ($PLUGINS) {
-        $self->InitPluginPaths;
-        $PLUGINS = [$self->InitPlugins];
+    $self->ProbePlugins;
+
+    unless ($LOADED_PLUGINS) {
+        $LOADED_PLUGINS = [$self->InitPlugins];
     }
-    return $PLUGINS;
+    return $LOADED_PLUGINS;
 }
 
 =head2 PluginDirs
@@ -563,6 +579,7 @@ This code chacke plugins names or anything else and required when main config
 is loaded to load plugins' configs.
 
 =cut
+
 
 sub PluginDirs {
     my $self = shift;
@@ -587,11 +604,13 @@ In case F<local/lib> isn't in @INC, append them to @INC
 =cut
 
 sub InitPluginPaths {
+    warn "DEPRECATED";
     my $self = shift || __PACKAGE__;
 
-    if ($PLUGINS) {
+    $self->ProbePlugins(1);
+    if ($LOADED_PLUGINS) {
         Carp::carp "reinitializing plugin paths";
-        $PLUGINS = undef;
+        $LOADED_PLUGINS = undef;
     }
 }
 
@@ -606,7 +625,11 @@ sub InitPlugins {
     my @plugins;
     require RT::Plugin;
     foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
-        my $plugin = RT::Plugin->new(Name => $plugin_name);
+        my $plugin = $PLUGINS->{$plugin_name};
+        unless ($plugin) {
+            # XXX: this is mostly for testing for rt plugin dists.
+            $PLUGINS->{$plugin_name} = $plugin = RT::Plugin->new(Name => $plugin_name);
+        }
         $plugin->Enable;
         $plugin_name->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
