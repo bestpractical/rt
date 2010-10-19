@@ -232,7 +232,7 @@ IPC::Run3
 .
 
 $deps{'PSGI'} = [ text_to_hash( << '.') ];
-HTML::Mason::PSGIHandler
+HTML::Mason::PSGIHandler 0.51
 Plack
 Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
