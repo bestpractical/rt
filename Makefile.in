@@ -501,7 +501,9 @@ apachectl:
 	sleep 5
 
 SNAPSHOT=$(shell git describe --tags)
-snapshot:
+snapshot: build-snapshot clearsign-snapshot
+
+build-snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
 	( cd $(SNAPSHOT) &&\
 	        echo "$(SNAPSHOT)" > .tag &&\
@@ -510,6 +512,8 @@ snapshot:
 	        --enable-layout=relative --with-web-handler=standalone ./configure \
 	)
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
+	rm -fr "$(SNAPSHOT)/"
+
+clearsign-snapshot:
 	gpg --clearsign "$(SNAPSHOT).tar.gz"
 	sha1sum $(SNAPSHOT).tar.gz*
-	rm -fr "$(SNAPSHOT)/"
