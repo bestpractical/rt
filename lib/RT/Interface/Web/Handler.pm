@@ -296,8 +296,11 @@ sub CleanupRequest {
     delete $RT::System->{attributes};
 
     # Explicitly remove any tmpfiles that GPG opened, and close their
-    # filehandles.
-    File::Temp::cleanup;
+    # filehandles.  unless we are doing inline psgi testing, which kills all the tmp file created by tests.
+    File::Temp::cleanup()
+            unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
+
+
 }
 
 
