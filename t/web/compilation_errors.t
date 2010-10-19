@@ -55,7 +55,7 @@ sub test_get {
         is($agent->status, 200, "Loaded $file");
         $agent->content_lacks('Not logged in', "Still logged in for  $file");
         $agent->content_lacks('raw error', "Didn't get a Mason compilation error on $file") or do {
-            if (my ($error) = $agent->content =~ /<pre>(.*)/) {
+            if (my ($error) = $agent->content =~ /<pre>(.*?line.*?)$/s) {
                 diag "$file: $error";
             }
         };
