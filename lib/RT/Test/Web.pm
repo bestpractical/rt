@@ -61,7 +61,11 @@ sub new {
 
     if ($class->isa('Test::WWW::Mechanize::PSGI')) {
         require RT::Interface::Web::Handler;
-        push @args, app => RT::Interface::Web::Handler->PSGIApp;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+        push @args, app => $app;
     }
 
     my $self = $class->SUPER::new(@args);
