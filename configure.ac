@@ -8,7 +8,7 @@ AC_REVISION($Revision$)dnl
 dnl Setup autoconf
 AC_PREREQ([2.53])
 AC_INIT(RT, m4_esyscmd([( git describe --tags || cat ./.tag 2> /dev/null || echo "rt-3.9.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
-AC_CONFIG_SRCDIR([lib/RT.pm.in])
+AC_CONFIG_SRCDIR([lib/RT.pm])
 
 dnl Extract RT version number components
 AC_SUBST([rt_version_major],
@@ -422,7 +422,7 @@ dnl All other generated files
 AC_CONFIG_FILES([
                  Makefile
                  etc/RT_Config.pm
-                 lib/RT.pm
+                 lib/RT/Generated.pm
                  bin/mason_handler.svc
                  bin/webmux.pl
                  t/data/configs/apache2.2+mod_perl.conf

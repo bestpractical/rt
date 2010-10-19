@@ -57,43 +57,25 @@ use Cwd ();
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_INSTALL_MODE);
 
-our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
+use vars qw($BasePath
+ $EtcPath
+ $BinPath
+ $SbinPath
+ $VarPath
+ $LexiconPath
+ $PluginPath
+ $LocalPath
+ $LocalEtcPath
+ $LocalLibPath
+ $LocalLexiconPath
+ $LocalPluginPath
+ $MasonComponentRoot
+ $MasonLocalComponentRoot
+ $MasonDataDir
+ $MasonSessionDir);
 
-@DATABASE_ENV_PREF@
 
-our $BasePath = '@RT_PATH@';
-our $EtcPath = '@RT_ETC_PATH@';
-our $BinPath = '@RT_BIN_PATH@';
-our $SbinPath = '@RT_SBIN_PATH@';
-our $VarPath = '@RT_VAR_PATH@';
-our $LexiconPath = '@RT_LEXICON_PATH@';
-our $PluginPath = '@RT_PLUGIN_PATH@';
-our $LocalPath = '@RT_LOCAL_PATH@';
-our $LocalEtcPath = '@LOCAL_ETC_PATH@';
-our $LocalLibPath        =    '@LOCAL_LIB_PATH@';
-our $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
-our $LocalPluginPath = $LocalPath."/plugins";
-
-
-# $MasonComponentRoot is where your rt instance keeps its mason html files
-
-our $MasonComponentRoot = '@MASON_HTML_PATH@';
-
-# $MasonLocalComponentRoot is where your rt instance keeps its site-local
-# mason html files.
-
-our $MasonLocalComponentRoot = '@MASON_LOCAL_HTML_PATH@';
-
-# $MasonDataDir Where mason keeps its datafiles
-
-our $MasonDataDir = '@MASON_DATA_PATH@';
-
-# RT needs to put session data (for preserving state between connections
-# via the web interface)
-our $MasonSessionDir = '@MASON_SESSION_PATH@';
-
-CanonicalizePaths();
-
+RT->LoadGeneratedData();
 
 =head1 NAME
 
@@ -142,7 +124,7 @@ sub LoadConfig {
     unless ( File::Spec->file_name_is_absolute( $gpgopts->{homedir} ) ) {
         $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
-    
+
     return $Config;
 }
 
@@ -163,7 +145,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses();
-    InitLogging(); 
+    InitLogging();
     InitPlugins();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
@@ -205,7 +187,7 @@ sub InitLogging {
         warning   => 3,
         error     => 4, 'err' => 4,
         critical  => 5, crit  => 5,
-        alert     => 6, 
+        alert     => 6,
         emergency => 7, emerg => 7,
     );
 
@@ -262,7 +244,7 @@ sub InitLogging {
             no warnings;
             my %p = @_;
             return $p{'message'} unless $level_to_num{ $p{'level'} } >= $stack_from_level;
-            
+
             require Devel::StackTrace;
             my $trace = Devel::StackTrace->new( ignore_class => [ 'Log::Dispatch', 'Log::Dispatch::Base' ] );
             return $p{'message'} . $trace->as_string;
@@ -364,7 +346,7 @@ sub InitSignalHandlers {
 
 sub CheckPerlRequirements {
     if ($^V < 5.008003) {
-        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
+        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V;
     }
 
     # use $error here so the following "die" can still affect the global $@
@@ -384,13 +366,13 @@ sub CheckPerlRequirements {
         die <<"EOF";
 
 RT requires the Scalar::Util module be built with support for  the 'weaken'
-function. 
+function.
 
-It is sometimes the case that operating system upgrades will replace 
+It is sometimes the case that operating system upgrades will replace
 a working Scalar::Util with a non-working one. If your system was working
 correctly up until now, this is likely the cause of the problem.
 
-Please reinstall Scalar::Util, being careful to let it build with your C 
+Please reinstall Scalar::Util, being careful to let it build with your C
 compiler. Ususally this is as simple as running the following command as
 root.
 
@@ -660,7 +642,16 @@ sub InstallMode {
     return $_INSTALL_MODE;
 }
 
-sub CanonicalizePaths {
+sub LoadGeneratedData {
+    my $class = shift;
+    my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+
+    require "$pm_path/RT/Generated.pm" || die "Couldn't load RT::Generated: $@";
+    $class->CanonicalizeGeneratedPaths();
+}
+
+sub CanonicalizeGeneratedPaths {
+    my $class = shift;
     unless ( File::Spec->file_name_is_absolute($EtcPath) ) {
 
    # if BasePath exists and is absolute, we won't infer it from $INC{'RT.pm'}.
