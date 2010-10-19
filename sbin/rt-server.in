@@ -1,4 +1,4 @@
-#!/Users/clkao/bin/perl -w
+#!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
