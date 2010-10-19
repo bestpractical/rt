@@ -52,6 +52,7 @@ use strict;
 package RT::Plugin;
 use File::ShareDir;
 use Class::Accessor "antlers";
+use Parse::CPAN::Meta;
 
 =head1 NAME
 
@@ -70,7 +71,8 @@ use List::MoreUtils qw(first_index);
 
 has _added_inc_path => (is => "rw", isa => "Str");
 has Name => (is => "rw", isa => "Str");
-
+has Description => (is => "rw", isa => "Str");
+has BasePath => (is => "rw", isa => "Str");
 
 sub new {
     my $class = shift;
@@ -115,7 +117,7 @@ See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
 sub Path {
     my $self   = shift;
     my $subdir = shift;
-    my $res = $self->BasePathFor($self->Name);
+    my $res = $self->BasePath || $self->BasePathFor($self->Name);
     $res .= "/$subdir" if defined $subdir && length $subdir;
     return $res;
 }
@@ -148,9 +150,28 @@ sub AvailablePlugins {
         my ($dir, $name) = $abs_path =~ m|(.*)/([^/]+)$|;
         # ensure no cascading
         next if $class->BasePathFor($name) ne $abs_path;
-        push @res, $name;
+        push @res, $class->ProbePlugin($name);
     }
-    return \@res;
+
+    # XXX: look for collision and warn
+    my %seen;
+    return { map { $seen{$_->Name}++ ? () : ($_->Name => $_) } @res };
+}
+
+sub ProbePlugin {
+    my ($class, $name) = @_;
+    my $base_path = $class->BasePathFor($name);
+    my $meta;
+    if (-e "$base_path/META.yml") {
+        ($meta) = Parse::CPAN::Meta::LoadFile( "$base_path/META.yml" ) or return;
+    }
+    else {
+        $meta = { name => $name };
+    }
+
+    return $class->new(Name => $meta->{name},
+                       Description => $meta->{abstract},
+                       BasePath => $base_path);
 }
 
 =head2 ComponentRoot
