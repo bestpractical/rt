@@ -487,13 +487,13 @@ sub Create {
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
+    foreach my $attr (qw(id Creator Created LastUpdated LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if $args{$attr};
     }
 
     # Delete null integer parameters
     foreach my $attr
-        qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority)
+        (qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority))
     {
         delete $params{$attr}
           unless ( exists $params{$attr} && $params{$attr} );
