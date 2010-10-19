@@ -306,14 +306,16 @@ sub CleanupRequest {
 use RT::Interface::Web::Handler;
 use CGI::Emulate::PSGI;
 use Plack::Request;
-
-use Encode qw(is_utf8 encode_utf8);
+use Plack::Util;
+use Encode qw(encode_utf8);
 
 sub PSGIApp {
     my $self = shift;
 
+    # XXX: this is fucked
     require HTML::Mason::CGIHandler;
-    my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler');
+    require HTML::Mason::PSGIHandler::Streamy;
+    my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler::Streamy');
 
     return sub {
         my $env = shift;
@@ -333,18 +335,37 @@ sub PSGIApp {
 
         $RT::Logger->crit($@) if $@ && $RT::Logger;
         warn $@ if $@ && !$RT::Logger;
-        $self->CleanupRequest();
-        if ($ret->[2] ) {
-            # XXX: for now.  the out_method for mason can be more careful
-            # and perhaps even streamy.  this should also check for
-            # explicit encoding in Content-Type header.
-            for (@{$ret->[2]}) {
-                $_ = encode_utf8($_)
-                    if is_utf8($_);
-            }
+        if (ref($ret) eq 'CODE') {
+            my $orig_ret = $ret;
+            $ret = sub {
+                my $respond = shift;
+                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+                $orig_ret->($respond);
+            };
         }
-        return $ret;
-    }
+
+        return $self->_psgi_response_cb($ret,
+                                        sub {
+                                            $self->CleanupRequest()
+                                        });
 };
+
+sub _psgi_response_cb {
+    my $self = shift;
+    my ($ret, $cleanup) = @_;
+    Plack::Util::response_cb
+            ($ret,
+             sub {
+                 return sub {
+                     if (!defined $_[0]) {
+                         $cleanup->();
+                         return '';
+                     }
+                     return utf8::is_utf8($_[0]) ? encode_utf8($_[0]) : $_[0];
+                     return $_[0];
+                 };
+             });
+    }
+}
 
 1;
