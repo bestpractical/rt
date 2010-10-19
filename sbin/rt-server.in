@@ -1,4 +1,4 @@
-#!@PERL@ -w
+#!/Users/clkao/bin/perl -w
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -52,7 +52,7 @@ use strict;
 # fix lib paths, some may be relative
 BEGIN {
     require File::Spec;
-    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my @libs = ("./lib", "./local/lib");
     my $bin_path;
 
     for my $lib (@libs) {
@@ -75,28 +75,20 @@ BEGIN {
 }
 
 use Getopt::Long;
+no warnings 'once';
 
-my %opt;
-GetOptions(\%opt, 'help|h');
-
-if ( $opt{help} ) {
+if (grep { m/help/ } @ARGV) {
     require Pod::Usage;
-    Pod::Usage::pod2usage( { verbose => 2 } );
+    print Pod::Usage::pod2usage( { verbose => 2 } );
     exit;
 }
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
-
-
 require RT;
 RT->LoadConfig();
-RT->InitLogging();
-if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-RT::CheckPerlRequirements();
-RT->InitPluginPaths();
-
-
+my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
+warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
+my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
@@ -120,7 +112,9 @@ EOF
     require RT::Installer;
     # don't enter install mode if the file exists but is unwritable
     if (-e RT::Installer->ConfigFile && !-w _) {
-        die "Since your configuration exists but is not writable, I'm refusing to do anything.\n";
+        die 'Since your configuration exists ('
+          . RT::Installer->ConfigFile
+          . ") but is not writable, I'm refusing to do anything.\n";
     }
 
     RT->Config->Set( 'LexiconLanguages' => '*' );
@@ -128,30 +122,69 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->ConnectToDatabase();
-    RT->InitSystemObjects();
-    RT->InitClasses();
-    RT->InitPlugins();
+    RT->Init();
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post');
+    unless ( $status ) {
+        print STDERR $msg, "\n\n";
+        exit -1;
+    }
 }
 
-require RT::Interface::Web::Standalone;
-my $server = RT::Interface::Web::Standalone->new;
-$server->net_server('RT::Interface::Web::Standalone::PreFork');
-$server->port($port);
-$server->run();
+require RT::Interface::Web::Handler;
+use Plack::Runner;
+my $r = Plack::Runner->new( server => $0 =~ 'rt-server$' ? 'Starlet' : 'Standalone', env => 'deployment' );
+
+my @args = @ARGV;
+push @args, '--port', $port unless grep { m/port/ } @args;
+
+$r->parse_options(@args);
+eval { $r->run(RT::Interface::Web::Handler->PSGIApp) };
+if (my $err = $@) {
+    handle_startup_error($err);
+}
+
+exit 0;
+
+sub handle_startup_error {
+    my $err = shift;
+    if ( $err =~ /listen.*Permission denied/ ) {
+        handle_bind_error();
+    } else {
+        die
+            "Something went wrong while trying to run RT's standalone web server:\n\t"
+            . $err;
+    }
+}
+
+
+sub handle_bind_error {
+
+    print STDERR <<EOF;
+WARNING: RT couldn't start up a web server on port @{[$port]}.
+This is often the case if you're running @{[$0]} as 
+someone other than your system's "root" user.  
+EOF
+
+    if ($explicit_port) {
+        print STDERR
+            "Please check your system configuration or choose another port\n\n";
+    }
+}
 
 __END__
 
 =head1 NAME
 
-rt-server - RT standalone server with prefork
+standalone_httpd - RT standalone server
 
 =head1 SYNOPSIS
 
     # runs server listening on port 8080
-    rt-server 8080
+    standalone_httpd --port 8080
 
 =head1 DESCRIPTION
 
-This script runs an RT server using C<RT::Interface::Web::Standalone::PreFork>
+This script runs an RT server using C<RT::Interface::Web::Standalone>
 
