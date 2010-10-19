@@ -52,7 +52,7 @@ use strict;
 # fix lib paths, some may be relative
 BEGIN {
     require File::Spec;
-    my @libs = ("./lib", "./local/lib");
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
     my $bin_path;
 
     for my $lib (@libs) {
