@@ -607,6 +607,7 @@ sub InitPlugins {
     require RT::Plugin;
     foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
         my $plugin = RT::Plugin->new(name => $plugin_name);
+        $plugin->Enable;
         $plugin_name->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
         push @plugins, $plugin;

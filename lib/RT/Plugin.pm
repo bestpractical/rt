@@ -51,6 +51,7 @@ use strict;
 
 package RT::Plugin;
 use File::ShareDir;
+use Class::Accessor "antlers";
 
 =head1 NAME
 
@@ -67,11 +68,18 @@ it cares about is 'name', the name of this plugin.
 
 use List::MoreUtils qw(first_index);
 
+has _added_inc_path => (is => "rw", isa => "Str");
+
 sub new {
     my $class = shift;
     my $args ={@_};
     my $self = bless $args, $class;
 
+    return $self;
+}
+
+sub Enable {
+    my $self = shift;
     my $add = $self->Path("lib");
     my $local_path = first_index { Cwd::realpath($_) eq $RT::LocalLibPath } @INC;
     if ($local_path >= 0 ) {
@@ -80,14 +88,13 @@ sub new {
     else {
         push @INC, $add;
     }
-    $self->{_added_inc_path} = $add;
-
-    return $self;
+    $self->_added_inc_path( $add );
 }
 
 sub DESTROY {
     my $self = shift;
-    my $inc_path = first_index { Cwd::realpath($_) eq $self->{_added_inc_path} } @INC;
+    my $added = $self->_added_inc_path or return;
+    my $inc_path = first_index { Cwd::realpath($_) eq $added } @INC;
     if ($inc_path >= 0 ) {
         splice(@INC, $inc_path, 1);
     }
