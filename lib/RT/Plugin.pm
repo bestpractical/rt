@@ -69,6 +69,8 @@ it cares about is 'name', the name of this plugin.
 use List::MoreUtils qw(first_index);
 
 has _added_inc_path => (is => "rw", isa => "Str");
+has Name => (is => "rw", isa => "Str");
+
 
 sub new {
     my $class = shift;
@@ -100,17 +102,6 @@ sub DESTROY {
     }
 }
 
-=head2 Name
-
-Returns a human-readable name for this plugin.
-
-=cut
-
-sub Name { 
-    my $self = shift;
-    return $self->{name};
-}
-
 =head2 Path
 
 Takes a name of sub directory and returns its full path, for example:
@@ -124,7 +115,7 @@ See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
 sub Path {
     my $self   = shift;
     my $subdir = shift;
-    my $res = $self->BasePathFor($self->{'name'});
+    my $res = $self->BasePathFor($self->Name);
     $res .= "/$subdir" if defined $subdir && length $subdir;
     return $res;
 }
