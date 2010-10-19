@@ -1,4 +1,4 @@
-#!@PERL@ -w
+#!/Users/clkao/bin/perl -w
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -52,7 +52,7 @@ use strict;
 # fix lib paths, some may be relative
 BEGIN {
     require File::Spec;
-    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my @libs = ("./lib", "./local/lib");
     my $bin_path;
 
     for my $lib (@libs) {
@@ -75,11 +75,9 @@ BEGIN {
 }
 
 use Getopt::Long;
-my %opt;
-GetOptions(\%opt, 'help|h');
-
 no warnings 'once';
-if ( $opt{help} ) {
+
+if (grep { m/help/ } @ARGV) {
     require Pod::Usage;
     print Pod::Usage::pod2usage( { verbose => 2 } );
     exit;
@@ -88,9 +86,9 @@ if ( $opt{help} ) {
 require RT;
 RT->LoadConfig();
 
-my $explicit_port = shift @ARGV;
+my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
+warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
 my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
-
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
@@ -134,24 +132,24 @@ EOF
     }
 }
 
-require RT::Interface::Web::Standalone;
-my $server = RT::Interface::Web::Standalone->new;
-run_server($port);
-exit 0;
+require RT::Interface::Web::Handler;
+use Plack::Runner;
+my $r = Plack::Runner->new( server => 'Standalone', env => 'deployment' );
 
-sub run_server {
-    my $port = shift;
-    $server->port($port);
-    eval { $server->run() };
+my @args = @ARGV;
+push @args, '--port', $port unless grep { m/port/ } @args;
 
-    if ( my $err = $@ ) {
-        handle_startup_error($err);
-    }
+$r->parse_options(@args);
+eval { $r->run(RT::Interface::Web::Handler->PSGIApp) };
+if (my $err = $@) {
+    handle_startup_error($err);
 }
+
+exit 0;
 
 sub handle_startup_error {
     my $err = shift;
-    if ( $err =~ /bind: Permission denied/ ) {
+    if ( $err =~ /listen.*Permission denied/ ) {
         handle_bind_error();
     } else {
         die
@@ -172,17 +170,6 @@ EOF
     if ($explicit_port) {
         print STDERR
             "Please check your system configuration or choose another port\n\n";
-    } else {
-        print STDERR "\nFor now, RT has chosen an alternate port to run on.\n\n";
-        if ( !$integrity ) {
-            print STDERR <<EOF;
-You can use this server to configure and explore RT.  While configuring
-RT, you'll have a chance to set a permanent port and URL for your
-server.
-
-EOF
-        }
-        run_server( 8000 + int( rand(1024) ) );
     }
 }
 
@@ -195,7 +182,7 @@ standalone_httpd - RT standalone server
 =head1 SYNOPSIS
 
     # runs server listening on port 8080
-    standalone_httpd 8080
+    standalone_httpd --port 8080
 
 =head1 DESCRIPTION
 
