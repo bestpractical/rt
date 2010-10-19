@@ -200,7 +200,7 @@
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
-<Layout vessel-relative>
+<Layout vessel>
   prefix:		/opt/rt3
   exec_prefix:		${prefix}
   bindir:		bin
