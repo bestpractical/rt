@@ -174,21 +174,13 @@ sub goto_create_ticket {
 
 sub get_warnings {
     my $self = shift;
-
-    # FIXME: need psgi mw for stashed warnings
-    if ($self->isa('Test::WWW::Mechanize::PSGI') || ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'plack') {
-        Test::More::ok(1);
-        return;
-    }
-
-    my $server_class = 'RT::Interface::Web::Standalone';
-
-    my $url = $server_class->test_warning_path;
-
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    return unless $self->get_ok($url);
 
-    my @warnings = $server_class->decode_warnings($self->content);
+    return unless $self->get_ok('/__test_warnings');
+
+    use Storable 'thaw';
+
+    my @warnings = @{ thaw $self->content };
     return @warnings;
 }
 
