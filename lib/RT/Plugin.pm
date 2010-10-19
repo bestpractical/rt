@@ -71,6 +71,7 @@ use List::MoreUtils qw(first_index);
 
 has _added_inc_path => (is => "rw", isa => "Str");
 has Name => (is => "rw", isa => "Str");
+has Enabled => (is => "rw", isa => "Bool");
 has Description => (is => "rw", isa => "Str");
 has BasePath => (is => "rw", isa => "Str");
 
@@ -92,6 +93,7 @@ sub Enable {
     else {
         push @INC, $add;
     }
+    $self->Enabled(1);
     $self->_added_inc_path( $add );
 }
 

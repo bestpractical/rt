@@ -566,7 +566,7 @@ sub Plugins {
     $self->ProbePlugins;
 
     unless ($LOADED_PLUGINS) {
-        $LOADED_PLUGINS = [$self->InitPlugins];
+        $self->InitPlugins;
     }
     return $LOADED_PLUGINS;
 }
@@ -622,7 +622,7 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 
 sub InitPlugins {
     my $self    = shift;
-    my @plugins;
+    $LOADED_PLUGINS ||= [];
     require RT::Plugin;
     foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
         my $plugin = $PLUGINS->{$plugin_name};
@@ -630,12 +630,15 @@ sub InitPlugins {
             # XXX: this is mostly for testing for rt plugin dists.
             $PLUGINS->{$plugin_name} = $plugin = RT::Plugin->new(Name => $plugin_name);
         }
+        next if $plugin->Enabled;
+
         $plugin->Enable;
         $plugin_name->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
-        push @plugins, $plugin;
+        push @$LOADED_PLUGINS, $plugin;
     }
-    return @plugins;
+
+    return @$LOADED_PLUGINS;
 }
 
 
