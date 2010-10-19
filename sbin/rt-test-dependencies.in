@@ -266,8 +266,6 @@ XML::Simple
 File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
-Test::HTTP::Server::Simple 0.09
-Test::HTTP::Server::Simple::StashWarnings 0.02
 Log::Dispatch::Perl
 Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
