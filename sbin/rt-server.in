@@ -177,14 +177,15 @@ __END__
 
 =head1 NAME
 
-standalone_httpd - RT standalone server
+rt-server - RT standalone server
 
 =head1 SYNOPSIS
 
+    # runs prefork server listening on port 8080, requires Starlet
+    rt-server --port 8080
+
     # runs server listening on port 8080
+    rt-server -s Standalone --port 8080
+    # or
     standalone_httpd --port 8080
-
-=head1 DESCRIPTION
-
-This script runs an RT server using C<RT::Interface::Web::Standalone>
 

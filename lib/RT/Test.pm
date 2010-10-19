@@ -1100,7 +1100,7 @@ sub started_ok {
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
         if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
-    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'plack';
     my ($server, $variant) = split /\+/, $which, 2;
 
     my $function = 'start_'. $server .'_server';
@@ -1175,36 +1175,6 @@ sub start_inline_server {
 
     Test::More::ok(1, "psgi test server ok");
     return ("http://localhost:$port", RT::Test::Web->new);
-}
-
-sub start_standalone_server {
-    my $self = shift;
-
-
-    require RT::Interface::Web::Standalone;
-
-    # this may happen if we start two servers in the same test process
-    unless (RT::Interface::Web::Standalone->can('test_warning_path')) {
-        require Test::HTTP::Server::Simple::StashWarnings;
-        unshift @RT::Interface::Web::Standalone::ISA,
-            'Test::HTTP::Server::Simple::StashWarnings';
-        *RT::Interface::Web::Standalone::test_warning_path = sub {
-            "/__test_warnings";
-        };
-    }
-
-    my $s = RT::Interface::Web::Standalone->new($port);
-
-    my $ret = $s->started_ok;
-    push @SERVERS, $s->pids;
-
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-
-    # the attribute cache holds on to a stale dbh
-    delete $RT::System->{attributes};
-    return ($ret, RT::Test::Web->new);
 }
 
 sub start_apache_server {

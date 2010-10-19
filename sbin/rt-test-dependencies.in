@@ -63,7 +63,6 @@ GetOptions(
     'with-ORACLE',                        'with-FASTCGI', 'with-FASTCGI-SERVER',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
-    'with-STANDALONE',
 
     'with-GPG',
     'with-ICAL',
@@ -93,7 +92,6 @@ my %default = (
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEV' => @RT_DEVEL_MODE@, 
-    'with-STANDALONE' => 1,
     'with-GPG' => @RT_GPG@,
     'with-ICAL' => 1,
     'with-SMTP' => 1,
@@ -236,12 +234,6 @@ Plack
 Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
 Plack::Middleware::Test::StashWarnings
-.
-
-$deps{'STANDALONE'} = [ text_to_hash( << '.') ];
-HTTP::Server::Simple 0.34
-HTTP::Server::Simple::Mason 0.14
-Net::Server
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -642,10 +634,6 @@ list the status of all dependencies, rather than just the missing ones.
 =item with-sqlite 
 
     database interface and driver for sqlite (unsupported)
-
-=item  with-standalone
-
-    libraries needed to support the standalone simple pure perl server
 
 =item with-fastcgi-server
 
