@@ -17,7 +17,7 @@ $LocalPath = '@RT_LOCAL_PATH@';
 $LocalEtcPath = '@LOCAL_ETC_PATH@';
 $LocalLibPath        =    '@LOCAL_LIB_PATH@';
 $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
-$LocalPluginPath = $LocalPath."/plugins";
+$LocalPluginPath = '@LOCAL_PLUGIN_PATH@';
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 $MasonComponentRoot = '@MASON_HTML_PATH@';
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local

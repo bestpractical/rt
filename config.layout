@@ -39,6 +39,7 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
 <Layout inplace>
   prefix:		.
@@ -63,6 +64,7 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
 
 <Layout FHS>
@@ -91,6 +93,7 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
 
 <Layout FreeBSD>
@@ -116,6 +119,7 @@
   customhtmldir:	${customdir}/local/html
   customlexdir:		${customdir}/local/po
   customlibdir:		${customdir}/local/lib
+  customplugindir:  ${customdir}/local/plugins
 </Layout>
 
 <Layout Win32>
@@ -141,6 +145,7 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
 
 #   RH path layout.
@@ -167,6 +172,7 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
 
 <Layout relative>
@@ -192,4 +198,30 @@
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
+</Layout>
+<Layout vessel-relative>
+  prefix:		/opt/rt3
+  exec_prefix:		${prefix}
+  bindir:		bin
+  sbindir:		sbin
+  sysconfdir:	etc/rt/
+  mandir:		man
+  plugindir:	${datadir}/plugins
+  libdir:		lib/rt/perl5/
+  datadir:		share/rt/
+  htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
+  lexdir:		${datadir}/po
+  manualdir:	${datadir}/doc
+  localstatedir:	var/rt/
+  logfiledir:		${localstatedir}/log
+  masonstatedir:	${localstatedir}/mason_data
+  sessionstatedir:	${localstatedir}/session_data
+  customdir:		local/rt/
+  custometcdir:		${customdir}/etc
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
+  customplugindir:  ${customdir}/plugins
 </Layout>
