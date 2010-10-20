@@ -9,6 +9,7 @@ plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 plan tests => 390;
 
+use RT::Test::GnuPG;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
 
@@ -64,9 +65,9 @@ my %mail = (
 
 # create a ticket for each combination
 foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( %$queue_set );
+    set_queue_crypt_options( $queue, %$queue_set );
     foreach my $ticket_set ( @variants ) {
-        create_a_ticket( %$ticket_set );
+        create_a_ticket( $queue, \%mail, $m, %$ticket_set );
     }
 }
 
@@ -83,9 +84,9 @@ my $tid;
 
 # again for each combination add a reply message
 foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( %$queue_set );
+    set_queue_crypt_options( $queue, %$queue_set );
     foreach my $ticket_set ( @variants ) {
-        update_ticket( $tid, %$ticket_set );
+        update_ticket( $tid, \%mail, $m, %$ticket_set );
     }
 }
 
@@ -198,107 +199,3 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     like $attachments[0]->Content, qr/Some content/,
         "RT's mail includes copy of ticket text";
 }
-
-sub create_a_ticket {
-    my %args = (@_);
-
-    RT::Test->clean_caught_mails;
-
-    $m->goto_create_ticket( $queue );
-    $m->form_name('TicketCreate');
-    $m->field( Subject    => 'test' );
-    $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content    => 'Some content' );
-
-    foreach ( qw(Sign Encrypt) ) {
-        if ( $args{ $_ } ) {
-            $m->tick( $_ => 1 );
-        } else {
-            $m->untick( $_ => 1 );
-        }
-    }
-
-    $m->submit;
-    is $m->status, 200, "request successful";
-
-    $m->content_lacks("unable to sign outgoing email messages");
-
-
-    my @mail = RT::Test->fetch_caught_mails;
-    check_text_emails( \%args, @mail );
-}
-
-sub update_ticket {
-    my $tid = shift;
-    my %args = (@_);
-
-    RT::Test->clean_caught_mails;
-
-    $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$tid" );
-    $m->form_number(3);
-    $m->field( UpdateContent => 'Some content' );
-
-    foreach ( qw(Sign Encrypt) ) {
-        if ( $args{ $_ } ) {
-            $m->tick( $_ => 1 );
-        } else {
-            $m->untick( $_ => 1 );
-        }
-    }
-
-    $m->click('SubmitTicket');
-    is $m->status, 200, "request successful";
-    $m->content_contains("Message recorded", 'Message recorded') or diag $m->content;
-
-
-    my @mail = RT::Test->fetch_caught_mails;
-    check_text_emails( \%args, @mail );
-}
-
-sub check_text_emails {
-    my %args = %{ shift @_ };
-    my @mail = @_;
-
-    ok scalar @mail, "got some mail";
-    for my $mail (@mail) {
-        if ( $args{'Encrypt'} ) {
-            unlike $mail, qr/Some content/, "outgoing email was encrypted";
-        } else {
-            like $mail, qr/Some content/, "outgoing email was not encrypted";
-        } 
-        if ( $args{'Sign'} && $args{'Encrypt'} ) {
-            like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
-        } elsif ( $args{'Sign'} ) {
-            like $mail, qr/SIGNATURE/, 'outgoing email was signed';
-        } else {
-            unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';
-        }
-    }
-    if ( $args{'Sign'} && $args{'Encrypt'} ) {
-        push @{ $mail{'signed_encrypted'} }, @mail;
-    } elsif ( $args{'Sign'} ) {
-        push @{ $mail{'signed'} }, @mail;
-    } elsif ( $args{'Encrypt'} ) {
-        push @{ $mail{'encrypted'} }, @mail;
-    } else {
-        push @{ $mail{'plain'} }, @mail;
-    }
-}
-
-sub cleanup_headers {
-    my $mail = shift;
-    # strip id from subject to create new ticket
-    $mail =~ s/^(Subject:)\s*\[.*?\s+#\d+\]\s*/$1 /m;
-    # strip several headers
-    foreach my $field ( qw(Message-ID X-RT-Original-Encoding RT-Originator RT-Ticket X-RT-Loop-Prevention) ) {
-        $mail =~ s/^$field:.*?\n(?! |\t)//gmsi;
-    }
-    return $mail;
-}
-
-sub set_queue_crypt_options {
-    my %args = @_;
-            $queue->SetEncrypt($args{'Encrypt'});
-            $queue->SetSign($args{'Sign'});
-}
-
