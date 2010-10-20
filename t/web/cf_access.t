@@ -2,7 +2,6 @@
 use strict;
 
 use RT::Test tests => 26;
-$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

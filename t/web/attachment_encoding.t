@@ -8,8 +8,6 @@ use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
-$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
-
 use utf8;
 
 use File::Spec;

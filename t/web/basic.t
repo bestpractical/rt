@@ -5,7 +5,6 @@ use warnings;
 use Encode;
 
 use RT::Test tests => 21;
-$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 

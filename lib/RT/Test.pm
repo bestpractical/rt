@@ -58,23 +58,6 @@ use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
 
-our $SKIP_REQUEST_WORK_AROUND = 0;
-
-use HTTP::Request::Common ();
-use Hook::LexWrap;
-wrap 'HTTP::Request::Common::form_data',
-   post => sub {
-       return if $SKIP_REQUEST_WORK_AROUND;
-       my $data = $_[-1];
-       if (ref $data) {
-       $data->[0] = Encode::encode_utf8($data->[0]);
-       }
-       else {
-       $_[-1] = Encode::encode_utf8($_[-1]);
-       }
-   };
-
-
 our @EXPORT = qw(is_empty diag);
 our ($port, $dbname);
 our @SERVERS;

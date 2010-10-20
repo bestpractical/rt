@@ -5,8 +5,6 @@ use warnings;
 
 use RT::Test tests => 41;
 
-$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
-
 use Encode;
 
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
