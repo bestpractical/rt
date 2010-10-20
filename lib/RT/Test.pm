@@ -1381,7 +1381,7 @@ END {
     RT::Test->stop_server;
 
     # not success
-    if ( !$Test->summary || grep !$_, $Test->summary ) {
+    if ( !$Test->is_passing ) {
         $tmp{'directory'}->unlink_on_destroy(0);
 
         Test::More::diag(
