@@ -207,8 +207,8 @@
   sbindir:		sbin
   sysconfdir:	etc/rt/
   mandir:		man
-  libdir:		rt/lib/
-  datadir:		rt/share/
+  libdir:		lib/rt
+  datadir:		share/rt
   plugindir:	${datadir}/plugins
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
@@ -218,7 +218,7 @@
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
   sessionstatedir:	${localstatedir}/session_data
-  customdir:		rt/local
+  customdir:		local/rt/
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
