@@ -1,9 +1,23 @@
 package RT::Test::GnuPG;
 use strict;
 use Test::More;
-use base qw(Exporter);
+use base qw(RT::Test);
 
 our @EXPORT = qw(create_a_ticket update_ticket check_text_emails cleanup_headers set_queue_crypt_options);
+
+sub import {
+    my $class = shift;
+    my %args  = @_;
+    my $t = $class->builder;
+
+    $t->plan( skip_all => 'GnuPG required.' )
+        unless eval { require GnuPG::Interface; 1 };
+    $t->plan( skip_all => 'gpg executable is required.' )
+        unless RT::Test->find_executable('gpg');
+
+    $class->SUPER::import( %args );
+    $class->export_to_level(1);
+}
 
 sub create_a_ticket {
     my $queue = shift;

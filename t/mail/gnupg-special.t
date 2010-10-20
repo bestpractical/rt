@@ -2,12 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 11;
+use RT::Test::GnuPG tests => 11;
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
