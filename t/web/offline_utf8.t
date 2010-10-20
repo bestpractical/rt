@@ -3,20 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => 7;
-
-use HTTP::Request::Common ();
-use Hook::LexWrap;
-wrap 'HTTP::Request::Common::form_data',
-   post => sub {
-       my $data = $_[-1];
-       if (ref $data) {
-       $data->[0] = Encode::encode_utf8($data->[0]);
-       }
-       else {
-       $_[-1] = Encode::encode_utf8($_[-1]);
-       }
-   };
-
+use utf8;
 
 use File::Temp qw/tempfile/;
 use Encode;
@@ -54,7 +41,7 @@ $m->submit_form(
     button    => 'UpdateTickets',
 
     # mimic what browsers do: they seems decoded $template
-    fields    => { string => decode( 'utf8', $template ), },
+    fields    => { string => $template },
 );
 
 $m->content_like( qr/Ticket \d+ created/, 'found ticket created message' );
