@@ -573,11 +573,15 @@ sub _ParseMultilineTemplate {
     my %args = (@_);
 
     my $template_id;
+    require Encode;
+    require utf8;
     my ( $queue, $requestor );
         $RT::Logger->debug("Line: ===");
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
-            $RT::Logger->debug("Line: $line");
+            $RT::Logger->debug( "Line: " . utf8::is_utf8($line)
+                ? Encode::encode_utf8($line)
+                : $line );
             if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id}
