@@ -107,7 +107,7 @@
 
 <%INIT>
 my $CF = RT::CustomField->new($session{'CurrentUser'});
-$CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
+$CF->Load($id) or Abort(loc("Could not load CustomField [_1]", $id));
 
 my $class = $CF->RecordClassFromLookupType;
 Abort(loc("Something wrong. Contact system administrator"))

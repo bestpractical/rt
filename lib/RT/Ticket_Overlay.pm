@@ -487,13 +487,13 @@ sub Create {
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
+    foreach my $attr (qw(id Creator Created LastUpdated LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if $args{$attr};
     }
 
     # Delete null integer parameters
     foreach my $attr
-        qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority)
+        (qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority))
     {
         delete $params{$attr}
           unless ( exists $params{$attr} && $params{$attr} );
@@ -760,7 +760,7 @@ sub _Parse822HeadersForAttributes {
         
     }
 
-    foreach my $date qw(due starts started resolved) {
+    foreach my $date (qw(due starts started resolved)) {
         my $dateobj = RT::Date->new(RT->SystemUser);
         if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
@@ -992,7 +992,7 @@ It will return true on success and undef on failure.
 sub _CreateTicketGroups {
     my $self = shift;
     
-    my @types = qw(Requestor Owner Cc AdminCc);
+    my @types = (qw(Requestor Owner Cc AdminCc));
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
@@ -2705,7 +2705,7 @@ sub _MergeInto {
     }
 
     # Update time fields
-    foreach my $type qw(TimeEstimated TimeWorked TimeLeft) {
+    foreach my $type (qw(TimeEstimated TimeWorked TimeLeft)) {
 
         my $mutator = "Set$type";
         $MergeInto->$mutator(
@@ -2713,7 +2713,7 @@ sub _MergeInto {
 
     }
 #add all of this ticket's watchers to that ticket.
-    foreach my $watcher_type qw(Requestors Cc AdminCc) {
+    foreach my $watcher_type (qw(Requestors Cc AdminCc)) {
 
         my $people = $self->$watcher_type->MembersObj;
         my $addwatcher_type =  $watcher_type;

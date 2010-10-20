@@ -40,7 +40,7 @@ AC_DEFUN([RT_LAYOUT],[
 				 sysconfdir mandir libdir datadir htmldir fontdir \
 				 localstatedir logfiledir masonstatedir plugindir \
 				 sessionstatedir customdir custometcdir customhtmldir \
-				 customlexdir customlibdir manualdir; do
+				 customplugindir customlexdir customlibdir manualdir; do
 				eval "val=\"\$$var\""
 				val=`echo $val | sed -e 's:\(.\)/*$:\1:'`
 				val=`echo $val | 
@@ -74,4 +74,5 @@ AC_DEFUN([RT_LAYOUT],[
 	RT_SUBST_EXPANDED_ARG(customhtmldir)
 	RT_SUBST_EXPANDED_ARG(customlexdir)
 	RT_SUBST_EXPANDED_ARG(customlibdir)
+	RT_SUBST_EXPANDED_ARG(customplugindir)
 ])dnl

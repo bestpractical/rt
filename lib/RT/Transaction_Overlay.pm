@@ -144,7 +144,7 @@ sub Create {
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy) {
+    foreach my $attr (qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
  
@@ -1220,7 +1220,7 @@ sub Recipients {
         my $action = $scrip->ActionObj->Action;
         next unless $action->isa('RT::Action::SendEmail');
 
-        foreach my $type qw(To Cc Bcc) {
+        foreach my $type (qw(To Cc Bcc)) {
             push @recipients, $action->$type();
         }
     }
@@ -1229,7 +1229,7 @@ sub Recipients {
         for my $rule (@{$self->Rules}) {
             next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
             my $data = $rule->{hints}{recipients};
-            foreach my $type qw(To Cc Bcc) {
+            foreach my $type (qw(To Cc Bcc)) {
                 push @recipients, map {Email::Address->new($_)} @{$data->{$type}};
             }
         }
