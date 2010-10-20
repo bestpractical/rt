@@ -57,7 +57,7 @@
 <form action="Forward.html" name="ForwardMessage" method="post">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} %>" />
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 
 <table border="0">
 
@@ -65,13 +65,13 @@
 <td><% $TicketObj->Subject %></td></tr>
 
 <tr><td align="right"><&|/l&>To</&>:</td>
-<td><input name="To" size="60" value="<% $ARGS{'To'} %>" /></td></tr>
+<td><input name="To" size="60" value="<% $ARGS{'To'} || '' %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>Cc</&>:</td>
-<td><input name="Cc" size="60" value="<% $ARGS{'Cc'} %>" /></td></tr>
+<td><input name="Cc" size="60" value="<% $ARGS{'Cc'} || '' %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>BCc</&>:</td>
-<td><input name="Bcc" size="60" value="<% $ARGS{'Bcc'} %>" /></td></tr>
+<td><input name="Bcc" size="60" value="<% $ARGS{'Bcc'} || '' %>" /></td></tr>
 
 </table>
 
