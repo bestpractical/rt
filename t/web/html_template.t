@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 19;
 use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -49,7 +49,8 @@ diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
     $m->form_number(3);
     $m->submit_form(
         form_number => 3,
-        fields      => { Subject => '标题', Content => '测试', },
+        fields      => { Subject => '标题', Content => '<h1>测试</h1>',
+        ContentType => 'text/html' },
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->follow_link( text => 'Show' );
@@ -57,8 +58,8 @@ diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
     $m->content_contains( 'éèà€', 'html has éèà€' );
     $m->content_contains( '标题',
         'html has ticket subject 标题' );
-    $m->content_contains( '测试',
-        'html has ticket content 测试' );
+    $m->content_contains( '&lt;h1&gt;测试&lt;/h1&gt;',
+        'html has ticket html content 测试' );
 }
 
 diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
@@ -72,5 +73,6 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
     like( $mail, qr/éèà€.*éèà€/s, 'mail has éèà€' );
     like( $mail, qr/标题.*标题/s,    'mail has ticket subject 标题' );
     like( $mail, qr/测试.*测试/s,    'mail has ticket content 测试' );
+    like( $mail, qr!<h1>测试</h1>!,    'mail has ticket html content 测试' );
 }
 
