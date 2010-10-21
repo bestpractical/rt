@@ -54,8 +54,9 @@
   <table width="100%" class="ticketsummary" >
       <tr>
         <td valign="top" width="50%" class="boxcontainer">
-          <&| /Widgets/TitleBox, title => loc('The Basics'), 
-                title_class=> 'inverse',  
+          <&| /Widgets/TitleBox, title => loc('The Basics'),
+                ($Ticket->CurrentUserHasRight('ModifyTicket') ? (title_href => $title_box_link) : ()),
+                title_class=> 'inverse',
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
                 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
@@ -224,7 +225,8 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     my $attachments =
       $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
 
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
+    my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
+    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
 </%INIT>
 
 
