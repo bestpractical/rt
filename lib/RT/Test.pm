@@ -75,7 +75,7 @@ wrap 'HTTP::Request::Common::form_data',
    };
 
 
-our @EXPORT = qw(is_empty diag parse_mail);
+our @EXPORT = qw(is_empty diag parse_mail works fails);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -1377,6 +1377,13 @@ sub parse_mail {
     return $parser->Entity;
 }
 
+sub works {
+    Test::More::ok($_[0], $_[1] || 'This works');
+}
+
+sub fails {
+    Test::More::ok(!$_[0], $_[1] || 'This should fail');
+}
 
 END {
     my $Test = RT::Test->builder;

@@ -5,10 +5,6 @@ use strict;
 use RT;
 use RT::Test nodata => 1, tests => 17;
 
-
-sub fails { ok(!$_[0], "This should fail: $_[1]") }
-sub works { ok($_[0], $_[1] || 'This works') }
-
 sub new (*) {
     my $class = shift;
     return $class->new(RT->SystemUser);
