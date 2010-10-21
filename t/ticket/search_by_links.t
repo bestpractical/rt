@@ -3,30 +3,13 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 80;
+use RT::Test nodata => 1, tests => 86;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 
 my ($total, @data, @tickets, %test) = (0, ());
-
-sub add_tix_from_data {
-    my @res = ();
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my %args = %{ shift(@data) };
-        $args{$_} = $res[ $args{$_} ]->id foreach grep $args{$_}, keys %RT::Ticket::LINKTYPEMAP;
-        my ( $id, undef $msg ) = $t->Create(
-            Queue => $q->id,
-            %args,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -58,7 +41,10 @@ sub run_tests {
     { Subject => 'p', },
     { Subject => 'c', MemberOf => -1 },
 );
-@tickets = add_tix_from_data();
+
+@tickets = create_tickets( $q->id, @data );
+$total = scalar @tickets;
+
 %test = (
     'Linked     IS NOT NULL'  => { '-' => 0, c => 1, p => 1 },
     'Linked     IS     NULL'  => { '-' => 1, c => 0, p => 0 },
@@ -97,7 +83,9 @@ run_tests();
     { Subject => 'rc1', RefersTo => -1 },
     { Subject => 'rc2', RefersTo => -2 },
 );
-@tickets = add_tix_from_data();
+@tickets = create_tickets( $q->id, @data );
+$total += scalar @tickets;
+
 my $pid = $tickets[1]->id;
 %test = (
     'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
