@@ -24,11 +24,13 @@ sub setup_indexing {
     );
     my ($exit_code, $output) = RT::Test->run_and_capture( %args );
     ok(!$exit_code, "setted up index") or diag "output: $output";
+}
 
-    %args = (
+sub sync_index {
+    my %args = (
         command => $RT::SbinPath .'/rt-fulltext-indexer',
     );
-    ($exit_code, $output) = RT::Test->run_and_capture( %args );
+    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
     ok(!$exit_code, "setted up index") or diag "output: $output";
 }
 
