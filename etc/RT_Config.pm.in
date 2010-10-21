@@ -1541,7 +1541,8 @@ default is disabled at all. To enable FTS set key 'Enable' to true value.
 Setup of indexes and filling them with data requires additional steps that
 vary from DB to DB. Use F<sbin/rt-setup-fulltext-index> helper
 for quick start. This script creates required structures in the DB and
-gives some ideas on next steps.
+gives some ideas on next steps. Use F<sbin/rt-fulltext-indexer> to keep
+the index in sync.
 
 =cut
 

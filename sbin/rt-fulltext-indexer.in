@@ -84,15 +84,38 @@ use RT::Interface::CLI ();
 my %OPT = (
     help        => 0,
 );
+my @OPT_LIST = qw(help|h!);
+
+my $db_type = RT->Config->Get('DatabaseType');
+if ( $db_type eq 'Pg' ) {
+    %OPT = (
+        %OPT,
+        limit  => 0,
+    );
+    push @OPT_LIST, 'limit=i';
+}
+elsif ( $db_type eq 'mysql' ) {
+    %OPT = (
+        %OPT,
+        limit  => 0,
+    );
+    push @OPT_LIST, 'limit=i';
+}
+elsif ( $db_type eq 'Oracle' ) {
+    %OPT = (
+        %OPT,
+        memory => '2M',
+    );
+    push @OPT_LIST, qw(memory=s);
+}
 
 use Getopt::Long qw(GetOptions);
-GetOptions(
-    'h|help!'        => \$OPT{'help'},
-
-);
+GetOptions( \%OPT, @OPT_LIST );
 
 if ( $OPT{'help'} ) {
-    RT::Interface::CLI->ShowHelp;
+    RT::Interface::CLI->ShowHelp(
+        Sections => 'NAME|DESCRIPTION|'. uc($db_type),
+    );
 }
 
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
@@ -109,14 +132,11 @@ unless ( $fts_config->{'Indexed'} ) {
     exit 1;
 }
 
-my $db_type = RT->Config->Get('DatabaseType');
-
 if ( $db_type eq 'Oracle' ) {
     my $index = $fts_config->{'IndexName'} || 'rt_fts_index';
-    my $memory = '2M';
     $RT::Handle->dbh->do(
         "begin ctx_ddl.sync_index(?, ?); end;", undef,
-        $index, $memory
+        $index, $OPT{'memory'}
     );
     exit;
 }
@@ -382,13 +402,64 @@ sub warning  { $RT::Logger->warn(_(@_)); verbose(@_); 1 }
 
 rt-fulltext-indexer - Indexer for full text search
 
-=head1 SYNOPSIS
-
-    /opt/rt3/local/sbin/rt-fulltext-indexer --help
-
-    /opt/rt3/local/sbin/rt-fulltext-indexer --limit 100
-
 =head1 DESCRIPTION
+
+This is a helper script to keep full text index in sync with data.
+
+Start from F<sbin/rt-setup-fulltext-index>, adjust config and run
+this script via cron.
+
+=head1 ORACLE
+
+=head2 USAGE
+
+    rt-fulltext-indexer --help
+    rt-fulltext-indexer
+    rt-fulltext-indexer --memory 10M
+
+=head2 DESCRIPTION
+
+Basicly this script runs the following query:
+
+    begin
+    ctx_ddl.sync_index('rt_fts_index', '2M');
+    end;
+
+Ammount of memory used for the sync can be controlled with --memory option.
+
+There is way to do all of this on Oracle side by setting up a DBMS_JOB. Read
+"Managing DML Operations for a CONTEXT Index" chapter from "Text Application
+Developer's Guide" for more info on the topic and how to keep index optimized,
+collect garbage and other stuff.
+
+=head1 PG
+
+=head2 USAGE
+
+    rt-fulltext-indexer --help
+    rt-fulltext-indexer
+    rt-fulltext-indexer --limit 100
+
+=head2 DESCRIPTION
+
+This script find attachments that should be indexed and process content if required
+and stores in the index. Use --limit option to specify how many attachments to process.
+
+=head1 MYSQL
+
+=head2 USAGE
+
+    rt-fulltext-indexer --help
+    rt-fulltext-indexer
+    rt-fulltext-indexer --limit 100
+
+=head2 DESCRIPTION
+
+This script find attachments that should be indexed and process content if required
+and generates xmlpipe2 document stream that can processed by sphinx. Read more in
+sphinx reference manual.
+
+Use --limit option to specify how many attachments to process.
 
 =cut
 
