@@ -5,21 +5,16 @@ use strict;
 use RT;
 use RT::Test nodata => 1, tests => 17;
 
-sub new (*) {
-    my $class = shift;
-    return $class->new(RT->SystemUser);
-}
-
-my $q = new(RT::Queue);
+my $q = RT::Queue->new($RT::SystemUser);
 works($q->Create(Name => "CF-Pattern-".$$));
 
-my $cf = new(RT::CustomField);
+my $cf = RT::CustomField->new($RT::SystemUser);
 my @cf_args = (Name => $q->Name, Type => 'Freeform', Queue => $q->id, MaxValues => 1);
 
 fails($cf->Create(@cf_args, Pattern => ')))bad!regex((('));
 works($cf->Create(@cf_args, Pattern => 'good regex'));
 
-my $t = new(RT::Ticket);
+my $t = RT::Ticket->new($RT::SystemUser);
 my ($id,undef,$msg) = $t->Create(Queue => $q->id, Subject => 'CF Test');
 works($id,$msg);
 

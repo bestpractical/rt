@@ -4,22 +4,17 @@ use strict;
 
 use RT::Test nodata => 1, tests => 11;
 
-sub new (*) {
-    my $class = shift;
-    return $class->new(RT->SystemUser);
-}
-
-my $q = new(RT::Queue);
+my $q = RT::Queue->new($RT::SystemUser);
 works($q->Create(Name => "CF-Pattern-".$$));
 
-my $cf = new(RT::CustomField);
+my $cf = RT::CustomField->new($RT::SystemUser);
 my @cf_args = (Name => $q->Name, Type => 'Combobox', Queue => $q->id);
 
 works($cf->Create(@cf_args));
 
 # Set some CFVs with Category markers
 
-my $t = new(RT::Ticket);
+my $t = RT::Ticket->new($RT::SystemUser);
 my ($id,undef,$msg) = $t->Create(Queue => $q->id, Subject => 'CF Test');
 works($id,$msg);
 
