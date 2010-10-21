@@ -320,12 +320,3 @@ foreach my $set ( 'ru', 'latin1' ) {
 }
 
 } # subject tag set
-
-sub parse_mail {
-    my $mail = shift;
-    require RT::EmailParser;
-    my $parser = new RT::EmailParser;
-    $parser->ParseMIMEEntityFromScalar( $mail );
-    return $parser->Entity;
-}
-

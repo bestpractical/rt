@@ -88,11 +88,3 @@ EOF
     unlike($freshticket->Subject,qr/\[\Q$subject_tag\E #$ticketid\]/,'Stripped Queue Subject Tag correctly');
 
 }
-
-sub parse_mail {
-    my $mail = shift;
-    require RT::EmailParser;
-    my $parser = new RT::EmailParser;
-    $parser->ParseMIMEEntityFromScalar( $mail );
-    return $parser->Entity;
-}
