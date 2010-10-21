@@ -248,6 +248,7 @@ function ReplaceAllTextareas(encoded) {
     var sAgent = navigator.userAgent.toLowerCase();
     if (!CKEDITOR.env.isCompatible ||
         sAgent.indexOf('iphone') != -1 ||
+        sAgent.indexOf('ipad') != -1 ||
         sAgent.indexOf('android') != -1 )
         return false;
 
