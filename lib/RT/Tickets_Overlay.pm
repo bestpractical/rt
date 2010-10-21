@@ -123,7 +123,7 @@ our %FIELD_METADATA = (
     LastUpdated      => [ 'DATE'            => 'LastUpdated', ], #loc_left_pair
     Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
     Subject          => [ 'STRING', ], #loc_left_pair
-    Content          => [ 'TRANSFIELD', ], #loc_left_pair
+    Content          => [ 'TRANSCONTENT', ], #loc_left_pair
     ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
     Filename         => [ 'TRANSFIELD', ], #loc_left_pair
     TransactionDate  => [ 'TRANSDATE', ], #loc_left_pair
@@ -156,6 +156,7 @@ our %dispatch = (
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
     TRANSFIELD      => \&_TransLimit,
+    TRANSCONTENT    => \&_TransContentLimit,
     TRANSDATE       => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
@@ -245,7 +246,6 @@ sub CleanSlate {
         _sql_group_members_aliases
         _sql_object_cfv_alias
         _sql_role_group_aliases
-        _sql_transalias
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
@@ -622,20 +622,7 @@ sub _TransDateLimit {
 
     # See the comments for TransLimit, they apply here too
 
-    unless ( $sb->{_sql_transalias} ) {
-        $sb->{_sql_transalias} = $sb->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Transactions',
-            FIELD2 => 'ObjectId',
-        );
-        $sb->SUPER::Limit(
-            ALIAS           => $sb->{_sql_transalias},
-            FIELD           => 'ObjectType',
-            VALUE           => 'RT::Ticket',
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
+    my $txn_alias = $sb->JoinTransactions;
 
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
@@ -653,7 +640,7 @@ sub _TransDateLimit {
         my $dayend = $date->ISO;
 
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => ">=",
             VALUE         => $daystart,
@@ -661,7 +648,7 @@ sub _TransDateLimit {
             @rest
         );
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => "<=",
             VALUE         => $dayend,
@@ -677,7 +664,7 @@ sub _TransDateLimit {
 
         #Search for the right field
         $sb->_SQLLimit(
-            ALIAS         => $sb->{_sql_transalias},
+            ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => $op,
             VALUE         => $date->ISO,
@@ -691,16 +678,43 @@ sub _TransDateLimit {
 
 =head2 _TransLimit
 
-Limit based on the Content of a transaction or the ContentType.
-
-Meta Data:
-  none
+Limit based on the ContentType or the Filename of a transaction.
 
 =cut
 
 sub _TransLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
 
-    # Content, ContentType, Filename
+    my $txn_alias = $self->JoinTransactions;
+    unless ( defined $self->{_sql_trattachalias} ) {
+        $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
+            ALIAS1 => $txn_alias,
+            FIELD1 => 'id',
+            TABLE2 => 'Attachments',
+            FIELD2 => 'TransactionId',
+        );
+    }
+
+    $self->_SQLLimit(
+        %rest,
+        ALIAS         => $self->{_sql_trattachalias},
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+    );
+}
+
+=head2 _TransContentLimit
+
+Limit based on the Content of a transaction.
+
+=cut
+
+sub _TransContentLimit {
+
+    # Content search
 
     # If only this was this simple.  We've got to do something
     # complicated here:
@@ -734,61 +748,100 @@ sub _TransLimit {
 
     my ( $self, $field, $op, $value, %rest ) = @_;
 
-    unless ( $self->{_sql_transalias} ) {
-        $self->{_sql_transalias} = $self->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Transactions',
-            FIELD2 => 'ObjectId',
-        );
-        $self->SUPER::Limit(
-            ALIAS           => $self->{_sql_transalias},
-            FIELD           => 'ObjectType',
-            VALUE           => 'RT::Ticket',
-            ENTRYAGGREGATOR => 'AND',
-        );
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    unless ( $config->{'Enable'} ) {
+        $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
+        return;
     }
+
+    my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
         $self->{_sql_trattachalias} = $self->_SQLJoin(
             TYPE   => 'LEFT', # not all txns have an attachment
-            ALIAS1 => $self->{_sql_transalias},
+            ALIAS1 => $txn_alias,
             FIELD1 => 'id',
             TABLE2 => 'Attachments',
             FIELD2 => 'TransactionId',
         );
     }
 
-    #Search for the right field
-    if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
-        $self->_OpenParen;
-        $self->_SQLLimit(
-			%rest,
-			ALIAS         => $self->{_sql_trattachalias},
-			FIELD         => $field,
-			OPERATOR      => $op,
-			VALUE         => $value,
-			CASESENSITIVE => 0,
-		       );
-        $self->_SQLLimit(
-			ENTRYAGGREGATOR => 'AND',
-			ALIAS           => $self->{_sql_trattachalias},
-			FIELD           => 'Filename',
-			OPERATOR        => 'IS',
-			VALUE           => 'NULL',
-		       );
-        $self->_CloseParen;
+    $self->_OpenParen;
+    if ( $config->{'Indexed'} ) {
+        my $db_type = RT->Config->Get('DatabaseType');
+
+        my $alias;
+        if ( $config->{'Table'} ) {
+            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
+                TYPE   => 'LEFT',
+                ALIAS1 => $self->{'_sql_trattachalias'},
+                FIELD1 => 'id',
+                TABLE2 => $config->{'Table'},
+                FIELD2 => 'id',
+            );
+        } else {
+            $alias = $self->{'_sql_trattachalias'};
+        }
+
+        my $field = $config->{'Field'} || 'Content';
+        if ( $db_type eq 'Oracle' ) {
+            my $dbh = $RT::Handle->dbh;
+            $self->_SQLLimit(
+                %rest,
+                # XXX: Nasty hack
+                ALIAS         => 'CONTAINS( '. $self->{_sql_trattachalias},
+                FIELD         => $field . ', '. $dbh->quote($value) .')',
+                OPERATOR      => '>',
+                VALUE         => 0,
+                QUOTEVALUE    => 0,
+                CASESENSITIVE => 1,
+            );
+            # this is required to trick DBIx::SB's LEFT JOINS optimizer
+            # into deciding that join is redundant as it is
+            $self->_SQLLimit(
+                ENTRYAGGREGATOR => 'AND',
+                ALIAS           => $self->{_sql_trattachalias},
+                FIELD           => 'Content',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+            );
+        }
+        elsif ( $db_type eq 'Pg' ) {
+            my $dbh = $RT::Handle->dbh;
+            #XXX: handle negative searches
+            $self->_SQLLimit(
+                %rest,
+                ALIAS       => $alias,
+                FIELD       => $field,
+                OPERATOR    => '@@',
+                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                QUOTEVALUE  => 0,
+            );
+        }
+        else {
+            $RT::Logger->error( "Indexed full text search is not supported for $db_type" );
+            $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
+            return;
+        }
     } else {
         $self->_SQLLimit(
-			%rest,
-			ALIAS         => $self->{_sql_trattachalias},
-			FIELD         => $field,
-			OPERATOR      => $op,
-			VALUE         => $value,
-			CASESENSITIVE => 0,
+            %rest,
+            ALIAS         => $self->{_sql_trattachalias},
+            FIELD         => $field,
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
         );
     }
-
-
+    if ( RT->Config->Get('DontSearchFileAttachments') ) {
+        $self->_SQLLimit(
+            ENTRYAGGREGATOR => 'AND',
+            ALIAS           => $self->{_sql_trattachalias},
+            FIELD           => 'Filename',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+        );
+    }
+    $self->_CloseParen;
 }
 
 =head2 _WatcherLimit

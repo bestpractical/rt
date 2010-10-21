@@ -38,6 +38,8 @@ my $cf;
 
 my (@data, @tickets, @test) = (0, ());
 
+
+
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $test ( @test ) {
@@ -89,7 +91,7 @@ sub run_tests {
     { Subject => 'b-d', 'CustomField-' . $cf->id => ['b', 'd'] },
     { Subject => 'a-c', 'CustomField-' . $cf->id => ['a', 'c'] },
 );
-@tickets = create_tickets($queue->id, sort { rand(100) <=> rand(100) } @data);
+@tickets = RT::Test->create_tickets( {Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}" },
     { Order => "CF.$queue_name.{$cf_name}" },
@@ -101,7 +103,7 @@ run_tests();
     { Subject => 'm', 'CustomField-' . $cf->id => ['m'] },
     { Subject => 'm-o', 'CustomField-' . $cf->id => ['m', 'o'] },
 );
-@tickets = create_tickets($queue->id, sort { rand(100) <=> rand(100) } @data);
+@tickets = RT::Test->create_tickets( {Queue => $queue->id, RandomORder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}", Query => "CF.{$cf_name} = 'm'" },
     { Order => "CF.$queue_name.{$cf_name}", Query => "CF.{$cf_name} = 'm'" },

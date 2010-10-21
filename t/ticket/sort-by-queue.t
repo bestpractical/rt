@@ -29,7 +29,7 @@ foreach my $name ( qw(sort-by-queue-Z sort-by-queue-A) ) {
     push @qids, $queue->id;
 }
 
-my (@data, @tickets, @test) = (0, ());
+my ($total, @tickets, @test) = (0, ());
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -74,11 +74,11 @@ sub run_tests {
     }
 }
 
-@data = (
+@tickets = RT::Test->create_tickets(
+    { RandomOrder => 1 },
     { Queue => $qids[0], Subject => 'z' },
     { Queue => $qids[1], Subject => 'a' },
 );
-@tickets = create_tickets( sort { rand(100) <=> rand(100) } @data );
 @test = (
     { Order => "Queue" },
 );

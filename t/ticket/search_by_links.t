@@ -9,7 +9,7 @@ use RT::Ticket;
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 
-my ($total, @data, @tickets, %test) = (0, ());
+my ($total, @tickets, %test) = (0, ());
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -36,15 +36,13 @@ sub run_tests {
 }
 
 # simple set with "no links", "parent and child"
-@data = (
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
     { Subject => '-', },
     { Subject => 'p', },
     { Subject => 'c', MemberOf => -1 },
 );
-
-@tickets = create_tickets( $q->id, @data );
-$total = scalar @tickets;
-
+$total += @tickets;
 %test = (
     'Linked     IS NOT NULL'  => { '-' => 0, c => 1, p => 1 },
     'Linked     IS     NULL'  => { '-' => 1, c => 0, p => 0 },
@@ -75,7 +73,8 @@ $total = scalar @tickets;
 run_tests();
 
 # another set with tests of combinations searches
-@data = (
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
     { Subject => '-', },
     { Subject => 'p', },
     { Subject => 'rp',  RefersTo => -1 },
@@ -83,9 +82,7 @@ run_tests();
     { Subject => 'rc1', RefersTo => -1 },
     { Subject => 'rc2', RefersTo => -2 },
 );
-@tickets = create_tickets( $q->id, @data );
-$total += scalar @tickets;
-
+$total += @tickets;
 my $pid = $tickets[1]->id;
 %test = (
     'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },

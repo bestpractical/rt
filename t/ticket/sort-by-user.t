@@ -49,6 +49,7 @@ foreach my $u (qw(Z A)) {
 
 my (@data, @tickets, @test) = (0, ());
 
+
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $test ( @test ) {

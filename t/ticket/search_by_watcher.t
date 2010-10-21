@@ -10,7 +10,7 @@ my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
-my ($total, @data, @tickets, @test, @conditions) = (0, ());
+my ($total, @tickets, @test, @conditions) = (0, ());
 
 sub generate_tix {
     my @list = (
@@ -21,7 +21,7 @@ sub generate_tix {
         ['x@foo.com', 'z@bar.com'],
         ['x@foo.com', 'y@bar.com', 'z@bar.com'],
     );
-    @data = ();
+    my @data = ();
     foreach my $r (@list) {
         foreach my $c (@list) {
             my $subject = 'r:'. (join( '', map substr($_, 0, 1), @$r ) || '-') .';';
@@ -34,7 +34,7 @@ sub generate_tix {
             };
         }
     }
-    return create_tickets($q->id, @data);
+    return RT::Test->create_tickets( { Queue => $q->id }, @data );
 }
 
 sub run_tests {
@@ -221,8 +221,7 @@ my $nobody = RT::Nobody();
     # create ticket and force type to not a 'ticket' value
     # bug #6898@rt3.fsck.com
     # and http://marc.theaimsgroup.com/?l=rt-devel&m=112662934627236&w=2
-    @data = ( { Subject => 'not a ticket' } );
-    my($t) = create_tickets( $q->id,, @data );
+    my($t) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'not a ticket' } );
     $t->_Set( Field             => 'Type',
               Value             => 'not a ticket',
               CheckACL          => 0,
@@ -246,15 +245,17 @@ my $nobody = RT::Nobody();
     my $u = RT::User->new( RT->SystemUser );
     $u->LoadOrCreateByEmail('alpha@e.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '4', Owner => $u->id } );
-    my($t) = create_tickets($q->id, @data);
+    my($t) = RT::Test->create_tickets(
+        { Queue => $q->id }, { Subject => '4', Owner => $u->id },
+    );
     my $u_alpha_id = $u->id;
 
     $u = RT::User->new( RT->SystemUser );
     $u->LoadOrCreateByEmail('bravo@e.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '5', Owner => $u->id } );
-    ($t) = create_tickets($q->id, @data);
+    ($t) = RT::Test->create_tickets(
+        { Queue => $q->id }, { Subject => '5', Owner => $u->id },
+    );
     my $u_bravo_id = $u->id;
 
     my $tix = RT::Tickets->new(RT->SystemUser);

@@ -114,7 +114,7 @@ sub run_tests {
     "'CF.$queue.{$cf_id}' = 'x' OR 'CF.$queue.{$cf_id}' IS NOT NULL"      => { '-' => 0, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1 },
     "'CF.$queue.{$cf_name}' = 'x' OR 'CF.$queue.{$cf_name}' IS NOT NULL"  => { '-' => 0, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1 },
 );
-@tickets = create_tickets($q->id, @data);
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data);
 $total = scalar @tickets;
 
 {
