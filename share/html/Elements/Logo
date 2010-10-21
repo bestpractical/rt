@@ -48,7 +48,7 @@
 <div id="logo">
 % if ($use_user_logo) {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
-    src="/Helpers/UserLogo"
+    src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo"
     alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
 % } else {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img

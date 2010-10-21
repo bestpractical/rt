@@ -61,7 +61,7 @@
 <div id="upload-logo">
   <h2>Logo</h2>
 % if ($img) {
-  <img src="/Helpers/UserLogo?<% time() %>" />
+  <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo?<% time() %>" />
 % }
   <form method="POST" enctype="multipart/form-data">
     <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
