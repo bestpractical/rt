@@ -75,7 +75,7 @@ wrap 'HTTP::Request::Common::form_data',
    };
 
 
-our @EXPORT = qw(is_empty diag);
+our @EXPORT = qw(is_empty diag parse_mail);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -1368,6 +1368,15 @@ sub diag {
     return unless $ENV{RT_TEST_VERBOSE} || $ENV{TEST_VERBOSE};
     goto \&Test::More::diag;
 }
+
+sub parse_mail {
+    my $mail = shift;
+    require RT::EmailParser;
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar( $mail );
+    return $parser->Entity;
+}
+
 
 END {
     my $Test = RT::Test->builder;
