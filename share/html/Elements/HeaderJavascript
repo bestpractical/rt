@@ -72,6 +72,7 @@ $onload => undef
         var sAgent = navigator.userAgent.toLowerCase();
         if (!FCKeditor_IsCompatibleBrowser() ||
             sAgent.indexOf('iphone') != -1 ||
+            sAgent.indexOf('ipad') != -1 ||
             sAgent.indexOf('android') != -1 )
             return false;
 
