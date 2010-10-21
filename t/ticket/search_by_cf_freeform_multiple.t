@@ -31,13 +31,11 @@ sub add_tix_from_data {
         my %args = %{ shift(@data) };
         my @cf_value = $args{'Subject'} ne '-'? (split /(?=.)/, $args{'Subject'}) : ();
         diag "vals: ". join ', ', @cf_value;
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
+        my $t = RT::Test->create_ticket(
             Queue => $q->id,
             %args,
             "CustomField-$cf_id" => \@cf_value,
         );
-        ok( $id, "ticket created" ) or diag("error: $msg");
 
         my $got = join ',', sort do { 
             my $vals = $t->CustomFieldValues( $cf_name );

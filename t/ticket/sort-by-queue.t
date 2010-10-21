@@ -29,21 +29,7 @@ foreach my $name ( qw(sort-by-queue-Z sort-by-queue-A) ) {
     push @qids, $queue->id;
 }
 
-my ($total, @data, @tickets, @test) = (0, ());
-
-sub add_tix_from_data {
-    my @res = ();
-    @data = sort { rand(100) <=> rand(100) } @data;
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my %args = %{ shift(@data) };
-        my ( $id, undef, $msg ) = $t->Create( %args );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
+my ($total, @tickets, @test) = (0, ());
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -88,11 +74,11 @@ sub run_tests {
     }
 }
 
-@data = (
+@tickets = RT::Test->create_tickets(
+    { RandomOrder => 1 },
     { Queue => $qids[0], Subject => 'z' },
     { Queue => $qids[1], Subject => 'a' },
 );
-@tickets = add_tix_from_data();
 @test = (
     { Order => "Queue" },
 );

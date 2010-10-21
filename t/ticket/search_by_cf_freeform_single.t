@@ -30,13 +30,11 @@ sub add_tix_from_data {
     while (@data) {
         my %args = %{ shift(@data) };
         my $cf_value = $args{'Subject'} ne '-'? $args{'Subject'} : undef;
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
+        my $t = RT::Test->create_ticket(
             Queue => $q->id,
             %args,
             "CustomField-$cf_id" => $cf_value,
         );
-        ok( $id, "ticket created" ) or diag("error: $msg");
         is( $t->FirstCustomFieldValue( $cf_name ), $cf_value, 'correct value' );
         push @res, $t;
         $total++;

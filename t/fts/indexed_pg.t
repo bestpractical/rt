@@ -15,8 +15,6 @@ my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
-my ($total, @data, @tickets, @test, @conditions) = (0, ());
-
 sub setup_indexing {
     my %args = (
         'no-ask'       => 1,
@@ -34,37 +32,14 @@ sub setup_indexing {
     ok(!$exit_code, "setted up index") or diag "output: $output";
 }
 
-sub add_tix_from_data {
-    my @res = ();
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my %args = %{ shift(@data) };
-
-        if ( my $content = delete $args{'Content'} ) {
-            $args{'MIMEObj'} = MIME::Entity->build(
-                From    => $args{'Requestor'},
-                To      => $q->CorrespondAddress,
-                Subject => $args{'Subject'},
-                Data    => $content,
-            );
-        }
-        my ( $id, undef, $msg ) = $t->Create(
-            Queue => $q->id,
-            %args,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
-
 sub run_tests {
+    my @test = @_;
     while ( my ($query, $checks) = splice @test, 0, 2 ) {
         run_test( $query, %$checks );
     }
 }
 
+my @tickets;
 sub run_test {
     my ($query, %checks) = @_;
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -89,15 +64,15 @@ sub run_test {
     diag "Wrong SQL query for '$query':". $tix->BuildSelectQuery if $error;
 }
 
-@data = (
-    { Subject => 'foo', Content => 'foo' },
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
+    { Subject => 'book', Content => 'book' },
     { Subject => 'bar', Content => 'bar' },
 );
-@tickets = add_tix_from_data();
+sync_index();
 
-@test = (
-    "Content LIKE 'foo'" => { foo => 1, bar => 0 },
-    "Content LIKE 'bar'" => { foo => 0, bar => 1 },
+run_tests(
+    "Content LIKE 'book'" => { book => 1, bar => 0 },
+    "Content LIKE 'bar'" => { book => 0, bar => 1 },
 );
-run_tests();
 

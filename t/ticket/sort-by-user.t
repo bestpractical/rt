@@ -53,10 +53,10 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
 
-        my ( $id, undef, $msg ) = $t->Create( %args, Queue => $queue->id );
+        my $t = RT::Test->create_ticket( %args, Queue => $queue->id );
+
         if ( $args{'Owner'} ) {
             is $t->Owner, $args{'Owner'}, "owner is correct";
         }
@@ -67,7 +67,6 @@ sub add_tix_from_data {
         if ( $args{'LastUpdatedBy'} ) {
             $t->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
         }
-        ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
         $total++;
     }

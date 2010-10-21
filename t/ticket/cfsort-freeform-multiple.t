@@ -42,8 +42,8 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
+
         my @values = ();
         if ( exists $args{'CF'} && ref $args{'CF'} ) {
             @values = @{ delete $args{'CF'} };
@@ -52,13 +52,13 @@ sub add_tix_from_data {
         }
         $args{ 'CustomField-'. $cf->id } = \@values
             if @values;
+
         my $subject = join(",", sort @values) || '-';
-        my ( $id, undef $msg ) = $t->Create(
+        my $t = RT::Test->create_ticket(
             %args,
             Queue => $queue->id,
             Subject => $subject,
         );
-        ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
         $total++;
     }

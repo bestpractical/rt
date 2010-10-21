@@ -600,6 +600,47 @@ sub load_or_create_queue {
     return $obj;
 }
 
+sub create_tickets {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my $defaults = shift;
+    my @data = @_;
+
+    @data = sort { rand(100) <=> rand(100) } @data
+        if delete $defaults->{'RandomOrder'};
+
+    my @res = ();
+    while ( @data ) {
+        my %args = %{ shift @data };
+        $args{$_} = $res[ $args{$_} ]->id foreach
+            grep $args{ $_ }, keys %RT::Ticket::LINKTYPEMAP;
+        push @res, $self->create_ticket( %$defaults, %args );
+    }
+    return @res;
+}
+
+sub create_ticket {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my %args = @_;
+
+    if ( my $content = delete $args{'Content'} ) {
+        $args{'MIMEObj'} = MIME::Entity->build(
+            From    => $args{'Requestor'},
+            Subject => $args{'Subject'},
+            Data    => $content,
+        );
+    }
+
+    my $t = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $t->Create( %args );
+    Test::More::ok( $id, "ticket created" )
+        or Test::More::diag("error: $msg");
+    return $t;
+}
+
 =head2 load_or_create_custom_field
 
 =cut

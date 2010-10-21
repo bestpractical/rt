@@ -45,7 +45,6 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
         my %args = %{ shift(@data) };
 
         my $subject = '-';
@@ -62,12 +61,11 @@ sub add_tix_from_data {
                 if $e eq 'CF';
         }
 
-        my ( $id, undef $msg ) = $t->Create(
+        my $t = RT::Test->create_ticket(
             %args,
             Queue => $queue->id,
             Subject => $subject,
         );
-        ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
         $total++;
     }
