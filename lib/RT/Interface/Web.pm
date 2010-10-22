@@ -286,10 +286,10 @@ the hash value.
 
 sub SetNextPage {
     my $next = shift || IntuitNextPage();
-    my $hash = Digest::MD5::md5_hex( $next . $$ );
+    my $hash = Digest::MD5::md5_hex($next . $$ . rand(1024));
 
     $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
-    $HTML::Mason::Commands::session{'i'}++;  # Cargo culted, do we need this?
+    $HTML::Mason::Commands::session{'i'}++;
     
     SendSessionCookie();
     return $hash;
