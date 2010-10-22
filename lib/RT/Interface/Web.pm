@@ -311,6 +311,18 @@ sub TangentForLogin {
     Redirect($login);
 }
 
+=head2 TangentForLoginWithError ERROR
+
+Localizes the passed error message, stashes it with L<LoginError> and then
+calls L<TangentForLogin> with the appropriate results key.
+
+=cut
+
+sub TangentForLoginWithError {
+    my $key = LoginError(HTML::Mason::Commands::loc(@_));
+    TangentForLogin( results => $key );
+}
+
 =head2 IntuitNextPage
 
 Attempt to figure out the path to which we should return the user after a
@@ -493,10 +505,7 @@ sub AttemptExternalAuth {
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
 
                 if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    my $key = LoginError(
-                        HTML::Mason::Commands::loc('Cannot create user: [_1]', $msg)
-                    );
-                    TangentForLogin( results => $key );
+                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
                 } else {
                     $m->abort();
                 }
@@ -510,19 +519,13 @@ sub AttemptExternalAuth {
             $user = $orig_user;
 
             if ( RT->Config->Get('WebExternalOnly') ) {
-                my $key = LoginError(
-                    HTML::Mason::Commands::loc('You are not an authorized user')
-                );
-                TangentForLogin( results => $key );
+                TangentForLoginWithError('You are not an authorized user');
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            my $key = LoginError(
-                HTML::Mason::Commands::loc('You are not an authorized user')
-            );
-            TangentForLogin( results => $key );
+            TangentForLoginWithError('You are not an authorized user');
         }
     } else {
 
