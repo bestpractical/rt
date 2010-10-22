@@ -53,6 +53,7 @@
 >
 
 <&|/l, $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ) &><input type="submit" class="button" value="New ticket in" />&nbsp;[_1]</&>
+% $m->callback(CallbackName => 'BeforeFormEnd');
 </form>
 <%ARGS>
 $SendTo => '/Ticket/Create.html',
