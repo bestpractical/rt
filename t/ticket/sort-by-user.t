@@ -99,7 +99,7 @@ sub run_tests {
     { Subject => 'A', Owner => $uids[1] },
 );
 
-@tickets = create_tickets( $queue->id, @data );
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
 
 @test = (
     { Order => "Owner" },
@@ -111,7 +111,7 @@ run_tests();
     { Subject => 'Z', Creator => $uids[0] },
     { Subject => 'A', Creator => $uids[1] },
 );
-@tickets = create_tickets( $queue->id, @data );
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
 @test = (
     { Order => "Creator" },
 );
@@ -122,7 +122,7 @@ run_tests();
     { Subject => 'Z', LastUpdatedBy => $uids[0] },
     { Subject => 'A', LastUpdatedBy => $uids[1] },
 );
-@tickets = create_tickets( $queue->id, @data );
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
 @test = (
     { Order => "LastUpdatedBy" },
 );

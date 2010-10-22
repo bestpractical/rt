@@ -5,7 +5,7 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not Oracle' unless RT->Config->Get('DatabaseType') eq 'Oracle';
-plan tests => 9;
+plan tests => 11;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1 );
 
