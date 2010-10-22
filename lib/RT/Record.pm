@@ -709,6 +709,7 @@ sub _EncodeLOB {
         my $self = shift;
         my $Body = shift;
         my $MIMEType = shift;
+        my $Filename = shift;
 
         my $ContentEncoding = 'none';
 
@@ -752,7 +753,8 @@ sub _EncodeLOB {
                 $RT::Logger->info( "$self: Dropped an attachment of size "
                                    . length($Body));
                 $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-                return ("none", "Large attachment dropped" );
+                $Filename .= ".txt" if $Filename;
+                return ("none", "Large attachment dropped", "plain/text", $Filename );
             }
         }
 
@@ -769,7 +771,7 @@ sub _EncodeLOB {
         }
 
 
-        return ($ContentEncoding, $Body);
+        return ($ContentEncoding, $Body, $MIMEType, $Filename );
 
 }
 
