@@ -75,7 +75,7 @@ wrap 'HTTP::Request::Common::form_data',
    };
 
 
-our @EXPORT = qw(is_empty diag parse_mail works fails create_tickets);
+our @EXPORT = qw(is_empty diag parse_mail works fails);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -606,9 +606,10 @@ sub create_tickets {
     my $self = shift;
     my $defaults = shift;
     my @data = @_;
-
     @data = sort { rand(100) <=> rand(100) } @data
         if delete $defaults->{'RandomOrder'};
+
+    $defaults->{'Queue'} ||= 'General';
 
     my @res = ();
     while ( @data ) {
@@ -634,11 +635,36 @@ sub create_ticket {
         );
     }
 
-    my $t = RT::Ticket->new( RT->SystemUser );
-    my ( $id, undef, $msg ) = $t->Create( %args );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $ticket->Create( %args );
     Test::More::ok( $id, "ticket created" )
         or Test::More::diag("error: $msg");
-    return $t;
+
+    # hackish, but simpler
+    if ( $args{'LastUpdatedBy'} ) {
+        $ticket->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
+    }
+
+
+    for my $field ( keys %args ) {
+        #TODO check links and watchers
+
+        if ( $field =~ /CustomField-(\d+)/ ) {
+            my $cf = $1;
+            my $got = join ',', sort map $_->Content,
+                @{ $ticket->CustomFieldValues($cf)->ItemsArrayRef };
+            my $expected = ref $args{$field}
+                ? join( ',', sort @{ $args{$field} } )
+                : $args{$field};
+            Test::More::is( $got, $expected, 'correct CF values' );
+        }
+        else {
+            next if ref $args{$field} || !$ticket->can($field) || ref $ticket->$field();
+            Test::More::is( $ticket->$field(), $args{$field}, "$field is correct" );
+        }
+    }
+
+    return $ticket;
 }
 
 =head2 load_or_create_custom_field
@@ -1424,73 +1450,6 @@ sub works {
 
 sub fails {
     Test::More::ok(!$_[0], $_[1] || 'This should fail');
-}
-
-sub create_tickets {
-    my $default_queue;
-    if ( $_[0] && ( !ref $_[0] || ref $_[0] eq 'RT::Queue' ) ) {
-        $default_queue = shift;
-    }
-    else {
-        $default_queue = 'General';
-    }
-
-    my @res;
-
-    while (my $data = shift @_) {
-        my $ticket = RT::Ticket->new(RT->SystemUser);
-        my %args = %$data;
-        my %links;
-
-        # link tickets
-        for my $type ( keys %RT::Ticket::LINKTYPEMAP ) {
-            my $index = delete $args{$type};
-            next unless defined $index;
-            $links{$type} = $res[ $index ]->id;
-        }
-
-        my ( $id, undef, $msg ) = $ticket->Create(
-            Queue => $default_queue,
-            %args,
-            %links,
-        );
-
-        # hackish, but simpler
-        if ( $args{'LastUpdatedBy'} ) {
-            $ticket->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
-        }
-
-        Test::More::ok( $id, "ticket created" ) or diag("error: $msg");
-
-        for my $field ( keys %args ) {
-            #TODO check links and watchers
-
-            if ( $field =~ /CustomField-(\d+)/ ) {
-                my $cf = $1;
-                my $got = join ',', do {
-                    my $vals = $ticket->CustomFieldValues($cf);
-                    $vals->OrderBy( Field => 'id', ORDER => 'ASC' );
-                    my @tmp;
-                    while ( my $v = $vals->Next ) { push @tmp, $v->Content }
-                    @tmp;
-                };
-        
-                Test::More::is(
-                    $got,
-                    ref $args{$field}
-                    ? join( ',', @{ $args{$field} } )
-                    : $args{$field},
-                    'correct CF values'
-                );
-            }
-            else {
-                next unless !ref $args{$field} && $ticket->can($field);
-                Test::More::is( $ticket->$field, $args{$field}, "$field is correct" );
-            }
-        }
-        push @res, $ticket;
-    }
-    return @res;
 }
 
 END {
