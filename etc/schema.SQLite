@@ -48,9 +48,9 @@ CREATE TABLE FM_ObjectClasses (
 id INTEGER PRIMARY KEY,
 Topic integer NOT NULL,
 ObjectType varchar(64) NOT NULL DEFAULT '',
-ObjectId integer NOT NULL
+ObjectId integer NOT NULL,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
+LastUpdated TIMESTAMP NULL
 );
