@@ -650,7 +650,10 @@ sub Redirect {
     
     # Make relative URIs absolute from the server host and scheme
     $uri->scheme($server_uri->scheme) if not defined $uri->scheme;
-    $uri->host($server_uri->host)     if not defined $uri->host;
+    if (not defined $uri->host) {
+        $uri->host($server_uri->host);
+        $uri->port($server_uri->port);
+    }
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
