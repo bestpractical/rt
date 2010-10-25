@@ -335,7 +335,13 @@ sub IntuitNextPage {
 
     # This includes any query parameters.  Redirect will take care of making
     # it an absolute URL.
-    $req_uri = $ENV{'REQUEST_URI'} if $ENV{'REQUEST_URI'};
+    if ($ENV{'REQUEST_URI'}) {
+        $req_uri = $ENV{'REQUEST_URI'};
+
+        # collapse multiple leading slashes so the first part doesn't look like
+        # a hostname of a schema-less URI
+        $req_uri =~ s{^/+}{/};
+    }
 
     my $next = defined $req_uri ? $req_uri : RT->Config->Get('WebURL');
 
