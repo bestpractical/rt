@@ -212,7 +212,6 @@ sub HandleRequest {
 
         unless ($authed) {
             my $m = $HTML::Mason::Commands::m;
-            my $results = $msg ? LoginError($msg) : undef;
 
             # REST urls get a special 401 response
             if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
@@ -225,11 +224,11 @@ sub HandleRequest {
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
                 my $next = SetNextPage(RT->Config->Get('WebURL'));
-                $m->comp('/NoAuth/Login.html', next => $next, results => $results);
+                $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
                 $m->abort;
             }
             else {
-                TangentForLogin(results => $results);
+                TangentForLogin(results => ($msg ? LoginError($msg) : undef));
             }
         }
     }
