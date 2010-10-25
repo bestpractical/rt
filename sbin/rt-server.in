@@ -129,10 +129,16 @@ EOF
 }
 
 require RT::Interface::Web::Handler;
+my $app = RT::Interface::Web::Handler->PSGIApp;
 
 # when used as a psgi file
 unless ($0 eq __FILE__) {
-    return RT::Interface::Web::Handler->PSGIApp;
+    if ($ENV{RT_TESTING}) {
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+    }
+
+    return $app;
 }
 
 
@@ -166,7 +172,7 @@ unless ($r->{env} eq 'development') {
         print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
     };
 }
-eval { $r->run(RT::Interface::Web::Handler->PSGIApp) };
+eval { $r->run($app) };
 if (my $err = $@) {
     handle_startup_error($err);
 }

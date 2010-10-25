@@ -37,5 +37,6 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
     SetHandler perl-script
     PerlResponseHandler Plack::Handler::Apache2
     PerlSetVar psgi_app %%RT_SBIN_PATH%%/rt-server
+    PerlSetEnv RT_TESTING 1
 </Directory>
 
