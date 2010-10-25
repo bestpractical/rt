@@ -561,7 +561,7 @@ sub AttemptPasswordAuthentication {
 
         # It's important to nab the next page from the session before we blow
         # the session away
-        my $next = $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
+        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
