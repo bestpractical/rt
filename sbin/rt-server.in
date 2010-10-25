@@ -86,10 +86,6 @@ if (grep { m/help/ } @ARGV) {
 require RT;
 RT->LoadConfig();
 
-my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
-warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
-my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
-
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
 
@@ -133,13 +129,33 @@ EOF
 }
 
 require RT::Interface::Web::Handler;
-use Plack::Runner;
-my $r = Plack::Runner->new( server => $0 =~ 'rt-server$' ? 'Starlet' : 'Standalone', env => 'deployment' );
 
+# when used as a psgi file
+unless ($0 eq __FILE__) {
+    return RT::Interface::Web::Handler->PSGIApp;
+}
+
+
+# load appropriate server
+
+my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
+warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
+my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
+
+require Plack::Runner;
+
+my $is_fastcgi = $0 =~ m/fcgi$/;
+my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
+                            $is_fastcgi        ? ( server => 'FCGI' )
+                                               : (),
+                            env => 'deployment' );
 my @args = @ARGV;
 push @args, '--port', $port unless grep { m/port/ } @args;
+push @args, '--server', 'Starlet' unless $r->{server} || grep { m/server/ } @args;
 
 $r->parse_options(@args);
+
+delete $r->{options} if $is_fastcgi; ### mangle_host_port_socket ruins everything
 
 unless ($r->{env} eq 'development') {
     push @{$r->{options}}, server_ready => sub {

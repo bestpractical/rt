@@ -1183,6 +1183,7 @@ sub start_apache_server {
         document_root  => $RT::MasonComponentRoot,
         tmp_dir        => "$tmp{'directory'}",
         rt_bin_path    => $RT::BinPath,
+        rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
     );
     foreach (qw(log pid lock)) {

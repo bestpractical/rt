@@ -411,6 +411,7 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-email-group-admin
                  sbin/rt-server
+                 sbin/rt-server.fcgi
                  sbin/standalone_httpd
                  bin/fastcgi_server
                  bin/mason_handler.fcgi
