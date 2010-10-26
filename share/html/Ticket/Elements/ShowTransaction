@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
+<div class="ticket-transaction <% $type_class %> <%$type%> <% $RowNum % 2 ? 'odd' : 'even' %>">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
 
 <div class="ticket-transaction">
