@@ -131,13 +131,13 @@ EOF
 require RT::Interface::Web::Handler;
 my $app = RT::Interface::Web::Handler->PSGIApp;
 
+if ($ENV{RT_TESTING}) {
+    require Plack::Middleware::Test::StashWarnings;
+    $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+}
+
 # when used as a psgi file
 unless ($0 eq __FILE__) {
-    if ($ENV{RT_TESTING}) {
-        require Plack::Middleware::Test::StashWarnings;
-        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
-    }
-
     return $app;
 }
 
