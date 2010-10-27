@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 36;
+use RT::FM::Test tests => 57;
 
 my ( $url, $m ) = RT::Test->started_ok;
 $m->login;
@@ -19,7 +19,7 @@ for my $name ( keys %class ) {
 
     $m->submit_form(
         form_number => 3,
-        fields      => { Name => $name }
+        fields      => { Name => $name, HotList => 1 },
     );
 
     $m->content_contains( "Editing Configuration for Class $name",
@@ -75,12 +75,35 @@ diag "update ticket to see if there is article foo"
 {
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
+    $m->content_contains( 'article foo:', 'got article foo in hotlist' );
+    $m->content_lacks( 'article bar:', 'no article bar in hotlist' );
+
     $m->submit_form(
         form_number => 3,
         fields      => { 'RTFM_Content' => 'article' },
         button      => 'Go',
     );
-    $m->content_contains( 'article foo', 'got article foo' );
+    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
+    $m->content_lacks( 'article bar', 'no article bar' );
+
+    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
+        'ticket update page' );
+    $m->submit_form(
+        form_number => 3,
+        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
+        button      => 'Go',
+    );
+    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
+    $m->content_lacks( 'article bar', 'no article bar' );
+
+    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
+        'ticket update page' );
+    $m->submit_form(
+        form_number => 3,
+        fields      => { 'RTFM-Include-Article-Named' => 'articlei bar' },
+        button      => 'Go',
+    );
+    $m->content_unlike( qr/article foo.*article foo/s, 'no article foo' );
     $m->content_lacks( 'article bar', 'no article bar' );
 }
 
@@ -102,29 +125,38 @@ diag "update ticket to see if there are both article foo and bar"
 {
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
+    $m->content_contains( 'article foo:', 'got article foo in hotlist' );
+    $m->content_contains( 'article bar:', 'got article bar in hotlist' );
+
     $m->submit_form(
         form_number => 3,
         fields      => { 'RTFM_Content' => 'article' },
         button      => 'Go',
     );
-    $m->content_contains( 'article foo', 'got article foo' );
-    $m->content_contains( 'article bar', 'got article bar' );
-}
+    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
+    $m->content_like( qr/article bar.*article bar/s, 'selected article bar' );
 
-diag "update ticket to see if there are both article foo and bar"
-  if $ENV{TEST_VERBOSE};
-
-{
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM_Content' => 'article' },
+        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
         button      => 'Go',
     );
-    $m->content_contains( 'article foo', 'got article foo' );
-    $m->content_contains( 'article bar', 'got article bar' );
+    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
+    $m->content_unlike( qr/article bar.*article bar/s, 'no article bar' );
+
+    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
+        'ticket update page' );
+    $m->submit_form(
+        form_number => 3,
+        fields      => { 'RTFM-Include-Article-Named' => 'article bar' },
+        button      => 'Go',
+    );
+    $m->content_like( qr/article bar.*article bar/s, 'selected article bar' );
+    $m->content_unlike( qr/article foo.*article foo/s, 'no article foo' );
 }
+
 
 diag "remove both foo and bar" if $ENV{TEST_VERBOSE};
 {
@@ -153,6 +185,9 @@ diag "update ticket to see if there are both article foo and bar"
 {
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
+    $m->content_lacks( 'article foo:', 'no article foo in hotlist' );
+    $m->content_lacks( 'article bar:', 'no article bar in hotlist' );
+
     $m->submit_form(
         form_number => 3,
         fields      => { 'RTFM_Content' => 'article' },
@@ -160,4 +195,25 @@ diag "update ticket to see if there are both article foo and bar"
     );
     $m->content_lacks( 'article foo', 'no article foo' );
     $m->content_lacks( 'article bar', 'no article bar' );
+
+    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
+        'ticket update page' );
+    $m->submit_form(
+        form_number => 3,
+        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
+        button      => 'Go',
+    );
+    $m->content_lacks( 'article foo', 'no article foo' );
+    $m->content_lacks( 'article bar', 'no article bar' );
+
+    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
+        'ticket update page' );
+    $m->submit_form(
+        form_number => 3,
+        fields      => { 'RTFM-Include-Article-Named' => 'article bar' },
+        button      => 'Go',
+    );
+    $m->content_lacks( 'article foo', 'no article foo' );
+    $m->content_lacks( 'article bar', 'no article bar' );
 }
+
