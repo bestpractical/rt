@@ -134,6 +134,7 @@ sub AvailableRights {
 
     # Build a merged list of all system wide rights, queue rights and group rights.
     my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});
+    delete $rights{ExecuteCode} if RT->Config->Get('DisallowExecuteCode');
 
     return(\%rights);
 }

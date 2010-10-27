@@ -150,6 +150,9 @@ sub GrantRight {
         @_
     );
 
+    return (0, "Permission denied") if $args{'Right'} eq 'ExecuteCode'
+        and RT->Config->Get('DisallowExecuteCode');
+
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
 
@@ -261,6 +264,9 @@ sub HasRight {
                "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;
     }
+
+    return undef if $args{'Right'} eq 'ExecuteCode'
+        and RT->Config->Get('DisallowExecuteCode');
 
     $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
         if $args{'EquivObjects'};
@@ -471,6 +477,9 @@ sub RolesWithRight {
                  EquivObjects        => [],
                  @_
                );
+
+    return () if $args{'Right'} eq 'ExecuteCode'
+        and RT->Config->Get('DisallowExecuteCode');
 
     my $query = "SELECT DISTINCT PrincipalType FROM ACL"
 
