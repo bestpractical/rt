@@ -45,51 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="results">
-<&| /Widgets/TitleBox, title => loc('Results'), %{$titlebox || {}} &>
-  <ul class="action-results">
-% foreach my $action (@actions) {
-    <li><%$action%></li>
-% }
-  </ul>
-</&>
-</div>
 <%init>
-
-# backward compatibility, don't use array in new code, but use keyed hash
-if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'} };
-}
-
-if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'}{''} };
-}
-
-my $actions_pointer = $m->request_args->{'results'};
-
-if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };
-}
-
-# XXX: run callbacks per row really crazy idea
-@actions =
-    grep $_,
-    grep {
-        my $skip;
-        $m->callback(
-            %ARGS,
-            row  => \$_,
-            skip => \$skip,
-            CallbackName => 'ModifyRow',
-        );
-        !$skip;
-    }
-    grep $_, @actions;
-
-return unless @actions;
-
+my ($good, $msg) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
+$ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
-<%ARGS>
-$titlebox => {}
-@actions => undef
-</%ARGS>
+<& /Elements/Login, %ARGS &>
