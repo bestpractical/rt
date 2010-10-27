@@ -58,7 +58,7 @@
 <tr>
 <td><&|/l&>Include RTFM article:</&></td>
 <td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 %   }
 %}
@@ -72,7 +72,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 % }
 % my %dedupe_articles;
@@ -106,7 +106,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 
 % if ( $ARGS{$name_prefix .'RTFM-Include-Topic'} ) {
@@ -122,7 +122,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" value="Go" name="Go" /></td>
 </tr>
 
 % }
