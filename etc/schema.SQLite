@@ -46,7 +46,7 @@ ObjectId integer NOT NULL
 
 CREATE TABLE FM_ObjectClasses (
 id INTEGER PRIMARY KEY,
-Topic integer NOT NULL,
+Class integer NOT NULL,
 ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL,
 Creator integer NOT NULL DEFAULT 0,
