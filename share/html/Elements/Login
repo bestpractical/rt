@@ -54,7 +54,7 @@ if ( $m->request_comp->path =~ '^/REST/\d+\.\d+/' ) {
     $m->abort;
 } elsif (    RT::Interface::Web->MobileClient()
           || ( $m->request_comp->path() =~ m{^/m(?:\/|$)} ) ) {
-    $m->comp( '/m / login ', %ARGS );
+    $m->comp( '/m/login', %ARGS );
     $m->abort;
 }
 
