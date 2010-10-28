@@ -2,22 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 214;
-
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
+use RT::Test::GnuPG tests => 214, gnupg_options => { passphrase => 'rt-test' };
 
 diag "load Everyone group";
 my $everyone;
@@ -26,12 +11,6 @@ my $everyone;
     $everyone->LoadSystemInternalGroup('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
-
-RT::Test->set_rights(
-    Principal => $everyone,
-    Right => ['CreateTicket'],
-);
-
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';

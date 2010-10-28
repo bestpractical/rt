@@ -2,23 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 11;
-
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
-
-# catch any outgoing emails
-RT::Test->set_mail_catcher;
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+use RT::Test::GnuPG tests => 11, gnupg_options => { passphrase => 'rt-test' };
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -41,11 +25,6 @@ ok( $m->login, 'we did log in' );
 ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket'],
-);
 
 {
     my $id = send_via_mailgate('quoted_inline_signature.txt');

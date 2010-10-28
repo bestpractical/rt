@@ -2,28 +2,24 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 39;
+my $homedir;
+BEGIN {
+    require RT::Test;
+    $homedir =
+      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+        qw/data gnupg keyrings/ );
+}
 
-use File::Temp;
+use RT::Test::GnuPG
+  tests         => 39,
+  gnupg_options => {
+    passphrase => 'rt-test',
+    homedir    => $homedir,
+  };
+
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings));
-
-# catch any outgoing emails
-RT::Test->set_mail_catcher;
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

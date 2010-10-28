@@ -2,28 +2,9 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 85;
+use RT::Test::GnuPG tests => 84, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
-use File::Temp qw(tempdir);
-
-RT::Test->set_mail_catcher;
-
-use_ok('RT::Crypt::GnuPG');
-
-RT->Config->Set( GnuPG =>
-    Enable => 1,
-    OutgoingMessagesFormat => 'RFC',
-);
-
-RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-);
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -31,11 +12,6 @@ my $queue = RT::Test->load_or_create_queue(
     CommentAddress    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
-);
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';

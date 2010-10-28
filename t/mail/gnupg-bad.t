@@ -2,21 +2,14 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 5;
-
-use Cwd 'getcwd';
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings));
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'test',
-                 'no-permission-warning' => undef);
+use RT::Test::GnuPG
+  tests         => 5,
+  gnupg_options => {
+    passphrase => 'rt-test',
+    homedir => RT::Test::get_abs_relocatable_dir(
+        File::Spec->updir(), qw/data gnupg keyrings/
+    ),
+  };
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 

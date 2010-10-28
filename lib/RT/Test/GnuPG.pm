@@ -2,20 +2,46 @@ package RT::Test::GnuPG;
 use strict;
 use Test::More;
 use base qw(RT::Test);
+use File::Temp qw(tempdir);
+use RT::Crypt::GnuPG;
 
 our @EXPORT = qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options check_text_emails);
 
 sub import {
     my $class = shift;
     my %args  = @_;
-    my $t = $class->builder;
+    my $t     = $class->builder;
 
     $t->plan( skip_all => 'GnuPG required.' )
-        unless eval { require GnuPG::Interface; 1 };
+      unless eval { require GnuPG::Interface; 1 };
     $t->plan( skip_all => 'gpg executable is required.' )
-        unless RT::Test->find_executable('gpg');
+      unless RT::Test->find_executable('gpg');
 
-    $class->SUPER::import( %args );
+    RT->Config->Set(
+        GnuPG                  => Enable => 1,
+        OutgoingMessagesFormat => 'RFC',
+    );
+
+    my %gnupg_options = (
+        'no-permission-warning' => undef,
+        $args{gnupg_options} ? %{ $args{gnupg_options} } : (),
+    );
+    $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
+
+    RT->Config->Set( GnuPGOptions => %gnupg_options );
+
+    diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
+
+    RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+
+    $class->SUPER::import(%args);
+
+    $class->set_rights(
+        Principal => 'Everyone',
+        Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
+    );
+
+    $class->set_mail_catcher;
     $class->export_to_level(1);
 }
 
