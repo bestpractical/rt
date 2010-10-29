@@ -84,94 +84,9 @@ $queue = RT::Test->load_or_create_queue(
 );
 ok $queue && $queue->id, 'changed props of the queue';
 
-foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "got id of a newly created ticket - $id");
-
-    my $tick = RT::Ticket->new( RT->SystemUser );
-    $tick->Load( $id );
-    ok ($tick->id, "loaded ticket #$id");
-
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
-
-    ok !$msg->GetHeader('X-RT-Privacy'), "RT's outgoing mail has no crypto";
-    is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Not encrypted',
-        "RT's outgoing mail looks not encrypted";
-    ok !$msg->GetHeader('X-RT-Incoming-Signature'),
-        "RT's outgoing mail looks not signed";
-
-    like $msg->Content, qr/Some content/, "RT's mail includes copy of ticket text";
+for my $type ( keys %mail ) {
+    for my $mail ( map cleanup_headers($_), @{ $mail{$type} } ) {
+        send_email_and_check_transaction( $mail, $type );
+    }
 }
 
-foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "got id of a newly created ticket - $id");
-
-    my $tick = RT::Ticket->new( RT->SystemUser );
-    $tick->Load( $id );
-    ok ($tick->id, "loaded ticket #$id");
-
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
-
-    is $msg->GetHeader('X-RT-Privacy'), 'PGP',
-        "RT's outgoing mail has crypto";
-    is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Not encrypted',
-        "RT's outgoing mail looks not encrypted";
-    like $msg->GetHeader('X-RT-Incoming-Signature'),
-        qr/<rt-recipient\@example.com>/,
-        "RT's outgoing mail looks signed";
-
-    like $attachments[0]->Content, qr/Some content/,
-        "RT's mail includes copy of ticket text";
-}
-
-foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "got id of a newly created ticket - $id");
-
-    my $tick = RT::Ticket->new( RT->SystemUser );
-    $tick->Load( $id );
-    ok ($tick->id, "loaded ticket #$id");
-
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
-
-    is $msg->GetHeader('X-RT-Privacy'), 'PGP',
-        "RT's outgoing mail has crypto";
-    is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Success',
-        "RT's outgoing mail looks encrypted";
-    ok !$msg->GetHeader('X-RT-Incoming-Signature'),
-        "RT's outgoing mail looks not signed";
-
-    like $attachments[0]->Content, qr/Some content/,
-        "RT's mail includes copy of ticket text";
-}
-
-foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
-    my ($status, $id) = RT::Test->send_via_mailgate($mail);
-    is ($status >> 8, 0, "The mail gateway exited normally");
-    ok ($id, "got id of a newly created ticket - $id");
-
-    my $tick = RT::Ticket->new( RT->SystemUser );
-    $tick->Load( $id );
-    ok ($tick->id, "loaded ticket #$id");
-
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
-
-    is $msg->GetHeader('X-RT-Privacy'), 'PGP',
-        "RT's outgoing mail has crypto";
-    is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Success',
-        "RT's outgoing mail looks encrypted";
-    like $msg->GetHeader('X-RT-Incoming-Signature'),
-        qr/<rt-recipient\@example.com>/,
-        "RT's outgoing mail looks signed";
-
-    like $attachments[0]->Content, qr/Some content/,
-        "RT's mail includes copy of ticket text";
-}
