@@ -9,8 +9,6 @@ use RT::Test::GnuPG
     'trust-model' => 'always',
   };
 
-use RT::Action::SendEmail;
-
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 
