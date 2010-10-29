@@ -103,7 +103,7 @@ $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initi
 
 if ( ! $ARGS{'NoRedirect'} && RT::Interface::Web->MobileClient()) {
     $id ||= $TicketObj->id if $TicketObj;
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'/m/ticket/show?id='.$id);
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'m/ticket/show?id='.$id);
     $m->abort;
 }
 

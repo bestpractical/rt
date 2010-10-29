@@ -142,7 +142,7 @@ if (@Actions) {
     my $key = Digest::MD5::md5_hex( rand(1024) );
     push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
     $session{'i'}++;
-    my $url = RT->Config->Get('WebURL') . "/m/ticket/show?id=" . $Ticket->id . "&results=" . $key;
+    my $url = RT->Config->Get('WebURL') . "m/ticket/show?id=" . $Ticket->id . "&results=" . $key;
     $url .= '#' . $ARGS{Anchor} if $ARGS{Anchor};
     RT::Interface::Web::Redirect($url);
 }

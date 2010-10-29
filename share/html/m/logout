@@ -50,5 +50,5 @@ if (keys %session) {
     tied(%session)->delete;
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
-RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/m");
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."m/");
 </%init>
