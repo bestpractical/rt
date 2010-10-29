@@ -30,7 +30,7 @@ sub import {
 
     RT->Config->Set( GnuPGOptions => %gnupg_options );
 
-    diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
+    RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
     RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
