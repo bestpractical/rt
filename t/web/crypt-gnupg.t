@@ -1,16 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 101;
+use RT::Test::GnuPG
+  tests         => 100,
+  gnupg_options => {
+    passphrase    => 'recipient',
+    'trust-model' => 'always',
+};
 
 use RT::Action::SendEmail;
-
-RT::Test->set_mail_catcher;
 
 RT->Config->Set( CommentAddress => 'general@example.com');
 RT->Config->Set( CorrespondAddress => 'general@example.com');
@@ -23,21 +21,6 @@ RT->Config->Set( DefaultSearchResultFormat => qq{
    'KR-__KeyRequestors__-K',
    Status});
 
-use File::Spec ();
-use Cwd;
-
-use_ok('RT::Crypt::GnuPG');
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => RT::Test->gnupg_homedir,
-                 passphrase => 'recipient',
-                 'no-permission-warning' => undef,
-                 'trust-model' => 'always');
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
@@ -56,11 +39,6 @@ my $queue = RT::Test->load_or_create_queue(
 );
 ok $queue && $queue->id, 'loaded or created queue';
 my $qid = $queue->id;
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
-);
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';

@@ -173,14 +173,15 @@ sub Create {
     #If it's not multipart
     else {
 
-        my ($ContentEncoding, $Body) = $self->_EncodeLOB(
+        my ($ContentEncoding, $Body, $ContentType, $Filename) = $self->_EncodeLOB(
             $Attachment->bodyhandle->as_string,
-            $Attachment->mime_type
+            $Attachment->mime_type,
+            $Filename
         );
 
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
-            ContentType     => $Attachment->mime_type,
+            ContentType     => $ContentType,
             ContentEncoding => $ContentEncoding,
             Parent          => $args{'Parent'},
             Headers         => $head,

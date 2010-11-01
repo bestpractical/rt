@@ -244,10 +244,19 @@ jQuery(function() {
     } );
 });
 
+function textToHTML(value) {
+    return value.replace(/&/g,    "&amp;")
+                .replace(/</g,    "&lt;")
+                .replace(/>/g,    "&gt;")
+                .replace(/-- \n/g,"--&nbsp;\n")
+                .replace(/\n/g,   "\n<br />");
+};
+
 function ReplaceAllTextareas(encoded) {
     var sAgent = navigator.userAgent.toLowerCase();
     if (!CKEDITOR.env.isCompatible ||
         sAgent.indexOf('iphone') != -1 ||
+        sAgent.indexOf('ipad') != -1 ||
         sAgent.indexOf('android') != -1 )
         return false;
 
@@ -259,11 +268,7 @@ function ReplaceAllTextareas(encoded) {
         if (jQuery(textArea).hasClass("messagebox")) {
             // Turn the original plain text content into HTML
             if (encoded == 0) {
-                textArea.value = textArea.value
-                    .replace(/&/g,  "&amp;")
-                    .replace(/</g,  "&lt;")
-                    .replace(/>/g,  "&gt;")
-                    .replace(/\n/g, "\n<br />");
+                textArea.value = textToHTML(textArea.value);
             }
             // For this javascript
             var CKeditorEncoded = document.createElement('input');

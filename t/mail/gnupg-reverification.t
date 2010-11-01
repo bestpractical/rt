@@ -2,24 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 214;
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => RT::Test->gnupg_homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
+use RT::Test::GnuPG tests => 214, gnupg_options => { passphrase => 'rt-test' };
 
 diag "load Everyone group";
 my $everyone;
@@ -28,12 +11,6 @@ my $everyone;
     $everyone->LoadSystemInternalGroup('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
-
-RT::Test->set_rights(
-    Principal => $everyone,
-    Right => ['CreateTicket'],
-);
-
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';

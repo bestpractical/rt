@@ -668,6 +668,13 @@ sub BriefDescription {
     elsif ( $type =~ /SystemError/ ) {
         return $self->loc("System error");
     }
+    elsif ( $type =~ /Forward Transaction/ ) {
+        return $self->loc( "Forwarded Transaction #[_1] to [_2]",
+            $self->Field, $self->Data );
+    }
+    elsif ( $type =~ /Forward Ticket/ ) {
+        return $self->loc( "Forwarded Ticket to [_1]", $self->Data );
+    }
 
     if ( my $code = $_BriefDescriptions{$type} ) {
         return $code->($self);

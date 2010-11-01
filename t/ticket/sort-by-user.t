@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test nodata => 1, tests => 32;
+use RT::Test nodata => 1, tests => 34;
 
 use strict;
 use warnings;
@@ -47,32 +47,8 @@ foreach my $u (qw(Z A)) {
     push @uids, $user->id;
 }
 
-my ($total, @data, @tickets, @test) = (0, ());
+my (@data, @tickets, @test) = (0, ());
 
-sub add_tix_from_data {
-    my @res = ();
-    @data = sort { rand(100) <=> rand(100) } @data;
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my %args = %{ shift(@data) };
-
-        my ( $id, undef, $msg ) = $t->Create( %args, Queue => $queue->id );
-        if ( $args{'Owner'} ) {
-            is $t->Owner, $args{'Owner'}, "owner is correct";
-        }
-        if ( $args{'Creator'} ) {
-            is $t->Creator, $args{'Creator'}, "creator is correct";
-        }
-        # hackish, but simpler
-        if ( $args{'LastUpdatedBy'} ) {
-            $t->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
-        }
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -122,7 +98,9 @@ sub run_tests {
     { Subject => 'Z', Owner => $uids[0] },
     { Subject => 'A', Owner => $uids[1] },
 );
-@tickets = add_tix_from_data();
+
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
+
 @test = (
     { Order => "Owner" },
 );
@@ -133,7 +111,7 @@ run_tests();
     { Subject => 'Z', Creator => $uids[0] },
     { Subject => 'A', Creator => $uids[1] },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
 @test = (
     { Order => "Creator" },
 );
@@ -144,7 +122,7 @@ run_tests();
     { Subject => 'Z', LastUpdatedBy => $uids[0] },
     { Subject => 'A', LastUpdatedBy => $uids[1] },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
 @test = (
     { Order => "LastUpdatedBy" },
 );

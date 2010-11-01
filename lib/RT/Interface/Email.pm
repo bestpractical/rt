@@ -614,7 +614,19 @@ sub ForwardTransaction {
 
     my $entity = $txn->ContentAsMIME;
 
-    return SendForward( %args, Entity => $entity, Transaction => $txn );
+    my ( $ret, $msg ) = SendForward( %args, Entity => $entity, Transaction => $txn );
+    if ($ret) {
+        my $ticket = $txn->TicketObj;
+        my ( $ret, $msg ) = $ticket->_NewTransaction(
+            Type  => 'Forward Transaction',
+            Field => $txn->id,
+            Data  => join ', ', grep { length } $args{To}, $args{Cc}, $args{Bcc},
+        );
+        unless ($ret) {
+            $RT::Logger->error("Failed to create transaction: $msg");
+        }
+    }
+    return ( $ret, $msg );
 }
 
 =head2 ForwardTicket TICKET, To => '', Cc => '', Bcc => ''
@@ -640,7 +652,26 @@ sub ForwardTicket {
         map $_->ContentAsMIME,
         @{ $txns->ItemsArrayRef };
 
-    return SendForward( %args, Entity => $entity, Ticket => $ticket, Template => 'Forward Ticket' );
+    my ( $ret, $msg ) = SendForward(
+        %args,
+        Entity   => $entity,
+        Ticket   => $ticket,
+        Template => 'Forward Ticket',
+    );
+
+    if ($ret) {
+        my ( $ret, $msg ) = $ticket->_NewTransaction(
+            Type  => 'Forward Ticket',
+            Field => $ticket->id,
+            Data  => join ', ', grep { length } $args{To}, $args{Cc}, $args{Bcc},
+        );
+        unless ($ret) {
+            $RT::Logger->error("Failed to create transaction: $msg");
+        }
+    }
+
+    return ( $ret, $msg );
+
 }
 
 =head2 SendForward Entity => undef, Ticket => undef, Transaction => undef, Template => undef, To => '', Cc => '', Bcc => ''

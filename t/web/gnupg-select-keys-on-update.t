@@ -2,32 +2,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 85;
+use RT::Test::GnuPG tests => 84, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
-
-RT::Test->set_mail_catcher;
-
-use_ok('RT::Crypt::GnuPG');
-
-RT->Config->Set( GnuPG =>
-    Enable => 1,
-    OutgoingMessagesFormat => 'RFC',
-);
-
-RT->Config->Set( GnuPGOptions =>
-    homedir => RT::Test->gnupg_homedir,
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-);
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -35,11 +12,6 @@ my $queue = RT::Test->load_or_create_queue(
     CommentAddress    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
-);
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -323,36 +295,3 @@ diag "check encrypting of attachments";
 
     $m->no_warnings_ok;
 }
-
-sub check_text_emails {
-    my %args = %{ shift @_ };
-    my @mail = @_;
-
-    ok scalar @mail, "got some mail";
-    for my $mail (@mail) {
-        for my $type ('email', 'attachment') {
-            next if $type eq 'attachment' && !$args{'Attachment'};
-
-            my $content = $type eq 'email'
-                        ? "Some content"
-                        : "Attachment content";
-
-            if ( $args{'Encrypt'} ) {
-                unlike $mail, qr/$content/, "outgoing $type was encrypted";
-            } else {
-                like $mail, qr/$content/, "outgoing $type was not encrypted";
-            } 
-
-            next unless $type eq 'email';
-
-            if ( $args{'Sign'} && $args{'Encrypt'} ) {
-                like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
-            } elsif ( $args{'Sign'} ) {
-                like $mail, qr/SIGNATURE/, 'outgoing email was signed';
-            } else {
-                unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';
-            }
-        }
-    }
-}
-

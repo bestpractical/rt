@@ -246,7 +246,20 @@ sub debug {
     }	
 }
 
-
+sub ShowHelp {
+    my $self = shift;
+    my %args = @_;
+    require Pod::Usage;
+    Pod::Usage::pod2usage(
+        -message => $args{'Message'},
+        -exitval => $args{'ExitValue'} || 0, 
+        -verbose => 99,
+        -sections => $args{'Sections'} || ($args{'ExitValue'}
+            ? 'NAME|USAGE'
+            : 'NAME|USAGE|OPTIONS|DESCRIPTION'
+        ),
+    );
+}
 
 RT::Base->_ImportOverlays();
 

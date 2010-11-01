@@ -2,27 +2,14 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 5;
-
-
-use Cwd 'getcwd';
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings));
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'test',
-                 'no-permission-warning' => undef);
+use RT::Test::GnuPG
+  tests         => 5,
+  gnupg_options => {
+    passphrase => 'rt-test',
+    homedir => RT::Test::get_abs_relocatable_dir(
+        File::Spec->updir(), qw/data gnupg keyrings/
+    ),
+  };
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 

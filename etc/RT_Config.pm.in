@@ -1533,6 +1533,27 @@ from being displayed in-line when viewing a ticket's history.
 
 Set($SuppressInlineTextFiles, undef);
 
+=item C<%FullTextSearch>
+
+Full text search (FTS) without indexes is a very slow operation and by
+default is disabled at all. To enable FTS set key 'Enable' to true value.
+
+Setup of indexes and filling them with data requires additional steps that
+vary from DB to DB. Use F<sbin/rt-setup-fulltext-index> helper
+for quick start. This script creates required structures in the DB and
+gives some ideas on next steps. Use F<sbin/rt-fulltext-indexer> to keep
+the index in sync.
+
+=cut
+
+Set(%FullTextSearch,
+    Enable  => 0,
+    Indexed => 0,
+#    Table   => 'AttachmentsIndex',
+#    Column  => 'ftsindex',
+);
+
+
 =item C<$DontSearchFileAttachments>
 
 If C<$DontSearchFileAttachments> is set to a true value, then uploaded

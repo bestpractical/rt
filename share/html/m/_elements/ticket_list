@@ -72,7 +72,7 @@ if ( $order_by) {
 $collection->RedoSearch();
  
 if ($page > 1 && ! @{$collection->ItemsArrayRef||[]}) {
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')."/m/tickets/search?page=".($page-1)."&query=".$query."&order=$order&order_by=$order_by");
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')."m/tickets/search?page=".($page-1)."&query=".$query."&order=$order&order_by=$order_by");
 }
 
 </%init>

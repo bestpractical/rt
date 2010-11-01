@@ -58,7 +58,7 @@ use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
 
-our @EXPORT = qw(is_empty diag);
+our @EXPORT = qw(is_empty diag parse_mail works fails);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -581,6 +581,73 @@ sub load_or_create_queue {
     }
 
     return $obj;
+}
+
+sub create_tickets {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my $defaults = shift;
+    my @data = @_;
+    @data = sort { rand(100) <=> rand(100) } @data
+        if delete $defaults->{'RandomOrder'};
+
+    $defaults->{'Queue'} ||= 'General';
+
+    my @res = ();
+    while ( @data ) {
+        my %args = %{ shift @data };
+        $args{$_} = $res[ $args{$_} ]->id foreach
+            grep $args{ $_ }, keys %RT::Ticket::LINKTYPEMAP;
+        push @res, $self->create_ticket( %$defaults, %args );
+    }
+    return @res;
+}
+
+sub create_ticket {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my %args = @_;
+
+    if ( my $content = delete $args{'Content'} ) {
+        $args{'MIMEObj'} = MIME::Entity->build(
+            From    => $args{'Requestor'},
+            Subject => $args{'Subject'},
+            Data    => $content,
+        );
+    }
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $ticket->Create( %args );
+    Test::More::ok( $id, "ticket created" )
+        or Test::More::diag("error: $msg");
+
+    # hackish, but simpler
+    if ( $args{'LastUpdatedBy'} ) {
+        $ticket->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
+    }
+
+
+    for my $field ( keys %args ) {
+        #TODO check links and watchers
+
+        if ( $field =~ /CustomField-(\d+)/ ) {
+            my $cf = $1;
+            my $got = join ',', sort map $_->Content,
+                @{ $ticket->CustomFieldValues($cf)->ItemsArrayRef };
+            my $expected = ref $args{$field}
+                ? join( ',', sort @{ $args{$field} } )
+                : $args{$field};
+            Test::More::is( $got, $expected, 'correct CF values' );
+        }
+        else {
+            next if ref $args{$field} || !$ticket->can($field) || ref $ticket->$field();
+            Test::More::is( $ticket->$field(), $args{$field}, "$field is correct" );
+        }
+    }
+
+    return $ticket;
 }
 
 =head2 load_or_create_custom_field
@@ -1401,6 +1468,22 @@ sub diag {
     goto \&Test::More::diag;
 }
 
+sub parse_mail {
+    my $mail = shift;
+    require RT::EmailParser;
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar( $mail );
+    return $parser->Entity;
+}
+
+sub works {
+    Test::More::ok($_[0], $_[1] || 'This works');
+}
+
+sub fails {
+    Test::More::ok(!$_[0], $_[1] || 'This should fail');
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
@@ -1413,7 +1496,7 @@ END {
     RT::Test->stop_server;
 
     # not success
-    if ( !$Test->summary || grep !$_, $Test->summary ) {
+    if ( !$Test->is_passing ) {
         $tmp{'directory'}->unlink_on_destroy(0);
 
         Test::More::diag(

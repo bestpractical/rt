@@ -12,7 +12,7 @@ etc/upgrade/3.8-branded-queues-extension
 etc/upgrade/3.8-ical-extension
 etc/upgrade/split-out-cf-categories
 etc/upgrade/generate-rtaddressregexp
-lib/RT.pm
+lib/RT/Generated.pm
 Makefile
 t/data/gnupg/keyrings/random_seed
 t/data/configs/apache2.2+fastcgi.conf
@@ -24,9 +24,12 @@ sbin/rt-dump-database
 sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin
+sbin/rt-fts-oracle
 sbin/rt-server
 sbin/rt-session-viewer
 sbin/rt-setup-database
+sbin/rt-setup-fulltext-index
+sbin/rt-fulltext-indexer
 sbin/rt-shredder
 sbin/rt-test-dependencies
 sbin/rt-validator

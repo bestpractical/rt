@@ -3,29 +3,14 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 1974;
+use RT::Test nodata => 1, tests => 1975;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
-my ($total, @data, @tickets, @test, @conditions) = (0, ());
-
-sub add_tix_from_data {
-    my @res = ();
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
-            Queue => $q->id,
-            %{ shift(@data) },
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
+my ($total, @tickets, @test, @conditions) = (0, ());
 
 sub generate_tix {
     my @list = (
@@ -36,7 +21,7 @@ sub generate_tix {
         ['x@foo.com', 'z@bar.com'],
         ['x@foo.com', 'y@bar.com', 'z@bar.com'],
     );
-    @data = ();
+    my @data = ();
     foreach my $r (@list) {
         foreach my $c (@list) {
             my $subject = 'r:'. (join( '', map substr($_, 0, 1), @$r ) || '-') .';';
@@ -49,7 +34,7 @@ sub generate_tix {
             };
         }
     }
-    return add_tix_from_data();
+    return RT::Test->create_tickets( { Queue => $q->id }, @data );
 }
 
 sub run_tests {
@@ -193,6 +178,7 @@ sub run_auto_tests {
 );
 
 @tickets = generate_tix();
+$total += scalar @tickets;
 {
     my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
@@ -235,14 +221,12 @@ my $nobody = RT::Nobody();
     # create ticket and force type to not a 'ticket' value
     # bug #6898@rt3.fsck.com
     # and http://marc.theaimsgroup.com/?l=rt-devel&m=112662934627236&w=2
-    @data = ( { Subject => 'not a ticket' } );
-    my($t) = add_tix_from_data();
+    my($t) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'not a ticket' } );
     $t->_Set( Field             => 'Type',
               Value             => 'not a ticket',
               CheckACL          => 0,
               RecordTransaction => 0,
             );
-    $total--;
 
     my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Owner = 'Nobody'");
@@ -261,17 +245,17 @@ my $nobody = RT::Nobody();
     my $u = RT::User->new( RT->SystemUser );
     $u->LoadOrCreateByEmail('alpha@e.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '4', Owner => $u->id } );
-    my($t) = add_tix_from_data();
-    is( $t->Owner, $u->id, "created ticket with custom owner" );
+    my($t) = RT::Test->create_tickets(
+        { Queue => $q->id }, { Subject => '4', Owner => $u->id },
+    );
     my $u_alpha_id = $u->id;
 
     $u = RT::User->new( RT->SystemUser );
     $u->LoadOrCreateByEmail('bravo@e.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '5', Owner => $u->id } );
-    ($t) = add_tix_from_data();
-    is( $t->Owner, $u->id, "created ticket with custom owner" );
+    ($t) = RT::Test->create_tickets(
+        { Queue => $q->id }, { Subject => '5', Owner => $u->id },
+    );
     my $u_bravo_id = $u->id;
 
     my $tix = RT::Tickets->new(RT->SystemUser);

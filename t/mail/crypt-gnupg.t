@@ -3,34 +3,17 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 97;
+my $homedir;
+BEGIN {
+    require RT::Test;
+    $homedir =
+      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+        qw/data gnupg keyrings/ );
+}
 
+use RT::Test::GnuPG tests => 96, gnupg_options => { homedir => $homedir };
 
-use File::Spec ();
-use Cwd;
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings) );
-
-mkdir $homedir;
-
-use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef,
-);
-
 
 diag 'only signing. correct passphrase';
 {

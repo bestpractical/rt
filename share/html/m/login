@@ -70,7 +70,7 @@ unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'htt
 
 # Make sure we're logging in to the same domain
 # You can get an undef authority with a relative uri like "index.html"
-my $uri_base_url = URI->new(RT->Config->Get('WebURL')."/m/");
+my $uri_base_url = URI->new(RT->Config->Get('WebURL')."m/");
 unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority) {
     $form_action = $default_path;
 }

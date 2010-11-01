@@ -2,25 +2,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-plan skip_all => 'GnuPG required.'
-    unless eval { require GnuPG::Interface; 1 };
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-plan tests => 196;
+use RT::Test::GnuPG tests => 196, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => RT::Test->gnupg_homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -33,11 +17,6 @@ $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
          fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket'],
-);
 
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {

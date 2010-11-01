@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test nodata => 1, tests => 57;
+use RT::Test nodata => 1, tests => 61;
 
 use strict;
 use warnings;
@@ -40,39 +40,6 @@ diag "create a CF";
 }
 
 my ($total, @data, @tickets, @test) = (0, ());
-
-sub add_tix_from_data {
-    my @res = ();
-    @data = sort { rand(100) <=> rand(100) } @data;
-    while (@data) {
-        my $t = RT::Ticket->new(RT->SystemUser);
-        my %args = %{ shift(@data) };
-
-        my $subject = '-';
-        foreach my $e ( grep exists $CF{$_} && defined $CF{$_}, keys %args ) {
-            my @values = ();
-            if ( ref $args{ $e } ) {
-                @values = @{ delete $args{ $e } };
-            } else {
-                @values = (delete $args{ $e });
-            }
-            $args{ 'CustomField-'. $CF{ $e }{'obj'}->id } = \@values
-                if @values;
-            $subject = join(",", sort @values) || '-'
-                if $e eq 'CF';
-        }
-
-        my ( $id, undef $msg ) = $t->Create(
-            %args,
-            Queue => $queue->id,
-            Subject => $subject,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
@@ -121,11 +88,12 @@ sub run_tests {
 }
 
 @data = (
-    { },
-    { CF => 'a' },
-    { CF => 'b' },
+    { Subject => '-' },
+    { Subject => 'a', 'CustomField-' . $CF{CF}{obj}->id => 'a' },
+    { Subject => 'b', 'CustomField-' . $CF{CF}{obj}->id => 'b' },
 );
-@tickets = add_tix_from_data();
+
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}" },
     { Order => "CF.$queue_name.{$cf_name}" },
@@ -133,11 +101,11 @@ sub run_tests {
 run_tests();
 
 @data = (
-    { },
-    { CF => 'aa' },
-    { CF => 'ab' },
+    { Subject => '-' },
+    { Subject => 'aa', 'CustomField-' . $CF{CF}{obj}->id => 'aa' },
+    { Subject => 'bb', 'CustomField-' . $CF{CF}{obj}->id => 'bb' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.{$cf_name}" },
     { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.$queue_name.{$cf_name}" },
@@ -150,7 +118,7 @@ run_tests();
     { Subject => 'b', CF => 'b' },
     { Subject => 'c', CF => 'c' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Query => "CF.{$cf_name} != 'c'", Order => "CF.{$cf_name}" },
     { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
@@ -178,7 +146,7 @@ diag "create another CF";
     { Subject => 'b', CF => 'b', AnotherCF => 'ya' },
     { Subject => 'c', CF => 'c', AnotherCF => 'xa' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}" },
     { Order => "CF.$queue_name.{$cf_name}" },
