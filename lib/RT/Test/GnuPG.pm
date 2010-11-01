@@ -111,18 +111,21 @@ sub update_ticket {
 }
 
 sub categorize_emails {
-    my %mail = %{ shift @_ };
-    my %args = %{ shift @_ };
+    my $mail = shift;
+    my $args = shift;
     my @mail = @_;
 
-    if ( $args{'Sign'} && $args{'Encrypt'} ) {
-        push @{ $mail{'signed_encrypted'} }, @mail;
-    } elsif ( $args{'Sign'} ) {
-        push @{ $mail{'signed'} }, @mail;
-    } elsif ( $args{'Encrypt'} ) {
-        push @{ $mail{'encrypted'} }, @mail;
-    } else {
-        push @{ $mail{'plain'} }, @mail;
+    if ( $args->{'Sign'} && $args->{'Encrypt'} ) {
+        push @{ $mail->{'signed_encrypted'} }, @mail;
+    }
+    elsif ( $args->{'Sign'} ) {
+        push @{ $mail->{'signed'} }, @mail;
+    }
+    elsif ( $args->{'Encrypt'} ) {
+        push @{ $mail->{'encrypted'} }, @mail;
+    }
+    else {
+        push @{ $mail->{'plain'} }, @mail;
     }
 }
 
