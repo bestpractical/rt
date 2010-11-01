@@ -326,25 +326,17 @@ if ( $request_path =~ qr'Admin/Queues' ) {
 
 
 
-        $queue->child( loc('Ticket Custom Fields'),
-             path => '/Admin/Queues/CustomFields.html?sub_type=RT::Ticket&id='
-                 . $id );
+        my $ticket_cfs = $queue->child( loc('Ticket Custom Fields'), path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
 
-        $queue->child( loc('Transaction Custom Fields'),
-            path =>
-                '/Admin/Queues/CustomFields.html?sub_type=RT::Ticket-RT::Transaction&id='
-                . $id );
+        my $txn_cfs = $queue->child( loc('Transaction Custom Fields'), path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id=' . $id );
 
-        $queue->child( loc('Group Rights'),
-                       path => "/Admin/Queues/GroupRights.html?id=" . $id );
-        $queue->child( loc('User Rights'),
-                       path => "/Admin/Queues/UserRights.html?id=" . $id );
+        $queue->child( loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=" . $id );
+        $queue->child( loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
     }
 }
 
 if ( $request_path =~ qr'/Admin/Users' ) {
-    if ( $session{'CurrentUser'}
-         ->HasRight( Object => $RT::System, Right => 'AdminUsers' ) )
+    if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers' ) )
     {
         PageMenu->child( select => title => loc('Select'), path => "/Admin/Users/" );
         PageMenu->child( create => title => loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
