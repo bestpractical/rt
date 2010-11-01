@@ -75,7 +75,16 @@
 <& /Elements/ListActions, actions => \@results &>
 <div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
 
-<& Elements/ShowSearchResults, query => \%filtered, articles => $articles &>
+% if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+<h2><&|/l&>Search results</&></h2>
+<& /Elements/CollectionList, %ARGS, 
+    Collection => $articles, 
+    AllowSorting => 1,
+    Class => 'RT::FM::ArticleCollection',
+    Format => $format,
+    GenericQueryArgs => { %filtered, Format => $format, },
+    &>
+% }
 
 <br />
 <br />
@@ -98,6 +107,14 @@
 use RT::SavedSearch;
 my @results;
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $format = q{
+    '<a href="/RTFM/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/RTFM/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__ClassName__',
+    '__CreatedRelative__',
+    '__LastUpdatedRelative__',
+    '__Summary__',
+    '__Topics__', };
 
 # {{{ Quicksearch logic
 
@@ -105,21 +122,7 @@ my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 # on name and summary.
 if ($ARGS{'q'} && $ARGS{'q'} =~ /^(\d+)$/) {
     return $m->comp("/RTFM/Article/Display.html", id => $1);
-} elsif ($ARGS{'q'}) {
-    $articles->Limit( FIELD => 'Name',
-                      SUBCLAUSE => 'NameOrSummary',
-                      OPERATOR => 'LIKE',
-                      ENTRYAGGREGATOR => 'OR',
-                      CASESENSITIVE => 0,
-                      VALUE => $ARGS{'q'} );
-    $articles->Limit( FIELD => 'Summary',
-                      SUBCLAUSE => 'NameOrSummary',
-                      OPERATOR => 'LIKE',
-                      ENTRYAGGREGATOR => 'OR',
-                      CASESENSITIVE => 0,
-                      VALUE => $ARGS{'q'} );
 }
-
 # }}}
 
 # {{{ Saved search logic
@@ -234,264 +237,12 @@ if ($ARGS{'Save'}) {
 
 # }}}
 
-
-# Don't want to search for a null class when there is no class specced
+    # Don't want to search for a null class when there is no class specced
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
-$customfields->LimitToLookupType(RT::FM::Article->new($session{'CurrentUser'})->CustomFieldLookupType);
-if ( $ARGS{'Class'} ) {
-    my @Classes =
-      ( ref $ARGS{'Class'} eq 'ARRAY' )
-      ? @{ $ARGS{'Class'} }
-      : ( $ARGS{'Class'} );
-    foreach my $class (@Classes) {
-        $customfields->LimitToGlobalOrObjectId($class);
-    }
-}
-else {
-    $customfields->LimitToGlobalOrObjectId();
-}
-
 my %dates;
-foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
-    next unless ( $ARGS{$date} );
-    my $seconds = parsedate( $ARGS{$date}, FUZZY => 1, PREFER_PAST => 1 );
-    my $date_obj = RT::Date->new( $session{'CurrentUser'} );
-    $date_obj->Set( Format => 'unix', Value => $seconds );
-    $dates{$date} = $date_obj;
 
-    if ( $date =~ /^(.*?)<$/i ) {
-        $articles->Limit( FIELD           => $1, OPERATOR        => "<=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
-    }
-
-    if ( $date =~ /^(.*?)>$/i ) {
-        $articles->Limit( FIELD           => $1, OPERATOR        => ">=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
-    }
-
-}
-
-if ($RefersTo) {
-    foreach my $link ( split ( /\s+/, $RefersTo ) ) {
-        next unless ($link);
-        $articles->LimitRefersTo($link);
-    }
-}
-
-if ($ReferredToBy) {
-    foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
-        next unless ($link);
-        $articles->LimitReferredToBy($link);
-    }
-}
-
-if ($ARGS{'Topics'}) {
-    my @Topics =
-      ( ref $ARGS{'Topics'} eq 'ARRAY' )
-      ? @{ $ARGS{'Topics'} }
-      : ( $ARGS{'Topics'} );
-    @Topics = map {split} @Topics;
-    if ($ARGS{'ExpandTopics'}) {
-        my %topics;
-        while (@Topics) {
-            my $id = shift @Topics;
-            next if $topics{$id};
-            my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
-            $Topics->Limit(FIELD => 'Parent', VALUE => $id);
-            push @Topics, $_->Id while $_ = $Topics->Next;
-            $topics{$id}++;
-        }
-        @Topics = keys %topics;
-        $ARGS{'Topics'} = \@Topics;
-    }
-    $articles->LimitTopics(@Topics);
-}
-
-my %cfs;
-while ( my $cf = $customfields->Next ) {
-    $cfs{ $cf->Name } = $cf->Id;
-}
-# reset the iterator because we use this to build the UI
-$customfields->GotoFirstItem;
-
-foreach my $field ( keys %cfs ) {
-   
-   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
-   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
-
-   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
-   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
-
-    foreach my $val (@MatchLike) {
-        next unless $val;
-        push @Match, "~".$val;
-    }
-
-    foreach my $val (@NoMatchLike) {
-        next unless $val;
-        push @NoMatch, "~".$val;
-    }
-
-
-    foreach my $value (@Match) {
-        next unless $value;
-        my $op;
-        if ( $value =~ /^~(.*)$/ ) {
-            $value = "%$1%";
-            $op    = 'LIKE';
-        }
-        else {
-            $op = '=';
-        }
-        $articles->LimitCustomField( FIELD           => $cfs{$field},
-                                     VALUE           => $value,
-                                     CASESENSITIVE   => 0,
-                                     ENTRYAGGREGATOR => 'OR',
-                                     OPERATOR        => $op );
-    }
-    foreach my $value (@NoMatch) {
-        next unless $value;
-        my $op;
-        if ( $value =~ /^~(.*)$/ ) {
-            $value = "%$1%";
-            $op    = 'NOT LIKE';
-        }
-        else {
-            $op = '!=';
-        }
-        $articles->LimitCustomField( FIELD           => $cfs{$field},
-                                     VALUE           => $value,
-                                     CASESENSITIVE   => 0,
-                                     ENTRYAGGREGATOR => 'OR',
-                                     OPERATOR        => $op );
-    }
-}
-
-### Searches for any field
-
-if ($ARGS{'Article~'}) {
-    $articles->LimitCustomField( VALUE => $ARGS{'Article~'},
-                                 ENTRYAGGREGATOR => 'OR',
-                                 OPERATOR => 'LIKE',
-                                 CASESENSITIVE => 0,
-                                 SUBCLAUSE => 'SearchAll' );
-    $articles->Limit( SUBCLAUSE => 'SearchAll',
-                      FIELD => "Name",
-                      VALUE => $ARGS{'Article~'},
-                      ENTRYAGGREGATOR => 'OR',
-                      CASESENSITIVE => 0,
-                      OPERATOR => 'LIKE' );
-    $articles->Limit( SUBCLAUSE => 'SearchAll',
-                      FIELD => "Summary",
-                      VALUE => $ARGS{'Article~'},
-                      ENTRYAGGREGATOR => 'OR',
-                      CASESENSITIVE => 0,
-                      OPERATOR => 'LIKE' );
-}
-
-if ($ARGS{'Article!~'}) {
-    $articles->LimitCustomField( VALUE => $ARGS{'Article!~'},
-                                 OPERATOR => 'NOT LIKE',
-                                 CASESENSITIVE => 0,
-                                 SUBCLAUSE => 'SearchAll' );
-    $articles->Limit( SUBCLAUSE => 'SearchAll',
-                      FIELD => "Name",
-                      VALUE => $ARGS{'Article!~'},
-                      ENTRYAGGREGATOR => 'AND',
-                      CASESENSITIVE => 0,
-                      OPERATOR => 'NOT LIKE' );
-    $articles->Limit( SUBCLAUSE => 'SearchAll',
-                      FIELD => "Summary",
-                      VALUE => $ARGS{'Article!~'},
-                      ENTRYAGGREGATOR => 'AND',
-                      CASESENSITIVE => 0,
-                      OPERATOR => 'NOT LIKE' );
-}
-
-foreach my $field qw(Name Summary Class) {
-
-   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
-   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
-
-   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
-   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
-
-    foreach my $val (@MatchLike) {
-        next unless $val;
-        push @Match, "~".$val;
-    }
-
-    foreach my $val (@NoMatchLike) {
-        next unless $val;
-        push @NoMatch, "~".$val;
-    }
-
-    my $op;
-    foreach my $value (@Match) {
-        if ( $value && $value =~ /^~(.*)$/ ) {
-            $value = "%$1%";
-            $op    = 'LIKE';
-        }
-        else {
-            $op = '=';
-        }
-
-        # preprocess Classes, so we can search on class
-        if ( $field eq 'Class' && $value ) {
-            my $class = RT::FM::Class->new($RT::SystemUser);
-            $class->Load($value);
-            $value = $class->Id;
-        }
-
-        # now that we've pruned the value, get out if it's different.
-        next unless $value;
-
-        $articles->Limit( SUBCLAUSE       => $field . 'Match',
-                          FIELD           => $field,
-                          OPERATOR        => $op,
-                          CASESENSITIVE   => 0,
-                          VALUE           => $value,
-                          ENTRYAGGREGATOR => 'OR' );
-
-    }
-    foreach my $value (@NoMatch) {
-
-        # preprocess Classes, so we can search on class
-        if ( $value && $value =~ /^~(.*)/ ) {
-            $value = "%$1%";
-            $op    = 'NOT LIKE';
-        }
-        else {
-            $op = '!=';
-        }
-        if ( $field eq 'Class' ) {
-            my $class = RT::FM::Class->new($RT::SystemUser);
-            $class->Load($value);
-            $value = $class->Id;
-        }
-
-        # now that we've pruned the value, get out if it's different.
-        next unless $value;
-
-        $articles->Limit( SUBCLAUSE       => $field . 'NoMatch',
-                          OPERATOR        => $op,
-                          VALUE           => $value,
-                          CASESENSITIVE   => 0,
-                          FIELD           => $field,
-                          ENTRYAGGREGATOR => 'AND' );
-
-    }
-}
-
-if ( @OrderBy ) {
-    if ( $OrderBy[0] && $OrderBy[0] =~ /\|/ ) {
-        @OrderBy = split '|', @OrderBy;
-        @Order   = split '|', @Order;
-    }
-    my @tmp = map
-        {{ FIELD => $OrderBy[$_], ORDER => $Order[$_] }}
-        0..$#OrderBy;
-    $articles->OrderByCols( @tmp );
-}
-
+$articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
+        OrderBy => \@OrderBy );
 
 $m->comp('/Elements/Callback', %ARGS, _Search => $articles);
 
