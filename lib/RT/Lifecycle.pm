@@ -77,10 +77,10 @@ __PACKAGE__->register_rights;
 #               'status_y -> status_y' => 'right',
 #               ....
 #            }
-#            actions => {
-#               'status_y -> status_y' => [ transition_label, transition_action ],
+#            actions => [
+#               { from => 'a', to => 'b', label => '...', update => '...' },
 #               ....
-#            }
+#            ]
 #        }
 #    }
 
@@ -167,7 +167,7 @@ Returns name of the laoded lifecycle.
 
 sub name { return $_[0]->{'name'} }
 
-=head2 Getting statuses and validatiing.
+=head2 Getting statuses and validating.
 
 Methods to get statuses in different sets or validating them.
 
@@ -411,45 +411,40 @@ sub register_rights {
     }
 }
 
-=head3 transition_label
+=head3 actions
 
-Takes two statuses (from -> to) and returns label for the transition,
-if custom label is not defined then default equal to the second status.
-
-=cut
-
-sub transition_label {
-    my $self = shift;
-    my $from = shift;
-    my $to = shift;
-    return $self->{'data'}{'actions'}{ $from .' -> '. $to }[0] || $to;
-}
-
-=head3 transition_action
-
-Takes two statuses (from -> to) and returns action for the transition.
-
-At this moment it can be:
+Takes a status and returns list of defined actions for the status. Each
+element in the list is a hash reference with the following key/value
+pairs:
 
 =over 4
 
-=item '' (empty string) - no action (default)
+=item from - either the status or *
 
-=item hide - hide this button from the Web UI
+=item to - next status
 
-=item comment - comment page is shown
+=item label - label of the action
 
-=item respond - reply page is shown
+=item update - 'Respond', 'Comment' or '' (empty string)
 
 =back
 
 =cut
 
-sub transition_action {
+sub actions {
     my $self = shift;
-    my $from = shift;
-    my $to = shift;
-    return $self->{'data'}{'actions'}{ $from .' -> '. $to }[1] || '';
+    my $from = shift || return ();
+
+    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+
+    my @res = grep $_->{'from'} eq $from || ( $_->{'from'} eq '*' && $_->{'to'} ne $from ),
+        @{ $self->{'data'}{'actions'} };
+
+    # skip '* -> x' if there is '$from -> x'
+    foreach my $e ( grep $_->{'from'} eq '*', @res ) {
+        $e = undef if grep $_->{'from'} ne '*' && $_->{'to'} eq $e->{'to'}, @res;
+    }
+    return grep defined, @res;
 }
 
 =head2 Creation and manipulation
@@ -562,6 +557,8 @@ sub fill_cache {
 #    $map = $map->content or return;
 
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
+    $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
+
     my %all = (
         '' => [],
         initial => [],
@@ -585,6 +582,24 @@ sub fill_cache {
         push @{ $all{''} }, @{ $all{ $type } } if $type;
     }
     $LIFECYCLES_CACHE{''} = \%all;
+
+    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
+        my @res;
+        if ( ref $lifecycle->{'actions'} eq 'HASH' ) {
+            foreach my $k ( sort keys %{ $lifecycle->{'actions'} } ) {
+                push @res, $k, $lifecycle->{'actions'}{ $k };
+            }
+        } elsif ( ref $lifecycle->{'actions'} eq 'ARRAY' ) {
+            @res = @{ $lifecycle->{'actions'} };
+        }
+
+        my @tmp = splice @res;
+        while ( my ($transition, $info) = splice @tmp, 0, 2 ) {
+            my ($from, $to) = split /\s*->\s*/, $transition, 2;
+            push @res, { from => $from, to => $to, label => $info->[0], update => $info->[1] };
+        }
+        $lifecycle->{'actions'} = \@res;
+    }
     return;
 }
 
