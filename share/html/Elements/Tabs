@@ -221,12 +221,26 @@ if ( $request_path =~ qr{.*} ) {
         $about_me->child( about_me => title => loc('About me'), path => '/User/Prefs.html', );
         $about_me->child( search_options => title => loc('Search options'),
                           path => '/Prefs/SearchOptions.html', );
-        $about_me->child( myrt => title =>  loc('RT at a glance'), path => '/Prefs/MyRT.html',
-        );
-        $about_me->child( quicksearch => title => 'Quick search' => title => loc('Quick search'),
-                          path => '/Prefs/Quicksearch.html' );
-    }
+        $about_me->child( myrt => title => loc('RT at a glance'),
+                          path => '/Prefs/MyRT.html', );
+        $about_me->child( quicksearch => title => 'Quick search' => title =>
+                              loc('Quick search'),
+                          path => '/Prefs/Quicksearch.html'
+                        );
 
+        my $searches = [ $m->comp(
+                          "/Search/Elements/SearchesForObject",
+                          Object => RT::System->new( $session{'CurrentUser'} )) ];
+        my $i = 0;
+        for my $search (@$searches) {
+            $about_me->child( "search-" . $i++,
+                      title => $search->[0],
+                      path  => "/Prefs/Search.html?" . $query_string->(
+                          name => ref( $search->[1] ) . '-' . $search->[1]->Id),
+            );
+
+        }
+    }
     if ( $session{'CurrentUser'}->Name
          && (   !RT->Config->Get('WebExternalAuth')
               || RT->Config->Get('WebFallbackToInternalAuth') )
