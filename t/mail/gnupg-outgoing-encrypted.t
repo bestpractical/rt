@@ -3,46 +3,35 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 389,
+  tests         => 101,
   gnupg_options => {
     passphrase    => 'rt-test',
     'trust-model' => 'always',
   };
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
-RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+RT::Test->import_gnupg_key( 'rt-test@example.com', 'public' );
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
     CorrespondAddress => 'rt-recipient@example.com',
     CommentAddress    => 'rt-recipient@example.com',
+    Encrypt           => 1,
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
-my ($baseurl, $m) = RT::Test->started_ok;
+my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-my @variants = (
-    {},
-    { Sign => 1 },
-    { Encrypt => 1 },
-    { Sign => 1, Encrypt => 1 },
-);
+my @variants =
+  ( {}, { Sign => 1 }, { Encrypt => 1 }, { Sign => 1, Encrypt => 1 }, );
 
 # collect emails
-my %mail = (
-    plain            => [],
-    signed           => [],
-    encrypted        => [],
-    signed_encrypted => [],
-);
+my %mail;
 
 # create a ticket for each combination
-foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( $queue, %$queue_set );
-    foreach my $ticket_set ( @variants ) {
-        create_a_ticket( $queue, \%mail, $m, %$ticket_set );
-    }
+foreach my $ticket_set (@variants) {
+    create_a_ticket( $queue, \%mail, $m, %$ticket_set );
 }
 
 my $tid;
@@ -57,13 +46,9 @@ my $tid;
 }
 
 # again for each combination add a reply message
-foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( $queue, %$queue_set );
-    foreach my $ticket_set ( @variants ) {
-        update_ticket( $tid, \%mail, $m, %$ticket_set );
-    }
+foreach my $ticket_set (@variants) {
+    update_ticket( $tid, \%mail, $m, %$ticket_set );
 }
-
 
 # ------------------------------------------------------------------------------
 # now delete all keys from the keyring and put back secret/pub pair for rt-test@
@@ -71,8 +56,8 @@ foreach my $queue_set ( @variants ) {
 # like we are on another side recieve emails
 # ------------------------------------------------------------------------------
 
-unlink $_ foreach glob( RT->Config->Get('GnuPGOptions')->{'homedir'} ."/*" );
-RT::Test->import_gnupg_key('rt-recipient@example.com', 'public');
+unlink $_ foreach glob( RT->Config->Get('GnuPGOptions')->{'homedir'} . "/*" );
+RT::Test->import_gnupg_key( 'rt-recipient@example.com', 'public' );
 RT::Test->import_gnupg_key('rt-test@example.com');
 
 $queue = RT::Test->load_or_create_queue(
