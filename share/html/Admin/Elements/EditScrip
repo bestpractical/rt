@@ -54,32 +54,32 @@
 <&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
 <table>
 
-<tr><td align="right"><&|/l&>Description</&>:</td><td>
-<input name="Scrip-<% $id %>-Description" 
-    size="60"
+<tr><td class="label"><&|/l&>Description</&>:</td><td class="value">\
+<input name="Scrip-<% $id %>-Description" \
+    size="60" \
     value="<% $ARGS{"Scrip-$id-Description"} || $scrip->Description || '' %>" />
 </td></tr>
 
-<tr><td align="right"><&|/l&>Condition</&>:</td><td>
+<tr><td class="label"><&|/l&>Condition</&>:</td><td class="value">\
 <& /Admin/Elements/SelectScripCondition,
     Name => "Scrip-$id-ScripCondition",
     Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->Id,
 &></td></tr>
 
-<tr><td align="right"><&|/l&>Action</&>:</td><td>
+<tr><td class="label"><&|/l&>Action</&>:</td><td class="value">\
 <& /Admin/Elements/SelectScripAction,
     Name => "Scrip-$id-ScripAction",
     Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->Id,
 &></td></tr>
 
-<tr><td align="right"><&|/l&>Template</&>:</td><td>
+<tr><td class="label"><&|/l&>Template</&>:</td><td class="value">\
 <& /Admin/Elements/SelectTemplate,
     Name => "Scrip-$id-Template",
     Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->Id,
     Queue => $Queue,
 &></td></tr>
 
-<tr><td align="right"><&|/l&>Stage</&>:</td><td>
+<tr><td class="label"><&|/l&>Stage</&>:</td><td class="value">\
 <& /Admin/Elements/SelectStage,
     Name => "Scrip-$id-Stage",
     Default => $ARGS{"Scrip-$id-Stage"} || $scrip->Stage,
@@ -100,21 +100,21 @@
 <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
 </td></tr>
 
-<tr><td class="labeltop"><&|/l&>Custom condition</&>:</td><td>
+<tr><td class="labeltop"><&|/l&>Custom condition</&>:</td><td class="value">
 % my $code = $ARGS{"Scrip-$id-CustomIsApplicableCode"} || $scrip->CustomIsApplicableCode || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomIsApplicableCode"><% $code %></textarea>
 </td></tr>
 
-<tr><td class="labeltop"><&|/l&>Custom action preparation code</&>:</td><td>
+<tr><td class="labeltop"><&|/l&>Custom action preparation code</&>:</td><td class="value">
 % $code = $ARGS{"Scrip-$id-CustomPrepareCode"} || $scrip->CustomPrepareCode || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomPrepareCode"><% $code %></textarea>
 </td></tr>
 
-<tr><td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td><td>
+<tr><td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td><td class="value">
 % $code = $ARGS{"Scrip-$id-CustomCommitCode"} || $scrip->CustomCommitCode || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
