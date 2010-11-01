@@ -74,6 +74,9 @@ if ($id) {
                  H => { title => loc('User Rights'),
                         path => "Admin/RTFM/Classes/UserRights.html?id=".$id,
                       },
+                 I => { title => loc('Applies to'),
+                        path  => "Admin/RTFM/Classes/Objects.html?id=$id",
+                      },
            };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminClass')) {

@@ -28,7 +28,7 @@ my $dbh = DBI->connect( $dsn, $user, $password );
 #get all tables out of database
 my @tables = $dbh->tables();
 
-@tables = grep { /^FM_/i } map {s/`(.*)`/$1/; $_} @tables;
+@tables = grep { /^FM_/i } map {s/`\Q$database\E`\.`(.*)`/$1/; $_} @tables;
 my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
@@ -43,7 +43,7 @@ foreach my $table (@tables) {
 
     $tablemap{$table}  = $table;
     $modulemap{$table} = $table;
-    if ( $table =~ /^FM_(Class)es$/i || $table =~ /^FM_(.*?)(s?)$/i ) {
+    if ( $table =~ /^FM_((?:Object)?Class)es$/i || $table =~ /^FM_(.*?)(s?)$/i ) {
         my $item = $1;
         $item = ucfirst($item);
         $tablemap{$item}  = $table;
@@ -76,6 +76,8 @@ foreach my $table (@tables) {
     $tablesingle =~ s/cfvalue/CFValue/gi;
     if ($tablesingle =~ /^Classes$/i) {
         $tablesingle = "Class";
+    } elsif ($tablesingle =~ /^ObjectClasses$/i) {
+        $tablesingle = "ObjectClass";
     } else {
         $tablesingle =~ s/s$//;
     }

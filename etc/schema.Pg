@@ -47,3 +47,16 @@ ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL,
 PRIMARY KEY (id)
 );
+
+
+CREATE TABLE FM_ObjectClasses (
+id SERIAL,
+Class integer NOT NULL,
+ObjectType varchar(255) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL,
+Creator integer NOT NULL DEFAULT 0,
+Created TIMESTAMP NULL,
+LastUpdatedBy integer NOT NULL DEFAULT 0,
+LastUpdated TIMESTAMP NULL,
+PRIMARY KEY (id)
+);

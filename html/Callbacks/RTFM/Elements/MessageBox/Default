@@ -57,13 +57,6 @@ $name_prefix = $ARGS{'Name'} .'-'
 foreach my $arg ( keys %$parent_args ) {
     next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
 
-    my $article = RT::FM::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude(
-        Field => substr($arg, length($name_prefix)),
-        Value => $parent_args->{$arg},
-    );
-    next unless $article && $article->id;
-
     my $Ticket = $ARGS{Ticket};
     if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
         $Ticket = RT::Ticket->new($session{'CurrentUser'});
@@ -73,6 +66,18 @@ foreach my $arg ( keys %$parent_args ) {
         }
     }
 
+    my $Queue = RT::Queue->new($session{CurrentUser});
+    if ($Ticket && $Ticket->Id) {
+        $Queue = $Ticket->QueueObj;
+    }
+
+    my $article = RT::FM::Article->new($session{'CurrentUser'});
+    $article->LoadByInclude(
+        Field => substr($arg, length($name_prefix)),
+        Value => $parent_args->{$arg},
+        Queue => $Queue->Id,
+    );
+    next unless $article && $article->id;
 
     my $formatted_article = $m->scomp('/RTFM/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket

@@ -43,3 +43,14 @@ Topic integer NOT NULL,
 ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL
 );
+
+CREATE TABLE FM_ObjectClasses (
+id INTEGER PRIMARY KEY,
+Class integer NOT NULL,
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL,
+Creator integer NOT NULL DEFAULT 0,
+Created TIMESTAMP NULL,
+LastUpdatedBy integer NOT NULL DEFAULT 0,
+LastUpdated TIMESTAMP NULL
+);

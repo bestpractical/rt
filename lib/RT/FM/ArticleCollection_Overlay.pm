@@ -467,4 +467,80 @@ sub LimitReferredToBy {
 
 # }}}
 
+=head2 LimitHostlistClasses
+
+Only fetch Articles from classes where Hotlist is true.
+
+=cut
+
+sub LimitHotlistClasses {
+    my $self = shift;
+
+    my $classes = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'Class',
+        TABLE2 => 'FM_Classes',
+        FIELD2 => 'id',
+    );
+    $self->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
+}
+
+=head2 LimitAppliedClasses Queue => QueueObj
+
+Takes a Queue and limits articles returned to classes which are applied to that Queue
+
+Accepts either a Queue obj or a Queue id
+
+=cut
+
+sub LimitAppliedClasses {
+    my $self = shift;
+    my %args = @_;
+
+    unless (ref $args{Queue} || $args{Queue} =~/^[0-9]+$/) {
+        $RT::Logger->error("Not a valid Queue: $args{Queue}");
+        return;
+    }
+
+    my $queue = ( ref $args{Queue} ? $args{Queue}->Id : $args{Queue} );
+
+    my $oc_alias = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'Class',
+        TABLE2 => 'FM_ObjectClasses',
+        FIELD2 => 'Class'
+    );
+
+    my $subclause = "possibleobjectclasses";
+    $self->_OpenParen($subclause);
+    $self->Limit( ALIAS => $oc_alias,
+                  FIELD => 'ObjectId',
+                  VALUE => $queue,
+                  SUBCLAUSE => $subclause,
+                  ENTRYAGGREGATOR => 'OR' );
+    $self->Limit( ALIAS => $oc_alias,
+                  FIELD => 'ObjectType',
+                  VALUE => 'RT::Queue',
+                  SUBCLAUSE => $subclause,
+                  ENTRYAGGREGATOR => 'AND' );
+    $self->_CloseParen($subclause);
+
+    $self->_OpenParen($subclause);
+    $self->Limit( ALIAS => $oc_alias,
+                  FIELD => 'ObjectId',
+                  VALUE => 0,
+                  SUBCLAUSE => $subclause,
+                  ENTRYAGGREGATOR => 'OR' );
+    $self->Limit( ALIAS => $oc_alias,
+                  FIELD => 'ObjectType',
+                  VALUE => 'RT::FM::System',
+                  SUBCLAUSE => $subclause,
+                  ENTRYAGGREGATOR => 'AND' );
+    $self->_CloseParen($subclause);
+
+    return $self;
+
+}
+
+
 1;

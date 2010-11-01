@@ -13,6 +13,8 @@ FM_Topics_id_seq
 FM_Topics
 FM_ObjectTopics_id_seq
 FM_ObjectTopics
+FM_ObjectClasses_id_seq
+FM_ObjectClasses
 
     );
 

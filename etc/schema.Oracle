@@ -51,3 +51,16 @@ Topic NUMBER(11,0) NOT NULL,
 ObjectType varchar2(64) DEFAULT '' NOT NULL,
 ObjectId NUMBER(11,0) NOT NULL
 );
+
+CREATE SEQUENCE FM_ObjectClasses_seq;
+CREATE TABLE FM_ObjectClasses (
+id NUMBER(11,0)
+  CONSTRAINT FM_ObjectClasses_key PRIMARY KEY,
+Class NUMBER(11,0) NOT NULL,
+ObjectType varchar2(255) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL,
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE
+);

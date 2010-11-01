@@ -611,6 +611,9 @@ and the value submitted by the browser and attempts to load an Article.
 This handles Articles included by searching, by the Name and via
 the hotlist.
 
+If you optionaly pass an id as the Queue argument, this will check that
+the Article's Class is applied to that Queue.
+
 =cut
 
 sub LoadByInclude {
@@ -618,20 +621,40 @@ sub LoadByInclude {
     my %args = @_;
     my $Field = $args{Field};
     my $Value = $args{Value};
+    my $Queue = $args{Queue};
 
     return unless $Field;
 
+    my ($ok, $msg);
     if ( $Field eq 'RTFM-Include-Article' && $Value ) {
-        return $self->Load( $Value );
+        ($ok, $msg) = $self->Load( $Value );
     } elsif ( $Field =~ /^RTFM-Include-Article-(\d+)$/ ) {
-        return $self->Load( $1 );
+        ($ok, $msg) = $self->Load( $1 );
     } elsif ( $Field =~ /^RTFM-Include-Article-Named/ && $Value ) {
         if ( $Value =~ /\D/ ) {
-            return $self->LoadByCols( Name => $Value );
+            ($ok, $msg) = $self->LoadByCols( Name => $Value );
         } else {
-            return $self->LoadByCols( id => $Value );
+            ($ok, $msg) = $self->LoadByCols( id => $Value );
         }
     }
+
+    unless ($ok) { # load failed, don't check Class
+        return ($ok, $msg);
+    }
+
+    unless ($Queue) { # we haven't requested extra sanity checking
+        return ($ok, $msg);
+    }
+
+    # ensure that this article is available for the Queue we're
+    # operating under.
+    my $class = $self->ClassObj;
+    unless ($class->IsApplied(0) || $class->IsApplied($Queue)) {
+        $self->LoadById(0);
+        return (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value));
+    }
+
+    return ($ok, $msg);
 
 }
 

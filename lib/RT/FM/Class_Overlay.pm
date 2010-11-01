@@ -55,6 +55,8 @@ use RT::FM::System;
 use RT::CustomFields;
 use RT::ACL;
 use RT::FM::ArticleCollection;
+use RT::FM::ObjectClass;
+use RT::FM::ObjectClassCollection;
 
 
 =head2 Load IDENTIFIER
@@ -230,6 +232,175 @@ sub ArticleCustomFields {
         $cfs->LimitToLookupType( RT::FM::Article->CustomFieldLookupType );
     }
     return ($cfs);
+}
+
+
+=head1 AppliedTo
+
+Returns collection of Queues this Class is applied to.
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub AppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS NOT',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+=head1 NotAppliedTo
+
+Returns collection of Queues this Class is not applied to.
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub NotAppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+sub _AppliedTo {
+    my $self = shift;
+
+    my $res = RT::Queues->new( $self->CurrentUser );
+
+    $res->OrderBy( FIELD => 'Name' );
+    my $ocfs_alias = $res->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'FM_ObjectClasses',
+        FIELD2 => 'ObjectId',
+    );
+    $res->Limit(
+        LEFTJOIN => $ocfs_alias,
+        ALIAS    => $ocfs_alias,
+        FIELD    => 'Class',
+        VALUE    => $self->id,
+    );
+    return ($res, $ocfs_alias);
+}
+
+=head2 IsApplied
+
+Takes object id and returns corresponding L<RT::ObjectClass>
+record if this Class is applied to the object. Use 0 to check
+if Class is applied globally.
+
+=cut
+
+sub IsApplied {
+    my $self = shift;
+    my $id = shift;
+    return unless defined $id;
+    my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
+    $oc->LoadByCols( Class=> $self->id, ObjectId => $id,
+                     ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ));
+    return undef unless $oc->id;
+    return $oc;
+}
+
+=head2 AddToObject OBJECT
+
+Apply this Class to a single object, to start with we support Queues
+
+Takes an object
+
+=cut
+
+
+sub AddToObject {
+    my $self  = shift;
+    my $object = shift;
+    my $id = $object->Id || 0;
+
+    unless ( $object->CurrentUserHasRight('AdminClass') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $queue = RT::Queue->new( $self->CurrentUser );
+    if ( $id ) {
+        my ($ok, $msg) = $queue->Load( $id );
+        unless ($ok) {
+            return ( 0, $self->loc('Invalid Queue, unable to apply Class: [_1]',$msg ) );
+        }
+
+    }
+
+    if ( $self->IsApplied( $id ) ) {
+        return ( 0, $self->loc("Class is already applied to [_1]",$queue->Name) );
+    }
+
+    if ( $id ) {
+        # applying locally
+        return (0, $self->loc("Class is already applied Globally ") )
+            if $self->IsApplied( 0 );
+    }
+    else {
+        my $applied = RT::FM::ObjectClassCollection->new( $self->CurrentUser );
+        $applied->LimitToClass( $self->id );
+        while ( my $record = $applied->Next ) {
+            $record->Delete;
+        }
+    }
+
+    my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
+    my ( $oid, $msg ) = $oc->Create(
+        ObjectId => $id, Class => $self->id,
+        ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ),
+    );
+    return ( $oid, $msg );
+}
+
+
+=head2 RemoveFromObject OBJECT
+
+Remove this custom field  for a single object, such as a queue or group.
+
+Takes an object
+
+=cut
+
+sub RemoveFromObject {
+    my $self = shift;
+    my $object = shift;
+    my $id = $object->Id || 0;
+
+    unless ( $object->CurrentUserHasRight('AdminClass') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $ocf = $self->IsApplied( $id );
+    unless ( $ocf ) {
+        return ( 0, $self->loc("This custom field does not apply to that object") );
+    }
+
+    # XXX: Delete doesn't return anything
+    my ( $oid, $msg ) = $ocf->Delete;
+    return ( $oid, $msg );
 }
 
 1;

@@ -58,7 +58,7 @@
 <tr>
 <td><&|/l&>Include RTFM article:</&></td>
 <td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 %   }
 %}
@@ -72,7 +72,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 % }
 % my %dedupe_articles;
@@ -106,7 +106,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 
 % if ( $ARGS{$name_prefix .'RTFM-Include-Topic'} ) {
@@ -122,7 +122,7 @@
 % }
 </select>
 </td>
-<td><input type="submit" value="Go" /></td>
+<td><input type="submit" value="Go" name="Go" /></td>
 </tr>
 
 % }
@@ -132,8 +132,15 @@
 </table>
 
 <%init>
+my $QueueObj = $ARGS{QueueObj};
+if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+    $ticket->Load( $ARGS{id} );
+    $QueueObj = $ticket->QueueObj;
+}
+
 my $skip = 0;
-$m->comp('/Elements/Callback', _CallbackName => "Init", skip => \$skip, Queue => $ARGS{QueueObj});
+$m->comp('/Elements/Callback', _CallbackName => "Init", skip => \$skip, Queue => $QueueObj);
 return if $skip;
 
 my $name_prefix = '';
@@ -173,6 +180,7 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
     $articles_content->LimitCustomField(
         VALUE => $tmp, OPERATOR => 'LIKE'
     );
+    $articles_content->LimitAppliedClasses( Queue => $QueueObj );
 
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Name',
@@ -184,16 +192,12 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
                              OPERATOR        => 'LIKE',
                              VALUE           => $tmp,
                              ENTRYAGGREGATOR => "OR" );
+    $articles_basics->LimitAppliedClasses( Queue => $QueueObj );
 }
 
 my $hotlist = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
-my $classes = $hotlist->Join(
-    ALIAS1 => 'main',
-    FIELD1 => 'Class',
-    TABLE2 => 'FM_Classes',
-    FIELD2 => 'id',
-);
-$hotlist->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
+$hotlist->LimitHotlistClasses;
+$hotlist->LimitAppliedClasses( Queue => $QueueObj );
 
 # By default, order by name
 $hotlist->OrderByCols( {
@@ -211,13 +215,6 @@ $hotlist->OrderByCols( {
 my ( $topic_articles, $topics, $included_topic );
 $topic_articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
 $topics = [];
-
-my $QueueObj = $ARGS{QueueObj};
-if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
-    my $ticket = RT::Ticket->new( $session{CurrentUser} );
-    $ticket->Load( $ARGS{id} );
-    $QueueObj = $ticket->QueueObj;
-}
 
 my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
 $top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
