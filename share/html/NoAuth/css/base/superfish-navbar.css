@@ -2,8 +2,8 @@
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
 	background:		#BDD2FF;
-	height:			2.5em;
-	padding-bottom:	2.5em;
+	height:			2em;
+	padding-bottom:	2em;
 	position:		relative;
 }
 .sf-navbar li {
@@ -59,7 +59,7 @@ ul.sf-navbar .current ul,
 ul.sf-navbar ul li:hover ul,
 ul.sf-navbar ul li.sfHover ul {
 	left:			0;
-	top:			2.5em; /* match top ul list item height */
+	top:			2em; /* match top ul list item height */
 }
 ul.sf-navbar .current ul ul {
 	top: 			-999em;
