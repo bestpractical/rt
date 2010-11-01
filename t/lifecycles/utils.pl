@@ -30,7 +30,6 @@ Set(\%Lifecycles,
             'open -> stalled'  => ['Stall',   'Comment'],
             'open -> resolved' => ['Resolve', 'Comment'],
             'open -> rejected' => ['Reject',  'Respond'],
-            'open -> deleted'  => ['Delete',  'hide'],
 
             'stalled -> open'  => ['Open It',  ''],
             'resolved -> open' => ['Re-open',  'Comment'],
