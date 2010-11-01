@@ -1914,23 +1914,21 @@ apropriate.
 
 =head3 Labeling and defining actions
 
-Each transition can be named, by default it's named as the end state.
+For each transition you can define an action that will be shown in the UI.
 
-Each action may be annotated with B<Comment>, B<Respond> or B<Hidden>.
+Each action annotated with label and update type.
 
-For example, you may want your staff to write a reply to the end user
-when they change status from B<new> to B<open>.
-
-Using B<Hide>, it's possible to hide the B<open> -> B<delete> from the ticket's
-main view, while still allowing it from the basics page and API.
-
-Neither B<Comment> nor B<Respond> are mandatory.
+Update type can be B<Comment>, B<Respond> or absent. For example, you may
+want your staff to write a reply to the end user when they change status
+from B<new> to B<open>. Neither B<Comment> nor B<Respond> are mandatory
+and user may leave message empty.
 
 Use the following format to define labels and actions of transitions:
 
     default => {
         ...
         actions => {
+        actions => [
             'new -> open'     => ['Open it', 'Respond'],
             'new -> resolved' => ['Resolve', 'Comment'],
             'new -> rejected' => ['Reject',  'Respond'],
@@ -1939,13 +1937,29 @@ Use the following format to define labels and actions of transitions:
             'open -> stalled'  => ['Stall',   'Comment'],
             'open -> resolved' => ['Resolve', 'Comment'],
             'open -> rejected' => ['Reject',  'Respond'],
-            'open -> deleted'  => ['Delete',  'hide'],
 
             'stalled -> open'  => ['Open it',  ''],
             'resolved -> open' => ['Re-open',  'Comment'],
             'rejected -> open' => ['Re-open',  'Comment'],
             'deleted -> open'  => ['Undelete', ''],
-        },
+        ],
+        ...
+    },
+
+In addition you can define multiple actions for the same transition.
+Also, it's possible to use '* -> x' to match more than one transition.
+For example:
+
+    default => {
+        ...
+        actions => [
+            ...
+            'new -> rejected' => ['Reject', 'Respond'],
+            'new -> rejected' => ['Quick Reject'],
+            ...
+            '*   -> deleted'  => ['Delete'],
+            ...
+        ],
         ...
     },
 
@@ -1989,7 +2003,7 @@ Set(%Lifecycles,
             '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
         },
-        actions => {
+        actions => [
 
             # 'from -> to'    => [action text, Respond/Comment/hide/''],
             'new -> open'     => [ 'Open it', 'Respond' ],
@@ -2007,7 +2021,7 @@ Set(%Lifecycles,
             'rejected -> open' => [ 'Re-open',  'Comment' ],
             'deleted -> open'  => [ 'Undelete', '' ],
             'open -> new'      => [ 'New',      'hide' ],
-        },
+        ],
     },
 );
 
