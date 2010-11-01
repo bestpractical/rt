@@ -45,25 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<ul <%$id ? 'id="'.$id.'"' : '' |n%><% $toplevel? 'class="sf-menu sf-js-enabled sf-shadow"' : '' |n %>>
+
+<%" " x $depth%><ul<%$id ? ' id="'.$id.'"' : '' |n%><% $toplevel? ' class="sf-menu sf-js-enabled sf-shadow"' : '' |n %>>
 % for my $child ($menu->children) {
-%   my $item_id = lc($parent_id."-".$child->key);
+%   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
-<li>
-<a id="<%$item_id%>" \
-<% $child->path ? 'href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%> \
-> \
+<%" " x ($depth+1)%><li>\
+<a id="<%$item_id%>" <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
 % if ($child->escape_title) {
-<%$child->title |n%>
+<%$child->title |n%>\
 % } else {
-<%$child->title%>
+<%$child->title%>\
 % }
-</a>
-% next unless ($child->has_children);
-<& Menu, menu => $child, toplevel => 0, parent_id => ($parent_id? $parent_id."-": '').$child->key &>
+</a>\
+% if ($child->has_children) {
+<& Menu, menu => $child, toplevel => 0, parent_id => ($parent_id? $parent_id."-": '').$child->key, depth=> ($depth+1) &>
+<%" " x ($depth+1)%></li>
+% } else {
 </li>
 % }
-</ul>
+% }
+<%" " x $depth%></ul>\
 <%INIT>
 
 </%INIT>
@@ -72,4 +74,5 @@ $menu
 $id => undef
 $toplevel => 1
 $parent_id => ''
+$depth => 0
 </%ARGS>
