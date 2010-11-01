@@ -47,13 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
     Title => $title,
     $Create ? () : (DashboardObj => $Dashboard),
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard" id="ModifyDashboard">
 
 %unless ($Dashboard->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -63,16 +62,14 @@
 
 <&|/Widgets/TitleBox, title => loc('Basics') &>
 <table>
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td>
-<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    <tr>
+     <td class="label"><&|/l&>Name</&>:</td>
+     <td class="value"><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    </tr>
+    <tr>
+    <td class="label"><&|/l&>Privacy</&>:</td>
+    <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
 </tr>
-<tr><td align="right">
-<&|/l&>Privacy</&>:
-</td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
-</td></tr>
 </table>
 </&>
 <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
@@ -147,6 +144,17 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     }
 
 }
+
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => 'Dashboards/Modify.html',
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
 
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 

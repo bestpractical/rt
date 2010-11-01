@@ -197,10 +197,10 @@ $m->callback(
 
 # This code does automatic redirection if any updates happen. 
 $m->comp(
-    'Elements/MaybeRedirectForResults',
+    '/Elements/MaybeRedirectForResults',
     Actions     => \@Actions,
     Path        => 'Ticket/Display.html',
-    TicketObj   => $TicketObj,
+    id          => $TicketObj->id,
     ARGSRef     => \%ARGS
 );
 

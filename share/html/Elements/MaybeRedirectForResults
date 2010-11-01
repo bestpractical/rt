@@ -48,8 +48,8 @@
 <%args>
 $Actions => []
 $ARGSRef => {}
-$Path    => 'Ticket/Display.html'
-$TicketObj
+$Path
+$id
 </%args>
 <%init>
 if ( @$Actions ) {
@@ -59,7 +59,7 @@ if ( @$Actions ) {
     my $key = Digest::MD5::md5_hex( rand(1024) );
     push @{ $session{"Actions"}->{$key} ||= [] }, @$Actions;
     $session{'i'}++;
-    my $url = RT->Config->Get('WebURL') . "$Path?id=" . $TicketObj->id . "&results=" . $key;
+    my $url = RT->Config->Get('WebURL') . "$Path?id=" . $id . "&results=" . $key;
     $url .= '#' . $ARGSRef->{Anchor} if $ARGSRef->{Anchor};
     RT::Interface::Web::Redirect($url);
 }
