@@ -114,17 +114,17 @@ if ( $request_path =~ qr{.*} ) {
     if ( $session{'CurrentUser'}
          ->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
-        $tools->child( loc('Approval'), path => '/Approvals/' );
+        $tools->child( approval => title => loc('Approval'), path => '/Approvals/' );
     }
 
     if ( $session{'CurrentUser'}
          ->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
     {
-        my $admin = Menu->child( Config => title => loc('Configuration'),
+        my $admin = Menu->child( config => title => loc('Configuration'),
                                  path   => '/Admin/' );
-        my $users = $admin->child( loc('Users'), path => '/Admin/Users/', );
-        $users->child( loc('Select'), path => "/Admin/Users/" );
-        $users->child( loc('Create'),
+        my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
+        $users->child( select => title => loc('Select'), path => "/Admin/Users/" );
+        $users->child( create => title => loc('Create'),
                        path => "/Admin/Users/Modify.html?Create=1" );
 
         my $groups
