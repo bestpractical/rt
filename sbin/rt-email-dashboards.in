@@ -117,10 +117,10 @@ $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 no warnings 'once';
 
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; 1 }
-sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
-sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
-sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
+sub verbose  { print @_, "\n" if $opts{debug} || $opts{verbose}; 1 }
+sub debug    { print @_, "\n" if $opts{debug}; 1 }
+sub error    { $RT::Logger->error(@_); verbose(@_); 1 }
+sub warning  { $RT::Logger->warning(@_); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
 verbose "Using time [_1]", scalar localtime($now);
