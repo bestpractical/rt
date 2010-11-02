@@ -1,6 +1,6 @@
 
 use RT;
-use RT::Test tests => 7;
+use RT::Test tests => 7, config => 'Set( %FullTextSearch, Enable => 1 );';
 
 
 {
