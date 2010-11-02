@@ -1416,14 +1416,13 @@ Set($PlainTextMono, 0);
 
 =item C<$ShowUnreadMessageNotifications>
 
-By default, RT will prompt users when there are new, unread messages on
-tickets they are viewing.
+RT will prompt users when there are new, unread messages on tickets they are viewing.
 
-Set C<$ShowUnreadMessageNotifications> to a false value to disable this feature.
+Set C<$ShowUnreadMessageNotifications> to a true value to enable this feature.
 
 =cut
 
-Set($ShowUnreadMessageNotifications, 1);
+Set($ShowUnreadMessageNotifications, 0);
 
 
 =item C<$HomepageComponents>
