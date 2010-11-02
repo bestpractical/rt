@@ -52,8 +52,8 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->back;
 
         $m->follow_link_ok( { text => 'root' }, '-> root' );
-        for my $tab ( 'History', 'Memberships', 'RT at a glance', 'Basics' ) {
-            $m->follow_link_ok( { text => $tab }, "-> $tab" );
+        for my $id ( 'rt-at-a-glance', 'memberships', 'history', 'basics' ) {
+            $m->follow_link_ok( { id => 'page-current-' . $id }, "-> $id" );
         }
     }
 
@@ -69,10 +69,10 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->back;
 
         $m->follow_link_ok( { text => 'group_foo' }, '-> group_foo' );
-        for my $tab ( 'History', 'Members', 'Group Rights', 'User Rights',
-            'Basics' )
+        for my $id ( 'history', 'members', 'group-rights', 'user-rights',
+            'basics' )
         {
-            $m->follow_link_ok( { text => $tab }, "-> $tab" );
+            $m->follow_link_ok( { id => 'page-group_foo-' . $id }, "-> $id" );
         }
     }
 
@@ -85,22 +85,27 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->back;
 
         $m->follow_link_ok( { text => 'General' }, '-> General' );
-        for my $tab (
-            'Watchers',                  'Scrips',
-            'Templates',                 'Ticket Custom Fields',
-            'Transaction Custom Fields', 'Group Rights',
-            'User Rights',               'History',
-            'Basics',
+        for my $id (
+            'people',                    'scrips',
+            'templates',                 'ticket-custom-fields',
+            'transaction-custom-fields', 'group-rights',
+            'user-rights',               'basics',
           )
         {
-            $m->follow_link_ok( { text => $tab }, "-> $tab" );
+            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
         }
     }
 
     diag 'walk into /Admin/CustomFields' if $ENV{TEST_VERBOSE};
     {
         my $cf = RT::CustomField->new($RT::SystemUser);
-        ok( $cf->Create( Name => 'cf_foo', Type => 'Freeform' ) );
+        ok(
+            $cf->Create(
+                Name       => 'cf_foo',
+                Type       => 'Freeform',
+                LookupType => 'RT::Queue-RT::Ticket',
+            )
+        );
         $m->get_ok( $baseurl, 'homepage' );
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Custom Fields' }, '-> Custom Fields' );
@@ -109,12 +114,8 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
 
         $m->follow_link_ok( { text => 'cf_foo' }, '-> cf_foo' );
 
-        for my $tab ( 'Applies to', 'Group Rights', 'User Rights', 'Basics' ) {
-
-            # very weird, 'Applies to' fails with ->follow_link_ok
-            #        $m->follow_link_ok( { text => $tab }, "-> $tab" );
-            $m->follow_link( text => $tab );
-            is( $m->status, 200, "-> $tab" );
+        for my $id ( 'applies-to', 'group-rights', 'user-rights', 'basics' ) {
+            $m->follow_link_ok( { id => 'page-cf_foo-' . $id }, "-> $id" );
         }
     }
 
@@ -124,11 +125,9 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Tools' },         '-> Tools' );
 
-        for my $tab ( 'System Configuration', 'SQL Queries', 'Shredder' ) {
-
-            #            $m->follow_link_ok( { text => $tab }, "-> $stab" );
-            $m->follow_link( text => $tab );
-            is( $m->status, 200, "-> $tab" );
+        for my $tab ( 'Configuration.html', 'Queries.html', 'Shredder' ) {
+            $m->follow_link_ok( { url_regex => qr!/Admin/Tools/$tab! },
+                "-> /Admin/Tools/$tab" );
         }
     }
 
@@ -138,32 +137,21 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Global' },        '-> Global' );
 
-        for my $tab ( 'Group Rights', 'User Rights', 'RT at a glance', 'Theme' )
+        for my $id ( 'group-rights', 'user-rights', 'rt-at-a-glance', 'theme' )
         {
-            $m->follow_link_ok( { text => $tab }, "-> $tab" );
+            $m->follow_link_ok( { id => 'config-global-' . $id }, "-> $id" );
         }
 
-        for my $tab ( 'Scrips', 'Templates' ) {
-            $m->follow_link_ok( { text => 'Global' }, '-> Global' );
-            $m->follow_link_ok( { text => $tab },     "-> $tab" );
-            $m->follow_link_ok( { text => 'Create' }, '-> Create' );
-            $m->back;
-            $m->follow_link_ok( { text => '1' },      '-> 1' );
-            $m->follow_link_ok( { text => 'Select' }, '-> Select' );
+        for my $tab ( 'scrips', 'templates' ) {
+            $m->follow_link_ok( { id => "config-global-" . $tab }, "-> $tab" );
+            for my $id (qw/create select/) {
+                $m->follow_link_ok( { id => "config-global-" . $tab . "-$id" },
+                    "-> $id" );
+            }
+            $m->follow_link_ok( { text => '1' }, '-> 1' );
         }
     }
 
-    diag 'walk into /Prefs' if $ENV{TEST_VERBOSE};
-    {
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Preferences' }, '-> Preferences' );
-
-        for
-          my $tab ( 'Settings', 'About me', 'Search options', 'RT at a glance' )
-        {
-            $m->follow_link_ok( { text => $tab }, "-> $tab" );
-        }
-    }
 }
 
 diag 'walk into /Approvals' if $ENV{TEST_VERBOSE};
@@ -175,3 +163,14 @@ diag 'walk into /Approvals' if $ENV{TEST_VERBOSE};
     is( $m->status, 200, '-> Approvals' );
 }
 
+diag 'walk into /Prefs' if $ENV{TEST_VERBOSE};
+{
+    for my $id (
+        'settings',    'about_me', 'search_options', 'myrt',
+        'quicksearch', 'search-0', 'search-1',       'search-2',
+        'logout'
+      )
+    {
+        $m->follow_link_ok( { id => 'preferences-' . $id }, "-> $id" );
+    }
+}
