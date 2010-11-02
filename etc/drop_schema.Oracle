@@ -1,8 +1,0 @@
-DROP TABLE FM_Classes ;
-DROP TABLE FM_Articles ;
-DROP TABLE FM_ObjectTopics ;
-DROP TABLE FM_Topics ;
-DROP sequence FM_Classes_seq;
-DROP sequence FM_Articles_seq;
-DROP sequence FM_ObjectTopics_seq;
-DROP sequence FM_Topics_seq;
