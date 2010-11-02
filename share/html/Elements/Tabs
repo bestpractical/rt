@@ -529,42 +529,77 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
 
         my $tabs = PageMenu()
             ; #->child( "#" . $id => class => "currentnav",path => "/Ticket/Display.html?id=" . $id);
-        $tabs->child ( bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), escape_title => 0, link_item => 0);
+        $tabs->child( bookmark => title =>
+                          $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
+                      escape_title => 0,
+                      link_item    => 0
+                    );
 
         $tabs->child(
                  loc('Display') => path => "/Ticket/Display.html?id=" . $id );
 
         $tabs->child(
                  loc('History') => path => "/Ticket/History.html?id=" . $id );
-        $tabs->child(
-                   loc('Basics') => path => "/Ticket/Modify.html?id=" . $id );
 
-        $tabs->child(
-               loc('Dates') => path => "/Ticket/ModifyDates.html?id=" . $id );
-        $tabs->child( loc('People'),
-                      path => "/Ticket/ModifyPeople.html?id=" . $id );
-        $tabs->child( loc('Links'),
-                      path => "/Ticket/ModifyLinks.html?id=" . $id );
-        $tabs->child( loc('Jumbo'),
-                      path => "/Ticket/ModifyAll.html?id=" . $id );
+        my %can = (
+              ModifyTicket    => $obj->CurrentUserHasRight('ModifyTicket'),
+              Watch    => $obj->CurrentUserHasRight('Watch'),
+              WatchAsAdminCc    => $obj->CurrentUserHasRight('WatchAsAdminCc'),
+              OwnTicket       => $obj->CurrentUserHasRight('OwnTicket'),
+              StealTicket     => $obj->CurrentUserHasRight('StealTicket'),
+              TakeTicket      => $obj->CurrentUserHasRight('TakeTicket'),
+              ReplyToTicket   => $obj->CurrentUserHasRight('ReplyToTicket'),
+              CommentOnTicket => $obj->CurrentUserHasRight('CommentOnTicket'),
+              ModifyCustomField => $obj->CurrentUserHasRight('ModifyCustomField'),
+              _ModifyOwner => (       $obj->CurrentUserHasRight('OwnTicket')
+                                   || $obj->CurrentUserHasRight('TakeTicket')
+                                   || $obj->CurrentUserHasRight('StealTicket')
+                              )
+                  );
+        # comment out until we can do it for an individual custom field
+        #if ( $can{ModifyTicket} || $can{ModifyCustomField} ) {
+            $tabs->child( basics => title => loc('Basics'),
+                          path => "/Ticket/Modify.html?id=" . $id, );
+        #}
 
-        my %can
-            = ( ModifyTicket => $obj->CurrentUserHasRight('ModifyTicket') );
+        if ( $can{ModifyTicket} || $can{_ModifyOwner} ||$can{Watch} ||$can{WatchAsAdminCc}) {
+            $tabs->child( people => title => loc('People'),
+                          path => "/Ticket/ModifyPeople.html?id=" . $id, );
+        }
 
-        if (    $can{'ModifyTicket'}
-             or $obj->CurrentUserHasRight('ReplyToTicket') )
-        {
-            $actions->child( loc('Reply'),
-                     path => "/Ticket/Update.html?Action=Respond&id=" . $id );
+        if ( $can{ModifyTicket} ) {
+            $tabs->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id, );
+            $tabs->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id, );
+        }
+
+        #if (    $can{ModifyTicket} || $can{ModifyCustomField} || $can{_ModifyOwner} ) {
+            $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id, );
+        #}
+
+        if ( RT->Config->Get('EnableReminders') ) {
+            $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id, );
+        }
+
+        if ( $can{'ModifyTicket'} or $can{'ReplyToTicket'} ) {
+            $actions->child(
+                        reply => title => loc('Reply'), path => "/Ticket/Update.html?Action=Respond;id=" . $id,
+            );
+        }
+
+        if ( $obj->CurrentUserHasRight('ForwardMessage') ) {
+            $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id, );
         }
 
         if ( $can{'ModifyTicket'} ) {
             my $current = $obj->Status;
-            my $schema  = $obj->QueueObj->lifecycle;
+            my $lifecycle  = $obj->QueueObj->lifecycle;
             my $i       = 1;
-            foreach my $next ( $schema->transitions($current) ) {
-                my $action = $schema->transition_action( $current => $next );
+            foreach my $next ( $lifecycle->transitions($current) ) {
+                my $action = $lifecycle->transition_action( $current => $next );
                 next if $action eq 'hide';
+            my $check = $lifecycle->check_right( $current => $next );
+            $can{$check} = $obj->CurrentUserHasRight($check) unless exists $can{$check};
+            next unless $can{$check};
 
                 my $url = '/Ticket/';
                 if ($action) {
@@ -580,32 +615,41 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
                         . $query_string->( Status => $next, id => $id );
                 }
                 $actions->child(
-                      loc( $schema->transition_label( $current => $next ) ) =>
+                      loc( $lifecycle->transition_label( $current => $next ) ) =>
                           path => $url );
             }
 
         }
-        if ( $obj->CurrentUserHasRight('OwnTicket') ) {
-            if ( $obj->OwnerObj->id == RT->Nobody->id ) {
-                $actions->child( loc('Take') => path =>
-                                "/Ticket/Display.html?Action=Take&id=" . $id )
-                    if (    $can{'ModifyTicket'}
-                         or $obj->CurrentUserHasRight('TakeTicket') );
-            } elsif ( $obj->OwnerObj->id != $session{'CurrentUser'}->id ) {
-                $actions->child( loc('Steal') => path =>
-                               "/Ticket/Display.html?Action=Steal&id=" . $id )
-                    if (    $can{'ModifyTicket'}
-                         or $obj->CurrentUserHasRight('StealTicket') );
+        if ( $can{OwnTicket} ) {
+            if ( $obj->OwnerObj->Id == RT->Nobody->id
+                 && ( $can{'ModifyTicket'} or $can{'TakeTicket'} ) )
+            {
+                $actions->child(
+                        take => path => "/Ticket/Display.html?Action=Take;id="
+                            . $id,
+                        title => loc('Take')
+                    ),
+                    ;
+            }
+
+            elsif (    $obj->OwnerObj->id != RT->Nobody->id
+                    && $obj->OwnerObj->id != $session{CurrentUser}->id
+                    && ( $can{'ModifyTicket'} or $can{'StealTicket'} ) )
+            {
+
+                $actions->child(
+                        steal => title => loc('Steal'),
+                        path => "/Ticket/Display.html?Action=Steal;id=" . $id,
+                );
             }
         }
 
-        if (    $can{'ModifyTicket'}
-             or $obj->CurrentUserHasRight('CommentOnTicket') )
-        {
-            $actions->child( loc('Comment') => path =>
-                             "/Ticket/Update.html?action=comment&id=" . $id );
+        if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
+            $actions->child(
+                        comment => title => loc('Comment'),
+                        path => "/Ticket/Update.html?Action=Comment;id=" . $id,
+            );
         }
-
 
         if ( defined $session{"tickets"} ) {
 
@@ -622,22 +666,26 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
             # Don't display prev links if we're on the first ticket
             if ( $item_map->{$id}->{prev} ) {
                 $search->child(
-                       '<< ' . loc('First') => class => "nav",
+                       'first',
+                       title => '<< ' . loc('First') => class => "nav",
                        path => "/Ticket/Display.html?id=" . $item_map->{first}
                 );
-                $search->child( '< ' . loc('Prev') => class => "nav",
-                                path => "/Ticket/Display.html?id="
-                                    . $item_map->{$id}->{prev}
-                              );
+                $search->child(
+                        prev => title => '< ' . loc('Prev') => class => "nav",
+                        path => "/Ticket/Display.html?id="
+                            . $item_map->{$id}->{prev}
+                );
 
                 # Don't display next links if we're on the last ticket
                 if ( $item_map->{$id}->{next} ) {
-                    $search->child( loc('next') . ' >' => class => "nav",
-                                    path => "/Ticket/Display.html?id="
-                                        . $item_map->{$id}->{next}
-                                  );
                     $search->child(
-                        loc('Last') . ' >>' => class => "nav",
+                        next => title => loc('next') . ' >' => class => "nav",
+                        path => "/Ticket/Display.html?id="
+                            . $item_map->{$id}->{next}
+                    );
+                    $search->child(
+                        last        => title => loc('Last')
+                            . ' >>' => class => "nav",
                         path => "/Ticket/Display.html?id=" . $item_map->{last}
                     );
                 }
@@ -659,6 +707,7 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
     my %query_args = (
 
         SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+    SavedChartSearchId => $m->request_args->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId},
         Query  => $m->request_args->{'Query'}  || $current_search->{'Query'},
         Format => $m->request_args->{'Format'} || $current_search->{'Format'},
         OrderBy => $m->request_args->{'OrderBy'}
@@ -698,7 +747,7 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
                                  search          => 1,
                                  plugin          => 'Tickets',
                                  'Tickets:query' => $query_args{'Query'},
-                                 'Tickets:limit' => $query_args{'RowsPerPage'}
+                                 'Tickets:limit' => $query_args{'Rows'}
                 );
 
             $current_search_menu->child(
@@ -714,6 +763,7 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
         $current_search_menu->child(
                                 bulk => title => loc('Bulk Update') => path =>
                                     "/Search/Bulk.html$args" );
+    $current_search_menu->child( chart => path  => "Search/Chart.html$args", title => loc('Graph'),);
 
     }
 
