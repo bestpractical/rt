@@ -160,6 +160,19 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     push @results, $msg;
 }
 
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/Groups/Modify.html',
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
+
+
+
+
 unless ($Group->Disabled()) {
     $EnabledChecked ='checked="checked"';
 }
