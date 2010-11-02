@@ -596,7 +596,7 @@ sub fill_cache {
         my @tmp = splice @res;
         while ( my ($transition, $info) = splice @tmp, 0, 2 ) {
             my ($from, $to) = split /\s*->\s*/, $transition, 2;
-            push @res, { from => $from, to => $to, label => $info->[0], update => $info->[1] };
+            push @res, { %$info, from => $from, to => $to };
         }
         $lifecycle->{'actions'} = \@res;
     }

@@ -1929,19 +1929,19 @@ Use the following format to define labels and actions of transitions:
         ...
         actions => {
         actions => [
-            'new -> open'     => ['Open it', 'Respond'],
-            'new -> resolved' => ['Resolve', 'Comment'],
-            'new -> rejected' => ['Reject',  'Respond'],
-            'new -> deleted'  => ['Delete',  ''],
+            'new -> open'     => { label => 'Open it', update => 'Respond' },
+            'new -> resolved' => { label => 'Resolve', update => 'Comment' },
+            'new -> rejected' => { label => 'Reject',  update => 'Respond' },
+            'new -> deleted'  => { label => 'Delete' },
 
-            'open -> stalled'  => ['Stall',   'Comment'],
-            'open -> resolved' => ['Resolve', 'Comment'],
-            'open -> rejected' => ['Reject',  'Respond'],
+            'open -> stalled'  => { label => 'Stall',   update => 'Comment' },
+            'open -> resolved' => { label => 'Resolve', update => 'Comment' },
+            'open -> rejected' => { label => 'Reject',  update => 'Respond' },
 
-            'stalled -> open'  => ['Open it',  ''],
-            'resolved -> open' => ['Re-open',  'Comment'],
-            'rejected -> open' => ['Re-open',  'Comment'],
-            'deleted -> open'  => ['Undelete', ''],
+            'stalled -> open'  => { label => 'Open it' },
+            'resolved -> open' => { label => 'Re-open', update => 'Comment' },
+            'rejected -> open' => { label => 'Re-open', update => 'Comment' },
+            'deleted -> open'  => { label => 'Undelete' },
         ],
         ...
     },
@@ -1954,10 +1954,10 @@ For example:
         ...
         actions => [
             ...
-            'new -> rejected' => ['Reject', 'Respond'],
-            'new -> rejected' => ['Quick Reject'],
+            'new -> rejected' => { label => 'Reject', update => 'Respond' },
+            'new -> rejected' => { label => 'Quick Reject' },
             ...
-            '*   -> deleted'  => ['Delete'],
+            '* -> deleted' => { label => 'Delete' },
             ...
         ],
         ...
@@ -2004,23 +2004,19 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
+            'new -> open'      => { label => 'Open It',  update => 'Respond' },
+            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
+            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
+            'new -> deleted'   => { label => 'Delete'                        },
 
-            # 'from -> to'    => [action text, Respond/Comment/hide/''],
-            'new -> open'     => [ 'Open it', 'Respond' ],
-            'new -> resolved' => [ 'Resolve', 'Comment' ],
-            'new -> rejected' => [ 'Reject',  'Respond' ],
-            'new -> deleted'  => [ 'Delete',  '' ],
+            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
+            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
+            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
 
-            'open -> stalled'  => [ 'Stall',   'Comment' ],
-            'open -> resolved' => [ 'Resolve', 'Comment' ],
-            'open -> rejected' => [ 'Reject',  'Respond' ],
-            'open -> deleted'  => [ 'Delete',  'hide' ],
-
-            'stalled -> open'  => [ 'Open it',  '' ],
-            'resolved -> open' => [ 'Re-open',  'Comment' ],
-            'rejected -> open' => [ 'Re-open',  'Comment' ],
-            'deleted -> open'  => [ 'Undelete', '' ],
-            'open -> new'      => [ 'New',      'hide' ],
+            'stalled -> open'  => { label => 'Open It'                       },
+            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
+            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
+            'deleted -> open'  => { label => 'Undelete'                      },
         ],
     },
 );
