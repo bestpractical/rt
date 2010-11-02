@@ -51,13 +51,17 @@
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
 <%" " x ($depth+1)%><li>\
+% if ($child->link_item) {
 <a id="<%$item_id%>" <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
-% if ($child->escape_title) {
-<%$child->title |n%>\
-% } else {
-<%$child->title%>\
 % }
+% if ($child->escape_title) {
+<%$child->title%>\
+% } else {
+<%$child->title |n%>\
+% }
+% if ($child->link_item) {
 </a>\
+% }
 % if ($child->has_children) {
 <& Menu, menu => $child, toplevel => 0, parent_id => ($parent_id? $parent_id."-": '').$child->key, depth=> ($depth+1) &>
 <%" " x ($depth+1)%></li>

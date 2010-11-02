@@ -58,7 +58,7 @@ use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
     title sort_order target escape_title class render_children_inline
-    raw_html key
+    link_item raw_html key
 ));
 
 =head1 NAME
@@ -215,10 +215,11 @@ sub child {
             $child->parent($self);
         } else {
             $child = $proto->new(
-                {   parent     => $self,
+                {   parent      => $self,
                     key         => $key,
-                    title        => $key,
-                    escape_title => 1,
+                    title       => $key,
+                    escape_title=> 1,
+                    link_item   => 1,
                     %args
                 }
             );
