@@ -28,7 +28,7 @@ diag "Create a CF";
 diag "apply the CF to General queue";
 my ( $cf, $cfid, $tid );
 {
-    $m->title_is(q/Created CustomField img/, 'admin-cf created');
+    $m->title_is(q/Editing CustomField img/, 'admin-cf created');
     $m->follow_link( id => 'tools-config-queues');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
