@@ -16,7 +16,7 @@ my $cf_name = 'test cf datetime';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( id => 'config-custom-fields-create');
+    $m->follow_link( id => 'tools-config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {

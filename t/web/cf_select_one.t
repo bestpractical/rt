@@ -13,7 +13,7 @@ my $cf_name = 'test select one value';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( id => 'config-custom-fields-create');
+    $m->follow_link( id => 'tools-config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -50,7 +50,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 diag "apply the CF to General queue";
 {
-    $m->follow_link( id => 'config-queues');
+    $m->follow_link( id => 'tools-config-queues');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( id => 'page-ticket-custom-fields');

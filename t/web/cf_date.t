@@ -15,7 +15,7 @@ my $cf_name = 'test cf date';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( id => 'config-custom-fields-create');
+    $m->follow_link( id => 'tools-config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields    => {
@@ -34,7 +34,7 @@ my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
 
 {
-    $m->follow_link( id => 'config-queues-select');
+    $m->follow_link( id => 'tools-config-queues-select');
     $m->title_is( q/Admin queues/, 'admin-queues screen' );
     $m->follow_link( text => 'General' );
     $m->title_is( q/Configuration for queue General/,

@@ -17,7 +17,7 @@ diag('make Autoreply template a html one and add utf8 chars')
   if $ENV{TEST_VERBOSE};
 
 {
-    $m->follow_link_ok( { id => 'config-global-templates' },     '-> Templates' );
+    $m->follow_link_ok( { id => 'tools-config-global-templates' },     '-> Templates' );
     $m->follow_link_ok( { text => 'Autoreply' },     '-> Autoreply' );
 
     $m->submit_form(

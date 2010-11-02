@@ -16,7 +16,7 @@ ok $m->login, 'logged in as root';
 
 my $sid;
 {
-    $m->follow_link_ok( { id => 'config-queues' } );
+    $m->follow_link_ok( { id => 'tools-config-queues' } );
     $m->follow_link_ok( { text => $queue->Name } );
     $m->follow_link_ok( { id => 'page-scrips-create'});
     $m->form_name('ModifyScrip');

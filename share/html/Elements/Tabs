@@ -120,7 +120,7 @@ if ( $request_path =~ qr{.*} ) {
     if ( $session{'CurrentUser'}
          ->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
     {
-        my $admin = Menu->child( config => title => loc('Configuration'),
+        my $admin = $tools->child( config => title => loc('Configuration'),
                                  path   => '/Admin/' );
         my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
         $users->child( select => title => loc('Select'), path => "/Admin/Users/" );

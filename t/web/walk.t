@@ -139,13 +139,13 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
 
         for my $id ( 'group-rights', 'user-rights', 'rt-at-a-glance', 'theme' )
         {
-            $m->follow_link_ok( { id => 'config-global-' . $id }, "-> $id" );
+            $m->follow_link_ok( { id => 'tools-config-global-' . $id }, "-> $id" );
         }
 
         for my $tab ( 'scrips', 'templates' ) {
-            $m->follow_link_ok( { id => "config-global-" . $tab }, "-> $tab" );
+            $m->follow_link_ok( { id => "tools-config-global-" . $tab }, "-> $tab" );
             for my $id (qw/create select/) {
-                $m->follow_link_ok( { id => "config-global-" . $tab . "-$id" },
+                $m->follow_link_ok( { id => "tools-config-global-" . $tab . "-$id" },
                     "-> $id" );
             }
             $m->follow_link_ok( { text => '1' }, '-> 1' );
