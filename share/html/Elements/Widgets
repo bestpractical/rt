@@ -1,4 +1,4 @@
-<div class="widgets">
+<div id="topactions">
 <& /Elements/SimpleSearch &>
 <& /Elements/CreateTicket &>
 </div>

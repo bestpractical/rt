@@ -84,8 +84,8 @@ div#body {
 #topactions {
  position: absolute;
  background: transparent;
- top: 3.8em; 
- right: 1em;
+ top: 3.2em;
+ right: 0.7em;
  width: auto;
  min-width: 42em;
  font-size: 0.9em;
@@ -169,7 +169,7 @@ div#footer #bpscredits {
 
 /* logo stuff */
 
-div#logo a {
+div#logo {
     position: absolute;
     left: 2px;
     top: 0;
@@ -183,12 +183,11 @@ div#logo a img {
 }
 
 div#logo .rtname {
-    position: absolute;
+    position: relative;
     font-weight: bold;
-    top: 0.5em;
-    left: 30%;
-    right: 30%;
     text-align: center;
+    top: -0.8em;
+    left: 0.5em;
 }
 
 

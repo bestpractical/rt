@@ -55,7 +55,7 @@
 
 #page-navigation {
     position: absolute;
-    top: 5.5em;
+    top: 5.4em;
     right: 0em;
     left: auto;
     z-index: 9995;
@@ -74,4 +74,12 @@
 
 .sf-menu li, .sf-menu li li, .sf-menu li li li {
     background-color: #eee;
+}
+
+#page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
+    background-color: #fff;
+}
+
+#page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
+    border: none;
 }
