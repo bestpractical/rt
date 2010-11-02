@@ -1186,14 +1186,13 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, @_);
 
-        return ("http://localhost:$port", RT::Test::Web->new);
-    } else {
         $RT::Handle = RT::Handle->new;
         $RT::Handle->dbh( undef );
         RT->ConnectToDatabase;
-
         # the attribute cache holds on to a stale dbh
         delete $RT::System->{attributes};
+
+        return ("http://localhost:$port", RT::Test::Web->new);
     }
 
     require POSIX;
