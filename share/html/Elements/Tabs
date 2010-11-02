@@ -490,6 +490,7 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
 
         my $tabs = PageMenu()
             ; #->child( "#" . $id => class => "currentnav",path => "/Ticket/Display.html?id=" . $id);
+        $tabs->child ( bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), escape_title => 0, link_item => 0);
 
         $tabs->child(
                  loc('Display') => path => "/Ticket/Display.html?id=" . $id );
@@ -566,7 +567,6 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
                              "/Ticket/Update.html?action=comment&id=" . $id );
         }
 
-# $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
 
         if ( defined $session{"tickets"} ) {
 
