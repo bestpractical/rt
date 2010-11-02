@@ -106,7 +106,11 @@ if ( $request_path =~ qr{.*} ) {
     $reports->child( loc('Created in a date range'),
                      path => '/Tools/Reports/CreatedByDates.html', );
 
-    $tools->child( loc('My Day'), path => '/Tools/MyDay.html' );
+    $tools->child( my_day => title => loc('My Day'), path => '/Tools/MyDay.html' );
+
+    $tools->child( offline => title => loc('Offline'), path => '/Tools/Offline.html');
+    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html');
+
     if ( $session{'CurrentUser'}
          ->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
