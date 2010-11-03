@@ -22,7 +22,7 @@ $agent->form_name('BuildQuery');
 $agent->field('idOp', '>');
 $agent->field('ValueOfid', '0');
 $agent->submit('DoSearch');
-$agent->follow_link_ok({id => 'search-current_search-results'});
+$agent->follow_link_ok({id => 'page-results'});
 
 for ( 1 .. 5 ) {
     $agent->content_contains('Ticket ' . $_);
