@@ -140,7 +140,7 @@ div.results .titlebox-content {
  font-size: 0.8em;
  padding-right: .5em;
 
-} 
+}
 
 .cflabel {
  text-align: right;
@@ -175,7 +175,7 @@ div.widget {
     padding-bottom: 0.5em;
 }
 
-div.widget .label { 
+div.widget .label {
  text-align: right;
  display: block;
  width: 15em;
@@ -211,7 +211,7 @@ div.widget .hints {
 }
 
 /* this style replaces the default down-triangle with one that looks more like
- *  native widget sets. It does not work in IE as it's an :after pseudo element 
+ *  native widget sets. It does not work in IE as it's an :after pseudo element
  *  with a "content" value. but that's ok because IE can't display unicode 25be
  *  anyway */
 
@@ -244,4 +244,3 @@ div.widget .hints {
     font-style: italic;
     color: red;
 }
-
