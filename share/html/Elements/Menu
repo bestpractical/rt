@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<%" " x $depth%><ul<%$id ? ' id="'.$id.'"' : '' |n%><% $toplevel? ' class="sf-menu sf-js-enabled sf-shadow"' : '' |n %>>
+<%" " x $depth%><ul<%$id ? ' id="'.$id.'"' : '' |n%><% $toplevel? ' class="toplevel"' : '' |n %>>
 % for my $child ($menu->children) {
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
