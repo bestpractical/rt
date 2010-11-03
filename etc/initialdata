@@ -206,11 +206,11 @@ creation of a trouble ticket regarding:
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id()}].
+assigned an ID of { $Ticket->SubjectTag }.
 
 Please include the string:
 
-         [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+         { $Ticket->SubjectTag }
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.

@@ -29,6 +29,15 @@ RT::Action, RT::Condition and RT::Search, respectively.
 
 * The "Rights Delegation" and "Personal Groups" features have been removed.
 
+* Replace the following code in templates:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
+with
+
+    { $Ticket->SubjectTag }
+
+
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:
 
