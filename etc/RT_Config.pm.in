@@ -1985,7 +1985,7 @@ Use the following format to define labels and actions of transitions:
     default => {
         ...
         actions => {
-            'new -> open'     => ['Open It', 'Respond'],
+            'new -> open'     => ['Open it', 'Respond'],
             'new -> resolved' => ['Resolve', 'Comment'],
             'new -> rejected' => ['Reject',  'Respond'],
             'new -> deleted'  => ['Delete',  ''],
@@ -1995,7 +1995,7 @@ Use the following format to define labels and actions of transitions:
             'open -> rejected' => ['Reject',  'Respond'],
             'open -> deleted'  => ['Delete',  'hide'],
 
-            'stalled -> open'  => ['Open It',  ''],
+            'stalled -> open'  => ['Open it',  ''],
             'resolved -> open' => ['Re-open',  'Comment'],
             'rejected -> open' => ['Re-open',  'Comment'],
             'deleted -> open'  => ['Undelete', ''],
@@ -2046,7 +2046,7 @@ Set(%Lifecycles,
         actions => {
 
             # 'from -> to'    => [action text, Respond/Comment/hide/''],
-            'new -> open'     => [ 'Open It', 'Respond' ],
+            'new -> open'     => [ 'Open it', 'Respond' ],
             'new -> resolved' => [ 'Resolve', 'Comment' ],
             'new -> rejected' => [ 'Reject',  'Respond' ],
             'new -> deleted'  => [ 'Delete',  '' ],
@@ -2056,7 +2056,7 @@ Set(%Lifecycles,
             'open -> rejected' => [ 'Reject',  'Respond' ],
             'open -> deleted'  => [ 'Delete',  'hide' ],
 
-            'stalled -> open'  => [ 'Open It',  '' ],
+            'stalled -> open'  => [ 'Open it',  '' ],
             'resolved -> open' => [ 'Re-open',  'Comment' ],
             'rejected -> open' => [ 'Re-open',  'Comment' ],
             'deleted -> open'  => [ 'Undelete', '' ],

@@ -59,7 +59,7 @@ my $query_string = sub {
 };
 
 if ( $request_path !~ qr{^/SelfService/} ) {
-    my $home = Menu->child( home => title => loc('Home Page'), path => '/' );
+    my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
     my $limit      = 7;
 
