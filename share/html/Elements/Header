@@ -89,7 +89,7 @@
   <& /Elements/PersonalQuickbar, %ARGS &>
 </div>
 % }
-
+<div id="header"><h1><% $Title %></h1></div>
 <%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';

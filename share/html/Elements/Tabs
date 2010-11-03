@@ -45,17 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/PageLayout,
-    current_toptab => $current_toptab,
-    current_tab => $current_tab,
-    toptabs => $toptabs,
-    topactions => $topactions,
-    tabs => $tabs,
-    actions => $actions,
-    subactions => $subactions,
-    title => $Title,
-    show_menu => $show_menu,
-&>
+<& /Elements/PageLayout, show_menu => $show_menu &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 
@@ -562,13 +552,5 @@ if ( $request_path =~ qr'/SelfService' ) {
 
 </%INIT>
 <%ARGS>
-$current_toptab => undef
-$current_tab => undef
-$toptabs => undef
-$topactions => undef
-$tabs => undef
-$actions => undef
-$subactions => undef
-$Title => undef
 $show_menu => 1
 </%ARGS>
