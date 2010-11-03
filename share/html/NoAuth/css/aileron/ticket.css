@@ -1,0 +1,286 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+div#ticket-history div.ticket-transaction {
+ border-top: 1px solid #ccc;
+ padding-bottom: 0.25em;
+
+}
+
+div#ticket-history div.odd {
+ background-color: #fff;
+}
+
+div#ticket-history {
+
+ margin-top: 0.75em;
+ border-left: 1px solid #ccc;
+
+ border-right: 2px solid #999;
+  border-bottom: 2px solid #999;
+
+}
+
+.ticket-transaction div.metadata span.actions {
+ position: absolute;
+ right: 2.3em;
+ padding: 0em;
+ background: #ccc;
+ text-align: right;
+ border-left: 1px solid #999;
+ border-bottom: 1px solid #999;
+ color: #ccc;
+ -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
+ white-space: nowrap;
+}
+
+.ticket-transaction div.metadata  span.type {
+ text-align: center;
+ float: left;
+ margin: 0.25em 0.70em 0.25em 0.25em;
+ width: 1em;
+ height: 1.25em;
+ padding: 0.75em 0 0 0;
+ border-right: 1px solid #999;
+ border-bottom: 1px solid #999;
+ -moz-border-radius: 0.25em;
+ -webkit-border-bottom-right-radius: 0.25em;
+}
+
+div#ticket-history span.type a {
+ color: #fff;
+}
+
+
+div#ticket-history span.date {
+ width: 10em;
+}
+
+
+div#ticket-history span.description {
+ margin-left: 1em;
+ font-weight: bold;
+}
+
+div#ticket-history span.time-taken {
+ margin-left: 1em;
+}
+
+div#ticket-history div.content {
+ padding-right: 1em;
+ padding-bottom: 0.7em;
+ font-size: 1.1em;
+ margin-left: 1.5em;
+}
+
+.plain-text-white-space {
+ white-space: pre-wrap;
+ font-family: monospace;
+}
+
+.ticket-transaction .messagebody {
+ font-size: 1em;
+ padding-left: 1em;
+ margin-top: 0.5em;
+ padding-top: 0.5em;
+ border-top: 1px solid #ccc;
+ /*overflow: auto; */
+ min-height: 2.5em;
+ /* To avoid overlapping of "downloadattachment" by messagebody */
+ clear: left;
+ word-wrap: break-word;
+}
+
+.ticket-transaction .messagebody img {
+ max-width: 100%;
+}
+
+div#ticket-history div.downloadattachment {
+float: right;
+clear: both;
+font-size: 0.9em;
+text-align: right;
+background: #ddd;
+padding: 0.5em;
+margin-left: 1em;
+
+border: 1px solid #ccc;
+border-right: 2px solid #aaa;
+border-bottom: 2px solid #aaa;
+margin-top: 0.5em;
+-moz-border-radius: 0.5em;
+-webkit-border-radius: 0.5em;
+
+}
+
+div#ticket-history div.downloadattachment .downloadcontenttype{
+color: #666;
+padding-right:0.25em;
+}
+
+
+div#ticket-history .message-header-key {
+  width: 7em;
+  font-weight: bold;
+  color: #666;
+}
+
+
+div#ticket-history .messagebody .messagebody{
+ font-size: 1em;
+ padding: 0;
+ border: 0;
+ margin: 0;
+}
+
+
+
+.ticket-transaction.basics .type { background: #b32; }
+.ticket-transaction.cfs .type { background: #b32; }
+.ticket-transaction.people .type { background: #48c; }
+.ticket-transaction.links .type { background: #316531; }
+.ticket-transaction.dates .type { background: #633063; }
+.ticket-transaction.message .type { background: #069; }
+.ticket-transaction.reminders .type { background: #369; }
+.ticket-transaction.other .type { background: #abc; }
+
+
+
+
+.ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
+.ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
+.ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
+.ticket-info-requestor .titlebox-title .left { white-space: nowrap; background-color: #48c;  color: #fff;}
+.ticket-info-links .titlebox-title .left { background-color: #316531;  color: #fff;}
+.ticket-info-reminders .titlebox-title .left { background-color: #369;  color: #fff;}
+.ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
+.ticket-info-attachments .titlebox-title .left { background-color: #993366;  color: #fff;}
+
+
+.ticket-summary .titlebox-title .left a, .ticket-summary .titlebox-title .left a:visited { color: #fff;}
+
+.unread-messages .titlebox , .unread-messages .titlebox-title .left {
+  border: 1px solid #99a;
+  border-right: 2px solid #aab;
+  border-bottom: 2px solid #aab;
+
+}
+
+
+.unread-messages .titlebox {
+  background-color: #dde;
+}
+
+.unread-messages .titlebox-title .left {
+  background-color: #cce;
+}
+
+.ticket-inactive {
+  text-decoration: line-through;
+  color: #666
+}
+
+table.ticket-summary td.boxcontainer:first-child {
+  width: 50%;
+}
+
+/* Message quoting */
+
+.message-stanza-depth-1 {
+    color: #1a1aa6;
+}
+
+div.requestor-ticket-links {
+    text-align: left;
+    font-size: 0.8em;
+    padding-top: 0.25em;
+}
+
+.more-about-requestor-extra-field .label {
+    display: inline-block;
+    width: 8em;
+    font-weight: bold;
+    text-align: right;
+}
+
+.more-about-requestor-extra-field .value {
+    display: inline-block;
+}
+
+.ticket-info-requestor .more-about-requestor-extra,
+.ticket-info-requestor .comments-about-user,
+.ticket-info-requestor .more-about-requestor-tickets,
+.ticket-info-requestor .more-about-user-groups
+{
+    margin: 1em 0;
+}
+
+.ticket-info-requestor .comments-about-user .label,
+.ticket-info-requestor .more-about-user-groups .label,
+.ticket-info-requestor .more-about-requestor-tickets .label
+{
+    display: block;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ticket-info-requestor .more-about-user-groups .value ul,
+.ticket-info-requestor .more-about-requestor-tickets ul
+{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+
+/* textareas get to be bigger */
+.edit-custom-field.cftype-Text textarea,
+.edit-custom-field.cftype-Freeform input,
+.edit-custom-field.cftype-Wikitext textarea
+{
+    width: 100%;
+}

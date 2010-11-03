@@ -836,10 +836,7 @@ Set($StatementLog, undef);
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
-  web2            The totally new, default layout for RT 3.8
-  3.5-default     RT 3.5 and 3.6 original layout
-  3.4-compat      A 3.4 compatibility stylesheet to make RT look
-                  (mostly) like 3.4
+  web2            The default layout for RT 3.8
 
 This value actually specifies a directory in F<share/html/NoAuth/css/>
 from which RT will try to load the file main.css (which should

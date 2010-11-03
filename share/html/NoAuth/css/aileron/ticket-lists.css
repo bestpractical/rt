@@ -1,0 +1,236 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+table.queue-summary, table.collection-as-table {
+  margin-top: 0.75em;
+  font-size: 0.9em;
+  border: 1px solid #aaa;
+  border-bottom: 2px solid #999;
+  border-right: 2px solid #999;
+  border-spacing: 0;
+  width: 100%;
+
+}
+
+table.queue-summary tr>*:first-child {
+ padding-left: 1em;
+
+}
+
+
+table.queue-summary tr>*:last-child {
+ padding-right: 1em;
+
+}
+
+table.queue-summary a, table.collection-as-table a  {
+  font-weight: bold;
+}
+
+
+table.collection-as-table th.collection-as-table {
+  background: #ddd;
+ font-size: 0.9em;
+  margin-bottom: 0.5em;
+  text-align: left;
+
+}
+
+
+table.queue-summary th.collection-as-table {
+ font-size: 0.9em;
+  margin-bottom: 0.5em;
+  text-align: right;
+
+}
+
+table.queue-summary th.collection-as-table:first-child {
+  text-align: left;
+
+}
+
+
+tr.collection-as-table+tr.collection-as-table th {
+ border-bottom: 2px solid grey;
+
+}
+
+
+
+
+table.queue-summary td {
+  background: #efefef;
+  border-bottom: 1px solid #ccc;
+}
+
+
+
+tr.evenline td {
+  background: #eee;
+}
+
+tr.oddline td {
+  background: #fff;
+
+}
+
+tr.evenline td, tr.oddline td {
+ padding-top: 0.5em;
+}
+
+
+
+tr.evenline+tr.evenline td, tr.oddline+tr.oddline td{
+ padding-top: 0;
+ border: none;
+}
+
+
+
+table.collection-as-table td:first-child,
+table.collection-as-table th:first-child {
+  padding-left: 1em;
+}
+
+table.collection-as-table td:last-child, table.collection-as-table th:last-child {
+  padding-right: 1em;
+}
+
+th.collection-as-table , td.collection-as-table {
+ padding-right: 0.5em;
+}
+
+.pagenum.a:hover, .paging a.nav:hover{
+text-decoration: underline;
+}
+
+
+.pagenum *, .paging a.nav{
+padding: .5em;
+}
+
+.currentpage{
+text-decoration: none;
+font-weight: bold;
+background: #eee;
+}
+
+div.paging{
+text-align: center;
+padding-bottom: 1em;
+}
+
+
+/* full-page ticket lists */
+#body>table.collection-as-table {
+    margin-bottom: 2em;
+
+}
+
+.chart.image {
+    margin-top: -1em;
+    padding-right: 2em;
+    float: left;
+    clear: both;
+}
+
+.chart-wrapper {
+    display: block;
+    width: auto;
+}
+
+.chart-wrapper .collection-as-table {
+    width: auto;
+    font-size: 1em;
+}
+
+.chart-wrapper .collection-as-table th.collection-as-table {
+    text-align: center;
+    padding: 0.5em;
+    padding-right: 1em;
+    padding-left:  1em;
+}
+
+.chart-wrapper .collection-as-table tr.total td {
+    border-top: 1px solid #ccc;
+}
+
+.chart-wrapper .collection-as-table td.value {
+    padding-left: 0.5em;
+}
+
+.chart-wrapper .query {
+    clear: both;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 1em;
+}
+
+.chart-wrapper .collection-as-table .label {
+    font-weight: bold;
+}
+
+
+.chart-wrapper .query .label {
+    font-weight: bold;
+}
+
+.chart-meta {
+    padding-top: 2em;
+    border-top: 1px solid #ccc;
+}
+
+.chart-meta .chart-type {
+    display: inline-block;
+    float: left;
+    padding-right: 2em;
+    clear: both;
+}
+
+.chart-meta .saved-search {
+    display: inline-block;
+}
