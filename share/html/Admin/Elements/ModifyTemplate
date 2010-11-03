@@ -47,38 +47,23 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 <tr>
-<td align="right">
-<&|/l&>Name</&>:
-</td>
-<td>
-<input name="Name" value="<%$Name%>" size="20" /><br />
-</td>
+<td class="label"><&|/l&>Name</&>:</td>
+<td class="value"><input name="Name" value="<%$Name%>" size="20" /></td>
 </tr>
 <tr>
-<td align="right">
-<&|/l&>Description</&>: 
-</td>
-<td>
-<input name="Description" value="<%$Description%>" size="80" /><br />
-</td>
+<td class="label"><&|/l&>Description</&>:</td>
+<td class="value"><input name="Description" value="<%$Description%>" size="80" /></td>
 </tr>
 <tr>
-<td align="right">
-<&|/l&>Type</&>:
-</td>
-<td>
+<td class="label"><&|/l&>Type</&>:</td>
+<td class="value">
 <input type="radio" name="Type" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>><&|/l&>Perl</&></input><br />
 <input type="radio" name="Type" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>><&|/l&>Simple</&></input><br />
 </td>
 </tr>
 <tr>
-<td align="right" valign="top">
-<&|/l&>Content</&>:<br />
-</td>
-<td>
-<textarea name="Content" rows="25" cols="80" wrap="soft">
-<%$Content%></textarea>
-</td>
+<td class="label" valign="top"><&|/l&>Content</&>:</td>
+<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft"><%$Content%></textarea></td>
 </tr>
 </table>
 
