@@ -64,7 +64,7 @@ div#body {
     -webkit-border-top-left-radius: 0.5em;
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
-    margin-left: 1em;
+    margin-left: 10em;
     margin-top: 3em;
     margin-right: 0;
     margin-bottom: 0em;
@@ -149,10 +149,35 @@ div#quickbar {
  border-bottom: 1px solid #ccc;
 
 }
-div#quick-personal {
-    float: left;
-    margin-left: 1em;
+
+#quick-personal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999
 }
+
+#prefs-menu.sf-menu li li {
+    background: #eaeaea;
+}
+
+#prefs-menu.sf-menu li#preferences {
+    background: none;
+}
+
+#prefs-menu.sf-menu li:hover, #prefs-menu.sf-menu li.sfHover, #prefs-menu.sf-menu a:focus, #prefs-menu.sf-menu a:hover, #prefs-menu.sf-menu a:active {
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+    border: none;
+}
+
+#prefs-menu .sfHover a,
+#prefs-menu .sfHover a:visited {
+    color: #000;
+    border: none;
+}
+
 
 
 div#header h1 {

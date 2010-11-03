@@ -86,7 +86,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $tickets->child( new => title => loc('New Search') => path => "/Search/Build.html?NewQuery=1" );
 
     my $tools = Menu->child(  tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html' );
+    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 2 );
 
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
@@ -94,24 +94,24 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html' );
+    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 4 );
     $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html', );
     $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html', );
     $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html', );
 
-    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html' );
+    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5 );
 
-    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html' );
-    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html' );
+    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10 );
+    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 15 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
-        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/' );
+        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=>3 );
     }
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
     {
-        my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/' );
+        my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 1 );
         if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers' ) ) {
             my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
             $users->child( select => title => loc('Select'), path   => "/Admin/Users/" );
@@ -189,6 +189,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
+        $settings->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
         $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
         $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );

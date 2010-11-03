@@ -45,45 +45,121 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-.sf-menu {
-    width: 100%;
-}
-
-.sf-menu a {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-}
-.sf-menu li:hover {
-    background-color: #fff;
-}
-
-.sf-menu li, .sf-menu li li, .sf-menu li li li {
-    background-color: #eee;
-}
 
 #main-navigation {
+    background-color: #fff;
+    -moz-border-radius-bottomright: 0.5em;
+    -webkit-border-bottom-right-radius: 0.5em;
+    -moz-border-radius-topright: 0.5em;
+    -webkit-border-top-right-radius: 0.5em;
+    width: 10em;
+    font-size: 0.85em;
     position: absolute;
-    top: 0;
-    left: 0;
-    left: auto;
-    z-index: 9999;
+    top: 6.2em;
+    left: 0em;
+    z-index: 9997;
+    background-color: none;
+    padding-top: 1em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
 }
+
+#main-navigation ul li {
+}
+
+
+#main-navigation .sf-menu {
+    text-color: #000;
+}
+
+#main-navigation .sf-menu li {
+    background: none;
+}
+
+#main-navigation .sf-menu li:first-child {
+    border-top: 1px solid #ccc;
+}
+
+#main-navigation .sf-menu a,
+#main-navigation .sf-menu a:visited {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    color: #000;
+    border: none;
+}
+
+#main-navigation .sf-menu li {
+    border-bottom: 1px solid #ccc;
+
+}
+
+
+#main-navigation .sf-menu ul a,
+#main-navigation .sf-menu ul a:visited {
+    color: #000;
+}
+
+
+#main-navigation .sf-menu li li, #main-navigation .sf-menu li li li {
+    border-left: none;
+    background-color: #fff;
+    text-color: #547CCC;
+}
+
+#main-navigation .sf-menu li:hover, #main-navigation .sf-menu li.sfHover, #main-navigation .sf-menu a:focus, #main-navigation .sf-menu a:hover, #main-navigation .sf-menu a:active {
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+}
+
+#main-navigation .sfHover a,
+#main-navigation .sfHover a:visited {
+    color: #000;
+}
+
 
 #page-navigation {
     position: absolute;
-    top: 6.8em;
+    top: 6em;
     right: 0em;
     left: auto;
     z-index: 9995;
-    font-size: 0.8em;
+    font-size: 0.9em;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+}
+
+#page-navigation .sf-menu {
+    margin: 0;
 }
 
 #page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
-    background-color: #fff;
+    background: none;
+    height: 2em;
+    padding-top: 0.25em;
+    padding-bottom: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    display: inline-block;
+}
+
+
+#page-navigation .sf-menu ul {
+    background: #eee;
+}
+
+
+#page-navigation .sf-menu li:hover, #page-navigation .sf-menu li.sfHover, #page-navigation .sf-menu a:focus, #page-navigation .sf-menu a:hover, #page-navigation .sf-menu a:active {
+    background: none;
+
 }
 
 #page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
     border: none;
+    padding: 0.25em;
+    color: #000;
 }
 
 
