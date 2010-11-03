@@ -171,7 +171,7 @@ div#footer #bpscredits {
 
 div#logo {
     position: absolute;
-    left: 2px;
+    right: 2px;
     top: 0;
     height: 2.3em;
 }
@@ -180,14 +180,16 @@ div#logo a img {
     border: 0;
     height: 100% !important;
     width: auto !important;
+    float: right;
 }
 
 div#logo .rtname {
     position: relative;
     font-weight: bold;
     text-align: center;
-    top: -0.8em;
-    left: 0.5em;
+    top: 0.7em;
+    padding-right: 1em;
+    float:left;
 }
 
 
@@ -209,8 +211,8 @@ div#quickbar {
 
 }
 div#quick-personal {
-    float: right;
-    margin-right: 1em;
+    float: left;
+    margin-left: 1em;
 }
 
 
