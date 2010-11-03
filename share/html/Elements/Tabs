@@ -197,11 +197,14 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html', );
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder', );
     }
+
     my $about_me = Menu->child( 'preferences' => title =>
                         loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
                     escape_title => 0,
                     sort_order   => 99
     );
+
+
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
@@ -527,22 +530,34 @@ if ( $request_path =~ qr'/SelfService' ) {
         last if ( $queue_count > 1 );
     }
 
-    my $TOP = Menu();
 
-    $TOP->child( open => title => loc('Open tickets'), path => '/SelfService/', );
-    $TOP->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html', );
+    my $tickets = Menu->child(tickets => title =>loc('Tickets'));
+    $tickets->child( open => title => loc('Open tickets'), path => '/SelfService/', );
+    $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html', );
     if ( $queue_count > 1 ) {
-        $TOP->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $tickets->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } else {
-        $TOP->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?queue=' . $queue_id );
+        $tickets->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?queue=' . $queue_id );
     }
+
+
+    my $about_me = Menu->child( 'preferences' => title =>
+                        loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
+                    escape_title => 0,
+                    sort_order   => 99
+    );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System ) ) {
-        $TOP->child( prefs => title => loc('Preferences'), path  => '/SelfService/Prefs.html' );
+        $about_me->child( prefs => title => loc('Preferences'), path  => '/SelfService/Prefs.html' );
     }
 
-    # XXX TODO RENDER GOTO TICKET WIDGET
-    Menu->child( goto         => title => $m->scomp('GotoTicket'), escape_title => 0 );
+    if ( $session{'CurrentUser'}->Name
+         && (   !RT->Config->Get('WebExternalAuth')
+              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+        $about_me->child( logout => title => loc('Logout'), path   => '/NoAuth/Logout.html' );
+    }
+
+    PageWidgets->child( goto         => title => $m->scomp('/SelfService/Elements/GotoTicket'), escape_title => 0 );
 }
 
 </%INIT>

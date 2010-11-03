@@ -108,7 +108,7 @@ div#body {
 
 }
 
-#topactions #CreateTicketInQueue {
+#topactions #GotoTicket, #topactions #CreateTicketInQueue {
  text-align: right; 
 
 }
