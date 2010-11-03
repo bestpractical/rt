@@ -90,14 +90,6 @@ div#header h1 {
     margin-top: 0.2em;
 }
 
-div#page-navigation ul#actions-menu {
-    margin-top: -2.9em;
-    margin-right: -0.2em;
-    border-top: 1px solid #ccc;
-    border-right: none;
-}
-
-
 div#page-navigation {
     position: absolute;
     top: 6.2em;
