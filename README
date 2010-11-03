@@ -31,7 +31,7 @@ o   A supported SQL database
                               SQLite 3.0. (Not recommended for production)
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
-        with mod_perl -- (http://perl.apache.org )
+        with mod_perl -- (http://perl.apache.org)
         or with FastCGI -- (www.fastcgi.com)
         or other webserver with FastCGI support
 
