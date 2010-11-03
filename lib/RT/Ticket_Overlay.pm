@@ -1813,8 +1813,25 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
+=head2 SubjectTag
 
+Takes nothing. Returns SubjectTag for this ticket. Includes
+queue's subject tag or rtname if that is not set, ticket
+id and braces, for example:
 
+    [support.example.com #123456]
+
+=cut
+
+sub SubjectTag {
+    my $self = shift;
+    return
+        '['
+        . ($self->QueueObj->SubjectTag || RT->Config->Get('rtname'))
+        .' #'. $self->id
+        .']'
+    ;
+}
 
 
 =head2 DueObj
