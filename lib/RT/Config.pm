@@ -870,7 +870,13 @@ sub SetFromConfig {
     # if option is already set we have to check where
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
-        if ( $args{'SiteConfig'} && $args{'Extension'} ) {
+        if ( $type eq 'HASH' ) {
+            $args{'Value'} = [
+                @{ $args{'Value'} },
+                @{ $args{'Value'} }%2? (undef) : (),
+                $self->Get( $name ),
+            ];
+        } elsif ( $args{'SiteConfig'} && $args{'Extension'} ) {
             # if it's site config of an extension then it can only
             # override options that came from its main config
             if ( $args{'Extension'} ne $META{$name}->{'Source'}{'Extension'} ) {
