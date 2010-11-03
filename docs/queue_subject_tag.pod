@@ -24,7 +24,7 @@ If you want to subjects to be "prefix [tag] real subject" like
 in default autoreply then you can use the following code in
 templates to place subject tag whenever you want in a template:
 
-    [{ $Ticket->QueueObj->SubjectTag || $rtname } #{$Ticket->id()}]
+    { $Ticket->SubjectTag }
 
 B<Note> that in the extension from the CPAN Tag method have
 been used when in 3.8 and newer it's SubjectTag, so you have to upgrade
@@ -56,7 +56,7 @@ For example, RT's default "Autoreply" includes this line:
 Change this line to read:
 
  "There is no need to reply to this message right now.  Your ticket has been
- assigned an ID of [{ $Ticket->QueueObj->SubjectTag || $rtname } #{$Ticket->id()}]."
+ assigned an ID of { $Ticket->SubjectTag }."
 
 =head2 For users of RT-Extension-BrandedQueues
 
@@ -73,7 +73,6 @@ This script will convert data in the DB into new format.
 
 4) In templates where you were using Tag method (for example
 C<< $Ticket-E<gt>QueueObj-E<gt>Tag >>) replace it with
-C<< $Ticket-E<gt>QueueObj-E<gt>SubjectTag >>. Read more in
-L</"Using tag in templates">
+new code. Read more in L</"Using tag in templates">.
 
 =cut
