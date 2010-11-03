@@ -288,6 +288,7 @@ sub MaybeShowNoAuthPage {
 sub InitializeMenu {
     $HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
     $HTML::Mason::Commands::m->notes('page-menu', RT::Interface::Web::Menu->new());
+    $HTML::Mason::Commands::m->notes('page-widgets', RT::Interface::Web::Menu->new());
 
 }
 
@@ -827,6 +828,12 @@ sub Menu {
 sub PageMenu {
     return $HTML::Mason::Commands::m->notes('page-menu');
 }
+
+sub PageWidgets {
+    return $HTML::Mason::Commands::m->notes('page-widgets');
+}
+
+
 
 =head2 loc ARRAY
 

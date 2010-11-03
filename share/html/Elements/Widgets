@@ -1,4 +1,0 @@
-<div id="topactions">
-<& /Elements/SimpleSearch &>
-<& /Elements/CreateTicket &>
-</div>
