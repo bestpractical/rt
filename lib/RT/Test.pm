@@ -167,7 +167,7 @@ sub import {
 
     $class->bootstrap_plugins( %args );
 
-    RT::InitPlugins();
+    RT->Plugins;
     
     RT::I18N->Init();
     RT->Config->PostLoadCheck;
@@ -449,6 +449,7 @@ sub bootstrap_plugins {
     };
 
     RT->Config->Set( Plugins => @plugins );
+    RT->InitPluginPaths();
 
     my $dba_dbh;
     $dba_dbh = _get_dbh(
