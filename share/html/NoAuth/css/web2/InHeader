@@ -53,7 +53,5 @@
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie6.css" type="text/css" media="all" />
 <![endif]-->
 <script type="text/javascript">
-jQuery(document).ready(function(){ jQuery("#app-nav").superfish(); });
-jQuery(document).ready(function(){ jQuery("#page-menu").superfish(); });
-jQuery(document).ready(function(){ jQuery("#actions-menu").superfish(); });
+jQuery(document).ready(function(){ jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish(); });
 </script>
