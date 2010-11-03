@@ -45,22 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-#main-navigation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    left: auto;
-    z-index: 9999;
-}
-
-#page-navigation {
-    position: absolute;
-    top: 6.8em;
-    right: 0em;
-    left: auto;
-    z-index: 9995;
-    font-size: 0.8em;
-}
 .sf-menu {
     width: 100%;
 }
@@ -77,10 +61,77 @@
     background-color: #eee;
 }
 
+#main-navigation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    left: auto;
+    z-index: 9999;
+}
+
+#page-navigation {
+    position: absolute;
+    top: 6.8em;
+    right: 0em;
+    left: auto;
+    z-index: 9995;
+    font-size: 0.8em;
+}
+
 #page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
     background-color: #fff;
 }
 
 #page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
     border: none;
+}
+
+
+#topactions {
+ position: absolute;
+ background: transparent;
+ top: 3.2em;
+ right: 0.7em;
+ width: auto;
+ min-width: 42em;
+ font-size: 0.9em;
+ z-index: 99;
+}
+
+#topactions form * {
+    vertical-align: top;
+}
+
+#topactions button, #topactions select, #topactions input{
+ padding-top: 0em;
+ padding-bottom: 0em;
+ width: 8em;
+
+}
+
+#topactions form {
+ display: block;
+
+}
+
+#topactions #GotoTicket, #topactions #CreateTicketInQueue {
+ text-align: right;
+
+}
+#topactions #simple-search {
+ float: right;
+}
+
+#topactions #simple-search .field{
+ margin-left: 1em;
+ color: #787;
+ }
+
+#topactions #simple-search .field:focus {
+ color: #000;
+ }
+
+#topactions #GotoTicket {
+ text-align: right;
+
 }

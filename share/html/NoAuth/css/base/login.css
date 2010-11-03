@@ -45,12 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-table.myday td { 
- padding: 1em;
+#login-box hr {
+ display: none;
 }
 
-ol.dashboard-queries {
-    padding-left: 1.5em;
+#login-box {
+
+ width: 30em;
+
+margin-right:auto;margin-left:auto;
+ padding-top: 2em;
+ padding-bottom: 2em;
+
+
 }
 
 
+#login-box .input-row {
+  position: relative;
+  height: 1.5em;
+  padding-top: 1em;
+}
+
+#login-box .input-row .label {
+
+ float: left;
+ width: 8em;
+ text-align: right;
+ font-weight: bold;
+
+
+}
+
+#login-box .button-row {
+  margin-top: 0.5em;
+}

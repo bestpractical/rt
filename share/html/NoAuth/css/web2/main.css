@@ -49,22 +49,13 @@
 
 @import "../base/main.css";
 
-@import "yui-fonts.css";
 @import "base.css";
-
 @import "layout.css";
 @import "nav.css";
-@import "forms.css";
 @import "boxes.css";
-
-@import "login.css";
 @import "ticket-lists.css";
 @import "ticket-search.css";
-@import "portlets.css";
 @import "ticket.css";
-@import "tools.css";
-@import "admin.css";
-@import "collection.css";
 @import "misc.css";
 
 % $m->callback(CallbackName => 'End');
