@@ -55,10 +55,11 @@
 
 #page-navigation {
     position: absolute;
-    top: 5.4em;
+    top: 6.6em;
     right: 0em;
     left: auto;
     z-index: 9995;
+    font-size: 0.8em;
 }
 .sf-menu {
     width: 100%;
