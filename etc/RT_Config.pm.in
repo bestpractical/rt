@@ -2194,6 +2194,8 @@ Set(@JSFilesInHead, qw/
     titlebox-state.js
     util.js
     userautocomplete.js
+    superfish.js
+    supersubs.js
 /);
 
 =item C<$JSMinPath>

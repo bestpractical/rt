@@ -54,6 +54,9 @@
 @import "theme-editor.css";
 @import "ticket.css";
 @import "tablesorter.css";
+@import "superfish.css";
+@import "superfish-navbar.css";
+@import "superfish-vertical.css";
 
 % $m->callback(CallbackName => 'End');
 
