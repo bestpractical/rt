@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    title sort_order link target escape_title class render_children_inline
+    title sort_order target escape_title class render_children_inline
     raw_html
 ));
 
@@ -107,7 +107,7 @@ to null. This ensures that the reference is weakened.
 =head2 raw_html [STRING]
 
 Sets the content of this menu item to a raw blob of HTML. When
-asked or output, rather than constructing a link, Jifty will return
+asked or output, rather than constructing a link, we will return
 this raw content. No escaping is done.
 
 =cut
@@ -127,12 +127,6 @@ sub parent {
 
 Gets or sets the sort order of the item, as it will be displayed under
 the parent.  This defaults to adding onto the end.
-
-=head2 link
-
-Gets or set a L<Jifty::Web::Form::Link> object that represents this
-menu item. If you're looking to do complex ajaxy things with menus,
-this is likely the option you want.
 
 =head2 target [STRING]
 
@@ -237,12 +231,7 @@ sub child {
         $child->path( $child->{path} );
 
         # Figure out the URL
-        my $path
-            = (     defined $child->link
-                and ref $child->link
-                and $child->link->can('path') )
-            ? $child->link->path
-            : $child->path;
+        my $path = $child->path;
 
         # Activate it
         if ( defined $path and length $path ) {
