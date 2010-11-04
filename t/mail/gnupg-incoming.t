@@ -17,7 +17,6 @@ use RT::Test::GnuPG
     homedir    => $homedir,
   };
 
-use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
