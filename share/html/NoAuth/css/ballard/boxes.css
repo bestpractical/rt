@@ -1,0 +1,185 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+.titlebox { 
+ border-left: 1px solid #ccc;
+ border-top: 1px solid #ccc;
+ background-color: #efefef;
+ padding-top: 1em;
+ margin-top: 1em;
+ margin-left: 1em;
+ -moz-border-radius: 0.5em;
+ -webkit-border-radius: 0.5em;
+ margin-bottom: 2em;
+ border-bottom: 2px solid #aaa;
+ border-right: 2px solid #aaa;
+ padding-right: 1em;
+}
+
+* html .titlebox {
+ border-top: none;
+ border-left: none;
+}
+
+.titlebox .titlebox { 
+
+ background-color: #ffffff;
+ margin-top: 1em;
+ -moz-border-radius: 0.5em;
+ -webkit-border-radius: 0.5em;
+ margin-right: 0.25em;
+ 
+}
+
+
+.titlebox {
+ margin-left: 0em;
+ margin-right: 0em;
+ min-height: 1.25em;
+
+}
+
+
+
+.titlebox .titlebox-title {
+ position: relative;
+ margin-top: -1.5em;
+ padding-bottom: 0.25em;
+ padding-left: 1em;
+ margin-right: -1em;
+
+}
+
+.titlebox .titlebox-title a {
+ text-decoration: none;
+ color: black;
+
+}
+
+.titlebox .titlebox-title a:hover {
+ text-decoration: underline;
+
+}
+
+.titlebox .titlebox-title .left {
+    font-weight: bold;
+    background: #ccc;
+    margin-left: 0.75em;
+    padding:0.5em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-bottom: 2px solid #aaa;
+    border-right: 2px solid #aaa;
+
+
+}
+
+.titlebox .titlebox-title .right-empty {
+ display:none;
+}
+
+.titlebox .titlebox-title .right {
+  position: absolute;
+   right: 0;
+   top: 0.5em;
+  font-size: 0.9em;
+  background: #dedede;
+  border-left: 1px solid #ccc;
+ border-bottom: 1px solid #ccc;
+ padding-right: 0.4em;
+ padding-left: 0.4em;
+ padding-bottom: 0.2em;
+ padding-top: 0.5em;
+ -moz-border-radius-bottomleft: 0.25em;
+ -webkit-border-bottom-left-radius: 0.25em;
+ 
+ 
+ -moz-border-radius-topright: 0.25em;
+ -webkit-border-top-right-radius: 0.25em;
+
+}
+
+.titlebox .titlebox-title .right a,
+.titlebox .titlebox-title .right a:visited {
+ color: #000;
+}
+
+.titlebox .titlebox-content {
+ padding-top: 0.5em;
+ padding-left: 1em;
+ padding-bottom: 1em;
+
+}
+
+.titlebox .titlebox-title .widget a {
+  display: block;
+  margin: 0;
+  margin-top: 0.5em;
+  width: 20px;
+
+  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
+
+  position: absolute;
+  top: -1em;
+  left: 0.15em;
+  float: left;
+
+  padding: 11px 0 0 0;
+  overflow: hidden;
+}
+
+* html .titlebox .titlebox-title .widget a {
+    background-position: center 0.3em;
+    top: 0em;
+    left: -1.5em; 
+}
+
+.titlebox.rolled-up .titlebox-title .widget a {
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rolldown-arrow.gif);
+}

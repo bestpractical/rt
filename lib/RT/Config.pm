@@ -195,7 +195,7 @@ our %META = (
         WidgetArguments => {
             Description => 'Theme',                  #loc
             # XXX: we need support for 'get values callback'
-            Values => [qw(web2 aileron)],
+            Values => [qw(web2 aileron ballard)],
         },
     },
     UseSideBySideLayout => {
