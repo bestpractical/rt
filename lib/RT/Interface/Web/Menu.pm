@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    label sort_order link target escape_label class render_children_inline
+    title sort_order link target escape_title class render_children_inline
     raw_html
 ));
 
@@ -70,7 +70,7 @@ RT::Interface::Web::Menu - Handle the API for menu navigation
 =head2 new PARAMHASH
 
 Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
-I<PARAMHASH> are L</label>, L</parent>, L</sort_order>, L</url>, and
+I<PARAMHASH> are L</title>, L</parent>, L</sort_order>, L</path>, and
 L</active>.  See the subroutines with the respective name below for
 each option's use.
 
@@ -93,7 +93,7 @@ sub new {
 }
 
 
-=head2 label [STRING]
+=head2 title [STRING]
 
 Sets or returns the string that the menu item will be displayed as.
 
@@ -155,23 +155,23 @@ Note that YUI doesn't support rendering nested menu groups, so having direct
 parent/children render_children_inline is likely not going to do what you
 want or expect.
 
-=head2 url
+=head2 path
 
 Gets or sets the URL that the menu's link goes to.  If the link
 provided is not absolute (does not start with a "/"), then is is
-treated as relative to it's parent's url, and made absolute.
+treated as relative to it's parent's path, and made absolute.
 
 =cut
 
-sub url {
+sub path {
     my $self = shift;
     if (@_) {
-        $self->{url} = shift;
-        $self->{url} = URI->new_abs($self->{url}, $self->parent->url . "/")->as_string
-            if defined $self->{url} and $self->parent and $self->parent->url;
-        $self->{url} =~ s!///!/! if $self->{url};
+        $self->{path} = shift;
+        $self->{path} = URI->new_abs($self->{path}, $self->parent->path . "/")->as_string
+            if defined $self->{path} and $self->parent and $self->parent->path;
+        $self->{path} =~ s!///!/! if $self->{path};
     }
-    return $self->{url};
+    return $self->{path};
 }
 
 =head2 active [BOOLEAN]
@@ -196,7 +196,7 @@ If only a I<KEY> is provided, returns the child with that I<KEY>.
 
 Otherwise, creates or overwrites the child with that key, passing the
 I<PARAMHASH> to L<RT::Interface::Web::Menu/new>.  Additionally, the paramhash's
-L</label> defaults to the I<KEY>, and the L</sort_order> defaults to the
+L</title> defaults to the I<KEY>, and the L</sort_order> defaults to the
 pre-existing child's sort order (if a C<KEY> is being over-written) or
 the end of the list, if it is a new C<KEY>.
 
@@ -222,8 +222,8 @@ sub child {
         } else {
             $child = $proto->new(
                 {   parent     => $self,
-                    label        => $key,
-                    escape_label => 1,
+                    title        => $key,
+                    escape_title => 1,
                     %args
                 }
             );
@@ -234,28 +234,28 @@ sub child {
             unless ($child->sort_order());
 
         # URL is relative to parents, and cached, so set it up now
-        $child->url( $child->{url} );
+        $child->path( $child->{path} );
 
         # Figure out the URL
-        my $url
+        my $path
             = (     defined $child->link
                 and ref $child->link
-                and $child->link->can('url') )
-            ? $child->link->url
-            : $child->url;
+                and $child->link->can('path') )
+            ? $child->link->path
+            : $child->path;
 
         # Activate it
-        if ( defined $url and length $url and Jifty->web->request ) {
+        if ( defined $path and length $path ) {
 
             # XXX TODO cleanup for mod_perl
-            my $base_path = Jifty->web->request->path;
+            my $base_path = '';
             chomp($base_path);
 
             $base_path =~ s/index\.html$//;
             $base_path =~ s/\/+$//;
-            $url       =~ s/\/+$//;
+            $path      =~ s/\/+$//;
 
-            if ( $url eq $base_path ) {
+            if ( $path eq $base_path ) {
                 $self->{children}{$key}->active(1);
             }
         }
