@@ -283,6 +283,23 @@ sub delete {
     delete $self->{children}{$key};
 }
 
+
+=head2 has_children
+
+Returns true if there are any children on this menu
+
+=cut
+
+sub has_children {
+    my $self = shift;
+    if (@{ $self->children}) {
+        return 1
+    } else {
+        return 0;
+    }
+}
+
+
 =head2 children
 
 Returns the children of this menu item in sorted order; as an array in
