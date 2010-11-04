@@ -87,6 +87,7 @@
 
 <div id="quickbar">
   <& /Elements/PersonalQuickbar, %ARGS &>
+</div>
 % }
 
 <%INIT>

@@ -51,9 +51,6 @@
 % }
 </div>
 
-%# End of div#quickbar from /Elements/Header
-</div>
-
 % if ( $show_menu ) {
 <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 
