@@ -4,12 +4,6 @@ As of RT 3.9, RT's web interface has been built on top of PSGI
 (L<http://plackperl.org>) which lets you use RT with any PSGI-supported web
 server (which includes Apache, nginx, lighttpd, etc).
 
-Once you've set up the web interface, consider setting up automatic
-logout for inactive sessions. For more information about how to do that,
-run:
-
-    perldoc /path/to/rt/sbin/rt-clean-sessions
-
 =head2 Standalone
 
 The standalone RT web server is backed by a pure-Perl server engine

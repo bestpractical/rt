@@ -169,6 +169,10 @@ want to read a more comprehensive installation guide at:
      NOTE: root's password for the web interface is "password"
      (without the quotes).  Not changing this is a SECURITY risk!
 
+     Once you've set up the web interface, consider setting up automatic
+     logout for inactive sessions. For more information about how to do that,
+     run: perldoc /path/to/rt/sbin/rt-clean-sessions
+
 10  Set up automated recurring tasks (cronjobs):
 
     To generate email digest messages, you must arrange for the provided
