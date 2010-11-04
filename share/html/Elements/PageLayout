@@ -55,121 +55,24 @@
 </div>
 
 % if ( $show_menu ) {
-<div id="nav">
-<& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
-</div>
+<div id="nav"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
+
+<div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
+<script type="text/javascript">
+jQuery(document).ready(function(){ jQuery("#app-nav").superfish(); });
+jQuery(document).ready(function(){ jQuery("#page-menu").superfish(); });
+jQuery(document).ready(function(){ jQuery("#actions-menu").superfish(); });
+</script>
 
 <div id="header">
 <h1><% $title %></h1>
-<div id="page-navigation">
 % my $sep       = 0;
 % my $postsep   = 0;
 % my $count     = 0;
 % my $class     = { };
 % 
-  <ul id="page-menu" <% (($actions && %$actions) || ($subactions && %$subactions)) && q[ class="actions-present"] | n %>>
-    <div><div><div>
-<%perl>
- if ($page_tabs) {
-     my @tabs = ( sort grep { $_ !~ /^(?:current_toptab|this)$/ } keys %{$page_tabs});
-     my $tab_idx = -1;
-     foreach my $tab ( @tabs ) {
-         $count++;
-         $tab_idx++;
 
-         my $current = $page_tabs->{current_toptab} || "";
-         my $path    = $page_tabs->{$tab}->{'path'} || "";
-         
-         $path    =~ s#(/index\.html)?(\?)?$##gi;
-         $current =~ s#(/index\.html)?(\?)?$##gi;
-         
-         $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
-
-         my $next_tab = $tabs[$tab_idx+1];
-         if ($next_tab && $toptabs->{$next_tab}->{'pre_separator'}) {
-            $sep = 1;
-         }
-
-         $class->{a} = $path eq $current ? ' class="selected"' : undef;
-
-         my @li;
-         push @li, 'first' if $count == 1;
-         push @li, 'pre-separator' if $sep;
-         push @li, 'post-separator' if $postsep;
-         push @li, 'last' if $tab eq $tabs[-1];
-         $class->{li} = join ' ', @li;
-
-         my $href = $page_tabs->{$tab}->{'path'} || "";
-         $href = RT->Config->Get('WebPath') .'/'. $href
-            unless $path =~ /^\w+:/;
-         my $target = $page_tabs->{$tab}->{'target'} || '';
-         $target = $m->interp->apply_escapes( $target, 'h' );
-</%perl>
-    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<% $href %>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %><% $target? " target='$target'": '' |n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
-%
-%         if ($sep) {
-    <li class="separator">&#183;&#183;&#183;</li>
-%         }
-%         $postsep = $sep;
-%     }
-% } else {
-&nbsp;
-% }
-    </div></div></div>
-  </ul>
-
-% if (($actions && %$actions) || ($subactions && %$subactions)) {
-  <ul id="actions-menu">
-    <div><div><div>
-<%perl>
- $sep       = 0;
- $postsep   = 0;
- $count     = 0;
- $class     = { };
-
- for my $type ($actions, $subactions) {
-
- if ($type && %$type) {
-     my @actions  = sort keys %{$type};
-     my $action_idx = -1;
-     foreach my $action (@actions) {
-         $count++;
-         $action_idx++;
-
-         $sep = $type->{$action}->{'separator'} ? 1 : 0;
-
-         my $next_action = $actions[$action_idx+1];
-         if ($next_action && $type->{$next_action}->{'pre_separator'}) {
-            $sep = 1;
-         }
-
-         my @li;
-         push @li, 'first' if $count == 1;
-         push @li, 'pre-separator' if $sep;
-         push @li, 'post-separator' if $postsep;
-         push @li, 'last' if $action  eq $actions[-1];
-
-         $class->{li} = join ' ', @li;
-</%perl>
-    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
-%         if ($type->{"$action"}->{'html'}) {
-      <% $type->{"$action"}->{'html'} | n %>
-%         } elsif ($type->{$action}->{path})  {
-      <a href="<%RT->Config->Get('WebPath')%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
-%         }
-    </li>
-%         if ($sep) {
-    <li class="separator">&#183;&#183;&#183;</li>
-%         }
-%         $postsep = $sep;
-%     }
-% }
-% }
-    </div></div></div>
-  </ul>
-% }
-</div>
 </div>
 <div id="body">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );

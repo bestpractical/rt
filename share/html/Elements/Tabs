@@ -65,44 +65,29 @@ my $basetopactions = {
 	B => { html => $m->scomp('/Elements/SimpleSearch') 
 		}
 	};
-my $basetabs = {     A => { title => loc('Homepage'),
-                           path => 'index.html',
-                         },
-                    Ab => { title => loc('Simple Search'),
-                        path => 'Search/Simple.html'
-                         },
-                    B => { title => loc('Tickets'),
-                        path => 'Search/Build.html'
-                      },
-                    C => { title => loc('Tools'),
-                           path => 'Tools/index.html'
-                         },
-                 };
 
-if ($session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', 
-				       Object => $RT::System )) {
-    $basetabs->{E} = { title => loc('Configuration'),
-                       path => 'Admin/',
-		     };
+Menu->child( A => title => loc('Homepage'), path => 'index.html' );
+Menu->child( Ab   => title => loc('Simple Search'), path => 'Search/Simple.html' );
+Menu->child( B => title => loc('Tickets'), path => 'Search/Build.html' );
+Menu->child( C => title => loc('Tools'),   path => 'Tools/index.html' );
+
+if ( $session{'CurrentUser'}->HasRight( Right  => 'ShowConfigTab', Object => $RT::System )) {
+    Menu->child( E => title => loc('Configuration'), path => 'Admin/' );
 }
 
-if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', 
-				       Object => $RT::System )) {
-    $basetabs->{K} = { title => loc('Preferences'),
-                       path => 'Prefs/Other.html'
-		     };
+if ( $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
+    Menu->child( K    => title => loc('Preferences'), path => 'Prefs/Other.html' );
 }
 
-if ($session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab',
-                        Object => $RT::System )) {
-    $basetabs->{P} = { title => loc('Approval'),
-                        path => 'Approvals/'
-            };
+if (
+     $session{'CurrentUser'}->HasRight( Right  => 'ShowApprovalsTab',
+                                        Object => $RT::System )
+   )
+{
+    Menu->child( P    => title => loc('Approval'),
+                 path => 'Approvals/' );
 }
 
-if (!defined $toptabs) {
-   $toptabs = $basetabs;
-}
 if (!defined $topactions) {
    $topactions = $basetopactions;
 }
