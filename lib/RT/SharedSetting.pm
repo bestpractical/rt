@@ -295,6 +295,9 @@ sub Id {
     return $self->{'Id'};
 }
 
+*id = \&Id;
+
+
 =head2 Privacy
 
 Returns the principal object to whom this shared setting belongs, in a string
