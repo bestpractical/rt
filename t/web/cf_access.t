@@ -36,10 +36,10 @@ my ( $cf, $cfid, $tid );
     $m->follow_link( text => 'Queues' );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
     $m->follow_link( text => 'General' );
-    $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
+    $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( text => 'Ticket Custom Fields' );
 
-    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
+    $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
     $m->form_name('EditCustomFields');
 
     # Sort by numeric IDs in names

@@ -63,7 +63,7 @@ my $FriendlySubTypes =
   RT::CustomField->new( $session{'CurrentUser'} )
   ->FriendlyLookupType( $Object->CustomFieldLookupType );
 
-my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );
+my $title = loc( 'Custom Fields for queue [_1]', $Object->Name );
 
 </%INIT>
 <%ARGS>

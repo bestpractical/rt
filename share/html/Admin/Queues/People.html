@@ -45,11 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
+<& /Elements/Header, Title => $title &>
+
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
+    Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -189,6 +190,7 @@ if ( $ARGS{'GroupString'} ) {
     $group_msg = loc("No principals selected.");
 }
 $current_tab = 'Admin/Queues/People.html?id=' . $QueueObj->id;
+my $title = loc('People related to queue [_1]', $QueueObj->Name);
 </%INIT>
 
 <%ARGS>
