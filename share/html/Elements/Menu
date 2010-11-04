@@ -50,7 +50,11 @@
 % for my $child ($menu->children) {
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
-<%" " x ($depth+1)%><li id="li-<%$item_id%>">\
+<%" " x ($depth+1)%><li id="li-<%$item_id%>"\
+% if ($child->has_children) {
+class="has-children" \
+% }
+>\
 % if ($child->link_item) {
 <a id="<%$item_id%>" <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
 % }
