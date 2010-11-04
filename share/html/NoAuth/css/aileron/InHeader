@@ -49,6 +49,8 @@
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie.css" type="text/css" media="all" />
 <![endif]-->
 <script type="text/javascript">
-jQuery(document).ready(function(){ jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish(); });
-jQuery(document).ready(function(){ jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish(); });
+jQuery(document).ready(function(){
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish();
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish( { autoArrows:  false, dropShadows: false } );
+});
 </script>
