@@ -2,10 +2,10 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%# This software is CopyRight (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %#
-%# (Except where explicitly superseded by other copyright notices)
+%# (Except where explicitly superseded by other copyRight notices)
 %#
 %#
 %# LICENSE:
@@ -23,13 +23,13 @@
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-%# 02110-1301 or visit their web page on the internet at
+%# 02110-1301 or visit their web Page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %#
 %#
 %# CONTRIBUTION SUBMISSION POLICY:
 %#
-%# (The following paragraph is not intended to limit the rights granted
+%# (The following paragraph is not intended to limit the Rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
@@ -38,7 +38,7 @@
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-%# you are the copyright holder for those contributions and you grant
+%# you are the copyRight holder for those contributions and you grant
 %# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
@@ -58,46 +58,539 @@
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
-my $action;
-my $basetopactions = {
-	A => { html => $m->scomp('/Elements/CreateTicket')	
-		},
-	B => { html => $m->scomp('/Elements/SimpleSearch') 
-		}
-	};
 
-Menu->child( A => title => loc('Homepage'), path => 'index.html' );
-Menu->child( Ab   => title => loc('Simple Search'), path => 'Search/Simple.html' );
-Menu->child( B => title => loc('Tickets'), path => 'Search/Build.html' );
-Menu->child( C => title => loc('Tools'),   path => 'Tools/index.html' );
+my $request_path = $HTML::Mason::Commands::r->uri;
 
-if ( $session{'CurrentUser'}->HasRight( Right  => 'ShowConfigTab', Object => $RT::System )) {
-    Menu->child( E => title => loc('Configuration'), path => 'Admin/' );
+my $query_string = sub {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(%args);
+    return $u->query;
+};
+
+my $PREFS_NAV = RT::Interface::Web::Menu->new(
+               { title => loc('Preferences'), path => '/Prefs/Other.html' } );
+$PREFS_NAV->child( loc('Settings'), path => '/Prefs/Other.html', );
+$PREFS_NAV->child( loc('About me'), path => '/User/Prefs.html', );
+$PREFS_NAV->child( loc('Search options'),
+                   path => '/Prefs/SearchOptions.html', );
+$PREFS_NAV->child( loc('RT at a glance'), path => '/Prefs/MyRT.html', );
+$PREFS_NAV->child( 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html' );
+
+if ( $request_path =~ qr{.*} ) {
+    Menu->child( home => title =>  loc('HomePage'), path => '/' );
+    my $tickets = Menu->child( search => title => loc('Tickets'),
+                               path => '/Search/Build.html' );
+    $tickets->child( new => title => loc('New Search') => path =>
+                     "/Search/Build.html?NewQuery=1" );
+    my $new = $tickets->child( create => title => loc('New ticket'),
+                               path => '/Ticket/Create.html' );
+
+    my $q = RT::Queues->new( $session{'CurrentUser'} );
+    $q->FindAllRows;
+    while ( my $queue = $q->Next ) {
+        next unless $queue->CurrentUserHasRight('CreateTicket');
+        $new->child( $queue->id => title => $queue->Name,
+                     path => '/Ticket/Create.html?Queue=' . $queue->id );
+    }
+
+    my $tools = Menu->child( loc('Tools'), path => '/Tools/index.html' );
+    my $dashes = $tools->child( loc('Dashboards'), path => '/Dashboards/index.html' );
+
+    $dashes->child( loc('Select'), path => "/Dashboards/index.html" );
+    my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
+    if ( $dashboard->_PrivacyObjects( create => 1 ) ) {
+        $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
+    }
+    my $reports = $tools->child( loc('Reports'),
+                                 path => '/Tools/Reports/index.html' );
+    $reports->child( loc('Resolved by owner'),
+                     path => '/Tools/Reports/ResolvedByOwner.html', );
+    $reports->child( loc('Resolved in date range'),
+                     path => '/Tools/Reports/ResolvedByDates.html', );
+    $reports->child( loc('Created in a date range'),
+                     path => '/Tools/Reports/CreatedByDates.html', );
+
+    $tools->child( loc('My Day'), path => '/Tools/MyDay.html' );
+    if ( $session{'CurrentUser'}
+         ->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
+    {
+        $tools->child( loc('Approval'), path => '/Approvals/' );
+    }
+
+    if ( $session{'CurrentUser'}
+         ->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
+    {
+        my $admin = Menu->child( Config => title => loc('Configuration'),
+                                 path   => '/Admin/' );
+        $admin->child( loc('Users'),  path => '/Admin/Users/', );
+        $admin->child( loc('Groups'), path => '/Admin/Groups/', );
+        my $queues = $admin->child( queues => title => loc('Queues'),
+                                    path => '/Admin/Queues/', );
+        $queues->child( loc('Select'), path => "/Admin/Queues/" );
+        $queues->child( loc('Create'),
+                        path => "/Admin/Queues/Modify.html?Create=1" );
+        $admin->child( loc('Custom Fields'), path => '/Admin/CustomFields/',
+        );
+        $admin->child( loc('Rules'), path => '/admin/rules/', );
+
+        my $admin_global
+            = $admin->child( loc('Global'), path => '/Admin/Global/', );
+
+        $admin_global->child( loc('Templates'),
+                              path => '/Admin/Global/Templates.html', );
+
+#        my $workflows = $admin_global->child( loc('Workflows'), path => '/Admin/Global/Workflows/index.html', );
+#        {
+#            $workflows->child( loc('Overview')     => path => "/Admin/Global/Workflows/index.html" );
+#            $workflows->child( loc('Localization') => path => "/Admin/Global/Workflows/Localization.html" );
+#            $workflows->child( loc('Mappings')     => path => "/Admin/Global/Workflows/Mappings.html" );
+#        }
+
+        my $cfadmin = $admin_global->child( loc('Custom Fields'),
+                           path => '/Admin/Global/CustomFields/index.html', );
+        {
+            $cfadmin->child( loc('Users') => text =>
+                                 loc('Select custom fields for all users'),
+                             path => '/Admin/Global/CustomFields/Users.html'
+                           );
+
+            $cfadmin->child(
+                          loc('Groups') => text =>
+                              loc('Select custom fields for all user groups'),
+                          path => '/Admin/Global/CustomFields/Groups.html'
+            );
+
+            $cfadmin->child( loc('Queues') => text =>
+                                 loc('Select custom fields for all queues'),
+                             path => '/Admin/Global/CustomFields/Queues.html'
+                           );
+
+            $cfadmin->child(
+                    loc('Tickets') => text =>
+                        loc('Select custom fields for tickets in all queues'),
+                    path => '/Admin/Global/CustomFields/Queue-Tickets.html'
+            );
+
+            $cfadmin->child(
+                loc('Ticket Transactions') => text =>
+                    loc(
+                    'Select custom fields for transactions on tickets in all queues'
+                    ),
+                path => 'Admin/Global/CustomFields/Queue-Transactions.html'
+            );
+
+        }
+
+        $admin_global->child( loc('Group Rights'),
+                              path => '/Admin/Global/GroupRights.html', );
+        $admin_global->child( loc('User Rights'),
+                              path => '/Admin/Global/UserRights.html', );
+        $admin_global->child( loc('RT at a glance'),
+                              path => '/Admin/Global/MyRT.html', );
+        $admin_global->child( loc('System'),
+                              path => '/Admin/Global/System.html', );
+
+        my $admin_tools
+            = $admin->child( loc('Tools'), path => '/Admin/Tools/', );
+        $admin_tools->child( loc('System Configuration'),
+                             path => '/Admin/Tools/Configuration.html', );
+        $admin_tools->child( loc('Shredder'),
+                             path => '/Admin/Tools/Shredder', );
+    }
+    if ( $session{'CurrentUser'}->UserObj
+         && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf',
+                                               Object => $RT::System )
+       )
+    {
+
+        if ( $session{'CurrentUser'}
+             ->HasRight( Right => 'ModifySelf', Object => $RT::System ) )
+        {
+
+            Menu->child( 'Preferences' => menu => $PREFS_NAV, Order => 99 );
+        }
+    }
+
 }
 
-if ( $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
-    Menu->child( K    => title => loc('Preferences'), path => 'Prefs/Other.html' );
+if ( $request_path =~ qr'Dashboards/(\d+)?' ) {
+    if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
+        my $obj = RT::Dashboard->new( $session{'CurrentUser'} );
+        $obj->LoadById($id);
+        if ( $obj and $obj->id ) {
+            my $tabs = PageMenu;
+            $tabs->child( loc('Basics'),
+                          path => "/Dashboards/Modify.html?id=" . $obj->id );
+            $tabs->child( loc('Content'),
+                          path => "/Dashboards/Queries.html?id=" . $obj->id );
+            $tabs->child( loc('Subscription'),
+                         path => "/Dashboards/Subscription.html?id=" . $obj->id )
+                if $obj->CurrentUserCanSubscribe;
+            $tabs->child( loc('Show'),
+                        path => "/Dashboards/" . $obj->id . "/" . $obj->Name )
+
+        }
+    }
 }
 
-if (
-     $session{'CurrentUser'}->HasRight( Right  => 'ShowApprovalsTab',
-                                        Object => $RT::System )
-   )
-{
-    Menu->child( P    => title => loc('Approval'),
-                 path => 'Approvals/' );
+if ( $request_path =~ qr'/SelfService' ) {
+
+    my $queues = RT::Queues->new( $session{'CurrentUser'} );
+    $queues->FindAllRows;
+
+    my $queue_count = 0;
+    my $queue_id    = 1;
+
+    while ( my $queue = $queues->Next ) {
+        next unless $queue->CurrentUserHasRight('CreateTicket');
+        $queue_id = $queue->id;
+        $queue_count++;
+        last if ( $queue_count > 1 );
+    }
+
+    my $TOP = Menu();
+
+    $TOP->child( loc('Open tickets'),   path => '/SelfService/', );
+    $TOP->child( loc('Closed tickets'), path => '/SelfService/Closed.html', );
+    if ( $queue_count > 1 ) {
+        $TOP->child( loc('New ticket'),
+                     path => '/SelfService/CreateTicketInQueue.html' );
+    } else {
+        $TOP->child( loc('New ticket'),
+                     path => '/SelfService/Create.html?queue=' . $queue_id );
+    }
+
+    if ( $session{'CurrentUser'}
+         ->HasRight( Right => 'ModifySelf', Object => $RT::System ) )
+    {
+        $TOP->child( loc('Preferences'), path => '/SelfService/Prefs.html' );
+    }
+
+    # XXX TODO RENDER GOTO TICKET WIDGET
+    #Menu->child( B =>  html => $m->scomp('GotoTicket'))
 }
 
-if (!defined $topactions) {
-   $topactions = $basetopactions;
+if ( $request_path =~ qr'Admin/Queues' ) {
+    if ( $session{'CurrentUser'}
+         ->HasRight( Object => $RT::System, Right => 'AdminQueue' ) )
+    {
+    }
+    if ( my $id = $m->request_args->{'id'} ) {
+        my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
+        $queue_obj->Load($id);
+
+        my $queue
+            = PageMenu->child(
+                   $queue_obj->Name => path => "/Admin/Queues/Modify.html?id="
+                       . $id );
+        $queue->child( loc('Basics'),
+                       path => "/Admin/Queues/Modify.html?id=" . $id );
+        $queue->child( loc('Watchers'),
+                       path => "/Admin/Queues/People.html?id=" . $id );
+        $queue->child( loc('Templates'),
+                       path => "/Admin/Queues/Templates.html?id=" . $id );
+
+        $queue->child( loc('Ticket Custom Fields'),
+             path => '/Admin/Queues/CustomFields.html?sub_type=RT::Ticket&id='
+                 . $id );
+
+        $queue->child( loc('Transaction Custom Fields'),
+            path =>
+                '/Admin/Queues/CustomFields.html?sub_type=RT::Ticket-RT::Transaction&id='
+                . $id );
+
+        $queue->child( loc('Group Rights'),
+                       path => "/Admin/Queues/GroupRights.html?id=" . $id );
+        $queue->child( loc('User Rights'),
+                       path => "/Admin/Queues/UserRights.html?id=" . $id );
+    }
 }
-                    
-# Now let callbacks add their extra tabs
-$m->callback(
-    topactions => $topactions, 
-    toptabs    => $toptabs,
-    %ARGS
-);
+
+if ( $request_path =~ qr'/Admin/Users' ) {
+    if ( $session{'CurrentUser'}
+         ->HasRight( Object => $RT::System, Right => 'AdminUsers' ) )
+    {
+        PageMenu->child( loc('Select'), path => "/Admin/Users/" );
+        PageMenu->child( loc('Create'),
+                         path      => "/Admin/Users/Modify.html?Create=1",
+                         separator => 1
+                       );
+    }
+    if ( my $id = $m->request_args->{'id'} ) {
+        my $obj = RT::User->new( $session{'CurrentUser'} );
+        $obj->Load($id);
+        my $tabs = PageMenu->child(
+                                 'current' => title => $obj->Name,
+                                 path => "/Admin/Users/Modify.html?id=" . $id,
+        );
+        $tabs->child( loc('Basics'),
+                      path => "/Admin/Users/Modify.html?id=" . $id );
+        $tabs->child( loc('Memberships'),
+                      path => "/Admin/Users/Memberships.html?id=" . $id );
+        $tabs->child( loc('History'),
+                      path => "/Admin/Users/History.html?id=" . $id );
+        $tabs->child( loc('RT at a glance'),
+                      path => "/Admin/Users/MyRT.html?id=" . $id );
+        if ( RT->Config->Get('GnuPG')->{'enable'} ) {
+            $tabs->child( loc('GnuPG'),
+                          path => "/Admin/Users/GnuPG.html?id=" . $id );
+        }
+    }
+
+}
+
+if ( $request_path =~ qr'Admin/Groups' ) {
+
+    PageMenu->child( loc('Select') => path => "/Admin/Groups/" );
+    PageMenu->child(
+                loc('Create') => path => "/Admin/Groups/Modify.html?Create=1",
+                separator     => 1 );
+    if ( my $id = $m->request_args->{'id'} ) {
+        my $obj = RT::Group->new( $session{'CurrentUser'} );
+        $obj->Load($id);
+        my $tabs = PageMenu->child( $obj->Name,
+                        path => "/Admin/Groups/Modify.html?id=" . $id );
+        $tabs->child( loc('Basics') => path => "/Admin/Groups/Modify.html?id="
+                      . $obj->id );
+        $tabs->child(
+                    loc('Members') => path => "/Admin/Groups/Members.html?id="
+                        . $obj->id );
+        $tabs->child( loc('Group Rights') => path =>
+                      "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+        $tabs->child(
+             loc('User Rights') => path => "/Admin/Groups/UserRights.html?id="
+                 . $obj->id );
+        $tabs->child(
+                    loc('History') => path => "/Admin/Groups/History.html?id="
+                        . $obj->id );
+    }
+}
+
+if ( $request_path =~ qr'Admin/CustomFields/' ) {
+    if ( $session{'CurrentUser'}
+         ->HasRight( Object => $RT::System, Right => 'AdminCustomField' ) )
+    {
+        PageMenu->child( loc('Select'), path => "/Admin/CustomFields/" );
+        PageMenu->child( loc('Create') => path =>
+                         "/Admin/CustomFields/Modify.html?Create=1", );
+
+    }
+    if ( my $id = $m->request_args->{'id'} ) {
+        my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+        $obj->Load($id);
+        my $tabs = PageMenu->child( $obj->Name,
+                        path => "/Admin/CustomFields/Modify.html?id=" . $id );
+
+        $tabs->child(
+                loc('Basics') => path => "/Admin/CustomFields/Modify.html?id="
+                    . $id );
+        $tabs->child( loc('Group Rights') => path =>
+                      "/Admin/CustomFields/GroupRights.html?id=" . $id );
+        $tabs->child( loc('User Rights') => path =>
+                      "/Admin/CustomFields/UserRights.html?id=" . $id );
+
+        if ( $obj->LookupType =~ /^RT::Queue-/io ) {
+            $tabs->child( loc('Applies to'),
+                       path => "/Admin/CustomFields/Objects.html?id=" . $id );
+        }
+
+    }
+
+}
+
+if ( $request_path =~ qr'Admin/Rules' ) {
+    PageMenu->child( loc('Select'), path => "/Admin/Rules/" );
+    PageMenu->child( loc('Create'),
+                     path => "/Admin/Rules/Modify.html?Create=1" );
+}
+
+if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
+    my $search = Menu()->child('search');
+    my $actions = PageMenu()->child( transitions => title => loc('Actions'), sort_order => 99 );
+    if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
+        my $id  = $1;
+        my $obj = RT::Ticket->new( $session{'CurrentUser'} );
+        $obj->Load($id);
+
+        my $tabs = PageMenu()
+            ; #->child( "#" . $id => class => "currentnav",path => "/Ticket/Display.html?id=" . $id);
+
+        $tabs->child(
+                 loc('Display') => path => "/Ticket/Display.html?id=" . $id );
+
+        $tabs->child(
+                 loc('History') => path => "/Ticket/History.html?id=" . $id );
+        $tabs->child(
+                   loc('Basics') => path => "/Ticket/Modify.html?id=" . $id );
+
+        $tabs->child(
+               loc('Dates') => path => "/Ticket/ModifyDates.html?id=" . $id );
+        $tabs->child( loc('People'),
+                      path => "/Ticket/ModifyPeople.html?id=" . $id );
+        $tabs->child( loc('Links'),
+                      path => "/Ticket/ModifyLinks.html?id=" . $id );
+        $tabs->child( loc('Jumbo'),
+                      path => "/Ticket/ModifyAll.html?id=" . $id );
+
+        my %can
+            = ( ModifyTicket => $obj->CurrentUserHasRight('ModifyTicket') );
+
+        if (    $can{'ModifyTicket'}
+             or $obj->CurrentUserHasRight('ReplyToTicket') )
+        {
+            $actions->child( loc('Reply'),
+                     path => "/Ticket/Update.html?Action=Respond&id=" . $id );
+        }
+
+        if ( $can{'ModifyTicket'} ) {
+            my $current = $obj->Status;
+            my $schema  = $obj->QueueObj->lifecycle;
+            my $i       = 1;
+            foreach my $next ( $schema->transitions($current) ) {
+                my $action = $schema->transition_action( $current => $next );
+                next if $action eq 'hide';
+
+                my $url = '/Ticket/';
+                if ($action) {
+
+                    $url .= "Update.html?"
+                        . $query_string->( Action        => $action,
+                                           DefaultStatus => $next,
+                                           id            => $id
+                                         );
+                } else {
+
+                   $url .= "Display.html?" .$query_string->(Status => $next, id => $id );
+                }
+                $actions->child( loc( $schema->transition_label( $current => $next ) ) => path => $url );
+            }
+
+        }
+        if ( $obj->CurrentUserHasRight('OwnTicket') ) {
+            if ( $obj->OwnerObj->id == RT->Nobody->id ) {
+                $actions->child( loc('Take') => path =>
+                                "/Ticket/Display.html?Action=Take&id=" . $id )
+                    if (    $can{'ModifyTicket'}
+                         or $obj->CurrentUserHasRight('TakeTicket') );
+            } elsif ( $obj->OwnerObj->id != $session{'CurrentUser'}->id ) {
+                $actions->child( loc('Steal') => path =>
+                               "/Ticket/Display.html?Action=Steal&id=" . $id )
+                    if (    $can{'ModifyTicket'}
+                         or $obj->CurrentUserHasRight('StealTicket') );
+            }
+        }
+
+        if (    $can{'ModifyTicket'}
+             or $obj->CurrentUserHasRight('CommentOnTicket') )
+        {
+            $actions->child( loc('Comment') => path =>
+                             "/Ticket/Update.html?action=comment&id=" . $id );
+        }
+
+# $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
+
+        if ( defined $session{"tickets"} ) {
+
+            # we have to update session data if we get new ItemMap
+            my $updatesession = 1
+                unless ( $session{"tickets"}->{'item_map'} );
+
+            my $item_map = $session{"tickets"}->ItemMap;
+
+            if ($updatesession) {
+                $session{"tickets"}->PrepForSerialization();
+            }
+
+            # Don't display prev links if we're on the first ticket
+            if ( $item_map->{$id}->{prev} ) {
+                $search->child(
+                       '<< ' . loc('First') => class => "nav",
+                       path => "/Ticket/Display.html?id=" . $item_map->{first}
+                );
+                $search->child( '< ' . loc('Prev') => class => "nav",
+                                path => "/Ticket/Display.html?id="
+                                    . $item_map->{$id}->{prev}
+                              );
+
+                # Don't display next links if we're on the last ticket
+                if ( $item_map->{$id}->{next} ) {
+                    $search->child( loc('next') . ' >' => class => "nav",
+                                    path => "/Ticket/Display.html?id="
+                                        . $item_map->{$id}->{next}
+                                  );
+                    $search->child(
+                        loc('Last') . ' >>' => class => "nav",
+                        path => "/Ticket/Display.html?id=" . $item_map->{last}
+                    );
+                }
+            }
+        }
+    }
+    my $args      = '';
+    my $has_query = '';
+
+    my $current_search = $session{"CurrentSearchHash"} || {};
+    my $search_id
+        = $m->request_args->{'SavedSearchId'}
+        || $search->{'SearchId'}
+        || '';
+
+    $has_query = 1
+        if ( $m->request_args->{'Query'} or $current_search->{'Query'} );
+
+    my %query_args = (
+
+        SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+        Query  => $m->request_args->{'Query'}  || $current_search->{'Query'},
+        Format => $m->request_args->{'Format'} || $current_search->{'Format'},
+        OrderBy => $m->request_args->{'OrderBy'}
+            || $current_search->{'OrderBy'},
+        Order => $m->request_args->{'Order'} || $current_search->{'Order'},
+        Page  => $m->request_args->{'Page'}  || $current_search->{'Page'},
+        RowsPerPage => ( defined $m->request_args->{'RowsPerPage'}
+                           ? $m->request_args->{'RowsPerPage'}
+                           : $current_search->{'RowsPerPage'}
+                         )
+                     );
+
+    $args = "?" . $query_string->(%query_args);
+
+
+        my $current_search_menu = $search->child( current_search => title => loc('Current Search'));
+        $current_search_menu->child( edit_search => title => loc('Edit Search') => path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+        $current_search_menu->child( loc('Advanced') => path => "/Search/Edit.html$args" );
+    if ($has_query) {
+        if ($request_path =~ qr|^Search/Results.html|
+            &&                        #XXX TODO better abstraction
+            $session{'CurrentUser'}
+            ->HasRight( Right => 'SuperUser', Object => $RT::System )
+           )
+        {
+            my $shred_args =
+                URI->new->query_param(
+                               search          => 1,
+                               plugin          => 'Tickets',
+                               'Tickets:query' => $query_args{'Query'},
+                               'Tickets:limit' => $query_args{'RowsPerPage'}
+                );
+
+            $current_search_menu->child( 'shredder' => title => loc('Shredder'),
+                            path => 'Admin/Tools/Shredder/?' . $shred_args );
+        }
+
+        $current_search_menu->child( results => title =>
+                 loc('Show Results') => path => "/Search/Results.html$args" );
+
+        $current_search_menu->child( bulk => title =>
+                     loc('Bulk Update') => path => "/Search/Bulk.html$args" );
+
+    }
+}
+
+
+
+
 
 </%INIT>
 <%ARGS>
