@@ -47,16 +47,29 @@
 %# END BPS TAGGED BLOCK }}}
 <ul <%$id ? 'id="'.$id.'"' : '' |n%><% $toplevel? 'class="sf-menu sf-js-enabled sf-shadow"' : '' |n %>>
 % for my $child ($menu->children) {
-<li><a href="<%RT->Config->Get('WebPath')%><%$child->path%>"><%$child->title%></a>
+%   my $item_id = lc($parent_id."-".$child->key);
+%   $item_id =~ s/\s/-/g;
+<li>
+<a id="<%$item_id%>" \
+<% $child->path ? 'href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%> \
+> \
+% if ($child->escape_title) {
+<%$child->title |n%>
+% } else {
+<%$child->title%>
+% }
+</a>
 % next unless ($child->has_children);
-<& Menu, menu => $child, toplevel => 0 &>
+<& Menu, menu => $child, toplevel => 0, parent_id => ($parent_id? $parent_id."-": '').$child->key &>
 </li>
 % }
 </ul>
 <%INIT>
+
 </%INIT>
 <%ARGS>
 $menu
 $id => undef
 $toplevel => 1
+$parent_id => ''
 </%ARGS>
