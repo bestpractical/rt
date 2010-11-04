@@ -50,9 +50,9 @@
 % for my $child ($menu->children) {
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
-<%" " x ($depth+1)%><li id="<%$item_id%>" >\
+<%" " x ($depth+1)%><li id="li-<%$item_id%>">\
 % if ($child->link_item) {
-<a <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
+<a id="<%$item_id%>" <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
 % }
 % if ($child->escape_title) {
 <%$child->title%>\
