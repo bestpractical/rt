@@ -49,7 +49,7 @@
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 
-my $request_path = $HTML::Mason::Commands::r->uri;
+my $request_path = $HTML::Mason::Commands::r->path_info;
 
 my $query_string = sub {
     my %args = @_;
