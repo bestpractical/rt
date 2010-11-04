@@ -54,7 +54,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
-<input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
+<input type="hidden" class="hidden" name="id" value="<% $fields{'DashboardId'} %>" />
 <table width="100%" border="0">
 <tr>
 
@@ -197,20 +197,20 @@ my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 
 # first let's see if we already have a subscription to this DashboardId
 for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $DashboardId;
+    next unless $sub->SubValue('DashboardId') == $id;
     $SubscriptionObj = $sub;
     last;
 }
 
-$DashboardId = $SubscriptionObj->Id
+$id = $SubscriptionObj->Id
              ? $SubscriptionObj->SubValue('DashboardId')
-             : $ARGS{'DashboardId'};
+             : $ARGS{'id'};
 
-($val, $msg) = $DashboardObj->LoadById($DashboardId);
-$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
+($val, $msg) = $DashboardObj->LoadById($id);
+$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $id, $msg));
 
 my %fields = (
-    DashboardId => $DashboardId,
+    DashboardId => $id,
     Frequency   => 'daily',
     Hour        => '06:00',
     Dow         => 'Monday',
@@ -238,9 +238,9 @@ for my $field (keys %fields) {
 if (defined $ARGS{Save}) {
     # update
     if ($SubscriptionObj->Id) {
-        $DashboardId = delete $fields{'DashboardId'}; # immutable
+        $id = delete $fields{'DashboardId'}; # immutable
         ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
-        $fields{'DashboardId'} = $DashboardId;
+        $fields{'DashboardId'} = $id;
 
         # not so good to spew base64-encoded data at the user :)
         if ($msg =~ /^Content changed from/) {
@@ -251,12 +251,12 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
+        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
             unless $DashboardObj->CurrentUserCanSubscribe;
 
         my ($val, $msg) = $SubscriptionObj->Create(
             Name        => 'Subscription',
-            Description => 'Subscription to dashboard ' . $DashboardId,
+            Description => 'Subscription to dashboard ' . $id,
             ContentType => 'storable',
             Object      => $session{'CurrentUser'}->UserObj,
             Content     => \%fields,
@@ -281,7 +281,7 @@ else {
 
 </%INIT>
 <%ARGS>
-$DashboardId => undef
+$id => undef
 $Frequency   => undef
 $Hour        => undef
 $Dow         => undef

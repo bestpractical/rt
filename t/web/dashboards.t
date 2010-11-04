@@ -153,7 +153,7 @@ $m->content_contains("50 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
 
-$m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
+$m->get_ok("/Dashboards/Subscription.html?id=$id");
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
 $m->content_contains("Permission denied");
