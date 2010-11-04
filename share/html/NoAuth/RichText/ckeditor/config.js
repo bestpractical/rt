@@ -25,8 +25,15 @@ config.toolbar_Full =
     ['Link']
 ];
 
+config.enterMode = CKEDITOR.ENTER_BR;
+config.shiftEnterMode = CKEDITOR.ENTER_P;
 config.enableTabKeyTools = true;
 config.htmlEncodeOutput = false;
+
+config.disableNativeSpellChecker = false;
+config.browserContextMenuOnCtrl = true;
+
+
 config.toolbarStartupExpanded = false;
 config.font_names =
     'Arial/Arial, Helvetica, sans-serif;' +
