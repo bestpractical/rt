@@ -1,11 +1,11 @@
-=head1 SETTING UP THE WEB INTERFACE
+=head1 Setting up the web interface
 
 RT's web interface is based around L<HTML::Mason>, which works well with
 the mod_perl perl interpreter within Apache httpd and FastCGI.
 
 Once you've set up the web interface, consider setting up automatic
 logout for inactive sessions. For more information about how to do that,
-run
+run:
 
     perldoc /path/to/rt/sbin/rt-clean-sessions
 
