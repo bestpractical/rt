@@ -9,6 +9,18 @@ run
 
     perldoc /path/to/rt/sbin/rt-clean-sessions
 
+=head2 Standalone
+
+The standalone RT web server is backed by a pure-Perl server engine
+(L<HTTP::Server::PSGI>). This standalone server is appropriate for development,
+testing, and so on, but is not appropriate for production use.
+
+You should not run this server against port 80 (which is the default port)
+because that requires root-level privileges and may conflict with any existing
+listeners. So choose a high port (for example 8080) and run the server:
+
+    /opt/rt3/sbin/rt-server 8080
+
 =head2 mod_perl
 
 =head3 mod_perl 1.xx
