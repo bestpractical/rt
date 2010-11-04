@@ -1,18 +1,19 @@
 =head1 Setting up the web interface
 
-As of RT 3.9, RT's web interface has been built on top of PSGI
+As of RT 3.9, RT's web interface speaks PSGI
 (L<http://plackperl.org>) which lets you use RT with any PSGI-supported web
 server (which includes Apache, nginx, lighttpd, etc).
 
 =head2 Standalone
 
 The standalone RT web server is backed by a pure-Perl server engine
-(L<HTTP::Server::PSGI>). This standalone server is appropriate for development,
-testing, and so on, but is not appropriate for production use.
+(L<HTTP::Server::PSGI>). This standalone server is appropriate for development
+and testing, but is not appropriate for production use.
 
 You should not run this server against port 80 (which is the default port)
 because that requires root-level privileges and may conflict with any existing
-listeners. So choose a high port (for example 8080) and run the server:
+listeners. So choose a high port (for example 8080) and start the standalone
+server with:
 
     /opt/rt3/sbin/rt-server 8080
 
@@ -20,7 +21,7 @@ listeners. So choose a high port (for example 8080) and run the server:
 
 =head3 mod_perl 1.xx
 
-WARNING: mod_perl 1.99_xx is not supported.
+B<WARNING: mod_perl 1.99_xx is not supported.>
 
 See below configuration instructions for mod_perl 2.x
 
@@ -57,7 +58,7 @@ it knows where to find RT:
 
 =head3 mod_perl 2.xx
 
-WARNING: mod_perl 1.99_xx is not supported.
+B<WARNING: mod_perl 1.99_xx is not supported.>
 
 Add a few lines to your Apache 2.xx configuration file, so that
 it knows where to find RT:
@@ -85,8 +86,9 @@ it knows where to find RT:
 
 =head2 FastCGI
 
-Installation with FastCGI is a little bit more complex and is documented
-in detail at L<http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration>
+Installation with FastCGI is a little bit more complex than mod_perl and is
+documented in detail at
+L<http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration>
 
 In the most basic configuration, you can set up your webserver to run
 as a user who is a member of the "rt" unix group so that the FastCGI script
@@ -94,7 +96,7 @@ can read RT's configuration file.  It's important to understand the security
 implications of this configuration, which are discussed in the document
 mentioned above.
 
-To install RT with FastCGI, you'll need to add a few lines to your
+To run RT using FastCGI, you'll need to add a few lines to your
 Apache configuration file telling it about RT:
 
     # Tell FastCGI to put its temporary files somewhere sane.
