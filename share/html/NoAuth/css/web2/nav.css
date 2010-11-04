@@ -117,6 +117,13 @@
     color: #000;
 }
 
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+#app-nav.toplevel { display: none; }
+#app-nav.toplevel.sf-menu { display:block; }
+#page-menu.toplevel { display: none; }
+#page-menu.toplevel.sf-menu { display:block; }
+
+
 
 #page-navigation {
     position: absolute;
