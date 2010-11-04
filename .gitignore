@@ -25,14 +25,16 @@ sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin
 sbin/rt-fts-oracle
+sbin/rt-fulltext-indexer
 sbin/rt-server
+sbin/rt-server.fcgi
 sbin/rt-session-viewer
 sbin/rt-setup-database
 sbin/rt-setup-fulltext-index
-sbin/rt-fulltext-indexer
 sbin/rt-shredder
 sbin/rt-test-dependencies
 sbin/rt-validator
+sbin/standalone_httpd
 var/mason_data/
 autom4te.cache
 configure
