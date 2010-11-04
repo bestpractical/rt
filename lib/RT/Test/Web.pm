@@ -266,6 +266,7 @@ sub ticket_status_is {
     my $id = shift;
     my $status = shift;
     my $desc = shift || "Status of the ticket #$id is '$status'";
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     return Test::More::is($self->ticket_status( $id), $status, $desc);
 }
 
