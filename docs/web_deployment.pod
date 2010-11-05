@@ -106,7 +106,6 @@ it knows where to find RT:
             SetHandler perl-script
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt3/sbin/rt-server
-            PerlSetEnv RT_TESTING 1
         </Directory>
     </VirtualHost>
 
