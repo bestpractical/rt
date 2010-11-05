@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/Tabs, 
-    current_tab => 'Prefs/Other.html',
-    Title => $title,
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">

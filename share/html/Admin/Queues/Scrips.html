@@ -46,12 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
-    QueueObj => $QueueObj,                                                      
-    current_tab => 'Admin/Queues/Scrips.html?id='.$id, 
-    current_subtab => 'Admin/Queues/Scrips.html?id='.$id, 
-    subtabs => $subtabs, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 % unless ( $QueueObj->Disabled ) { # Global scrips does not apply to disabled queues
 <h2><&|/l&>Scrips which apply to all queues</&></h2>
@@ -70,16 +65,6 @@ if ($QueueObj->id) {
 } else {
     Abort(loc("Queue [_1] not found",$id));
 }
-
-my $subtabs = {
-	 A => { title => loc('Select'),
-	     	path => "Admin/Queues/Scrips.html?id=".$id,
-			   },
-	 B => { title => loc('Create'),
-	     	path => "Admin/Queues/Scrip.html?create=1&Queue=".$id,
-            separator => 1,
-			   }
-	      };
 </%init>
 
 <%ARGS>

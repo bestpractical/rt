@@ -46,17 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& $ObjectTabs,
-$id ? (
-    id => $Object->id, 
-    current_tab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
-    current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
-    "${Type}Obj" => $Object,
-) : (
-    current_tab => "Admin/Global/CustomFields/${QualifiedType}s.html",
-),
-    Title => $title
-    &>
+<& /Elements/Tabs &>
 
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object &>
 <%INIT>
@@ -68,7 +58,6 @@ $id ? (
 
 my $Type = $1;
 my $Types = $Type.'s';
-my $ObjectTabs;
 my $Object = $ObjectType->new($session{'CurrentUser'});
 
 
@@ -83,10 +72,6 @@ if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
 
 if ($id) { 
     $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id), SuppressHeader => 1);
-    $ObjectTabs = "/Admin/Elements/${Type}Tabs";
-} else {
-    $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
-
 } 
 
 my $title; 

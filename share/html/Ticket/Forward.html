@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $Title &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
-    Title  => $Title,
-&>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>

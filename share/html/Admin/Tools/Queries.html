@@ -52,10 +52,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 }
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/ToolTabs, 
-    current_tab => 'Admin/Tools/Queries.html',
-    current_subtab => 'Admin/Tools/Queries.html', 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <&|/Widgets/TitleBox, title => loc('SQL Queries') &>
 % my $history = $RT::Handle->QueryHistory;

@@ -46,9 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
-    Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Tabs &>
 
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeActionList' );
 
@@ -63,7 +61,7 @@
     AttachmentContent => $attachment_content
     &> 
 
-% $m->callback( %ARGS, CallbackName => 'AfterShowHistory', Ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
+% $m->callback( %ARGS, CallbackName => 'AfterShowHistory', Ticket => $Ticket );
 
 <%ARGS>
 $id => undef

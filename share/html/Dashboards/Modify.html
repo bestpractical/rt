@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Dashboards/Elements/Tabs,
-    Title => $title,
-    $Create ? () : (DashboardObj => $Dashboard),
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard" id="ModifyDashboard">
@@ -80,7 +77,6 @@
 </form>
 <%INIT>
 
-my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
@@ -99,7 +95,6 @@ my @privacies = $Dashboard->$method;
 Abort(loc("Permission denied")) if @privacies == 0;
 
 if ($Create) {
-    $current_subtab = 'Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
 }
 else {
@@ -129,12 +124,10 @@ else {
 
     if ($id) {
         $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
-        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $Create = 1;
-        $current_subtab = 'Dashboards/Modify.html?Create=1';
         $title = loc("Create a new dashboard");
     }
 }

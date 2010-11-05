@@ -80,8 +80,7 @@ my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => 
 
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, Title => $title, Query => $ARGS{Query},
-    SavedChartSearchId => $saved_search->{SearchId} &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 

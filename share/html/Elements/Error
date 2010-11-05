@@ -49,7 +49,7 @@
 
 % unless ($SuppressHeader) {
 <& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
-<& /Elements/Tabs, Title => $Title &>
+<& /Elements/Tabs &>
 % }
 
 <div class="error">

@@ -48,10 +48,7 @@
 <& /Elements/Header,
     Title => $title,
     onload => "function () { hide('Ticket-Create-details') }" &>
-<& /Elements/Tabs, 
-    current_toptab => "Ticket/Create.html", 
-    Title => $title,
-    actions => $actions &>
+<& /Elements/Tabs &>
     
 <& /Elements/ListActions, actions => \@results &>
 

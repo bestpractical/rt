@@ -71,7 +71,7 @@ if ($ResolvedBefore) {
 $q->LoadByCols(Name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>
+<& /Elements/Tabs &>
 <form method="post" action="ResolvedByDates.html">
 % if ($Queue|| $ResolvedBefore ||$ResolvedAfter) {
 % # if we have a queue, do the search

@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Prefs/Elements/Tabs,
-    current_tab => 'Prefs/MyRT.html',
-#    current_subtab => 'Prefs/Search.html?name='.$m->comp('/Elements/QueryString', name => $ARGS{name}),
-    current_subtab => 'Prefs/Search.html?name='.$ARGS{name},
-    Title => $title
+<& /Elements/Tabs
 &>
 <& /Elements/ListActions, actions => \@actions &>
 % if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {

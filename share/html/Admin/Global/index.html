@@ -45,13 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, tabs => $tabs );
 <& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
-<& /Admin/Elements/SystemTabs, 
-    Title => loc('Admin/Global configuration') &>
-    <& /Elements/ListMenu, items => $tabs &>
+<& /Elements/Tabs &>
+    <& /Elements/ListMenu, items => $items &>
 <%INIT>
-  my $tabs = {
+  my $items = {
                 
                A => { title => loc('Scrips'),
                            text => loc('Modify scrips which apply to all queues'),

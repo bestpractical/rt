@@ -52,7 +52,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->back;
 
         $m->follow_link_ok( { text => 'root' }, '-> root' );
-        for my $id ( 'rt-at-a-glance', 'memberships', 'history', 'basics' ) {
+        for my $id ( 'my-rt', 'memberships', 'history', 'basics' ) {
             $m->follow_link_ok( { id => 'page-current-' . $id }, "-> $id" );
         }
     }
@@ -137,7 +137,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Global' },        '-> Global' );
 
-        for my $id ( 'group-rights', 'user-rights', 'rt-at-a-glance', 'theme' )
+        for my $id ( 'group-rights', 'user-rights', 'my-rt', 'theme' )
         {
             $m->follow_link_ok( { id => 'tools-config-global-' . $id }, "-> $id" );
         }

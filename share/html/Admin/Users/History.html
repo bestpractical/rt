@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/UserTabs, 
-    id => $id, 
-    UserObj => $UserObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Ticket/Elements/ShowHistory,
     Ticket => $UserObj,
@@ -58,7 +54,6 @@
 &>
 
 <%INIT>
-my $current_tab = 'Admin/Users/History.html?id='.$id;
 my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("History of the user [_1]", $UserObj->Name);

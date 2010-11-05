@@ -66,13 +66,7 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Build.html?".$QueryString, 
-    Title => $title,
-    %query,
-    SavedSearchId => $saved_search{'Id'},
-    SavedChartSearchId => $ARGS{SavedChartSearchId},
-&>
+<& /Elements/Tabs &>
 
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />

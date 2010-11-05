@@ -46,17 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Bulk.html",
-    Title => $title,
-    Format => $ARGS{'Format'}, # we don't want the locally modified one
-    Query => $Query,
-    Rows => $Rows,
-    OrderBy => $OrderBy,
-    Order => $Order,
-    SavedSearchId => $SavedSearchId,
-    SavedChartSearchId => $SavedChartSearchId,
-    &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">

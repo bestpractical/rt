@@ -52,11 +52,7 @@ $Wipeout => ''
 @WipeoutObject => ()
 </%ARGS>
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/ToolTabs,
-    current_tab => 'Admin/Tools/Shredder',
-    current_subtab => 'Admin/Tools/Shredder',
-    Title => $title,
-&>
+<& /Elements/Tabs &>
 <form id="shredder-search-form" action="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/" method="GET">
 <div id="shredder-select-plugin">
 <& /Elements/ListActions, actions => $messages{'Errors'} &>

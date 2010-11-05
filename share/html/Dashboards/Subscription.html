@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $DashboardObj &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -182,8 +179,6 @@
 </form>
 
 <%INIT>
-
-my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 
 my ($title, @results);
 my ($val, $msg);

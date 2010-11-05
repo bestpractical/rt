@@ -75,13 +75,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    Title          => loc("RT at a glance"),
-    current_tab    => 'index.html',
-    current_toptab => 'index.html',
-    tabs           => $tabs,
-    actions        => $actions,
-    &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>    
 <& /Elements/MyRT &>
 <%init>
@@ -133,16 +127,6 @@ if ( $ARGS{'q'} ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
-my $actions;
-if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
-    $actions = {
-        A => { title => loc('Edit'),
-               path  => 'Prefs/MyRT.html',
-             },
-    };
-}
-
-my $tabs = $m->comp("/Elements/DashboardTabs");
 </%init>
 
 %# --></body></html>

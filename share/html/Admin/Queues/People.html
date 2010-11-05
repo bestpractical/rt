@@ -47,10 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 
-<& /Admin/Elements/QueueTabs, id => $id, 
-    QueueObj => $QueueObj,                                                      
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -129,7 +126,6 @@
 
 <%INIT>
 
-my $current_tab;
 my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
@@ -189,7 +185,6 @@ if ( $ARGS{'GroupString'} ) {
 } else {
     $group_msg = loc("No principals selected.");
 }
-$current_tab = 'Admin/Queues/People.html?id=' . $QueueObj->id;
 my $title = loc('People related to queue [_1]', $QueueObj->Name);
 </%INIT>
 

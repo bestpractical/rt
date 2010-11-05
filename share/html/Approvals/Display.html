@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title =>  $title &>
-
-<& Elements/Tabs, 
-    current_tab => "Approvals/Display.html", 
-    Title =>  $title &>
+<& /Elements/Tabs &>
 <form method="post" action="<%RT->Config->Get('WebPath')%>/Approvals/index.html">
 
 <&| /Widgets/TitleBox, title => $title &>

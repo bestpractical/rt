@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/GlobalCustomFieldTabs,
-    current_tab => "Admin/Global/CustomFields/Queue-Transactions.html",
-    current_subtab => "Admin/Global/CustomFields/Queue-Transactions.html",
-    Title => $title
+<& /Elements/Tabs
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Queue', Object=> $object, SubType => 'RT::Ticket-RT::Transaction' &>
 <%INIT>

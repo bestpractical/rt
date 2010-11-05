@@ -46,32 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title, FeedURI => 'templates' &>
-<& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/Templates.html', 
-    current_subtab => 'Admin/Global/Templates.html', 
-    subtabs => $subtabs, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 </form>
 <%init>
-
-my $subtabs = {
-		 A => { title => loc('Select'),
-  		     	path => "Admin/Global/Templates.html"
-			   },
-		 B => { title => loc('Create'),
-  		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
-			separator => 1,
-			   }
-	      };
 my $title = loc("Modify templates which apply to all queues");
-
 my (@actions);
-
 </%init>
-
-
-
 <%ARGS>
 $id => undef
 </%ARGS>
