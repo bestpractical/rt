@@ -494,12 +494,6 @@ if ( $request_path =~ qr'Admin/CustomFields/' ) {
 
 }
 
-if ( $request_path =~ qr'Admin/Rules' ) {
-    PageMenu->child( loc('Select'), path => "/Admin/Rules/" );
-    PageMenu->child( loc('Create'),
-                     path => "/Admin/Rules/Modify.html?Create=1" );
-}
-
 if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
     my $search  = Menu()->child('search');
     my $actions = PageMenu()
