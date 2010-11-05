@@ -39,7 +39,7 @@ $m->submit_form(
 );
 
 $m->content_contains('Saved dashboard bar', 'dashboard saved' );
-my $dashboard_queries_link = $m->find_link( text_regex => qr/Queries/ );
+my $dashboard_queries_link = $m->find_link( text_regex => qr/Content/ );
 my ( $dashboard_id ) = $dashboard_queries_link->url =~ /id=(\d+)/;
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );

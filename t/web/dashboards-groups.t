@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 39;
+use RT::Test nodata => 1, tests => 35;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -69,7 +69,14 @@ $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $m->click_button(value => 'Create');
-$m->content_lacks("No permission to create dashboards");
+
+$m->content_contains("Permission denied", "we lack SeeGroupDashboard");
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SeeGroupDashboard',
+    Object => $inner_group,
+);
+$m->reload;
+$m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
@@ -82,18 +89,10 @@ is($dashboard->Name, "inner dashboard");
 is($dashboard->Privacy, 'RT::Group-' . $inner_group->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
-$m->no_warnings_ok;
+$m->warning_like(qr/Permission denied/, "got a permission denied warning when trying to see the dashboard");
 
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
-$m->content_contains("Permission denied");
-
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeGroupDashboard', Object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");
-
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 

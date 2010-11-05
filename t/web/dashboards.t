@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 109;
+use RT::Test tests => 110;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -63,20 +63,19 @@ $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
-
 $m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
-$m->content_lacks("No permission to create dashboards");
+
+$m->content_contains("Permission denied", "we lack SeeOwnDashboard");
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
+$m->reload;
+$m->content_lacks("Permission denied", "we now have SeeOwnDashboard");
 $m->content_contains("Saved dashboard different dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
-
-$m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
+$m->warning_like(qr/Permission denied/, "got a permission denied warning when trying to see the dashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -84,13 +83,13 @@ $m->content_lacks("Permission denied");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
-$m->content_contains("Queries");
+$m->content_contains("Content");
 $m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
 
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
 
-$m->follow_link_ok({text => "Queries"});
+$m->follow_link_ok({text => "Content"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
 my $form = $m->form_name('Dashboard-Searches-body');
 my @input = $form->find_input('Searches-body-Available');
@@ -144,13 +143,15 @@ $ticket->Create(
 $m->follow_link_ok({id => 'page-show'});
 $m->content_contains("50 highest priority tickets I own");
 $m->content_contains("50 newest unowned tickets");
-$m->content_lacks("Bookmarked Tickets");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
 $m->content_contains("50 highest priority tickets I own");
 $m->content_contains("50 newest unowned tickets");
-$m->content_lacks("Bookmarked Tickets");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/Subscription.html?id=$id");
@@ -169,7 +170,8 @@ $m->follow_link_ok({text => "Subscription"});
 $m->content_contains("Subscribe to dashboard different dashboard");
 $m->content_contains("Unowned Tickets");
 $m->content_contains("My Tickets");
-$m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
