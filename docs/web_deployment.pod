@@ -15,7 +15,7 @@ because that requires root-level privileges and may conflict with any existing
 listeners. So choose a high port (for example 8080) and start the standalone
 server with:
 
-    /opt/rt3/sbin/rt-server 8080
+    /opt/rt3/sbin/rt-server --port 8080
 
 =head2 mod_perl
 
