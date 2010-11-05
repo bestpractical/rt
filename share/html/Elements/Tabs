@@ -158,11 +158,12 @@ if ( $request_path =~ qr{.*} ) {
     {
         my $admin = $tools->child( config => title => loc('Configuration'),
                                  path   => '/Admin/' );
-        my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
-        $users->child( select => title => loc('Select'), path => "/Admin/Users/" );
-        $users->child( create => title => loc('Create'),
-                       path => "/Admin/Users/Modify.html?Create=1" );
-
+        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers' ) ) {
+            my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
+            $users->child( select => title => loc('Select'), path => "/Admin/Users/" );
+            $users->child( create => title => loc('Create'),
+                           path => "/Admin/Users/Modify.html?Create=1" );
+        }
         my $groups
             = $admin->child( loc('Groups'), path => '/Admin/Groups/', );
 
@@ -175,14 +176,15 @@ if ( $request_path =~ qr{.*} ) {
         $queues->child( loc('Select'), path => "/Admin/Queues/" );
         $queues->child( loc('Create'),
                         path => "/Admin/Queues/Modify.html?Create=1" );
-        my $cfs = $admin->child(
-                             'custom-fields' => title => loc('Custom Fields'),
-                             path => '/Admin/CustomFields/', );
-        $cfs->child( select => title => loc('Select'),
-                     path   => "/Admin/CustomFields/" );
-        $cfs->child( create => title => loc('Create'),
-                     path => "/Admin/CustomFields/Modify.html?Create=1" );
-
+        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField' ) ) {
+            my $cfs = $admin->child(
+                                 'custom-fields' => title => loc('Custom Fields'),
+                                 path => '/Admin/CustomFields/', );
+            $cfs->child( select => title => loc('Select'),
+                         path   => "/Admin/CustomFields/" );
+            $cfs->child( create => title => loc('Create'),
+                         path => "/Admin/CustomFields/Modify.html?Create=1" );
+        }
         my $admin_global =
             $admin->child( global => title => loc('Global'),
                            path   => '/Admin/Global/', );
@@ -421,14 +423,6 @@ if ( $request_path =~ qr'Admin/Queues' ) {
 }
 
 if ( $request_path =~ qr'/Admin/Users' ) {
-    if ( $session{'CurrentUser'}
-         ->HasRight( Object => $RT::System, Right => 'AdminUsers' ) )
-    {
-        PageMenu->child( select => title => loc('Select'),
-                         path   => "/Admin/Users/" );
-        PageMenu->child( create => title => loc('Create'),
-                         path => "/Admin/Users/Modify.html?Create=1" );
-    }
     if ( my $id = $m->request_args->{'id'} ) {
         my $obj = RT::User->new( $session{'CurrentUser'} );
         $obj->Load($id);
@@ -453,11 +447,6 @@ if ( $request_path =~ qr'/Admin/Users' ) {
 }
 
 if ( $request_path =~ qr'Admin/Groups' ) {
-
-    PageMenu->child( loc('Select') => path => "/Admin/Groups/" );
-    PageMenu->child(
-                loc('Create') => path => "/Admin/Groups/Modify.html?Create=1",
-                separator     => 1 );
     if ( my $id = $m->request_args->{'id'} ) {
         my $obj = RT::Group->new( $session{'CurrentUser'} );
         $obj->Load($id);
@@ -481,14 +470,7 @@ if ( $request_path =~ qr'Admin/Groups' ) {
 }
 
 if ( $request_path =~ qr'Admin/CustomFields/' ) {
-    if ( $session{'CurrentUser'}
-         ->HasRight( Object => $RT::System, Right => 'AdminCustomField' ) )
-    {
-        PageMenu->child( loc('Select'), path => "/Admin/CustomFields/" );
-        PageMenu->child( loc('Create') => path =>
-                         "/Admin/CustomFields/Modify.html?Create=1", );
 
-    }
     if ( my $id = $m->request_args->{'id'} ) {
         my $obj = RT::CustomField->new( $session{'CurrentUser'} );
         $obj->Load($id);
