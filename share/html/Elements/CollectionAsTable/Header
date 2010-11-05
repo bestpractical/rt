@@ -123,6 +123,7 @@ foreach my $col ( @Format ) {
       )
     {
         $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+        $attr = "id" if $attr eq "Created";
 
         my $new_order = 'ASC';
         $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'

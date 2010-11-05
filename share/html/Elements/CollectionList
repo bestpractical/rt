@@ -71,6 +71,7 @@ if ( @OrderBy && ($AllowSorting || !$Collection->{'order_by'}) ) {
         @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
     }
+    @OrderBy = map {$_ eq "Created" ? "id" : $_} @OrderBy;
     $Collection->OrderByCols(
         map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
         ( 0 .. $#OrderBy )
