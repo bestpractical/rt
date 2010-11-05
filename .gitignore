@@ -1,8 +1,0 @@
-Makefile
-Makefile.old
-MANIFEST.bak
-blib
-pm_to_blib
-t/tmp
-t/lib/RT/FM/Test.pm
-*.swp
