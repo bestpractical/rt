@@ -231,7 +231,7 @@ IPC::Run3
 $deps{'PSGI'} = [ text_to_hash( << '.') ];
 CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
-Plack
+Plack 0.9942
 Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
 Plack::Middleware::Test::StashWarnings
