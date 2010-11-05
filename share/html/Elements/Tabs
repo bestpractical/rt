@@ -116,22 +116,35 @@ if ( $request_path =~ qr{.*} ) {
     {
         my $admin = Menu->child( Config => title => loc('Configuration'),
                                  path   => '/Admin/' );
-        $admin->child( loc('Users'),  path => '/Admin/Users/', );
-        $admin->child( loc('Groups'), path => '/Admin/Groups/', );
-        my $queues = $admin->child( queues => title => loc('Queues'),
-                                    path => '/Admin/Queues/', );
+        my $users = $admin->child( loc('Users'),  path => '/Admin/Users/', );
+        $users->child( loc('Select'), path => "/Admin/Users/" );
+        $users->child( loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
+
+
+        my $groups = $admin->child( loc('Groups'), path => '/Admin/Groups/', );
+
+        $groups->child( loc('Select'), path => "/Admin/Groups/" );
+        $groups->child( loc('Create'), path => "/Admin/Groups/Modify.html?Create=1" );
+
+
+        my $queues = $admin->child( queues => title => loc('Queues'), path => '/Admin/Queues/', );
         $queues->child( loc('Select'), path => "/Admin/Queues/" );
-        $queues->child( loc('Create'),
-                        path => "/Admin/Queues/Modify.html?Create=1" );
-        $admin->child( loc('Custom Fields'), path => '/Admin/CustomFields/',
+        $queues->child( loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );
+        my $cfs = $admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/',
         );
-        $admin->child( loc('Rules'), path => '/admin/rules/', );
+        $cfs->child( select => title => loc('Select'), path => "/Admin/CustomFields/" );
+        $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
 
         my $admin_global
-            = $admin->child( loc('Global'), path => '/Admin/Global/', );
+            = $admin->child( global=> title => loc('Global'), path => '/Admin/Global/', );
 
-        $admin_global->child( loc('Templates'),
+        my $scrips = $admin_global->child( loc('Scrips'), path => '/Admin/Global/Scrips.html', );
+        $scrips->child( loc('Select'), path => "/Admin/Global/Scrips.html" );
+        $scrips->child( loc('Create'), path => "/Admin/Global/Scrip.html?Create=1" );
+        my $templates = $admin_global->child( loc('Templates'),
                               path => '/Admin/Global/Templates.html', );
+        $templates->child( loc('Select'), path => "/Admin/Global/Templates.html" );
+        $templates->child( loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
 
 #        my $workflows = $admin_global->child( loc('Workflows'), path => '/Admin/Global/Workflows/index.html', );
 #        {
@@ -197,22 +210,24 @@ if ( $request_path =~ qr{.*} ) {
                                                Object => $RT::System )
        )
     {
-$about_me->child( loc('Settings'), path => '/Prefs/Other.html', );
-$about_me->child( loc('About me'), path => '/User/Prefs.html', );
-$about_me->child( loc('Search options'),
-                   path => '/Prefs/SearchOptions.html', );
-$about_me->child( loc('RT at a glance'), path => '/Prefs/MyRT.html', );
-$about_me->child( 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html' );
-
-
-if ( $session{'CurrentUser'}->Name
-    && ( !RT->Config->Get('WebExternalAuth')
-        || RT->Config->Get('WebFallbackToInternalAuth')
-    )
-) {
-  $about_me->child(logout => title => loc('Logout'),  path =>'/NoAuth/Logout.html');
+        $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
+        $about_me->child( about_me => title => loc('About me'), path => '/User/Prefs.html', );
+        $about_me->child( search_options => title => loc('Search options'),
+                          path => '/Prefs/SearchOptions.html', );
+        $about_me->child( myrt => title =>  loc('RT at a glance'), path => '/Prefs/MyRT.html',
+        );
+        $about_me->child( quicksearch => title => 'Quick search' => title => loc('Quick search'),
+                          path => '/Prefs/Quicksearch.html' );
     }
-}
+
+    if ( $session{'CurrentUser'}->Name
+         && (   !RT->Config->Get('WebExternalAuth')
+              || RT->Config->Get('WebFallbackToInternalAuth') )
+       )
+    {
+        $about_me->child( logout => title => loc('Logout'),
+                          path   => '/NoAuth/Logout.html' );
+    }
 }
 if ( $request_path =~ qr'Dashboards/(\d+)?' ) {
     if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
@@ -272,24 +287,37 @@ if ( $request_path =~ qr'/SelfService' ) {
 }
 
 if ( $request_path =~ qr'Admin/Queues' ) {
-    if ( $session{'CurrentUser'}
-         ->HasRight( Object => $RT::System, Right => 'AdminQueue' ) )
+    if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue' ) )
     {
     }
-    if ( my $id = $m->request_args->{'id'} ) {
+    if ( my $id = $m->request_args->{'id'} ||$m->request_args->{'Queue'}) {
         my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
         $queue_obj->Load($id);
 
-        my $queue
-            = PageMenu->child(
-                   $queue_obj->Name => path => "/Admin/Queues/Modify.html?id="
-                       . $id );
-        $queue->child( loc('Basics'),
+        my $queue = PageMenu();
+        $queue->child( basics => title =>loc('Basics'),
                        path => "/Admin/Queues/Modify.html?id=" . $id );
-        $queue->child( loc('Watchers'),
+        $queue->child( people => title => loc('Watchers'),
                        path => "/Admin/Queues/People.html?id=" . $id );
-        $queue->child( loc('Templates'),
+        my $templates = $queue->child( templates => title => loc('Templates'),
                        path => "/Admin/Queues/Templates.html?id=" . $id );
+
+
+
+        $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id );
+        $templates->child( create => title =>  loc('Create'), path  => "/Admin/Queues/Template.html?Create=1;Queue=".$id );
+
+        my $scrips = $queue->child( scrips => title => loc('Scrips'),
+                       path => "/Admin/Queues/Scrips.html?id=" . $id );
+
+
+
+        $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=".$id );
+        $scrips->child( create => title =>  loc('Create'), path  => "/Admin/Queues/Scrip.html?Create=1;Queue=".$id );
+
+
+
+
 
         $queue->child( loc('Ticket Custom Fields'),
              path => '/Admin/Queues/CustomFields.html?sub_type=RT::Ticket&id='
@@ -311,11 +339,8 @@ if ( $request_path =~ qr'/Admin/Users' ) {
     if ( $session{'CurrentUser'}
          ->HasRight( Object => $RT::System, Right => 'AdminUsers' ) )
     {
-        PageMenu->child( loc('Select'), path => "/Admin/Users/" );
-        PageMenu->child( loc('Create'),
-                         path      => "/Admin/Users/Modify.html?Create=1",
-                         separator => 1
-                       );
+        PageMenu->child( select => title => loc('Select'), path => "/Admin/Users/" );
+        PageMenu->child( create => title => loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
     }
     if ( my $id = $m->request_args->{'id'} ) {
         my $obj = RT::User->new( $session{'CurrentUser'} );
@@ -586,7 +611,47 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
                      loc('Bulk Update') => path => "/Search/Bulk.html$args" );
 
     }
+
 }
+
+
+    if ( $request_path =~ /^\/(?:index.html|$)/ ) {
+
+        my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+        my $limit      = 7;
+
+        $m->callback( Dashboards   => \@dashboards,
+                      Limit        => \$limit,
+                      CallbackName => 'MassageDashboards',
+                    );
+
+        my $more = 0;
+        if ( @dashboards > $limit ) {
+            $more = 1;
+            splice @dashboards, $limit;
+        }
+
+        my $position = 0;
+
+        for my $dash (@dashboards) {
+            PageMenu->child(
+                        'dashboard-' . $dash->id,
+                        title => $dash->Name,
+                        path => 'Dashboards/' . $dash->id . '/' . $dash->Name,
+            );
+        }
+
+        PageMenu()->child( home => title => loc('Home'), path => 'index.html' );
+
+        if ($more) {
+            $tabs->{"D-more"} = { title => loc('More'),
+                                  path  => 'Dashboards/index.html',
+                                };
+        }
+
+    }
+
+
 
 
 
