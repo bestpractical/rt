@@ -211,13 +211,15 @@ if ( $request_path =~ qr{.*} ) {
                               path => '/Admin/Global/UserRights.html', );
         $admin_global->child( loc('RT at a glance'),
                               path => '/Admin/Global/MyRT.html', );
-        $admin_global->child( loc('System'),
-                              path => '/Admin/Global/System.html', );
+        $admin_global->child( loc('Theme'),
+                              path => '/Admin/Global/Theme.html', );
 
         my $admin_tools
             = $admin->child( loc('Tools'), path => '/Admin/Tools/', );
         $admin_tools->child( loc('System Configuration'),
                              path => '/Admin/Tools/Configuration.html', );
+        $admin_tools->child( loc('SQL Queries'),
+                             path => '/Admin/Tools/Queries.html', );
         $admin_tools->child( loc('Shredder'),
                              path => '/Admin/Tools/Shredder', );
     }
@@ -235,25 +237,26 @@ if ( $request_path =~ qr{.*} ) {
                                                Object => $RT::System )
        )
     {
-        $about_me->child( settings => title => loc('Settings'),
+        my $settings = $about_me->child( settings => title => loc('Settings'),
                           path     => '/Prefs/Other.html', );
-        $about_me->child( about_me => title => loc('About me'),
+        $settings->child( about_me => title => loc('About me'),
                           path     => '/User/Prefs.html', );
-        $about_me->child( search_options => title => loc('Search options'),
+        $settings->child( search_options => title => loc('Search options'),
                           path => '/Prefs/SearchOptions.html', );
-        $about_me->child( myrt => title => loc('RT at a glance'),
+        $settings->child( myrt => title => loc('RT at a glance'),
                           path => '/Prefs/MyRT.html', );
-        $about_me->child( quicksearch => title => 'Quick search' => title =>
+        $settings->child( quicksearch => title => 'Quick search' => title =>
                               loc('Quick search'),
                           path => '/Prefs/Quicksearch.html'
                         );
 
+        my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches');
         my $searches = [ $m->comp(
                           "/Search/Elements/SearchesForObject",
                           Object => RT::System->new( $session{'CurrentUser'} )) ];
         my $i = 0;
         for my $search (@$searches) {
-            $about_me->child( "search-" . $i++,
+            $search_menu->child( "search-" . $i++,
                       title => $search->[0],
                       path  => "/Prefs/Search.html?" . $query_string->(
                           name => ref( $search->[1] ) . '-' . $search->[1]->Id),
