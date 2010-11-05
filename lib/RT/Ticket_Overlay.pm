@@ -304,7 +304,7 @@ sub Create {
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} )
-            && $QueueObj->Lifecycle->is_initial( $args{'Status'} )) {
+            && $QueueObj->Lifecycle->IsInitial( $args{'Status'} )) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
                 $self->loc($args{'Status'})));
@@ -1745,7 +1745,7 @@ sub SetQueue {
 
         #If we're changing the status from initial in old to not intial in new,
         # record that we've started
-        if ( $old_lifecycle->is_initial($old_status) && !$new_lifecycle->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
+        if ( $old_lifecycle->IsInitial($old_status) && !$new_lifecycle->IsInitial($new_status)  && $clone->StartedObj->Unix == 0 ) {
             #Set the Started time to "now"
             $clone->_Set(
                 Field             => 'Started',
@@ -3117,7 +3117,7 @@ sub SetStatus {
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
     #If we're changing the status from new, record that we've started
-    if ( $args{SetStarted} && $lifecycle->is_initial($old) && !$lifecycle->is_initial($new) && !$raw_started->Unix) {
+    if ( $args{SetStarted} && $lifecycle->IsInitial($old) && !$lifecycle->IsInitial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',

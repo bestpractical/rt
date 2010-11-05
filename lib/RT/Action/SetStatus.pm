@@ -112,7 +112,7 @@ sub Prepare {
 
     my $next = '';
     if ( $argument =~ /^(initial|active|inactive)$/i ) {
-        my $method = 'is_'. lc $argument;
+        my $method = 'Is'. ucfirst lc $argument;
         ($next) = grep $lifecycle->$method($_), $lifecycle->transitions($status);
         unless ( $next ) {
             $RT::Logger->info("No transition from '$status' to $argument set");

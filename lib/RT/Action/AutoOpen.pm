@@ -94,7 +94,7 @@ sub Prepare {
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $lifecycle->is_initial($status) && $self->TransactionObj->IsInbound;
+    return 1 if $lifecycle->IsInitial($status) && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
         return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;

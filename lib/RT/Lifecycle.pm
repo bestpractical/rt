@@ -218,25 +218,25 @@ sub IsValid {
     return 0;
 }
 
-=head3 initial
+=head3 Initial
 
 Returns an array of all initial statuses for the current lifecycle.
 
 =cut
 
-sub initial {
+sub Initial {
     my $self = shift;
     return $self->valid('initial');
 }
 
-=head3 is_initial
+=head3 IsInitial
 
 Takes a status and returns true if value is a valid initial status.
 Otherwise, returns false.
 
 =cut
 
-sub is_initial {
+sub IsInitial {
     my $self  = shift;
     my $value = lc shift;
     return 1 if grep lc($_) eq $value, $self->valid('initial');
