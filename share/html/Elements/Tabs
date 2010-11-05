@@ -204,7 +204,14 @@ if ( $request_path =~ qr{.*} ) {
         $admin_tools->child( loc('Shredder'),
                              path => '/Admin/Tools/Shredder', );
     }
-    my $about_me =  Menu->child( 'preferences' => title => loc("Logged in as [_1]", $session{'CurrentUser'}->Name), sort_rder => 99 );
+    my $about_me = Menu->child(
+                    'preferences' => title =>
+                        loc('Logged in as <span class="current-user">[_1]</span>',
+                        $session{'CurrentUser'}->Name
+                        ),
+                    escape_title => 0,
+                    sort_order   => 99
+    );
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf',
                                                Object => $RT::System )
