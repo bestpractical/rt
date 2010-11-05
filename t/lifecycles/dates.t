@@ -28,11 +28,11 @@ ok $m->login, 'logged in';
 
 diag "check basic API";
 {
-    my $schema = $general->lifecycle;
+    my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'default', "it's a default schema";
 
-    $schema = $delivery->lifecycle;
+    $schema = $delivery->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'delivery', "it's a delivery schema";
 }

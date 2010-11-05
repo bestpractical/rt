@@ -115,7 +115,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
     {  id          => $_->Id,
        Name        => $_->Name,
        Description => $_->Description,
-       Lifecycle   => $_->lifecycle->name,
+       Lifecycle   => $_->Lifecycle->name,
     }
 } grep $_, @queues;
 

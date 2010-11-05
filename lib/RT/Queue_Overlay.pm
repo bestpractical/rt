@@ -243,7 +243,7 @@ sub RightCategories {
 
 
 
-sub lifecycle {
+sub Lifecycle {
     my $self = shift;
     unless (ref $self && $self->id) { 
         return RT::Lifecycle->load('')
@@ -272,10 +272,7 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-
-    my %seen;
-    my @active_statuses = grep !$seen{$_}++, $self->lifecycle->valid('initial', 'active');
-    return @active_statuses;
+    return $self->Lifecycle->valid('initial', 'active');
 }
 
 =head2 InactiveStatusArray
@@ -286,7 +283,7 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return $self->lifecycle->inactive;
+    return $self->Lifecycle->inactive;
 }
 
 =head2 StatusArray
@@ -297,7 +294,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return $self->lifecycle->valid( @_ );
+    return $self->Lifecycle->valid( @_ );
 }
 
 =head2 IsValidStatus value
@@ -308,7 +305,7 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 sub IsValidStatus {
     my $self  = shift;
-    return $self->lifecycle->is_valid( shift );
+    return $self->Lifecycle->is_valid( shift );
 }
 
 =head2 IsActiveStatus value
@@ -319,7 +316,7 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 sub IsActiveStatus {
     my $self  = shift;
-    return $self->lifecycle->is_valid( shift, 'initial', 'active');
+    return $self->Lifecycle->is_valid( shift, 'initial', 'active');
 }
 
 
@@ -333,7 +330,7 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 sub IsInactiveStatus {
     my $self  = shift;
-    return $self->lifecycle->is_inactive( shift );
+    return $self->Lifecycle->is_inactive( shift );
 }
 
 

@@ -300,11 +300,11 @@ sub Create {
     }
 
     if ( ! defined $args{'Status'}) {
-        $args{'Status'} = $QueueObj->lifecycle->default_initial();
+        $args{'Status'} = $QueueObj->Lifecycle->default_initial();
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} )
-            && $QueueObj->lifecycle->is_initial( $args{'Status'} )) {
+            && $QueueObj->Lifecycle->is_initial( $args{'Status'} )) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
                 $self->loc($args{'Status'})));
@@ -360,8 +360,8 @@ sub Create {
     #
     # Instead, we check to make sure that it's either an "active" or "inactive" status
     elsif (
-        $QueueObj->lifecycle->is_active($args{'Status'}) ||
-        $QueueObj->lifecycle->is_inactive($args{'Status'})
+        $QueueObj->Lifecycle->is_active($args{'Status'}) ||
+        $QueueObj->Lifecycle->is_inactive($args{'Status'})
 
     ){
         $Started->SetToNow;
@@ -373,7 +373,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->lifecycle->is_inactive( $args{'Status'} ) )
+    elsif ( $QueueObj->Lifecycle->is_inactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -607,7 +607,7 @@ sub Create {
     # TODO: Adding link may fire scrips on other end and those scrips
     # could create transactions on this ticket before 'Create' transaction.
     #
-    # We should implement different lifecycle: record 'Create' transaction,
+    # We should implement different Lifecycle: record 'Create' transaction,
     # create links and only then fire create transaction's scrips.
     #
     # Ideal variant: add all links without firing scrips, record create
@@ -1710,8 +1710,8 @@ sub SetQueue {
     }
 
     my $new_status;
-    my $old_lifecycle = $self->QueueObj->lifecycle;
-    my $new_lifecycle = $NewQueueObj->lifecycle;
+    my $old_lifecycle = $self->QueueObj->Lifecycle;
+    my $new_lifecycle = $NewQueueObj->Lifecycle;
     if ( $old_lifecycle->name ne $new_lifecycle->name ) {
         unless ( $old_lifecycle->has_map( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
@@ -2654,7 +2654,7 @@ sub _MergeInto {
     }
 
 
-    my $default_inactive = $self->QueueObj->lifecycle->default_inactive;
+    my $default_inactive = $self->QueueObj->Lifecycle->default_inactive;
     if ( $default_inactive ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
             = $self->__Set( Field => 'Status', Value => $default_inactive );
@@ -3089,7 +3089,7 @@ sub SetStatus {
     $args{SetStarted} = 1 unless exists $args{SetStarted};
 
 
-    my $lifecycle = $self->QueueObj->lifecycle;
+    my $lifecycle = $self->QueueObj->Lifecycle;
 
     my $new = $args{'Status'};
     unless ( $lifecycle->is_valid( $new ) ) {

@@ -20,7 +20,7 @@ my $tstatus = sub {
 
 diag "check basic API";
 {
-    my $schema = $general->lifecycle;
+    my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->name, 'default', "it's a default schema";
     is join(', ', sort $schema->valid),
@@ -43,7 +43,7 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        next if $general->lifecycle->is_valid($_);
+        next if $general->Lifecycle->is_valid($_);
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }

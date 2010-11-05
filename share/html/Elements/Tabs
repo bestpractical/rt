@@ -370,7 +370,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
             if ( $can{'ModifyTicket'} ) {
                 my $current   = $obj->Status;
-                my $lifecycle = $obj->QueueObj->lifecycle;
+                my $lifecycle = $obj->QueueObj->Lifecycle;
                 my $i         = 1;
 
                 foreach my $info ( $lifecycle->actions($current) ) {

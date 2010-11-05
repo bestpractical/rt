@@ -117,7 +117,7 @@ sub IsApplicable {
         return 0;
     }
 
-    my $lifecycle = $self->TicketObj->QueueObj->lifecycle;
+    my $lifecycle = $self->TicketObj->QueueObj->Lifecycle;
     if ( $new_must_be ) {
         return 0 unless grep lc($new) eq lc($_),
             map {m/^(initial|active|inactive)$/i? $lifecycle->valid(lc $_): $_ }

@@ -61,7 +61,7 @@
 my @status;
 if ( $TicketObj ) {
     my $current = $TicketObj->Status;
-    my $lifecycle = $TicketObj->QueueObj->lifecycle;
+    my $lifecycle = $TicketObj->QueueObj->Lifecycle;
 
     my %has = ();
     foreach my $next ( $lifecycle->transitions( $current ) ) {
@@ -72,10 +72,10 @@ if ( $TicketObj ) {
     }
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->lifecycle->valid;
+    @status = $QueueObj->Lifecycle->valid;
 }
 else {
-    @status = RT::Queue->lifecycle->valid;
+    @status = RT::Queue->Lifecycle->valid;
 }
 </%INIT>
 <%ARGS>
