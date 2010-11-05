@@ -56,6 +56,7 @@
 
 <div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
+<div id="widgets"><& /Elements/Widgets &></div>
 <script type="text/javascript">
 jQuery(document).ready(function(){ jQuery("#app-nav").superfish(); });
 jQuery(document).ready(function(){ jQuery("#page-menu").superfish(); });
