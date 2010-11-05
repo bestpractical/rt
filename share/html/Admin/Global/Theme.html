@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/farbtastic.js"></script>
-<style type="text/css" media="screen" id="test"></style>
+<style type="text/css" id="test"></style>
 
 <div id="simple-customize">
 <div id="upload-logo">
@@ -109,11 +109,11 @@
 
 <script type="text/javascript">
 var section_css_mapping = {
-    'Page': ['body', 'input[type="reset"], input[type="submit"], input[class="button"]'],
-    'Header': ['div#quickbar'],
+    'Page': ['body'],
+    'Header': ['div#quickbar', '#main-navigation #app-nav > li', '#main-navigation #app-nav > li > a'],
+    'Page title': ['div#header h1'],
     'Page content': ['div#body'],
-    'Navigation': ['div#nav'],
-    'Page menu': ['div#page-navigation ul#page-menu'],
+    'Buttons': ['input[type="reset"], input[type="submit"], input[class="button"]'],
 };
 
 jQuery(function($) {
@@ -139,8 +139,12 @@ jQuery(function($) {
       var applying = section_css_mapping[section];
       var css = $('#user_css').val();
       if (applying) {
+          var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
           for (var name in applying) {
-              var rule = new RegExp('\\b'+applying[name]+'\\s*{.*?}');
+              var selector = (applying[name]).replace(specials, "\\$1");
+              //var rule = new RegExp('\\b'+selector+'\\s*\{.*?\}');
+              var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
+              console.log(rule);
               var newcss = "background: " + bg;
 
               /* Don't set the text color on <body> as it affects too much */
@@ -151,7 +155,16 @@ jQuery(function($) {
               if (applying[name].match(/quickbar/))
                   newcss += "; border: none;"
 
-              css = css.replace(rule, applying[name]+" { "+newcss+" } ");
+              /* Page title's text color is the selected color */
+              if (applying[name].match(/#header/))
+                  newcss = "color: " + bg;
+
+              /* Navigation wants border color too */
+              if (applying[name].match(/#app-nav > li > a/))
+                  newcss += "; border-color: " + fg;
+
+              //css = css.replace(rule, applying[name]+" { "+newcss+" }");
+              css = css.replace(rule, applying[name]+" { "+newcss+" }");
           }
       }
       $('#user_css').val(css);
@@ -223,22 +236,20 @@ if (!$user_css) {
     my $attr = $RT::System->FirstAttribute('UserCSS');
     $user_css = $attr ? $attr->Content : '/* Page */
 body {}
-input[type="reset"], input[type="submit"], input[class="button"] {}
 
-/* Page content */
-div#body {}
+/* Header */
+div#quickbar {}
+#main-navigation #app-nav > li {}
+#main-navigation #app-nav > li > a {}
 
 /* Page title */
 div#header h1 {}
 
-/* Header */
-div#quickbar {}
+/* Page content */
+div#body {}
 
-/* Navigation */
-div#nav {}
-
-/* Page menu */
-div#page-navigation ul#page-menu {}
+/* Buttons */
+input[type="reset"], input[type="submit"], input[class="button"] {}
 ';
 
 }
