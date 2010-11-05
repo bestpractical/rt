@@ -54,11 +54,11 @@
 
 =head1 NAME
 
-  RT::FM::ClassCollection -- Class Description
+  RT::Classes -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::FM::ClassCollection
+  use RT::Classes
 
 =head1 DESCRIPTION
 
@@ -68,17 +68,17 @@
 =cut
 
 no warnings 'redefine';
-package RT::FM::ClassCollection;
+package RT::Classes;
 
-use RT::FM::SearchBuilder;
-use RT::FM::Class;
+use RT::SearchBuilder;
+use RT::Class;
 
-use base qw(RT::FM::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'FM_Classes';
+    $self->{'table'} = 'Classes';
     $self->{'primary_key'} = 'id';
 
 
@@ -94,45 +94,15 @@ sub _Init {
 
 =item NewItem
 
-Returns an empty new RT::FM::Class item
+Returns an empty new RT::Class item
 
 =cut
 
 sub NewItem {
     my $self = shift;
-    return(RT::FM::Class->new($self->CurrentUser));
+    return(RT::Class->new($self->CurrentUser));
 }
 
-        eval "require RT::FM::ClassCollection_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-        eval "require RT::FM::ClassCollection_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-
-
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::FM::ClassCollection_Overlay, RT::FM::ClassCollection_Local
-
-=cut
-
+RT::Base->_ImportOverlays();
 
 1;

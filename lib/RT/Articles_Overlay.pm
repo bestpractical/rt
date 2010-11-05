@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 
-package RT::FM::ArticleCollection;
+package RT::Articles;
 
 no warnings qw/redefine/;
 
@@ -306,7 +306,7 @@ sub LimitCustomField {
                 ALIAS => $fields,
                 FIELD => 'LookupType',
                 VALUE =>
-                  RT::FM::Article->new($RT::SystemUser)->CustomFieldLookupType()
+                  RT::Article->new($RT::SystemUser)->CustomFieldLookupType()
             );
 
         }
@@ -379,7 +379,7 @@ sub LimitTopics {
     my $self   = shift;
     my @topics = @_;
 
-    my $topics = $self->NewAlias('FM_ObjectTopics');
+    my $topics = $self->NewAlias('ObjectTopics');
     $self->Limit(
         ALIAS           => $topics,
         FIELD           => 'Topic',
@@ -391,7 +391,7 @@ sub LimitTopics {
     $self->Limit(
         ALIAS => $topics,
         FIELD => 'ObjectType',
-        VALUE => 'RT::FM::Article',
+        VALUE => 'RT::Article',
     );
     $self->Join(
         ALIAS1 => 'main',
@@ -479,7 +479,7 @@ sub LimitHotlistClasses {
     my $classes = $self->Join(
         ALIAS1 => 'main',
         FIELD1 => 'Class',
-        TABLE2 => 'FM_Classes',
+        TABLE2 => 'Classes',
         FIELD2 => 'id',
     );
     $self->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
@@ -507,7 +507,7 @@ sub LimitAppliedClasses {
     my $oc_alias = $self->Join(
         ALIAS1 => 'main',
         FIELD1 => 'Class',
-        TABLE2 => 'FM_ObjectClasses',
+        TABLE2 => 'ObjectClasses',
         FIELD2 => 'Class'
     );
 
@@ -533,7 +533,7 @@ sub LimitAppliedClasses {
                   ENTRYAGGREGATOR => 'OR' );
     $self->Limit( ALIAS => $oc_alias,
                   FIELD => 'ObjectType',
-                  VALUE => 'RT::FM::System',
+                  VALUE => 'RT::System',
                   SUBCLAUSE => $subclause,
                   ENTRYAGGREGATOR => 'AND' );
     $self->_CloseParen($subclause);

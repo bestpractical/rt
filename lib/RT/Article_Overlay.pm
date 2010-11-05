@@ -45,16 +45,15 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::FM::Article;
+package RT::Article;
 
 use strict;
 
 no warnings qw/redefine/;
 
-use RT::FM;
-use RT::FM::ArticleCollection;
-use RT::FM::ObjectTopicCollection;
-use RT::FM::ClassCollection;
+use RT::Articles;
+use RT::ObjectTopics;
+use RT::Classes;
 use RT::Links;
 use RT::CustomFields;
 use RT::URI::fsck_com_rtfm;
@@ -98,7 +97,7 @@ sub Create {
         @_
     );
 
-    my $class = RT::FM::Class->new($RT::SystemUser);
+    my $class = RT::Class->new($RT::SystemUser);
     $class->Load( $args{'Class'} );
     unless ( $class->Id ) {
         return ( 0, $self->loc('Invalid Class') );
@@ -232,7 +231,7 @@ sub ValidateName {
         return (1);
     }
 
-    my $temp = RT::FM::Article->new($RT::SystemUser);
+    my $temp = RT::Article->new($RT::SystemUser);
     $temp->LoadByCols( Name => $name );
     if ( $temp->id && 
          (!$self->id || ($temp->id != $self->id ))) {
@@ -326,7 +325,7 @@ sub Delete {
 
 =item Children
 
-Returns an RT::FM::ArticleCollection object which contains
+Returns an RT::Articles object which contains
 all articles which have this article as their parent.  This 
 routine will not recurse and will not find grandchildren, great-grandchildren, uncles, aunts, nephews or any other such thing.  
 
@@ -334,7 +333,7 @@ routine will not recurse and will not find grandchildren, great-grandchildren, u
 
 sub Children {
     my $self = shift;
-    my $kids = new RT::FM::ArticleCollection( $self->CurrentUser );
+    my $kids = new RT::Articles( $self->CurrentUser );
 
     unless ( $self->CurrentUserHasRight('ShowArticle') ) {
         $kids->LimitToParent( $self->Id );
@@ -445,7 +444,7 @@ sub URIObj {
 sub Topics {
     my $self = shift;
 
-    my $topics = new RT::FM::ObjectTopicCollection( $self->CurrentUser );
+    my $topics = new RT::ObjectTopics( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('ShowArticle') ) {
         $topics->LimitToObject($self);
     }
@@ -463,7 +462,7 @@ sub AddTopic {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $t = new RT::FM::ObjectTopic( $self->CurrentUser );
+    my $t = new RT::ObjectTopic( $self->CurrentUser );
     my ($tid) = $t->Create(
         Topic      => $args{'Topic'},
         ObjectType => ref($self),
@@ -487,7 +486,7 @@ sub DeleteTopic {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $t = new RT::FM::ObjectTopic( $self->CurrentUser );
+    my $t = new RT::ObjectTopic( $self->CurrentUser );
     $t->LoadByCols(
         Topic      => $args{'Topic'},
         ObjectId   => $self->Id,
@@ -531,7 +530,7 @@ sub CurrentUserHasRight {
         $self->CurrentUser->HasRight(
             Right        => $right,
             Object       => $self,
-            EquivObjects => [ $RT::FM::System, $RT::System, $self->ClassObj ]
+            EquivObjects => [ $RT::System, $RT::System, $self->ClassObj ]
         )
     );
 
@@ -591,11 +590,11 @@ sub _Value {
 # }}}
 
 sub CustomFieldLookupType {
-    "RT::FM::Class-RT::FM::Article";
+    "RT::Class-RT::Article";
 }
 
 # _LookupId is the id of the toplevel type object the customfield is joined to
-# in this case, that's an RT::FM::Class.
+# in this case, that's an RT::Class.
 
 sub _LookupId {
     my $self = shift;

@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::FM::ObjectClassCollection;
+package RT::ObjectClasses;
 
 use strict;
 use warnings;

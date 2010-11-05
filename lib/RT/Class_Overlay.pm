@@ -45,18 +45,18 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::FM::Class;
+package RT::Class;
 
 use strict;
 use warnings;
 no warnings qw/redefine/;
 
-use RT::FM::System;
+use RT::System;
 use RT::CustomFields;
 use RT::ACL;
-use RT::FM::ArticleCollection;
-use RT::FM::ObjectClass;
-use RT::FM::ObjectClassCollection;
+use RT::Articles;
+use RT::ObjectClass;
+use RT::ObjectClasses;
 
 
 =head2 Load IDENTIFIER
@@ -102,7 +102,7 @@ $RIGHTS = {
 # stuff the rights into a hash of rights that can exist.
 
 # Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::FM::Class'} = 1;
+$RT::ACE::OBJECT_TYPES{'RT::Class'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
     $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
@@ -148,7 +148,7 @@ sub Create {
     unless (
         $self->CurrentUser->HasRight(
             Right  => 'AdminClass',
-            Object => $RT::FM::System
+            Object => $RT::System
         )
       )
     {
@@ -169,7 +169,7 @@ sub ValidateName {
     my $newval = shift;
 
     return undef unless ($newval);
-    my $obj = RT::FM::Class->new($RT::SystemUser);
+    my $obj = RT::Class->new($RT::SystemUser);
     $obj->Load($newval);
     return undef if ( $obj->Id );
     return 1;
@@ -215,8 +215,8 @@ sub CurrentUserHasRight {
     return (
         $self->CurrentUser->HasRight(
             Right        => $right,
-            Object       => ( $self->Id ? $self : $RT::FM::System ),
-            EquivObjects => [ $RT::System, $RT::FM::System ]
+            Object       => ( $self->Id ? $self : $RT::System ),
+            EquivObjects => [ $RT::System, $RT::System ]
         )
     );
 
@@ -229,7 +229,7 @@ sub ArticleCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeClass') ) {
         $cfs->LimitToGlobalOrObjectId( $self->Id );
-        $cfs->LimitToLookupType( RT::FM::Article->CustomFieldLookupType );
+        $cfs->LimitToLookupType( RT::Article->CustomFieldLookupType );
     }
     return ($cfs);
 }
@@ -292,7 +292,7 @@ sub _AppliedTo {
         TYPE   => 'LEFT',
         ALIAS1 => 'main',
         FIELD1 => 'id',
-        TABLE2 => 'FM_ObjectClasses',
+        TABLE2 => 'ObjectClasses',
         FIELD2 => 'ObjectId',
     );
     $res->Limit(
@@ -316,9 +316,9 @@ sub IsApplied {
     my $self = shift;
     my $id = shift;
     return unless defined $id;
-    my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
+    my $oc = RT::ObjectClass->new( $self->CurrentUser );
     $oc->LoadByCols( Class=> $self->id, ObjectId => $id,
-                     ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ));
+                     ObjectType => ( $id ? 'RT::Queue' : 'RT::System' ));
     return undef unless $oc->id;
     return $oc;
 }
@@ -360,17 +360,17 @@ sub AddToObject {
             if $self->IsApplied( 0 );
     }
     else {
-        my $applied = RT::FM::ObjectClassCollection->new( $self->CurrentUser );
+        my $applied = RT::ObjectClasses->new( $self->CurrentUser );
         $applied->LimitToClass( $self->id );
         while ( my $record = $applied->Next ) {
             $record->Delete;
         }
     }
 
-    my $oc = RT::FM::ObjectClass->new( $self->CurrentUser );
+    my $oc = RT::ObjectClass->new( $self->CurrentUser );
     my ( $oid, $msg ) = $oc->Create(
         ObjectId => $id, Class => $self->id,
-        ObjectType => ( $id ? 'RT::Queue' : 'RT::FM::System' ),
+        ObjectType => ( $id ? 'RT::Queue' : 'RT::System' ),
     );
     return ( $oid, $msg );
 }

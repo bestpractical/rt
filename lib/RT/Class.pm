@@ -54,7 +54,7 @@
 
 =head1 NAME
 
-RT::FM::Topic
+RT::Class
 
 
 =head1 SYNOPSIS
@@ -66,16 +66,16 @@ RT::FM::Topic
 =cut
 
 no warnings 'redefine';
-package RT::FM::Topic;
-use RT::FM::Record; 
+package RT::Class;
+use RT::Record; 
 
 
-use base qw( RT::FM::Record );
+use base qw( RT::Record );
 
 sub _Init {
   my $self = shift; 
 
-  $self->Table('FM_Topics');
+  $self->Table('Classes');
   $self->SUPER::_Init(@_);
 }
 
@@ -87,11 +87,11 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  int(11) 'Parent'.
   varchar(255) 'Name'.
   varchar(255) 'Description'.
-  varchar(64) 'ObjectType'.
-  int(11) 'ObjectId'.
+  int(11) 'SortOrder'.
+  int(2) 'Disabled'.
+  int(2) 'HotList'.
 
 =cut
 
@@ -101,19 +101,19 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                Parent => '',
                 Name => '',
                 Description => '',
-                ObjectType => '',
-                ObjectId => '0',
+                SortOrder => '0',
+                Disabled => '0',
+                HotList => '0',
 
 		  @_);
     $self->SUPER::Create(
-                         Parent => $args{'Parent'},
                          Name => $args{'Name'},
                          Description => $args{'Description'},
-                         ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
+                         SortOrder => $args{'SortOrder'},
+                         Disabled => $args{'Disabled'},
+                         HotList => $args{'HotList'},
 );
 
 }
@@ -124,24 +124,6 @@ sub Create {
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
-
-
-=cut
-
-
-=item Parent
-
-Returns the current value of Parent. 
-(In the database, Parent is stored as int(11).)
-
-
-
-=item SetParent VALUE
-
-
-Set Parent to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Parent will be stored as a int(11).)
 
 
 =cut
@@ -183,37 +165,91 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectType
+=item SortOrder
 
-Returns the current value of ObjectType. 
-(In the database, ObjectType is stored as varchar(64).)
-
-
-
-=item SetObjectType VALUE
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
 
 
-Set ObjectType to VALUE. 
+
+=item SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectType will be stored as a varchar(64).)
+(In the database, SortOrder will be stored as a int(11).)
 
 
 =cut
 
 
-=item ObjectId
+=item Disabled
 
-Returns the current value of ObjectId. 
-(In the database, ObjectId is stored as int(11).)
-
-
-
-=item SetObjectId VALUE
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as int(2).)
 
 
-Set ObjectId to VALUE. 
+
+=item SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectId will be stored as a int(11).)
+(In the database, Disabled will be stored as a int(2).)
+
+
+=cut
+
+
+=item HotList
+
+Returns the current value of HotList. 
+(In the database, HotList is stored as int(2).)
+
+
+
+=item SetHotList VALUE
+
+
+Set HotList to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, HotList will be stored as a int(2).)
+
+
+=cut
+
+
+=item Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=item Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=item LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=item LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
 
 
 =cut
@@ -225,51 +261,28 @@ sub _CoreAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
         Name => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Description => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        ObjectType => 
-		{read => 1, write => 1, type => 'varchar(64)', default => ''},
-        ObjectId => 
+        SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Disabled => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        HotList => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        Creator => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        Created => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
+        LastUpdatedBy => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        LastUpdated => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
 
  }
 };
 
-
-        eval "require RT::FM::Topic_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-        eval "require RT::FM::Topic_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-
-
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::FM::Topic_Overlay, RT::FM::Topic_Local
-
-=cut
-
+RT::Base->_ImportOverlays();
 
 1;

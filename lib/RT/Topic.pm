@@ -54,7 +54,7 @@
 
 =head1 NAME
 
-RT::FM::ObjectTopic
+RT::Topic
 
 
 =head1 SYNOPSIS
@@ -66,17 +66,16 @@ RT::FM::ObjectTopic
 =cut
 
 no warnings 'redefine';
-package RT::FM::ObjectTopic;
-use RT::FM::Record; 
-use RT::FM::Topic;
+package RT::Topic;
+use RT::Record; 
 
 
-use base qw( RT::FM::Record );
+use base qw( RT::Record );
 
 sub _Init {
   my $self = shift; 
 
-  $self->Table('FM_ObjectTopics');
+  $self->Table('Topics');
   $self->SUPER::_Init(@_);
 }
 
@@ -88,7 +87,9 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  int(11) 'Topic'.
+  int(11) 'Parent'.
+  varchar(255) 'Name'.
+  varchar(255) 'Description'.
   varchar(64) 'ObjectType'.
   int(11) 'ObjectId'.
 
@@ -100,13 +101,17 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                Topic => '0',
+                Parent => '',
+                Name => '',
+                Description => '',
                 ObjectType => '',
                 ObjectId => '0',
 
 		  @_);
     $self->SUPER::Create(
-                         Topic => $args{'Topic'},
+                         Parent => $args{'Parent'},
+                         Name => $args{'Name'},
+                         Description => $args{'Description'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
 );
@@ -124,37 +129,59 @@ Returns the current value of id.
 =cut
 
 
-=item Topic
+=item Parent
 
-Returns the current value of Topic. 
-(In the database, Topic is stored as int(11).)
-
-
-
-=item SetTopic VALUE
+Returns the current value of Parent. 
+(In the database, Parent is stored as int(11).)
 
 
-Set Topic to VALUE. 
+
+=item SetParent VALUE
+
+
+Set Parent to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Topic will be stored as a int(11).)
+(In the database, Parent will be stored as a int(11).)
 
 
 =cut
 
 
-=item TopicObj
+=item Name
 
-Returns the Topic Object which has the id returned by Topic
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(255).)
+
+
+
+=item SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
 
 
 =cut
 
-sub TopicObj {
-	my $self = shift;
-	my $Topic =  RT::FM::Topic->new($self->CurrentUser);
-	$Topic->Load($self->Topic());
-	return($Topic);
-}
+
+=item Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=item SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
 
 =item ObjectType
 
@@ -198,8 +225,12 @@ sub _CoreAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        Topic => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Parent => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Name => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Description => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         ObjectType => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
         ObjectId => 
@@ -208,37 +239,6 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::FM::ObjectTopic_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-        eval "require RT::FM::ObjectTopic_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-
-
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::FM::ObjectTopic_Overlay, RT::FM::ObjectTopic_Local
-
-=cut
-
+RT::Base->_ImportOverlays();
 
 1;

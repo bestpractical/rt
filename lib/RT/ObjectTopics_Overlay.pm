@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::FM::ObjectTopicCollection;
+package RT::ObjectTopics;
 
 use strict;
 no warnings qw(redefine);

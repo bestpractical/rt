@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::FM::Topic;
+package RT::Topic;
 
 use strict;
 no warnings qw(redefine);
@@ -74,18 +74,18 @@ sub Create {
                 ObjectId => '0',
                 @_);
 
-    my $obj = $RT::FM::System;
+    my $obj = $RT::System;
     if ($args{ObjectId}) {
         $obj = $args{ObjectType}->new($self->CurrentUser);
         $obj->Load($args{ObjectId});
-        $obj = $RT::FM::System unless $obj->id;
+        $obj = $RT::System unless $obj->id;
     }
 
     return ( 0, $self->loc("Permission denied"))
       unless ( $self->CurrentUser->HasRight(
                                             Right        => "AdminTopics",
                                             Object       => $obj,
-                                            EquivObjects => [ $RT::FM::System, $obj ],
+                                            EquivObjects => [ $RT::System, $obj ],
                                            ) );
 
     $self->SUPER::Create(@_);
@@ -109,7 +109,7 @@ sub Delete {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $kids = new RT::FM::TopicCollection($self->CurrentUser);
+    my $kids = new RT::Topics($self->CurrentUser);
     $kids->LimitToKids($self->Id);
     while (my $topic = $kids->Next) {
         $topic->setParent($self->Parent);
@@ -138,7 +138,7 @@ sub DeleteAll {
     }
 
     $self->SUPER::Delete(@_);
-    my $kids = new RT::FM::TopicCollection($self->CurrentUser);
+    my $kids = new RT::Topics($self->CurrentUser);
     $kids->LimitToKids($self->Id);
     while (my $topic = $kids->Next) {
         $topic->DeleteAll;
@@ -161,7 +161,7 @@ Returns the parent Topic of this one.
 sub ParentObj {
   my $self = shift;
   my $id = $self->Parent;
-  my $obj = new RT::FM::Topic($self->CurrentUser);
+  my $obj = new RT::Topic($self->CurrentUser);
   $obj->Load($id);
   return $obj;
 }
@@ -172,7 +172,7 @@ sub ParentObj {
 
 =head2 Children
 
-Returns a TopicCollection object containing this topic's children,
+Returns a Topics object containing this topic's children,
 sorted by Topic.Name.
 
 =cut
@@ -180,7 +180,7 @@ sorted by Topic.Name.
 sub Children {
     my $self = shift;
     unless ($self->{'Children'}) {
-        $self->{'Children'} = RT::FM::TopicCollection->new($self->CurrentUser);
+        $self->{'Children'} = RT::Topics->new($self->CurrentUser);
         $self->{'Children'}->Limit('FIELD' => 'Parent',
                                    'VALUE' => $self->Id);
         $self->{'Children'}->OrderBy('FIELD' => 'Name');
@@ -221,7 +221,7 @@ sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
 
-    my $equiv = [ $RT::FM::System ];
+    my $equiv = [ $RT::System ];
     if ($self->ObjectId) {
         my $obj = $self->ObjectType->new($self->CurrentUser);
         $obj->Load($self->ObjectId);
@@ -239,7 +239,7 @@ sub CurrentUserHasRight {
         # system object.
         return ( $self->CurrentUser->HasRight(
                                               Right        => $right,
-                                              Object       => $RT::FM::System,
+                                              Object       => $RT::System,
                                              ) );
     }
     

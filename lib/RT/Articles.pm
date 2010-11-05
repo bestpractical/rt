@@ -54,11 +54,11 @@
 
 =head1 NAME
 
-  RT::FM::ArticleCollection -- Class Description
+  RT::Articles -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::FM::ArticleCollection
+  use RT::Articles
 
 =head1 DESCRIPTION
 
@@ -68,17 +68,17 @@
 =cut
 
 no warnings 'redefine';
-package RT::FM::ArticleCollection;
+package RT::Articles;
 
-use RT::FM::SearchBuilder;
-use RT::FM::Article;
+use RT::SearchBuilder;
+use RT::Article;
 
-use base qw(RT::FM::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'FM_Articles';
+    $self->{'table'} = 'Articles';
     $self->{'primary_key'} = 'id';
 
 
@@ -94,13 +94,13 @@ sub _Init {
 
 =item NewItem
 
-Returns an empty new RT::FM::Article item
+Returns an empty new RT::Article item
 
 =cut
 
 sub NewItem {
     my $self = shift;
-    return(RT::FM::Article->new($self->CurrentUser));
+    return(RT::Article->new($self->CurrentUser));
 }
 
 sub Search {
@@ -184,7 +184,7 @@ sub Search {
                 my $id = shift @Topics;
                 next if $topics{$id};
                 my $Topics =
-                  RT::FM::TopicCollection->new( $self->CurrentUser );
+                  RT::Topics->new( $self->CurrentUser );
                 $Topics->Limit( FIELD => 'Parent', VALUE => $id );
                 push @Topics, $_->Id while $_ = $Topics->Next;
                 $topics{$id}++;
@@ -197,7 +197,7 @@ sub Search {
 
     my %cfs;
     $customfields->LimitToLookupType(
-        RT::FM::Article->new( $self->CurrentUser )
+        RT::Article->new( $self->CurrentUser )
           ->CustomFieldLookupType );
     if ( $ARGS{'Class'} ) {
         my @Classes =
@@ -381,7 +381,7 @@ sub Search {
 
             # preprocess Classes, so we can search on class
             if ( $field eq 'Class' && $value ) {
-                my $class = RT::FM::Class->new($RT::SystemUser);
+                my $class = RT::Class->new($RT::SystemUser);
                 $class->Load($value);
                 $value = $class->Id;
             }
@@ -410,7 +410,7 @@ sub Search {
                 $op = '!=';
             }
             if ( $field eq 'Class' ) {
-                my $class = RT::FM::Class->new($RT::SystemUser);
+                my $class = RT::Class->new($RT::SystemUser);
                 $class->Load($value);
                 $value = $class->Id;
             }
@@ -443,36 +443,6 @@ sub Search {
     return 1;
 }
 
-        eval "require RT::FM::ArticleCollection_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-        eval "require RT::FM::ArticleCollection_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-
-
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::FM::ArticleCollection_Overlay, RT::FM::ArticleCollection_Local
-
-=cut
-
+RT::Base->_ImportOverlays();
 
 1;

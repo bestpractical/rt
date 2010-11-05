@@ -54,7 +54,7 @@
 
 =head1 NAME
 
-RT::FM::Article
+RT::Article
 
 
 =head1 SYNOPSIS
@@ -66,17 +66,17 @@ RT::FM::Article
 =cut
 
 no warnings 'redefine';
-package RT::FM::Article;
-use RT::FM::Record; 
-use RT::FM::Class;
+package RT::Article;
+use RT::Record; 
+use RT::Class;
 
 
-use base qw( RT::FM::Record );
+use base qw( RT::Record );
 
 sub _Init {
   my $self = shift; 
 
-  $self->Table('FM_Articles');
+  $self->Table('Articles');
   $self->SUPER::_Init(@_);
 }
 
@@ -214,7 +214,7 @@ Returns the Class Object which has the id returned by Class
 
 sub ClassObj {
 	my $self = shift;
-	my $Class =  RT::FM::Class->new($self->CurrentUser);
+	my $Class =  RT::Class->new($self->CurrentUser);
 	$Class->Load($self->Class());
 	return($Class);
 }
@@ -321,37 +321,6 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::FM::Article_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-        eval "require RT::FM::Article_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
-            die $@;
-        };
-
-
-
-
-=head1 SEE ALSO
-
-This class allows "overlay" methods to be placed
-into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
-
-These overlay files can contain new subs or subs to replace existing subs in this module.
-
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
-
-   no warnings qw(redefine);
-
-so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
-
-RT::FM::Article_Overlay, RT::FM::Article_Local
-
-=cut
-
+RT::Base->_ImportOverlays();
 
 1;
