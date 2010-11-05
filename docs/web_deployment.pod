@@ -23,10 +23,10 @@ server with:
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
-See below configuration instructions for mod_perl 2.x
+See below configuration instructions for mod_perl 2.x.
 
 To install RT with mod_perl 1.x, you'll need to install the
-apache database connection cache. To make sure it's installed, run
+Apache database connection cache. To make sure it's installed, run
 the following command:
 
     perl -MCPAN -e'install "Apache::DBI"'
