@@ -1,18 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 14;
+use RT::Test tests => 12;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
 diag "Create a queue CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {

@@ -64,7 +64,7 @@ $m->content_contains("Create");
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
@@ -141,7 +141,7 @@ $ticket->Create(
 	Subject   => 'dashboard test',
 );
 
-$m->follow_link_ok({text => 'different dashboard'});
+$m->follow_link_ok({id => 'page-show'});
 $m->content_contains("50 highest priority tickets I own");
 $m->content_contains("50 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
@@ -231,7 +231,7 @@ $m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard system dashboard");
 
-$m->follow_link_ok({text => 'Queries'});
+$m->follow_link_ok({id => 'page-content'});
 
 $form = $m->form_name('Dashboard-Searches-body');
 @input = $form->find_input('Searches-body-Available');
@@ -244,7 +244,7 @@ $m->content_contains("Dashboard updated");
 
 $m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
 
-$m->follow_link_ok({text => 'system dashboard'});
+$m->follow_link_ok({id => 'page-show'});
 $m->content_contains("personal search", "saved search shows up");
 $m->content_contains("dashboard test", "matched ticket shows up");
 

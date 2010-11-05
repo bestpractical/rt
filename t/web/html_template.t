@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 16;
 use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -17,9 +17,7 @@ diag('make Autoreply template a html one and add utf8 chars')
   if $ENV{TEST_VERBOSE};
 
 {
-    $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-    $m->follow_link_ok( { text => 'Global' },        '-> Global' );
-    $m->follow_link_ok( { text => 'Templates' },     '-> Templates' );
+    $m->follow_link_ok( { id => 'config-global-templates' },     '-> Templates' );
     $m->follow_link_ok( { text => 'Autoreply' },     '-> Autoreply' );
 
     $m->submit_form(

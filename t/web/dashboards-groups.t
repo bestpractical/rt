@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 40;
+use RT::Test nodata => 1, tests => 39;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -53,16 +53,15 @@ ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user r
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok("$url/Dashboards");
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'inner dashboard');

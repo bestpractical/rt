@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 46;
+use RT::Test tests => 43;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -13,11 +13,7 @@ my $cf_name = 'test select one value';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -54,11 +50,10 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 diag "apply the CF to General queue";
 {
-    $m->follow_link( text => 'Queues' );
-    $m->title_is(q/Admin queues/, 'admin-queues screen');
+    $m->follow_link( id => 'config-queues');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( text => 'Ticket Custom Fields' );
+    $m->follow_link( id => 'page-ticket-custom-fields');
     $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
 
     $m->form_name('EditCustomFields');
@@ -91,7 +86,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF";
 diag "check that values of the CF are case insensetive(asd vs. ASD)";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( id => 'page-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
@@ -113,7 +108,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)";
 diag "check that 0 is ok value of the CF";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( id => 'page-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
@@ -137,7 +132,7 @@ diag "check that 0 is ok value of the CF";
 diag "check that we can set empty value when the current is 0";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( id => 'page-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 

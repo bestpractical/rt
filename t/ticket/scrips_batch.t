@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => '19';
+use RT::Test tests => '17';
 use_ok('RT');
 use_ok('RT::Ticket');
 
@@ -16,11 +16,9 @@ ok $m->login, 'logged in as root';
 
 my $sid;
 {
-    $m->follow_link_ok( { text => 'Configuration' } );
-    $m->follow_link_ok( { text => 'Queues' } );
+    $m->follow_link_ok( { id => 'config-queues' } );
     $m->follow_link_ok( { text => $queue->Name } );
-    $m->follow_link_ok( { text => 'Scrips' } );
-    $m->follow_link_ok( { url_regex => qr'Scrip.html\?create=1' } );
+    $m->follow_link_ok( { id => 'page-scrips-create'});
     $m->form_name('ModifyScrip');
     $m->field('Scrip-new-Description' => 'test');
     $m->select('Scrip-new-ScripCondition' => 'On Transaction');

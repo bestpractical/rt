@@ -2,14 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => 12;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
-$m->follow_link_ok({ text => 'Configuration' });
-$m->follow_link_ok({ text => 'Global' });
-$m->follow_link_ok({ text => 'Group Rights' });
+$m->follow_link_ok({ id => 'config-global-group-rights'});
 
 
 sub get_rights {

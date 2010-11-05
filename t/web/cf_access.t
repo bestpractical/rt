@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 26;
+use RT::Test tests => 23;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -13,11 +13,7 @@ ok $m->login, 'logged in';
 
 diag "Create a CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -33,12 +29,10 @@ diag "apply the CF to General queue";
 my ( $cf, $cfid, $tid );
 {
     $m->title_is(q/Created CustomField img/, 'admin-cf created');
-    $m->follow_link( text => 'Queues' );
-    $m->title_is(q/Admin queues/, 'admin-queues screen');
+    $m->follow_link( id => 'config-queues');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( text => 'Ticket Custom Fields' );
-
+    $m->follow_link( id => 'page-ticket-custom-fields');
     $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
     $m->form_name('EditCustomFields');
 
@@ -113,7 +107,7 @@ diag "check that we have no the CF on the create"
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is created succesfully";
 
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( id => 'page-basics');
     $m->content_lacks('Upload multiple images', 'has no upload image field');
     $form = $m->form_name('TicketModify');
     $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";
@@ -156,9 +150,7 @@ diag "create a ticket with an image";
 }
 
 $m->get( $m->rt_base_url );
-$m->follow_link( text => 'Tickets' );
-$m->follow_link( text => 'New Query' );
-
+$m->follow_link( id => 'search-new');
 $m->title_is(q/Query Builder/, 'Query building');
 $m->submit_form(
     form_name => "BuildQuery",

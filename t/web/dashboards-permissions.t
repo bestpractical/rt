@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 7;
+use RT::Test nodata => 1, tests => 6;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -28,9 +28,8 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok("$url/Dashboards");
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok( {id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");

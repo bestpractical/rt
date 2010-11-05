@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 44;
+use RT::Test tests => 42;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -16,11 +16,7 @@ my $cf_name = 'test cf datetime';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
