@@ -317,14 +317,14 @@ if ( $request_path =~ qr'Dashboards/(\d+)?' ) {
         $obj->LoadById($id);
         if ( $obj and $obj->id ) {
             my $tabs = PageMenu;
-            $tabs->child( loc('Basics'),
+            $tabs->child( basics => title => loc('Basics'),
                           path => "/Dashboards/Modify.html?id=" . $obj->id );
-            $tabs->child( loc('Content'),
+            $tabs->child( content => title => loc('Content'),
                           path => "/Dashboards/Queries.html?id=" . $obj->id );
-            $tabs->child( loc('Subscription'),
+            $tabs->child( subscription => title => loc('Subscription'),
                       path => "/Dashboards/Subscription.html?id=" . $obj->id )
                 if $obj->CurrentUserCanSubscribe;
-            $tabs->child( loc('Show'),
+            $tabs->child( show => title =>loc('Show'),
                         path => "/Dashboards/" . $obj->id . "/" . $obj->Name )
 
         }
@@ -348,24 +348,24 @@ if ( $request_path =~ qr'/SelfService' ) {
 
     my $TOP = Menu();
 
-    $TOP->child( loc('Open tickets'),   path => '/SelfService/', );
-    $TOP->child( loc('Closed tickets'), path => '/SelfService/Closed.html', );
+    $TOP->child( open => title => loc('Open tickets'),   path => '/SelfService/', );
+    $TOP->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html', );
     if ( $queue_count > 1 ) {
-        $TOP->child( loc('New ticket'),
+        $TOP->child( new => title => loc('New ticket'),
                      path => '/SelfService/CreateTicketInQueue.html' );
     } else {
-        $TOP->child( loc('New ticket'),
+        $TOP->child( new => title => loc('New ticket'),
                      path => '/SelfService/Create.html?queue=' . $queue_id );
     }
 
     if ( $session{'CurrentUser'}
          ->HasRight( Right => 'ModifySelf', Object => $RT::System ) )
     {
-        $TOP->child( loc('Preferences'), path => '/SelfService/Prefs.html' );
+        $TOP->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 
     # XXX TODO RENDER GOTO TICKET WIDGET
-    #Menu->child( B =>  html => $m->scomp('GotoTicket'))
+    Menu->child( goto =>  title => $m->scomp('GotoTicket'), escape_title => 0)
 }
 
 if ( $request_path =~ qr'Admin/Queues' ) {
@@ -430,16 +430,16 @@ if ( $request_path =~ qr'/Admin/Users' ) {
                                  'current' => title => $obj->Name,
                                  path => "/Admin/Users/Modify.html?id=" . $id,
         );
-        $tabs->child( loc('Basics'),
+        $tabs->child( basics => title => loc('Basics'),
                       path => "/Admin/Users/Modify.html?id=" . $id );
-        $tabs->child( loc('Memberships'),
+        $tabs->child( memberships => title => loc('Memberships'),
                       path => "/Admin/Users/Memberships.html?id=" . $id );
-        $tabs->child( loc('History'),
+        $tabs->child( history => title => loc('History'),
                       path => "/Admin/Users/History.html?id=" . $id );
-        $tabs->child( loc('RT at a glance'),
+        $tabs->child( 'my-rt' => title => loc('RT at a glance'),
                       path => "/Admin/Users/MyRT.html?id=" . $id );
         if ( RT->Config->Get('GnuPG')->{'enable'} ) {
-            $tabs->child( loc('GnuPG'),
+            $tabs->child( pgp => title => loc('GnuPG'),
                           path => "/Admin/Users/GnuPG.html?id=" . $id );
         }
     }
@@ -452,17 +452,17 @@ if ( $request_path =~ qr'Admin/Groups' ) {
         $obj->Load($id);
         my $tabs = PageMenu->child( $obj->Name,
                     path => "/Admin/Groups/Modify.html?id=" . $id );
-        $tabs->child(
+        $tabs->child( basics => title =>
                   loc('Basics') => path => "/Admin/Groups/Modify.html?id="
                       . $obj->id );
-        $tabs->child(
+        $tabs->child( members => title =>
                 loc('Members') => path => "/Admin/Groups/Members.html?id="
                     . $obj->id );
-        $tabs->child( loc('Group Rights') => path =>
+        $tabs->child( 'group-rights' => title =>loc('Group Rights') => path =>
                       "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-        $tabs->child( loc('User Rights') => path =>
+        $tabs->child( 'user-rights' => title => loc('User Rights') => path =>
                       "/Admin/Groups/UserRights.html?id=" . $obj->id );
-        $tabs->child(
+        $tabs->child( history => title =>
                 loc('History') => path => "/Admin/Groups/History.html?id="
                     . $obj->id );
     }
