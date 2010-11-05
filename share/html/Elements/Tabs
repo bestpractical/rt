@@ -627,6 +627,12 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
                          : $current_search->{'RowsPerPage'}
                        )
                      );
+    for my $field (qw(Order OrderBy)) {
+        if (ref($query_args{$field}) eq 'ARRAY') {
+        $query_args{$field} = join("|",@{$query_args{$field}});
+        }
+    }
+
 
     $args = "?" . $query_string->(%query_args);
 
