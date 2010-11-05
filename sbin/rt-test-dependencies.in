@@ -233,6 +233,7 @@ $deps{'PSGI'} = [ text_to_hash( << '.') ];
 CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
 Plack 0.9942
+Plack::Handler::Starlet
 Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
 Plack::Middleware::Test::StashWarnings
