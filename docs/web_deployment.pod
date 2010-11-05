@@ -36,24 +36,50 @@ it knows where to find RT:
 
     <VirtualHost your.ip.address>
         ServerName your.rt.server.hostname
+        ServerRoot /usr
+        ServerAdmin root@localhost
 
-        DocumentRoot /opt/rt3/share/html
-        AddDefaultCharset UTF-8
+        LoadModule authz_host_module modules/mod_authz_host.so
+        LoadModule log_config_module modules/mod_log_config.so
+        LoadModule env_module modules/mod_env.so
+        LoadModule alias_module modules/mod_alias.so
+        LoadModule perl_module modules/mod_perl.so
+
+        <IfModule !mpm_netware_module>
+        <IfModule !mpm_winnt_module>
+        User rt
+        Group staff
+        </IfModule>
+        </IfModule>
+
+        PerlModule Apache::DBI
 
         # optional apache logs for RT
         # ErrorLog /opt/rt3/var/log/apache.error
         # TransferLog /opt/rt3/var/log/apache.access
+        # LogLevel debug
 
-        PerlModule Apache::DBI
-        PerlRequire /opt/rt3/bin/webmux.pl
+        <Directory />
+            Options FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Deny from all
+        </Directory>
 
-        <Location /NoAuth/images>
-            SetHandler default
-        </Location>
-        <Location />
+        AddDefaultCharset UTF-8
+        PerlSetEnv RT_SITE_CONFIG /opt/rt3/etc/RT_SiteConfig.pm
+
+        RedirectMatch permanent (.*)/$ $1/index.html
+
+        DocumentRoot "/opt/rt3/share/html"
+        <Directory "/opt/rt3/share/html">
+            Order allow,deny
+            Allow from all
+
             SetHandler perl-script
-            PerlHandler RT::Mason
-        </Location>
+            PerlHandler Plack::Handler::Apache1
+            PerlSetVar psgi_app /opt/rt3/sbin/rt-server
+        </Directory>
     </VirtualHost>
 
 =head3 mod_perl 2.xx
