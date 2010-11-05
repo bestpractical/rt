@@ -56,6 +56,24 @@ use base qw(Test::WWW::Mechanize);
 require RT::Test;
 require Test::More;
 
+sub new {
+    my ($class, @args) = @_;
+
+    if ($class->isa('Test::WWW::Mechanize::PSGI')) {
+        require RT::Interface::Web::Handler;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+        push @args, app => $app;
+    }
+
+    my $self = $class->SUPER::new(@args);
+    $self->cookie_jar(HTTP::Cookies->new);
+
+    return $self;
+}
+
 sub get_ok {
     my $self = shift;
     my $url = shift;
@@ -160,14 +178,13 @@ sub goto_create_ticket {
 
 sub get_warnings {
     my $self = shift;
-    my $server_class = 'RT::Interface::Web::Standalone';
-
-    my $url = $server_class->test_warning_path;
-
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    return unless $self->get_ok($url);
 
-    my @warnings = $server_class->decode_warnings($self->content);
+    return unless $self->get_ok('/__test_warnings');
+
+    use Storable 'thaw';
+
+    my @warnings = @{ thaw $self->content };
     return @warnings;
 }
 

@@ -146,9 +146,9 @@ RT::Init();
 }
 
 require RT::Interface::Web::Handler;
-$RT::Mason::Handler = RT::Interface::Web::Handler->new(
-    RT->Config->Get('MasonParameters')
-);
+# XXX: this is for the maybe-used package variable of the modperl handler: RT::Mason
+$RT::Mason::Handler = RT::Interface::Web::Handler->Init(undef,
+                                                        RT->Config->Get('MasonParameters'));
 
 # load more for mod_perl before forking
 RT::InitClasses( Heavy => 1 ) if $ENV{'MOD_PERL'} || $ENV{RT_WEBMUX_HEAVY_LOAD};

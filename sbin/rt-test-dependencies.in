@@ -63,7 +63,6 @@ GetOptions(
     'with-ORACLE',                        'with-FASTCGI', 'with-FASTCGI-SERVER',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
-    'with-STANDALONE',
 
     'with-GPG',
     'with-ICAL',
@@ -88,11 +87,11 @@ if ( $args{help} ) {
 # Set up defaults
 my %default = (
     'with-MASON' => 1,
+    'with-PSGI' => 1,
     'with-CORE' => 1,
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEV' => @RT_DEVEL_MODE@, 
-    'with-STANDALONE' => 1,
     'with-GPG' => @RT_GPG@,
     'with-ICAL' => 1,
     'with-SMTP' => 1,
@@ -229,10 +228,13 @@ JavaScript::Minifier
 IPC::Run3
 .
 
-$deps{'STANDALONE'} = [ text_to_hash( << '.') ];
-HTTP::Server::Simple 0.34
-HTTP::Server::Simple::Mason 0.14
-Net::Server
+$deps{'PSGI'} = [ text_to_hash( << '.') ];
+CGI::PSGI 0.12
+HTML::Mason::PSGIHandler 0.52
+Plack
+Test::WWW::Mechanize::PSGI
+CGI::Emulate::PSGI
+Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -265,13 +267,10 @@ XML::Simple
 File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
-Test::HTTP::Server::Simple 0.09
-Test::HTTP::Server::Simple::StashWarnings 0.02
 Log::Dispatch::Perl
 Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
 Test::MockTime
-HTTP::Server::Simple::Mason 0.13
 Log::Dispatch::Perl
 Web::Scraper
 .
@@ -633,10 +632,6 @@ list the status of all dependencies, rather than just the missing ones.
 =item with-sqlite 
 
     database interface and driver for sqlite (unsupported)
-
-=item  with-standalone
-
-    libraries needed to support the standalone simple pure perl server
 
 =item with-fastcgi-server
 

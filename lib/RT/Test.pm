@@ -58,23 +58,6 @@ use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
 
-our $SKIP_REQUEST_WORK_AROUND = 0;
-
-use HTTP::Request::Common ();
-use Hook::LexWrap;
-wrap 'HTTP::Request::Common::form_data',
-   post => sub {
-       return if $SKIP_REQUEST_WORK_AROUND;
-       my $data = $_[-1];
-       if (ref $data) {
-       $data->[0] = Encode::encode_utf8($data->[0]);
-       }
-       else {
-       $_[-1] = Encode::encode_utf8($_[-1]);
-       }
-   };
-
-
 our @EXPORT = qw(is_empty diag parse_mail works fails);
 our ($port, $dbname);
 our @SERVERS;
@@ -990,6 +973,14 @@ sub get_abs_relocatable_dir {
     }
 }
 
+sub gnupg_homedir {
+    my $self = shift;
+    File::Temp->newdir(
+        DIR => $tmp{directory},
+        CLEANUP => 0,
+    );
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key  = shift;
@@ -1157,7 +1148,10 @@ sub started_ok {
         die "you are trying to use a test web server without db, try use noinitialdata => 1 instead";
     }
 
-    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
+
+    $ENV{'RT_TEST_WEB_HANDLER'} = undef
+        if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'plack';
     my ($server, $variant) = split /\+/, $which, 2;
 
     my $function = 'start_'. $server .'_server';
@@ -1167,34 +1161,70 @@ sub started_ok {
     return $self->$function( $variant, @_ );
 }
 
-sub start_standalone_server {
+sub start_plack_server {
     my $self = shift;
 
+    require Plack::Loader;
+    my $plack_server = Plack::Loader->load
+        ('Standalone',
+         port => $port,
+         server_ready => sub {
+             kill 'USR1' => getppid();
+         });
 
-    require RT::Interface::Web::Standalone;
+    my $pid = fork();
+    die "failed to fork" unless defined $pid;
 
-    # this may happen if we start two servers in the same test process
-    unless (RT::Interface::Web::Standalone->can('test_warning_path')) {
-        require Test::HTTP::Server::Simple::StashWarnings;
-        unshift @RT::Interface::Web::Standalone::ISA,
-            'Test::HTTP::Server::Simple::StashWarnings';
-        *RT::Interface::Web::Standalone::test_warning_path = sub {
-            "/__test_warnings";
-        };
+    if ($pid) {
+        # We are expecting a USR1 from the child process after it's
+        # ready to listen.
+        my $handled;
+        $SIG{USR1} = sub { $handled = 1};
+        sleep 15;
+        Test::More::diag "did not get expected USR1 for test server readiness"
+            unless $handled;
+        push @SERVERS, $pid;
+        my $Tester = Test::Builder->new;
+        $Tester->ok(1, @_);
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase;
+        # the attribute cache holds on to a stale dbh
+        delete $RT::System->{attributes};
+
+        return ("http://localhost:$port", RT::Test::Web->new);
     }
 
-    my $s = RT::Interface::Web::Standalone->new($port);
+    require POSIX;
+    if ( $^O !~ /MSWin32/ ) {
+        POSIX::setsid()
+            or die "Can't start a new session: $!";
+    }
 
-    my $ret = $s->started_ok;
-    push @SERVERS, $s->pids;
+    # stick this in a scope so that when $app is garbage collected,
+    # StashWarnings can complain about unhandled warnings
+    do {
+        require RT::Interface::Web::Handler;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
 
-    $RT::Handle = RT::Handle->new;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
 
-    # the attribute cache holds on to a stale dbh
-    delete $RT::System->{attributes};
-    return ($ret, RT::Test::Web->new);
+        $plack_server->run($app);
+    };
+
+    exit;
+}
+
+sub start_inline_server {
+    my $self = shift;
+
+    require Test::WWW::Mechanize::PSGI;
+    unshift @RT::Test::Web::ISA, 'Test::WWW::Mechanize::PSGI';
+
+    Test::More::ok(1, "psgi test server ok");
+    return ("http://localhost:$port", RT::Test::Web->new);
 }
 
 sub start_apache_server {
@@ -1220,6 +1250,7 @@ sub start_apache_server {
         document_root  => $RT::MasonComponentRoot,
         tmp_dir        => "$tmp{'directory'}",
         rt_bin_path    => $RT::BinPath,
+        rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
     );
     foreach (qw(log pid lock)) {

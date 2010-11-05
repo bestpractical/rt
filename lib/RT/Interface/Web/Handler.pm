@@ -85,12 +85,15 @@ sub DefaultHandlerArgs  { (
 
 =head2 new
 
+DEPRECATED: this method is to be removed as it's not the constructor of the class which is confusing
+
   Constructs a web handler of the appropriate class.
   Takes options to pass to the constructor.
 
 =cut
 
 sub new {
+    Carp::carp "DEPRECATED: call RT::Interface::Handler->Init instead";
     my $class = shift;
     $class->InitSessionDir;
 
@@ -100,6 +103,34 @@ sub new {
     else {
         goto &NewCGIHandler;
     }
+}
+
+=head2 Init
+
+  Initialize and return the mason web handler for current environment.
+
+=cut
+
+my $_handler;
+
+sub Init {
+    my $class = shift;
+    my $handler_class = shift;
+    my @handler_args = @_;
+
+    $class->InitSessionDir;
+
+    unless ($handler_class) {
+        if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
+            $handler_class = 'HTML::Mason::ApacheHandler';
+            unshift @handler_args, args_method => "CGI";
+        }
+        else {
+            $handler_class = 'HTML::Mason::CGIHandler';
+        }
+    }
+
+    $_handler = NewHandler($handler_class, @handler_args);
 }
 
 sub InitSessionDir {
@@ -153,8 +184,10 @@ sub NewCGIHandler {
     return NewHandler('HTML::Mason::CGIHandler', @_);
 }
 
+use UNIVERSAL::require;
 sub NewHandler {
     my $class = shift;
+    $class->require or die $!;
     my $handler = $class->new(
         DefaultHandlerArgs(),
         @_
@@ -165,6 +198,20 @@ sub NewHandler {
     return($handler);
 }
 
+=head2 _mason_dir_index
+
+=cut
+
+sub _mason_dir_index {
+    my ($self, $interp, $path) = @_;
+    if (   !$interp->comp_exists( $path )
+         && $interp->comp_exists( $path . "/index.html" ) )
+    {
+        return $path . "/index.html";
+    }
+
+    return $path;
+}
 
 =head2 HandleRequest
 
@@ -178,15 +225,11 @@ sub HandleRequest {
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
     RT::ConnectToDatabase() unless RT->InstallMode;
 
-    my $interp = $RT::Mason::Handler->interp;
-    if (   !$interp->comp_exists( $cgi->path_info )
-         && $interp->comp_exists( $cgi->path_info . "/index.html" ) )
-    {
-        $cgi->path_info( $cgi->path_info . "/index.html" );
-    }
+    my $interp = $_handler->interp;
+    $cgi->path_info( $self->_mason_dir_index($interp, $cgi->path_info));
 
     local $@;
-    eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
+    eval { $_handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);
     }
@@ -253,8 +296,79 @@ sub CleanupRequest {
     delete $RT::System->{attributes};
 
     # Explicitly remove any tmpfiles that GPG opened, and close their
-    # filehandles.
-    File::Temp::cleanup;
+    # filehandles.  unless we are doing inline psgi testing, which kills all the tmp file created by tests.
+    File::Temp::cleanup()
+            unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
+
+
+}
+
+
+# PSGI App
+
+use RT::Interface::Web::Handler;
+use CGI::Emulate::PSGI;
+use Plack::Request;
+use Plack::Util;
+use Encode qw(encode_utf8);
+
+sub PSGIApp {
+    my $self = shift;
+
+    # XXX: this is fucked
+    require HTML::Mason::CGIHandler;
+    require HTML::Mason::PSGIHandler::Streamy;
+    my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler::Streamy');
+
+    return sub {
+        my $env = shift;
+        RT::ConnectToDatabase() unless RT->InstallMode;
+
+        my $req = Plack::Request->new($env);
+
+        $env->{PATH_INFO} = $self->_mason_dir_index( $h->interp, $req->path_info);
+
+        my $ret;
+        {
+            # XXX: until we get rid of all $ENV stuff.
+            local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+
+            $ret = $h->handle_psgi($env);
+        }
+
+        $RT::Logger->crit($@) if $@ && $RT::Logger;
+        warn $@ if $@ && !$RT::Logger;
+        if (ref($ret) eq 'CODE') {
+            my $orig_ret = $ret;
+            $ret = sub {
+                my $respond = shift;
+                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+                $orig_ret->($respond);
+            };
+        }
+
+        return $self->_psgi_response_cb($ret,
+                                        sub {
+                                            $self->CleanupRequest()
+                                        });
+};
+
+sub _psgi_response_cb {
+    my $self = shift;
+    my ($ret, $cleanup) = @_;
+    Plack::Util::response_cb
+            ($ret,
+             sub {
+                 return sub {
+                     if (!defined $_[0]) {
+                         $cleanup->();
+                         return '';
+                     }
+                     return utf8::is_utf8($_[0]) ? encode_utf8($_[0]) : $_[0];
+                     return $_[0];
+                 };
+             });
+    }
 }
 
 1;

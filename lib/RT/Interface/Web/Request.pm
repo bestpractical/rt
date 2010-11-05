@@ -53,18 +53,19 @@ use warnings;
 
 our $VERSION = '0.30';
 use base qw(HTML::Mason::Request);
+use Params::Validate qw(:all);
 
 sub new {
     my $class = shift;
 
-    my $new_class = $HTML::Mason::ApacheHandler::VERSION ?
-        'HTML::Mason::Request::ApacheHandler' :
-            $HTML::Mason::CGIHandler::VERSION ?
-                'HTML::Mason::Request::CGI' :
-                    'HTML::Mason::Request';
+    my $new_class =
+         $HTML::Mason::ApacheHandler::VERSION ? 'HTML::Mason::Request::ApacheHandler' :
+         $HTML::Mason::PSGIHandler::VERSION   ? 'HTML::Mason::Request::PSGI' :
+         $HTML::Mason::CGIHandler::VERSION    ? 'HTML::Mason::Request::CGI' :
+                                                'HTML::Mason::Request';
 
     $class->alter_superclass( $new_class );
-    $class->valid_params( %{ $new_class->valid_params } );
+    $class->valid_params( %{ $new_class->valid_params },cgi_request => { type => OBJECT, optional => 1 } );
     return $class->SUPER::new(@_);
 }
 

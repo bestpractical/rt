@@ -128,8 +128,6 @@ RT_READABLE_DIR_MODE	=	0755
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	webmux.pl
-# RT_STANDALONE_SERVER is a stand-alone HTTP server
-RT_STANDALONE_SERVER	=	standalone_httpd
 # RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
 RT_SPEEDYCGI_HANDLER	=	mason_handler.scgi
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
@@ -151,7 +149,6 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 				$(RT_MAILGATE_BIN) \
 				$(RT_CLI_BIN) \
 				$(RT_CRON_BIN) \
-				$(RT_STANDALONE_SERVER) \
 				$(RT_SPEEDYCGI_HANDLER) \
 				$(RT_FASTCGI_HANDLER) \
 				$(RT_FASTCGI_SERVER) \
@@ -162,19 +159,21 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 
 
 SYSTEM_BINARIES		=	rt-attributes-viewer \
+				rt-clean-sessions \
 				rt-dump-database \
+				rt-email-dashboards \
+				rt-email-digest \
+				rt-email-group-admin \
+				rt-fulltext-indexer \
+				rt-server \
+				rt-server.fcgi \
+				rt-session-viewer \
 				rt-setup-database \
 				rt-setup-fulltext-index \
-				rt-fulltext-indexer \
-				rt-email-digest \
-				rt-email-dashboards \
-				rt-email-group-admin \
-				rt-server \
-				rt-session-viewer \
-				rt-test-dependencies \
-				rt-clean-sessions \
 				rt-shredder \
-				rt-validator
+				rt-test-dependencies \
+				rt-validator \
+				standalone_httpd
 
 
 ETC_FILES		=	acl.Pg \
@@ -491,7 +490,7 @@ reconfigure:
 	./configure
 
 start-httpd:
-	$(PERL) bin/standalone_httpd &
+	$(PERL) sbin/standalone_httpd &
 
 start-server:
 	$(PERL) sbin/rt-server &

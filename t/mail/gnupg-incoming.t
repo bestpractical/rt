@@ -12,6 +12,7 @@ BEGIN {
 
 use RT::Test::GnuPG
   tests         => 39,
+  actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
     homedir    => $homedir,

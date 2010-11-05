@@ -259,5 +259,5 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$m->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
+$omech->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
 

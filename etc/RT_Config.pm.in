@@ -1678,57 +1678,6 @@ Set( $AllowUserAutocompleteForUnprivileged, 0 );
 
 =back
 
-=head1 L<Net::Server> (rt-server) Configuration
-
-=over 4
-
-=item C<$StandaloneMinServers>, C<$StandaloneMaxServers>
-
-The absolute minimum and maximum number of servers that will be created to
-handle requests. Having multiple servers means that serving a slow page will
-affect other users less.
-
-=cut
-
-Set($StandaloneMinServers, 1);
-Set($StandaloneMaxServers, 1);
-
-=item C<$StandaloneMinSpareServers>, C<$StandaloneMaxSpareServers>
-
-These next two options can be used to scale up and down the number of servers
-to adjust to load. These two options will respect the C<$StandaloneMinServers
-> and C<$StandaloneMaxServers options>.
-
-=cut
-
-Set($StandaloneMinSpareServers, 0);
-Set($StandaloneMaxSpareServers, 0);
-
-=item C<$StandaloneMaxRequests>
-
-This sets the absolute maximum number of requests a single server will serve.
-Setting this would be useful if, for example, memory usage slowly crawls up
-every hit.
-
-=cut
-
-#Set($StandaloneMaxRequests, 50);
-
-=item C<%NetServerOptions>
-
-C<%NetServerOptions> is a hash of additional options to use for
-L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
-reverse_lookups to get the hostnames for all users with:
-
-C<Set(%NetServerOptions, (reverse_lookups => 1));>
-
-=cut
-
-Set(%NetServerOptions, ());
-
-=back
-
-
 =head1 UTF-8 Configuration
 
 =over 4

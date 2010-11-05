@@ -411,12 +411,13 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-email-group-admin
                  sbin/rt-server
+                 sbin/rt-server.fcgi
+                 sbin/standalone_httpd
                  sbin/rt-setup-fulltext-index
                  sbin/rt-fulltext-indexer
                  bin/fastcgi_server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi
-                 bin/standalone_httpd
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],
