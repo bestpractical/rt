@@ -49,7 +49,7 @@
 <& /Approvals/Elements/Tabs, Title => loc("My approvals") &>
 
 <& /Elements/ListActions, actions => \@actions &>
-<form method="post">
+<form method="post" name="Approvals" id="Approvals">
 <& Elements/PendingMyApproval, %ARGS &>
 <& /Elements/Submit, Label => loc('Go!') &>
 </form>

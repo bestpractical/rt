@@ -95,12 +95,12 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)";
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
     $m->submit;
     $m->content_unlike(qr/\Q$cf_name\E.*?changed/mi, 'field is not changed');
 
-    $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'the same value is still selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -117,14 +117,14 @@ diag "check that 0 is ok value of the CF";
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => 0 );
     $m->submit;
     $m->content_like(qr/\Q$cf_name\E.*?changed/mi, 'field is changed');
     $m->content_lacks('0 is no longer a value for custom field', 'no bad message in results');
 
-    $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'new value is selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -141,13 +141,13 @@ diag "check that we can set empty value when the current is 0";
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => '' );
     $m->submit;
     $m->content_contains('0 is no longer a value for custom field', '0 is no longer a value');
 
-    $value = $m->form_number(3)->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is $value, '', '(no value) is selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );

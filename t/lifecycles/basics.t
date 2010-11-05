@@ -82,7 +82,7 @@ diag "new ->(open it)-> open";
     }
 
     $m->follow_link_ok({text => 'Open It'});
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->click('SubmitTicket');
 
     is $tstatus->($tid), 'open', 'changed status';
@@ -111,7 +111,7 @@ diag "open ->(stall)-> stalled";
     }
 
     $m->follow_link_ok({text => 'Stall'});
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->click('SubmitTicket');
 
     is $tstatus->($tid), 'stalled', 'changed status';
@@ -149,7 +149,7 @@ diag "open -> deleted, only via modify";
     is $tstatus->($tid), 'open', 'ticket is open';
 
     $m->get_ok( '/Ticket/Modify.html?id='. $tid );
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketModify');
     ok my $input = $form->find_input('Status'), 'found status selector';
 
     my @form_values = $input->possible_values;
@@ -168,7 +168,7 @@ diag "deleted -> X via modify, only open is available";
     is $tstatus->($tid), 'deleted', 'ticket is deleted';
 
     $m->get_ok( '/Ticket/Modify.html?id='. $tid );
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketModify');
     ok my $input = $form->find_input('Status'), 'found status selector';
 
     my @form_values = $input->possible_values;

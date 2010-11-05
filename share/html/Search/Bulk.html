@@ -59,7 +59,7 @@
     &>
 
 <& /Elements/ListActions, actions => \@results &>
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
 % foreach my $var (qw(Query Format OrderBy Order Rows Page SavedChartSearchId)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}

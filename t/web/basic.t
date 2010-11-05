@@ -28,7 +28,7 @@ my $url = $agent->rt_base_url;
 {
     $agent->goto_create_ticket(1);
     is ($agent->status, 200, "Loaded Create.html");
-    $agent->form_number(3);
+    $agent->form_name('TicketCreate');
     my $string = Encode::decode_utf8("I18N Web Testing æøå");
     $agent->field('Subject' => "Ticket with utf8 body");
     $agent->field('Content' => $string);
@@ -49,7 +49,7 @@ my $url = $agent->rt_base_url;
 {
     $agent->goto_create_ticket(1);
     is ($agent->status, 200, "Loaded Create.html");
-    $agent->form_number(3);
+    $agent->form_name('TicketCreate');
 
     my $string = Encode::decode_utf8("I18N Web Testing æøå");
     $agent->field('Subject' => $string);
@@ -70,7 +70,7 @@ my $url = $agent->rt_base_url;
 # Update time worked in hours
 {
     $agent->follow_link( text_regex => qr/Basics/ );
-    $agent->submit_form( form_number => 3,
+    $agent->submit_form( form_name => 'TicketModify',
         fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
     );
 

@@ -52,7 +52,7 @@
     Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="GroupRights.html">
+<form method="post" action="GroupRights.html" id="ModifyGroupRights" name="ModifyGroupRights">
   <input type="hidden" class="hidden" name="id" value="<% $QueueObj->id %>" />
 
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results, principals => \@principals );

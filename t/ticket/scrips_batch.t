@@ -21,7 +21,7 @@ my $sid;
     $m->follow_link_ok( { text => $queue->Name } );
     $m->follow_link_ok( { text => 'Scrips' } );
     $m->follow_link_ok( { url_regex => qr'Scrip.html\?create=1' } );
-    $m->form_number(3);
+    $m->form_name('ModifyScrip');
     $m->field('Scrip-new-Description' => 'test');
     $m->select('Scrip-new-ScripCondition' => 'On Transaction');
     $m->select('Scrip-new-ScripAction' => 'User Defined');
@@ -32,9 +32,9 @@ my $sid;
     $m->submit;
     $m->content_contains("Scrip Created");
 
-    ($sid) = ($m->content =~ /Scrip\s*#(\d+)/);
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('ModifyScrip');
+    $sid = $form->value('id');
     is $m->value("Scrip-$sid-Description"), 'test', 'correct description';
     is value_name($form, "Scrip-$sid-ScripCondition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-ScripAction"), 'User Defined', 'correct action';
@@ -62,13 +62,13 @@ END
     $m->submit;
 
     $m->goto_create_ticket( $queue );
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->submit;
 
     is_deeply parse_handle($tmp_fh), ['Create'], 'Create';
 
     $m->follow_link_ok( { text => 'Resolve' } );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->field( "UpdateContent" => 'resolve it' );
     $m->click('SubmitTicket');
 

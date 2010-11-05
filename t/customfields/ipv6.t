@@ -100,7 +100,7 @@ diag "create a ticket and edit IP field using Edit page"
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
 
     is( $agent->value($cf_field), '', 'IP is empty' );
     $agent->field( $cf_field => $valid{$ip} );
@@ -120,7 +120,7 @@ diag "create a ticket and edit IP field using Edit page"
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $valid{$ip}, 'IP is in input box' );
     $agent->field( $cf_field => $new_ip );
     $agent->click('SubmitTicket');

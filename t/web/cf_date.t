@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
+use RT::Test tests => 33;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -88,7 +88,7 @@ diag 'check search build page';
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
 
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     my ($cf_op) =
       $m->find_all_inputs( type => 'option', name_regex => qr/test cf date/ );
     is_deeply(
@@ -112,7 +112,7 @@ diag 'check search build page';
     $m->content_lacks( '2010-05-06', 'did not get the wrong ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '<',
@@ -123,7 +123,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '>',
@@ -134,7 +134,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -145,7 +145,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 0 tickets', 'Found 0 tickets' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '<',
@@ -156,7 +156,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 0 tickets', 'Found 0 tickets' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '>',

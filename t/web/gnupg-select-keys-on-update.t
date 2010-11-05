@@ -33,7 +33,7 @@ diag "check that signing doesn't work if there is no key";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Sign => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -63,7 +63,7 @@ diag "check that things don't work if there is no key";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -77,7 +77,7 @@ diag "check that things don't work if there is no key";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok !$form->find_input( 'UseKey-rt-test@example.com' ), 'no key selector';
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -103,7 +103,7 @@ diag "check that things still doesn't work if key is not trusted";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -117,7 +117,7 @@ diag "check that things still doesn't work if key is not trusted";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 1, 'one option';
 
@@ -153,7 +153,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -167,7 +167,7 @@ diag "check that things still doesn't work if two keys are not trusted";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -201,7 +201,7 @@ diag "check that we see key selector even if only one key is trusted but there a
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -215,7 +215,7 @@ diag "check that we see key selector even if only one key is trusted but there a
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -231,7 +231,7 @@ diag "check that key selector works and we can select trusted key";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -245,7 +245,7 @@ diag "check that key selector works and we can select trusted key";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -266,7 +266,7 @@ diag "check encrypting of attachments";
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('TicketUpdate');
     $m->tick( Encrypt => 1 );
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
@@ -281,7 +281,7 @@ diag "check encrypting of attachments";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketUpdate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 

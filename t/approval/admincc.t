@@ -247,7 +247,7 @@ $m_ceo->content_contains('second approval', 'ceo: see both approvals');
 
 # now let's approve the first one via cto
 $m->submit_form(
-    form_number => 3,
+    form_name   => 'Approvals',
     fields      => { 'Approval-' . $first_approval->id . '-Action' => 'approve', },
 );
 
@@ -261,7 +261,7 @@ $m_ceo->content_lacks( 'first approval', 'ceo: first approval is gone' );
 $m_ceo->content_contains( 'second approval', 'ceo: second approval is still here' );
 
 $m_coo->submit_form(
-    form_number => 3,
+    form_name => 'Approvals',
     fields      => { 'Approval-' . $second_approval->id . '-Action' => 'approve', },
 );
 

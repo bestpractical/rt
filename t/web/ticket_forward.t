@@ -10,9 +10,8 @@ ok $m->login, 'logged in as root';
 RT::Test->set_mail_catcher;
 $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
 
-$m->form_number(3);
 $m->submit_form(
-    form_number => 3,
+    form_name   => 'TicketCreate',
     fields      => {
         Subject => 'test forward',
         Content => 'this is content',
@@ -27,7 +26,7 @@ diag "Foward Ticket" if $ENV{TEST_VERBOSE};
         'follow 1st Forward to forward ticket' );
 
     $m->submit_form(
-        form_number => 3,
+        form_name   => 'ForwardMessage',
         fields      => {
             To  => 'rt-test, rt-to@example.com',
             Cc  => 'rt-cc@example.com',
@@ -50,7 +49,7 @@ diag "Foward Transaction" if $ENV{TEST_VERBOSE};
 {
     $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
     $m->submit_form(
-        form_number => 3,
+        form_name   => 'ForwardMessage',
         fields      => {
             To  => 'rt-test, rt-to@example.com',
             Cc  => 'rt-cc@example.com',

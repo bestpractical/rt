@@ -16,7 +16,7 @@ sub get_rights {
     my $agent = shift;
     my $principal_id = shift;
     my $object = shift;
-    $agent->form_number(3);
+    $agent->form_name('ModifyGroupRights');
     my @inputs = $agent->current_form->find_input("SetRights-$principal_id-$object");
     my @rights = sort grep $_, map $_->possible_values, grep $_ && $_->value, @inputs;
     return @rights;
@@ -33,7 +33,7 @@ my ($everyone, $everyone_gid);
 diag "revoke all global rights from Everyone group";
 my @has = get_rights( $m, $everyone_gid, 'RT::System-1' );
 if ( @has ) {
-    $m->form_number(3);
+    $m->form_name('ModifyGroupRights');
     $m->untick("SetRights-$everyone_gid-RT::System-1", $_) foreach @has;
     $m->submit;
     
@@ -44,7 +44,7 @@ if ( @has ) {
 
 diag "grant SuperUser right to everyone";
 {
-    $m->form_number(3);
+    $m->form_name('ModifyGroupRights');
     $m->tick("SetRights-$everyone_gid-RT::System-1", 'SuperUser');
     $m->submit;
 
@@ -56,7 +56,7 @@ diag "grant SuperUser right to everyone";
 
 diag "revoke the right";
 {
-    $m->form_number(3);
+    $m->form_name('ModifyGroupRights');
     $m->untick("SetRights-$everyone_gid-RT::System-1", 'SuperUser');
     $m->submit;
 
@@ -69,7 +69,7 @@ diag "revoke the right";
 
 diag "return rights the group had in the beginning";
 if ( @has ) {
-    $m->form_number(3);
+    $m->form_name('ModifyGroupRights');
     $m->tick("SetRights-$everyone_gid-RT::System-1", $_) for @has;
     $m->submit;
 

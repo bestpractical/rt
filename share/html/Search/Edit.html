@@ -60,7 +60,7 @@
 
 <& Elements/NewListActions, actions => \@actions &>
 
-<form method="post" action="Build.html">
+<form method="post" action="Build.html" id="BuildQueryAdvanced" name="BuildQueryAdvanced">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
 <&|/Widgets/TitleBox, title => loc('Query'), &>

@@ -53,7 +53,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@results &>
-<form method="post" action="Modify.html" enctype="multipart/form-data">
+<form method="post" action="Modify.html" enctype="multipart/form-data" name="TicketModify" id="TicketModify">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 

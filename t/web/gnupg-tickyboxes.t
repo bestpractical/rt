@@ -66,7 +66,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( $queue => %$variant );
         $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$id" );
-        $m->form_number(3);
+        $m->form_name('TicketUpdate');
         if ( $variant->{'Encrypt'} ) {
             ok $m->value('Encrypt', 2), "encrypt tick box is checked";
         } else {

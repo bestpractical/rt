@@ -82,7 +82,7 @@ diag "create a ticket and edit IP field using Edit page"
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
 
     is( $agent->value($cf_field), '', 'IP is empty' );
     $agent->field( $cf_field => $val );
@@ -99,7 +99,7 @@ diag "create a ticket and edit IP field using Edit page"
     $val = "  172.16.0.2  \n  ";
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field), '172.16.0.1', 'IP is in input box' );
     $agent->field( $cf_field => $val );
     $agent->click('SubmitTicket');
@@ -278,7 +278,7 @@ diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
 {
     $agent->get_ok( $baseurl . "/Search/Build.html?Query=Queue='General'" );
     $agent->content_contains('CF.{IP}', 'got CF.{IP}');
-    my $form = $agent->form_number(3);
+    my $form = $agent->form_name('BuildQuery');
     my $op = $form->find_input("'CF.{IP}'Op");
     ok( $op, "found 'CF.{IP}'Op" );
     is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );

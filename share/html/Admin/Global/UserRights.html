@@ -51,7 +51,7 @@
     Title => loc('Modify global user rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="UserRights.html">
+<form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
   <& /Admin/Elements/EditRights, Context => $RT::System, Principals => \@principals &>
   <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
 </form>

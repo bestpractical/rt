@@ -124,7 +124,7 @@ diag 'check search build page';
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
 
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     my ($cf_op) =
       $m->find_all_inputs( type => 'option', name_regex => qr/test cf datetime/ );
     is_deeply(
@@ -159,7 +159,7 @@ diag 'check search build page';
     $m->login( 'shanghai', 'password', logout => 1 );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -170,7 +170,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '<',
@@ -181,7 +181,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 2 ticket', 'Found 2 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '>',
@@ -192,7 +192,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 2 tickets', 'Found 2 tickets' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -203,7 +203,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',

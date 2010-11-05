@@ -389,7 +389,7 @@ like($m->content, qr/$key1/, "first key shows up in preferences");
 like($m->content, qr/$key2/, "second key shows up in preferences");
 like($m->content, qr/$key1.*?$key2/s, "first key shows up before the second");
 
-$m->form_number(3);
+$m->form_name('ModifyPreferences');
 $m->select("PreferredKey" => $key2);
 $m->submit;
 

@@ -53,7 +53,7 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="post" action="GroupRights.html">
+  <form method="post" action="GroupRights.html" id="ModifyGroupRights" name="ModifyGroupRights">
     <input type="hidden" class="hidden" name="id" value="<% $CustomFieldObj->id %>" />
 
     <& /Admin/Elements/EditRights, Context => $CustomFieldObj, Principals => \@principals &>

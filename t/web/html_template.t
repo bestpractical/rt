@@ -22,8 +22,8 @@ diag('make Autoreply template a html one and add utf8 chars')
     $m->follow_link_ok( { text => 'Templates' },     '-> Templates' );
     $m->follow_link_ok( { text => 'Autoreply' },     '-> Autoreply' );
 
-    $m->form_number(3);
     $m->submit_form(
+        form_name => 'ModifyTemplate',
         fields => {
             Content => <<'EOF',
 Subject: AutoReply: {$Ticket->Subject}
@@ -46,9 +46,8 @@ diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
 {
     $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
 
-    $m->form_number(3);
     $m->submit_form(
-        form_number => 3,
+        form_name => 'TicketCreate',
         fields      => { Subject => '标题', Content => '测试', },
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );

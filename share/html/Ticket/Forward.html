@@ -54,7 +54,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Forward.html" name="ForwardMessage" method="post">
+<form action="Forward.html" id="ForwardMessage" name="ForwardMessage" method="post">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />

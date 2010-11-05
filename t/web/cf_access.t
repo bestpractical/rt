@@ -115,7 +115,7 @@ diag "check that we have no the CF on the create"
 
     $m->follow_link( text => 'Custom Fields' );
     $m->content_lacks('Upload multiple images', 'has no upload image field');
-    $form = $m->form_number(3);
+    $form = $m->form_name('TicketModify');
     $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 }

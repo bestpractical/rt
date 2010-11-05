@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@actions &>
   
-<form method="post" action="Scrip.html">
+<form method="post" action="Scrip.html" id="ModifyScrip" name="ModifyScrip">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
 
