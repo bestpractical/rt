@@ -44,6 +44,6 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-% if ( RT->can('Config') && RT->Config->can('Get') && RT->Config->Get('RTFM_TicketCreate')) {
+% if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /RTFM/Elements/BeforeMessageBox, %ARGS &>
 % }

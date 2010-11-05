@@ -2308,6 +2308,20 @@ This option is exists for backwards compatibility.  Don't use it.
 
 =cut
 
+=head1 Articles
+
+=item C<$ArticleOnTicketCreate>
+
+Set this to 1 to display the Articles interface on the Ticket Create page
+in addition to the Reply/Comment page.
+This will only work with 3.8.1 or greater
+
+=back
+
+=cut
+
+Set($ArticleOnTicketCreate, 0);
+
 =head1 DON'T MESS WITH THE STUFF BELOW
 
 =cut
