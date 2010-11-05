@@ -57,15 +57,4 @@ our $VERSION = '2.4.HEAD';
 use RT::FM::System;
 our $System = RT::FM::System->new( $RT::SystemUser );
 
-# blow in a format for the CF Applies To UI new in 3.8.8
-if (RT->can('Config') && RT->Config->can('Get')) {
-    if (my $admin_formats = RT->Config->Get('AdminSearchResultFormat')) {
-        $admin_formats->{'FM::ClassCollection'} ||=
-             q{ '<a href="__WebPath__/Admin/RTFM/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-            .q{,'<a href="__WebPath__/Admin/RTFM/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-            .q{,__Description__};
-        RT->Config->Set('AdminSearchResultFormat',%$admin_formats);
-    }
-}
-
 1;
