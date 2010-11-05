@@ -1330,7 +1330,7 @@ sub apache_mod_perl_server_options {
     my $current = shift;
 
     my %required_modules = (
-        '2.2' => [qw(authz_host log_config env alias perl)],
+        '2.2' => [qw(authz_host env alias perl)],
     );
     my @mlist = @{ $required_modules{ $info{'version'} } };
 

@@ -156,7 +156,6 @@ Apache configuration file telling it about RT:
         ServerAdmin root@localhost
 
         LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule log_config_module modules/mod_log_config.so
         LoadModule env_module modules/mod_env.so
         LoadModule alias_module modules/mod_alias.so
         LoadModule mime_module modules/mod_mime.so
