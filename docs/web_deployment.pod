@@ -151,16 +151,51 @@ Apache configuration file telling it about RT:
     # Tell FastCGI to put its temporary files somewhere sane.
     FastCgiIpcDir /tmp
 
-    FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
+    FastCgiServer /opt/rt3/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt3/etc/RT_SiteConfig.pm
 
     <VirtualHost rt.example.com>
-       ServerName your.rt.server.hostname
+        ServerRoot /usr
+        ServerAdmin root@localhost
 
-       # Pass through requests to display images
-       Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
+        LoadModule authz_host_module modules/mod_authz_host.so
+        LoadModule log_config_module modules/mod_log_config.so
+        LoadModule env_module modules/mod_env.so
+        LoadModule alias_module modules/mod_alias.so
+        LoadModule mime_module modules/mod_mime.so
+        LoadModule fastcgi_module modules/mod_fastcgi.so
 
-       AddHandler fastcgi-script fcgi
-       ScriptAlias / /opt/rt3/bin/mason_handler.fcgi/
+        <IfModule !mpm_netware_module>
+        <IfModule !mpm_winnt_module>
+        User rt
+        Group staff
+        </IfModule>
+        </IfModule>
+
+        # optional apache logs for RT
+        # ErrorLog /opt/rt3/var/log/apache2.error
+        # TransferLog /opt/rt3/var/log/apache2.access
+        # LogLevel debug
+
+        <Directory />
+            Options FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Deny from all
+        </Directory>
+
+        AddDefaultCharset UTF-8
+
+        Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
+        ScriptAlias / /opt/rt3/sbin/rt-server.fcgi/
+
+        DocumentRoot "/opt/rt3/share/html"
+        <Location />
+            Order allow,deny
+            Allow from all
+
+            Options +ExecCGI
+            AddHandler fastcgi-script fcgi
+        </Location>
     </VirtualHost>
 
 =cut
