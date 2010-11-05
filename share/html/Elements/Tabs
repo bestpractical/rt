@@ -69,7 +69,37 @@ my $query_string = sub {
 };
 
 if ( $request_path =~ qr{.*} ) {
-    Menu->child( home => title => loc('HomePage'), path => '/' );
+    my $home = Menu->child( home => title => loc('HomePage'), path => '/' );
+    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+    my $limit      = 7;
+
+    my $more = 0;
+    if ( @dashboards > $limit ) {
+        $more = 1;
+        splice @dashboards, $limit;
+    }
+
+    my $position = 0;
+
+    if (@dashboards) {
+    my $dashes = Menu()->child('home');
+    for my $dash (@dashboards) {
+        $home->child('dashboard-' . $dash->id,
+                        title => $dash->Name,
+                        path => '/Dashboards/' . $dash->id . '/' . $dash->Name,
+                       );
+    }
+
+
+    if ($more) {
+        $dashes->child( title => loc('More...'),
+                              path  => 'Dashboards/index.html',
+                            );
+    }
+    }
+
+
+
     my $tickets = Menu->child( search => title => loc('Tickets'),
                                path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search') => path =>
@@ -97,6 +127,12 @@ if ( $request_path =~ qr{.*} ) {
         $dashes->child(
                 loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
     }
+
+
+
+
+
+
     my $reports = $tools->child( loc('Reports'),
                                  path => '/Tools/Reports/index.html' );
     $reports->child( loc('Resolved by owner'),
@@ -685,37 +721,7 @@ if ( $request_path =~ qr'(?:Ticket|Search)/' ) {
 
 if ( $request_path =~ /^\/(?:index.html|$)/ ) {
 
-    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
-    my $limit      = 7;
-
-    $m->callback( Dashboards   => \@dashboards,
-                  Limit        => \$limit,
-                  CallbackName => 'MassageDashboards',
-                );
-
-    my $more = 0;
-    if ( @dashboards > $limit ) {
-        $more = 1;
-        splice @dashboards, $limit;
-    }
-
-    my $position = 0;
-
-    for my $dash (@dashboards) {
-        PageMenu->child('dashboard-' . $dash->id,
-                        title => $dash->Name,
-                        path => 'Dashboards/' . $dash->id . '/' . $dash->Name,
-                       );
-    }
-
-    PageMenu()->child( home => title => loc('Home'), path => 'index.html' );
-
-    if ($more) {
-        $tabs->{"D-more"} = { title => loc('More'),
-                              path  => 'Dashboards/index.html',
-                            };
-    }
-
+    PageMenu()->child(edit => title => loc('Edit'), path => '/Prefs/MyRT.html');
 }
 
 

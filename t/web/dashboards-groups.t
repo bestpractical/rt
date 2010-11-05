@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 35;
+use RT::Test nodata => 1, tests => 33;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -70,7 +70,7 @@ $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $m->click_button(value => 'Create');
 
-$m->content_contains("Permission denied", "we lack SeeGroupDashboard");
+$m->content_contains("created", "we lack SeeGroupDashboard, so we end up back at the index.");
 $user_obj->PrincipalObj->GrantRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
@@ -89,7 +89,6 @@ is($dashboard->Name, "inner dashboard");
 is($dashboard->Privacy, 'RT::Group-' . $inner_group->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning when trying to see the dashboard");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");

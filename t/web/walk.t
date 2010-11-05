@@ -166,8 +166,8 @@ diag 'walk into /Approvals' if $ENV{TEST_VERBOSE};
 diag 'walk into /Prefs' if $ENV{TEST_VERBOSE};
 {
     for my $id (
-        'settings',    'about_me', 'search_options', 'myrt',
-        'quicksearch', 'search-0', 'search-1',       'search-2',
+        'settings',    'settings-about_me', 'settings-search_options', 'settings-myrt',
+        'settings-quicksearch', 'settings-saved-searches-search-0', 'settings-saved-searches-search-1',       'settings-saved-searches-search-2',
         'logout'
       )
     {

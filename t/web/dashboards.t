@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 110;
+use RT::Test tests => 108;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -68,14 +68,12 @@ $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
-
-$m->content_contains("Permission denied", "we lack SeeOwnDashboard");
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
-$m->reload;
-$m->content_lacks("Permission denied", "we now have SeeOwnDashboard");
 $m->content_contains("Saved dashboard different dashboard");
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
+$m->get($url."Dashboards/index.html");
+$m->follow_link_ok({ text => 'different dashboard'});
+$m->content_lacks("Permission denied", "we now have SeeOwnDashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
-$m->warning_like(qr/Permission denied/, "got a permission denied warning when trying to see the dashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -200,7 +198,7 @@ $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDas
 
 $m->form_name('ModifyDashboard');
 $m->click_button(name => 'Delete');
-$m->content_contains("Deleted dashboard $id");
+$m->content_contains("Deleted dashboard");
 
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");

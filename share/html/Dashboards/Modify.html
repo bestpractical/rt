@@ -87,6 +87,9 @@ my $tried_create = 0;
 # user went directly to Modify.html
 $Create = 1 if !$id;
 
+
+my $redirect_to ='/Dashboards/Modify.html';
+
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
@@ -114,6 +117,10 @@ else {
 
         push @results, $msg;
         $id = $Dashboard->Id;
+        if (!$Dashboard->id || ! $Dashboard->CurrentUserCanSee) {
+            $redirect_to='/Dashboards/index.html';
+
+        }
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
@@ -146,26 +153,27 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 }
 
 
-# This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
-    Actions     => \@results,
-    Path        => 'Dashboards/Modify.html',
-    id              => $id,
-    ARGSRef     => \%ARGS
-);
-
-
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();
-    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+    if (!$ok) {
+             Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+             }
 
-    # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
-
+    push @results, $msg;
+    $redirect_to = '/Dashboards/index.html';
 }
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => $redirect_to,
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
 </%INIT>
 
 <%ARGS>

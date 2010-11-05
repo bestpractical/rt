@@ -79,9 +79,6 @@ use RT::Dashboard;
 my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects");
 
 my @actions;
-if (defined $Deleted) {
-    push @actions, loc("Deleted dashboard [_1]", $Deleted);
-}
 
 my @personal_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] };
 my @system_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{system} || [] };
@@ -101,7 +98,4 @@ $m->callback(
     CallbackName       => 'MassageDashboards',
 );
 </%INIT>
-<%ARGS>
-$Deleted => undef
-</%ARGS>
 
