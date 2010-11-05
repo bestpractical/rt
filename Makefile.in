@@ -162,18 +162,19 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 
 
 SYSTEM_BINARIES		=	rt-attributes-viewer \
+				rt-clean-sessions \
 				rt-dump-database \
+				rt-email-dashboards \
+				rt-email-digest \
+				rt-email-group-admin \
+				rt-fulltext-indexer \
+				rt-server \
+				rt-server.fcgi \
+				rt-session-viewer \
 				rt-setup-database \
 				rt-setup-fulltext-index \
-				rt-fulltext-indexer \
-				rt-email-digest \
-				rt-email-dashboards \
-				rt-email-group-admin \
-				rt-server \
-				rt-session-viewer \
-				rt-test-dependencies \
-				rt-clean-sessions \
 				rt-shredder \
+				rt-test-dependencies \
 				rt-validator
 
 
