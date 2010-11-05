@@ -119,7 +119,7 @@ sub Prepare {
             return 1;
         }
     }
-    elsif ( $lifecycle->is_valid( $argument ) ) {
+    elsif ( $lifecycle->IsValid( $argument ) ) {
         unless ( $lifecycle->is_transition( $status => $argument ) ) {
             $RT::Logger->warning("Transition '$status -> $argument' is not valid");
             return 1;

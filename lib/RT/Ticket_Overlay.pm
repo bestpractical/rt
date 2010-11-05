@@ -3092,7 +3092,7 @@ sub SetStatus {
     my $lifecycle = $self->QueueObj->Lifecycle;
 
     my $new = $args{'Status'};
-    unless ( $lifecycle->is_valid( $new ) ) {
+    unless ( $lifecycle->IsValid( $new ) ) {
         return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
 

@@ -113,7 +113,7 @@ sub IsApplicable {
     }
     else {
         $RT::Logger->error("Argument '$argument' is incorrect.")
-            unless RT::Lifecycle->load('')->is_valid( $argument );
+            unless RT::Lifecycle->load('')->IsValid( $argument );
         return 0;
     }
 

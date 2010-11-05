@@ -305,7 +305,7 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 sub IsValidStatus {
     my $self  = shift;
-    return $self->Lifecycle->is_valid( shift );
+    return $self->Lifecycle->IsValid( shift );
 }
 
 =head2 IsActiveStatus value
@@ -316,7 +316,7 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 sub IsActiveStatus {
     my $self  = shift;
-    return $self->Lifecycle->is_valid( shift, 'initial', 'active');
+    return $self->Lifecycle->IsValid( shift, 'initial', 'active');
 }
 
 

@@ -43,7 +43,7 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        next if $general->Lifecycle->is_valid($_);
+        next if $general->Lifecycle->IsValid($_);
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }

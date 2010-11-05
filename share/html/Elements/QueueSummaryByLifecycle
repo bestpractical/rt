@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
     foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-    my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
+    my @cur_statuses = grep $lifecycle->IsValid($_), @statuses;
     next unless @cur_statuses;
 </%perl>
 

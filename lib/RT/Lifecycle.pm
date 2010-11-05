@@ -196,7 +196,7 @@ sub valid {
     return @res;
 }
 
-=head3 is_valid
+=head3 IsValid
 
 Takes a status and returns true if value is a valid status for the current
 lifecycle. Otherwise, returns false.
@@ -205,13 +205,13 @@ Takes optional list of status types after the status, so it's possible check
 validity in particular sets, for example:
 
     # returns true if status is valid and from initial or active set
-    $lifecycle->is_valid('some_status', 'initial', 'active');
+    $lifecycle->IsValid('some_status', 'initial', 'active');
 
 See also </valid>.
 
 =cut
 
-sub is_valid {
+sub IsValid {
     my $self  = shift;
     my $value = lc shift;
     return 1 if grep lc($_) eq $value, $self->valid( @_ );
@@ -700,7 +700,7 @@ sub from_set {
     my $self = shift;
     my $status = shift;
     foreach my $set ( qw(initial active inactive) ) {
-        return $set if $self->is_valid( $status, $set );
+        return $set if $self->IsValid( $status, $set );
     }
     return '';
 }
