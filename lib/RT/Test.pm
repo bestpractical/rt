@@ -1350,7 +1350,7 @@ sub apache_fastcgi_server_options {
     my $current = shift;
 
     my %required_modules = (
-        '2.2' => [qw(authz_host log_config env alias mime fastcgi)],
+        '2.2' => [qw(authz_host env alias mime fastcgi)],
     );
     my @mlist = @{ $required_modules{ $info{'version'} } };
 

@@ -39,7 +39,6 @@ it knows where to find RT:
         ServerAdmin root@localhost
 
         LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule log_config_module modules/mod_log_config.so
         LoadModule env_module modules/mod_env.so
         LoadModule alias_module modules/mod_alias.so
         LoadModule perl_module modules/mod_perl.so
@@ -93,7 +92,6 @@ it knows where to find RT:
         ServerAdmin root@localhost
 
         LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule log_config_module modules/mod_log_config.so
         LoadModule env_module modules/mod_env.so
         LoadModule alias_module modules/mod_alias.so
         LoadModule perl_module modules/mod_perl.so
