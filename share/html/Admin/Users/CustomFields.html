@@ -46,12 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<&    /Admin/Elements/UserTabs,
-    id => $Object->id, 
-    current_tab => "Admin/Users/CustomFields.html?$id=".$id, 
-    current_subtab => "Admin/Users/CustomFields.html?id=".$id, 
-    UserObj => $Object,
-    Title => $title
+<&    /Elements/Tabs
     &>
 
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::User' &>

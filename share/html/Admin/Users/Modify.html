@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/UserTabs, 
-    id => $id, 
-    UserObj => $UserObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -234,19 +230,15 @@
 
 <%INIT>
 
-my $current_tab;
 my $UserObj = RT::User->new($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);
 
 if ($Create) {
-    $current_tab = 'Admin/Users/Modify.html?Create=1';
     $title = loc("Create a new user");
 } 
 else {
-
-    $current_tab = 'Admin/Users/Modify.html?id='.$id if $id;
 
     if ( defined $id && $id eq 'new') {
 	( $val, $msg ) = $UserObj->Create(

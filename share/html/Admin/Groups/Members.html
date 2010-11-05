@@ -46,9 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/GroupTabs, GroupObj => $Group, 
-    current_tab => 'Admin/Groups/Members.html?id='.$id, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/Members.html" method="post">

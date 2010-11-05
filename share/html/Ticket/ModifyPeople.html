@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->Id, 
-    Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>

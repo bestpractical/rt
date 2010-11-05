@@ -79,7 +79,6 @@ if ($ShowDisplayModes or $ShowTitle) {
 <div class="history">
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
-
 <div id="ticket-history">
 <%perl>
 my $trans_content = {};

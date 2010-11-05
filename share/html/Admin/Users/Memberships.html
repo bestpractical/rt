@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/UserTabs, 
-    id => $id, 
-    UserObj => $UserObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -94,7 +90,6 @@ my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load( $id ) || Abort("Couldn't load user '$id'");
 
 my $title = loc("Memberships of the user [_1]", $UserObj->Name);
-my $current_tab = 'Admin/Users/Memberships.html?id='. $id;
 
 my @results;
 if ( $Update ) {

@@ -48,14 +48,10 @@
 /* body */
 
 body {
-
-
     padding:0;
     margin:0;
-
     background: #547CCC url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
     font-family: arial, helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -68,8 +64,8 @@ div#body {
     -webkit-border-top-left-radius: 0.5em;
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
-    margin-left: 10.5em;
-    margin-top: 5.6em;
+    margin-left: 10em;
+    margin-top: 3em;
     margin-right: 0;
     margin-bottom: 0em;
     min-height: 10%;
@@ -81,75 +77,18 @@ div#body {
 
 }
 
-#topactions {
- position: absolute;
- background: transparent;
- top: 3.8em; 
- right: 1em;
- width: auto;
- min-width: 42em;
- font-size: 0.9em;
- z-index: 99;
-}
-
-#topactions form * {
-    vertical-align: top;
-}
-
-#topactions button, #topactions select, #topactions input{
- padding-top: 0em;
- padding-bottom: 0em;
- width: 8em;
-
-}
-
-#topactions form {
- display: block;
-
-}
-
-#topactions #CreateTicketInQueue {
- text-align: right; 
-
-}
-#topactions #simple-search {
-    float: right;
-}
-
-#topactions #simple-search .field{
- margin-left: 1em;
- color: #787;
- }
-
-#topactions #simple-search .field:focus {
- color: #000;
- }
-
-#topactions #GotoTicket {
- text-align: right; 
-
-}
-
 div#footer {
  position: absolute;
  right: 0;
-  text-align: right;
+ text-align: right;
  font-size: 0.9em;
  margin-top: 2em;
  background: #fff;
  margin-bottom: 0;
  padding-left: 3em;
  padding-right: 1em;
-
-
-
-
-
  border-top: 2px solid #aaa;
  border-left: 2px solid #aaa;
-
-
-
  -moz-border-radius-topleft: 0.5em;
  -webkit-border-top-left-radius: 0.5em;
  -moz-border-radius-bottomleft: 0.5em;
@@ -157,7 +96,7 @@ div#footer {
 }
 
 div#footer #time {
-display: none ;
+    display: none ;
 }
 
 div#footer #bpscredits {
@@ -169,9 +108,9 @@ div#footer #bpscredits {
 
 /* logo stuff */
 
-div#logo a {
+div#logo {
     position: absolute;
-    left: 2px;
+    right: 2px;
     top: 0;
     height: 2.3em;
 }
@@ -180,15 +119,16 @@ div#logo a img {
     border: 0;
     height: 100% !important;
     width: auto !important;
+    float: right;
 }
 
 div#logo .rtname {
-    position: absolute;
+    position: relative;
     font-weight: bold;
-    top: 0.5em;
-    left: 30%;
-    right: 30%;
     text-align: center;
+    top: 0.7em;
+    padding-right: 1em;
+    float:left;
 }
 
 
@@ -209,16 +149,42 @@ div#quickbar {
  border-bottom: 1px solid #ccc;
 
 }
-div#quick-personal {
-    float: right;
-    margin-right: 1em;
+
+#quick-personal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999
 }
+
+#prefs-menu.sf-menu li li {
+    background: #eaeaea;
+}
+
+#prefs-menu.sf-menu li#li-preferences {
+    background: none;
+}
+
+#prefs-menu.sf-menu li:hover, #prefs-menu.sf-menu li.sfHover, #prefs-menu.sf-menu a:focus, #prefs-menu.sf-menu a:hover, #prefs-menu.sf-menu a:active {
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+    border: none;
+}
+
+#prefs-menu .sfHover a,
+#prefs-menu .sfHover a:visited {
+    color: #000;
+    border: none;
+}
+
 
 
 div#header h1 {
  position: absolute;
- left: 7.25em;
+ left: 0.5em;
  right: 20em;
+ top: 1.6em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;

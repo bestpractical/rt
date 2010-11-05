@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 40;
+use RT::Test nodata => 1, tests => 33;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -53,16 +53,15 @@ ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user r
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok("$url/Dashboards");
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
 
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'inner dashboard');
@@ -70,7 +69,14 @@ $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $m->click_button(value => 'Create');
-$m->content_lacks("No permission to create dashboards");
+
+$m->content_contains("created", "we lack SeeGroupDashboard, so we end up back at the index.");
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SeeGroupDashboard',
+    Object => $inner_group,
+);
+$m->reload;
+$m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
@@ -83,18 +89,9 @@ is($dashboard->Name, "inner dashboard");
 is($dashboard->Privacy, 'RT::Group-' . $inner_group->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
-$m->no_warnings_ok;
 
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
-$m->content_contains("Permission denied");
-
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeGroupDashboard', Object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");
-
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 

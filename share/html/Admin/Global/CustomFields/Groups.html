@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/GlobalCustomFieldTabs,
-    current_tab => "Admin/Global/CustomFields/Groups.html",
-    current_subtab => "Admin/Global/CustomFields/Groups.html",
-    Title => $title
+<& /Elements/Tabs
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Group', Object=> $object &>
 <%INIT>

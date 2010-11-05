@@ -52,3 +52,16 @@
 <!--[if lt IE 7]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie6.css" type="text/css" media="all" />
 <![endif]-->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+    jQuery("#quick-personal").append('<ul id="prefs-menu"></ul>');
+    jQuery("#li-preferences").detach().appendTo(jQuery("#prefs-menu"));
+    jQuery("#li-tools-config").detach().appendTo(jQuery("#app-nav"));
+    jQuery("#li-search-simple").detach().insertBefore(jQuery("#li-search"));
+    jQuery("#li-tools-approval").detach().appendTo(jQuery("#app-nav"));
+
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled ').superfish();
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-vertical sf-js-enabled ').superfish();
+    jQuery("#prefs-menu").addClass('sf-menu sf-js-enabled ').superfish();
+});
+</script>

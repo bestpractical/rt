@@ -65,6 +65,7 @@ package RT::Interface::Web;
 
 use RT::SavedSearches;
 use URI qw();
+use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
@@ -284,6 +285,14 @@ sub MaybeShowNoAuthPage {
     $m->abort;
 }
 
+sub InitializeMenu {
+    $HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
+    $HTML::Mason::Commands::m->notes('page-menu', RT::Interface::Web::Menu->new());
+    $HTML::Mason::Commands::m->notes('page-widgets', RT::Interface::Web::Menu->new());
+
+}
+
+
 =head2 ShowRequestedPage  \%ARGS
 
 This function, called exclusively by RT's autohandler, dispatches
@@ -296,6 +305,8 @@ sub ShowRequestedPage {
     my $ARGS = shift;
 
     my $m = $HTML::Mason::Commands::m;
+
+    InitializeMenu();
 
     SendSessionCookie();
 
@@ -809,6 +820,19 @@ sub LogRecordedSQLStatements {
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
+
+sub Menu {
+    return $HTML::Mason::Commands::m->notes('menu');
+}
+
+sub PageMenu {
+    return $HTML::Mason::Commands::m->notes('page-menu');
+}
+
+sub PageWidgets {
+    return $HTML::Mason::Commands::m->notes('page-widgets');
+}
+
 
 
 =head2 loc ARRAY

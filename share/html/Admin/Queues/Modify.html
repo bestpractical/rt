@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
-    QueueObj => $QueueObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -140,14 +137,13 @@
 
 
 <%INIT>
-my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
+my ($title, @results, $Disabled, $EnabledChecked);
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = 'checked="checked"';
 
 if ($Create) {
-    $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
@@ -158,9 +154,7 @@ if ($Create) {
     else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
-    
-    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name);
 }
 if ( $QueueObj->Id ) {
     my @attribs= qw(Description CorrespondAddress CommentAddress Name

@@ -95,7 +95,7 @@ diag "user A can not change owner after create";
     my $test_cb = sub {
         my $agent = shift;
         $agent->get("/Ticket/Modify.html?id=$id");
-        my $form = $agent->form_number(3);
+        my $form = $agent->form_name('TicketModify');
         is $form->value('Owner'), $user_b->Name, 'correct owner selected';
         $form->value('Owner', RT->Nobody->Name);
         $agent->submit;
@@ -128,7 +128,7 @@ diag "on reply correct owner is selected";
     is $ticket->Owner, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
-    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Basics');
+    $agent_a->follow_link_ok( { id => 'page-transitions-reply' }, 'Reply' );
 
     my $form = $agent_a->form_number(3);
     is $form->value('Owner'), '', 'empty value selected';

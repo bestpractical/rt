@@ -49,9 +49,7 @@
     Title => loc("Theme"),
     LinkRel => { stylesheet => '/NoAuth/css/farbtastic.css' }
     &>
-<& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/Theme.html', 
-    Title => loc("Theme") &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/farbtastic.js"></script>

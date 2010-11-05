@@ -99,7 +99,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
 
     like( $agent->value($cf_field), qr/^\s*$/, 'IP is empty' );
     $agent->field( $cf_field => $val );
@@ -116,7 +116,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $val = "  172.16.0.2  \n  ";
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     like( $agent->value($cf_field),
         qr/^\s*\Q172.16.0.1\E\s*$/, 'IP is in input box' );
     $agent->field( $cf_field => $val );
@@ -133,7 +133,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $val = '172.16.0.0-172.16.0.255';
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     like( $agent->value($cf_field),
         qr/^\s*\Q172.16.0.2\E\s*$/, 'IP is in input box' );
     $agent->field( $cf_field => $val );
@@ -150,7 +150,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     $val = '172.16/16';
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field),
         '172.16.0.0-172.16.0.255', 'IP is in input box' );
     $agent->field( $cf_field => $val );
@@ -461,7 +461,7 @@ diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
 {
     $agent->get_ok( $baseurl . "/Search/Build.html?Query=Queue='General'" );
     $agent->content_contains('CF.{IP}', 'got CF.{IP}');
-    my $form = $agent->form_number(3);
+    my $form = $agent->form_name('BuildQuery');
     my $op = $form->find_input("'CF.{IP}'Op");
     ok( $op, "found 'CF.{IP}'Op" );
     is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );

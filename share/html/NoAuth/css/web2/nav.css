@@ -45,159 +45,176 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-div#nav {
- position: absolute;
- left: 0;
- font-size: 0.9em;
- top: 3.2em;
- width: 10.5em;
- background: #fff;
- -moz-border-radius-bottomright: 0.5em;
- -webkit-border-bottom-right-radius: 0.5em;
-  border-left: 1px solid #999;  
-border-top: 1px solid #999;
 
- -moz-border-radius-topright: 0.5em;
- -webkit-border-top-right-radius: 0.5em;
- z-index: 99;
-
-
+#main-navigation {
+    background-color: #fff;
+    -moz-border-radius-bottomright: 0.5em;
+    -webkit-border-bottom-right-radius: 0.5em;
+    -moz-border-radius-topright: 0.5em;
+    -webkit-border-top-right-radius: 0.5em;
+    width: 10em;
+    font-size: 0.85em;
+    position: absolute;
+    top: 6.2em;
+    left: 0em;
+    z-index: 9997;
+    background-color: none;
+    padding-top: 1em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
 }
 
-#nav #system-menu {
-    overflow: hidden;
+#main-navigation ul li {
 }
 
-div#nav ul {
- padding-left: 0.75em;
- margin-left: 0;
- padding-right: 0.75em;
- list-style-type: none;
+
+#main-navigation .sf-menu {
+    text-color: #000;
 }
 
-div#nav li:first-child {
- border-top: 1px solid #ccc;
- padding-top: 0.25em;
-
+#main-navigation .sf-menu li {
+    background: none;
 }
 
-div#nav li {
- padding: 0.125em;
- padding-bottom: 0.25em;
- margin-bottom: 0.25em;
- border-bottom: 1px solid #ccc;
- padding-left: 0.5em;
- margin-right: 0.25em;
- margin-left: 0em;
+#main-navigation .sf-menu li:first-child {
+    border-top: 1px solid #ccc;
 }
 
-div#nav li li:first-child {
-    margin-top: 0.25em;
-}
-div#nav li li {
-    margin-left: -0.5em;
-    padding-left: 0.25em;
-    margin-right: -0.5em;
-}
-
-div#nav li li:last-child {
-    margin-bottom: 0; 
-    padding-bottom: 0;
+#main-navigation .sf-menu a,
+#main-navigation .sf-menu a:visited {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    color: #000;
     border: none;
 }
 
-div#nav .bullet {
- display: none;
-}
-
-div#nav .separator {
-display: none;
-}
-
-
-div#nav a, div#page-navigation a{
- text-decoration: none;
- font-weight: normal;
- color: #000;
-}
-
-div#nav a:hover, div#page-navigation a:hover {
- text-decoration: underline;
-}
-
-
-
-div#nav a.selected, div#page-navigation a.selected {
-  font-weight: bold;
-}
-
-
-div#nav a.selected:after {
-/* content: " > " */
-}
-
-div#page-navigation {
- background: white;
- position: relative;
- width:100%;
- z-index: 10;
+#main-navigation .sf-menu li {
+    border-bottom: 1px solid #ccc;
 
 }
 
 
-div#page-navigation ul#page-menu {
- display: block;
+#main-navigation .sf-menu ul a,
+#main-navigation .sf-menu ul a:visited {
+    color: #000;
+}
+
+
+#main-navigation .sf-menu li li, #main-navigation .sf-menu li li li {
+    border-left: none;
+    background-color: #fff;
+    text-color: #547CCC;
+}
+
+#main-navigation .sf-menu li:hover, #main-navigation .sf-menu li.sfHover, #main-navigation .sf-menu a:focus, #main-navigation .sf-menu a:hover, #main-navigation .sf-menu a:active {
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+}
+
+#main-navigation .sfHover a,
+#main-navigation .sfHover a:visited {
+    color: #000;
+}
+
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+#app-nav.toplevel { display: none; }
+#app-nav.toplevel.sf-menu { display:block; }
+#page-menu.toplevel { display: none; }
+#page-menu.toplevel.sf-menu { display:block; }
+
+
+
+#page-navigation {
+    position: absolute;
+    top: 6em;
+    right: 0em;
+    left: auto;
+    z-index: 9995;
+    font-size: 0.9em;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+}
+
+#page-navigation .sf-menu {
+    margin: 0;
+}
+
+#page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
+    background: none;
+    height: 2em;
+    padding-top: 0.25em;
+    padding-bottom: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    display: inline-block;
+}
+
+
+#page-navigation .sf-menu ul {
+    background: #eee;
+}
+
+
+#page-navigation .sf-menu li:hover, #page-navigation .sf-menu li.sfHover, #page-navigation .sf-menu a:focus, #page-navigation .sf-menu a:hover, #page-navigation .sf-menu a:active {
+    background: none;
+
+}
+
+#page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
+    border: none;
+    padding: 0.25em;
+    color: #000;
+}
+
+
+#topactions {
  position: absolute;
- left: 8em;
+ background: transparent;
+ top: 3.2em;
+ right: 0.7em;
+ width: auto;
+ min-width: 42em;
  font-size: 0.9em;
- top: 2.3em;
- background-color: white;
- right: 0em;
- padding-top:0.3em;
- padding-bottom:0.5em;
- border-top: 1px solid #aaa;
- overflow: auto;
+ z-index: 99;
 }
 
-/* ie hack */
-* html div#page-navigation ul#page-menu {
-    left: 6.5em;
-    top: 3.2em;
-    padding-left: 2em;
-    width: 88%;
+#topactions form * {
+    vertical-align: top;
 }
 
-
-div#page-navigation ul#actions-menu {
- position: absolute;
- right: 0em;
- top: 5.6em;
- margin-top: 0em;
- padding: 0.25em;
- padding-left: 0.5em;
- padding-right: 0.5em;
-
- background: #dedede;
- border-left: 1px solid #aaa;
- border-bottom: 2px solid #aaa;
- -moz-border-radius-bottomleft: 0.5em;
- -webkit-border-bottom-left-radius: 0.5em;
- -moz-border-radius-topright: 0.25em;
- -webkit-border-top-right-radius: 0.25em;
-
-
+#topactions button, #topactions select, #topactions input{
+ padding-top: 0em;
+ padding-bottom: 0em;
+ width: 8em;
 
 }
 
-
-
-div#page-navigation ul li{
- display: inline;
+#topactions form {
+ display: block;
 
 }
 
+#topactions #GotoTicket, #topactions #CreateTicketInQueue {
+ text-align: right;
 
-ul.page-navigation ul.page-menu {
+}
+#topactions #simple-search {
  float: right;
 }
 
+#topactions #simple-search .field{
+ margin-left: 1em;
+ color: #787;
+ }
+
+#topactions #simple-search .field:focus {
+ color: #000;
+ }
+
+#topactions #GotoTicket {
+ text-align: right;
+
+}

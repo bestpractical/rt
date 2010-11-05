@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title=>loc("Page not found")&>
-<& /Elements/Tabs, Title=>loc("Page not found"), &>
+<& /Elements/Tabs &>
 <h1><&|/l&>The page you requested could not be found</&></h1>
 <&|/l&>Please check the URL and try again.</&>
 <%init>

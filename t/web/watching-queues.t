@@ -64,9 +64,9 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Queues' );
     $m->title_is('Admin queues', 'queues page');
     $m->follow_link( text => 'General' );
-    $m->title_is('Editing Configuration for queue General');
+    $m->title_is('Configuration for queue General');
     $m->follow_link( text => 'Watchers' );
-    $m->title_is('Modify people related to queue General');
+    $m->title_is('People related to queue General');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -77,7 +77,7 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue General', 'caught the right form! :)');
+    $m->title_is('People related to queue General', 'caught the right form! :)');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -86,7 +86,7 @@ diag "add self as AdminCc on General" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue General', 'caught the right form! :)');
+    $m->title_is('People related to queue General', 'caught the right form! :)');
 
     my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load('General');
@@ -119,9 +119,9 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Queues' );
     $m->title_is('Admin queues', 'queues page');
     $m->follow_link( text => 'General' );
-    $m->title_is('Editing Configuration for queue General');
+    $m->title_is('Configuration for queue General');
     $m->follow_link( text => 'Watchers' );
-    $m->title_is('Modify people related to queue General');
+    $m->title_is('People related to queue General');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -132,7 +132,7 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue General', 'caught the right form! :)');
+    $m->title_is('People related to queue General', 'caught the right form! :)');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -141,7 +141,7 @@ diag "add self as Cc on General" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue General', 'caught the right form! :)');
+    $m->title_is('People related to queue General', 'caught the right form! :)');
 
     my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load('General');
@@ -174,9 +174,9 @@ diag "add self as AdminCc on Fancypants" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Queues' );
     $m->title_is('Admin queues', 'queues page');
     $m->follow_link( text => 'Fancypants' );
-    $m->title_is('Editing Configuration for queue Fancypants');
+    $m->title_is('Configuration for queue Fancypants');
     $m->follow_link( text => 'Watchers' );
-    $m->title_is('Modify people related to queue Fancypants');
+    $m->title_is('People related to queue Fancypants');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -187,7 +187,7 @@ diag "add self as AdminCc on Fancypants" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Fancypants', 'caught the right form! :)');
+    $m->title_is('People related to queue Fancypants', 'caught the right form! :)');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -196,7 +196,7 @@ diag "add self as AdminCc on Fancypants" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Fancypants', 'caught the right form! :)');
+    $m->title_is('People related to queue Fancypants', 'caught the right form! :)');
 
     ok($other_queue->IsWatcher(Type => 'AdminCc', PrincipalId => $user->PrincipalId), 'added root as AdminCc on Fancypants');
 }
@@ -231,9 +231,9 @@ diag "add group as Cc on Loopy" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Queues' );
     $m->title_is('Admin queues', 'queues page');
     $m->follow_link( text => 'Loopy' );
-    $m->title_is('Editing Configuration for queue Loopy');
+    $m->title_is('Configuration for queue Loopy');
     $m->follow_link( text => 'Watchers' );
-    $m->title_is('Modify people related to queue Loopy');
+    $m->title_is('People related to queue Loopy');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -244,7 +244,7 @@ diag "add group as Cc on Loopy" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+    $m->title_is('People related to queue Loopy', 'caught the right form! :)');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -253,7 +253,7 @@ diag "add group as Cc on Loopy" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+    $m->title_is('People related to queue Loopy', 'caught the right form! :)');
 
     ok($loopy_queue->IsWatcher(Type => 'Cc', PrincipalId => $group->PrincipalId), 'added Groupies as Cc on Loopy');
 }
@@ -294,9 +294,9 @@ diag "add other group as AdminCc on Loopy" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Queues' );
     $m->title_is('Admin queues', 'queues page');
     $m->follow_link( text => 'Loopy' );
-    $m->title_is('Editing Configuration for queue Loopy');
+    $m->title_is('Configuration for queue Loopy');
     $m->follow_link( text => 'Watchers' );
-    $m->title_is('Modify people related to queue Loopy');
+    $m->title_is('People related to queue Loopy');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -307,7 +307,7 @@ diag "add other group as AdminCc on Loopy" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+    $m->title_is('People related to queue Loopy', 'caught the right form! :)');
 
     $m->submit_form_ok({
         form_number => 3,
@@ -316,7 +316,7 @@ diag "add other group as AdminCc on Loopy" if $ENV{'TEST_VERBOSE'};
         },
     });
 
-    $m->title_is('Modify people related to queue Loopy', 'caught the right form! :)');
+    $m->title_is('People related to queue Loopy', 'caught the right form! :)');
 
     ok($loopy_queue->IsWatcher(Type => 'AdminCc', PrincipalId => $outer_group->PrincipalId), 'added Groupies 2.0 as AdminCc on Loopy');
 }

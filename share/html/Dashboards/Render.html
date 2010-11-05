@@ -53,10 +53,7 @@
 &>
 
 % if ($Preview) {
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $DashboardObj &>
+<& /Elements/Tabs &>
 % }
 
 % $m->callback(CallbackName => 'BeforeTable', Dashboard => $DashboardObj, show_cb => $show_cb);
@@ -90,7 +87,6 @@
 
 <%INIT>
 
-my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});

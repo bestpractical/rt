@@ -48,10 +48,7 @@
 <& /Elements/Header, 
     Title => $title,
     LinkRel => \%link_rel &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
-    current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
-    Title => $title &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
@@ -86,7 +83,6 @@
 
 % $m->callback( %ARGS,
 %     Ticket       => $TicketObj,
-%     current_tab  => 'Ticket/Display.html?id=' . $TicketObj->id,
 %     CallbackName => 'AfterShowHistory',
 % );
 
@@ -197,10 +193,10 @@ $m->callback(
 
 # This code does automatic redirection if any updates happen. 
 $m->comp(
-    'Elements/MaybeRedirectForResults',
+    '/Elements/MaybeRedirectForResults',
     Actions     => \@Actions,
     Path        => 'Ticket/Display.html',
-    TicketObj   => $TicketObj,
+    id          => $TicketObj->id,
     ARGSRef     => \%ARGS
 );
 

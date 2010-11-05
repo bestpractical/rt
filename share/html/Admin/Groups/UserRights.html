@@ -46,13 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
-<& /Admin/Elements/GroupTabs, 
-    GroupObj => $GroupObj, 
-    current_tab => 'Admin/Groups/UserRights.html?id='.$id, 
-    Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>  
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <form method="post" action="UserRights.html">
+  <form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
     <& /Admin/Elements/EditRights, Context => $GroupObj, Principals => \@principals &>
     <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>

@@ -46,41 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/Scrips.html', 
-    current_subtab => $current_subtab, 
-    subtabs => $subtabs, 
-    Title => $title &>
-
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS, id => $id &>
 
 <%init>
-my $subtabs = {
-    A => {
-        title     => loc('Select'),
-        path      => "Admin/Global/Scrips.html",
-    },
-    B => {
-        title     => loc('New'),
-        path      => "Admin/Global/Scrip.html?create=1&Queue=0",
-        separator => 1,
-    },
-};
-
 my ($id, @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
-my ($title, $current_subtab);
+my ($title);
 if ( $id ) {
-    $current_subtab = "Admin/Global/Scrip.html?id=$id&Queue=0";
     $title = loc("Modify a scrip that applies to all queues");
-    $subtabs->{"C"} = {
-        title => loc('Scrip #[_1]', $id),
-        path  => "Admin/Global/Scrip.html?id=$id&Queue=0",
-    };
 }
 else {
-    $current_subtab = "Admin/Global/Scrip.html?create=1&Queue=0";
     $title = loc("Add a scrip which will apply to all queues");
 }
 </%init>

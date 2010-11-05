@@ -115,7 +115,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
 
     is( $agent->value($cf_field), '', 'IP is empty' );
     $agent->field( $cf_field => $val );
@@ -131,7 +131,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $val, 'IP is in input box' );
     $val = 'bbcd' . ':abcd' x 7;
     $agent->field( $cf_field => "   $val   " );
@@ -147,7 +147,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $val, 'IP is in input box' );
     $val = 'abcd' . ':0000' x 7 . '-' . 'abcd' . ':ffff' x 7;
     $agent->field( $cf_field => 'abcd::/16' );
@@ -163,7 +163,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
-    $agent->form_number(3);
+    $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $val, 'IP is in input box' );
     $val = 'bb00' . ':0000' x 7 . '-' . 'bbff' . ':ffff' x 7;
     $agent->field( $cf_field => $val );

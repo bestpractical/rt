@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs,
-    Ticket => $ticket,
-    Title => $title,
-    current_tab => "Ticket/ModifyLinks.html?id=$id",
-&>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 

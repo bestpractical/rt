@@ -30,7 +30,7 @@ ok $m->login, 'logged in';
 # create a ticket with a subject only
 foreach my $test_str ( $ru_test, $l1_test ) {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->field( Subject => $test_str );
     $m->submit;
 
@@ -47,7 +47,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
 foreach my $test_str ( $ru_test, $l1_test ) {
     foreach my $support_str ( $ru_support, $l1_support ) {
         ok $m->goto_create_ticket( $q ), "go to create ticket";
-        $m->form_number(3);
+        $m->form_name('TicketCreate');
         $m->field( Subject => $test_str );
         $m->field( Content => $support_str );
         $m->submit;
@@ -70,7 +70,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
 foreach my $test_str ( $ru_test, $l1_test ) {
     foreach my $support_str ( $ru_support, $l1_support ) {
         ok $m->goto_create_ticket( $q ), "go to create ticket";
-        $m->form_number(3);
+        $m->form_name('TicketCreate');
         $m->field( Subject => $test_str );
         $m->field( Content => $support_str );
         $m->submit;

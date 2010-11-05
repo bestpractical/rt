@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/GroupTabs, 
-    id => $id, 
-    GroupObj => $GroupObj,
-    current_subtab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Ticket/Elements/ShowHistory,
     Ticket => $GroupObj,
@@ -58,7 +54,6 @@
 &>
 
 <%INIT>
-my $current_tab = 'Admin/Groups/History.html?id='.$id;
 my $GroupObj = RT::Group->new($session{'CurrentUser'});
 $GroupObj->Load($id) || Abort("Couldn't load group '$id'");
 my $title = loc("History of the group [_1]", $GroupObj->Name);

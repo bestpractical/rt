@@ -46,14 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
-    Title => $title,
-    $Create ? () : (DashboardObj => $Dashboard),
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard" id="ModifyDashboard">
 
 %unless ($Dashboard->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -63,16 +59,14 @@
 
 <&|/Widgets/TitleBox, title => loc('Basics') &>
 <table>
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td>
-<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    <tr>
+     <td class="label"><&|/l&>Name</&>:</td>
+     <td class="value"><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    </tr>
+    <tr>
+    <td class="label"><&|/l&>Privacy</&>:</td>
+    <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
 </tr>
-<tr><td align="right">
-<&|/l&>Privacy</&>:
-</td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
-</td></tr>
 </table>
 </&>
 <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
@@ -83,12 +77,14 @@
 </form>
 <%INIT>
 
-my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
+
+
+my $redirect_to ='/Dashboards/Modify.html';
 
 use RT::Dashboard;
 
@@ -99,7 +95,6 @@ my @privacies = $Dashboard->$method;
 Abort(loc("Permission denied")) if @privacies == 0;
 
 if ($Create) {
-    $current_subtab = 'Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
 }
 else {
@@ -117,6 +112,10 @@ else {
 
         push @results, $msg;
         $id = $Dashboard->Id;
+        if (!$Dashboard->id || ! $Dashboard->CurrentUserCanSee) {
+            $redirect_to='/Dashboards/index.html';
+
+        }
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
@@ -125,12 +124,10 @@ else {
 
     if ($id) {
         $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
-        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $Create = 1;
-        $current_subtab = 'Dashboards/Modify.html?Create=1';
         $title = loc("Create a new dashboard");
     }
 }
@@ -148,16 +145,28 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 
 }
 
+
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();
-    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+    if (!$ok) {
+             Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+             }
 
-    # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
-
+    push @results, $msg;
+    $redirect_to = '/Dashboards/index.html';
 }
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => $redirect_to,
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
 </%INIT>
 
 <%ARGS>

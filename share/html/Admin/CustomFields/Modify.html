@@ -46,14 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/CustomFieldTabs,
-    id => $CustomFieldObj->Id ,
-    current_tab => $current_tab,
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="post" action="Modify.html" name="ModifyCustomField">
+<form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <table>
@@ -158,14 +155,12 @@
 my ($title, @results, $Disabled);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-my $current_tab = 'Admin/CustomFields/Modify.html';
 
 $m->callback(CallbackName => 'Initial', Pattern => \$Pattern, ARGSRef => \%ARGS);
 
 unless ( $id ) {
     $title = loc("Create a CustomField");
     $id    = 'new';
-    $current_tab .= '?Create=1';
 }
 else {
     if ( $id eq 'new' ) {
@@ -186,7 +181,6 @@ else {
         $CustomFieldObj->Load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
-    $current_tab .= "?id=$id";
 }
 
 if ( $ARGS{'Update'} && $id ne 'new' ) {
@@ -269,7 +263,22 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
+
+
+
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
+
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/CustomFields/Modify.html',
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
+
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;

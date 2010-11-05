@@ -45,11 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
-<& /Admin/Elements/QueueTabs, id => $id, 
-    QueueObj => $QueueObj,                                                      
-    current_tab => $current_tab, 
-    Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
+<& /Elements/Header, Title => $title &>
+
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -128,15 +126,7 @@
 
 <%INIT>
 
-my $current_tab;
 my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
-
-# Load the queue
-#If we get handed two ids, mason will make them an array. bleck.
-# We want teh first one. Just because there's no other sensible way
-# to deal
-
-
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
@@ -163,7 +153,6 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 
         next unless RT::Queue->IsManageableRoleGroupType($type);
 
-        $RT::Logger->debug("Adding a watcher $id to $type\n");
         my ($code, $msg) = $QueueObj->AddWatcher(
             Type => $type,
             PrincipalId => $id,
@@ -196,7 +185,7 @@ if ( $ARGS{'GroupString'} ) {
 } else {
     $group_msg = loc("No principals selected.");
 }
-$current_tab = 'Admin/Queues/People.html?id=' . $QueueObj->id;
+my $title = loc('People related to queue [_1]', $QueueObj->Name);
 </%INIT>
 
 <%ARGS>

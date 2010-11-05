@@ -49,41 +49,26 @@
 <tr>
   <td valign="top" class="boxcontainer">
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
-
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-basics',
-    &>
-        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-    </&>
-
+    &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
 % if ($Ticket->CustomFields->First) {
     <&| /Widgets/TitleBox, title => loc('Custom Fields'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-cfs',
-    &>
-        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
-    </&>
+    &><& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &></&>
 % }
-
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-people',
-    &>
-        <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
-    </&>
-
+    &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
-
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
-
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
-
   </td>
   <td valign="top" class="boxcontainer">
-
 % $m->callback( %ARGS, CallbackName => 'RightColumnTop' );
-
 % if ( RT->Config->Get('EnableReminders') ) {
     <&|/Widgets/TitleBox, title => loc("Reminders"),
         title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id,
@@ -97,14 +82,10 @@
         </td></tr></table>
     </&>
 % }
-
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-dates',
-    &>
-        <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
-    </&>
-
+    &><& /Ticket/Elements/ShowDates, Ticket => $Ticket &></&>
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
@@ -112,12 +93,8 @@
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-links',
         @extra,
-    &>
-        <& /Elements/ShowLinks, Ticket => $Ticket &>
-    </&>
-
+    &><& /Elements/ShowLinks, Ticket => $Ticket &></&>
 % $m->callback( %ARGS, CallbackName => 'RightColumn' );
-
   </td>
 </tr>
 </table>

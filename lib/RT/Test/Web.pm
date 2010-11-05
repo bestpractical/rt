@@ -108,7 +108,7 @@ sub login {
         Test::More::diag("error: page has no Logout");
         return 0;
     }
-    unless ( $self->content =~ m{<span>\Q$user\E</span>}i ) {
+    unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
         Test::More::diag("Page has no user name");
         return 0;
     }

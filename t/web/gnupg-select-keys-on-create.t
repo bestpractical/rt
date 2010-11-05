@@ -20,7 +20,7 @@ diag "check that signing doesn't work if there is no key";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Sign => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -47,7 +47,7 @@ diag "check that things don't work if there is no key";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -61,7 +61,7 @@ diag "check that things don't work if there is no key";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok !$form->find_input( 'UseKey-rt-test@example.com' ), 'no key selector';
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -85,7 +85,7 @@ diag "check that things still doesn't work if key is not trusted";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -99,7 +99,7 @@ diag "check that things still doesn't work if key is not trusted";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 1, 'one option';
 
@@ -134,7 +134,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -148,7 +148,7 @@ diag "check that things still doesn't work if two keys are not trusted";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -181,7 +181,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -195,7 +195,7 @@ diag "check that we see key selector even if only one key is trusted but there a
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -210,7 +210,7 @@ diag "check that key selector works and we can select trusted key";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -224,7 +224,7 @@ diag "check that key selector works and we can select trusted key";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 
@@ -244,7 +244,7 @@ diag "check encrypting of attachments";
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
-    $m->form_number(3);
+    $m->form_name('TicketCreate');
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
@@ -259,7 +259,7 @@ diag "check encrypting of attachments";
         'problems with keys'
     );
 
-    my $form = $m->form_number(3);
+    my $form = $m->form_name('TicketCreate');
     ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
     is scalar $input->possible_values, 2, 'two options';
 

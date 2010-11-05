@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 29, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 20, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
 
@@ -37,7 +37,7 @@ my %mail = (
 diag "check in read-only mode that queue's props influence create/update ticket pages";
 {
     foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
+        set_queue_crypt_options( $queue =>  %$variant );
         $m->goto_create_ticket( $queue );
         $m->form_name('TicketCreate');
         if ( $variant->{'Encrypt'} ) {
@@ -53,7 +53,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     }
 
     # to avoid encryption/signing during create
-    set_queue_crypt_options();
+    set_queue_crypt_options($queue);
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id) = $ticket->Create(
@@ -64,9 +64,9 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     ok $id, 'ticket created';
 
     foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
+        set_queue_crypt_options( $queue => %$variant );
         $m->get( $m->rt_base_url . "/Ticket/Update.html?Action=Respond&id=$id" );
-        $m->form_number(3);
+        $m->form_name('TicketUpdate');
         if ( $variant->{'Encrypt'} ) {
             ok $m->value('Encrypt', 2), "encrypt tick box is checked";
         } else {
@@ -81,47 +81,4 @@ diag "check in read-only mode that queue's props influence create/update ticket 
 }
 
 
-sub create_a_ticket {
-    my %args = (@_);
-
-    RT::Test->clean_caught_mails;
-
-    $m->goto_create_ticket( $queue );
-    $m->form_name('TicketCreate');
-    $m->field( Subject    => 'test' );
-    $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content    => 'Some content' );
-
-    foreach ( qw(Sign Encrypt) ) {
-        if ( $args{ $_ } ) {
-            $m->tick( $_ => 1 );
-        } else {
-            $m->untick( $_ => 1 );
-        }
-    }
-
-    $m->submit;
-    is $m->status, 200, "request successful";
-
-    $m->content_lacks('unable to sign outgoing email messages');
-
-    $m->get_ok('/'); # ensure that the mail has been processed
-
-    my @mail = RT::Test->fetch_caught_mails;
-    check_text_emails( \%args, @mail );
-}
-
-sub set_queue_crypt_options {
-    my %args = @_;
-    $m->get_ok("/Admin/Queues/Modify.html?id=". $queue->id);
-    $m->form_with_fields('Sign', 'Encrypt');
-    foreach my $opt ('Sign', 'Encrypt') {
-        if ( $args{$opt} ) {
-            $m->tick($opt => 1);
-        } else {
-            $m->untick($opt => 1);
-        }
-    }
-    $m->submit;
-}
 

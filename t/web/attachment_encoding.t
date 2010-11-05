@@ -17,7 +17,7 @@ diag 'test without attachments' if $ENV{TEST_VERBOSE};
 {
     $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
 
-    $m->form_number(3);
+    $m->form_name('TicketModify');
     $m->submit_form(
         form_number => 3,
         fields      => { Subject => '标题', Content => '测试' },
@@ -52,7 +52,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
 
-    $m->form_number(3);
+    $m->form_name('TicketModify');
     $m->submit_form(
         form_number => 3,
         fields => { Subject => '标题', Content => '测试', Attach => $file },

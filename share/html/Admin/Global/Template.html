@@ -46,14 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/Templates.html', 
-    current_subtab => $current_subtab, 
-    subtabs => $subtabs, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" name="ModifyTemplate" action="Template.html">
+<form method="post" name="ModifyTemplate" id="ModifyTemplate" action="Template.html">
 %if ($Create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
@@ -75,21 +71,10 @@
 <%INIT>
 
 my $TemplateObj = RT::Template->new($session{'CurrentUser'});
-my  ($title, @results, $current_subtab, $SubmitLabel);
-
-my $subtabs = {
-		 A => { title => loc('Select'),
-  		     	path => "Admin/Global/Templates.html"
-			   },
-		 B => { title => loc('New'),
-  		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
-			separator => 1,
-			   }
-	      };
+my  ($title, @results, $SubmitLabel);
 
 if ($Create) {
   $title = loc("Create a template");
-  $current_subtab = "Admin/Global/Template.html?Create=1&Queue=0";
   $SubmitLabel = loc('Create');
 }
 
@@ -111,10 +96,6 @@ if ($TemplateObj->Id()) {
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id();
-  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
-  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->Id(),
-			};
   push @results, @aresults;
 
   my ($ok, $msg) = $TemplateObj->CompileCheck;
@@ -123,8 +104,8 @@ if ($TemplateObj->Id()) {
 
 </%INIT>
 <%ARGS>
-$Queue => undef
-$Template => undef
-$Create => undef
-$Name => undef
+$Queue => ''
+$Template => ''
+$Create => ''
+$Name => ''
 </%ARGS>

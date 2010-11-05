@@ -63,18 +63,15 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
  / <a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
-
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Ticket => $Ticket, Transaction => $Transaction, Attachment => $message);
-
 <br />
 <span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
 </div>
 %   }
-
 %# If there is sub-messages, open a dedicated div
 % if ( scalar ( grep $_->__Value('Parent') == $message->id, @$Attachments ) ) {
 <div class="messageattachments">

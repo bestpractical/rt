@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 44;
+use RT::Test tests => 42;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -16,11 +16,7 @@ my $cf_name = 'test cf datetime';
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'tools-config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -42,9 +38,9 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->follow_link( text => 'Queues' );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
     $m->follow_link( text => 'General' );
-    $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
+    $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( text => 'Ticket Custom Fields' );
-    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
+    $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
 
     $m->form_name('EditCustomFields');
     $m->tick( "AddCustomField" => $cfid );
@@ -124,7 +120,7 @@ diag 'check search build page';
 {
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
 
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     my ($cf_op) =
       $m->find_all_inputs( type => 'option', name_regex => qr/test cf datetime/ );
     is_deeply(
@@ -159,7 +155,7 @@ diag 'check search build page';
     $m->login( 'shanghai', 'password', logout => 1 );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -170,7 +166,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '<',
@@ -181,7 +177,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 2 ticket', 'Found 2 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '>',
@@ -192,7 +188,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 2 tickets', 'Found 2 tickets' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',
@@ -203,7 +199,7 @@ diag 'check search build page';
     $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
 
     $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_number(3);
+    $m->form_name('BuildQuery');
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',

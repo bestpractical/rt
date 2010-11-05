@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Search Preferences") &>
-<& /User/Elements/Tabs, 
-    current_tab => "Prefs/SearchOptions.html",
-    Title => loc("Search Preferences")
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
 
 <form method="post" action="SearchOptions.html">

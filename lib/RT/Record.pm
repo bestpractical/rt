@@ -224,7 +224,9 @@ Deletes all attributes with the matching name for this object.
 sub DeleteAttribute {
     my $self = shift;
     my $name = shift;
-    return $self->Attributes->DeleteEntry( Name => $name );
+    my ($val,$msg) =  $self->Attributes->DeleteEntry( Name => $name );
+    $self->ClearAttributes;
+    return ($val,$msg);
 }
 
 =head2 FirstAttribute NAME
@@ -244,6 +246,12 @@ sub FirstAttribute {
     return ($self->Attributes->Named( $name ))[0];
 }
 
+
+sub ClearAttributes {
+    my $self = shift;
+    delete $self->{'attributes'};
+
+}
 
 sub _Handle { return $RT::Handle }
 
@@ -352,7 +360,7 @@ sub LoadByCols {
     my $self = shift;
 
     # We don't want to hang onto this
-    delete $self->{'attributes'};
+    $self->ClearAttributes;
 
     return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
 

@@ -46,21 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title&>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Edit.html?".$QueryString, 
-    Title   => $title,
-    Format  => $Format,
-    Query   => $Query,
-    Rows    => $Rows,
-    OrderBy => $OrderBy,
-    Order   => $Order,
-    SavedSearchId => $SavedSearchId,
-    SavedChartSearchId => $SavedChartSearchId,
-&>
+<& /Elements/Tabs &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
-<form method="post" action="Build.html">
+<form method="post" action="Build.html" id="BuildQueryAdvanced" name="BuildQueryAdvanced">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
 <&|/Widgets/TitleBox, title => loc('Query'), &>

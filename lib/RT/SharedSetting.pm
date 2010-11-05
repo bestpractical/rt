@@ -258,11 +258,11 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
-
     return (0, $self->loc("Permission denied"))
         unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
+    $self->CurrentUser->ClearAttributes; # force the current user's attribute cache to be cleaned up
     if ($status) {
         return (1, $self->loc("Deleted [_1]", $self->ObjectName));
     } else {
@@ -294,6 +294,9 @@ sub Id {
     my $self = shift;
     return $self->{'Id'};
 }
+
+*id = \&Id;
+
 
 =head2 Privacy
 
@@ -330,7 +333,7 @@ This does not deal with ACLs, this only looks at membership.
 sub IsVisibleTo {
     my $self    = shift;
     my $to      = shift;
-    my $privacy = $self->Privacy;
+    my $privacy = $self->Privacy || '';
 
     # if the privacies are the same, then they can be seen. this handles
     # a personal setting being visible to that user.

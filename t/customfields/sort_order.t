@@ -51,8 +51,7 @@ diag "reorder CFs: C, A and B";
 {
     $m->get( '/Admin/Queues/' );
     $m->follow_link_ok( {text => $queue->id} );
-    $m->follow_link_ok( {text => 'Ticket Custom Fields'} );
-
+    $m->follow_link_ok( {id  => 'page-ticket-custom-fields'} );
     my @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF B', 'CF A', 'CF C']);
 
@@ -83,8 +82,7 @@ diag "check ticket create, display and edit pages";
     
     @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);
-
-    $m->follow_link_ok( {text => 'Custom Fields'} );
+    $m->follow_link_ok( {id => 'page-basics'});
 
     @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);

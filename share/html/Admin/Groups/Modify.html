@@ -47,10 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
 
-<& /Admin/Elements/GroupTabs, 
-    GroupObj => $Group, 
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -99,18 +96,15 @@
 </form>
 <%INIT>
 
-my $current_tab;
 my  ($title, @results, $Disabled, $EnabledChecked);
 
 my $Group = RT::Group->new($session{'CurrentUser'});
 
 if ($Create) {
-    $current_tab = 'Admin/Groups/Modify.html?Create=1';
     $title = loc("Create a new group");
 } 
 
 else {
-    $current_tab = 'Admin/Groups/Modify.html?id='.$id;
     if ($id eq 'new' ) {
 	
 	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name =>
@@ -159,6 +153,19 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
     push @results, $msg;
 }
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/Groups/Modify.html',
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
+
+
+
 
 unless ($Group->Disabled()) {
     $EnabledChecked ='checked="checked"';

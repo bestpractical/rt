@@ -48,10 +48,7 @@
 <& /Elements/Header,
     Title => $title,
     onload => "function () { hide('Ticket-Create-details') }" &>
-<& /Elements/Tabs, 
-    current_toptab => "Ticket/Create.html", 
-    Title => $title,
-    actions => $actions &>
+<& /Elements/Tabs &>
     
 <& /Elements/ListActions, actions => \@results &>
 
@@ -449,15 +446,8 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
         }
     }
 }
-
-my $actions = {
-    A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>],
-    },
-    B => {
-        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>],
-    },
-};
+PageMenu->child( basics => title =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>], escape_title => 0, link_item => 0);
+PageMenu->child( details => title =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>], escape_title => 0, link_item => 0);
 </%INIT>
 
 <%ARGS>

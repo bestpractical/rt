@@ -47,37 +47,33 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
-
 <div class="ticket-transaction">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyCommand' );
   <div class="metadata">
     <span class="type">
-      <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
+      <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>\
       <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"></a>' : ''|n %>
     </span>
 % $m->callback( Transaction => $Transaction, %ARGS, CallbackName => 'AfterAnchor' );
     <span class="date"><% $transdate|n %></span>
 % my $desc = $Transaction->BriefDescription;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
-    <span class="description">
-      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $TicketString %> <% $desc %>
+    <span class="description">\
+<& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $TicketString %> <% $desc %>\
 % $m->callback( Transaction => $Transaction, %ARGS, CallbackName => 'AfterDescription' );
-    </span>
+</span>
 % $m->callback( TimeTaken => \$TimeTaken, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyTimeTaken' );
-    <span class="time-taken"><% $TimeTaken %></span>
+    <span class="time-taken"><% $TimeTaken %></span>\
     <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
   </div>
-
     <div class="content">
 % if ( $type_class eq 'message' ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
     </div>
-
 </div>
 </div>
-
 <%ARGS>
 $Ticket => undef
 $Transaction => undef

@@ -46,12 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Modify global group rights') &>
-<& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/GroupRights.html', 
-    Title => loc('Modify global group rights') &>  
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="GroupRights.html">
+<form method="post" action="GroupRights.html" id="ModifyGroupRights" name="ModifyGroupRights">
   <& /Admin/Elements/EditRights, Context => $RT::System, Principals => \@principals &>
   <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
 </form>
@@ -63,5 +61,3 @@ my @results = ProcessACLs(\%ARGS);
 # Principal collections
 my @principals = GetPrincipalsMap($RT::System, qw(System Roles Groups));
 </%INIT>
-<%ARGS>
-</%ARGS>

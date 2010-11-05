@@ -1,0 +1,157 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+.sf-menu {
+    width: 100%;
+}
+
+
+.sf-menu li:hover {
+    background-color: #fff;
+}
+
+.sf-menu li, .sf-menu li li, .sf-menu li li li {
+    background-color: #eaeaea;
+}
+
+#main-navigation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    left: auto;
+    z-index: 9999;
+    text-color: #000;
+}
+
+#main-navigation .sf-menu a, #main-navigation .sf-menu a:hover {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-color: #fff;
+    color: #000;
+}
+
+#main-navigation a {
+    border-top: none;
+}
+
+#main-navigation li li a {
+    border-top: 1px solid white;
+}
+
+
+#page-navigation {
+    position: absolute;
+    top: 7.2em;
+    right: 0em;
+    left: auto;
+    z-index: 9995;
+    font-size: 0.8em;
+}
+
+#page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
+    background-color: #fff;
+}
+
+#page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
+    border: none;
+    color: #000;
+}
+
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+#app-nav.toplevel { display: none; }
+#app-nav.toplevel.sf-menu { display:block; }
+#page-menu.toplevel { display: none; }
+#page-menu.toplevel.sf-menu { display:block; }
+
+#topactions {
+ position: absolute;
+ background: transparent;
+ top: 3.2em;
+ right: 0.7em;
+ width: auto;
+ min-width: 42em;
+ font-size: 0.9em;
+ z-index: 99;
+}
+
+#topactions form * {
+    vertical-align: top;
+}
+
+#topactions button, #topactions select, #topactions input{
+ padding-top: 0em;
+ padding-bottom: 0em;
+ width: 8em;
+
+}
+
+#topactions form {
+ display: block;
+
+}
+
+#topactions #GotoTicket, #topactions #CreateTicketInQueue {
+ text-align: right;
+
+}
+#topactions #simple-search {
+ float: right;
+}
+
+#topactions #simple-search .field{
+ margin-left: 1em;
+ color: #787;
+ }
+
+#topactions #simple-search .field:focus {
+ color: #000;
+ }
+
+#topactions #GotoTicket {
+ text-align: right;
+
+}

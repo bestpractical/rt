@@ -46,10 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc("RT at a glance") &>
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
-&>
+<& /Elements/Tabs &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
 

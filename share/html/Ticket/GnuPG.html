@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs,
-    Ticket => $txn->TicketObj,
-    current_tab => 'Ticket/Encrypt.html?id='. $id,
-    Title => $title,
-&>
+<& /Elements/Tabs &>
 
 % $m->callback( CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
 <& /Elements/ListActions, actions => \@results &>

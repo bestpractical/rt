@@ -53,10 +53,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 }
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/ToolTabs, 
-    current_tab => 'Admin/Tools/Configuration.html',
-    current_subtab => 'Admin/Tools/Configuration.html', 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <&|/Widgets/TitleBox, title => loc("RT Configuration") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
