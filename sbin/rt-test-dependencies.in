@@ -234,9 +234,7 @@ CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
 Plack 0.9942
 Plack::Handler::Starlet
-Test::WWW::Mechanize::PSGI
 CGI::Emulate::PSGI
-Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -275,6 +273,8 @@ Test::Builder 0.77 # needed to fix TODO test
 Test::MockTime
 Log::Dispatch::Perl
 Web::Scraper
+Test::WWW::Mechanize::PSGI
+Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
