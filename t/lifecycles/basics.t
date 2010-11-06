@@ -22,8 +22,8 @@ diag "check basic API";
 {
     my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
-    is $schema->name, 'default', "it's a default schema";
-    is join(', ', sort $schema->valid),
+    is $schema->Name, 'default', "it's a default schema";
+    is join(', ', sort $schema->Valid),
         join(', ', sort qw(new open stalled resolved rejected deleted)),
         'this is the default set from our config file';
 }

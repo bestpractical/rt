@@ -272,7 +272,7 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return $self->Lifecycle->valid('initial', 'active');
+    return $self->Lifecycle->Valid('initial', 'active');
 }
 
 =head2 InactiveStatusArray
@@ -294,7 +294,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return $self->Lifecycle->valid( @_ );
+    return $self->Lifecycle->Valid( @_ );
 }
 
 =head2 IsValidStatus value

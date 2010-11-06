@@ -1712,7 +1712,7 @@ sub SetQueue {
     my $new_status;
     my $old_lifecycle = $self->QueueObj->Lifecycle;
     my $new_lifecycle = $NewQueueObj->Lifecycle;
-    if ( $old_lifecycle->name ne $new_lifecycle->name ) {
+    if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
         unless ( $old_lifecycle->has_map( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }

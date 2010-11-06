@@ -72,10 +72,10 @@ if ( $TicketObj ) {
     }
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->Lifecycle->valid;
+    @status = $QueueObj->Lifecycle->Valid;
 }
 else {
-    @status = RT::Queue->Lifecycle->valid;
+    @status = RT::Queue->Lifecycle->Valid;
 }
 </%INIT>
 <%ARGS>

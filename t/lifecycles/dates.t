@@ -30,11 +30,11 @@ diag "check basic API";
 {
     my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
-    is $schema->name, 'default', "it's a default schema";
+    is $schema->Name, 'default', "it's a default schema";
 
     $schema = $delivery->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
-    is $schema->name, 'delivery', "it's a delivery schema";
+    is $schema->Name, 'delivery', "it's a delivery schema";
 }
 
 diag "dates on create for default schema";
