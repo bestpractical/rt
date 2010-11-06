@@ -53,7 +53,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
 
         $m->follow_link_ok( { text => 'root' }, '-> root' );
         for my $id ( 'my-rt', 'memberships', 'history', 'basics' ) {
-            $m->follow_link_ok( { id => 'page-current-' . $id }, "-> $id" );
+            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
         }
     }
 
@@ -72,7 +72,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         for my $id ( 'history', 'members', 'group-rights', 'user-rights',
             'basics' )
         {
-            $m->follow_link_ok( { id => 'page-group_foo-' . $id }, "-> $id" );
+            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
         }
     }
 
@@ -115,7 +115,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'cf_foo' }, '-> cf_foo' );
 
         for my $id ( 'applies-to', 'group-rights', 'user-rights', 'basics' ) {
-            $m->follow_link_ok( { id => 'page-cf_foo-' . $id }, "-> $id" );
+            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
         }
     }
 
