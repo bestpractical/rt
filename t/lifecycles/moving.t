@@ -46,7 +46,7 @@ diag "add partial map";
             new => 'ordered',
         },
     };
-    RT::Lifecycle->fill_cache;
+    RT::Lifecycle->FillCache;
 }
 
 diag "check moving with a partial map";

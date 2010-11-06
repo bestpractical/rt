@@ -113,7 +113,7 @@ sub new {
     my $proto = shift;
     my $self = bless {}, ref($proto) || $proto;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return $self;
 }
@@ -152,7 +152,7 @@ Returns sorted list of the lifecycles' names.
 sub List {
     my $self = shift;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return sort grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
@@ -242,7 +242,7 @@ sub IsInitial {
 }
 
 
-=head3 default_initial
+=head3 DefaultInitial
 
 Returns the "default" initial status for this lifecycle
 
@@ -304,20 +304,20 @@ sub IsInactive {
     return 0;
 }
 
-=head3 default_inactive
+=head3 DefaultInactive
 
 Returns the "default" inactive status for this lifecycle
 
 =cut
 
-sub default_inactive {
+sub DefaultInactive {
     my $self = shift;
     return $self->{data}->{default_inactive};
 }
 
 =head2 Transitions, rights, labels and actions.
 
-=head3 transitions
+=head3 Transitions
 
 Takes status and returns list of statuses it can be changed to.
 
@@ -354,14 +354,14 @@ sub IsTransition {
     return 0;
 }
 
-=head3 check_right
+=head3 CheckRight
 
 Takes two statuses (from -> to) and returns the right that should
 be checked on the ticket.
 
 =cut
 
-sub check_right {
+sub CheckRight {
     my $self = shift;
     my $from = shift;
     my $to = shift;
@@ -376,10 +376,10 @@ sub check_right {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
-sub register_rights {
+sub RegisterRights {
     my $self = shift;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my %tmp;
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
@@ -409,7 +409,7 @@ sub register_rights {
     }
 }
 
-=head3 actions
+=head3 Actions
 
 Takes a status and returns list of defined actions for the status. Each
 element in the list is a hash reference with the following key/value
@@ -429,11 +429,11 @@ pairs:
 
 =cut
 
-sub actions {
+sub Actions {
     my $self = shift;
     my $from = shift || return ();
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my @res = grep $_->{'from'} eq $from || ( $_->{'from'} eq '*' && $_->{'to'} ne $from ),
         @{ $self->{'data'}{'actions'} };
@@ -603,7 +603,7 @@ sub fill_cache {
 
 sub for_localization {
     my $self = shift;
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my @res = ();
 
@@ -628,7 +628,7 @@ sub _store_lifecycles {
         description => 'all system lifecycles',
         content => \%LIFECYCLES,
     );
-    $self->fill_cache;
+    $self->FillCache;
     $self->Load( $name );
     return ($status, loc("Couldn't store lifecycle")) unless $status;
     return 1;

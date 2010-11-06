@@ -285,7 +285,7 @@ diag "add partial map between general->delivery";
             'on way' => 'resolved',
         },
     };
-    RT::Lifecycle->fill_cache;
+    RT::Lifecycle->FillCache;
 }
 
 diag "check date changes on moving a ticket";
