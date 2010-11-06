@@ -300,7 +300,7 @@ sub Create {
     }
 
     if ( ! defined $args{'Status'}) {
-        $args{'Status'} = $QueueObj->Lifecycle->default_initial();
+        $args{'Status'} = $QueueObj->Lifecycle->DefaultInitial();
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} )
@@ -360,8 +360,8 @@ sub Create {
     #
     # Instead, we check to make sure that it's either an "active" or "inactive" status
     elsif (
-        $QueueObj->Lifecycle->is_active($args{'Status'}) ||
-        $QueueObj->Lifecycle->is_inactive($args{'Status'})
+        $QueueObj->Lifecycle->IsActive($args{'Status'}) ||
+        $QueueObj->Lifecycle->IsInactive($args{'Status'})
 
     ){
         $Started->SetToNow;
@@ -373,7 +373,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->Lifecycle->is_inactive( $args{'Status'} ) )
+    elsif ( $QueueObj->Lifecycle->IsInactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -1756,7 +1756,7 @@ sub SetQueue {
 
         #When we close a ticket, set the 'Resolved' attribute to now.
         # It's misnamed, but that's just historical.
-        if ( $new_lifecycle->is_inactive($new_status) ) {
+        if ( $new_lifecycle->IsInactive($new_status) ) {
             $clone->_Set(
                 Field             => 'Resolved',
                 Value             => $now->ISO,
@@ -3097,7 +3097,7 @@ sub SetStatus {
     }
 
     my $old = $self->__Value('Status');
-    unless ( $lifecycle->is_transition( $old => $new ) ) {
+    unless ( $lifecycle->IsTransition( $old => $new ) ) {
         return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
     }
 
@@ -3106,7 +3106,7 @@ sub SetStatus {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( !$args{Force} && $lifecycle->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
+    if ( !$args{Force} && $lifecycle->IsInactive( $new ) && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
@@ -3128,7 +3128,7 @@ sub SetStatus {
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $lifecycle->is_inactive($new) ) {
+    if ( $lifecycle->IsInactive($new) ) {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,

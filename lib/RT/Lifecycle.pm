@@ -250,31 +250,31 @@ Returns the "default" initial status for this lifecycle
 
 =cut
 
-sub default_initial {
+sub DefaultInitial {
     my $self = shift;
     return $self->{data}->{default_initial};
 }
 
 
-=head3 active
+=head3 Active
 
 Returns an array of all active statuses for this lifecycle.
 
 =cut
 
-sub active {
+sub Active {
     my $self = shift;
     return $self->valid('active');
 }
 
-=head3 is_active
+=head3 IsActive
 
 Takes a value and returns true if value is a valid active status.
 Otherwise, returns false.
 
 =cut
 
-sub is_active {
+sub IsActive {
     my $self  = shift;
     my $value = lc shift;
     return 1 if grep lc($_) eq $value, $self->valid('active');
@@ -287,7 +287,7 @@ Returns an array of all inactive statuses for this lifecycle.
 
 =cut
 
-sub inactive {
+sub Inactive {
     my $self = shift;
     return $self->valid('inactive');
 }
@@ -299,7 +299,7 @@ Otherwise, returns false.
 
 =cut
 
-sub is_inactive {
+sub IsInactive {
     my $self  = shift;
     my $value = lc shift;
     return 1 if grep lc($_) eq $value, $self->valid('inactive');
@@ -331,7 +331,7 @@ in the following format:
 
 =cut
 
-sub transitions {
+sub Transitions {
     my $self = shift;
     my $status = shift;
     if ( $status ) {
@@ -341,18 +341,18 @@ sub transitions {
     }
 }
 
-=head1 is_transition
+=head1 IsTransition
 
 Takes two statuses (from -> to) and returns true if it's valid
 transition and false otherwise.
 
 =cut
 
-sub is_transition {
+sub IsTransition {
     my $self = shift;
     my $from = shift or return 0;
     my $to   = shift or return 0;
-    return 1 if grep lc($_) eq lc($to), $self->transitions($from);
+    return 1 if grep lc($_) eq lc($to), $self->Transitions($from);
     return 0;
 }
 

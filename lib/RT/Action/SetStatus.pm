@@ -113,14 +113,14 @@ sub Prepare {
     my $next = '';
     if ( $argument =~ /^(initial|active|inactive)$/i ) {
         my $method = 'Is'. ucfirst lc $argument;
-        ($next) = grep $lifecycle->$method($_), $lifecycle->transitions($status);
+        ($next) = grep $lifecycle->$method($_), $lifecycle->Transitions($status);
         unless ( $next ) {
             $RT::Logger->info("No transition from '$status' to $argument set");
             return 1;
         }
     }
     elsif ( $lifecycle->IsValid( $argument ) ) {
-        unless ( $lifecycle->is_transition( $status => $argument ) ) {
+        unless ( $lifecycle->IsTransition( $status => $argument ) ) {
             $RT::Logger->warning("Transition '$status -> $argument' is not valid");
             return 1;
         }

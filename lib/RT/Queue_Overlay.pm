@@ -283,7 +283,7 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return $self->Lifecycle->inactive;
+    return $self->Lifecycle->Inactive;
 }
 
 =head2 StatusArray
@@ -330,7 +330,7 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 sub IsInactiveStatus {
     my $self  = shift;
-    return $self->Lifecycle->is_inactive( shift );
+    return $self->Lifecycle->IsInactive( shift );
 }
 
 

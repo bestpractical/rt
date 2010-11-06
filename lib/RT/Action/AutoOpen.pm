@@ -85,7 +85,7 @@ sub Prepare {
     my $lifecycle = $ticket->QueueObj->Lifecycle;
     my $status = $ticket->Status;
 
-    my @active = $lifecycle->active;
+    my @active = $lifecycle->Active;
     # no change if no active statuses in the lifecycle
     return 1 unless @active;
 
@@ -100,7 +100,7 @@ sub Prepare {
         return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
-    my ($next) = grep $lifecycle->is_active($_), $lifecycle->transitions($status);
+    my ($next) = grep $lifecycle->IsActive($_), $lifecycle->Transitions($status);
 
     $self->{'set_status_to'} = $next;
 
