@@ -165,6 +165,20 @@ Returns name of the laoded lifecycle.
 
 sub Name { return $_[0]->{'name'} }
 
+=head2 Queues
+
+Returns L<RT::Queues> collection with queues that use this lifecycle.
+
+=cut
+
+sub Queues {
+    my $self = shift;
+    require RT::Queues;
+    my $queues = RT::Queues->new( RT->SystemUser );
+    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
+    return $queues;
+}
+
 =head2 Getting statuses and validating.
 
 Methods to get statuses in different sets or validating them.
@@ -752,14 +766,6 @@ sub NoMaps {
         }
     }
     return @res;
-}
-
-sub Queues {
-    my $self = shift;
-    require RT::Queues;
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
-    return $queues;
 }
 
 sub loc { return RT->SystemUser->loc( @_ ) }
