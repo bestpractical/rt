@@ -1713,10 +1713,10 @@ sub SetQueue {
     my $old_lifecycle = $self->QueueObj->Lifecycle;
     my $new_lifecycle = $NewQueueObj->Lifecycle;
     if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
-        unless ( $old_lifecycle->has_map( $new_lifecycle ) ) {
+        unless ( $old_lifecycle->HasMap( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }
-        $new_status = $old_lifecycle->map( $new_lifecycle )->{ $self->Status };
+        $new_status = $old_lifecycle->Map( $new_lifecycle )->{ $self->Status };
         return ( 0, $self->loc("Mapping between queues' lifecycles is incomplete. Contact your system administrator.") )
             unless $new_status;
     }

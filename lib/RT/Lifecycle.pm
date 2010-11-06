@@ -546,7 +546,7 @@ sub set_actions {
     return (1, loc('Updated lifecycle with actions data'));
 }
 
-sub fill_cache {
+sub FillCache {
     my $self = shift;
 
     my $map = RT->Config->Get('Lifecycles') or return;
@@ -601,7 +601,7 @@ sub fill_cache {
     return;
 }
 
-sub for_localization {
+sub ForLocalization {
     my $self = shift;
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
@@ -694,7 +694,7 @@ sub _set_actions {
     return 1;
 }
 
-sub from_set {
+sub FromSet {
     my $self = shift;
     my $status = shift;
     foreach my $set ( qw(initial active inactive) ) {
@@ -703,7 +703,7 @@ sub from_set {
     return '';
 }
 
-sub map {
+sub Map {
     my $from = shift;
     my $to = shift;
     $to = RT::Lifecycle->Load( $to ) unless ref $to;
@@ -732,15 +732,15 @@ sub set_map {
     return (1, loc('Updated lifecycle with actions data'));
 }
 
-sub has_map {
+sub HasMap {
     my $self = shift;
-    my $map = $self->map( @_ );
+    my $map = $self->Map( @_ );
     return 0 unless $map && keys %$map;
     return 0 unless grep defined && length, values %$map;
     return 1;
 }
 
-sub no_maps {
+sub NoMaps {
     my $self = shift;
     my @list = $self->List;
     my @res;
@@ -748,17 +748,17 @@ sub no_maps {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::Lifecycle->Load( $from )->has_map( $to );
+                unless RT::Lifecycle->Load( $from )->HasMap( $to );
         }
     }
     return @res;
 }
 
-sub queues {
+sub Queues {
     my $self = shift;
     require RT::Queues;
     my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->limit( column => 'lifecycle', value => $self->Name );
+    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
     return $queues;
 }
 
