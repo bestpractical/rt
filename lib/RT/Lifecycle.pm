@@ -230,6 +230,22 @@ sub IsValid {
     return 0;
 }
 
+=head3 StatusType
+
+Takes a status and returns its type, one of 'initial', 'active' or
+'inactive'.
+
+=cut
+
+sub StatusType {
+    my $self = shift;
+    my $status = shift;
+    foreach my $type ( qw(initial active inactive) ) {
+        return $type if $self->IsValid( $status, $set );
+    }
+    return '';
+}
+
 =head3 Initial
 
 Returns an array of all initial statuses for the current lifecycle.
@@ -706,15 +722,6 @@ sub _set_actions {
     # XXX, TODO: more tests on data
     $LIFECYCLES{ $args{'name'} }{'actions'} = $args{'actions'};
     return 1;
-}
-
-sub FromSet {
-    my $self = shift;
-    my $status = shift;
-    foreach my $set ( qw(initial active inactive) ) {
-        return $set if $self->IsValid( $status, $set );
-    }
-    return '';
 }
 
 sub Map {
