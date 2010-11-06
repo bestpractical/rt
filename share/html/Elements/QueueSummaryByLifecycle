@@ -122,7 +122,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
 my %lifecycle;
 
 for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->load( $queue->{'Lifecycle'} );
+    my $cycle = RT::Lifecycle->Load( $queue->{'Lifecycle'} );
     $lifecycle{ lc $cycle->name } = $cycle;
 }
 

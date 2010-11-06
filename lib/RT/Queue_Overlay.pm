@@ -246,7 +246,7 @@ sub RightCategories {
 sub Lifecycle {
     my $self = shift;
     unless (ref $self && $self->id) { 
-        return RT::Lifecycle->load('')
+        return RT::Lifecycle->Load('')
     }
 
     my $name = '';
@@ -259,7 +259,7 @@ sub Lifecycle {
         $name = 'default';
     }
 
-    my $res = RT::Lifecycle->load( $name );
+    my $res = RT::Lifecycle->Load( $name );
     $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist") unless $res;
     return $res;
 }

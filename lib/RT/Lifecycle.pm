@@ -51,8 +51,6 @@ use warnings;
 
 package RT::Lifecycle;
 
-sub loc { return RT->SystemUser->loc( @_ ) }
-
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
 __PACKAGE__->register_rights;
@@ -120,21 +118,21 @@ sub new {
     return $self;
 }
 
-=head2 load
+=head2 Load
 
 Takes a name of the lifecycle and loads it. If name is empty or undefined then
 loads the global lifecycle with statuses from all named lifecycles.
 
 Can be called as class method, returns a new object, for example:
 
-    my $lifecycle = RT::Lifecycle->load('default');
+    my $lifecycle = RT::Lifecycle->Load('default');
 
 =cut
 
-sub load {
+sub Load {
     my $self = shift;
     my $name = shift || '';
-    return $self->new->load( $name, @_ )
+    return $self->new->Load( $name, @_ )
         unless ref $self;
 
     return unless exists $LIFECYCLES_CACHE{ $name };
@@ -631,7 +629,7 @@ sub _store_lifecycles {
         content => \%LIFECYCLES,
     );
     $self->fill_cache;
-    $self->load( $name );
+    $self->Load( $name );
     return ($status, loc("Couldn't store lifecycle")) unless $status;
     return 1;
 }
@@ -708,14 +706,14 @@ sub from_set {
 sub map {
     my $from = shift;
     my $to = shift;
-    $to = RT::Lifecycle->load( $to ) unless ref $to;
+    $to = RT::Lifecycle->Load( $to ) unless ref $to;
     return $LIFECYCLES{'__maps__'}{ $from->name .' -> '. $to->name } || {};
 }
 
 sub set_map {
     my $self = shift;
     my $to = shift;
-    $to = RT::Lifecycle->load( $to ) unless ref $to;
+    $to = RT::Lifecycle->Load( $to ) unless ref $to;
     my %map = @_;
     $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
 
@@ -750,7 +748,7 @@ sub no_maps {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::Lifecycle->load( $from )->has_map( $to );
+                unless RT::Lifecycle->Load( $from )->has_map( $to );
         }
     }
     return @res;
@@ -763,5 +761,7 @@ sub queues {
     $queues->limit( column => 'lifecycle', value => $self->name );
     return $queues;
 }
+
+sub loc { return RT->SystemUser->loc( @_ ) }
 
 1;
