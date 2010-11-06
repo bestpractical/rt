@@ -2654,7 +2654,7 @@ sub _MergeInto {
     }
 
 
-    my $default_inactive = $self->QueueObj->Lifecycle->default_inactive;
+    my $default_inactive = $self->QueueObj->Lifecycle->DefaultInactive;
     if ( $default_inactive ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
             = $self->__Set( Field => 'Status', Value => $default_inactive );
@@ -3101,7 +3101,7 @@ sub SetStatus {
         return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
     }
 
-    my $check_right = $lifecycle->check_right( $old => $new );
+    my $check_right = $lifecycle->CheckRight( $old => $new );
     unless ( $self->CurrentUserHasRight( $check_right ) ) {
         return ( 0, $self->loc('Permission Denied') );
     }

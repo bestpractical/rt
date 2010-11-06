@@ -53,7 +53,7 @@ package RT::Lifecycle;
 
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
-__PACKAGE__->register_rights;
+__PACKAGE__->RegisterRights;
 
 # cache structure:
 #    {

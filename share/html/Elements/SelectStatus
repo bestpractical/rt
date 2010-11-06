@@ -65,7 +65,7 @@ if ( $TicketObj ) {
 
     my %has = ();
     foreach my $next ( $lifecycle->Transitions( $current ) ) {
-        my $check = $lifecycle->check_right( $current => $next );
+        my $check = $lifecycle->CheckRight( $current => $next );
         $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
             unless exists $has{ $check };
         push @status, $next if $has{ $check };
