@@ -64,6 +64,40 @@
     padding-left: 0.5em;
 }
 
+#app-nav .sf-sub-indicator {
+    background-image: url(../images/arrows-grey.png);
+    margin-top: -3px;
+}
+
+#app-nav.sf-vertical li:hover ul,
+#app-nav.sf-vertical li.sfHover ul {
+    top: -1px;
+}
+
+#prefs-menu.sf-menu a,
+#prefs-menu .sf-menu a
+{
+    border: none;
+}
+
+#prefs-menu.sf-menu li li li {
+    border-left: 1px solid #ccc;
+}
+
+#prefs-menu.sf-menu li:hover ul,
+#prefs-menu.sf-menu li.sfHover ul {
+    top: 2.4em; /* match the height of the top level li */
+}
+
+#prefs-menu.sf-menu li li:hover ul,
+#prefs-menu.sf-menu li li.sfHover ul {
+    top: 0;
+}
+
+#prefs-menu .sf-sub-indicator {
+    background-image: url(../images/arrows-grey.png);
+}
+
 #main-navigation ul li {
 }
 

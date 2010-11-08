@@ -161,11 +161,18 @@ div#quickbar {
     background: #eaeaea;
 }
 
-#prefs-menu.sf-menu li#li-preferences {
+#prefs-menu.sf-menu #li-preferences {
     background: none;
 }
 
-#prefs-menu.sf-menu li:hover, #prefs-menu.sf-menu li.sfHover, #prefs-menu.sf-menu a:focus, #prefs-menu.sf-menu a:hover, #prefs-menu.sf-menu a:active {
+#prefs-menu.sf-menu li:hover,
+#prefs-menu.sf-menu li.sfHover,
+#prefs-menu.sf-menu #li-preferences.sfHover,
+#prefs-menu.sf-menu #li-preferences:hover,
+#prefs-menu.sf-menu a:focus,
+#prefs-menu.sf-menu a:hover,
+#prefs-menu.sf-menu a:active,
+{
     background-color: #CFDEFF;
     text-color: #000;
     color: #000;
