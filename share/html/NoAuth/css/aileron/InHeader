@@ -50,7 +50,12 @@
 <![endif]-->
 <script type="text/javascript">
 jQuery(document).ready(function(){
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish();
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish( { autoArrows:  false, dropShadows: false } );
+    jQuery.fn.supersubs.defaults = {
+        maxWidth: 30,
+        extraWidth: 2
+    };
+
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish();
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ autoArrows:  false, dropShadows: false });
 });
 </script>

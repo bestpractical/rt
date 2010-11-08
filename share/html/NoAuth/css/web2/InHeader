@@ -60,8 +60,13 @@ jQuery(document).ready(function(){
     jQuery("#li-search-simple").detach().insertBefore("#li-search");
     jQuery("#li-tools-approval").detach().appendTo("#app-nav");
 
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled ').superfish();
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-vertical sf-js-enabled ').superfish();
-    jQuery("#prefs-menu").addClass('sf-menu sf-js-enabled ').superfish();
+    jQuery.fn.supersubs.defaults = {
+        maxWidth: 30,
+        extraWidth: 2
+    };
+
+    jQuery("#page-menu.toplevel").addClass("sf-menu sf-js-enabled").supersubs().superfish();
+    jQuery("#app-nav.toplevel").addClass("sf-menu sf-vertical sf-js-enabled").supersubs().superfish();
+    jQuery("#prefs-menu").addClass("sf-menu sf-js-enabled").supersubs().superfish();
 });
 </script>
