@@ -49,13 +49,20 @@
     width: 100%;
 }
 
-
 .sf-menu li:hover {
-    background-color: #fff;
+    background-color: #CFDEFF;
 }
 
 .sf-menu li, .sf-menu li li, .sf-menu li li li {
     background-color: #eaeaea;
+}
+
+.sf-sub-indicator {
+    background-image: url(../images/arrows-grey.png);
+}
+
+.sf-menu li li .sf-sub-indicator {
+    margin-top: -3px;
 }
 
 #main-navigation {
