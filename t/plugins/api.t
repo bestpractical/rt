@@ -10,8 +10,11 @@ use RT::Test nodb => 1, tests => 7;
 is_deeply([RT->PluginDirs('lib')], []);
 ok(!grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
 RT->Config->Set('Plugins',qw(Hello));
-RT->InitPluginPaths;
+
+RT->ProbePlugins(1);
+RT->UnloadPlugins;
 RT->Plugins;
+
 ok(grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);;
 
 is_deeply([RT->PluginDirs('lib')], ["$RT::PluginPath/Hello/lib"], 'plugin lib dir found');
@@ -23,6 +26,8 @@ is_deeply({RT::Interface::Web::Handler->DefaultHandlerArgs}->{comp_root}[1],
 
 # reset
 RT->Config->Set('Plugins',qw());
-RT->InitPluginPaths;
+RT->ProbePlugins(1);
+RT->UnloadPlugins;
+
 ok(!grep { $_ eq "$RT::PluginPath/Hello/lib" } @INC);
 is({RT::Interface::Web::Handler->DefaultHandlerArgs}->{comp_root}[1][0],'standard');

@@ -604,14 +604,11 @@ In case F<local/lib> isn't in @INC, append them to @INC
 =cut
 
 sub InitPluginPaths {
-    warn "DEPRECATED";
+    Carp::carp "DEPRECATED";
     my $self = shift || __PACKAGE__;
 
     $self->ProbePlugins(1);
-    if ($LOADED_PLUGINS) {
-        Carp::carp "reinitializing plugin paths";
-        $LOADED_PLUGINS = undef;
-    }
+    $self->UnloadPlugins();
 }
 
 =head2 InitPlugins
@@ -641,6 +638,10 @@ sub InitPlugins {
     return @$LOADED_PLUGINS;
 }
 
+sub UnloadPlugins {
+    my $self = shift;
+    $LOADED_PLUGINS = undef;
+}
 
 sub InstallMode {
     my $self = shift;

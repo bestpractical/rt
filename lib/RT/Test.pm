@@ -434,7 +434,8 @@ sub bootstrap_plugins {
     };
 
     RT->Config->Set( Plugins => @plugins );
-    RT->InitPluginPaths();
+    RT->ProbePlugins(1);
+    RT->UnloadPlugins();
 
     my $dba_dbh;
     $dba_dbh = _get_dbh(
