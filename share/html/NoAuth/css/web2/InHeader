@@ -55,7 +55,11 @@
 <script type="text/javascript">
 jQuery(document).ready(function(){
     jQuery("#quick-personal").append('<ul id="prefs-menu"></ul>');
+
+    jQuery("#li-preferences-settings > ul > li").detach().insertAfter("#li-preferences-settings");
+    jQuery("#li-preferences-settings").remove();
     jQuery("#li-preferences").detach().appendTo(jQuery("#prefs-menu"));
+
     jQuery("#li-tools-config").detach().appendTo(jQuery("#app-nav"));
     jQuery("#li-search-simple").detach().insertBefore(jQuery("#li-search"));
     jQuery("#li-tools-approval").detach().appendTo(jQuery("#app-nav"));
