@@ -2140,6 +2140,7 @@ Set(@JSFilesInHead, qw/
     titlebox-state.js
     util.js
     userautocomplete.js
+    jquery.hoverIntent.js
     superfish.js
     supersubs.js
     history-folding.js
