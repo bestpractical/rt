@@ -170,6 +170,11 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
         }
 
+        my $article_admin = $admin->child( articles => title => loc('Articles') => path => "/Admin/Articles/index.html" );
+        $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/index.html');
+        $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
+        $article_admin->child( cfs => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
+
         $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html', );
         $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html', );
