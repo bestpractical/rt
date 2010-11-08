@@ -88,6 +88,12 @@
                 .addClass("action-"+ev.target.value);
         });
     });
+    jQuery(function() {
+        jQuery("input[name=TxnSendMailTo]").change(function(ev) {
+            jQuery("input[name=TxnSendMailTo][value="+ev.target.value+"]")
+                  .attr("checked",jQuery(ev.target).attr('checked'));
+        });
+    });
 </script>
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
