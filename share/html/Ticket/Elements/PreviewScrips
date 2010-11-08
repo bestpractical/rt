@@ -77,8 +77,8 @@ my %recips;
 %                 my $checked = 1;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
-                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>" />
-                  <label for="TxnSendMailTo-<% $addr->address %>"><& /Elements/ShowUser, Address => $addr &></label>
+                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+                  <label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
                   </li>
 %             }
