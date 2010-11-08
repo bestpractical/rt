@@ -77,7 +77,7 @@ my %recips;
 %                 my $checked = 1;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
-                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' %> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>" />
+                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>" />
                   <label for="TxnSendMailTo-<% $addr->address %>"><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
                   </li>
@@ -104,7 +104,7 @@ my %recips;
 %                 my $checked = 1;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => Email::Address->parse($address), Type => $type, Checked => \$checked);
 %                 $recips{$address}++;
-                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' %> value="<%$address%>" />
+                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$address%>" />
                                          <%$address%>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => Email::Address->parse($address), Type => $type);
                   </li>
