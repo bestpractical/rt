@@ -89,6 +89,9 @@
     border-top: 1px solid white;
 }
 
+#app-nav.sf-menu > li:first-child > a {
+    border-left: none;
+}
 
 #page-navigation {
     position: absolute;
