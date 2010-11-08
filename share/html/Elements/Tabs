@@ -86,7 +86,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $tickets->child( new => title => loc('New Search') => path => "/Search/Build.html?NewQuery=1" );
 
     my $tools = Menu->child(  tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 2 );
+    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 5 );
 
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
@@ -94,19 +94,21 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 4 );
+    my $articles = $tools->child( articles => title => loc('Articles') => path => "/Articles/index.html", sort_order => 10 );
+
+    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 15 );
     $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html', );
     $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html', );
     $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html', );
 
-    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5 );
+    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 25 );
 
-    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10 );
-    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 15 );
+    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 30 );
+    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 35 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
-        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=>3 );
+        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 20 );
     }
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
