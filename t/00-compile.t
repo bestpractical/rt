@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1, tests => 31;
+use RT::Test nodb => 1, tests => 41;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -35,6 +35,16 @@ require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");
 require_ok("RT::Installer");
 require_ok("RT::Util");
+require_ok("RT::Article");
+require_ok("RT::Articles");
+require_ok("RT::Class");
+require_ok("RT::Classes");
+require_ok("RT::ObjectClass");
+require_ok("RT::ObjectClasses");
+require_ok("RT::ObjectTopic");
+require_ok("RT::ObjectTopics");
+require_ok("RT::Topic");
+require_ok("RT::Topics");
 
 
 # no the following doesn't work yet
