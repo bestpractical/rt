@@ -51,7 +51,7 @@ use strict;
 use warnings;
 no warnings 'redefine';
 
-use RT::FM::Article;
+use RT::Article;
 use base qw/RT::URI::base/;
 
 =head2 LocalURIPrefix 
@@ -83,7 +83,7 @@ sub URIForObject {
 
 =head2 ParseObject $ArticleObj
 
-When handed an L<RT::FM::Article> object, figure out its URI
+When handed an L<RT::Article> object, figure out its URI
 
 =cut
 
@@ -101,7 +101,7 @@ sub ParseURI {
 	my $article;
  
  	if ($uri =~ /^(\d+)$/) {
- 		$article = RT::FM::Article->new($self->CurrentUser);
+ 		$article = RT::Article->new($self->CurrentUser);
  		$article->Load($uri);	
  		$self->{'uri'} = $article->URI;
  	}
@@ -117,7 +117,7 @@ sub ParseURI {
     		my $id = $1;
     	
     
-	        $article = RT::FM::Article->new( $self->CurrentUser );
+	        $article = RT::Article->new( $self->CurrentUser );
     	    $article->Load($id);
 
     	    #If we couldn't find a article, return undef.
