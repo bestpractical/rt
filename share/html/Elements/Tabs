@@ -188,14 +188,13 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
-        my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
-        $settings->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
-        $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
-        $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
-        $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
-        $settings->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
+        $about_me->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
+        $about_me->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
+        $about_me->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
+        $about_me->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
+        $about_me->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
 
-        my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches' );
+        my $search_menu = $about_me->child( 'saved-searches' => title => 'Saved Searches' );
         my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",
                           Object => RT::System->new( $session{'CurrentUser'} )) ];
         my $i = 0;
