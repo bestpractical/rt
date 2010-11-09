@@ -2150,10 +2150,11 @@ Set(@JSFilesInHead, qw/
     titlebox-state.js
     util.js
     userautocomplete.js
-    jquery.hoverIntent.js
+    jquery.event.hover-1.0.js
     superfish.js
     supersubs.js
     history-folding.js
+    late.js
 /);
 
 =item C<$JSMinPath>
