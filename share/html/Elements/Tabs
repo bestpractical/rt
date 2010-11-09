@@ -310,7 +310,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             my $obj = RT::Ticket->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            my $actions = PageMenu()->child( transitions => title => loc('Actions'), sort_order  => 95 );
+            my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
             my $tabs = PageMenu();
             $tabs->child( bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
                       escape_title => 0,
