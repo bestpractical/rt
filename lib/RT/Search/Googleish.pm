@@ -73,28 +73,29 @@ sub _Init {
     my $self = shift;
     my %args = @_;
 
-    $self->{'Queues'} = delete($args{'Queues'}) || [];
+    $self->{'Queues'} = delete( $args{'Queues'} ) || [];
     $self->SUPER::_Init(%args);
 }
 
-sub Describe  {
-  my $self = shift;
-  return ($self->loc("No description for [_1]", ref $self));
+sub Describe {
+    my $self = shift;
+    return ( $self->loc( "No description for [_1]", ref $self ) );
 }
 
 sub QueryToSQL {
-    my $self     = shift;
-    my $query    = shift || $self->Argument;
+    my $self = shift;
+    my $query = shift || $self->Argument;
 
     my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
-      split /((?:fulltext:)?$re_delim|\s+)/o, $query;
+        split /((?:fulltext:)?$re_delim|\s+)/o, $query;
 
-    my (@keyvalue_clauses, @status_clauses, @other_clauses);
+    my ( @keyvalue_clauses, @status_clauses, @other_clauses );
 
     for my $keyword (@keywords) {
         my @clauses;
-        if ( ( @clauses = $self->TranslateCustom($keyword) ) ||
-             ( @clauses = $self->TranslateKeyValue($keyword) ) ) {
+        if (   ( @clauses = $self->TranslateCustom($keyword) )
+            || ( @clauses = $self->TranslateKeyValue($keyword) ) )
+        {
             push @keyvalue_clauses, @clauses;
             next;
         } elsif ( @clauses = $self->TranslateStatus($keyword) ) {
@@ -137,7 +138,9 @@ sub TranslateKeyValue {
     my $self = shift;
     my $key  = shift;
 
-    if ( $key =~ /(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"]?)(.+)\2/i )
+    if ( $key
+        =~ /(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"]?)(.+)\2/i
+       )
     {
         my $field = $1;
         my $value = $3;
@@ -145,11 +148,9 @@ sub TranslateKeyValue {
 
         if ( $field =~ /id|status|owner|queue/i ) {
             return "$field = '$value'";
-        }
-        elsif ( $field =~ /fulltext/i ) {
+        } elsif ( $field =~ /fulltext/i ) {
             return "Content LIKE '$value'";
-        }
-        else {
+        } else {
             return "$field LIKE '$value'";
         }
     }
@@ -161,7 +162,7 @@ sub TranslateNumber {
     my $key  = shift;
 
     if ( $key =~ /^\d+$/ ) {
-        return ("id = '$key'", "Subject LIKE '$key'");
+        return ( "id = '$key'", "Subject LIKE '$key'" );
     }
     return;
 }
@@ -227,8 +228,8 @@ sub TranslateOthers {
 }
 
 sub ProcessExtraQueues {
-    my $self           = shift;
-    my %args           = @_;
+    my $self = shift;
+    my %args = @_;
 
     # restrict to any queues requested by the caller
     my @clauses;
@@ -245,8 +246,15 @@ sub ProcessExtraQueues {
 sub ProcessExtraStatus {
     my $self = shift;
 
-    if ( RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch',$self->TicketsObj->CurrentUser) ) {
-          return join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray() );
+    if (RT::Config->Get(
+            'OnlySearchActiveTicketsInSimpleSearch',
+            $self->TicketsObj->CurrentUser
+        )
+       )
+    {
+        return join( " OR ",
+            map "Status = '$_'",
+            RT::Queue->ActiveStatusArray() );
     }
     return;
 }
