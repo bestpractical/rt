@@ -7,16 +7,16 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ([2.53])
-AC_INIT(RT, 3.8.HEAD, [rt-bugs@bestpractical.com])
-AC_CONFIG_SRCDIR([lib/RT.pm.in])
+AC_INIT(RT, m4_esyscmd([( git describe --tags || cat ./.tag 2> /dev/null || echo "rt-3.9.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
+AC_CONFIG_SRCDIR([lib/RT.pm])
 
 dnl Extract RT version number components
 AC_SUBST([rt_version_major],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\1]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\1]))
 AC_SUBST([rt_version_minor],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\2]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\2]))
 AC_SUBST([rt_version_patch],
-	m4_bregexp(AC_PACKAGE_VERSION,[^\(\w+\)\.\(\w+\)\(\.\(\w+\)\)?],[\4]))
+	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\3]))
 test "x$rt_version_major" = 'x' && rt_version_major=0
 test "x$rt_version_minor" = 'x' && rt_version_minor=0
 test "x$rt_version_patch" = 'x' && rt_version_patch=0
@@ -35,14 +35,15 @@ dnl WEB_HANDLER
 AC_ARG_WITH(web-handler,
     AC_HELP_STRING([--with-web-handler=LIST],
 	[comma separated list of web-handlers RT will be able to use.
-         Default is fastcgi when modperl1, modperl2, fastcgi, standalone
-         and speedycgi are valid. To succefuly run RT you need only one.
+         Default is fastcgi when modperl1, modperl2, fastcgi, fastcgi-server,
+         and speedycgi are valid. To successfuly run RT you need only one.
+         only one.
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl[12]|fastcgi|speedycgi|standalone)$/i, grep defined && length, split /\s*,\s*/, "$WEB_HANDLER"')
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi(?:-server)?|speedycgi|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
 if test "$my_web_handler_test" != "ok"; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, speedycgi and standalone are valid web-handlers])
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fastcgi-server, speedycgi and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
@@ -119,7 +120,7 @@ AC_ARG_WITH(db-type,
 	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and SQLite are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' -a "$DB_TYPE" != 'Sybase' ; then
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' ; then
 	AC_MSG_ERROR([Only Oracle, Pg, mysql and SQLite are valid db types])
 fi
 AC_SUBST(DB_TYPE)
@@ -130,11 +131,6 @@ if test "$DB_TYPE" = 'Oracle'; then
 	DATABASE_ENV_PREF="\$ENV{'ORACLE_HOME'} = '$ORACLE_HOME';"
 fi
 
-dnl DATABASE_ENV_PREF
-if test "$DB_TYPE" = 'Sybase'; then
-	test "x$SYBASE" = 'x' && AC_MSG_ERROR([Please declare the SYBASE_HOME environment variable])
-	DATABASE_ENV_PREF="\$ENV{'SYBASE'} = '$SYBASE';"
-fi
 AC_SUBST(DATABASE_ENV_PREF)
 
 dnl DB_HOST
@@ -327,12 +323,15 @@ AC_SUBST([RT_PATH],			${exp_prefix})
 AC_SUBST([RT_DOC_PATH],			${exp_manualdir})
 AC_SUBST([RT_LOCAL_PATH],		${exp_customdir})
 AC_SUBST([RT_LIB_PATH],			${exp_libdir})
+AC_SUBST([RT_LEXICON_PATH],			${exp_lexdir})
 AC_SUBST([RT_ETC_PATH],			${exp_sysconfdir})
 AC_SUBST([CONFIG_FILE_PATH],		${exp_sysconfdir})
 AC_SUBST([RT_BIN_PATH],			${exp_bindir})
 AC_SUBST([RT_SBIN_PATH],		${exp_sbindir})
 AC_SUBST([RT_VAR_PATH],			${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH],			${exp_mandir})
+AC_SUBST([RT_FONT_PATH],			${exp_fontdir})
+AC_SUBST([RT_PLUGIN_PATH],			${exp_plugindir})
 AC_SUBST([MASON_DATA_PATH],		${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH],		${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH],		${exp_htmldir})
@@ -340,9 +339,10 @@ AC_SUBST([LOCAL_ETC_PATH],		${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH],		${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH],		${exp_customlibdir})
+AC_SUBST([LOCAL_PLUGIN_PATH],		${exp_customplugindir})
 AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
-if test ${exp_sysconfdir} = "etc"; then
+if test ${exp_sysconfdir} = "etc" -o ${exp_sysconfdir} = "etc/rt"; then
 AC_SUBST([RT_PATH_R],			${exp_prefix})
 AC_SUBST([RT_DOC_PATH_R],			${exp_prefix}/${exp_manualdir})
 AC_SUBST([RT_LOCAL_PATH_R],		${exp_prefix}/${exp_customdir})
@@ -353,6 +353,9 @@ AC_SUBST([RT_BIN_PATH_R],			${exp_prefix}/${exp_bindir})
 AC_SUBST([RT_SBIN_PATH_R],		${exp_prefix}/${exp_sbindir})
 AC_SUBST([RT_VAR_PATH_R],			${exp_prefix}/${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH_R],			${exp_prefix}/${exp_mandir})
+AC_SUBST([RT_FONT_PATH_R],			${exp_prefix}/${exp_fontdir})
+AC_SUBST([RT_LEXICON_PATH_R],			${exp_prefix}/${exp_lexdir})
+AC_SUBST([RT_PLUGIN_PATH_R],		${exp_prefix}/${exp_plugindir})
 AC_SUBST([MASON_DATA_PATH_R],		${exp_prefix}/${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH_R],		${exp_prefix}/${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH_R],		${exp_prefix}/${exp_htmldir})
@@ -360,24 +363,29 @@ AC_SUBST([LOCAL_ETC_PATH_R],		${exp_prefix}/${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH_R],	${exp_prefix}/${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH_R],		${exp_prefix}/${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH_R],		${exp_prefix}/${exp_customlibdir})
+AC_SUBST([LOCAL_PLUGIN_PATH_R],		${exp_prefix}/${exp_customplugindir})
 AC_SUBST([RT_LOG_PATH_R],			${exp_prefix}/${exp_logfiledir})
 else
 AC_SUBST([RT_PATH_R],			${exp_prefix})
 AC_SUBST([RT_DOC_PATH_R],			${exp_manualdir})
 AC_SUBST([RT_LOCAL_PATH_R],		${exp_customdir})
 AC_SUBST([RT_LIB_PATH_R],			${exp_libdir})
+AC_SUBST([RT_LEXICON_PATH_R],			${exp_lexdir})
 AC_SUBST([RT_ETC_PATH_R],			${exp_sysconfdir})
+AC_SUBST([RT_PLUGIN_PATH_R],		${exp_plugindir})
 AC_SUBST([CONFIG_FILE_PATH_R],		${exp_sysconfdir})
 AC_SUBST([RT_BIN_PATH_R],			${exp_bindir})
 AC_SUBST([RT_SBIN_PATH_R],		${exp_sbindir})
 AC_SUBST([RT_VAR_PATH_R],			${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH_R],			${exp_mandir})
+AC_SUBST([RT_FONT_PATH_R],			${exp_fontdir})
 AC_SUBST([MASON_DATA_PATH_R],		${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH_R],		${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH_R],		${exp_htmldir})
 AC_SUBST([LOCAL_ETC_PATH_R],		${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH_R],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH_R],		${exp_customlexdir})
+AC_SUBST([LOCAL_PLUGIN_PATH_R],		${exp_customplugindir})
 AC_SUBST([LOCAL_LIB_PATH_R],		${exp_customlibdir})
 AC_SUBST([RT_LOG_PATH_R],			${exp_logfiledir})
 
@@ -389,7 +397,10 @@ dnl Binaries that should be +x
 AC_CONFIG_FILES([
                  etc/upgrade/3.8-branded-queues-extension
                  etc/upgrade/3.8-ical-extension
+                 etc/upgrade/split-out-cf-categories
+                 etc/upgrade/generate-rtaddressregexp
                  sbin/rt-attributes-viewer
+                 sbin/rt-session-viewer
                  sbin/rt-dump-database
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
@@ -400,9 +411,13 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-email-group-admin
                  sbin/rt-server
+                 sbin/rt-server.fcgi
+                 sbin/standalone_httpd
+                 sbin/rt-setup-fulltext-index
+                 sbin/rt-fulltext-indexer
+                 bin/fastcgi_server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi
-                 bin/standalone_httpd
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],
@@ -413,9 +428,10 @@ dnl All other generated files
 AC_CONFIG_FILES([
                  Makefile
                  etc/RT_Config.pm
-                 lib/RT.pm
+                 lib/RT/Generated.pm
                  bin/mason_handler.svc
                  bin/webmux.pl
-                 t/data/configs/apache2.2+mod_perl.conf],
+                 t/data/configs/apache2.2+mod_perl.conf
+                 t/data/configs/apache2.2+fastcgi.conf],
                )
 AC_OUTPUT

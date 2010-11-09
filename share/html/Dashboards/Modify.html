@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,62 +43,58 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
-    Title => $title,
-    $Create ? () : (DashboardObj => $Dashboard),
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard" id="ModifyDashboard">
 
 %unless ($Dashboard->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 % }
+
+<&|/Widgets/TitleBox, title => loc('Basics') &>
 <table>
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td>
-<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    <tr>
+     <td class="label"><&|/l&>Name</&>:</td>
+     <td class="value"><input name="Name" value="<%$Dashboard->Name%>" /></td>
+    </tr>
+    <tr>
+    <td class="label"><&|/l&>Privacy</&>:</td>
+    <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
 </tr>
-<tr><td align="right">
-<&|/l&>Privacy</&>:
-</td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
-</td></tr>
 </table>
-% if ( $Create ) {
-<& /Elements/Submit, Name => 'Save', Label => loc('Create') &>
-% } else {
-<& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-% }
+</&>
+<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+
 % if ($Dashboard->Id && $can_delete) {
 <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
 % }
 </form>
 <%INIT>
 
-my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
 
+
+my $redirect_to ='/Dashboards/Modify.html';
+
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @privacies = $Dashboard->_PrivacyObjects(($Create ? 'Create' : 'Modify') => 1);
+my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
+my @privacies = $Dashboard->$method;
 
 Abort(loc("Permission denied")) if @privacies == 0;
 
 if ($Create) {
-    $current_subtab = 'Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
 }
 else {
@@ -116,6 +112,10 @@ else {
 
         push @results, $msg;
         $id = $Dashboard->Id;
+        if (!$Dashboard->id || ! $Dashboard->CurrentUserCanSee) {
+            $redirect_to='/Dashboards/index.html';
+
+        }
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
@@ -124,12 +124,10 @@ else {
 
     if ($id) {
         $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
-        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $Create = 1;
-        $current_subtab = 'Dashboards/Modify.html?Create=1';
         $title = loc("Create a new dashboard");
     }
 }
@@ -147,16 +145,28 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 
 }
 
+
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();
-    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+    if (!$ok) {
+             Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+             }
 
-    # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
-
+    push @results, $msg;
+    $redirect_to = '/Dashboards/index.html';
 }
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => $redirect_to,
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
 </%INIT>
 
 <%ARGS>

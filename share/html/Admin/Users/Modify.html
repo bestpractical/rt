@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,14 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/UserTabs, 
-    id => $id, 
-    UserObj => $UserObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -112,27 +108,12 @@
 
 
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-<input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked||''%> /> <&|/l&>Let this user be granted rights</&><br />
-		    
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<table>
-<tr>
-<td align="right">
-<&|/l&>New Password</&>:
-</td>
-<td align="left">
-<input type="password" name="Pass1" autocomplete="off" />
-</td>
-</tr>
-<tr><td align="right">
-<&|/l&>Retype Password</&>:
-</td>
-<td>
-<input type="password" name="Pass2" autocomplete="off" />
-</td>
-</tr>
-</table>
-% }
+<input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked||''%> /> <&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)<br />
+
+<& /Elements/EditPassword,
+    User => $UserObj,
+    Name => [qw(CurrentPass Pass1 Pass2)],
+&>
 </&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 </td>
@@ -249,19 +230,15 @@
 
 <%INIT>
 
-my $current_tab;
-my $UserObj = new RT::User($session{'CurrentUser'});
+my $UserObj = RT::User->new($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);
 
 if ($Create) {
-    $current_tab = 'Admin/Users/Modify.html?Create=1';
     $title = loc("Create a new user");
 } 
 else {
-
-    $current_tab = 'Admin/Users/Modify.html?id='.$id if $id;
 
     if ( defined $id && $id eq 'new') {
 	( $val, $msg ) = $UserObj->Create(
@@ -327,6 +304,7 @@ else {
 }
 
 
+$m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef => \%ARGS, Results => \@results );
 
 
 # If we have a user to modify, lets try. 
@@ -361,25 +339,22 @@ if ($UserObj->Id && $id ne 'new') {
     }
 
 
-    # }}}
 }
 
+
+my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
 if ( $UserObj->Id ) {
-    my $password_not_set;
     # Deal with Password field
-    if ( !$Pass1 and !$Pass2 ) {
-	$password_not_set = 1;
-    } elsif ( $Pass1 ne $Pass2 ) {
-	$password_not_set = 1;
-        push @results, loc("Passwords do not match.");
-    } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
-        my ($code, $msg) = $UserObj->SetPassword($Pass1);
-        push @results, loc_fuzzy($msg);
-	$password_not_set = 1 unless $code;
+    my ($status, $msg) = $UserObj->SafeSetPassword(
+        Current      => $CurrentPass,
+        New          => $Pass1,
+        Confirmation => $Pass2,
+    );
+    push @results, $msg;
+
+    if ( $id eq 'new' && !$status ) {
+        push @results, loc("A password was not set, so user won't be able to login.");
     }
-    if ($id eq 'new' and $password_not_set) {
-	push @results, loc("A password was not set, so user won't be able to login.");
-    } 
 }
 
 
@@ -431,7 +406,8 @@ $City  => undef
 $State  => undef
 $Zip  => undef
 $Country => undef
+$CurrentPass => undef
 $Pass1 => undef
-$Pass2=> undef
+$Pass2 => undef
 $Create=> undef
 </%ARGS>

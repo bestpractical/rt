@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 %#
 %# Data flow here:
@@ -66,15 +66,11 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Build.html?".$QueryString, 
-    Title => $title,
-    %query,
-    SavedSearchId => $saved_search{'Id'},
-&>
+<& /Elements/Tabs &>
 
-<form method="post" action="Build.html" name="BuildQuery">
+<form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
+<input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $ARGS{'SavedChartSearchId'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 
@@ -106,13 +102,15 @@
     AvailableColumns => $AvailableColumns,
     CurrentFormat    => $CurrentFormat,
 &>
-<& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </span>
+<& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </form>
 
 <%INIT>
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
+
+$ARGS{SavedChartSearchId} ||= 'new';
 
 my $title = loc("Query Builder");
 
@@ -170,10 +168,11 @@ my $ParseQuery = sub {
     return $tree;
 };
 
-my $tree = $ParseQuery->( $query{'Query'}, \@actions );
+my @parse_results;
+my $tree = $ParseQuery->( $query{'Query'}, \@parse_results );
 
 # if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
+if ( @parse_results ) {
     return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
 }
 
@@ -181,7 +180,7 @@ my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
-# {{{ Try to find if we're adding a clause
+# Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
     next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
@@ -241,7 +240,6 @@ foreach my $arg ( keys %ARGS ) {
     }
 }
 
-# }}}
 
 push @actions, $m->comp('Elements/EditQuery:Process',
     %ARGS,
@@ -250,7 +248,7 @@ push @actions, $m->comp('Elements/EditQuery:Process',
     New      => \@new_values,
 );
 
-# {{{ Rebuild $Query based on the additions / movements
+# Rebuild $Query based on the additions / movements
 
 my $optionlist_arrayref;
 ($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
@@ -259,11 +257,10 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
-# }}}
 
 my $queues = $tree->GetReferencedQueues;
 
-# {{{ Deal with format changes
+# Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
@@ -272,12 +269,11 @@ my ( $AvailableColumns, $CurrentFormat );
     Format => $query{'Format'},
 );
 
-# }}}
 
 # if we're asked to save the current search, save it
 push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
-# {{{ Push the updates into the session so we don't loose 'em
+# Push the updates into the session so we don't lose 'em
 
 $session{'CurrentSearchHash'} = {
     %query,
@@ -286,19 +282,17 @@ $session{'CurrentSearchHash'} = {
     Description => $saved_search{'Description'},
 };
 
-# }}}
 
-# {{{ Show the results, if we were asked.
+# Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    $m->comp( 'Results.html', %query );
+    $m->comp( 'Results.html', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'}, );
     $m->comp( '/Elements/Footer' );
     $m->abort;
 }
 
-# }}}
 
-# {{{ Build a querystring for the tabs
+# Build a querystring for the tabs
 
 my $QueryString = '';
 if ($NewQuery) {
@@ -308,7 +302,6 @@ elsif ( $query{'Query'} ) {
     $QueryString = $m->comp('/Elements/QueryString', %query );
 }
 
-# }}}
 
 </%INIT>
 

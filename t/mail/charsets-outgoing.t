@@ -1,10 +1,22 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use utf8;
+use Encode;
 
-use RT::Test tests => 30;
+use RT::Test tests => 78;
 
+my %string = (
+    ru => {
+        test      => "\x{442}\x{435}\x{441}\x{442}",
+        autoreply => "\x{410}\x{432}\x{442}\x{43e}\x{43e}\x{442}\x{432}\x{435}\x{442}",
+        support   => "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}",
+    },
+    latin1 => {
+        test      => Encode::decode('latin1', "t\xE9st"),
+        autoreply => Encode::decode('latin1', "a\xFCtoreply"),
+        support   => Encode::decode('latin1', "supp\xF5rt"),
+    },
+);
 
 RT::Test->set_mail_catcher;
 
@@ -15,15 +27,15 @@ my $queue = RT::Test->load_or_create_queue(
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
-diag "make sure queue has no subject tag" if $ENV{'TEST_VERBOSE'};
+diag "make sure queue has no subject tag";
 {
     my ($status, $msg) = $queue->SetSubjectTag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
-diag "set intial simple autoreply template" if $ENV{'TEST_VERBOSE'};
+diag "set intial simple autoreply template";
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
@@ -37,9 +49,9 @@ diag "set intial simple autoreply template" if $ENV{'TEST_VERBOSE'};
         or diag "error: $msg";
 }
 
-diag "basic test of autoreply" if $ENV{'TEST_VERBOSE'};
+diag "basic test of autoreply";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -49,17 +61,12 @@ diag "basic test of autoreply" if $ENV{'TEST_VERBOSE'};
     ok @mails, "got some outgoing emails";
 }
 
-my $str_ru_test = "\x{442}\x{435}\x{441}\x{442}";
-my $str_ru_autoreply = "\x{410}\x{432}\x{442}\x{43e}\x{43e}\x{442}\x{432}\x{435}\x{442}";
-my $str_ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
-
-diag "non-ascii Subject with ascii prefix set in the template"
-    if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii Subject with ascii prefix set in the template";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -69,21 +76,23 @@ diag "non-ascii Subject with ascii prefix set in the template"
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_test/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
+foreach my $tag_set ( 'ru', 'latin1' ) {
+
+diag "set non-ascii subject tag for the queue";
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->SetSubjectTag( $string{$tag_set}{support} );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
-diag "ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
+diag "ascii subject with non-ascii subject tag";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -96,18 +105,18 @@ diag "ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_support/
+        $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii subject with non-ascii subject tag";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -117,28 +126,33 @@ diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_support/
+        $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
-        $subject =~ /$str_ru_test/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "return back the empty subject tag" if $ENV{'TEST_VERBOSE'};
+} # subject tag
+
+diag "return back the empty subject tag";
 {
     my ($status, $msg) = $queue->SetSubjectTag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
-diag "add non-ascii subject prefix in the autoreply template" if $ENV{'TEST_VERBOSE'};
+
+foreach my $prefix_set ( 'ru', 'latin1' ) {
+
+diag "add non-ascii subject prefix in the autoreply template";
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
     my ($status, $msg) = $template->SetContent(
-        "Subject: $str_ru_autoreply { \$Ticket->Subject }\n"
+        "Subject: $string{$prefix_set}{autoreply} { \$Ticket->Subject }\n"
         ."\n"
         ."hi there it's an autoreply.\n"
         ."\n"
@@ -146,9 +160,9 @@ diag "add non-ascii subject prefix in the autoreply template" if $ENV{'TEST_VERB
     ok $status, "changed content of the template" or diag "error: $msg";
 }
 
-diag "ascii subject with non-ascii subject prefix in template" if $ENV{'TEST_VERBOSE'};
+diag "ascii subject with non-ascii subject prefix in template";
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
         Subject => 'test',
@@ -161,19 +175,18 @@ diag "ascii subject with non-ascii subject prefix in template" if $ENV{'TEST_VER
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "non-ascii subject with non-ascii subject prefix in template"
-    if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii subject with non-ascii subject prefix in template";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -183,27 +196,27 @@ diag "non-ascii subject with non-ascii subject prefix in template"
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
+foreach my $tag_set ( 'ru', 'latin1' ) {
+diag "set non-ascii subject tag for the queue";
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->SetSubjectTag( $string{$tag_set}{support} );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
-diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
-    if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii subject, non-ascii prefix in template and non-ascii tag";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -213,26 +226,32 @@ diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
-        $subject =~ /$str_ru_autoreply/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "flush subject tag of the queue" if $ENV{'TEST_VERBOSE'};
+} # subject tag
+
+diag "flush subject tag of the queue";
 {
     my ($status, $msg) = $queue->SetSubjectTag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
+} # prefix set
 
-diag "don't change subject via template" if $ENV{'TEST_VERBOSE'};
+
+diag "don't change subject via template";
+# clean DB has autoreply that always changes subject in template,
+# we should test situation when subject is not changed from template
 {
-    my $template = RT::Template->new( $RT::SystemUser );
+    my $template = RT::Template->new( RT->SystemUser );
     $template->Load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
@@ -245,12 +264,12 @@ diag "don't change subject via template" if $ENV{'TEST_VERBOSE'};
     ok $status, "changed content of the template" or diag "error: $msg";
 }
 
-diag "non-ascii Subject without changes in template" if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii Subject without changes in template";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -260,25 +279,25 @@ diag "non-ascii Subject without changes in template" if $ENV{'TEST_VERBOSE'};
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_test/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
+foreach my $tag_set ( 'ru', 'latin1' ) {
+diag "set non-ascii subject tag for the queue";
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->SetSubjectTag( $string{$tag_set}{support} );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
-diag "non-ascii Subject without changes in template and with non-ascii subject tag"
-    if $ENV{'TEST_VERBOSE'};
-{
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+diag "non-ascii Subject without changes in template and with non-ascii subject tag";
+foreach my $set ( 'ru', 'latin1' ) {
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Create(
         Queue => $queue->id,
-        Subject => $str_ru_test,
+        Subject => $string{$set}{test},
         Requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
@@ -288,19 +307,13 @@ diag "non-ascii Subject without changes in template and with non-ascii subject t
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
         my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
-        $subject =~ /$str_ru_test/
+        $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
-        $subject =~ /$str_ru_support/
+        $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
     ok $status, "all mails have correct data";
 }
 
-sub parse_mail {
-    my $mail = shift;
-    require RT::EmailParser;
-    my $parser = new RT::EmailParser;
-    $parser->ParseMIMEEntityFromScalar( $mail );
-    return $parser->Entity;
-}
+} # subject tag set
 

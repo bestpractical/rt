@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -69,15 +69,13 @@ package RT::Users;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub _Init 
 sub _Init {
     my $self = shift;
     $self->{'table'} = 'Users';
-        $self->{'primary_key'} = 'id';
+    $self->{'primary_key'} = 'id';
+    $self->{'with_disabled_column'} = 1;
 
-
-
-    my @result =          $self->SUPER::_Init(@_);
+    my @result = $self->SUPER::_Init(@_);
     # By default, order by name
     $self->OrderBy( ALIAS => 'main',
                     FIELD => 'Name',
@@ -98,7 +96,6 @@ sub _Init {
     return (@result);
 }
 
-# }}}
 
 =head2 PrincipalsAlias
 
@@ -114,29 +111,6 @@ sub PrincipalsAlias {
 }
 
 
-# {{{ sub _DoSearch 
-
-=head2 _DoSearch
-
-  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
-we're explicitly trying to see them.
-
-=cut
-
-sub _DoSearch {
-    my $self = shift;
-
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless ( $self->{'find_disabled_rows'} ) {
-        $self->LimitToEnabled();
-    }
-    return ( $self->SUPER::_DoSearch(@_) );
-
-}
-
-# }}}
-# {{{ sub LimitToEnabled
-
 =head2 LimitToEnabled
 
 Only find items that haven\'t been disabled
@@ -147,15 +121,32 @@ Only find items that haven\'t been disabled
 sub LimitToEnabled {
     my $self = shift;
 
-    $self->Limit( ALIAS    => $self->PrincipalsAlias,
-                  FIELD    => 'Disabled',
-                  VALUE    => '0',
-                  OPERATOR => '=' );
+    $self->{'handled_disabled_column'} = 1;
+    $self->Limit(
+        ALIAS    => $self->PrincipalsAlias,
+        FIELD    => 'Disabled',
+        VALUE    => '0',
+    );
 }
 
-# }}}
+=head2 LimitToDeleted
 
-# {{{ LimitToEmail
+Only find items that have been deleted.
+
+=cut
+
+sub LimitToDeleted {
+    my $self = shift;
+    
+    $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => 1,
+    );
+}
+
+
 
 =head2 LimitToEmail
 
@@ -170,9 +161,7 @@ sub LimitToEmail {
     $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
 }
 
-# }}}
 
-# {{{ MemberOfGroup
 
 =head2 MemberOfGroup PRINCIPAL_ID
 
@@ -201,9 +190,7 @@ sub MemberOfGroup {
                   OPERATOR => "=" );
 }
 
-# }}}
 
-# {{{ LimitToPrivileged
 
 =head2 LimitToPrivileged
 
@@ -222,9 +209,23 @@ sub LimitToPrivileged {
     $self->MemberOfGroup( $priv->PrincipalId );
 }
 
-# }}}
+=head2 LimitToUnprivileged
 
-# {{{ WhoHaveRight
+Limits to unprivileged users only
+
+=cut
+
+sub LimitToUnprivileged {
+    my $self = shift;
+
+    my $unpriv = RT::Group->new( $self->CurrentUser );
+    $unpriv->LoadSystemInternalGroup('Unprivileged');
+    unless ( $unpriv->Id ) {
+        $RT::Logger->crit("Couldn't find an 'Unprivileged' users group");
+    }
+    $self->MemberOfGroup( $unpriv->PrincipalId );
+}
+
 
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
 
@@ -378,22 +379,22 @@ sub WhoHaveRight {
         return (undef);
     }
 
-    my @from_role = $self->Clone->_WhoHaveRoleRightSplitted( %args );
+    my $from_role = $self->Clone;
+    $from_role->WhoHaveRoleRight( %args );
 
     my $from_group = $self->Clone;
     $from_group->WhoHaveGroupRight( %args );
 
     #XXX: DIRTY HACK
     use DBIx::SearchBuilder::Union;
-    my $union = new DBIx::SearchBuilder::Union;
-    $union->add( $_ ) foreach @from_role;
+    my $union = DBIx::SearchBuilder::Union->new();
     $union->add( $from_group );
+    $union->add( $from_role );
     %$self = %$union;
     bless $self, ref($union);
 
     return;
 }
-# }}}
 
 # XXX: should be generalized
 sub WhoHaveRoleRight
@@ -409,94 +410,37 @@ sub WhoHaveRoleRight
         @_
     );
 
-    my $groups = $self->_JoinGroups( %args );
-    my $acl = $self->_JoinACL( %args );
-
-    $self->Limit( ALIAS => $acl,
-                  FIELD => 'PrincipalType',
-                  VALUE => "$groups.Type",
-                  QUOTEVALUE => 0,
-                );
-
-    # no system user
-    $self->Limit( ALIAS => $self->PrincipalsAlias,
-                  FIELD => 'id',
-                  OPERATOR => '!=',
-                  VALUE => $RT::SystemUser->id
-                );
-
     my @objects = $self->_GetEquivObjects( %args );
-    unless ( @objects ) {
-        unless ( $args{'IncludeSystemRights'} ) {
-            $self->_AddSubClause( WhichObjects => "($acl.ObjectType != 'RT::System')" );
-        }
+    my @roles = RT::Principal->RolesWithRight( %args );
+    unless ( @roles ) {
+        $self->_AddSubClause( "WhichRole", "(main.id = 0)" );
         return;
     }
 
-    my ($groups_clauses, $acl_clauses) = $self->_RoleClauses( $groups, $acl, @objects );
-    $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @$groups_clauses ) .")" );
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', @$acl_clauses ) .")" );
-
-    return;
-}
-
-sub _WhoHaveRoleRightSplitted {
-    my $self = shift;
-    my %args = (
-        Right                  => undef,
-        Object                 => undef,
-        IncludeSystemRights    => undef,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 1,
-        EquivObjects           => [ ],
-        @_
-    );
-
     my $groups = $self->_JoinGroups( %args );
-    my $acl = $self->_JoinACL( %args );
-
-    $self->Limit( ALIAS => $acl,
-                  FIELD => 'PrincipalType',
-                  VALUE => "$groups.Type",
-                  QUOTEVALUE => 0,
-                );
 
     # no system user
     $self->Limit( ALIAS => $self->PrincipalsAlias,
                   FIELD => 'id',
                   OPERATOR => '!=',
-                  VALUE => $RT::SystemUser->id
+                  VALUE => RT->SystemUser->id
                 );
 
-    my @objects = $self->_GetEquivObjects( %args );
-    unless ( @objects ) {
-        unless ( $args{'IncludeSystemRights'} ) {
-            $self->_AddSubClause( WhichObjects => "($acl.ObjectType != 'RT::System')" );
-        }
-        return $self;
-    }
+    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Type = '$_'", @roles ) .")" );
 
-    my ($groups_clauses, $acl_clauses) = $self->_RoleClauses( $groups, $acl, @objects );
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', @$acl_clauses ) .")" );
-    
-    my @res;
-    foreach ( @$groups_clauses ) {
-        my $tmp = $self->Clone;
-        $tmp->_AddSubClause( WhichObject => $_ );
-        push @res, $tmp;
-    }
+    my @groups_clauses = $self->_RoleClauses( $groups, @objects );
+    $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @groups_clauses ) .")" )
+        if @groups_clauses;
 
-    return @res;
+    return;
 }
 
 sub _RoleClauses {
     my $self = shift;
     my $groups = shift;
-    my $acl = shift;
     my @objects = @_;
 
     my @groups_clauses;
-    my @acl_clauses;
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
@@ -508,12 +452,8 @@ sub _RoleClauses {
         # field to integer and drop this quotes.
         $role_clause   .= " AND $groups.Instance = '$id'" if $id;
         push @groups_clauses, "($role_clause)";
-
-        my $object_clause = "$acl.ObjectType = '$type'";
-        $object_clause   .= " AND $acl.ObjectId = $id" if $id;
-        push @acl_clauses, "($object_clause)";
     }
-    return (\@groups_clauses, \@acl_clauses);
+    return @groups_clauses;
 }
 
 # XXX: should be generalized
@@ -527,6 +467,7 @@ sub _JoinGroupMembersForGroupRights
                   VALUE => "$group_members.GroupId",
                   QUOTEVALUE => 0,
                 );
+    return $group_members;
 }
 
 # XXX: should be generalized
@@ -570,7 +511,7 @@ sub WhoHaveGroupRight
     }
     $self->_AddSubClause( "WhichObject", "($check_objects)" );
     
-    $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
+    my $group_members = $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
     # Find only members of groups that have the right.
     $self->Limit( ALIAS => $acl,
                   FIELD => 'PrincipalType',
@@ -581,12 +522,11 @@ sub WhoHaveGroupRight
     $self->Limit( ALIAS => $self->PrincipalsAlias,
                   FIELD => 'id',
                   OPERATOR => '!=',
-                  VALUE => $RT::SystemUser->id
+                  VALUE => RT->SystemUser->id
                 );
-    return;
+    return $group_members;
 }
 
-# {{{ WhoBelongToGroups
 
 =head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
 
@@ -614,7 +554,6 @@ sub WhoBelongToGroups {
                     );
     }
 }
-# }}}
 
 
 1;

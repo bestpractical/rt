@@ -3,35 +3,19 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 92;
-plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
+my $homedir;
+BEGIN {
+    require RT::Test;
+    $homedir =
+      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+        qw/data gnupg keyrings/ );
+}
 
+use RT::Test::GnuPG tests => 96, gnupg_options => { homedir => $homedir };
 
-use File::Spec ();
-use Cwd;
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings) );
-
-mkdir $homedir;
-
-use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef,
-);
-
-
-diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
+diag 'only signing. correct passphrase';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -67,8 +51,13 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     is( $status[0]->{'Trust'}, 'ULTIMATE', 'have trust value');
 }
 
-diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
+diag 'only signing. missing passphrase';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         Subject => 'test',
@@ -82,10 +71,17 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
     is( $status[0]->{'Status'}, 'MISSING', 'missing passphrase');
+
+    like($warnings, qr/bad passphrase/);
 }
 
-diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
+diag 'only signing. wrong passphrase';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         Subject => 'test',
@@ -99,9 +95,11 @@ diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
     is( $status[0]->{'Status'}, 'BAD', 'wrong passphrase');
+
+    like($warnings, qr/bad passphrase/);
 }
 
-diag 'encryption only' if $ENV{'TEST_VERBOSE'};
+diag 'encryption only';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -127,8 +125,13 @@ diag 'encryption only' if $ENV{'TEST_VERBOSE'};
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
-diag 'encryption only, bad recipient' if $ENV{'TEST_VERBOSE'};
+diag 'encryption only, bad recipient';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'keyless@example.com',
@@ -142,9 +145,11 @@ diag 'encryption only, bad recipient' if $ENV{'TEST_VERBOSE'};
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Keyword'}, 'INV_RECP', 'invalid recipient');
+
+    like($warnings, qr/public key not found/);
 }
 
-diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
+diag 'encryption and signing with combined method';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -174,7 +179,7 @@ diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
-diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VERBOSE'};
+diag 'encryption and signing with cascading, sign on encrypted';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -196,7 +201,7 @@ diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VE
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
-diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
+diag 'find signed/encrypted part deep inside';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -219,8 +224,13 @@ diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
     is( $parts[0]->{'Top'}, $entity->parts(0), "it's the same entity" );
 }
 
-diag 'wrong signed/encrypted parts: no protocol' if $ENV{'TEST_VERBOSE'};
+diag 'wrong signed/encrypted parts: no protocol';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
@@ -233,10 +243,17 @@ diag 'wrong signed/encrypted parts: no protocol' if $ENV{'TEST_VERBOSE'};
 
     my @parts = RT::Crypt::GnuPG::FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
+
+    like($warnings, qr{Entity is 'multipart/encrypted', but has no protocol defined. Skipped});
 }
 
-diag 'wrong signed/encrypted parts: not enought parts' if $ENV{'TEST_VERBOSE'};
+diag 'wrong signed/encrypted parts: not enought parts';
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub {
+        $warnings .= "@_";
+    };
+
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
@@ -249,9 +266,11 @@ diag 'wrong signed/encrypted parts: not enought parts' if $ENV{'TEST_VERBOSE'};
 
     my @parts = RT::Crypt::GnuPG::FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
+
+    like($warnings, qr/Encrypted or signed entity must has two subparts. Skipped/);
 }
 
-diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
+diag 'wrong signed/encrypted parts: wrong proto';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -267,7 +286,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 0, 'no protected parts' );
 }
 
-diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
+diag 'wrong signed/encrypted parts: wrong proto';
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
@@ -283,7 +302,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 0, 'no protected parts' );
 }
 
-diag 'verify inline and in attachment signatures' if $ENV{'TEST_VERBOSE'};
+diag 'verify inline and in attachment signatures';
 {
     open my $fh, "$homedir/signed_old_style_with_attachment.eml";
     my $parser = new MIME::Parser;

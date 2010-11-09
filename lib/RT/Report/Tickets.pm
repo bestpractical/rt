@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Report::Tickets;
@@ -68,14 +68,13 @@ sub Groupings {
         );
     }
 
-    push @fields, map {$_, $_} qw(
-        DueDaily DueMonthly DueAnnually
-        ResolvedDaily ResolvedMonthly ResolvedAnnually
-        CreatedDaily CreatedMonthly CreatedAnnually
-        LastUpdatedDaily LastUpdatedMonthly LastUpdatedAnnually
-        StartedDaily StartedMonthly StartedAnnually
-        StartsDaily StartsMonthly StartsAnnually
-    );
+
+    for my $field (qw(Due Resolved Created LastUpdated Started Starts)) {
+        for my $frequency (qw(Hourly Daily Monthly Annually)) {
+            my $item = $field.$frequency;
+            push @fields,  $item,  $item;
+        }
+    }
 
     my $queues = $args{'Queues'};
     if ( !$queues && $args{'Query'} ) {
@@ -167,7 +166,14 @@ columns if it makes sense
 sub _DoSearch {
     my $self = shift;
     $self->SUPER::_DoSearch( @_ );
-    $self->AddEmptyRows;
+    if ( $self->{'must_redo_search'} ) {
+        $RT::Logger->crit(
+"_DoSearch is not so successful as it still needs redo search, won't call AddEmptyRows"
+        );
+    }
+    else {
+        $self->AddEmptyRows;
+    }
 }
 
 =head2 _FieldToFunction FIELD
@@ -183,20 +189,53 @@ sub _FieldToFunction {
 
     my $field = $args{'FIELD'};
 
-    if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
+    if ($field =~ /^(.*)(Hourly|Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
         my $alias = $args{'ALIAS'} || 'main';
+
+        my $func = "$alias.$field";
+
+        my $db_type = RT->Config->Get('DatabaseType');
+        if ( RT->Config->Get('ChartsTimezonesInDB') ) {
+            my $tz = $self->CurrentUser->UserObj->Timezone
+                || RT->Config->Get('Timezone')
+                || 'UTC';
+            if ( lc $tz eq 'utc' ) {
+                # do nothing
+            }
+            elsif ( $db_type eq 'Pg' ) {
+                $func = "timezone('UTC', $func)";
+                $func = "timezone(". $self->_Handle->dbh->quote($tz) .", $func)";
+            }
+            elsif ( $db_type eq 'mysql' ) {
+                $func = "CONVERT_TZ($func, 'UTC', "
+                    . $self->_Handle->dbh->quote($tz)
+                    .")";
+            }
+            else {
+                $RT::Logger->warning(
+                    "ChartsTimezonesInDB config option"
+                    ." is not supported on $db_type."
+                );
+            }
+        }
+
         # Pg 8.3 requires explicit casting
-        $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
-        if ( $grouping =~ /Daily/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,10)";
+        $func .= '::text' if $db_type eq 'Pg';
+
+        if ( $grouping eq 'Hourly' ) {
+            $func = "SUBSTR($func,1,13)";
         }
-        elsif ( $grouping =~ /Monthly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,7)";
+        if ( $grouping eq 'Daily' ) {
+            $func = "SUBSTR($func,1,10)";
         }
-        elsif ( $grouping =~ /Annually/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,4)";
+        elsif ( $grouping eq 'Monthly' ) {
+            $func = "SUBSTR($func,1,7)";
         }
+        elsif ( $grouping eq 'Annually' ) {
+            $func = "SUBSTR($func,1,4)";
+        }
+        $args{'FUNCTION'} = $func;
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf = RT::CustomField->new( $self->CurrentUser );
@@ -257,7 +296,7 @@ sub Next {
 
 sub NewItem {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->CurrentUser);
+    return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
 }
 
 
@@ -285,14 +324,6 @@ sub AddEmptyRows {
     }
 }
 
-eval "require RT::Report::Tickets_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Report::Tickets_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

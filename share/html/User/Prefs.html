@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,12 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title=>loc("Preferences") &>
-<& /User/Elements/Tabs, 
-    current_tab => 'User/Prefs.html', 
-    Title=>loc("Preferences") &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -107,27 +105,13 @@
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+
 <&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
-<table>
-<tr>
-<td class="label">
-<&|/l&>New Password</&>:
-</td>
-<td class="value">
-<input type="password" name="Pass1" autocomplete="off"/>
-</td>
-</tr>
-<tr><td class="label">
-<&|/l&>Retype Password</&>:
-</td>
-<td class="value">
-<input type="password" name="Pass2" autocomplete="off" />
-</td>
-</tr>
-</table>
+<& /Elements/EditPassword,
+    User => $UserObj,
+    Name => [qw(CurrentPass Pass1 Pass2)],
+&>
 </&>
-% }
 
 <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
 <table cellspacing="0" cellpadding="0">
@@ -161,6 +145,20 @@
   </tr>
 </table>
 </&>
+
+<&| /Widgets/TitleBox, title => loc('Custom Fields') &>
+<table>
+% my $CustomFields = $UserObj->CustomFields;
+% while ( my $CF = $CustomFields->Next ) {
+<tr valign="top">
+<td align="right"><% loc( $CF->Name ) %>:</td>
+<td><& /Elements/EditCustomField,
+    %ARGS, Object => $UserObj, CustomField => $CF
+&></td></tr>
+% }
+</table>
+</&>
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
@@ -195,70 +193,71 @@
 
 <%INIT>
 
-my $UserObj = new RT::User($session{'CurrentUser'});
-my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
+my $UserObj = RT::User->new( $session{'CurrentUser'} );
+$UserObj->Load($id) if $id;
+$UserObj->Load($Name) if $Name && !$UserObj->id;
+unless ( $UserObj->id ) {
+    Abort(loc("Couldn't load user #[_1] or user '[_2]'", $id, $Name))
+        if $id && $Name;
+    Abort(loc("Couldn't load user #[_1]", $id))
+        if $id;
+    Abort(loc("Couldn't load user '[_1]'", $Name))
+        if $Name;
+    Abort(loc("Couldn't load user"));
+}
+$id = $UserObj->id;
 
-my ($val, $msg);
+my @results;
 
+my @fields = qw(
+    Name Comments Signature EmailAddress FreeformContactInfo 
+    Organization RealName NickName Lang EmailEncoding WebEncoding 
+    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
+    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+    Address2 City State Zip Country Lang Timezone
+);
 
-	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
-	$val = $UserObj->Id();
-    
+$m->callback(
+    CallbackName => 'UpdateLogic',
+    fields       => \@fields,
+    results      => \@results,
+    UserObj      => $UserObj,
+    ARGSRef      => \%ARGS,
+);
 
+push @results, UpdateRecordObject (
+    AttributesRef => \@fields,
+    Object => $UserObj,
+    ARGSRef => \%ARGS,
+);
 
+push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
-
-
-# If we have a user to modify, lets try. 
-if ($UserObj->Id) {
-    
-    my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
-		    Organization RealName NickName Lang EmailEncoding WebEncoding 
-		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country Lang Timezone
-		   );
-
-    $m->callback(
-        CallbackName => 'UpdateLogic',
-        fields       => \@fields,
-        results      => \@results,
-        UserObj      => $UserObj,
-        ARGSRef      => \%ARGS,
-    );
-    
-    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $UserObj,
-					    ARGSRef => \%ARGS );
-    if ($Lang) {
-	$session{'CurrentUser'}->LanguageHandle($Lang);
-	$session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
-    }
-
-    push (@results,@fieldresults);
-
+if ( $Lang ) {
+    $session{'CurrentUser'}->LanguageHandle($Lang);
+    $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+}
 
 # Deal with special fields: Privileged, Enabled, and Password
-if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
-my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
-     push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
+    my ($code, $msg) = $UserObj->SetPrivileged( $Privileged );
+    push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
 }
 
-#TODO: make this report errors properly
-if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
-    my ($code, $msg);
-    ($code, $msg) = $UserObj->SetPassword($Pass1);
-    push @results, loc('Password: [_1]', loc_fuzzy($msg));
-} elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
-    push @results, loc("Passwords do not match. Your password has not been changed");
+my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
+if (defined $Pass1 && length $Pass1 ) {
+    my ($status, $msg) = $UserObj->SafeSetPassword(
+        Current      => $CurrentPass,
+        New          => $Pass1,
+        Confirmation => $Pass2,
+    );
+    push @results, loc("Password: [_1]", $msg);
 }
 
-    if ( $ARGS{'ResetAuthToken'} ) {
-        my ($status, $msg) = $UserObj->GenerateAuthToken;
-        push @results, $msg;
-    }
+if ( $ARGS{'ResetAuthToken'} ) {
+    my ($status, $msg) = $UserObj->GenerateAuthToken;
+    push @results, $msg;
 }
-
 
 </%INIT>
 
@@ -295,7 +294,8 @@ $City  => undef
 $State  => undef
 $Zip  => undef
 $Country => undef
+$CurrentPass => undef
 $Pass1 => undef
-$Pass2=> undef
+$Pass2 => undef
 $Create=> undef
 </%ARGS>

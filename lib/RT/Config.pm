@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Config;
@@ -61,7 +61,7 @@ use File::Spec ();
 
     # get config object
     use RT::Config;
-    my $config = new RT::Config;
+    my $config = RT::Config->new;
     $config->LoadConfigs;
 
     # get or set option
@@ -126,6 +126,9 @@ can be set for each config optin:
                  (such as seeing if a library is installed) and then change
                  the setting of this or other options in the Config using 
                  the RT::Config option.
+   Obfuscate   - subref passed the RT::Config object, current setting of the config option
+                 and a user object, can return obfuscated value. it's called in
+                 RT->Config->GetObfuscated() 
 
 =cut
 
@@ -140,7 +143,7 @@ our %META = (
             Description => 'Default queue',    #loc
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {}};
-                my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
+                my $q = RT::Queues->new($HTML::Mason::Commands::session{'CurrentUser'});
                 $q->UnLimit;
                 while (my $queue = $q->Next) {
                     next unless $queue->CurrentUserHasRight("CreateTicket");
@@ -151,10 +154,19 @@ our %META = (
             },
         }
     },
+    RememberDefaultQueue => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 2,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Remember default queue' # loc
+        }
+    },
     UsernameFormat => {
         Section         => 'General',
         Overridable     => 1,
-        SortOrder       => 2,
+        SortOrder       => 3,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Username format', # loc
@@ -165,57 +177,87 @@ our %META = (
             },
         },
     },
+    AutocompleteOwners => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 3.1,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use autocomplete to find owners?', # loc
+            Hints       => 'Replaces the owner dropdowns with textboxes' #loc
+        }
+    },
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
-        SortOrder       => 3,
+        SortOrder       => 4,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Theme',                  #loc
             # XXX: we need support for 'get values callback'
-            Values => [qw(3.5-default 3.4-compat web2)],
+            Values => [qw(web2 aileron ballard)],
         },
     },
-    MessageBoxRichText => {
-        Section => 'General',
+    UseSideBySideLayout => {
+        Section => 'Ticket composition',
         Overridable => 1,
-        SortOrder => 4,
+        SortOrder => 5,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use a two column layout for create and update forms?' # loc
+        }
+    },
+    MessageBoxRichText => {
+        Section => 'Ticket composition',
+        Overridable => 1,
+        SortOrder => 5.1,
         Widget => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'WYSIWYG message composer' # loc
         }
     },
     MessageBoxRichTextHeight => {
-        Section => 'General',
+        Section => 'Ticket composition',
         Overridable => 1,
-        SortOrder => 5,
+        SortOrder => 6,
         Widget => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'WYSIWYG composer height', # loc
         }
     },
     MessageBoxWidth => {
-        Section         => 'General',
+        Section         => 'Ticket composition',
         Overridable     => 1,
-        SortOrder       => 6,
+        SortOrder       => 7,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box width',           #loc
         },
     },
     MessageBoxHeight => {
-        Section         => 'General',
+        Section         => 'Ticket composition',
         Overridable     => 1,
-        SortOrder       => 7,
+        SortOrder       => 8,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box height',          #loc
         },
     },
+    MessageBoxWrap => {
+        Section         => 'Ticket composition',                #loc
+        Overridable     => 1,
+        SortOrder       => 8.1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Message box wrapping',   #loc
+            Values => [qw(SOFT HARD)],
+            Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
+        },
+    },
     SearchResultsRefreshInterval => {
         Section         => 'General',                       #loc
         Overridable     => 1,
-        SortOrder       => 8,
+        SortOrder       => 9,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Search results refresh interval',                            #loc
@@ -230,6 +272,20 @@ our %META = (
                 7200 => "Refresh search results every 120 minutes.",       #loc
             },  
         },  
+    },
+    ResolveDefaultUpdateType => {
+        Section         => 'General',                                      #loc
+        Overridable     => 1,
+        SortOrder       => 10,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default Update Type when Resolving',           #loc
+            Values      => [qw(Comment Respond)],
+            ValuesLabel => {
+                Comment => "Comments (Not sent to requestors)",            #loc
+                Respond => "Reply to requestors",                          #loc
+            },
+        },
     },
 
     # User overridable options for RT at a glance
@@ -283,10 +339,19 @@ our %META = (
             Description => 'Show oldest history first',    #loc
         },
     },
-    ShowUnreadMessageNotifications => { 
+    DeferTransactionLoading => {
         Section         => 'Ticket display',
         Overridable     => 1,
         SortOrder       => 3,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Hide ticket history by default',    #loc
+        },
+    },
+    ShowUnreadMessageNotifications => { 
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 4,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Notify me of unread messages',    #loc
@@ -296,11 +361,46 @@ our %META = (
     PlainTextPre => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 4,
+        SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Use monospace font', #loc
-            Hints       => "Use fixed-width font to display plaintext messages" #loc
+            Description => 'add <pre> tag around plain text attachments', #loc
+            Hints       => "Use this to protect the format of plain text" #loc
+        },
+    },
+    PlainTextMono => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 5,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'display wrapped and formatted plain text attachments', #loc
+            Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
+        },
+    },
+    MoreAboutRequestorTicketList => {
+        Section         => 'Ticket display',                       #loc
+        Overridable     => 1,
+        SortOrder       => 6,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => q|What tickets to display in the 'More about requestor' box|,                #loc
+            Values      => [qw(Active Inactive All None)],
+            ValuesLabel => {
+                Active   => "Show the Requestor's 10 highest priority open tickets",                  #loc
+                Inactive => "Show the Requestor's 10 highest priority closed tickets",      #loc
+                All      => "Show the Requestor's 10 highest priority tickets",      #loc
+                None     => "Show no tickets for the Requestor", #loc
+            },
+        },
+    },
+    SimplifiedRecipients => {
+        Section         => 'Ticket display',                       #loc
+        Overridable     => 1,
+        SortOrder       => 7,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => q|Show simplified recipient list on ticket update|,                #loc
         },
     },
 
@@ -312,7 +412,7 @@ our %META = (
         WidgetArguments => {
             Description => 'Date format',                            #loc
             Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
-                              my $date = new RT::Date($HTML::Mason::Commands::session{'CurrentUser'});
+                              my $date = RT::Date->new($HTML::Mason::Commands::session{'CurrentUser'});
                               $date->Set;
                               foreach my $value ($date->Formatters) {
                                  push @{$ret->{Values}}, $value;
@@ -323,6 +423,22 @@ our %META = (
         },
     },
 
+    RTAddressRegexp => {
+        Type    => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('RTAddressRegexp');
+            return if $value;
+
+            $RT::Logger->debug(
+                'The RTAddressRegexp option is not set in the config.'
+                .' Not setting this option results in additional SQL queries to'
+                .' check whether each address belongs to RT or not.'
+                .' It is especially important to set this option if RT recieves'
+                .' emails on addresses that are not in the database or config.'
+            );
+        },
+    },
     # User overridable mail options
     EmailFrequency => {
         Section         => 'Mail',                                     #loc
@@ -338,6 +454,26 @@ our %META = (
             'Suspended'               #loc
             ]
         }
+    },
+    NotifyActor => {
+        Section         => 'Mail',                                     #loc
+        Overridable     => 1,
+        SortOrder       => 2,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Outgoing mail', #loc
+            Hints => 'Should RT send you mail for ticket updates you make?', #loc
+        }
+    },
+
+    # this tends to break extensions that stash links in ticket update pages
+    Organization => {
+        Type            => 'SCALAR',
+        PostLoadCheck   => sub {
+            my ($self,$value) = @_;
+            $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.")
+                if $value =~ /\s/;;
+        },
     },
 
     # Internal config options
@@ -516,8 +652,8 @@ sub _LoadConfig {
         require $args{'File'};
     };
     if ($@) {
-        return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
-        if ( $is_site || $@ !~ qr{^Can't locate \Q$args{File}} ) {
+        return 1 if $is_site && $@ =~ /^Can't locate \Q$args{File}/;
+        if ( $is_site || $@ !~ /^Can't locate \Q$args{File}/ ) {
             die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
         }
 
@@ -639,6 +775,27 @@ sub Get {
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 
+=head2 GetObfuscated
+
+the same as Get, except it returns Obfuscated value via Obfuscate sub
+
+=cut
+
+sub GetObfuscated {
+    my $self = shift;
+    my ( $name, $user ) = @_;
+    my $obfuscate = $META{$name}->{Obfuscate};
+
+    # we use two Get here is to simplify the logic of the return value
+    # configs need obfuscation are supposed to be less, so won't be too heavy
+
+    return $self->Get(@_) unless $obfuscate;
+
+    my $res = $self->Get(@_);
+    $res = $obfuscate->( $self, $res, $user );
+    return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
+}
+
 =head2 Set
 
 Set option's value to new value. Takes name of the option and new value.
@@ -713,7 +870,13 @@ sub SetFromConfig {
     # if option is already set we have to check where
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
-        if ( $args{'SiteConfig'} && $args{'Extension'} ) {
+        if ( $type eq 'HASH' ) {
+            $args{'Value'} = [
+                @{ $args{'Value'} },
+                @{ $args{'Value'} }%2? (undef) : (),
+                $self->Get( $name ),
+            ];
+        } elsif ( $args{'SiteConfig'} && $args{'Extension'} ) {
             # if it's site config of an extension then it can only
             # override options that came from its main config
             if ( $args{'Extension'} ne $META{$name}->{'Source'}{'Extension'} ) {
@@ -737,8 +900,8 @@ sub SetFromConfig {
                 # RTIR's options is set in main site config or RTFM's
                 warn
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
-                    ." It's may be ok, but we want you to be aware."
-                    ." This option earlier has been set in $source{'File'} line $source{'Line'}."
+                    ." It may be ok, but we want you to be aware."
+                    ." This option has been set earlier in $source{'File'} line $source{'Line'}."
                 ;
             }
 
@@ -755,6 +918,13 @@ sub SetFromConfig {
     return 1;
 }
 
+    our %REF_SYMBOLS = (
+            SCALAR => '$',
+            ARRAY  => '@',
+            HASH   => '%',
+            CODE   => '&',
+        );
+
 {
     my $last_pack = '';
 
@@ -769,24 +939,18 @@ sub SetFromConfig {
         $pack ||= 'main::';
         $pack .= '::' unless substr( $pack, -2 ) eq '::';
 
-        my %ref_sym = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
         no strict 'refs';
         my $name = undef;
 
         # scan $pack's nametable(hash)
         foreach my $k ( keys %{$pack} ) {
 
-            # hash for main:: has reference on itself
+            # The hash for main:: has a reference to itself
             next if $k eq 'main::';
 
-            # if entry has trailing '::' then
-            # it is link to other name space
-            if ( $k =~ /::$/ ) {
+            # if the entry has a trailing '::' then
+            # it is a link to another name space
+            if ( substr( $k, -2 ) eq '::') {
                 $name = $self->__GetNameByRef( $ref, $k );
                 return $name if $name;
             }
@@ -808,7 +972,7 @@ sub SetFromConfig {
             # if references are equal then we've found
             if ( $entry_ref == $ref ) {
                 $last_pack = $pack;
-                return ( $ref_sym{ ref($ref) } || '*' ) . $pack . $k;
+                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
             }
         }
         return '';
@@ -861,14 +1025,89 @@ sub Options {
     return @res;
 }
 
-eval "require RT::Config_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Config_Vendor.pm}) {
-    die $@;
-};
+=head2 AddOption( Name => '', Section => '', ... )
 
-eval "require RT::Config_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Config_Local.pm}) {
-    die $@;
-};
+=cut
+
+sub AddOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => 0,
+        SortOrder       => undef,
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {},
+        @_
+    );
+
+    unless ( $args{Name} ) {
+        $RT::Logger->error("Need Name to add a new config");
+        return;
+    }
+
+    unless ( $args{Section} ) {
+        $RT::Logger->error("Need Section to add a new config option");
+        return;
+    }
+
+    $META{ delete $args{Name} } = \%args;
+}
+
+=head2 DeleteOption( Name => '' )
+
+=cut
+
+sub DeleteOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        @_
+        );
+    if ( $args{Name} ) {
+        delete $META{$args{Name}};
+    }
+    else {
+        $RT::Logger->error("Need Name to remove a config option");
+        return;
+    }
+}
+
+=head2 UpdateOption( Name => '' ), Section => '', ... )
+
+=cut
+
+sub UpdateOption {
+    my $self = shift;
+    my %args = (
+        Name            => undef,
+        Section         => undef,
+        Overridable     => undef,
+        SortOrder       => undef,
+        Widget          => undef,
+        WidgetArguments => undef,
+        @_
+    );
+
+    my $name = delete $args{Name};
+
+    unless ( $name ) {
+        $RT::Logger->error("Need Name to update a new config");
+        return;
+    }
+
+    unless ( exists $META{$name} ) {
+        $RT::Logger->error("Config $name doesn't exist");
+        return;
+    }
+
+    for my $type ( keys %args ) {
+        next unless defined $args{$type};
+        $META{$name}{$type} = $args{$type};
+    }
+    return 1;
+}
+
+RT::Base->_ImportOverlays();
 
 1;

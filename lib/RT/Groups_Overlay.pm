@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -82,12 +82,12 @@ use RT::Users;
 # See comments below for candidats.
 
 
-# {{{ sub _Init
 
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Groups";
   $self->{'primary_key'} = "id";
+  $self->{'with_disabled_column'} = 1;
 
   my @result = $self->SUPER::_Init(@_);
 
@@ -113,7 +113,6 @@ sub _Init {
 
   return (@result);
 }
-# }}}
 
 =head2 PrincipalsAlias
 
@@ -129,7 +128,6 @@ sub PrincipalsAlias {
 }
 
 
-# {{{ LimiToSystemInternalGroups
 
 =head2 LimitToSystemInternalGroups
 
@@ -146,9 +144,7 @@ sub LimitToSystemInternalGroups {
 }
 
 
-# }}}
 
-# {{{ LimiToUserDefinedGroups
 
 =head2 LimitToUserDefinedGroups
 
@@ -165,32 +161,7 @@ sub LimitToUserDefinedGroups {
 }
 
 
-# }}}
 
-# {{{ LimiToPersonalGroupsFor
-
-=head2 LimitToPersonalGroupsFor PRINCIPAL_ID
-
-Return only Personal Groups for the user whose principal id 
-is PRINCIPAL_ID
-
-=cut
-
-
-sub LimitToPersonalGroupsFor {
-    my $self = shift;
-    my $princ = shift;
-
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
-    $self->Limit(   FIELD => 'Instance',   
-                    OPERATOR => '=', 
-                    VALUE => $princ);
-}
-
-
-# }}}
-
-# {{{ LimitToRolesForQueue
 
 =head2 LimitToRolesForQueue QUEUE_ID
 
@@ -205,9 +176,7 @@ sub LimitToRolesForQueue {
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
 
-# }}}
 
-# {{{ LimitToRolesForTicket
 
 =head2 LimitToRolesForTicket Ticket_ID
 
@@ -222,9 +191,7 @@ sub LimitToRolesForTicket {
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
 }
 
-# }}}
 
-# {{{ LimitToRolesForSystem
 
 =head2 LimitToRolesForSystem System_ID
 
@@ -237,7 +204,6 @@ sub LimitToRolesForSystem {
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
-# }}}
 
 =head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
 
@@ -323,7 +289,7 @@ sub WithRight {
 
     #XXX: DIRTY HACK
     use DBIx::SearchBuilder::Union;
-    my $union = new DBIx::SearchBuilder::Union;
+    my $union = DBIx::SearchBuilder::Union->new();
     $union->add($from_role);
     $union->add($from_group);
     %$self = %$union;
@@ -366,7 +332,6 @@ sub _GetEquivObjects          { return (shift)->RT::Users::_GetEquivObjects( @_ 
 sub WithGroupRight            { return (shift)->RT::Users::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Users::WhoHaveRoleRight( @_ ) }
 
-# {{{ sub LimitToEnabled
 
 =head2 LimitToEnabled
 
@@ -376,16 +341,15 @@ Only find items that haven\'t been disabled
 
 sub LimitToEnabled {
     my $self = shift;
-    
-    $self->Limit( ALIAS => $self->PrincipalsAlias,
-		          FIELD => 'Disabled',
-		          VALUE => '0',
-		          OPERATOR => '=',
-                );
-}
-# }}}
 
-# {{{ sub LimitToDisabled
+    $self->{'handled_disabled_column'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => '0',
+    );
+}
+
 
 =head2 LimitToDeleted
 
@@ -396,16 +360,15 @@ Only find items that have been deleted.
 sub LimitToDeleted {
     my $self = shift;
     
-    $self->{'find_disabled_rows'} = 1;
-    $self->Limit( ALIAS => $self->PrincipalsAlias,
-                  FIELD => 'Disabled',
-                  OPERATOR => '=',
-                  VALUE => 1,
-                );
+    $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => 1,
+    );
 }
-# }}}
 
-# {{{ sub Next
+
 
 sub Next {
     my $self = shift;

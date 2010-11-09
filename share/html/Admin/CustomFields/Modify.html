@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,17 +43,14 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/CustomFieldTabs,
-    id => $CustomFieldObj->Id ,
-    current_tab => $current_tab,
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="post" action="Modify.html" name="ModifyCustomField">
+<form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <table>
@@ -70,6 +67,19 @@
         Default => $CustomFieldObj->TypeComposite, &>
 </td></tr>
 
+% if ( $CustomFieldObj->Id and $CustomFieldObj->HasRenderTypes ) {
+<tr>
+  <td class="label"><&|/l&>Render Type</&></td>
+  <td>
+    <& /Admin/Elements/SelectCustomFieldRenderType,
+        Name            => "RenderType",
+        TypeComposite   => $CustomFieldObj->TypeComposite,
+        Default         => $CustomFieldObj->RenderType, 
+        BasedOn         => $CustomFieldObj->BasedOnObj->id, &>
+  </td>
+</tr>
+% }
+
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
@@ -82,7 +92,7 @@
         Default => $CustomFieldObj->LookupType, &>
 </td></tr>
 
-<tr><td class="label"><&|/l&>Validation</&></td>
+<tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
     Name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
@@ -108,7 +118,7 @@
 </div></td></tr>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<tr><td class="label"><&|/l&>Categories are based on</&></td><td>
+<tr class="categoriesbasedon"><td class="label"><&|/l&>Categories are based on</&></td><td>
 <& /Admin/Elements/SelectCustomField,
     Name => "BasedOn",
     LookupType => $CustomFieldObj->LookupType,
@@ -118,11 +128,15 @@
 </td></tr>
 % }
 
+% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
+
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
 <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
+
+% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 </table>
 
@@ -141,12 +155,12 @@
 my ($title, @results, $Disabled);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-my $current_tab = 'Admin/CustomFields/Modify.html';
+
+$m->callback(CallbackName => 'Initial', Pattern => \$Pattern, ARGSRef => \%ARGS);
 
 unless ( $id ) {
     $title = loc("Create a CustomField");
     $id    = 'new';
-    $current_tab .= '?Create=1';
 }
 else {
     if ( $id eq 'new' ) {
@@ -167,7 +181,6 @@ else {
         $CustomFieldObj->Load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
-    $current_tab .= "?id=$id";
 }
 
 if ( $ARGS{'Update'} && $id ne 'new' ) {
@@ -183,7 +196,30 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     );
     $CustomFieldObj->SetValuesClass( $ValuesClass );
 
-    $CustomFieldObj->SetBasedOn( $BasedOn );
+    # Set the render type if we have it, but unset it if the new type doesn't
+    # support render types
+    if ( $CustomFieldObj->HasRenderTypes($TypeComposite) ) {
+        my $original = $CustomFieldObj->RenderType;
+
+        if ( defined $RenderType and $RenderType ne $original ) {
+            # It's changed!  Let's update it.
+            my ($good, $msg) = $CustomFieldObj->SetRenderType( $RenderType );
+
+            if ( $good ) {
+                $msg = loc("[_1] changed from '[_2]' to '[_3]'",
+                            loc("Render Type"), $original, $RenderType );
+            }
+
+            push @results, $msg;
+        }
+    }
+    else {
+        # Delete it if we no longer support render types
+        $CustomFieldObj->SetRenderType( undef );
+    }
+
+    my ($good, $msg) = $CustomFieldObj->SetBasedOn( $BasedOn );
+    push @results, $msg unless $good or $msg =~ /No entry found/;
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
@@ -196,28 +232,53 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
-        foreach my $attr qw(Name Description SortOrder Category) {
+        foreach my $attr (qw(Name Description SortOrder Category)) {
             my $param = join("-", $paramtag, $value->Id, $attr);
             next unless exists $ARGS{$param};
+            $ARGS{$param} =~ s/^\s+//;
+            $ARGS{$param} =~ s/\s+$//;
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
             my $mutator = "Set$attr";
             my ($id, $msg) = $value->$mutator( $ARGS{$param} );
             push (@results, $msg);
         }
+        $m->callback(CallbackName => 'AfterUpdateCustomFieldValue', CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
     }
 
     # Add any new values
     if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
         my ($id, $msg) = $CustomFieldObj->AddValue(
-            map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( Name Description SortOrder Category )
+            map { 
+                $ARGS{$paramtag."-new-$_"} =~ s/^\s+//;
+                $ARGS{$paramtag."-new-$_"} =~ s/\s+$//;
+                $_ => $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
         push (@results, $msg);
+
+        my $cfv = RT::CustomFieldValue->new( $session{CurrentUser} );
+        $cfv->Load($id);
+        $m->callback(CallbackName => 'AfterCreateCustomFieldValue',
+CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARGS );
     }
 }
 
+
+
+
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
+
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/CustomFields/Modify.html',
+    id              => $id,
+    ARGSRef     => \%ARGS
+);
+
+
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
@@ -243,6 +304,7 @@ $Name => undef
 $SetEnabled => undef
 $Enabled => 0
 $ValuesClass => 'RT::CustomFieldValues'
+$RenderType => undef
 $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef

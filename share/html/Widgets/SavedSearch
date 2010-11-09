@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%method new>
 <%init>
@@ -55,19 +55,37 @@ return \%ARGS;
 
 <%init>
 my @actions;
-my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
+my @Objects = RT::SavedSearch->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser' );
-$self->{SearchId} ||= 'new';
+$self->{SearchId} ||= $args->{'SavedChartSearchId'} || 'new';
+
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
-if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'SavedSearchLoad'} ) ) {
+if ( my ( $container_object, $search_id ) = _parse_saved_search(
+            $args->{'SavedSearchLoad'} || $args->{'SavedChartSearchId'} ) ) {
     my $search = $container_object->Attributes->WithId($search_id);
     # We have a $search and now; import the others
-    $self->{SearchId} = $args->{'SavedSearchLoad'};
+    $self->{SearchId} = $args->{'SavedSearchLoad'} ||
+        $args->{'SavedChartSearchId'};
     $self->{CurrentSearch}{Object} = $search;
-    $args->{$_} = $search->SubValue($_) for @{ $self->{SearchFields} };
+    if ( $args->{'SavedSearchLoad'} ) {
+        for ( @{ $self->{SearchFields} } ) {
+            $args->{$_} = $search->SubValue($_) 
+        }
+    }
+
+    $args->{SavedChartSearchId} = $args->{'SavedSearchLoad'}
+        if $args->{'SavedSearchLoad'};
+# saved search in /Search/Chart.html is different from /Search/Build.html
+# the former is of type 'Chart', while the latter is of type 'Ticket'.
+# After loading a saved search from the former after loading one from the
+# latter, accessing /Search/Build.html will still show the old one, so we
+# need to delete $session{CurrentSearchHash} to let it not show the old one.
+# of course, the new one should not be shown there either because it's of
+# different type
+    delete $session{'CurrentSearchHash'};
 }
 
 # look for the current one in the available saved searches
@@ -91,7 +109,8 @@ if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
-	push @actions, loc( '[_1] [_2] renamed to [_3].', loc($self->{SearchType}), $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
+        $search->SetSubValues(%$SearchParams);
+	    push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
@@ -103,7 +122,10 @@ if ( $args->{SavedSearchSave} ) {
             SearchParams => $SearchParams
         );
         if ($ok) {
-	    $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
+	        $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
+            $self->{SearchId} = $args->{SavedChartSearchId} = 'RT::User-' .
+                $session{CurrentUser}->id . '-SavedSearch-' .
+                $saved_search->Id;
             push @actions, loc( '[_1] [_2] saved.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
         } else {
             push @actions,
@@ -117,7 +139,7 @@ if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{Object} ) {
     push @actions, $ok ? loc( '[_1] [_2] deleted.', loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description ) : $msg;
     delete $self->{CurrentSearch}{Object};
     delete $self->{SearchId};
-
+    delete $args->{SavedChartSearchId};
 }
 
 $self->{CurrentSearch}{Description} = $self->{CurrentSearch}{Object}->Description
@@ -135,11 +157,14 @@ $args
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
 <& /Search/Elements/EditSearches,
-    Id            => $self->{SearchId},
+    Id            => $self->{SearchId} || 'new',
     Type          => $self->{SearchType},
     CurrentSearch => $self->{CurrentSearch},
     Title         => $Title,
     AllowCopy     => 0,
+    $self->{CurrentSearch}{Object} ? 
+    ( Object        => $self->{CurrentSearch}{Object},
+    Description   => $self->{CurrentSearch}{Object}->Description, ) : (),
 &><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
@@ -152,6 +177,7 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 <input type="hidden" class="hidden" name="<% $field %>" value="<% $value %>" />
 %   }
 % }
+<input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $self->{SearchId} || 'new'  %>" />
 </form>
 <%ARGS>
 $self   => undef

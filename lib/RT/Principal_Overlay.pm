@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 #
@@ -64,7 +64,6 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
-# {{{ IsGroup
 
 =head2 IsGroup
 
@@ -82,9 +81,7 @@ sub IsGroup {
     return undef;
 }
 
-# }}}
 
-# {{{ IsUser
 
 =head2 IsUser 
 
@@ -103,9 +100,7 @@ sub IsUser {
     }
 }
 
-# }}}
 
-# {{{ Object
 
 =head2 Object
 
@@ -133,11 +128,8 @@ sub Object {
 
 
 }
-# }}} 
 
-# {{{ ACL Related routines
 
-# {{{ GrantRight 
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
@@ -163,6 +155,8 @@ sub GrantRight {
 
     my $type = $self->_GetPrincipalTypeForACL();
 
+    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
+
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
     return $ace->Create(
@@ -172,9 +166,7 @@ sub GrantRight {
         PrincipalId   => $self->Id,
     );
 }
-# }}}
 
-# {{{ RevokeRight
 
 =head2 RevokeRight { Right => "RightName", Object => "object" }
 
@@ -210,48 +202,18 @@ sub RevokeRight {
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );
+
+    if ( not $status and $msg =~ /Invalid right/ ) {
+        $RT::Logger->warn("Tried to revoke the invalid right '$args{Right}', ignoring it.");
+        return (1);
+    }
+
+    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
     return ($status, $msg) unless $status;
     return $ace->Delete;
 }
 
-# }}}
 
-# {{{ sub _CleanupInvalidDelegations
-
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
-
-Revokes all ACE entries delegated by this principal which are
-inconsistent with this principal's current delegation rights.  Does
-not perform permission checks, but takes no action and returns success
-if this principal still retains DelegateRights.  Should only ever be
-called from inside the RT library.
-
-If this principal is a group, recursively calls this method on each
-cached user member of itself.
-
-If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# This is currently just a stub for the methods of the same name in
-# RT::User and RT::Group.
-
-sub _CleanupInvalidDelegations {
-    my $self = shift;
-    unless ( $self->Id ) {
-	$RT::Logger->warning("Principal not loaded.");
-	return (undef);
-    }
-    return ($self->Object->_CleanupInvalidDelegations(@_));
-}
-
-# }}}
-
-# {{{ sub HasRight
 
 =head2 sub HasRight (Right => 'right' Object => undef)
 
@@ -282,67 +244,61 @@ Returns undef if no ACE was found.
 sub HasRight {
 
     my $self = shift;
-    my %args = (
-        Right        => undef,
-        Object       => undef,
-        EquivObjects => undef,
-        @_,
-    );
+    my %args = ( Right        => undef,
+                 Object       => undef,
+                 EquivObjects => undef,
+                 @_,
+               );
 
-    unless ( $args{'Right'} ) {
-        $RT::Logger->crit("HasRight called without a right");
-        return (undef);
+    # RT's SystemUser always has all rights
+    if ( $self->id == RT->SystemUser->id ) {
+        return 1;
     }
 
-    my $canonic_name = RT::ACE->CanonicalizeRightName( $args{'Right'} );
-    unless ( $canonic_name ) {
-        $RT::Logger->error("Invalid right. Couldn't canonicalize right '$args{'Right'}'");
+    $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
+    unless ( $args{'Right'} ) {
+        $RT::Logger->error(
+               "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;
     }
-    $args{'Right'} = $canonic_name;
 
     $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
         if $args{'EquivObjects'};
 
-    if ( $self->Disabled ) {
-        $RT::Logger->debug( "Disabled User #"
-              . $self->id
-              . " failed access check for "
-              . $args{'Right'} );
+    if ( $self->__Value('Disabled') ) {
+        $RT::Logger->debug(   "Disabled User #"
+                            . $self->id
+                            . " failed access check for "
+                            . $args{'Right'} );
         return (undef);
     }
 
-    if (   defined( $args{'Object'} )
-        && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id ) {
-
+    if ( eval { $args{'Object'}->id } ) {
         push @{ $args{'EquivObjects'} }, $args{'Object'};
-    }
-    else {
+    } else {
         $RT::Logger->crit("HasRight called with no valid object");
         return (undef);
     }
 
-
-    unshift @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects;
+    unshift @{ $args{'EquivObjects'} },
+        $args{'Object'}->ACLEquivalenceObjects;
 
     unshift @{ $args{'EquivObjects'} }, $RT::System
         unless $self->can('_IsOverrideGlobalACL')
-               && $self->_IsOverrideGlobalACL( $args{'Object'} );
+            && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
-    # {{{ If we've cached a win or loss for this lookup say so
+    # If we've cached a win or loss for this lookup say so
 
-    # Construct a hashkeys to cache decisions:
-    # 1) full_hashkey - key for any result and for full combination of uid, right and objects
-    # 2) short_hashkey - one key for each object to store positive results only, it applies
-    # only to direct group rights and partly to role rights
-    my $self_id = $self->id;
-    my $full_hashkey = join ";:;", $self_id, $args{'Right'};
+# Construct a hashkeys to cache decisions:
+# 1) full_hashkey - key for any result and for full combination of uid, right and objects
+# 2) short_hashkey - one key for each object to store positive results only, it applies
+# only to direct group rights and partly to role rights
+    my $full_hashkey = join (";:;", $self->id, $args{'Right'});
     foreach ( @{ $args{'EquivObjects'} } ) {
-        my $ref_id = _ReferenceId($_);
-        $full_hashkey .= ";:;$ref_id";
+        my $ref_id = $self->_ReferenceId($_);
+        $full_hashkey .= ";:;".$ref_id;
 
-        my $short_hashkey = join ";:;", $self_id, $args{'Right'}, $ref_id;
+        my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
         my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
         return $cached_answer > 0 if defined $cached_answer;
     }
@@ -352,11 +308,10 @@ sub HasRight {
         return $cached_answer > 0 if defined $cached_answer;
     }
 
+    my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
-    my ($hitcount, $via_obj) = $self->_HasRight( %args );
-
-    $_ACL_CACHE->set( $full_hashkey => $hitcount? 1: -1 );
-    $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
+    $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
+    $_ACL_CACHE->set( join(';:;',  $self->id, $args{'Right'},$via_obj) => 1 )
         if $via_obj && $hitcount;
 
     return ($hitcount);
@@ -368,16 +323,15 @@ Low level HasRight implementation, use HasRight method instead.
 
 =cut
 
-sub _HasRight
-{
+sub _HasRight {
     my $self = shift;
     {
-        my ($hit, @other) = $self->_HasGroupRight( @_ );
-        return ($hit, @other) if $hit;
+        my ( $hit, @other ) = $self->_HasGroupRight(@_);
+        return ( $hit, @other ) if $hit;
     }
     {
-        my ($hit, @other) = $self->_HasRoleRight( @_ );
-        return ($hit, @other) if $hit;
+        my ( $hit, @other ) = $self->_HasRoleRight(@_);
+        return ( $hit, @other ) if $hit;
     }
     return (0);
 }
@@ -386,136 +340,182 @@ sub _HasRight
 # where user plays role X on an object and as well the right is
 # assigned to this role X of the object, for example right CommentOnTicket
 # is granted to Cc role of a queue and user is in cc list of the queue
-sub _HasGroupRight
-{
+sub _HasGroupRight {
     my $self = shift;
-    my %args = (
-        Right        => undef,
-        EquivObjects => [],
-        @_
-    );
+    my %args = ( Right        => undef,
+                 EquivObjects => [],
+                 @_
+               );
     my $right = $args{'Right'};
 
-    my $query =
-      "SELECT ACL.id, ACL.ObjectType, ACL.ObjectId " .
-      "FROM ACL, Principals, CachedGroupMembers WHERE " .
+    my $query
+        = "SELECT ACL.id, ACL.ObjectType, ACL.ObjectId "
+        . "FROM ACL, Principals, CachedGroupMembers WHERE "
+        .
 
-      # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR ACL.RightName = '$right') "
+        # Only find superuser or rights with the name $right
+        "(ACL.RightName = 'SuperUser' "
+        . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '' )
+        . ") "
 
-      # Never find disabled groups.
-      . "AND Principals.id = ACL.PrincipalId "
-      . "AND Principals.PrincipalType = 'Group' "
-      . "AND Principals.Disabled = 0 "
+        # Never find disabled groups.
+        . "AND Principals.id = ACL.PrincipalId "
+        . "AND Principals.PrincipalType = 'Group' "
+        . "AND Principals.Disabled = 0 "
 
-      # See if the principal is a member of the group recursively or _is the rightholder_
-      # never find recursively disabled group members
-      # also, check to see if the right is being granted _directly_ to this principal,
-      #  as is the case when we want to look up group rights
-      . "AND CachedGroupMembers.GroupId  = ACL.PrincipalId "
-      . "AND CachedGroupMembers.GroupId  = Principals.id "
-      . "AND CachedGroupMembers.MemberId = ". $self->Id ." "
-      . "AND CachedGroupMembers.Disabled = 0 ";
+# See if the principal is a member of the group recursively or _is the rightholder_
+# never find recursively disabled group members
+# also, check to see if the right is being granted _directly_ to this principal,
+#  as is the case when we want to look up group rights
+        . "AND CachedGroupMembers.GroupId  = ACL.PrincipalId "
+        . "AND CachedGroupMembers.GroupId  = Principals.id "
+        . "AND CachedGroupMembers.MemberId = "
+        . $self->Id . " "
+        . "AND CachedGroupMembers.Disabled = 0 ";
 
     my @clauses;
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        my $type = ref( $obj ) || $obj;
+        my $type = ref($obj) || $obj;
         my $clause = "ACL.ObjectType = '$type'";
 
-        if ( ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id ) {
-            $clause .= " AND ACL.ObjectId = ". $obj->id;
+        if ( defined eval { $obj->id } ) {    # it might be 0
+            $clause .= " AND ACL.ObjectId = " . $obj->id;
         }
 
         push @clauses, "($clause)";
     }
-    if ( @clauses ) {
-        $query .= " AND (". join( ' OR ', @clauses ) .")";
+    if (@clauses) {
+        $query .= " AND (" . join( ' OR ', @clauses ) . ")";
     }
 
     $self->_Handle->ApplyLimits( \$query, 1 );
-    my ($hit, $obj, $id) = $self->_Handle->FetchResult( $query );
+    my ( $hit, $obj, $id ) = $self->_Handle->FetchResult($query);
     return (0) unless $hit;
 
     $obj .= "-$id" if $id;
-    return (1, $obj);
+    return ( 1, $obj );
 }
 
-sub _HasRoleRight
-{
+sub _HasRoleRight {
     my $self = shift;
-    my %args = (
-        Right        => undef,
-        EquivObjects => [],
-        @_
-    );
-    my $right = $args{'Right'};
+    my %args = ( Right        => undef,
+                 EquivObjects => [],
+                 @_
+               );
 
-    my $query =
-      "SELECT ACL.id " .
-      "FROM ACL, Groups, Principals, CachedGroupMembers WHERE " .
+    my @roles = $self->RolesWithRight(%args);
+    return 0 unless @roles;
 
-      # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR ACL.RightName = '$right') "
+    my $query = "SELECT Groups.id "
+        . "FROM Groups, Principals, CachedGroupMembers WHERE "
 
-      # Never find disabled things
-      . "AND Principals.Disabled = 0 "
-      . "AND CachedGroupMembers.Disabled = 0 "
+        # Never find disabled things
+        . "Principals.Disabled = 0 " . "AND CachedGroupMembers.Disabled = 0 "
 
-      # We always grant rights to Groups
-      . "AND Principals.id = Groups.id "
-      . "AND Principals.PrincipalType = 'Group' "
+        # We always grant rights to Groups
+        . "AND Principals.id = Groups.id "
+        . "AND Principals.PrincipalType = 'Group' "
 
-      # See if the principal is a member of the group recursively or _is the rightholder_
-      # never find recursively disabled group members
-      # also, check to see if the right is being granted _directly_ to this principal,
-      #  as is the case when we want to look up group rights
-      . "AND Principals.id = CachedGroupMembers.GroupId "
-      . "AND CachedGroupMembers.MemberId = ". $self->Id ." "
-      . "AND ACL.PrincipalType = Groups.Type ";
+# See if the principal is a member of the group recursively or _is the rightholder_
+# never find recursively disabled group members
+# also, check to see if the right is being granted _directly_ to this principal,
+#  as is the case when we want to look up group rights
+        . "AND Principals.id = CachedGroupMembers.GroupId "
+        . "AND CachedGroupMembers.MemberId = " . $self->Id . " "
+
+        . "AND (" . join( ' OR ', map "Groups.Type = '$_'", @roles ) . ")";
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        my $type = ref($obj)? ref($obj): $obj;
-        my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        my $type = ref($obj) ? ref($obj) : $obj;
 
-        my $object_clause = "ACL.ObjectType = '$type'";
-        $object_clause   .= " AND ACL.ObjectId = $id" if $id;
-        push @object_clauses, "($object_clause)";
-    }
-    # find ACLs that are related to our objects only
-    $query .= " AND (". join( ' OR ', @object_clauses ) .")";
+        my $clause = "Groups.Domain = '$type-Role'";
 
-    # because of mysql bug in versions up to 5.0.45 we do one query per object
-    # each query should be faster on any DB as it uses indexes more effective
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        my $type = ref($obj)? ref($obj): $obj;
-        my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
-
-        my $tmp = $query;
-        $tmp .= " AND Groups.Domain = '$type-Role'";
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
         # if we want mysql 4.0 use indexes here. we MUST convert that
         # field to integer and drop this quotes.
-        $tmp .= " AND Groups.Instance = '$id'" if $id;
-
-        $self->_Handle->ApplyLimits( \$tmp, 1 );
-        my ($hit) = $self->_Handle->FetchResult( $tmp );
-        return (1) if $hit;
+        if ( my $id = eval { $obj->id } ) {
+            $clause .= " AND Groups.Instance = '$id'";
+        }
+        push @object_clauses, "($clause)";
     }
+    $query .= " AND (" . join( ' OR ', @object_clauses ) . ")";
+
+    $self->_Handle->ApplyLimits( \$query, 1 );
+    my ($hit) = $self->_Handle->FetchResult($query);
+    return (1) if $hit;
 
     return 0;
 }
 
-# }}}
+=head2 RolesWithRight
 
-# }}}
+Returns list with names of roles that have right on
+set of objects. Takes Right, EquiveObjects,
+IncludeSystemRights and IncludeSuperusers arguments.
 
-# {{{ ACL caching
+IncludeSystemRights is true by default, rights
+granted systemwide are ignored when IncludeSystemRights
+is set to a false value.
+
+IncludeSuperusers is true by default, SuperUser right
+is not checked if it's set to a false value.
+
+=cut
+
+sub RolesWithRight {
+    my $self = shift;
+    my %args = ( Right               => undef,
+                 IncludeSystemRights => 1,
+                 IncludeSuperusers   => 1,
+                 EquivObjects        => [],
+                 @_
+               );
+
+    my $query = "SELECT DISTINCT PrincipalType FROM ACL"
+
+        # Only find superuser or rights with the requested right
+        . " WHERE ( RightName = '" . $args{'Right'} . "' "
+
+        # Check SuperUser if we were asked to
+        . ( $args{'IncludeSuperusers'} ? "OR RightName = 'SuperUser' " : '' )
+        . ")"
+
+        # we need only roles
+        . " AND PrincipalType != 'Group'";
+
+    # skip rights granted on system level if we were asked to
+    unless ( $args{'IncludeSystemRights'} ) {
+        $query .= " AND ObjectType != 'RT::System'";
+    }
+
+    my (@object_clauses);
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+        my $type = ref($obj) ? ref($obj) : $obj;
+
+        my $object_clause = "ObjectType = '$type'";
+        if ( my $id = eval { $obj->id } ) {
+            $object_clause .= " AND ObjectId = $id";
+        }
+        push @object_clauses, "($object_clause)";
+    }
+
+    # find ACLs that are related to our objects only
+    $query .= " AND (" . join( ' OR ', @object_clauses ) . ")"
+        if @object_clauses;
+
+    my $roles = $RT::Handle->dbh->selectcol_arrayref($query);
+    unless ($roles) {
+        $RT::Logger->warning( $RT::Handle->dbh->errstr );
+        return ();
+    }
+    return @$roles;
+}
 
 
-# {{{ InvalidateACLCache
+
+
+
 
 =head2 InvalidateACLCache
 
@@ -530,12 +530,9 @@ sub InvalidateACLCache {
     $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ _GetPrincipalTypeForACL
+
 
 =head2 _GetPrincipalTypeForACL
 
@@ -546,42 +543,37 @@ return that. if it has no type, return group.
 
 sub _GetPrincipalTypeForACL {
     my $self = shift;
-    my $type;    
     if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
-        $type = $self->Object->Type;
+        return $self->Object->Type;
+    } else {
+        return $self->PrincipalType;
     }
-    else {
-        $type = $self->PrincipalType;
-    }
-
-    return($type);
 }
 
-# }}}
 
-# {{{ _ReferenceId
 
 =head2 _ReferenceId
 
 Returns a list uniquely representing an object or normal scalar.
 
-For scalars, its string value is returned; for objects that has an
-id() method, its class name and Id are returned as a string separated by a "-".
+For a scalar, its string value is returned.
+For an object that has an id() method which returns a value, its class name and id are returned as a string separated by a "-".
+For an object that has an id() method which returns false, its class name is returned.
 
 =cut
 
 sub _ReferenceId {
+    my $self = shift;
     my $scalar = shift;
-
-    # just return the value for non-objects
-    return $scalar unless UNIVERSAL::can($scalar, 'id');
-
-    return ref($scalar) unless $scalar->id;
-
-    # an object -- return the class and id
-    return(ref($scalar)."-". $scalar->id);
+    my $id = eval { $scalar->id };
+    if ($@) {
+        return $scalar;
+    } elsif ($id) {
+        return ref($scalar) . "-" . $id;
+    } else {
+        return ref($scalar);
+    }
 }
 
-# }}}
 
 1;

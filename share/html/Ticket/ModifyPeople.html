@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,13 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->Id, 
-    Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
@@ -59,6 +56,22 @@
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399", class=>'ticket-info-people' &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
+</&>
+<&| /Widgets/TitleBox, title => loc("Modify who receives mail for ticket #[_1]", $Ticket->Id),   width => "100%", color=> "#333399", class=>'ticket-info-squelch' &>
+<p>
+  The checked users may receive email related to this ticket depending on the
+  action taken.  Uncheck users to stop sending email to them about this ticket.
+</p>
+
+<ul>
+% for my $addr (sort keys %recips) {
+  <li>
+  <input type="hidden" name="autorecipient" value="<% $addr %>">
+  <input type="checkbox" name="checked_recipient" id="checked_recipient_<%$addr%>" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>>
+  <label for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &></label>
+  </li>
+% }
+</ul>
 </&>
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
@@ -70,12 +83,44 @@ my @results;
 my $Ticket = LoadTicket($id);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+# Update the squelch list
+my %squelched = map {$_->Content => 1} $Ticket->SquelchMailTo;
+my %checked = map {$_ => 1} grep {defined}
+    (ref $ARGS{'checked_recipient'} eq "ARRAY" ? @{$ARGS{'checked_recipient'}}
+         : defined $ARGS{'checked_recipient'} ? ($ARGS{'checked_recipient'}) : ());
+my @all = grep {defined}
+    (ref $ARGS{'autorecipient'} eq "ARRAY" ? @{$ARGS{'autorecipient'}}
+         : defined $ARGS{'autorecipient'} ? ($ARGS{'autorecipient'}) : ());
+$Ticket->UnsquelchMailTo($_)
+    for grep {$squelched{$_}} keys %checked;
+$Ticket->SquelchMailTo($_)
+    for grep {!$squelched{$_} and !$checked{$_}} @all;
+
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     $Ticket->ApplyTransactionBatch;
 }
+
+# Use the ticket's scrips to figure out the new list of recipients.
+my @txns = map {$Ticket->DryRun( Action => $_ )} qw/comment respond/;
+my %recips=();
+for my $scrip (map {@{$_->Scrips->Prepared}} @txns) {
+    next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
+    for my $type (qw(To Cc Bcc)) {
+        $recips{$_->address} = 1 for $scrip->ActionObj->Action->$type();
+    }
+}
+for my $rule (map {@{$_->Rules}} @txns) {
+    next unless $rule->{hints} && $rule->{hints}{class} eq "SendEmail";
+    for my $type (qw(To Cc Bcc)) {
+        $recips{$_} = 1 for @{$rule->{hints}{recips}{$type}};
+    }
+}
+
+# Use tkt squelch list to get recipients who will NOT get mail:
+$recips{$_->Content} = 0 for $Ticket->SquelchMailTo;
 </%INIT>
 
 

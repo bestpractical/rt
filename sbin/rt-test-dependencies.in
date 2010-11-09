@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 #
 # This is just a basic script that checks to make sure that all
@@ -60,10 +60,9 @@ GetOptions(
     \%args,                               'v|verbose',
     'install',                            'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
-    'with-ORACLE',                        'with-FASTCGI',
+    'with-ORACLE',                        'with-FASTCGI', 'with-FASTCGI-SERVER',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
-    'with-STANDALONE',
 
     'with-GPG',
     'with-ICAL',
@@ -71,31 +70,35 @@ GetOptions(
     'with-GRAPHVIZ',
     'with-GD',
     'with-DASHBOARDS',
+    'with-USERLOGO',
 
     'download=s',
     'repository=s',
-    'list-deps'
+    'list-deps',
+    'help|h',
 );
 
-unless (keys %args) {
-    help();
-    exit(1);
+if ( $args{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
 }
 
 # Set up defaults
 my %default = (
     'with-MASON' => 1,
+    'with-PSGI' => 1,
     'with-CORE' => 1,
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEV' => @RT_DEVEL_MODE@, 
-    'with-STANDALONE' => 1,
     'with-GPG' => @RT_GPG@,
     'with-ICAL' => 1,
     'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
-    'with-DASHBOARDS' => 1
+    'with-DASHBOARDS' => 1,
+    'with-USERLOGO' => 1,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -147,50 +150,14 @@ sub conclude {
             for my $name ( keys %$missing ) {
                 my $module  = $missing->{$name};
                 my $version = $module->{version};
-                print_found( $name . ( $version ? " >= $version" : "" ),
+                my $error = $module->{error};
+                print_found( $name . ( $version && !$error ? " >= $version" : "" ),
                     0, $module->{error} );
             }
         }
         exit 1;
     }
 }
-
-
-sub help {
-
-    print <<'.';
-
-By default, testdeps determine whether you have 
-installed all the perl modules RT needs to run.
-
-    --install           Install missing modules
-
-The following switches will tell the tool to check for specific dependencies
-
-    --with-mysql        Database interface for MySQL
-    --with-postgresql   Database interface for PostgreSQL 
-    --with-oracle       Database interface for Oracle
-    --with-sqlite       Database interface and driver for SQLite (unsupported)
-
-    --with-standalone   Libraries needed to support the standalone simple pure perl server
-    --with-fastcgi      Libraries needed to support the fastcgi handler
-    --with-speedycgi    Libraries needed to support the speedycgi handler
-    --with-modperl1     Libraries needed to support the modperl 1 handler
-    --with-modperl2     Libraries needed to support the modperl 2 handler
-
-    --with-dev          Tools needed for RT development
-
-You can also specify -v or --verbose to list the status of all dependencies,
-rather than just the missing ones.
-
-The "RT_FIX_DEPS_CMD" environment variable, if set, will be used
-instead of the standard CPAN shell by --install to install any
-required modules.  It will be called with the module name, or, if
-"RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
-module name before calling the program.
-.
-}
-
 
 sub text_to_hash {
     my %hash;
@@ -208,13 +175,14 @@ Digest::base
 Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.54
+DBIx::SearchBuilder 1.57
 Text::Template 1.44
 File::ShareDir
 File::Spec 0.8
 HTML::Entities 
+HTML::Quoted
 HTML::Scrubber 0.08
-Log::Dispatch 2.0
+Log::Dispatch 2.23
 Sys::Syslog 0.16
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
@@ -225,7 +193,7 @@ Email::Address
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
-File::Temp 0.18
+File::Temp 0.19
 Text::Quoted 2.02
 Tree::Simple 1.04
 UNIVERSAL::require
@@ -233,12 +201,16 @@ Regexp::Common
 Scalar::Util
 Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
-Calendar::Simple
-Encode 2.13
+Encode 2.39
 CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
-Parse::BooleanLogic 0.09
+Text::Password::Pronounceable
+Devel::GlobalDestruction
+List::MoreUtils
+Net::CIDR
+Regexp::Common::net::CIDR
+Regexp::IPv6
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -252,12 +224,17 @@ XML::RSS 1.05
 Text::WikiFormat 0.76
 CSS::Squish 0.06
 Devel::StackTrace 1.19
+JSON
+JavaScript::Minifier
+IPC::Run3
 .
 
-$deps{'STANDALONE'} = [ text_to_hash( << '.') ];
-HTTP::Server::Simple 0.34
-HTTP::Server::Simple::Mason 0.09
-Net::Server
+$deps{'PSGI'} = [ text_to_hash( << '.') ];
+CGI::PSGI 0.12
+HTML::Mason::PSGIHandler 0.52
+Plack 0.9942
+Plack::Handler::Starlet
+CGI::Emulate::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -278,29 +255,42 @@ Term::ReadKey
 .
 
 $deps{'DEV'} = [ text_to_hash( << '.') ];
+Email::Abstract
+Test::Email
 HTML::Form
 HTML::TokeParser
-WWW::Mechanize
-Test::WWW::Mechanize 1.04
+WWW::Mechanize 1.52
+Test::WWW::Mechanize 1.30
 Module::Refresh 0.03
 Test::Expect 0.31
 XML::Simple
 File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
-Test::HTTP::Server::Simple 0.09
-Test::HTTP::Server::Simple::StashWarnings 0.02
 Log::Dispatch::Perl
 Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
-IPC::Run3
 Test::MockTime
+Log::Dispatch::Perl
+Web::Scraper
+Test::WWW::Mechanize::PSGI
+Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 CGI 3.38
 FCGI
 CGI::Fast 
+.
+
+$deps{'FASTCGI-SERVER'} = [ text_to_hash( << '.') ];
+CGI 3.38
+CGI::Fast
+FCGI::ProcManager
+File::Basename
+File::Spec
+Getopt::Long
+Pod::Usage
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
@@ -367,8 +357,16 @@ GD::Graph
 GD::Text
 .
 
-if ($args{'download'}) {
+$deps{'USERLOGO'} = [ text_to_hash( << '.') ];
+Imager
+Convert::Color
+.
 
+my %AVOID = (
+    'DBD::Oracle' => [qw(1.23)],
+);
+
+if ($args{'download'}) {
     download_mods();
 }
 
@@ -392,7 +390,8 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     if ( $args{'install'} ) {
         for my $module (keys %missing) {
             resolve_dep($module, $missing{$module}{version});
-            delete $missing{$module} if test_dep($module, $missing{$module}{version});
+            delete $missing{$module}
+                if test_dep($module, $missing{$module}{version}, $AVOID{$module});
         }
     }
 
@@ -408,8 +407,8 @@ sub test_deps {
     while(@deps) {
         my $module = shift @deps;
         my $version = shift @deps;
-        my($test, $error) = test_dep($module, $version);
-        my $msg = $module . ($version ? " >= $version" : '');
+        my($test, $error) = test_dep($module, $version, $AVOID{$module});
+        my $msg = $module . ($version && !$error ? " >= $version" : '');
         print_found($msg, $test, $error);
 
         $missing{$module} = { version => $version, error => $error } unless $test;
@@ -421,23 +420,32 @@ sub test_deps {
 sub test_dep {
     my $module = shift;
     my $version = shift;
+    my $avoid = shift;
 
     if ( $args{'list-deps'} ) {
         print $module, ': ', $version || 0, "\n"; 
     }
     else {
         eval "use $module $version ()";
-        if ($@) {
-            my $error = $@;
+        if ( my $error = $@ ) {
+            return 0 unless wantarray;
+
             $error =~ s/\n(.*)$//s;
             $error =~ s/at \(eval \d+\) line \d+\.$//;
-            undef $error unless $error =~ /this is only/;
+            undef $error if $error =~ /this is only/;
 
             return ( 0, $error );
         }
-        else {
-            return 1;
+        
+        if ( $avoid ) {
+            my $version = $module->VERSION;
+            if ( grep $version eq $_, @$avoid ) {
+                return 0 unless wantarray;
+                return (0, "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually.");
+            }
         }
+
+        return 1;
     }
 }
 
@@ -569,6 +577,89 @@ sub check_users {
   print_found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
 }
 
-
-
 1;
+
+__END__
+
+=head1 NAME
+
+rt-test-dependencies - test rt's dependencies
+
+=head1 SYNOPSIS
+
+    rt-test-dependencies
+    rt-test-dependencies --install
+    rt-test-dependencies --with-mysql --with-fastcgi
+
+=head1 DESCRIPTION
+
+by default, C<rt-test-dependencies> determines whether you have installed all
+the perl modules RT needs to run.
+
+the "RT_FIX_DEPS_CMD" environment variable, if set, will be used instead of
+the standard CPAN shell by --install to install any required modules.  it will
+be called with the module name, or, if "RT_FIX_DEPS_CMD" contains a "%s", will
+replace the "%s" with the module name before calling the program.
+
+=head1 OPTIONS
+
+=over
+
+=item install
+
+    install missing modules
+
+=item verbose
+
+list the status of all dependencies, rather than just the missing ones.
+
+-v is equal to --verbose
+
+=item specify dependencies
+
+=over
+
+=item --with-mysql
+
+    database interface for mysql
+
+=item --with-postgresql
+
+    database interface for postgresql 
+
+=item with-oracle       
+    
+    database interface for oracle
+
+=item with-sqlite 
+
+    database interface and driver for sqlite (unsupported)
+
+=item with-fastcgi-server
+
+    libraries needed to support the external fastcgi server
+ 
+=item with-fastcgi 
+
+    libraries needed to support the fastcgi handler
+
+=item with-speedycgi
+
+    libraries needed to support the speedycgi handler
+
+=item with-modperl1
+
+    libraries needed to support the modperl 1 handler
+
+=item with-modperl2
+
+    libraries needed to support the modperl 2 handler
+
+=item with-dev
+
+    tools needed for RT development
+
+=back
+
+=back
+

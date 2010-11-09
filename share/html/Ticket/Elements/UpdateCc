@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,30 +43,40 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => '60', Default => $ARGS{UpdateCc} &>
+% $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
+
+<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc} &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
-%foreach my $addr ( keys %txn_addresses) {
-%    next if ( grep {$addr eq $_} @req_addresses );
+%if (scalar @one_time_Ccs) {
+<i class="label">(<&|/l&>check to add</&>)</i>
+%}
+%foreach my $addr ( @one_time_Ccs ) {
 <input 
 id="UpdateCc-<%$addr%>" 
 name="UpdateCc-<%$addr%>" 
     type="checkbox" 
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+% my $clean_addr = $txn_addresses{$addr}->format;
+% $clean_addr =~ s/'/\\'/g;
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 </td></tr>
-<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
-%foreach my $addr ( keys %txn_addresses) {
-%    next if ( grep {$addr eq $_} @req_addresses );
+<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc} &><br />
+%if (scalar @one_time_Ccs) {
+<i class="label">(<&|/l&>check to add</&>)</i>
+%}
+%foreach my $addr ( @one_time_Ccs ) {
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
     type="checkbox" 
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
+% my $clean_addr = $txn_addresses{$addr}->format;
+% $clean_addr =~ s/'/\\'/g;
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
@@ -77,4 +87,10 @@ $TicketObj
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses};
 my @req_addresses = split /,/, $TicketObj->RequestorAddresses;
+my @one_time_Ccs;
+
+foreach my $addr ( keys %txn_addresses) {
+  next if ( grep {$addr eq $_} @req_addresses );
+  push @one_time_Ccs,$addr;
+}
 </%init>

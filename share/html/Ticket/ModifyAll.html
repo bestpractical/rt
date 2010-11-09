@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,13 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => "Ticket/ModifyAll.html?id=".$Ticket->Id, 
-    Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
@@ -63,6 +60,7 @@
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
 
+% $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
 <br />
 
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
@@ -97,6 +95,7 @@
         <option value="response"><&|/l&>Reply to requestors</&></option>
 % }
       </select> 
+% $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
     </td>
   </tr>
   <tr>
@@ -114,27 +113,18 @@
 </td></tr>
 %    } # end if while
 % } # end of if
-% if (exists $session{'Attachments'}) {
-<tr><td><&|/l&>Attached file</&>:</td>
-<td>
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-% } # end of if
+
+<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 
   <tr>
-    <td class="label"><&|/l&>Attach</&>:</td>
-    <td class="entry"><input name="Attach" type="file" />
-    <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-    <input type="hidden" class="hidden" name="UpdateAttach" value="1" /></td>
-  </tr>
-  <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry"><& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &></td>
-  </tr>
+    <td class="entry">
+% if (exists $ARGS{UpdateContent}) {
+    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
+% } else {
+    <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+% }
+  </td></tr>
 </table>
 </&>
   
@@ -169,16 +159,15 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-# {{{ deal with deleting uploaded attachments
+# deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
         delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
-# }}}
 
-# {{{ store the uploaded attachment in session
+# store the uploaded attachment in session
 if ($ARGS{'Attach'}) {            # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
@@ -190,13 +179,11 @@ if ($ARGS{'Attach'}) {            # attachment?
         $file_path => $attachment,
     };
 }
-# }}}
 
 # delete temporary storage entry to make WebUI clean
 unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
     delete $session{'Attachments'};
 }
-# }}}
 
 
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );

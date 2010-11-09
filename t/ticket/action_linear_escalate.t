@@ -34,7 +34,7 @@ my $user = RT::Test->load_or_create_user(
 ok $user && $user->id, 'loaded or created user';
 
 $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
-my $current_user = RT::CurrentUser->new($RT::SystemUser);
+my $current_user = RT::CurrentUser->new(RT->SystemUser);
 ($id, $msg) = $current_user->Load($user->id);
 ok( $id, "Got current user? $msg" );
 
@@ -60,15 +60,12 @@ escalate_ticket_ok($ticket3);
 ok( $ticket3->LastUpdatedBy == $user->id, "Did not set LastUpdated" );
 ok( $ticket3->Transactions->Last->Type =~ /Create/i, "Did not record a transaction" );
 
-1;
-
-
 sub create_ticket_as_ok {
     my $user = shift;
 
-    my $created = RT::Date->new($RT::SystemUser);
+    my $created = RT::Date->new(RT->SystemUser);
     $created->Unix(time() - ( 7 * 24 * 60**2 ));
-    my $due = RT::Date->new($RT::SystemUser);
+    my $due = RT::Date->new(RT->SystemUser);
     $due->Unix(time() + ( 7 * 24 * 60**2 ));
 
     my $ticket = RT::Ticket->new($user);

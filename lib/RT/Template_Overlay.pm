@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
@@ -74,6 +74,7 @@ no warnings qw(redefine);
 use Text::Template;
 use MIME::Entity;
 use MIME::Parser;
+use Scalar::Util 'blessed';
 
 sub _Accessible {
     my $self = shift;
@@ -81,7 +82,7 @@ sub _Accessible {
         id            => 'read',
         Name          => 'read/write',
         Description   => 'read/write',
-        Type          => 'read/write',    #Type is one of Action or Message
+        Type          => 'read/write',    #Type is one of Perl or Simple
         Content       => 'read/write',
         Queue         => 'read/write',
         Creator       => 'read/auto',
@@ -111,14 +112,14 @@ if the user passes an ACL check, otherwise returns undef.
 sub _Value {
     my $self  = shift;
 
-    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+    unless ( $self->CurrentUserCanRead() ) {
         return undef;
     }
     return $self->__Value( @_ );
 
 }
 
-=head2 Load <identifer>
+=head2 Load <identifier>
 
 Load a template, either by number or by name.
 
@@ -205,10 +206,14 @@ sub Create {
         Content     => undef,
         Queue       => 0,
         Description => '[no description]',
-        Type        => 'Action', #By default, template are 'Action' templates
+        Type        => 'Perl',
         Name        => undef,
         @_
     );
+
+    if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System) ) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
 
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
@@ -217,7 +222,7 @@ sub Create {
         $args{'Queue'} = 0;
     }
     else {
-        my $QueueObj = new RT::Queue( $self->CurrentUser );
+        my $QueueObj = RT::Queue->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
     
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
@@ -231,6 +236,7 @@ sub Create {
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
         Name        => $args{'Name'},
+        Type        => $args{'Type'},
     );
 
     return ($result);
@@ -375,7 +381,7 @@ sub _ParseContent {
         @_
     );
 
-    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+    unless ( $self->CurrentUserCanRead() ) {
         return (undef, $self->loc("Permission Denied"));
     }
 
@@ -387,10 +393,6 @@ sub _ParseContent {
     # We need to untaint the content of the template, since we'll be working
     # with it
     $content =~ s/^(.*)$/$1/;
-    my $template = Text::Template->new(
-        TYPE   => 'STRING',
-        SOURCE => $content
-    );
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
@@ -404,28 +406,150 @@ sub _ParseContent {
         $args{'loc'} = sub { $self->loc(@_) };
     }
 
-    foreach my $key ( keys %args ) {
-        next unless ref $args{ $key };
-        next if ref $args{ $key } =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
-        my $val = $args{ $key };
-        $args{ $key } = \$val;
+    if ($self->Type eq 'Perl') {
+        return $self->_ParseContentPerl(
+            Content      => $content,
+            TemplateArgs => \%args,
+        );
+    }
+    else {
+        return $self->_ParseContentSimple(
+            Content      => $content,
+            TemplateArgs => \%args,
+        );
+    }
+}
+
+# uses Text::Template for Perl templates
+sub _ParseContentPerl {
+    my $self = shift;
+    my %args = (
+        Content      => undef,
+        TemplateArgs => {},
+        @_,
+    );
+
+    foreach my $key ( keys %{ $args{TemplateArgs} } ) {
+        my $val = $args{TemplateArgs}{ $key };
+        next unless ref $val;
+        next if ref $val =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        $args{TemplateArgs}{ $key } = \$val;
     }
 
-
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $args{Content},
+    );
     my $is_broken = 0;
     my $retval = $template->fill_in(
-        HASH => \%args,
+        HASH => $args{TemplateArgs},
         BROKEN => sub {
             my (%args) = @_;
             $RT::Logger->error("Template parsing error: $args{error}")
                 unless $args{error} =~ /^Died at /; # ignore intentional die()
             $is_broken++;
             return undef;
-        }, 
+        },
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
     return ($retval);
+}
+
+sub _ParseContentSimple {
+    my $self = shift;
+    my %args = (
+        Content      => undef,
+        TemplateArgs => {},
+        @_,
+    );
+
+    $self->_MassageSimpleTemplateArgs(%args);
+
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $args{Content},
+    );
+    my ($ok) = $template->compile;
+    return ( undef, $self->loc('Template parsing error') ) if !$ok;
+
+    # copied from Text::Template::fill_in and refactored to be simple variable
+    # interpolation
+    my $fi_r = '';
+    foreach my $fi_item (@{$template->{SOURCE}}) {
+        my ($fi_type, $fi_text, $fi_lineno) = @$fi_item;
+        if ($fi_type eq 'TEXT') {
+            $fi_r .= $fi_text;
+        } elsif ($fi_type eq 'PROG') {
+            my $fi_res;
+            my $original_fi_text = $fi_text;
+
+            # strip surrounding whitespace for simpler regexes
+            $fi_text =~ s/^\s+//;
+            $fi_text =~ s/\s+$//;
+
+            # if the codeblock is a simple $Variable lookup, use the value from
+            # the TemplateArgs hash...
+            if (my ($var) = $fi_text =~ /^\$(\w+)$/) {
+                if (exists $args{TemplateArgs}{$var}) {
+                    $fi_res = $args{TemplateArgs}{$var};
+                }
+            }
+
+            # if there was no substitution then just reinsert the codeblock
+            if (!defined $fi_res) {
+                $fi_res = "{$original_fi_text}";
+            }
+
+            # If the value of the filled-in text really was undef,
+            # change it to an explicit empty string to avoid undefined
+            # value warnings later.
+            $fi_res = '' unless defined $fi_res;
+
+            $fi_r .= $fi_res;
+        }
+    }
+
+    return $fi_r;
+}
+
+sub _MassageSimpleTemplateArgs {
+    my $self = shift;
+    my %args = (
+        TemplateArgs => {},
+        @_,
+    );
+
+    my $template_args = $args{TemplateArgs};
+
+    if (my $ticket = $template_args->{Ticket}) {
+        for my $column (qw/Id Subject Type InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved RequestorAddresses AdminCcAddresses CcAddresses/) {
+            $template_args->{"Ticket".$column} = $ticket->$column;
+        }
+
+        $template_args->{"TicketQueueId"}   = $ticket->Queue;
+        $template_args->{"TicketQueueName"} = $ticket->QueueObj->Name;
+
+        $template_args->{"TicketOwnerId"}    = $ticket->Owner;
+        $template_args->{"TicketOwnerName"}  = $ticket->OwnerObj->Name;
+        $template_args->{"TicketOwnerEmailAddress"} = $ticket->OwnerObj->EmailAddress;
+
+        my $cfs = $ticket->CustomFields;
+        while (my $cf = $cfs->Next) {
+            $template_args->{"TicketCF" . $cf->Name} = $ticket->CustomFieldValuesAsString($cf->Name);
+        }
+    }
+
+    if (my $txn = $template_args->{Transaction}) {
+        for my $column (qw/Id TimeTaken Type Field OldValue NewValue Data Content Subject Description BriefDescription/) {
+            $template_args->{"Transaction".$column} = $txn->$column;
+        }
+
+        my $cfs = $txn->CustomFields;
+        while (my $cf = $cfs->Next) {
+            $template_args->{"TransactionCF" . $cf->Name} = $txn->CustomFieldValuesAsString($cf->Name);
+        }
+    }
 }
 
 sub _DowngradeFromHTML {
@@ -442,18 +566,23 @@ sub _DowngradeFromHTML {
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
-    $new_entity->bodyhandle(MIME::Body::InCore->new(\(scalar(HTML::FormatText->new(
-        leftmargin  => 0,
-        rightmargin => 78,
-    )->format(
-        HTML::TreeBuilder->new_from_content( $new_entity->bodyhandle->as_string )
-    )))));
+    require Encode;
+    # need to decode_utf8, see the doc of MIMEObj method
+    my $tree = HTML::TreeBuilder->new_from_content(
+        Encode::decode_utf8($new_entity->bodyhandle->as_string)
+    );
+    $new_entity->bodyhandle(MIME::Body::InCore->new(
+        \(scalar HTML::FormatText->new(
+            leftmargin  => 0,
+            rightmargin => 78,
+        )->format( $tree ))
+    ));
+    $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
 
     return;
-
 }
 
 =head2 CurrentUserHasQueueRight
@@ -465,6 +594,122 @@ Helper function to call the template's queue's CurrentUserHasQueueRight with the
 sub CurrentUserHasQueueRight {
     my $self = shift;
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
+}
+
+=head2 SetType
+
+If setting Type to Perl, require the ExecuteCode right.
+
+=cut
+
+sub SetType {
+    my $self    = shift;
+    my $NewType = shift;
+
+    if ($NewType eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
+
+    return $self->_Set( Field => 'Type', Value => $NewType );
+}
+
+=head2 SetContent
+
+If changing content and the type is Perl, require the ExecuteCode right.
+
+=cut
+
+sub SetContent {
+    my $self       = shift;
+    my $NewContent = shift;
+
+    if ($self->Type eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+        return ( undef, $self->loc('Permission Denied') );
+    }
+
+    return $self->_Set( Field => 'Content', Value => $NewContent );
+}
+
+sub _UpdateAttributes {
+    my $self = shift;
+    my %args = (
+        NewValues => {},
+        @_,
+    );
+
+    my $type = $args{NewValues}{Type} || $self->Type;
+
+    # forbid updating content when the (possibly new) value of Type is Perl
+    if ($type eq 'Perl' && exists $args{NewValues}{Content}) {
+        if (!$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+            return $self->loc('Permission Denied');
+        }
+    }
+
+    return $self->SUPER::_UpdateAttributes(%args);
+}
+
+=head2 CompileCheck
+
+If the template's Type is Perl, then compile check all the codeblocks to see if
+they are syntactically valid. We eval them in a codeblock to avoid actually
+executing the code.
+
+Returns an (ok, message) pair.
+
+=cut
+
+sub CompileCheck {
+    my $self = shift;
+
+    return (1, $self->loc("Template does not include Perl code"))
+        unless $self->Type eq 'Perl';
+
+    my $content = $self->Content;
+    $content = '' if !defined($content);
+
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $content,
+    );
+    $template->compile;
+
+    # copied from Text::Template::fill_in and refactored to be compile checks
+    foreach my $fi_item (@{$template->{SOURCE}}) {
+        my ($fi_type, $fi_text, $fi_lineno) = @$fi_item;
+        next unless $fi_type eq 'PROG';
+
+        do {
+            no strict 'vars';
+            eval "sub { $fi_text }";
+        };
+        next if !$@;
+
+        my $error = $@;
+
+        # provide a (hopefully) useful line number for the error, but clean up
+        # all the other extraneous garbage
+        $error =~ s/\(eval \d+\) line (\d+).*/"template line " . ($1+$fi_lineno-1)/es;
+
+        return (0, $self->loc("Couldn't compile template codeblock '[_1]': [_2]", $fi_text, $error));
+    }
+
+    return (1, $self->loc("Template compiles"));
+}
+
+=head2 CurrentUserCanRead
+
+=cut
+
+sub CurrentUserCanRead {
+    my $self =shift;
+
+    return 1 if $self->CurrentUserHasQueueRight('ShowTemplate');
+
+    return $self->CurrentUser->HasRight( Right =>'ShowGlobalTemplates', Object => $RT::System )
+        if !$self->QueueObj->Id;
+
+    return;
 }
 
 1;

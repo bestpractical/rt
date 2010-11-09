@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
@@ -76,15 +76,6 @@ BEGIN {
 
 }
 
-#This drags in  RT's config.pm
-# We do it in a begin block because RT::Handle needs to know the type to do its
-# inheritance
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::InitClasses();
-}
-
 use Term::ReadKey;
 use Getopt::Long;
 
@@ -96,13 +87,37 @@ GetOptions(
     'action=s',
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
-    'datafile=s', 'datadir=s'
+    'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
+    'help|h',
 );
 
-unless ( $args{'action'} ) {
-    help();
-    exit(-1);
+no warnings 'once';
+if ( $args{help} || ! $args{'action'} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;
 }
+
+require RT;
+RT->LoadConfig();
+RT->InitClasses();
+
+# get customized root password
+my $root_password;
+if ( $args{'root-password-file'} ) {
+    open my $fh, '<', $args{'root-password-file'}
+      or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
+    $root_password = <$fh>;
+    chomp $root_password;
+    my $min_length = RT->Config->Get('MinimumPasswordLength');
+    if ($min_length) {
+        die
+"password needs to be at least $min_length long, please check file '$args{'root-password-file'}'"
+          if length $root_password < $min_length;
+    }
+    close $fh;
+}
+
 
 # check and setup @actions
 my @actions = grep $_, split /,/, $args{'action'};
@@ -124,7 +139,11 @@ foreach ( @actions ) {
 # convert init to multiple actions
 my $init = 0;
 if ( $actions[0] eq 'init' ) {
-    @actions = qw(create schema acl coredata insert);
+    if ($args{'skip-create'}) {
+        @actions = qw(schema coredata insert);
+    } else {
+        @actions = qw(create schema acl coredata insert);
+    }
     $init = 1;
 }
 
@@ -152,20 +171,25 @@ if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
 my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
-if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
-    $dba_pass = get_dba_password();
-    chomp $dba_pass if defined($dba_pass);
+if ($args{'skip-create'}) {
+    $dba_user = $db_user;
+    $dba_pass = $db_pass;
+} else {
+    if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
+        $dba_pass = get_dba_password();
+        chomp $dba_pass if defined($dba_pass);
+    }
 }
 
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
-    ."User:\t$db_user\nDBA:\t$dba_user\n";
+    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
 
 foreach my $action ( @actions ) {
     no strict 'refs';
     my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
     error($action, $msg) unless $status;
-    print $msg ."\n" if $msg;
+    print $msg .".\n" if $msg;
     print "Done.\n";
 }
 
@@ -213,35 +237,36 @@ sub action_acl {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting database ACLs\n";
+    print "Now inserting database ACLs.\n";
     return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
 }
 
 sub action_coredata {
     my %args = @_;
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
     RT::InitLogging();
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting RT core system objects\n";
+    print "Now inserting RT core system objects.\n";
     return $RT::Handle->InsertInitialData;
 }
 
 sub action_insert {
     my %args = @_;
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     RT::Init();
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting data\n";
+    print "Now inserting data.\n";
     my $file = $args{'datafile'};
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
-    return $RT::Handle->InsertData( $file );
+
+    return $RT::Handle->InsertData( $file, $root_password );
 }
 
 sub action_upgrade {
@@ -269,7 +294,12 @@ sub action_upgrade {
     return (1, "The version $upgrading_to you're upgrading to is up to date")
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
 
-    my @versions = get_versions_from_to($base_dir, $upgrading_from, $upgrading_to);
+    my @versions = get_versions_from_to($base_dir, $upgrading_from, undef);
+    if (RT::Handle::cmp_version($versions[-1], $upgrading_to) > 0) {
+        print "\n***** There are upgrades for $versions[-1], which is later than $upgrading_to,\n";
+        print   "***** which you are nominally upgrading to.  Upgrading to $versions[-1] instead.\n";
+        $upgrading_to = $versions[-1];
+    }
 
     return (1, "No DB changes between $upgrading_from and $upgrading_to")
         unless @versions;
@@ -344,7 +374,7 @@ sub get_versions_from_to {
     closedir $dh;
 
     return
-        grep RT::Handle::cmp_version($_, $to) <= 0,
+        grep defined $to ? RT::Handle::cmp_version($_, $to) <= 0 : 1,
         grep RT::Handle::cmp_version($_, $from) > 0,
         sort RT::Handle::cmp_version @versions;
 }
@@ -370,13 +400,10 @@ sub get_dba_password {
     return ($password);
 }
 
-=head2 get_system_dbh
+#   get_system_dbh
+#   Returns L<DBI> database handle connected to B<system> with DBA credentials.
+#   See also L<RT::Handle/SystemDSN>.
 
-Returns L<DBI> database handle connected to B<system> with DBA credentials.
-
-See also L<RT::Handle/SystemDSN>.
-
-=cut
 
 sub get_system_dbh {
     return _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
@@ -386,13 +413,11 @@ sub get_admin_dbh {
     return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
 }
 
-=head2 get_rt_dbh [USER, PASSWORD]
+# get_rt_dbh [USER, PASSWORD]
 
-Returns L<DBI> database handle connected to RT database,
-you may specify credentials(USER and PASSWORD) to connect
-with. By default connects with credentials from RT config.
-
-=cut
+# Returns L<DBI> database handle connected to RT database,
+# you may specify credentials(USER and PASSWORD) to connect
+# with. By default connects with credentials from RT config.
 
 sub get_rt_dbh {
     return _get_dbh( RT::Handle->DSN, $db_user, $db_pass );
@@ -421,54 +446,105 @@ sub _yesno {
     $x =~ /^y/i;
 }
 
-sub help {
+1;
 
-    print <<EOF;
+__END__
 
-$0: Set up RT's database
+=head1 NAME
 
---action        init     Initialize the database. This is combination of
-                         multiple actions listed below. Create DB, schema,
-                         setup acl, insert core data and initial data.
+rt-setup-database - Set up RT's database
 
-                upgrade  Apply all needed schema/acl/content updates (will ask
-                         for version to upgrade from)
+=head1 SYNOPSIS
 
-                create   Create the database.
+    rt-setup-database --action ... 
 
-                drop     Drop the database.
-                         This will ERASE ALL YOUR DATA
+=head1 OPTIONS
 
-                schema   Initialize only the database schema
-                         To use a local or supplementary datafile, specify it
-                         using the '--datadir' option below.
+=over
 
-                acl      Initialize only the database ACLs
-                         To use a local or supplementary datafile, specify it
-                         using the '--datadir' option below.
-
-                coredata Insert data into RT's database. This data is required
-                         for normal functioning of any RT instance.
-
-                insert   Insert data into RT's database.
-                         By default, will use RT's installation data.
-                         To use a local or supplementary datafile, specify it
-                         using the '--datafile' option below.
+=item action
 
 Several actions can be combined using comma separated list.
 
---datafile /path/to/datafile
---datadir /path/to/              Used to specify a path to find the local
-                                 database schema and acls to be installed.
+=over
+
+=item init
+
+    Initialize the database. This is combination of multiple actions listed 
+    below. Create DB, schema, setup acl, insert core data and initial data.
+
+=item upgrade
+
+    Apply all needed schema/acl/content updates (will ask for version to 
+    upgrade from)
+
+=item create
+
+    Create the database.
+
+=item drop
+
+    Drop the database.
+    This will ERASE ALL YOUR DATA
+
+=item schema
+
+    Initialize only the database schema
+    To use a local or supplementary datafile, specify it
+    using the '--datadir' option below.
 
 
---dba                           dba's username
---dba-password                  dba's password
---prompt-for-dba-password       Ask for the database administrator's password interactively
+=item acl
+    Initialize only the database ACLs
+    To use a local or supplementary datafile, specify it
+    using the '--datadir' option below.
+
+=item coredata 
+
+    Insert data into RT's database. This data is required
+    for normal functioning of any RT instance.
+
+=item insert
+    Insert data into RT's database.
+    By default, will use RT's installation data.
+    To use a local or supplementary datafile, specify it
+    using the '--datafile' option below.
+
+=back
 
 
-EOF
+=item datafile
 
-}
+file path of the data you want to action on
 
-1;
+e.g. --datafile /path/to/datafile
+
+=item datadir
+
+    Used to specify a path to find the local database schema and acls to be
+    installed.
+
+e.g. --datadir /path/to/
+
+=item dba
+
+    dba's username
+=item dba-password
+
+    dba's password
+
+=item prompt-for-dba-password
+
+Ask for the database administrator's password interactively
+
+=item skip-create
+
+    for 'init': skip creating the database and the user account, so we don't
+    need administrator privileges
+
+=item root-password-file
+
+    for 'init' and 'insert': rather than using the default administrative 
+    password for RT's "root" user, use the password in this file.
+
+=back

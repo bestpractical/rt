@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -65,11 +65,11 @@ package RT::Interface::Web;
 
 use RT::SavedSearches;
 use URI qw();
+use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 
-# {{{ EscapeUTF8
 
 =head2 EscapeUTF8 SCALARREF
 
@@ -90,9 +90,7 @@ sub EscapeUTF8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-# }}}
 
-# {{{ EscapeURI
 
 =head2 EscapeURI SCALARREF
 
@@ -108,9 +106,7 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
-# }}}
 
-# {{{ WebCanonicalizeInfo
 
 =head2 WebCanonicalizeInfo();
 
@@ -124,9 +120,7 @@ sub WebCanonicalizeInfo {
     return $ENV{'REMOTE_USER'} ? lc $ENV{'REMOTE_USER'} : $ENV{'REMOTE_USER'};
 }
 
-# }}}
 
-# {{{ WebExternalAutoInfo
 
 =head2 WebExternalAutoInfo($user);
 
@@ -163,7 +157,6 @@ sub WebExternalAutoInfo {
     return {%user_info};
 }
 
-# }}}
 
 sub HandleRequest {
     my $ARGS = shift;
@@ -173,7 +166,7 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 
     # Roll back any dangling transactions from a previous failed connection
-    $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+    $RT::Handle->ForceRollback() if $RT::Handle and $RT::Handle->TransactionDepth;
 
     MaybeEnableSQLStatementLog();
 
@@ -192,9 +185,12 @@ sub HandleRequest {
     SendSessionCookie();
     $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
 
+    # Process session-related callbacks before any auth attempts
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
+
     MaybeShowNoAuthPage($ARGS);
 
-    AttemptExternalAuth($ARGS) unless _UserLoggedIn();
+    AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
 
     _ForceLogout() unless _UserLoggedIn();
 
@@ -222,7 +218,12 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
     ShowRequestedPage($ARGS);
-    LogRecordedSQLStatements();
+    LogRecordedSQLStatements(RequestData => {
+        Path => $HTML::Mason::Commands::m->request_comp->path,
+    });
+
+    # Process per-page final cleanup callbacks
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 }
 
 sub _ForceLogout {
@@ -284,6 +285,14 @@ sub MaybeShowNoAuthPage {
     $m->abort;
 }
 
+sub InitializeMenu {
+    $HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
+    $HTML::Mason::Commands::m->notes('page-menu', RT::Interface::Web::Menu->new());
+    $HTML::Mason::Commands::m->notes('page-widgets', RT::Interface::Web::Menu->new());
+
+}
+
+
 =head2 ShowRequestedPage  \%ARGS
 
 This function, called exclusively by RT's autohandler, dispatches
@@ -296,6 +305,8 @@ sub ShowRequestedPage {
     my $ARGS = shift;
 
     my $m = $HTML::Mason::Commands::m;
+
+    InitializeMenu();
 
     SendSessionCookie();
 
@@ -344,14 +355,14 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
-        InstantiateNewSession();
+        InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
 
         if ( RT->Config->Get('WebExternalAuto') and not _UserLoggedIn() ) {
 
             # Create users on-the-fly
-            my $UserObj = RT::User->new($RT::SystemUser);
+            my $UserObj = RT::User->new(RT->SystemUser);
             my ( $val, $msg ) = $UserObj->Create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
                 Name  => $user,
@@ -364,7 +375,7 @@ sub AttemptExternalAuth {
                 my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
 
                 # set the attributes that have been defined.
-                foreach my $attribute ( $user->WritableAttributes ) {
+                foreach my $attribute ( $UserObj->WritableAttributes ) {
                     $m->callback(
                         Attribute    => $attribute,
                         User         => $user,
@@ -380,7 +391,7 @@ sub AttemptExternalAuth {
 
                 # we failed to successfully create the user. abort abort abort.
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
-                $m->comp( '/Elements/Login', %$ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) )
+                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc( 'Cannot create user: [_1]', $msg ) )
                     if RT->Config->Get('WebFallbackToInternalAuth');;
                 $m->abort();
             }
@@ -393,14 +404,14 @@ sub AttemptExternalAuth {
             $user = $orig_user;
 
             if ( RT->Config->Get('WebExternalOnly') ) {
-                $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
                 $m->abort();
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+            $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
             $m->abort();
         }
     } else {
@@ -422,7 +433,7 @@ sub AttemptPasswordAuthentication {
 
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
-        $m->comp( '/Elements/Login', %$ARGS, Error => loc('Your username or password is incorrect'), );
+        $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('Your username or password is incorrect'), );
         $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
         $m->abort;
     }
@@ -480,7 +491,7 @@ sub SendSessionCookie {
         -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
     );
 
-    $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
 =head2 Redirect URL
@@ -513,7 +524,7 @@ sub Redirect {
         }
 
         # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
-        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} );
+        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'});
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
@@ -538,7 +549,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
 
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
@@ -552,6 +563,58 @@ sub StaticFileHeaders {
     # Last modified at server start time
     # $date->Set( Value => $^T );
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+}
+
+=head2 PathIsSafe
+
+Takes a C<< Path => path >> and returns a boolean indicating that
+the path is safely within RT's control or not. The path I<must> be
+relative.
+
+This function does not consult the filesystem at all; it is merely
+a logical sanity checking of the path. This explicitly does not handle
+symlinks; if you have symlinks in RT's webroot pointing outside of it,
+then we assume you know what you are doing.
+
+=cut
+
+sub PathIsSafe {
+    my $self = shift;
+    my %args = @_;
+    my $path = $args{Path};
+
+    # Get File::Spec to clean up extra /s, ./, etc
+    my $cleaned_up = File::Spec->canonpath($path);
+
+    if (!defined($cleaned_up)) {
+        $RT::Logger->info("Rejecting path that canonpath doesn't understand: $path");
+        return 0;
+    }
+
+    # Forbid too many ..s. We can't just sum then check because
+    # "../foo/bar/baz" should be illegal even though it has more
+    # downdirs than updirs. So as soon as we get a negative score
+    # (which means "breaking out" of the top level) we reject the path.
+
+    my @components = split '/', $cleaned_up;
+    my $score = 0;
+    for my $component (@components) {
+        if ($component eq '..') {
+            $score--;
+            if ($score < 0) {
+                $RT::Logger->info("Rejecting unsafe path: $path");
+                return 0;
+            }
+        }
+        elsif ($component eq '.' || $component eq '') {
+            # these two have no effect on $score
+        }
+        else {
+            $score++;
+        }
+    }
+
+    return 1;
 }
 
 =head2 SendStaticFile 
@@ -571,6 +634,12 @@ sub SendStaticFile {
     my %args = @_;
     my $file = $args{File};
     my $type = $args{Type};
+    my $relfile = $args{RelativeFile};
+
+    if (defined($relfile) && !$self->PathIsSafe(Path => $relfile)) {
+        $HTML::Mason::Commands::r->status(400);
+        $HTML::Mason::Commands::m->abort;
+    }
 
     $self->StaticFileHeaders();
 
@@ -592,40 +661,63 @@ sub SendStaticFile {
     close $fh;
 }
 
+
+
+sub MobileClient {
+    my $self = shift;
+
+
+if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
+    return 1;
+} else {
+    return undef;
+}
+
+}
+
+
 sub StripContent {
     my %args    = @_;
     my $content = $args{Content};
-    my $html    = ( ( $args{ContentType} || '' ) eq "text/html" );
-    my $sigonly = $args{StripSignature};
-
-    # Save us from undef warnings
-    return '' unless defined $content;
+    return '' unless $content;
 
     # Make the content have no 'weird' newlines in it
     $content =~ s/\r+\n/\n/g;
 
+    my $return_content = $content;
+
+    my $html = $args{ContentType} && $args{ContentType} eq "text/html";
+    my $sigonly = $args{StripSignature};
+
+    # massage content to easily detect if there's any real content
+    $content =~ s/\s+//g; # yes! remove all the spaces
+    if ( $html ) {
+        # remove html version of spaces and newlines
+        $content =~ s!&nbsp;!!g;
+        $content =~ s!<br/?>!!g;
+    }
+
     # Filter empty content when type is text/html
-    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+    return '' if $html && $content !~ /\S/;
 
     # If we aren't supposed to strip the sig, just bail now.
-    return $content unless $sigonly;
+    return $return_content unless $sigonly;
 
     # Find the signature
     my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
-    $sig =~ s/^\s+//;
-    $sig =~ s/\s+$//;
+    $sig =~ s/\s+//g;
 
     # Check for plaintext sig
-    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+    return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
     # Check for html-formatted sig
     RT::Interface::Web::EscapeUTF8( \$sig );
     return ''
-        if $html
-            and $content =~ m{^\s*(?:<p>)?\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*(?:</p>)?\s*$}s;
+      if $html
+          and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
 
     # Pass it through
-    return $content;
+    return $return_content;
 }
 
 sub DecodeARGS {
@@ -690,12 +782,20 @@ sub MaybeEnableSQLStatementLog {
 }
 
 sub LogRecordedSQLStatements {
+    my %args = @_;
+
     my $log_sql_statements = RT->Config->Get('StatementLog');
 
     return unless ($log_sql_statements);
 
     my @log = $RT::Handle->SQLStatementLog;
     $RT::Handle->ClearSQLStatementLog;
+
+    $RT::Handle->AddRequestToHistory({
+        %{ $args{RequestData} },
+        Queries => \@log,
+    });
+
     for my $stmt (@log) {
         my ( $time, $sql, $bind, $duration ) = @{$stmt};
         my @bind;
@@ -721,7 +821,19 @@ package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
 
-# {{{ loc
+sub Menu {
+    return $HTML::Mason::Commands::m->notes('menu');
+}
+
+sub PageMenu {
+    return $HTML::Mason::Commands::m->notes('page-menu');
+}
+
+sub PageWidgets {
+    return $HTML::Mason::Commands::m->notes('page-widgets');
+}
+
+
 
 =head2 loc ARRAY
 
@@ -752,9 +864,7 @@ sub loc {
     }
 }
 
-# }}}
 
-# {{{ loc_fuzzy
 
 =head2 loc_fuzzy STRING
 
@@ -774,14 +884,12 @@ sub loc_fuzzy {
     {
         return ( $session{'CurrentUser'}->loc_fuzzy($msg) );
     } else {
-        my $u = RT::CurrentUser->new( $RT::SystemUser->Id );
+        my $u = RT::CurrentUser->new( RT->SystemUser->Id );
         return ( $u->loc_fuzzy($msg) );
     }
 }
 
-# }}}
 
-# {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
     my $why  = shift;
@@ -799,9 +907,7 @@ sub Abort {
     }
 }
 
-# }}}
 
-# {{{ sub CreateTicket
 
 =head2 CreateTicket ARGS
 
@@ -814,9 +920,9 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+    my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -827,12 +933,12 @@ sub CreateTicket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( $session{'CurrentUser'} );
+        $due = RT::Date->new( $session{'CurrentUser'} );
         $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( $session{'CurrentUser'} );
+        $starts = RT::Date->new( $session{'CurrentUser'} );
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 
@@ -866,7 +972,9 @@ sub CreateTicket {
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add( "X-RT-$argument" => $ARGS{$argument} ) if defined $ARGS{$argument};
+        $MIMEObj->head->add(
+            "X-RT-$argument" => Encode::encode_utf8( $ARGS{$argument} )
+        ) if defined $ARGS{$argument};
     }
 
     my %create_args = (
@@ -890,17 +998,13 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
 
-    my @temp_squelch;
+    my @txn_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @temp_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
+        push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
             if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
-
     }
-
-    if (@temp_squelch) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
-    }
+    $create_args{TransSquelchMailTo} = \@txn_squelch
+        if @txn_squelch;
 
     if ( $ARGS{'AttachTickets'} ) {
         require RT::Action::SendEmail;
@@ -984,9 +1088,7 @@ sub CreateTicket {
 
 }
 
-# }}}
 
-# {{{ sub LoadTicket - loads a ticket
 
 =head2  LoadTicket id
 
@@ -1016,9 +1118,7 @@ sub LoadTicket {
     return $Ticket;
 }
 
-# }}}
 
-# {{{ sub ProcessUpdateMessage
 
 =head2 ProcessUpdateMessage
 
@@ -1076,7 +1176,9 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'}, ) );
+    $Message->head->add( 'Message-ID' => Encode::encode_utf8(
+        RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
+    ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
@@ -1104,31 +1206,17 @@ sub ProcessUpdateMessage {
             : ( $args{ARGSRef}->{'AttachTickets'} ) );
     }
 
-    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
-    my $cc  = $args{ARGSRef}->{'UpdateCc'};
-
     my %message_args = (
-        CcMessageTo  => $cc,
-        BccMessageTo => $bcc,
         Sign         => $args{ARGSRef}->{'Sign'},
         Encrypt      => $args{ARGSRef}->{'Encrypt'},
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
 
-    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
-        foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
-
-            my $var   = ucfirst($1) . 'MessageTo';
-            my $value = $2;
-            if ( $message_args{$var} ) {
-                $message_args{$var} .= ", $value";
-            } else {
-                $message_args{$var} = $value;
-            }
-        }
-    }
+    _ProcessUpdateMessageRecipients(
+        MessageArgs => \%message_args,
+        %args,
+    );
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
@@ -1146,9 +1234,55 @@ sub ProcessUpdateMessage {
     return @results;
 }
 
-# }}}
+sub _ProcessUpdateMessageRecipients {
+    my %args = (
+        ARGSRef           => undef,
+        TicketObj         => undef,
+        MessageArgs       => undef,
+        @_,
+    );
 
-# {{{ sub MakeMIMEEntity
+    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
+    my $cc  = $args{ARGSRef}->{'UpdateCc'};
+
+    my $message_args = $args{MessageArgs};
+
+    $message_args->{CcMessageTo} = $cc;
+    $message_args->{BccMessageTo} = $bcc;
+
+    my @txn_squelch;
+    foreach my $type (qw(Cc AdminCc)) {
+        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
+            push @txn_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
+            push @txn_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
+        }
+    }
+    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+        push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
+        push @txn_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
+    }
+
+    push @txn_squelch, @{$args{ARGSRef}{SquelchMailTo}} if $args{ARGSRef}{SquelchMailTo};
+    $message_args->{SquelchMailTo} = \@txn_squelch
+        if @txn_squelch;
+
+    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+        foreach my $key ( keys %{ $args{ARGSRef} } ) {
+            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
+
+            my $var   = ucfirst($1) . 'MessageTo';
+            my $value = $2;
+            if ( $message_args->{$var} ) {
+                $message_args->{$var} .= ", $value";
+            } else {
+                $message_args->{$var} = $value;
+            }
+        }
+    }
+}
+
+
 
 =head2 MakeMIMEEntity PARAMHASH
 
@@ -1174,9 +1308,9 @@ sub MakeMIMEEntity {
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        Subject => $args{'Subject'} || "",
-        From    => $args{'From'},
-        Cc      => $args{'Cc'},
+        "Message-Id" => RT::Interface::Email::GenMessageId,
+        map { $_ => Encode::encode_utf8( $args{ $_} ) }
+            grep defined $args{$_}, qw(Subject From Cc)
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
@@ -1184,12 +1318,8 @@ sub MakeMIMEEntity {
         # Make the update content have no 'weird' newlines in it
         $args{'Body'} =~ s/\r\n/\n/gs;
 
-        # MIME::Head is not happy in utf-8 domain.  This only happens
-        # when processing an incoming email (so far observed).
-        no utf8;
-        use bytes;
         $Message->attach(
-            Type => $args{'Type'} || 'text/plain',
+            Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -1210,8 +1340,8 @@ sub MakeMIMEEntity {
 
             # Prefer the cached name first over CGI.pm stringification.
             my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined($filename);
-            $filename = Encode::decode_utf8($filename);
+            $filename = "$filehandle" unless defined $filename;
+            $filename = Encode::encode_utf8( $filename );
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
@@ -1226,15 +1356,14 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart;
+
     RT::I18N::SetMIMEEntityToUTF8($Message);    # convert text parts into utf-8
 
     return ($Message);
 
 }
 
-# }}}
 
-# {{{ sub ParseDateToISO
 
 =head2 ParseDateToISO
 
@@ -1254,9 +1383,7 @@ sub ParseDateToISO {
     return ( $date_obj->ISO );
 }
 
-# }}}
 
-# {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
     my $ARGSref = shift;
@@ -1307,9 +1434,133 @@ sub ProcessACLChanges {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub UpdateRecordObj
+=head2 ProcessACLs
+
+ProcessACLs expects values from a series of checkboxes that describe the full
+set of rights a principal should have on an object.
+
+It expects form inputs with names like SetRights-PrincipalId-ObjType-ObjId
+instead of with the prefixes Grant/RevokeRight.  Each input should be an array
+listing the rights the principal should have, and ProcessACLs will modify the
+current rights to match.  Additionally, the previously unused CheckACL input
+listing PrincipalId-ObjType-ObjId is now used to catch cases when all the
+rights are removed from a principal and as such no SetRights input is
+submitted.
+
+=cut
+
+sub ProcessACLs {
+    my $ARGSref = shift;
+    my (%state, @results);
+
+    my $CheckACL = $ARGSref->{'CheckACL'};
+    my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
+
+    # Check if we want to grant rights to a previously rights-less user
+    for my $type (qw(user group)) {
+        my $key = "AddPrincipalForRights-$type";
+
+        next unless $ARGSref->{$key};
+
+        my $principal;
+        if ( $type eq 'user' ) {
+            $principal = RT::User->new( $session{'CurrentUser'} );
+            $principal->Load( $ARGSref->{$key} );
+        }
+        else {
+            $principal = RT::Group->new( $session{'CurrentUser'} );
+            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+        }
+
+        unless ($principal->PrincipalId) {
+            push @results, loc("Couldn't load the specified principal");
+            next;
+        }
+
+        my $principal_id = $principal->PrincipalId;
+
+        # Turn our addprincipal rights spec into a real one
+        for my $arg (keys %$ARGSref) {
+            next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
+            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
+            push @check, "$principal_id-$1";
+        }
+    }
+
+    # Build our rights state for each Principal-Object tuple
+    foreach my $arg ( keys %$ARGSref ) {
+        next unless $arg =~ /^SetRights-(\d+-.+?-\d+)$/;
+
+        my $tuple  = $1;
+        my $value  = $ARGSref->{$arg};
+        my @rights = grep { $_ } (ref $value eq 'ARRAY' ? @$value : $value);
+        next unless @rights;
+
+        $state{$tuple} = { map { $_ => 1 } @rights };
+    }
+
+    foreach my $tuple (@check) {
+        next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
+
+        my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
+
+        my $principal = RT::Principal->new( $session{'CurrentUser'} );
+        $principal->Load($principal_id);
+
+        my $obj;
+        if ( $object_type eq 'RT::System' ) {
+            $obj = $RT::System;
+        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+            $obj = $object_type->new( $session{'CurrentUser'} );
+            $obj->Load($object_id);
+            unless ( $obj->id ) {
+                $RT::Logger->error("couldn't load $object_type #$object_id");
+                next;
+            }
+        } else {
+            $RT::Logger->error("object type '$object_type' is incorrect");
+            push( @results, loc("System Error") . ': ' . loc( "Rights could not be granted for [_1]", $object_type ) );
+            next;
+        }
+
+        my $acls = RT::ACL->new($session{'CurrentUser'});
+        $acls->LimitToObject( $obj );
+        $acls->LimitToPrincipal( Id => $principal_id );
+
+        while ( my $ace = $acls->Next ) {
+            my $right = $ace->RightName;
+
+            # Has right and should have right
+            next if delete $state{$tuple}->{$right};
+
+            # Has right and shouldn't have right
+            my ($val, $msg) = $principal->RevokeRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # For everything left, they don't have the right but they should
+        for my $right (keys %{ $state{$tuple} || {} }) {
+            delete $state{$tuple}->{$right};
+            my ($val, $msg) = $principal->GrantRight( Object => $obj, Right => $right );
+            push @results, $msg;
+        }
+
+        # Check our state for leftovers
+        if ( keys %{ $state{$tuple} || {} } ) {
+            my $missed = join '|', %{$state{$tuple} || {}};
+            $RT::Logger->warn(
+               "Uh-oh, it looks like we somehow missed a right in "
+              ."ProcessACLs.  Here's what was leftover: $missed"
+            );
+        }
+    }
+
+    return (@results);
+}
+
+
+
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
 
@@ -1338,9 +1589,7 @@ sub UpdateRecordObject {
     return (@results);
 }
 
-# }}}
 
-# {{{ Sub ProcessCustomFieldUpdates
 
 sub ProcessCustomFieldUpdates {
     my %args = (
@@ -1393,9 +1642,7 @@ sub ProcessCustomFieldUpdates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketBasics
 
 =head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1414,7 +1661,9 @@ sub ProcessTicketBasics {
     my $TicketObj = $args{'TicketObj'};
     my $ARGSRef   = $args{'ARGSRef'};
 
-    # {{{ Set basic fields
+    my $OrigOwner = $TicketObj->Owner;
+
+    # Set basic fields
     my @attribs = qw(
         Subject
         FinalPriority
@@ -1427,11 +1676,15 @@ sub ProcessTicketBasics {
         Queue
     );
 
-    if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Queue->new($RT::SystemUser);
-        $tempqueue->Load( $ARGSRef->{'Queue'} );
-        if ( $tempqueue->id ) {
-            $ARGSRef->{'Queue'} = $tempqueue->id;
+    # Canonicalize Queue and Owner to their IDs if they aren't numeric
+    for my $field (qw(Queue Owner)) {
+        if ( $ARGSRef->{$field} and ( $ARGSRef->{$field} !~ /^(\d+)$/ ) ) {
+            my $class = $field eq 'Owner' ? "RT::User" : "RT::$field";
+            my $temp = $class->new(RT->SystemUser);
+            $temp->Load( $ARGSRef->{$field} );
+            if ( $temp->id ) {
+                $ARGSRef->{$field} = $temp->id;
+            }
         }
     }
 
@@ -1446,7 +1699,7 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $TicketObj->Owner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
@@ -1463,7 +1716,6 @@ sub ProcessTicketBasics {
     return (@results);
 }
 
-# }}}
 
 sub ProcessTicketCustomFieldUpdates {
     my %args = @_;
@@ -1535,7 +1787,7 @@ sub ProcessObjectCustomFieldUpdates {
 sub _ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $cf      = $args{'CustomField'};
-    my $cf_type = $cf->Type;
+    my $cf_type = $cf->Type || '';
 
     # Remove blank Values since the magic field will take care of this. Sometimes
     # the browser gives you a blank value which causes CFs to be processed twice
@@ -1630,6 +1882,9 @@ sub _ProcessObjectCustomFieldUpdates {
                 $values_hash{$val} = 1 if $val;
             }
 
+            # For Date Cfs, @values is empty when there is no changes (no datas in form input)
+            return @results if ( $cf->Type =~ /^Date(?:Time)?$/ && ! @values );
+
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {
                 next if $values_hash{ $cf_value->id };
@@ -1676,7 +1931,6 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
-# {{{ sub ProcessTicketWatchers
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1758,9 +2012,7 @@ sub ProcessTicketWatchers {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketDates
 
 =head2 ProcessTicketDates ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1780,7 +2032,7 @@ sub ProcessTicketDates {
 
     my (@results);
 
-    # {{{ Set date fields
+    # Set date fields
     my @date_fields = qw(
         Told
         Resolved
@@ -1816,9 +2068,7 @@ sub ProcessTicketDates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub ProcessTicketLinks
 
 =head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -1848,7 +2098,6 @@ sub ProcessTicketLinks {
     return (@results);
 }
 
-# }}}
 
 sub ProcessRecordLinks {
     my %args = (
@@ -1982,6 +2231,89 @@ sub ProcessColumnMapValue {
     return $value;
 }
 
+=head2 GetPrincipalsMap OBJECT, CATEGORIES
+
+Returns an array suitable for passing to /Admin/Elements/EditRights with the
+principal collections mapped from the categories given.
+
+=cut
+
+sub GetPrincipalsMap {
+    my $object = shift;
+    my @map;
+    for (@_) {
+        if (/System/) {
+            my $system = RT::Groups->new($session{'CurrentUser'});
+            $system->LimitToSystemInternalGroups();
+            $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            push @map, ['System' => $system => 'Type' => 1];
+        }
+        elsif (/Groups/) {
+            my $groups = RT::Groups->new($session{'CurrentUser'});
+            $groups->LimitToUserDefinedGroups();
+            $groups->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show groups who have rights granted on this object
+            $groups->WithGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
+            );
+
+            push @map, ['User Groups' => $groups => 'Name' => 0];
+        }
+        elsif (/Roles/) {
+            my $roles = RT::Groups->new($session{'CurrentUser'});
+
+            if ($object->isa('RT::System')) {
+                $roles->LimitToRolesForSystem();
+            }
+            elsif ($object->isa('RT::Queue')) {
+                $roles->LimitToRolesForQueue($object->Id);
+            }
+            else {
+                $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
+                next;
+            }
+            $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            push @map, ['Roles' => $roles => 'Type' => 1];
+        }
+        elsif (/Users/) {
+            my $Privileged = RT::Group->new($session{'CurrentUser'});
+            $Privileged->LoadSystemInternalGroup('Privileged');
+            my $Users = $Privileged->UserMembersObj();
+            $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+            # Only show users who have rights granted on this object
+            my $group_members = $Users->WhoHaveGroupRight(
+                Right   => '',
+                Object  => $object,
+                IncludeSystemRights => 0,
+                IncludeSubgroupMembers => 0,
+            );
+
+            # Limit to UserEquiv groups
+            my $groups = $Users->NewAlias('Groups');
+            $Users->Join(
+                ALIAS1 => $groups,
+                FIELD1 => 'id',
+                ALIAS2 => $group_members,
+                FIELD2 => 'GroupId'
+            );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
+
+
+            my $display = sub {
+                $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
+            };
+            push @map, ['Users' => $Users => $display => 0];
+        }
+    }
+    return @map;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.
@@ -2013,9 +2345,6 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-eval "require RT::Interface::Web_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm} );
-eval "require RT::Interface::Web_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;

@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
@@ -111,23 +111,14 @@ BEGIN {
 
 }
 
-use RT;
-RT::LoadConfig;
-RT::Init;
-
-require RT::Principal;
-require RT::User;
-require RT::Group;
-require RT::ScripActions;
-
 use Getopt::Long qw(GetOptions);
+Getopt::Long::Configure( "pass_through" );
 
 our $cmd = 'usage';
 our $opts = {};
 
 sub parse_args {
     my $tmp;
-    Getopt::Long::Configure( "pass_through" );
     if ( GetOptions( 'list' => \$tmp ) && $tmp ) {
         $cmd = 'list';
     }
@@ -180,17 +171,27 @@ sub parse_args {
 }
 
 sub usage {
-    local $@;
-    eval "require Pod::PlainText;";
-    if ( $@ ) {
-        print "see `perldoc $0`\n";
-    } else {
-        my $parser = Pod::PlainText->new( sentence => 0, width => 78 );
-        $parser->parse_from_file( $0 );
-    }
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+}
+
+my $help;
+if ( GetOptions( 'help|h' => \$help ) && $help ) {
+    usage();
+    exit;
 }
 
 parse_args();
+
+require RT;
+RT->LoadConfig;
+RT->Init;
+
+require RT::Principal;
+require RT::User;
+require RT::Group;
+require RT::ScripActions;
+
 
 {
     eval "main::$cmd()";
@@ -231,7 +232,7 @@ sub _list {
 
     print "Members: \n";
     foreach( @princ ) {
-        my $obj = RT::Principal->new( $RT::SystemUser );
+        my $obj = RT::Principal->new( RT->SystemUser );
         $obj->Load( $_ );
         next unless $obj->id;
 
@@ -252,7 +253,7 @@ recipient list. Would be notify as comment if --comment specified.
 =cut
 
 sub create {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit(
         FIELD => 'Name',
         VALUE => $opts->{'name'},
@@ -281,7 +282,7 @@ sub __create_empty {
     my $name = shift;
     my $as_comment = shift || 0;
     require RT::ScripAction;
-    my $action = RT::ScripAction->new( $RT::SystemUser );
+    my $action = RT::ScripAction->new( RT->SystemUser );
     $action->Create(
         Name => $name,
         Description => "Created with rt-email-group-admin script",
@@ -302,7 +303,7 @@ sub __check_group
 {
     my $instance = shift;
     require RT::Group;
-    my $obj = RT::Group->new( $RT::SystemUser );
+    my $obj = RT::Group->new( RT->SystemUser );
     $obj->LoadUserDefinedGroup( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -317,7 +318,7 @@ sub __check_user
 {
     my $instance = shift;
     require RT::User;
-    my $obj = RT::User->new( $RT::SystemUser );
+    my $obj = RT::User->new( RT->SystemUser );
     $obj->Load( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -378,7 +379,7 @@ sub delete {
     }
 
     require RT::Scrips;
-    my $scrips = RT::Scrips->new( $RT::SystemUser );
+    my $scrips = RT::Scrips->new( RT->SystemUser );
     $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
     if ( $scrips->Count ) {
         my @sid;
@@ -451,7 +452,7 @@ sub rename {
         exit(-1);
     }
 
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit( FIELD => 'Name', VALUE => $opts->{'newname'} );
     if ( $actions->Count ) {
         print STDERR "ScripAction '". $opts->{'newname'} ."' allready exists\n";
@@ -482,7 +483,7 @@ sub argument_to_list {
 }
 
 sub _get_our_actions {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->SystemUser );
     $actions->Limit(
         FIELD => 'ExecModule',
         VALUE => 'NotifyGroup',

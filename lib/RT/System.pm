@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME 
@@ -77,27 +77,33 @@ use RT::ACL;
 # XXX TODO Can't localize these outside of having an object around.
 our $RIGHTS = {
     SuperUser              => 'Do anything and everything',           # loc_pair
-    AdminAllPersonalGroups =>
-      "Create, delete and modify the members of any user's personal groups", # loc_pair
-    AdminOwnPersonalGroups =>
-      'Create, delete and modify the members of personal groups',     # loc_pair
-    AdminUsers     => 'Create, delete and modify users',              # loc_pair
+    AdminUsers     => 'Create, modify and delete users',              # loc_pair
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
-    DelegateRights =>
-      "Delegate specific rights which have been granted to you.",     # loc_pair
-    ShowConfigTab => "show Configuration tab",     # loc_pair
-    ShowApprovalsTab => "show Approvals tab",     # loc_pair
-    LoadSavedSearch => "allow loading of saved searches",     # loc_pair
-    CreateSavedSearch => "allow creation of saved searches",      # loc_pair
+    ShowConfigTab => "Show Configuration tab",     # loc_pair
+    ShowApprovalsTab => "Show Approvals tab",     # loc_pair
+    ShowGlobalTemplates => "Show global templates",     # loc_pair
+    LoadSavedSearch => "Allow loading of saved searches",     # loc_pair
+    CreateSavedSearch => "Allow creation of saved searches",      # loc_pair
+    ExecuteCode => "Allow writing Perl code in templates, scrips, etc", # loc_pair
+};
+
+our $RIGHT_CATEGORIES = {
+    SuperUser              => 'Admin',
+    AdminUsers             => 'Admin',
+    ModifySelf             => 'Staff',
+    ShowConfigTab          => 'Admin',
+    ShowApprovalsTab       => 'Admin',
+    ShowGlobalTemplates    => 'Staff',
+    LoadSavedSearch        => 'General',
+    CreateSavedSearch      => 'General',
+    ExecuteCode            => 'Admin',
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-
+__PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AvailableRights
 
@@ -118,9 +124,9 @@ use RT::Group;
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Queue->new($RT::SystemUser);
-    my $group = RT::Group->new($RT::SystemUser);
-    my $cf    = RT::CustomField->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
+    my $group = RT::Group->new(RT->SystemUser);
+    my $cf    = RT::CustomField->new(RT->SystemUser);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
@@ -128,6 +134,30 @@ sub AvailableRights {
 
     # Build a merged list of all system wide rights, queue rights and group rights.
     my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});
+
+    return(\%rights);
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    my $self = shift;
+
+    my $queue = RT::Queue->new(RT->SystemUser);
+    my $group = RT::Group->new(RT->SystemUser);
+    my $cf    = RT::CustomField->new(RT->SystemUser);
+
+    my $qr = $queue->RightCategories();
+    my $gr = $group->RightCategories();
+    my $cr = $cf->RightCategories();
+
+    # Build a merged list of all system wide rights, queue rights and group rights.
+    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr});
 
     return(\%rights);
 }
@@ -145,6 +175,19 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 sub _Init {
@@ -189,9 +232,28 @@ sub SubjectTag {
     return grep !$seen{lc $_}++, values %$map;
 }
 
-eval "require RT::System_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Vendor.pm});
-eval "require RT::System_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Local.pm});
+=head2 QueueCacheNeedsUpdate ( 1 )
+
+Attribute to decide when SelectQueue needs to flush the list of queues
+and retrieve new ones.  Set when queues are created, enabled/disabled
+and on certain acl changes.  Should also better understand group management.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
+sub QueueCacheNeedsUpdate {
+    my $self = shift;
+    my $update = shift;
+
+    if ($update) {
+        return $self->SetAttribute(Name => 'QueueCacheNeedsUpdate', Content => time);
+    } else {
+        my $cache = $self->FirstAttribute('QueueCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0 );
+    }
+}
+
+RT::Base->_ImportOverlays();
 
 1;

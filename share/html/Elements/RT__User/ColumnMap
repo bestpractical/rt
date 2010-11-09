@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Name
@@ -59,78 +59,88 @@ my $COLUMN_MAP = {
     },
     Name => {
         title     => 'Name', # loc
-	attribute => 'Name',
-	value     => sub { return $_[0]->Name() },
+        attribute => 'Name',
+        value     => sub { return $_[0]->Name() },
     },
     RealName => {
-        title     => 'RealName', # loc
-	attribute => 'RealName',
-	value     => sub { return $_[0]->RealName() },
+        title     => 'Real Name', # loc
+        attribute => 'RealName',
+        value     => sub { return $_[0]->RealName() },
     },
     NickName => {
-        title     => 'NickName', # loc
-	attribute => 'NickName',
-	value     => sub { return $_[0]->NickName() },
+        title     => 'Nickname', # loc
+        attribute => 'NickName',
+        value     => sub { return $_[0]->NickName() },
     },
     EmailAddress => {
-        title     => 'EmailAddress', # loc
-	attribute => 'EmailAddress',
-	value     => sub { return $_[0]->EmailAddress() },
+        title     => 'Email Address', # loc
+        attribute => 'EmailAddress',
+        value     => sub { return $_[0]->EmailAddress() },
     },
     Organization => {
         title     => 'Organization', # loc
-	attribute => 'Organization',
-	value     => sub { return $_[0]->Organization() },
+        attribute => 'Organization',
+        value     => sub { return $_[0]->Organization() },
     },
     HomePhone => {
-        title     => 'HomePhone', # loc
-	attribute => 'HomePhone',
-	value     => sub { return $_[0]->HomePhone() },
+        title     => 'Home Phone', # loc
+        attribute => 'HomePhone',
+        value     => sub { return $_[0]->HomePhone() },
     },
     WorkPhone => {
-        title     => 'WorkPhone', # loc
-	attribute => 'WorkPhone',
-	value     => sub { return $_[0]->WorkPhone() },
+        title     => 'Work Phone', # loc
+        attribute => 'WorkPhone',
+        value     => sub { return $_[0]->WorkPhone() },
     },
     MobilePhone => {
-        title     => 'MobilePhone', # loc
-	attribute => 'MobilePhone',
-	value     => sub { return $_[0]->MobilePhone() },
+        title     => 'Mobile Phone', # loc
+        attribute => 'MobilePhone',
+        value     => sub { return $_[0]->MobilePhone() },
     },
     PagerPhone => {
-        title     => 'PagerPhone', # loc
-	attribute => 'PagerPhone',
-	value     => sub { return $_[0]->PagerPhone() },
+        title     => 'Pager Phone', # loc
+        attribute => 'PagerPhone',
+        value     => sub { return $_[0]->PagerPhone() },
     },
     Address1 => {
-        title     => 'Address1', # loc
-	attribute => 'Address1',
-	value     => sub { return $_[0]->Address1() },
+        title     => 'Address', # loc
+        attribute => 'Address1',
+        value     => sub { return $_[0]->Address1() },
     },
     Address2 => {
-        title     => 'Address2', # loc
-	attribute => 'Address2',
-	value     => sub { return $_[0]->Address2() },
+        title     => 'Address 2', # loc
+        attribute => 'Address2',
+        value     => sub { return $_[0]->Address2() },
     },
     City => {
         title     => 'City', # loc
-	attribute => 'City',
-	value     => sub { return $_[0]->City() },
+        attribute => 'City',
+        value     => sub { return $_[0]->City() },
     },
     State => {
         title     => 'State', # loc
-	attribute => 'State',
-	value     => sub { return $_[0]->State() },
+        attribute => 'State',
+        value     => sub { return $_[0]->State() },
     },
     Zip => {
         title     => 'Zip', # loc
-	attribute => 'Zip',
-	value     => sub { return $_[0]->Zip() },
+        attribute => 'Zip',
+        value     => sub { return $_[0]->Zip() },
     },
     Country => {
         title     => 'Country', # loc
-	attribute => 'Country',
-	value     => sub { return $_[0]->Country() },
+        attribute => 'Country',
+        value     => sub { return $_[0]->Country() },
+    },
+    Gecos => {
+        title       => 'Unix login', #loc
+        attribute   => 'Gecos',
+        value       => sub { return $_[0]->Gecos() },
+    },
+    Lang => {
+        title       => 'Language', #loc
+        attribute   => 'Lang',
+        value       => sub { return $_[0]->Lang() },
     },
 };
 

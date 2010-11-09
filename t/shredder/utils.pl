@@ -97,6 +97,7 @@ sub rewrite_rtconfig
     config_set( '$LogToFile'      , 'debug' );
     my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
     config_set( '$LogToFileNamed' , $fname );
+    config_set('@LexiconLanguages', qw(en));
 }
 
 =head3 config_set
@@ -192,7 +193,7 @@ Creates and returns a new RT::Shredder object.
 
 sub shredder_new
 {
-    my $obj = new RT::Shredder;
+    my $obj = RT::Shredder->new;
 
     my $file = File::Spec->catfile( create_tmpdir(), test_name() .'.XXXX.sql' );
     $obj->AddDumpPlugin( Arguments => {
@@ -293,6 +294,7 @@ sub restore_savepoint { return __cp_db( savepoint_name( shift ) => db_name() ) }
 sub __cp_db
 {
     my( $orig, $dest ) = @_;
+    delete $RT::System->{attributes};
     $RT::Handle->dbh->disconnect;
     # DIRTY HACK: undef Handles to force reconnect
     $RT::Handle = undef;
@@ -337,13 +339,34 @@ sub dump_sqlite
     my $res = {};
     foreach my $t( @tables ) {
         next if lc($t) eq 'sessions';
-        $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
+        $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t".dump_sqlite_exceptions($t), 'id');
         clean_dates( $res->{$t} ) if $args{'CleanDates'};
         die $DBI::err if $DBI::err;
     }
 
     $dbh->{'FetchHashKeyName'} = $old_fhkn;
     return $res;
+}
+
+=head3 dump_sqlite_exceptions
+
+If there are parts of the DB which can change from creating and deleting
+a queue, skip them when doing the comparison.  One example is the global
+queue cache attribute on RT::System which will be updated on Queue creation
+and can't be rolled back by the shredder.  It may actually make sense for
+Shredder to be updating this at some point in the future.
+
+=cut
+
+sub dump_sqlite_exceptions {
+    my $table = shift;
+
+    my $special_wheres = {
+        attributes => " WHERE Name != 'QueueCacheNeedsUpdate'"
+    };
+
+    return $special_wheres->{lc $table}||'';
+
 }
 
 =head3 dump_current_and_savepoint

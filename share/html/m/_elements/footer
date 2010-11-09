@@ -1,0 +1,8 @@
+  <div id="bpscredits">
+    <& /Elements/Logo, ShowName => 0 &>
+    <div id="copyright">
+<&|/l,     '', '', '2010', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
+</div>
+</div>
+</body>
+</html>

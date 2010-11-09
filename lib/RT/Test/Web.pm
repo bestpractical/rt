@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Test::Web;
@@ -56,10 +56,28 @@ use base qw(Test::WWW::Mechanize);
 require RT::Test;
 require Test::More;
 
+sub new {
+    my ($class, @args) = @_;
+
+    if ($class->isa('Test::WWW::Mechanize::PSGI')) {
+        require RT::Interface::Web::Handler;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+        push @args, app => $app;
+    }
+
+    my $self = $class->SUPER::new(@args);
+    $self->cookie_jar(HTTP::Cookies->new);
+
+    return $self;
+}
+
 sub get_ok {
     my $self = shift;
     my $url = shift;
-    if ( $url =~ m{^/} ) {
+    if ( $url =~ s!^/!! ) {
         $url = $self->rt_base_url . $url;
     }
     my $rv = $self->SUPER::get_ok($url, @_);
@@ -76,23 +94,47 @@ sub login {
     my $self = shift;
     my $user = shift || 'root';
     my $pass = shift || 'password';
+    my %args = @_;
+    
+    $self->logout if $args{logout};
 
     my $url = $self->rt_base_url;
-
-    $self->get($url);
-    Test::More::diag( "error: status is ". $self->status )
-        unless $self->status == 200;
-    if ( $self->content =~ qr/Logout/i ) {
-        $self->follow_link( text => 'Logout' );
-    }
-
     $self->get($url . "?user=$user;pass=$pass");
     unless ( $self->status == 200 ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
-    unless ( $self->content =~ qr/Logout/i ) {
+    unless ( $self->content =~ m/Logout/i ) {
         Test::More::diag("error: page has no Logout");
+        return 0;
+    }
+    unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
+        Test::More::diag("Page has no user name");
+        return 0;
+    }
+    return 1;
+}
+
+sub logout {
+    my $self = shift;
+
+    my $url = $self->rt_base_url;
+    $self->get($url);
+    Test::More::diag( "error: status is ". $self->status )
+        unless $self->status == 200;
+
+    if ( $self->content =~ /Logout/i ) {
+        $self->follow_link( text => 'Logout' );
+        Test::More::diag( "error: status is ". $self->status ." when tried to logout" )
+            unless $self->status == 200;
+    }
+    else {
+        return 1;
+    }
+
+    $self->get($url);
+    if ( $self->content =~ /Logout/i ) {
+        Test::More::diag( "error: couldn't logout" );
         return 0;
     }
     return 1;
@@ -129,24 +171,20 @@ sub goto_create_ticket {
         die "not yet implemented";
     }
 
-    $self->get('/');
-    $self->form_name('CreateTicketInQueue');
-    $self->select( 'Queue', $id );
-    $self->submit;
+    $self->get($self->rt_base_url . 'Ticket/Create.html?Queue='.$id);
 
     return 1;
 }
 
 sub get_warnings {
     my $self = shift;
-    my $server_class = 'RT::Interface::Web::Standalone';
-
-    my $url = $server_class->test_warning_path;
-
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    return unless $self->get_ok($url);
 
-    my @warnings = $server_class->decode_warnings($self->content);
+    return unless $self->get_ok('/__test_warnings');
+
+    use Storable 'thaw';
+
+    my @warnings = @{ thaw $self->content };
     return @warnings;
 }
 
@@ -173,6 +211,26 @@ sub warning_like {
     return Test::More::like($warnings[0], $re, $name);
 }
 
+sub next_warning_like {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    if (@{ $self->{stashed_server_warnings} || [] } == 0) {
+        my @warnings = $self->get_warnings;
+        if (@warnings == 0) {
+            Test::More::fail("no warnings emitted; expected 1");
+            return 0;
+        }
+        $self->{stashed_server_warnings} = \@warnings;
+    }
+
+    my $warning = shift @{ $self->{stashed_server_warnings} };
+    return Test::More::like($warning, $re, $name);
+}
+
 sub no_warnings_ok {
     my $self = shift;
     my $name = shift || "no warnings emitted";
@@ -187,6 +245,97 @@ sub no_warnings_ok {
     }
 
     return @warnings == 0 ? 1 : 0;
+}
+
+sub no_leftover_warnings_ok {
+    my $self = shift;
+
+    my $name = shift || "no leftover warnings";
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    # we clear the warnings because we don't want to break later tests
+    # in case there *are* leftover warnings
+    my @warnings = splice @{ $self->{stashed_server_warnings} || [] };
+
+    Test::More::is(@warnings, 0, $name);
+    for (@warnings) {
+        Test::More::diag("leftover warning: $_");
+    }
+
+    return @warnings == 0 ? 1 : 0;
+}
+
+sub ticket_status {
+    my $self = shift;
+    my $id = shift;
+    
+    $self->display_ticket( $id);
+    my ($got) = ($self->content =~ qr{Status:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    unless ( $got ) {
+        Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
+    }
+    return $got;
+}
+
+sub ticket_status_is {
+    my $self = shift;
+    my $id = shift;
+    my $status = shift;
+    my $desc = shift || "Status of the ticket #$id is '$status'";
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return Test::More::is($self->ticket_status( $id), $status, $desc);
+}
+
+sub get_ticket_id {
+    my $self = shift;
+    my $content = $self->content;
+    my $id = 0;
+    if ($content =~ /.*Ticket (\d+) created.*/g) {
+        $id = $1;
+    }
+    elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
+        Test::More::diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
+        $id = $1;
+    }
+    return $id;
+}
+
+sub set_custom_field {
+    my $self   = shift;
+    my $queue   = shift;
+    my $cf_name = shift;
+    my $val     = shift;
+    
+    my $field_name = $self->custom_field_input( $queue, $cf_name )
+        or return 0;
+
+    $self->field($field_name, $val);
+    return 1;
+}
+
+sub custom_field_input {
+    my $self   = shift;
+    my $queue   = shift;
+    my $cf_name = shift;
+
+    my $cf_obj = RT::CustomField->new( $RT::SystemUser );
+    $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
+    unless ( $cf_obj->id ) {
+        Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
+        return undef;
+    }
+    my $cf_id = $cf_obj->id;
+    
+    my ($res) =
+        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        map $_->name,
+        $self->current_form->inputs;
+    unless ( $res ) {
+        Test::More::diag("Can not find input for custom field '$cf_name' #$cf_id");
+        return undef;
+    }
+    return $res;
 }
 
 1;

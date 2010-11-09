@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
@@ -82,35 +82,17 @@ GetOptions(
     'resolve',
     'force',
     'verbose|v',
+    'help|h',
 );
 
-usage() unless $opt{'check'};
+if ( $opt{help} || !$opt{check} ) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
+
 usage_warning() if $opt{'resolve'} && !$opt{'force'};
 
-sub usage {
-    print STDERR <<END;
-Usage: $0 options
-
-Options:
-
-    $0 --check
-    $0 --check --verbose
-    $0 --check --verbose --resolve
-    $0 --check --verbose --resolve --force
-
---check   - is mandatory argument, you can use -c, as well.
---verbose - print additional info to STDOUT
---resolve - enable resolver that can delete or create some records
---force   - resolve without asking questions
-
-Description:
-
-This script checks integrity of records in RT's DB. May delete some invalid
-records or ressurect accidentally deleted.
-
-END
-    exit 1;
-}
 
 sub usage_warning {
     print <<END;
@@ -217,7 +199,7 @@ sub m2t($) {
     my $model = shift;
     return $cache{$model} if $cache{$model};
     my $class = "RT::$model";
-    my $object = $class->new( $RT::SystemUser );
+    my $object = $class->new( RT->SystemUser );
     return $cache{$model} = $object->Table;
 } }
 
@@ -412,7 +394,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 "Found a record in GroupMembers that has no direct duplicate in CachedGroupMembers table."
             );
 
-            my $gm = RT::GroupMember->new( $RT::SystemUser );
+            my $gm = RT::GroupMember->new( RT->SystemUser );
             $gm->Load( $id );
             die "Couldn't load GM record #$id" unless $gm->id;
             my $cgm = create_record( 'CachedGroupMembers',
@@ -452,7 +434,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 ." duplicate in CachedGroupMembers table."
             );
 
-            my $g = RT::Group->new( $RT::SystemUser );
+            my $g = RT::Group->new( RT->SystemUser );
             $g->Load( $id );
             die "Couldn't load group #$id" unless $g->id;
             die "Loaded group by $id has id ". $g->id  unless $g->id == $id;
@@ -813,7 +795,7 @@ push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
     my %fix = ();
     foreach my $model ( @models ) {
         my $class = "RT::$model";
-        my $object = $class->new( $RT::SystemUser );
+        my $object = $class->new( RT->SystemUser );
         foreach my $column ( qw(LastUpdatedBy Creator) ) {
             next unless $object->_Accessible( $column, 'auto' );
 
@@ -866,7 +848,7 @@ END
 push @CHECKS, 'LastUpdatedBy and Creator' => sub {
     foreach my $model ( @models ) {
         my $class = "RT::$model";
-        my $object = $class->new( $RT::SystemUser );
+        my $object = $class->new( RT->SystemUser );
         my $table = $object->Table;
         foreach my $column ( qw(LastUpdatedBy Creator) ) {
             next unless $object->_Accessible( $column, 'auto' );
@@ -1116,3 +1098,47 @@ sub prompt_integer {
 } }
 
 1;
+
+__END__
+
+=head1 NAME
+
+rt-validator - show the content of an attribute 
+
+=head1 SYNOPSIS
+
+    rt-validator --check 
+    rt-validator --check --verbose
+    rt-validator --check --verbose --resolve
+    rt-validator --check --verbose --resolve --force
+
+=head1 DESCRIPTION
+
+This script checks integrity of records in RT's DB. May delete some invalid
+records or ressurect accidentally deleted.
+
+=head1 OPTIONS
+
+=over
+
+=item check
+
+    mandatory.
+    
+    it's equall to -c
+
+=item verbose
+
+    print additional info to STDOUT
+    it's equall to -v
+
+=item resolve
+
+    enable resolver that can delete or create some records
+
+=item force
+
+    resolve without asking questions
+
+=back
+

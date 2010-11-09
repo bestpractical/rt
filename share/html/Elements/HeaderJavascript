@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,77 +43,34 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $focus => undef
 $onload => undef
 </%args>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
-% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
-% }
-<script type="text/javascript"><!--
-    doOnLoad(loadTitleBoxStates);
-% if ( $focus ) {
-    doOnLoad(function () { focusElementById('<% $focus %>') });
+
+% if ( RT->Config->Get('DevelMode' ) ) {
+% for my $jsfile ( RT->Config->Get('JSFilesInHead') ) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
+% } }
+% else {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/squished.js"></script>
 % }
 
+% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/ckeditor.js"></script>
+% }
+<script type="text/javascript"><!--
+	jQuery( loadTitleBoxStates );
+% if ( $focus ) {
+    jQuery(function () { focusElementById('<% $focus %>') });
+% }
 % if ( $onload ) {
-    doOnLoad(<% $onload |n %>);
+    jQuery( <% $onload |n %> );
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    function ReplaceAllTextareas() {
-        if (!FCKeditor_IsCompatibleBrowser())
-            return false;
-
-        // replace all content and signature message boxes
-        var allTextAreas = document.getElementsByTagName("textarea");
-
-        for (var i=0; i < allTextAreas.length; i++) {
-            var textArea = allTextAreas[i];
-            if ( (textArea.getAttribute('class') == 'messagebox')
-              || (textArea.getAttribute('className') == 'messagebox')) {
-                // Turn the original plain text content into HTML 
-
-%# Special case - when we re-edit a textarea, don't re-encode it
-% if (!$m->request_args->{'FCKeditorEncoded'}) {
-                textArea.value = textArea.value.replace(
-                    /&/g, "&amp;"
-                ).replace(
-                    /</g, "&lt;"
-                ).replace(
-                    />/g, "&gt;"
-                ).replace(
-                    /\n/g, "\n<br />"
-                );
-% }
-
-%# for this template..
-                var FCKeditorEncoded = document.createElement('input');
-                FCKeditorEncoded.setAttribute('type', 'hidden');
-                FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-                FCKeditorEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(FCKeditorEncoded);
-
-%# for FCKeditor..
-                var typeField = document.createElement('input');
-                typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + 'Type');
-                typeField.setAttribute('value', 'text/html');
-                textArea.parentNode.appendChild(typeField);
-
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight') %> );
-                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
-                oFCKeditor.ReplaceTextarea();
-            }
-        }
-    }
-    doOnLoad(ReplaceAllTextareas);
+    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
 % }
 --></script>

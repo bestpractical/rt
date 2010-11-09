@@ -6,7 +6,7 @@ use warnings;
 use Test::Deep;
 use File::Spec;
 use Test::More tests => 4;
-use RT::Test ();
+use RT::Test nodb => 1;
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
@@ -15,7 +15,7 @@ BEGIN {
 
 
 use_ok('RT::Shredder::Plugin');
-my $plugin_obj = new RT::Shredder::Plugin;
+my $plugin_obj = RT::Shredder::Plugin->new;
 isa_ok($plugin_obj, 'RT::Shredder::Plugin');
 my ($status, $msg) = $plugin_obj->LoadByName('Summary');
 ok($status, 'loaded summary plugin') or diag "error: $msg";

@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%doc>
 #   This is (ab)used in Admin/(Users|Groups)/History.html and should probably
@@ -77,13 +77,27 @@ if ($ShowDisplayModes or $ShowTitle) {
     }
 </%perl>
 <div class="history">
+<script type="text/javascript">
+var _rt_dict = {};
+_rt_dict = { 'hide quoted text': '<% loc('hide quoted text') %>',
+             'show quoted text': '<% loc('show quoted text') %>'
+           };
+</script>
+
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
-
 <div id="ticket-history">
 <%perl>
-my @attachments = @{$Attachments->ItemsArrayRef()};
-my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
+my $trans_content = {};
+my $trans_attachments = {};
+
+for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
+    $trans_content->{$content->TransactionId}->{$content->Id} = $content;
+}
+
+for my $attachment (@{$Attachments->ItemsArrayRef()}) {
+    push (@{$trans_attachments->{$attachment->TransactionId}}, $attachment)
+}
 
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
@@ -97,14 +111,8 @@ while ( my $Transaction = $Transactions->Next ) {
 
     $i++;
 
-    my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
-
-    my $trans_content = {};
-    grep { ($_->TransactionId == $Transaction->Id ) && ($trans_content->{$_->Id} = $_)  } @attachment_content;
-
-   
     my $IsLastTransaction = 0;
-    if ( $OldestFirst ) {
+    if ( RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} )){
         $IsLastTransaction = $Transactions->IsLast;
     } else {
         $IsLastTransaction = 1 if ( $i == 1 );
@@ -118,7 +126,7 @@ while ( my $Transaction = $Transactions->Next ) {
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
               RowNum               => $i,
-              Attachments          => \@trans_attachments,
+              Attachments          => $trans_attachments->{$Transaction->id},
               AttachmentContent    => $trans_content,
               LastTransaction      => $IsLastTransaction
  );
@@ -135,25 +143,9 @@ $m->flush_buffer();
 </div>
 % }
 <%INIT>
-my $Transactions = new RT::Transactions($session{'CurrentUser'});
-if ($Tickets) {
-    while (my $t = $Tickets->Next) {
-        $Transactions->LimitToTicket($t->id);
-    }
-} else {
-    $Transactions = $Ticket->Transactions;
-}
-
-
-my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
-my $SortOrder = $OldestFirst? 'ASC': 'DESC';
-$Transactions->OrderByCols( { FIELD => 'Created',
-                              ORDER => $SortOrder },
-                            { FIELD => 'id',
-                              ORDER => $SortOrder },
-                          );
 
 my $i;
+$Transactions ||= $m->comp('/Ticket/Elements/FindTransactions',Ticket => $Ticket, Tickets => $Tickets || undef);
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
@@ -162,6 +154,7 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 $URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
 $Tickets => undef
+$Transactions => undef
 $Attachments => undef
 $AttachmentContent => undef
 $ShowHeaders => undef

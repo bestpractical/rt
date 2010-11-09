@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -59,11 +59,12 @@ use warnings;
 
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
-use base ('Locale::Maketext::Fuzzy');
+use base 'Locale::Maketext::Fuzzy';
 
 use Encode;
 use MIME::Entity;
 use MIME::Head;
+use File::Glob;
 
 # I decree that this project's first language is English.
 
@@ -91,7 +92,6 @@ Initializes the lexicons used for localization.
 =cut
 
 sub Init {
-    require File::Glob;
 
     my @lang = RT->Config->Get('LexiconLanguages');
     @lang = ('*') unless @lang;
@@ -115,9 +115,9 @@ sub Init {
     my %import;
     foreach my $l ( @lang ) {
         $import{$l} = [
-            Gettext => (substr(__FILE__, 0, -3) . "/$l.po"),
-            Gettext => "$RT::LocalLexiconPath/*/$l.po",
-            Gettext => "$RT::LocalLexiconPath/$l.po",
+            Gettext => $RT::LexiconPath."/$l.po",
+            Gettext => $RT::LocalLexiconPath."/*/$l.po",
+            Gettext => $RT::LocalLexiconPath."/$l.po",
         ];
         push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
     }
@@ -126,6 +126,24 @@ sub Init {
     Locale::Maketext::Lexicon->import({ _decode => 1, %import });
 
     return 1;
+}
+
+sub LoadLexicons {
+
+    no strict 'refs';
+    foreach my $k (keys %{RT::I18N::} ) {
+        next if $k eq 'main::';
+        next unless index($k, '::', -2) >= 0;
+        next unless exists ${ 'RT::I18N::'. $k }{'Lexicon'};
+
+        my $lex = *{ ${'RT::I18N::'. $k }{'Lexicon'} }{HASH};
+        # run fetch to force load
+        my $tmp = $lex->{'foo'};
+        # XXX: untie may fail with "untie attempted
+        # while 1 inner references still exist"
+        # TODO: untie that has to lower fetch impact
+        # untie %$lex if tied %$lex;
+    }
 }
 
 =head2 encoding
@@ -140,7 +158,6 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 sub encoding { 'utf-8' }
 
-# {{{ SetMIMEEntityToUTF8
 
 =head2 SetMIMEEntityToUTF8 $entity
 
@@ -153,9 +170,7 @@ sub SetMIMEEntityToUTF8 {
     RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
 }
 
-# }}}
 
-# {{{ IsTextualContentType
 
 =head2 IsTextualContentType $type
 
@@ -167,7 +182,6 @@ Currently, it returns true iff $type matches this regular expression
 
     ^(?:text/(?:plain|html)|message/rfc822)\b
 
-# }}}
 
 =cut
 
@@ -176,7 +190,6 @@ sub IsTextualContentType {
     ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
 }
 
-# {{{ SetMIMEEntityToEncoding
 
 =head2 SetMIMEEntityToEncoding $entity, $encoding
 
@@ -184,6 +197,11 @@ An utility function which will try to convert entity body into specified
 charset encoding (encoded as octets, *not* unicode-strings).  It will
 iterate all the entities in $entity, and try to convert each one into
 specified charset if whose Content-Type is 'text/plain'.
+
+the methods are tries in order:
+1) to convert the entity to $encoding, 
+2) to interpret the entity as iso-8859-1 and then convert it to $encoding,
+3) forcibly convert it to $encoding.
 
 This function doesn't return anything meaningful.
 
@@ -223,30 +241,44 @@ sub SetMIMEEntityToEncoding {
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset && $body) {
-	my @lines = $body->as_lines or return;
+    if ( $enc ne $charset && $body ) {
+        my $string = $body->as_string or return;
+        # NOTE:: see the comments at the end of the sub.
+        Encode::_utf8_off($string);
+        my $orig_string = $string;
 
-	# {{{ Convert the body
-	eval {
-	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
+        # Convert the body
+        eval {
+            $RT::Logger->debug( "Converting '$charset' to '$enc' for "
+                  . $head->mime_type . " - "
+                  . ( $head->get('subject') || 'Subjectless message' ) );
+            Encode::from_to( $string, $charset => $enc, Encode::FB_CROAK );
+        };
 
-	    # NOTE:: see the comments at the end of the sub.
-	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
-	    Encode::from_to( $lines[$_], $charset => $enc ) for ( 0 .. $#lines );
-	};
+        if ($@) {
+            $RT::Logger->error( "Encoding error: " 
+                  . $@
+                  . " falling back to iso-8859-1 => $enc" );
+            $string = $orig_string;
+            eval {
+                Encode::from_to(
+                    $string,
+                    'iso-8859-1' => $enc,
+                    Encode::FB_CROAK
+                );
+            };
+            if ($@) {
+                $RT::Logger->error( "Encoding error: " 
+                      . $@
+                      . " forcing conversion to $charset => $enc" );
+                $string = $orig_string;
+                Encode::from_to( $string, $charset => $enc );
+            }
+        }
 
-	if ($@) {
-	    $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-	    eval {
-		Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
-	    };
-	    if ($@) {
-		$RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-	    }
-	}
-	# }}}
+        # }}}
 
-        my $new_body = MIME::Body::InCore->new( \@lines );
+        my $new_body = MIME::Body::InCore->new($string);
 
         # set up the new entity
         $head->mime_attr( "content-type" => 'text/plain' )
@@ -267,9 +299,7 @@ sub SetMIMEEntityToEncoding {
 # Not turning off the UTF-8 flag in the string will prevent the string
 # from conversion.
 
-# }}}
 
-# {{{ DecodeMIMEWordsToUTF8
 
 =head2 DecodeMIMEWordsToUTF8 $raw
 
@@ -295,8 +325,8 @@ sub DecodeMIMEWordsToEncoding {
     my $enc = shift;
 
     @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
-    return ($str) unless (@_);
 
+    if ( @_ ) {
     # add everything that hasn't matched to the end of the latest
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
     $_[-1] .= substr($str, pos $str);
@@ -321,13 +351,15 @@ sub DecodeMIMEWordsToEncoding {
 	}
 
 	# now we have got a decoded subject, try to convert into the encoding
-	unless ($charset eq $enc) {
-	    eval { Encode::from_to($enc_str, $charset,  $enc) };
-	    if ($@) {
-		$charset = _GuessCharset( $enc_str );
-		Encode::from_to($enc_str, $charset, $enc);
-	    }
-	}
+    unless ( $charset eq $enc ) {
+        my $orig_str = $enc_str;
+        eval { Encode::from_to( $enc_str, $charset, $enc, Encode::FB_CROAK ) };
+        if ($@) {
+            $enc_str = $orig_str;
+            $charset = _GuessCharset($enc_str);
+            Encode::from_to( $enc_str, $charset, $enc );
+        }
+    }
 
         # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
         # We _should_ be preserving them encoded until after parsing is completed and
@@ -349,6 +381,34 @@ sub DecodeMIMEWordsToEncoding {
 
 	$str .= $prefix . $enc_str . $trailing;
     }
+    }
+
+# handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, see also rfc 2231
+    @_ = $str =~ m/(.*?\*=)([^']*?)'([^']*?)'(\S+)(.*?)(?=(?:\*=|$))/gcs;
+    if (@_) {
+        $str = '';
+        while (@_) {
+            my ( $prefix, $charset, $language, $enc_str, $trailing ) =
+              ( shift, shift, shift, shift, shift );
+            $prefix =~ s/\*=$/=/; # remove the *
+            $enc_str =~ s/%(\w{2})/chr hex $1/eg;
+            unless ( $charset eq $enc ) {
+                my $orig_str = $enc_str;
+                eval {
+                    Encode::from_to( $enc_str, $charset, $enc,
+                        Encode::FB_CROAK );
+                };
+                if ($@) {
+                    $enc_str = $orig_str;
+                    $charset = _GuessCharset($enc_str);
+                    Encode::from_to( $enc_str, $charset, $enc );
+                }
+            }
+            $enc_str = qq{"$enc_str"}
+              if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+            $str .= $prefix . $enc_str . $trailing;
+        }
+     }
 
     # We might have \n without trailing whitespace, which will result in
     # invalid headers.
@@ -357,9 +417,7 @@ sub DecodeMIMEWordsToEncoding {
     return ($str)
 }
 
-# }}}
 
-# {{{ _FindOrGuessCharset
 
 =head2 _FindOrGuessCharset MIME::Entity, $head_only
 
@@ -388,9 +446,7 @@ sub _FindOrGuessCharset {
     }
 }
 
-# }}}
 
-# {{{ _GuessCharset
 
 =head2 _GuessCharset STRING
 
@@ -444,9 +500,7 @@ sub _GuessCharset {
     return ($charset || $fallback);
 }
 
-# }}}
 
-# {{{ SetMIMEHeadToEncoding
 
 =head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
 
@@ -470,18 +524,30 @@ sub SetMIMEHeadToEncoding {
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
+            Encode::_utf8_off($value);
+            my $orig_value = $value;
             if ( $charset ne $enc ) {
-
                 eval {
-                    Encode::_utf8_off($value);
-                    Encode::from_to( $value, $charset => $enc );
+                    Encode::from_to( $value, $charset => $enc, Encode::FB_CROAK );
                 };
                 if ($@) {
-                    $RT::Logger->error( "Encoding error: " . $@
-                                       . " defaulting to ISO-8859-1 -> UTF-8" );
-                    eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
+                    $RT::Logger->error( "Encoding error: " 
+                          . $@
+                          . " falling back to iso-8859-1 => $enc" );
+                    $value = $orig_value;
+                    eval {
+                        Encode::from_to(
+                            $value,
+                            'iso-8859-1' => $enc,
+                            Encode::FB_CROAK
+                        );
+                    };
                     if ($@) {
-                        $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                        $RT::Logger->error( "Encoding error: " 
+                              . $@
+                              . " forcing conversion to $charset => $enc" );
+                        $value = $orig_value;
+                        Encode::from_to( $value, $charset => $enc );
                     }
                 }
             }
@@ -491,12 +557,8 @@ sub SetMIMEHeadToEncoding {
     }
 
 }
-# }}}
 
-eval "require RT::I18N_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Vendor.pm});
-eval "require RT::I18N_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;  # End of module.
 

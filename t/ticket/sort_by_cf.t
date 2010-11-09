@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test tests => 21;
+use RT::Test nodata => 1, tests => 21;
 RT::Init();
 
 use strict;
@@ -19,7 +19,7 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
-my $queue_obj = RT::Queue->new( $RT::SystemUser );
+my $queue_obj = RT::Queue->new( RT->SystemUser );
 ($ret, $msg) = $queue_obj->Create(
     Name => $queue,
     Description => 'queue for custom field sort testing'
@@ -28,10 +28,10 @@ ok($ret, "$queue test queue creation. $msg");
 
 # ---- Create some custom fields.  We're not currently using all of
 # them to test with, but the more the merrier.
-my $cfO = RT::CustomField->new($RT::SystemUser);
-my $cfA = RT::CustomField->new($RT::SystemUser);
-my $cfB = RT::CustomField->new($RT::SystemUser);
-my $cfC = RT::CustomField->new($RT::SystemUser);
+my $cfO = RT::CustomField->new(RT->SystemUser);
+my $cfA = RT::CustomField->new(RT->SystemUser);
+my $cfB = RT::CustomField->new(RT->SystemUser);
+my $cfC = RT::CustomField->new(RT->SystemUser);
 
 ($ret, $msg) = $cfO->Create( Name => 'Order',
                              Queue => 0,
@@ -61,7 +61,7 @@ ok($ret, "Custom Field Charlie created");
 
 # ----- Create some tickets to test with.  Assign them some values to
 # make it easy to sort with.
-my $t1 = RT::Ticket->new($RT::SystemUser);
+my $t1 = RT::Ticket->new(RT->SystemUser);
 $t1->Create( Queue => $queue_obj->Id,
              Subject => 'One',
            );
@@ -70,7 +70,7 @@ $t1->AddCustomFieldValue(Field => $cfA->Id,  Value => '2');
 $t1->AddCustomFieldValue(Field => $cfB->Id,  Value => '1');
 $t1->AddCustomFieldValue(Field => $cfC->Id,  Value => 'BBB');
 
-my $t2 = RT::Ticket->new($RT::SystemUser);
+my $t2 = RT::Ticket->new(RT->SystemUser);
 $t2->Create( Queue => $queue_obj->Id,
              Subject => 'Two',
            );
@@ -93,7 +93,7 @@ sub check_order {
 }
 
 # The real tests start here
-my $tx = new RT::Tickets( $RT::SystemUser );
+my $tx = RT::Tickets->new( RT->SystemUser );
 
 
 # Make sure we can sort in both directions on a queue specific field.
@@ -102,7 +102,7 @@ $tx->OrderBy( FIELD => "CF.${queue}.{Charlie}", ORDER => 'DES' );
 is($tx->Count,2 ,"We found 2 tickets when looking for cf charlie");
 check_order( $tx, 1, 2);
 
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC' );
 is($tx->Count,2, "We found two tickets when sorting by cf charlie without limiting to it" );
@@ -111,20 +111,20 @@ check_order( $tx, 2, 1);
 # When ordering by _global_ CustomFields, if more than one queue has a
 # CF named Charlie, things will go bad.  So, these results are uniqued
 # in Tickets_Overlay.
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'DESC' );
 is($tx->Count,2);
 check_order( $tx, 1, 2);
 
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'ASC' );
 is($tx->Count,2);
 check_order( $tx, 2, 1);
 
 # Add a new ticket, to test sorting on multiple columns.
-my $t3 = RT::Ticket->new($RT::SystemUser);
+my $t3 = RT::Ticket->new(RT->SystemUser);
 $t3->Create( Queue => $queue_obj->Id,
              Subject => 'Three',
            );
@@ -133,7 +133,7 @@ $t3->AddCustomFieldValue(Field => $cfA->Id,  Value => '3');
 $t3->AddCustomFieldValue(Field => $cfB->Id,  Value => '2');
 $t3->AddCustomFieldValue(Field => $cfC->Id,  Value => 'AAA');
 
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC' },
@@ -142,7 +142,7 @@ $tx->OrderByCols(
 is($tx->Count,3);
 check_order( $tx, 3, 2, 1);
 
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Charlie}", ORDER => 'DES' },
@@ -153,7 +153,7 @@ check_order( $tx, 1, 2, 3);
 
 # Reverse the order of the secondary column, which changes the order
 # of the first two tickets.
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Charlie}", ORDER => 'ASC' },
@@ -162,7 +162,7 @@ $tx->OrderByCols(
 is($tx->Count,3);
 check_order( $tx, 2, 3, 1);
 
-$tx = new RT::Tickets( $RT::SystemUser );
+$tx = RT::Tickets->new( RT->SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Charlie}", ORDER => 'DES' },

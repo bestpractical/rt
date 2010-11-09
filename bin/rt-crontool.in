@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use strict;
 use Carp;
@@ -79,8 +79,6 @@ use RT;
 use Getopt::Long;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
-use RT::Tickets;
-use RT::Template;
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -111,6 +109,9 @@ RT->Config->Set( LogToScreen => $log ) if $log;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
+
+require RT::Tickets;
+require RT::Template;
 
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
@@ -230,13 +231,13 @@ sub process {
     print loc("Action committed.\n") if $verbose;
 }
 
-=head2 get_transactions
-
-Takes ticket and returns L<RT::Transactions> object with transactions
-of the ticket according to command line arguments C<--transaction>
-and <--transaction-type>.
-
-=cut
+# =head2 get_transactions
+# 
+# Takes ticket and returns L<RT::Transactions> object with transactions
+# of the ticket according to command line arguments C<--transaction>
+# and <--transaction-type>.
+# 
+# =cut
 
 sub get_transactions {
     my $ticket = shift;
@@ -257,11 +258,11 @@ sub get_transactions {
     return $txns;
 }
 
-=head2 get_template
-
-Takes a ticket and returns a template according to command line options.
-
-=cut
+# =head2 get_template
+# 
+# Takes a ticket and returns a template according to command line options.
+# 
+# =cut
 
 { my $cache = undef;
 sub get_template {
@@ -272,7 +273,7 @@ sub get_template {
         # by id
         return $cache if $cache;
 
-        my $cache = RT::Template->new( $RT::SystemUser );
+        my $cache = RT::Template->new( RT->SystemUser );
         $cache->Load( $template );
         die "Failed to load template '$template'"
             unless $cache->id;
@@ -282,7 +283,7 @@ sub get_template {
     my $queue = $ticket->Queue;
     return $cache->{ $queue } if $cache->{ $queue };
 
-    my $res = RT::Template->new( $RT::SystemUser );
+    my $res = RT::Template->new( RT->SystemUser );
     $res->LoadQueueTemplate( Queue => $queue, Name => $template );
     unless ( $res->id ) {
         $res->LoadGlobalTemplate( $template );
@@ -292,13 +293,12 @@ sub get_template {
     return $cache->{ $queue } = $res;
 } }
 
-# {{{ load_module 
 
-=head2 load_module
-
-Loads a perl module, dying nicely if it can't find it.
-
-=cut
+# =head2 load_module
+# 
+# Loads a perl module, dying nicely if it can't find it.
+# 
+# =cut
 
 sub load_module {
     my $modname = shift;
@@ -309,21 +309,18 @@ sub load_module {
 
 }
 
-# }}}
 
-# {{{ loc 
 
-=head2 loc LIST
-
-Localize this string, with the current user's currentuser object
-
-=cut
+# =head2 loc LIST
+# 
+# Localize this string, with the current user's currentuser object
+# 
+# =cut
 
 sub loc {
     $CurrentUser->loc(@_);
 }
 
-# }}}
 
 sub help {
 
@@ -374,13 +371,13 @@ sub help {
     print loc("Example:");
     print "\n";
     print " "
-      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
       )
       . "\n\n";
 
     print " bin/rt-crontool \\\n";
     print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
+    print "  --condition RT::Condition::Overdue \\\n";
     print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
     print "  --verbose\n";
 
@@ -397,3 +394,90 @@ sub help {
 
     exit(0);
 }
+
+__END__
+
+=head1 NAME
+
+rt-crontool - a tool to act on tickets from an external scheduling tool
+
+=head1 SYNOPSIS
+
+    # find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:
+    rt-crontool \
+      --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+      --condition RT::Condition::Overdue \
+      --action RT::Action::SetPriority --action-arg 99 \
+      --verbose
+
+    # Escalate tickets
+      rt-crontool \
+        --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+        --action RT::Action::EscalatePriority
+
+=head1 DESCRIPTION
+
+This script is a tool to act on tickets from an external scheduling tool, such
+as cron.
+
+Security:
+
+This tool allows the user to run arbitrary perl modules from within RT. If
+this tool were setgid, a hostile local user could use this tool to gain
+administrative access to RT. It is incredibly important that nonprivileged
+users not be allowed to run this tool. It is suggested that you create a
+non-privileged unix user with the correct group membership and RT access to
+run this tool.
+
+
+=head1 OPTIONS
+
+=over
+
+=item search 
+
+Specify the search module you want to use
+
+=item search-arg 
+
+An argument to pass to --search
+
+=item condition
+
+Specify the condition module you want to use
+
+=item condition-arg
+
+An argument to pass to --condition
+
+=item action 
+
+Specify the action module you want to use
+
+=item action-arg
+
+An argument to pass to --action
+
+=item template
+
+Specify name or id of template(s) you want to use
+
+=item transaction
+
+Specify if you want to use either 'first', 'last' or 'all' transactions
+
+
+=item transaction-type
+
+Specify the comma separated list of transactions' types you want to use
+
+=item log
+
+Adjust LogToScreen config option
+
+=item verbose
+
+Output status updates to STDOUT
+
+=back
+

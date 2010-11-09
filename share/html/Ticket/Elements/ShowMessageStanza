@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,12 +43,11 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 if ( ref $Message ) {
-    $m->out('<pre>') if $plain_text_pre && !$Depth;
-    $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+    $m->comp('FoldStanzaJS', Depth => $Depth);
 
     my @stack;
     my $para = '';
@@ -57,6 +56,9 @@ if ( ref $Message ) {
     AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         my $stanza = $Message->[$i];
         if ( ref $stanza eq "HASH" ) {
+            if ( $stanza->{text} && $stanza->{text} =~ /----- Original Message -----/ ) {
+                $Message->[$i+1] = [ splice @$Message, $i+1 ] if $Message->[$i+1];
+            }
             $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
         }
         next unless ref $stanza eq "ARRAY";
@@ -66,7 +68,8 @@ if ( ref $Message ) {
         $Depth++;
         push @stack, [$Message, $i+1];
         ($Message, $i) = ($stanza, -1);
-        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+
+        $m->comp('FoldStanzaJS', Depth => $Depth);
     }
     if ( length $para ) {
         $print_content->( \$para ); $para = '';
@@ -75,18 +78,19 @@ if ( ref $Message ) {
     if ( @stack ) {
         ($Message, $i) = @{ pop @stack };
         $Depth--;
-        $m->out('</div>');
+        $m->out('</span>');
         goto AGAIN;
     }
 
     $m->out('</div>');
-    $m->out('</pre>') if $plain_text_pre && !$Depth;
+    $m->out('</pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
 } else {
       $print_content->( \$Message );
 }
 </%perl>
 <%INIT>
 my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
+my $plain_text_mono = RT->Config->Get('PlainTextMono', $session{'CurrentUser'});
 
 my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 
@@ -96,8 +100,8 @@ my $print_content = sub {
 
     $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    unless ( $plain_text_pre ) {
-        $$ref =~ s{(?=\r*\n)}{<br />}g if defined $$ref;
+    unless ( $plain_text_pre || $plain_text_mono ) {
+        $$ref =~ s{(\r?\n)}{<br />}g if defined $$ref;
     }
     $m->out( $$ref );
 };

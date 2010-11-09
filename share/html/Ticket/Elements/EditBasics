@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,88 +43,102 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-      <td class="label"><&|/l&>Subject</&>:</td>
-      <td class="value"><input name="Subject" value="<%$TicketObj->Subject|h%>" size="50" /></td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Status</&>:</td>
-      <td class="value"><%$SelectStatus|n%></td>
-    </tr>
-  <tr>
-      <td class="label"><&|/l&>Queue</&>:</td>
-      <td class="value"><%$SelectQueue|n%></td>
-    </tr>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-      <td class="value"><& /Elements/SelectOwner,
-          Name         => 'Owner',
-          QueueObj     => $TicketObj->QueueObj,
-          TicketObj    => $TicketObj,
-          Default      => $TicketObj->OwnerObj->Id,
-          DefaultValue => 0,
-      &></td>
-  </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Time Estimated</&>:</td>
-      <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeEstimated',
-            Default => $TicketObj->TimeEstimated,
-        &>
-      </td>
-    </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeWorked',
-            Default => $TicketObj->TimeWorked,
-        &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Left</&>:</td>
-    <td class="value">
-        <& /Elements/EditTimeValue,
-            Name => 'TimeLeft',
-            Default => $TicketObj->TimeLeft,
-        &>
-      </td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Priority</&>:</td>
-      <td class="value"><& /Elements/SelectPriority,
-          Default => $TicketObj->Priority,
-      &></td>
-    </tr>
-
-  <tr>
-      <td class="label"><&|/l&>Final Priority</&>:</td>
-      <td class="value"><& /Elements/SelectPriority,
-          Name => "FinalPriority",
-          Default => $TicketObj->FinalPriority,
-      &></td>
-    </tr>
-
-
-
-% $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
-</table>
-
-<%INIT>
-#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->Id, ShowNullOption => 0);
-
-</%INIT>
 <%ARGS>
-
 $TicketObj => undef
+@fields => ()
+$InTable => 0
+%defaults => ()
 </%ARGS>
+<%INIT>
+unless ( @fields ) {
+    @fields = (
+        {   name => 'Subject',
+            html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
+        },
+        {   name => 'Status',
+            comp => '/Elements/SelectStatus',
+            args => {
+                Name => 'Status',
+                DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+                Default => $defaults{'Status'} || undef,
+                TicketObj => $TicketObj,
+                QueueObj => $TicketObj->QueueObj
+            },
+        },
+        {   name => 'Queue',
+            comp => '/Elements/SelectQueue',
+            args => {
+                Name => 'Queue',
+                Default => $defaults{'Queue'} || $TicketObj->QueueObj->Id,
+                ShowNullOption => 0,
+            }
+        },
+        {   name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name => 'Owner',
+                QueueObj => $TicketObj->QueueObj,
+                TicketObj => $TicketObj,
+                Default => $defaults{'Owner'} || $TicketObj->OwnerObj->Id,
+                DefaultValue => 0,
+            }
+        },
+        # Time Estimated, Worked, and Left
+        (
+            map {
+                (my $field = $_) =~ s/ //g;
+                {
+                    name => $_,
+                    comp => '/Elements/EditTimeValue',
+                    args => {
+                        Name => $field,
+                        Default => $defaults{$field} || $TicketObj->$field,
+                    }
+                }
+            } ('Time Estimated', 'Time Worked', 'Time Left')
+        ),
+        # Priority and Final Priority
+        (
+            map {
+                (my $field = $_) =~ s/ //g;
+                {
+                    name => $_,
+                    comp => '/Elements/SelectPriority',
+                    args => {
+                        Name => $field,
+                        Default => $defaults{$field} || $TicketObj->$field,
+                    }
+                }
+            } ('Priority', 'Final Priority')
+        ),
+    );
+}
+
+$m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
+
+# Process the field list, skipping if html is provided and running the
+# components otherwise
+for my $field (@fields) {
+    next if defined $field->{'html'};
+    if ( $field->{'comp'} ) {
+        $field->{'html'} = $m->scomp($field->{'comp'}, %{$field->{'args'} || {}});
+    }
+}
+</%INIT>
+
+% unless ($InTable) {
+<table>
+% }
+% for my $field (@fields) {
+ <tr class="<% lc $field->{'name'} %>">\
+<td class="label"><&|/l&><% $field->{'name'} %></&>:</td>\
+<td class="value"><% $field->{'html'} |n %></td>\
+</tr>
+% }
+% $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
+% unless ($InTable) {
+</table>
+% }
+

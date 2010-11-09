@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,35 +43,153 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
+<table width="100%">
+  <tr>
+    <td valign="top" width="50%">
+      <h3><&|/l&>Current Links</&></h3>
+<table>
+  <tr>
+    <td class="labeltop"><&|/l&>Depends on</&>:</td>
+    <td class="value">
+% if ( $hash{DependsOn} ) {
+% for my $link ( values %{$hash{DependsOn}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
+    <td class="value">
+% if ( $hash{DependedOnBy} ) {
+% for my $link ( values %{$hash{DependedOnBy}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Parents</&>:</td>
+    <td class="value">
+% if ( $hash{MemberOf} ) {
+% for my $link ( values %{$hash{MemberOf}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Children</&>:</td>
+    <td class="value">
+% if ( $hash{Members} ) {
+% for my $link ( values %{$hash{Members}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Refers to</&>:</td>
+    <td class="value">
+% if ( $hash{RefersTo} ) {
+% for my $link ( values %{$hash{RefersTo}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
+    <td class="value">
+% if ( $hash{ReferredToBy} ) {
+% for my $link ( values %{$hash{ReferredToBy}} ) {
+% # Skip reminders
+% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><i><&|/l&>(Check box to delete)</&></i></td>
+  </tr>
+</table>
+</td>
+<td valign="top">
+<h3><&|/l&>New Links</&></h3>
+<i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
+</i><br />
 <table>
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="Ticket-MergeInto" /> <i><&|/l&>(only one ticket)</&></i></td>
+    <td class="entry"><input name="Ticket-MergeInto" value="<% $ARGS{'Ticket-MergeInto'} || '' %>" /> <i><&|/l&>(only one ticket)</&></i></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
-    <td class="entry"><input name="Ticket-DependsOn" /></td>
+    <td class="entry"><input name="Ticket-DependsOn" value="<% $ARGS{'Ticket-DependsOn'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depended on by</&>:</td>
-    <td class="entry"><input name="DependsOn-Ticket" /></td>
+    <td class="entry"><input name="DependsOn-Ticket" value="<% $ARGS{'DependsOn-Ticket'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Parents</&>:</td>
-    <td class="entry"><input name="Ticket-MemberOf" /></td>
+    <td class="entry"><input name="Ticket-MemberOf" value="<% $ARGS{'Ticket-MemberOf'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Children</&>:</td>
-    <td class="entry"> <input name="MemberOf-Ticket" /></td>
+    <td class="entry"> <input name="MemberOf-Ticket" value="<% $ARGS{'MemberOf-Ticket'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Refers to</&>:</td>
-    <td class="entry"><input name="Ticket-RefersTo" /></td>
+    <td class="entry"><input name="Ticket-RefersTo" value="<% $ARGS{'Ticket-RefersTo'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Referred to by</&>:</td>
-    <td class="entry"> <input name="RefersTo-Ticket" /></td>
+    <td class="entry"> <input name="RefersTo-Ticket" value="<% $ARGS{'RefersTo-Ticket'} || '' %>" /></td>
   </tr>
 </table>
+</td>
+</tr>
+</table>
+
+<%ARGS>
+$Tickets => undef
+</%ARGS>
+
+<%INIT>
+my %hash;
+if ( $Tickets && $Tickets->Count ) {
+    my $first_ticket = $Tickets->Next;
+    # we only show current links that eixst on all the tickets
+    for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
+            ReferredToBy/ ) {
+        my $target_or_base =
+            $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
+        while ( my $link = $first_ticket->$type->Next ) {
+            $hash{$type}{$link->$target_or_base} = $link;
+        }
+    }
+
+    while ( my $ticket = $Tickets->Next ) {
+        for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
+                ReferredToBy/ ) {
+            my $target_or_base =
+                $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
+            # if $hash{$type} is empty, no need to check any more
+            next unless $hash{$type} && keys %{$hash{$type}};
+            my %exists;
+            while ( my $link = $ticket->$type->Next ) {
+                $exists{$link->$target_or_base}++;
+            }
+
+            for ( keys %{$hash{$type}} ) {
+                delete $hash{$type}{$_} unless $exists{$_};
+            }
+        }
+    }
+}
+</%INIT>

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use RT;
-use RT::Test tests => 7;
+use RT::Test nodata => 1, tests => 7;
 
 
 use strict;
@@ -19,7 +19,7 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "PAWSortQueue-$$";
-my $queue_obj = RT::Queue->new($RT::SystemUser);
+my $queue_obj = RT::Queue->new(RT->SystemUser);
 ($ret, $msg) = $queue_obj->Create(Name => $queue,
                                   Description => 'queue for custom field sort testing');
 ok($ret, "$queue test queue creation. $msg");
@@ -27,18 +27,18 @@ ok($ret, "$queue test queue creation. $msg");
 
 # ---- Create some users
 
-my $me = RT::User->new($RT::SystemUser);
+my $me = RT::User->new(RT->SystemUser);
 ($ret, $msg) = $me->Create(Name => "Me$$", EmailAddress => $$.'create-me-1@example.com');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
-my $you = RT::User->new($RT::SystemUser);
+my $you = RT::User->new(RT->SystemUser);
 ($ret, $msg) = $you->Create(Name => "You$$", EmailAddress => $$.'create-you-1@example.com');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
 
-my $nobody = RT::User->new($RT::SystemUser);
+my $nobody = RT::User->new(RT->SystemUser);
 $nobody->Load('nobody');
 
 
@@ -54,7 +54,7 @@ my @tickets = (
                [qw[6 55], $nobody],
               );
 for (@tickets) {
-  my $t = RT::Ticket->new($RT::SystemUser);
+  my $t = RT::Ticket->new(RT->SystemUser);
   $t->Create( Queue => $queue_obj->Id,
               Subject => $_->[0],
               Owner => $_->[2]->Id,
@@ -76,8 +76,8 @@ sub check_order {
 
 # The real tests start here
 
-my $cme = new RT::CurrentUser( $me );
-my $metx = new RT::Tickets( $cme );
+my $cme = RT::CurrentUser->new( $me );
+my $metx = RT::Tickets->new( $cme );
 # Make sure we can sort in both directions on a queue specific field.
 $metx->FromSQL(qq[queue="$queue"] );
 $metx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );
@@ -90,8 +90,8 @@ check_order( $metx, reverse qw[2 1 6 5 4 3]);
 
 
 
-my $cyou = new RT::CurrentUser( $you );
-my $youtx = new RT::Tickets( $cyou );
+my $cyou = RT::CurrentUser->new( $you );
+my $youtx = RT::Tickets->new( $cyou );
 # Make sure we can sort in both directions on a queue specific field.
 $youtx->FromSQL(qq[queue="$queue"] );
 $youtx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );

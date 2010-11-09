@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -65,6 +65,7 @@ package RT::SharedSetting;
 use strict;
 use warnings;
 use RT::Attribute;
+use Scalar::Util 'blessed';
 use base qw/RT::Base/;
 
 =head1 METHODS
@@ -257,11 +258,11 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
-
     return (0, $self->loc("Permission denied"))
         unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
+    $self->CurrentUser->ClearAttributes; # force the current user's attribute cache to be cleaned up
     if ($status) {
         return (1, $self->loc("Deleted [_1]", $self->ObjectName));
     } else {
@@ -293,6 +294,9 @@ sub Id {
     my $self = shift;
     return $self->{'Id'};
 }
+
+*id = \&Id;
+
 
 =head2 Privacy
 
@@ -329,7 +333,7 @@ This does not deal with ACLs, this only looks at membership.
 sub IsVisibleTo {
     my $self    = shift;
     my $to      = shift;
-    my $privacy = $self->Privacy;
+    my $privacy = $self->Privacy || '';
 
     # if the privacies are the same, then they can be seen. this handles
     # a personal setting being visible to that user.
@@ -371,6 +375,11 @@ sub CurrentUserCanDelete { 1 }
 sub _GetObject {
     my $self = shift;
     my $privacy = shift;
+
+    # short circuit: if they pass the object we want anyway, just return it
+    if (blessed($privacy) && $privacy->isa('RT::Record')) {
+        return $privacy;
+    }
 
     my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
 
@@ -450,9 +459,42 @@ sub _build_privacy {
          : undef;
 }
 
-eval "require RT::SharedSetting_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm});
-eval "require RT::SharedSetting_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Local.pm});
+=head2 ObjectsForLoading
+
+Returns a list of objects that can be used to load this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForLoading {
+    my $self = shift;
+    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects;
+}
+
+=head2 ObjectsForCreating
+
+Returns a list of objects that can be used to create this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForCreating {
+    my $self = shift;
+    return grep { $self->CurrentUserCanCreate($_) } $self->_PrivacyObjects;
+}
+
+=head2 ObjectsForModifying
+
+Returns a list of objects that can be used to modify this shared setting. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForModifying {
+    my $self = shift;
+    return grep { $self->CurrentUserCanModify($_) } $self->_PrivacyObjects;
+}
+
+RT::Base->_ImportOverlays();
 
 1;

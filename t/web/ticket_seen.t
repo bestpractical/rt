@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 16;
+use RT::Test nodata => 1, tests => 21, config => 'Set($ShowUnreadMessageNotifications, 1);';
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -30,7 +30,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 my $agent_b = RT::Test::Web->new;
 ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
-diag "create a ticket for testing" if $ENV{TEST_VERBOSE};
+diag "create a ticket for testing";
 my $tid;
 {
     my $ticket = RT::Ticket->new( $user_a );
@@ -44,7 +44,7 @@ my $tid;
     is $ticket->Owner, $user_a->id, 'correct owner';
 }
 
-diag "user B adds a message, we check that user A see notification and can clear it" if $ENV{TEST_VERBOSE};
+diag "user B adds a message, we check that user A see notification and can clear it";
 {
     my $ticket = RT::Ticket->new( $user_b );
     $ticket->Load( $tid );
@@ -52,29 +52,45 @@ diag "user B adds a message, we check that user A see notification and can clear
 
     my ($status, $msg) = $ticket->Correspond( Content => 'bla-bla' );
     ok $status, 'added reply' or diag "error: $msg";
+    my $txns = $ticket->Transactions;
+    $txns->Limit(
+        FIELD           => 'Type',
+        VALUE           => "Correspond",
+    );
+    my $txn = $txns->Last;
+    my $reply_id = $txn->id;
+    ok( $reply_id, 'got correspond txn id' );
 
     $agent_a->goto_ticket($tid);
-    $agent_a->content_like(qr/bla-bla/ims, 'the message on the page');
+    $agent_a->content_contains('bla-bla', 'the message on the page');
 
-    $agent_a->content_like(
-        qr/unread message/ims,
+    $agent_a->content_contains(
+        'unread message',
         'we have not seen something'
     );
 
+    $agent_a->follow_link_ok(
+        { text => 'jump to the first unread message' },
+        'try to jump to first unread message'
+    );
+    like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
+
     $agent_a->follow_link_ok({text => 'jump to the first unread message and mark all messages as seen'}, 'try to mark all as seen');
-    $agent_a->content_like(
-        qr/Marked all messages as seen/ims,
+    $agent_a->content_contains(
+        'Marked all messages as seen',
+        'see success message'
+    );
+    like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
+
+    $agent_a->content_contains(
+        'Marked all messages as seen',
         'see success message'
     );
 
     $agent_a->goto_ticket($tid);
-    $agent_a->content_unlike(
-        qr/unread message/ims,
+    $agent_a->content_lacks(
+        'unread message',
         'we have seen everything, so no messages'
     );
 }
-
-
-
-
 

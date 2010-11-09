@@ -1,0 +1,6 @@
+# This perlcritic policy file isn't to be taken as gospel. It's just a start
+# As of now, it's mostly about disabling policies we're not able to follow or
+# strongly disagree with
+exclude = Subroutines::ProhibitExplicitReturnUndef  Modules::RequireFilenameMatchesPackage TestingAndDebugging::ProhibitNoStrict
+color = 1
+verbose = 7

@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
@@ -188,13 +188,13 @@ sub send_digest {
     }
 }
 
-=item mark_transactions_sent( $frequency, $user, @txn_list );
-
-Takes a frequency string (either 'daily' or 'weekly'), a user  and one or more
-transaction objects as its arguments.  Marks the given deferred
-notifications as sent.
-
-=cut
+# =item mark_transactions_sent( $frequency, $user, @txn_list );
+# 
+# Takes a frequency string (either 'daily' or 'weekly'), a user  and one or more
+# transaction objects as its arguments.  Marks the given deferred
+# notifications as sent.
+# 
+# =cut
 
 sub mark_transactions_sent {
     my ( $freq, $user, @txns ) = @_;
@@ -335,3 +335,42 @@ sub build_digest_for_user {
     return ( $contents_list, $contents_body );
 
 }
+
+__END__
+
+=head1 NAME
+
+rt-email-digest - dispatch deferred notifications as a per-user digest
+
+=head1 SYNOPSIS
+
+    rt-email-digest -m (daily|weekly) [--print] [--help]
+
+=head1 DESCRIPTION
+
+This script is a tool to dispatch all deferred RT notifications as a per-user
+object.
+
+=head1 OPTIONS
+
+=over
+
+=item mode
+
+Specify whether this is a daily or weekly run.
+
+--mode is equal to -m
+
+=item print
+
+Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent
+
+--print is equal to -p
+
+=item help
+
+Print this message
+
+--help is equal to -h
+
+=back

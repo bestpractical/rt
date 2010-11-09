@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,30 +43,8 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-/* $(...)
-    Returns DOM node or array of nodes (if more then one argument passed).
-    If argument is node object allready then do nothing.
-    // Stolen from Prototype
-*/
-function $() {
-    var elements = new Array();
-
-    for (var i = 0; i < arguments.length; i++) {
-        var element = arguments[i];
-        if (typeof element == 'string')
-            element = document.getElementById(element);
-
-        if (arguments.length == 1)
-            return element;
-
-        elements.push(element);
-    }
-
-    return elements;
-}
-
 /* Visibility */
 
 function show(id) { delClass( id, 'hidden' ) }
@@ -74,12 +52,14 @@ function hide(id) { addClass( id, 'hidden' ) }
 
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
-    var e = $(id);
+    var e = jQuery('#' + id);
 
-    if ( e.className.match( /\bhidden\b/ ) )
-        show(e);
-    else
-        hide(e);
+    if ( e.hasClass('hidden') ) {
+        e.removeClass('hidden');
+    }
+    else {
+        e.addClass('hidden');
+    }
 
     return false;
 }
@@ -98,26 +78,25 @@ function switchVisibility(id1, id2) {
 }
 
 /* Classes */
+function jQueryWrap( id ) {
+    return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
+}
 
 function addClass(id, value) {
-    var e = $(id);
-    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
-        return;
-    e.className += e.className? ' '+value : value;
+    jQueryWrap(id).addClass(value);
 }
 
 function delClass(id, value) {
-    var e = $(id);
-    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
+    jQueryWrap(id).removeClass(value);
 }
 
 /* Rollups */
 
 function rollup(id) {
-    var e   = $(id);
-    var e2  = e.parentNode;
+    var e = jQueryWrap(id);
+    var e2  = e.parent();
     
-    if (e.className.match(/\bhidden\b/)) {
+    if (e.hasClass('hidden')) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
@@ -141,96 +120,11 @@ function set_rollup_state(e,e2,state) {
     }
 }
 
-
-/* onload handlers */
-/* New code should be using doOnLoad which makes use of prototype
-   instead. See HeaderJavascript.  It works better than clobbering
-   window.onload.  Left around in case other code is using them */
-
-var onLoadStack     = new Array();
-var onLoadLastStack = new Array();
-var onLoadExecuted  = 0;
-
-function onLoadHook(commandStr) {
-    if(typeof(commandStr) == "string") {
-        onLoadStack[ onLoadStack.length ] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-// some things *really* need to be done after everything else
-function onLoadLastHook(commandStr) {
-    if(typeof(commandStr) == "string"){
-        onLoadLastStack[onLoadLastStack.length] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-function doOnLoadHooks() {
-    if(onLoadExecuted) return;
-
-    var i;
-    for ( i in onLoadStack ) { 
-        eval( onLoadStack[i] );
-    }
-    for ( i in onLoadLastStack ) { 
-        eval( onLoadLastStack[i] );
-    }
-    onLoadExecuted = 1;
-}
-
-window.onload = doOnLoadHooks;
-
-/* new onLoad code */
-
-function doOnLoad(handler) {
-    Event.observe(window, 'load', handler);
-}
-
-/* calendar functions */
-
-function openCalWindow(field) {
-    var objWindow = window.open('<%RT->Config->Get('WebPath')%>/Helpers/CalPopup.html?field='+field, 
-                                'RT_Calendar', 
-                                'height=235,width=285,scrollbars=1');
-    objWindow.focus();
-}
-
-function createCalendarLink(input) {
-    var e = $(input);
-    if (e) {
-        var link = document.createElement('a');
-        link.setAttribute('href', '#');
-        $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
-        //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
-
-        var text = document.createTextNode('<% loc("Calendar") %>');
-        link.appendChild(text);
-
-        var space = document.createTextNode(' ');
-        
-        e.parentNode.insertBefore(link, e.nextSibling);
-        e.parentNode.insertBefore(space, e.nextSibling);
-
-        return true;
-    }
-    return false;
-}
-
 /* other utils */
 
 function focusElementById(id) {
-    var e = $(id);
+    var e = jQuery('#'+id);
     if (e) e.focus();
-}
-
-function updateParentField(field, value) {
-    if (window.opener) {
-        window.opener.$(field).value = value;
-        window.close();
-    }
 }
 
 function setCheckbox(form, name, val) {
@@ -247,71 +141,159 @@ function setCheckbox(form, name, val) {
 
 function walkChildNodes(parent, callback)
 {
-	if( !parent || !parent.childNodes ) return;
-	var list = parent.childNodes;
-	for( var i = 0; i < list.length; i++ ) {
-		callback( list[i] );
-	}
+    if( !parent || !parent.childNodes ) return;
+    var list = parent.childNodes;
+    for( var i = 0; i < list.length; i++ ) {
+        callback( list[i] );
+    }
 }
 
 function walkChildElements(parent, callback)
 {
-	walkChildNodes( parent, function(node) {
-		if( node.nodeType != 1 ) return;
-		return callback( node );
-	} );
+    walkChildNodes( parent, function(node) {
+        if( node.nodeType != 1 ) return;
+        return callback( node );
+    } );
 }
 
 /* shredder things */
 
 function showShredderPluginTab( plugin )
 {
-	var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
-	var root = $('shredder-plugin-tabs');
-	walkChildElements( root, function(node) {
-		if( node.id == plugin_tab_id ) {
-			show( node );
-		} else {
-			hide( node );
-		}
-	} );
-	if( plugin ) {
-		show('shredder-submit-button');
-	} else {
-		hide('shredder-submit-button');
-	}
+    var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
+    var root = jQuery('#shredder-plugin-tabs');
+    
+    root.children(':not(.hidden)').addClass('hidden');
+    root.children('#' + plugin_tab_id).removeClass('hidden');
+
+    if( plugin ) {
+        show('shredder-submit-button');
+    } else {
+        hide('shredder-submit-button');
+    }
 }
 
 function checkAllObjects()
 {
-	var check = $('shredder-select-all-objects-checkbox').checked;
-	var elements = $('shredder-search-form').elements;
-	for( var i = 0; i < elements.length; i++ ) {
-		if( elements[i].name != 'WipeoutObject' ) {
-			continue;
-		}
-		if( elements[i].type != 'checkbox' ) {
-			continue;
-		}
-		if( check ) {
-			elements[i].checked = true;
-		} else {
-			elements[i].checked = false;
-		}
-	}
-}
+    var check = jQuery('#shredder-select-all-objects-checkbox').attr('checked');
+    var elements = jQuery('#shredder-search-form :checkbox[name=WipeoutObject]');
 
-function checkboxToInput(target,checkbox,val){    
-    var tar=$(target);
-    var box = $(checkbox);
-    if(box.checked){
-        if (tar.value==''){
-            tar.value=val;
-        }else{
-            tar.value=val+', '+tar.value;        }
-    }else{
-        tar.value=tar.value.replace(val+', ','');
-        tar.value=tar.value.replace(val,'');
+    if( check ) {
+        elements.attr('checked', true);
+    } else {
+        elements.attr('checked', false);
     }
 }
 
+function checkboxToInput(target,checkbox,val){    
+    var tar = jQuery('#'+target);
+    var box = jQuery('#' + checkbox);
+    if(box.attr('checked')){
+        if (tar.val()==''){
+            tar.val(val);
+        }
+        else{
+            tar.val( val+', '+ tar.val() );        
+        }
+    }
+    else{
+        tar.val(tar.val().replace(val+', ',''));
+        tar.val(tar.val().replace(val,''));
+    }
+}
+
+// ahah for back compatibility as plugins may still use it
+function ahah( url, id ) {
+    jQuery('#'+id).load(url);
+}
+
+// only for back compatibility, please JQuery() instead
+function doOnLoad( js ) {
+    jQuery(js);
+}
+
+jQuery(function() {
+    jQuery(".ui-datepicker:not(.withtime)").datepicker( {
+        dateFormat: 'yy-mm-dd',
+        constrainInput: false
+    } );
+
+    jQuery(".ui-datepicker.withtime").datepicker( {
+        dateFormat: 'yy-mm-dd',
+        constrainInput: false,
+        onSelect: function( dateText, inst ) {
+            // trigger timepicker to get time
+            var button = document.createElement('input');
+            button.setAttribute('type',  'button');
+            jQuery(button).width('5em');
+            jQuery(button).insertAfter(this);
+            jQuery(button).timepickr({val: '00:00'});
+            var date_input = this;
+
+            jQuery(button).blur( function() {
+                var time = jQuery(button).val();
+                if ( ! time.match(/\d\d:\d\d/) ) {
+                    time = '00:00';
+                }
+                jQuery(date_input).val(  dateText + ' ' + time + ':00' );
+                jQuery(button).remove();
+            } );
+
+            jQuery(button).focus();
+        }
+    } );
+});
+
+function textToHTML(value) {
+    return value.replace(/&/g,    "&amp;")
+                .replace(/</g,    "&lt;")
+                .replace(/>/g,    "&gt;")
+                .replace(/-- \n/g,"--&nbsp;\n")
+                .replace(/\n/g,   "\n<br />");
+};
+
+function ReplaceAllTextareas(encoded) {
+    var sAgent = navigator.userAgent.toLowerCase();
+    if (!CKEDITOR.env.isCompatible ||
+        sAgent.indexOf('iphone') != -1 ||
+        sAgent.indexOf('ipad') != -1 ||
+        sAgent.indexOf('android') != -1 )
+        return false;
+
+    // replace all content and signature message boxes
+    var allTextAreas = document.getElementsByTagName("textarea");
+
+    for (var i=0; i < allTextAreas.length; i++) {
+        var textArea = allTextAreas[i];
+        if (jQuery(textArea).hasClass("messagebox")) {
+            // Turn the original plain text content into HTML
+            if (encoded == 0) {
+                textArea.value = textToHTML(textArea.value);
+            }
+            // For this javascript
+            var CKeditorEncoded = document.createElement('input');
+            CKeditorEncoded.setAttribute('type', 'hidden');
+            CKeditorEncoded.setAttribute('name', 'CKeditorEncoded');
+            CKeditorEncoded.setAttribute('value', '1');
+            textArea.parentNode.appendChild(CKeditorEncoded);
+
+            // For fckeditor
+            var typeField = document.createElement('input');
+            typeField.setAttribute('type', 'hidden');
+            typeField.setAttribute('name', textArea.name + 'Type');
+            typeField.setAttribute('value', 'text/html');
+            textArea.parentNode.appendChild(typeField);
+
+
+            CKEDITOR.replace(textArea.name,{width:'100%',height:'<% RT->Config->Get('MessageBoxRichTextHeight') %>'});
+            CKEDITOR.basePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
+
+            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
+        }
+    }
+};
+
+function update_addprincipal_title(ev, ui) {
+    var h3 = jQuery("#acl-AddPrincipal h3");
+    h3.html( h3.text().replace(/: .+$/,'') + ": " + ui.item.value );
+}

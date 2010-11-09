@@ -1,0 +1,40 @@
+@Initial = (
+    sub {
+        use strict;
+        $RT::Logger->debug('Make sure local links are local');
+
+        use RT::URI::fsck_com_rt;
+        my $prefix = RT::URI::fsck_com_rt->LocalURIPrefix . '/ticket/';
+
+        foreach my $dir (qw(Target Base)) {
+            my $found;
+            do {
+                $found = 0;
+                my $links = RT::Links->new( RT->SystemUser );
+                $links->Limit( FIELD => $dir, OPERATOR => 'STARTSWITH', VALUE => $prefix );
+                $links->Limit( FIELD => 'Local'.$dir, VALUE => 0 );
+                $links->Limit(
+                    ENTRYAGGREGATOR => 'OR',
+                    FIELD => 'Local'.$dir,
+                    OPERATOR => 'IS',
+                    VALUE => 'NULL',
+                );
+                $links->RowsPerPage( 1000 );
+                while ( my $link = $links->Next ) {
+                    $found++;
+                    my $uri = $link->$dir();
+                    $uri =~ s/^\Q$prefix//;
+                    if ( int($uri) eq $uri && $uri > 0 ) {
+                        my $method = 'SetLocal'. $dir;
+                        my ($status, $msg) = $link->$method( $uri );
+                        unless ( $status ) {
+                            die "Couldn't change local $dir: $msg";
+                        }
+                    } else {
+                        die "$dir URI looks like local, but is not parseable";
+                    }
+                }
+            } while $found == 1000;
+        }
+    },
+);

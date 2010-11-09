@@ -6,11 +6,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 43;
+use RT::Test nodata => 1, tests => 43;
 
 # setup the queue
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 my $queue = 'SearchTests-'.$$;
 $q->Create(Name => $queue);
 ok ($q->id, "Created the queue");
@@ -19,17 +19,17 @@ ok ($q->id, "Created the queue");
 # and setup the CFs
 # we believe the Type shouldn't matter.
 
-my $cf = RT::CustomField->new($RT::SystemUser);
+my $cf = RT::CustomField->new(RT->SystemUser);
 $cf->Create(Name => 'SearchTest', Type => 'Freeform', MaxValues => 0, Queue => $q->id);
 ok($cf->id, "Created the SearchTest CF");
 my $cflabel = "CustomField-".$cf->id;
 
-my $cf2 = RT::CustomField->new($RT::SystemUser);
+my $cf2 = RT::CustomField->new(RT->SystemUser);
 $cf2->Create(Name => 'SearchTest2', Type => 'Freeform', MaxValues => 0, Queue => $q->id);
 ok($cf2->id, "Created the SearchTest2 CF");
 my $cflabel2 = "CustomField-".$cf2->id;
 
-my $cf3 = RT::CustomField->new($RT::SystemUser);
+my $cf3 = RT::CustomField->new(RT->SystemUser);
 $cf3->Create(Name => 'SearchTest3', Type => 'Freeform', MaxValues => 0, Queue => $q->id);
 ok($cf3->id, "Created the SearchTest3 CF");
 my $cflabel3 = "CustomField-".$cf3->id;
@@ -39,16 +39,16 @@ my $cflabel3 = "CustomField-".$cf3->id;
 # caused spurious results on negative searches if another custom field
 # with the same name existed on a different queue.  Hence, we make
 # duplicate CFs on a different queue here
-my $dup = RT::Queue->new($RT::SystemUser);
+my $dup = RT::Queue->new(RT->SystemUser);
 $dup->Create(Name => $queue . "-Copy");
 ok ($dup->id, "Created the duplicate queue");
-my $dupcf = RT::CustomField->new($RT::SystemUser);
+my $dupcf = RT::CustomField->new(RT->SystemUser);
 $dupcf->Create(Name => 'SearchTest', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
 ok($dupcf->id, "Created the duplicate SearchTest CF");
-$dupcf = RT::CustomField->new($RT::SystemUser);
+$dupcf = RT::CustomField->new(RT->SystemUser);
 $dupcf->Create(Name => 'SearchTest2', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
 ok($dupcf->id, "Created the SearchTest2 CF");
-$dupcf = RT::CustomField->new($RT::SystemUser);
+$dupcf = RT::CustomField->new(RT->SystemUser);
 $dupcf->Create(Name => 'SearchTest3', Type => 'Freeform', MaxValues => 0, Queue => $dup->id);
 ok($dupcf->id, "Created the SearchTest3 CF");
 
@@ -58,7 +58,7 @@ ok($dupcf->id, "Created the SearchTest3 CF");
 # there's probably a way to think harder and do this with fewer
 
 
-my $t1 = RT::Ticket->new($RT::SystemUser);
+my $t1 = RT::Ticket->new(RT->SystemUser);
 my ( $id, undef $msg ) = $t1->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest1',
@@ -70,7 +70,7 @@ my ( $id, undef $msg ) = $t1->Create(
 ok( $id, $msg );
 
 
-my $t2 = RT::Ticket->new($RT::SystemUser);
+my $t2 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t2->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest2',
@@ -81,7 +81,7 @@ my $t2 = RT::Ticket->new($RT::SystemUser);
 );
 ok( $id, $msg );
 
-my $t3 = RT::Ticket->new($RT::SystemUser);
+my $t3 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t3->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest3',
@@ -92,7 +92,7 @@ my $t3 = RT::Ticket->new($RT::SystemUser);
 );
 ok( $id, $msg );
 
-my $t4 = RT::Ticket->new($RT::SystemUser);
+my $t4 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t4->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest4',
@@ -103,7 +103,7 @@ my $t4 = RT::Ticket->new($RT::SystemUser);
 );
 ok( $id, $msg );
 
-my $t5 = RT::Ticket->new($RT::SystemUser);
+my $t5 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t5->Create(
     Queue      => $q->id,
 #    Subject    => 'SearchTest5',
@@ -114,7 +114,7 @@ my $t5 = RT::Ticket->new($RT::SystemUser);
 );
 ok( $id, $msg );
 
-my $t6 = RT::Ticket->new($RT::SystemUser);
+my $t6 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t6->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest6',
@@ -125,7 +125,7 @@ my $t6 = RT::Ticket->new($RT::SystemUser);
 );
 ok( $id, $msg );
 
-my $t7 = RT::Ticket->new($RT::SystemUser);
+my $t7 = RT::Ticket->new(RT->SystemUser);
 ( $id, undef, $msg ) = $t7->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest7',
@@ -137,7 +137,7 @@ my $t7 = RT::Ticket->new($RT::SystemUser);
 ok( $id, $msg );
 
 # we have tickets. start searching
-my $tix = RT::Tickets->new($RT::SystemUser);
+my $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue'");
 is($tix->Count, 7, "found all the tickets")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
@@ -145,73 +145,73 @@ is($tix->Count, 7, "found all the tickets")
 
 # very simple searches. both CF and normal
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest = 'foo1'");
 is($tix->Count, 1, "matched identical subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
 is($tix->Count, 1, "matched LIKE subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest = 'foo'");
 is($tix->Count, 0, "IS a regexp match")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
 is($tix->Count, 5, "matched LIKE subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL");
 is($tix->Count, 2, "IS null CF")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search1'");
 is($tix->Count, 1, "LIKE requestor")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors = 'search1\@example.com'");
 is($tix->Count, 1, "IS requestor")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search'");
 is($tix->Count, 6, "LIKE requestor")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
 is($tix->Count, 1, "Search for no requestor")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = 'SearchTest1'");
 is($tix->Count, 1, "IS subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'SearchTest1'");
 is($tix->Count, 1, "LIKE subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = ''");
 is($tix->Count, 1, "found one ticket")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'SearchTest'");
 is($tix->Count, 6, "found two ticket")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'qwerty'");
 is($tix->Count, 0, "found zero ticket")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
@@ -221,58 +221,58 @@ is($tix->Count, 0, "found zero ticket")
 
 # various combinations
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar1'");
 is($tix->Count, 1, "LIKE cf and LIKE cf");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' AND CF.SearchTest2 = 'bar1'");
 is($tix->Count, 1, "is cf and is cf");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo' AND CF.SearchTest2 LIKE 'bar1'");
 is($tix->Count, 0, "is cf and like cf");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar' AND CF.SearchTest3 LIKE 'qux'");
 is($tix->Count, 3, "like cf and like cf and like cf");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar' AND CF.SearchTest3 LIKE 'qux6'");
 is($tix->Count, 1, "like cf and like cf and is cf");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest LIKE 'foo' AND Subject LIKE 'SearchTest'");
 is($tix->Count, 4, "like cf and like subject");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest IS NULL AND CF.SearchTest2 = 'bar2'");
 is($tix->Count, 1, "null cf and is cf");
 
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
 is($tix->Count, 1, "null cf and null cf"); 
 
 # tests with the same CF listed twice
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.{SearchTest} = 'foo1'");
 is($tix->Count, 1, "is cf.{name} format");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3'");
 is($tix->Count, 2, "is cf1 or is cf1");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest IS NULL");
 is($tix->Count, 3, "is cf1 or null cf1");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("(CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3') AND (CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2')");
 is($tix->Count, 1, "(is cf1 or is cf1) and (is cf2 or is cf2)");
 
-$tix = RT::Tickets->new($RT::SystemUser);
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
 is($tix->Count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 

@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,13 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
-    QueueObj => $QueueObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -88,7 +85,7 @@
 <td><& /Elements/SelectPriority,
     Name => "FinalPriority",
     Default => $Create? 0: $QueueObj->FinalPriority,
-&></td>
+&><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
@@ -140,31 +137,26 @@
 
 
 <%INIT>
-my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
+my ($title, @results, $Disabled, $EnabledChecked);
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = 'checked="checked"';
 
 if ($Create) {
-    $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
         Abort("$msg") unless $val;
-        delete $session{'create_in_queues'};
 		push @results, $msg;
     }
     else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
-    
-    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name);
 }
 if ( $QueueObj->Id ) {
-    delete $session{'create_in_queues'};
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt SubjectTag Disabled);
 
@@ -174,6 +166,13 @@ if ( $QueueObj->Id ) {
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
             qw(Sign Encrypt Disabled);
     }
+
+    $m->callback(
+        CallbackName => 'BeforeUpdate',
+        Queue => $QueueObj,
+        AttributesRef => \@attribs,
+        ARGSRef => \%ARGS,
+    );
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -194,6 +193,13 @@ if ( $QueueObj->Id ) {
     );
     push @results, @linkresults;
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj );
+    if ( RT->Config->Get('RTAddressRegexp') ) {
+        foreach my $address ( $QueueObj->CorrespondAddress, $QueueObj->CommentAddress ) {
+            next unless defined $address && length $address;
+            next if RT::EmailParser->IsRTAddress( $address );
+            push @results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
+        }
+    }
 }
 </%INIT>
 

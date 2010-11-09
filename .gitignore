@@ -1,3 +1,4 @@
+bin/fastcgi_server
 bin/mason_handler.fcgi
 bin/mason_handler.scgi
 bin/mason_handler.svc
@@ -9,20 +10,31 @@ bin/webmux.pl
 etc/RT_Config.pm
 etc/upgrade/3.8-branded-queues-extension
 etc/upgrade/3.8-ical-extension
-lib/RT.pm
+etc/upgrade/split-out-cf-categories
+etc/upgrade/generate-rtaddressregexp
+lib/RT/Generated.pm
 Makefile
 t/data/gnupg/keyrings/random_seed
+t/data/configs/apache2.2+fastcgi.conf
+t/data/configs/apache2.2+mod_perl.conf
+t/tmp/
 sbin/rt-attributes-viewer
 sbin/rt-clean-sessions
 sbin/rt-dump-database
 sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin
+sbin/rt-fts-oracle
+sbin/rt-fulltext-indexer
 sbin/rt-server
+sbin/rt-server.fcgi
+sbin/rt-session-viewer
 sbin/rt-setup-database
+sbin/rt-setup-fulltext-index
 sbin/rt-shredder
 sbin/rt-test-dependencies
 sbin/rt-validator
+sbin/standalone_httpd
 var/mason_data/
 autom4te.cache
 configure
@@ -32,6 +44,8 @@ config.pld
 *~
 *.swp
 *.swo
+.prove
+nytprof.out*
 
 # RT4 junk
 META.yml
@@ -39,3 +53,5 @@ inc/
 rt4
 var/
 etc/site_config.yml
+etc/local.yml
+etc/log4perl.conf

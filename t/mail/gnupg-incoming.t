@@ -2,47 +2,36 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 46;
+my $homedir;
+BEGIN {
+    require RT::Test;
+    $homedir =
+      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+        qw/data gnupg keyrings/ );
+}
 
-plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
+use RT::Test::GnuPG
+  tests         => 39,
+  actual_server => 1,
+  gnupg_options => {
+    passphrase => 'rt-test',
+    homedir    => $homedir,
+  };
 
-
-use File::Temp;
-use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
-
-my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-    qw(data gnupg keyrings));
-
-# catch any outgoing emails
-RT::Test->set_mail_catcher;
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
 # configure key for General queue
-$m->get( $baseurl."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok( $m->login, 'we did log in' );
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
 		 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::User->new($RT::SystemUser));
+ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 $user->SetEmailAddress('recipient@example.com');
 
@@ -61,7 +50,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject,
         'This is a test of new ticket creation as root',
         "Created the ticket"
@@ -80,7 +69,7 @@ my $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -101,7 +90,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'signed message for queue',
         "Created the ticket"
     );
@@ -122,7 +111,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign --clearsign),
+        qw(gpg --batch --no-tty --armor --sign --clearsign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'recipient',
@@ -143,7 +132,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'signed message for queue',
         "Created the ticket"
     );
@@ -163,7 +152,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --encrypt --armor --sign),
+        qw(gpg --batch --no-tty --encrypt --armor --sign),
         '--recipient'   => 'general@example.com',
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
@@ -185,7 +174,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'Encrypted message for queue',
         "Created the ticket"
     );
@@ -212,7 +201,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --sign),
+        qw(gpg --batch --no-tty --armor --sign),
         '--default-key' => 'rt@example.com',
         '--homedir'     => $homedir,
         '--passphrase'  => 'test',
@@ -233,7 +222,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     # XXX: in this case, which credential should we be using?
@@ -248,7 +237,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'random@localhost',
         '--homedir'     => $homedir,
     ),
@@ -268,7 +257,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     
@@ -285,7 +274,7 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --armor --encrypt),
+        qw(gpg --batch --no-tty --armor --encrypt),
         '--recipient'   => 'rt@example.com',
         '--homedir'     => $homedir,
     ),
@@ -312,18 +301,9 @@ is(@mail, 1, 'caught outgoing mail.');
 }
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
-}
-
-sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    return $tick;
 }
 

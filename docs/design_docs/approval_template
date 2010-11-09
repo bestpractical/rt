@@ -1,13 +1,13 @@
 ===Create-Ticket: approval
  {  my $name = "HR";
-     my $groups = RT::Groups->new($RT::SystemUser);
+     my $groups = RT::Groups->new(RT->SystemUser);
    $groups->LimitToUserDefinedGroups();
    $groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => "$name");
    $groups->WithMember($TransactionObj->CreatorObj->Id);
 
    my $groupid = $groups->First->Id;
 
-   my $adminccs = RT::Users->new($RT::SystemUser);
+   my $adminccs = RT::Users->new(RT->SystemUser);
    $adminccs->WhoHaveRight(Right => 'AdminGroup', IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, Object => $groups->First);
 
     my @admins;
@@ -15,11 +15,11 @@
         push (@admins, $admin->Name); 
     }
  }
- Queue: Approvals
- Type: Approval
+ Queue: ___Approvals
+ Type: approval
  AdminCcs: {join (", ",@admins) }
- Depended-On-By: {$tickets{'TOP'}->Id}
- Refers-To: {$tickets{'TOP'}->Id}
+ Depended-On-By: TOP
+ Refers-To: TOP
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {%$tickets{'TOP'}->Id}: {$tickets{'TOP'}->Subject}
+ Content: Your approval is requested for the ticket {$Tickets{'TOP'}->Id}: {$Tickets{'TOP'}->Subject}

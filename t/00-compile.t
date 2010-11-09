@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 34;
+use RT::Test nodb => 1, tests => 31;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -24,15 +24,12 @@ require_ok("RT::GroupMembers");
 require_ok("RT::ScripActions");
 require_ok("RT::Transactions");
 require_ok("RT::ScripCondition");
-require_ok("RT::Action::Generic");
+require_ok("RT::Action");
 require_ok("RT::ScripConditions");
-require_ok("RT::Search::Generic");
-require_ok("RT::Search::Generic");
-require_ok("RT::Search::Generic");
-require_ok("RT::Search::Generic");
+require_ok("RT::Search");
 require_ok("RT::Action::SendEmail");
 require_ok("RT::CachedGroupMembers");
-require_ok("RT::Condition::Generic");
+require_ok("RT::Condition");
 require_ok("RT::Interface::Web");
 require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");
@@ -55,4 +52,3 @@ for (@files) {
     require_ok($_);
 }
 
-1;

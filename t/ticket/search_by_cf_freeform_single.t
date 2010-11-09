@@ -3,17 +3,17 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 99;
+use RT::Test nodata => 1, tests => 98;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 my ($cf_name, $cf_id, $cf) = ("Test", 0, undef);
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => $cf_name,
         Queue => $q->id,
@@ -25,29 +25,10 @@ my ($cf_name, $cf_id, $cf) = ("Test", 0, undef);
 
 my ($total, @data, @tickets, %test) = (0, ());
 
-sub add_tix_from_data {
-    my @res = ();
-    while (@data) {
-        my %args = %{ shift(@data) };
-        my $cf_value = $args{'Subject'} ne '-'? $args{'Subject'} : undef;
-        my $t = RT::Ticket->new($RT::SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
-            Queue => $q->id,
-            %args,
-            "CustomField-$cf_id" => $cf_value,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        is( $t->FirstCustomFieldValue( $cf_name ), $cf_value, 'correct value' );
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
-
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Tickets->new($RT::SystemUser);
+        my $tix = RT::Tickets->new(RT->SystemUser);
         $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -70,9 +51,9 @@ sub run_tests {
 
 @data = (
     { Subject => '-' },
-    { Subject => 'x' },
-    { Subject => 'y' },
-    { Subject => 'z' },
+    { Subject => 'x', "CustomField-$cf_id" => 'x', },
+    { Subject => 'y', "CustomField-$cf_id" => 'y', },
+    { Subject => 'z', "CustomField-$cf_id" => 'z', },
 );
 %test = (
     "CF.{$cf_id} IS NULL"                 => { '-' => 1, x => 0, y => 0, z => 0 },
@@ -131,12 +112,14 @@ sub run_tests {
     "'CF.$queue.{$cf_name}' = 'x' OR 'CF.$queue.{$cf_name}' IS NOT NULL"  => { '-' => 0, x => 1, y => 1, z => 1 },
 
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $q->id }, @data);
+$total = scalar @tickets;
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
 
-exit 0;
+@tickets = ();
+

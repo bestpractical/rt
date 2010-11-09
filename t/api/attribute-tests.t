@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 34;
+use RT::Test nodata => 1, tests => 34;
 
 
 
@@ -11,7 +11,7 @@ my $attribute = "squelch-$runid";
 
 ok(require RT::Attributes);
 
-my $user = RT::User->new($RT::SystemUser);
+my $user = RT::User->new(RT->SystemUser);
 ok (UNIVERSAL::isa($user, 'RT::User'));
 my ($id,$msg)  = $user->Create(Name => 'attrtest-'.$runid);
 ok ($id, $msg);
@@ -81,6 +81,3 @@ ok(1, $attr->BuildSelectQuery);
 @names = $attr->Names;
 is("@names", "TestAttr");
 
-
-
-1;

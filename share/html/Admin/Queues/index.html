@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,12 +43,10 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc("Admin queues") &>
-<& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/', 
-    current_subtab => 'Admin/Queues/', 
-    Title => loc("Admin queues") &>
+<& /Elements/Tabs &>
 
 
 
@@ -64,33 +62,63 @@
     Format => $Format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy FindDisabledQueues)],
+    PassArguments => [qw(
+        Format Rows Page Order OrderBy
+        FindDisabledQueues QueueString QueueOp QueueField
+    )],
 &>
 % }
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
+% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
+<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
+% }
+
+<select name="QueueField">
+% foreach my $col (qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
+<option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+% }
+</select>
+<& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
+<input size="8" name="QueueString" value="<% $QueueString %>" />
+<br />
+
 <input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
 <%INIT>
-my ($queue, $caption);
-my $queues = new RT::Queues($session{'CurrentUser'});
-$queues->UnLimit();
+my $queues = RT::Queues->new($session{'CurrentUser'});
+$queues->FindAllRows if $FindDisabledQueues;
 
-if ($FindDisabledQueues) {
-    $caption = loc("All Queues");
-    $queues->{'find_disabled_rows'} = 1;
+my ($caption);
+if ( defined $QueueString && length $QueueString ) {
+    $caption = $FindDisabledQueues
+        ? loc("All queues matching search criteria")
+        : loc("Enabled queues matching search criteria");
+    $queues->Limit(
+        FIELD    => $QueueField,
+        OPERATOR => $QueueOp,
+        VALUE    => $QueueString,
+    );
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Queues/Modify.html?id=".$queues->First->id)
+          if $queues->Count == 1;
 } else {
-    $caption = loc("Enabled Queues");
+    $queues->UnLimit;
+    $caption = $FindDisabledQueues
+        ? loc("All Queues")
+        : loc("Enabled Queues");
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
 
 </%INIT>
 <%ARGS>
 $FindDisabledQueues => 0
 $Format             => undef
+
+$QueueField         => 'Name'
+$QueueOp            => '='
+$QueueString        => ''
 </%ARGS>

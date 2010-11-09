@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -68,13 +68,15 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 
 package RT::Date;
 
-use Time::Local;
-use POSIX qw(tzset);
 
 use strict;
 use warnings;
 use base qw/RT::Base/;
 
+use DateTime;
+
+use Time::Local;
+use POSIX qw(tzset);
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
 $MINUTE = 60;
@@ -117,7 +119,7 @@ our @FORMATTERS = (
     'RFC2616',       # loc
     'iCal',          # loc
 );
-if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' ) {
+if (DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
     push @FORMATTERS, 'LocalizedDateTime'; # loc
 }
 
@@ -163,7 +165,7 @@ sub Set {
         @_
     );
 
-    return $self->Unix(0) unless $args{'Value'};
+    return $self->Unix(0) unless $args{'Value'} && $args{'Value'} =~ /\S/;
 
     if ( $args{'Format'} =~ /^unix$/i ) {
         return $self->Unix( $args{'Value'} );
@@ -501,6 +503,9 @@ as described in L</Get>.
 
 sub DateTime {
     my $self = shift;
+    unless (defined $self) {
+        use Carp; Carp::confess("undefined $self");
+    }
     return $self->Get( @_, Date => 1, Time => 1 );
 }
 
@@ -641,25 +646,34 @@ sub LocalizedDateTime
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
-                 DateFormat => 'full_date_format',
-                 TimeFormat => 'medium_time_format',
+                 DateFormat => 'date_format_full',
+                 TimeFormat => 'time_format_medium',
                  AbbrDay => 1,
                  AbbrMonth => 1,
                  @_,
                );
 
-    return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
-    return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
+    return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
+        unless DateTime::->can('format_cldr');
+
+
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
-    my $lang = $self->CurrentUser->UserObj->Lang || 'en';
+    my $lang = $self->CurrentUser->UserObj->Lang;
+    unless ($lang) {
+        require I18N::LangTags::Detect;
+        $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
+    }
+    
 
     my $formatter = DateTime::Locale->load($lang);
+    return $self->loc("DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature") 
+        unless $formatter->can('date_format_full');
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
-    $date_format =~ s/\%A/\%a/g if ( $args{'AbbrDay'} );
-    $date_format =~ s/\%B/\%b/g if ( $args{'AbbrMonth'} );
+    $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );
+    $date_format =~ s/MMMM/MMM/g if ( $args{'AbbrMonth'} );
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
                             $self->Localtime($args{'Timezone'});
@@ -668,7 +682,7 @@ sub LocalizedDateTime
 
     # FIXME : another way to call this module without conflict with local
     # DateTime method?
-    my $dt = new DateTime::( locale => $lang,
+    my $dt = DateTime::->new( locale => $lang,
                             time_zone => $tz,
                             year => $year,
                             month => $mon,
@@ -680,11 +694,11 @@ sub LocalizedDateTime
                           );
 
     if ( $args{'Date'} && !$args{'Time'} ) {
-        return $dt->strftime($date_format);
+        return $dt->format_cldr($date_format);
     } elsif ( !$args{'Date'} && $args{'Time'} ) {
-        return $dt->strftime($time_format);
+        return $dt->format_cldr($time_format);
     } else {
-        return $dt->strftime($date_format) . " " . $dt->strftime($time_format);
+        return $dt->format_cldr($date_format) . " " . $dt->format_cldr($time_format);
     }
 }
 
@@ -843,7 +857,7 @@ sub RFC2616 {
                  Seconds => 1, DayOfWeek => 1,
                );
 
-    my $res = $self->RFC2822( @_ );
+    my $res = $self->RFC2822( %args );
     $res =~ s/\s*[+-]\d\d\d\d$/ GMT/ if $args{'Time'};
     return $res;
 }
@@ -1007,6 +1021,12 @@ If both server's and user's timezone names are undefined returns 'UTC'.
 
 sub Timezone {
     my $self = shift;
+
+    if (@_ == 0) {
+        Carp::carp "RT::Date->Timezone is a setter only";
+        return undef;
+    }
+
     my $context = lc(shift);
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
@@ -1025,9 +1045,6 @@ sub Timezone {
 }
 
 
-eval "require RT::Date_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Vendor.pm});
-eval "require RT::Date_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

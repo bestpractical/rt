@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -146,6 +146,29 @@ sub Count {
     return scalar @{$self->{'objects'}};
 }
 
+=head2 CountAll
+
+Returns the number of search objects found
+
+=cut
+
+sub CountAll {
+    my $self = shift;
+    return $self->Count;
+}
+
+=head2 GotoPage
+
+Act more like a normal L<DBIx::SearchBuilder> collection.
+Moves the internal index around
+
+=cut
+
+sub GotoPage {
+    my $self = shift;
+    $self->{idx} = shift;
+}
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
@@ -158,25 +181,13 @@ sub _GetObject {
     return RT::SavedSearch->new($self->CurrentUser)->_GetObject($privacy);
 }
 
-### Internal methods
-
-# _PrivacyObjects: returns a list of objects that can be used to load saved searches from.
-
 sub _PrivacyObjects {
-    my $self        = shift;
-    my $CurrentUser = $self->CurrentUser;
-
-    my $groups = RT::Groups->new($CurrentUser);
-    $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $CurrentUser->Id,
-                         Recursively => 1 );
-
-    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+    my $self = shift;
+    Carp::carp("RT::SavedSearches->_PrivacyObjects is deprecated. Please use RT::SavedSearch->_PrivacyObjects");
+    my $search = RT::SavedSearch->new($self->CurrentUser);
+    return $search->_PrivacyObjects(@_);
 }
 
-eval "require RT::SavedSearches_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Vendor.pm});
-eval "require RT::SavedSearches_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

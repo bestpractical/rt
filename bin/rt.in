@@ -1,41 +1,41 @@
 #!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,12 +44,18 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 # Designed and implemented for Best Practical Solutions, LLC by
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+
+if ( $ARGV[0] && $ARGV[0] =~ /^(?:--help|-h)$/ ) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
 
 # This program is intentionally written to have as few non-core module
 # dependencies as possible. It should stay that way.
@@ -1347,7 +1353,7 @@ sub Form::compose {
                         $line .= ",\n$sp$v";
                     }
                     else {
-                        $line = $line ? "$line, $v" : "$key: $v";
+                        $line = $line ? "$line,$v" : "$key: $v";
                     }
                 }
 
@@ -1415,7 +1421,7 @@ sub config_from_file {
         }
 
         # Still nothing? We'll fall back to some likely defaults.
-        for ("$HOME/$rc", "/etc/rt.conf") {
+        for ("$HOME/$rc", "@LOCAL_ETC_PATH@/rt.conf", "/etc/rt.conf") {
             return parse_config_file($_) if (-r $_);
         }
     }
@@ -1514,7 +1520,7 @@ sub vsplit {
         # XXX: This should become a real parser, à la Text::ParseWords.
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
-        my ( $a, $b ) = split /,/, $line, 2;
+        my ( $a, $b ) = split /\s*,\s*/, $line, 2;
 
         while ($a) {
             no warnings 'uninitialized';
@@ -1522,7 +1528,7 @@ sub vsplit {
                 my $s = $a;
                 while ( $a !~ /'$/ || (   $a !~ /(\\\\)+'$/
                             && $a =~ /(\\)+'$/ )) {
-                    ( $a, $b ) = split /,/, $b, 2;
+                    ( $a, $b ) = split /\s*,\s*/, $b, 2;
                     $s .= ',' . $a;
                 }
                 push @words, $s;
@@ -1531,7 +1537,7 @@ sub vsplit {
                 my $s = $a;
                 while ( $a !~ /}$/ ) {
                     ( $a, $b ) =
-                      split /,/, $b, 2;
+                      split /\s*,\s*/, $b, 2;
                     $s .= ',' . $a;
                 }
                 $s =~ s/^q{/'/;
@@ -1541,7 +1547,7 @@ sub vsplit {
             else {
                 push @words, $a;
             }
-            ( $a, $b ) = split /,/, $b, 2;
+            ( $a, $b ) = split /\s*,\s*/, $b, 2;
         }
 
 
@@ -1556,7 +1562,7 @@ sub expand_list {
     my ($list) = @_;
 
     my @elts;
-    foreach (split /,/, $list) {
+    foreach (split /\s*,\s*/, $list) {
         push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
@@ -1751,10 +1757,7 @@ Title: intro
 Title: introduction
 Text:
 
-     ** THIS IS AN UNSUPPORTED PREVIEW RELEASE **
-     ** PLEASE REPORT BUGS TO rt-bugs@bestpractical.com **
-
-    This is a command-line interface to RT 3.0 or newer
+    This is a command-line interface to RT 3.0 or newer.
 
     It allows you to interact with an RT server over HTTP, and offers an
     interface to RT's functionality that is better-suited to automation
@@ -1829,7 +1832,8 @@ Text:
     The program looks for configuration directives in a file named .rtrc
     (or $RTCONFIG; see below) in the current directory, and then in more
     distant ancestors, until it reaches /. If no suitable configuration
-    files are found, it will also check for ~/.rtrc and /etc/rt.conf.
+    files are found, it will also check for ~/.rtrc, @LOCAL_ETC_PATH@/rt.conf
+    and /etc/rt.conf.
 
     Configuration directives:
 
@@ -2587,3 +2591,24 @@ Text:
         $ rt shell
         rt> quit
         $
+
+__END__
+
+=head1 NAME
+
+rt - command-line interface to RT 3.0 or newer
+
+=head1 SYNOPSIS
+
+    rt help
+
+=head1 DESCRIPTION
+
+This script allows you to interact with an RT server over HTTP, and offers an
+interface to RT's functionality that is better-suited to automation and
+integration with other tools.
+
+In general, each invocation of this program should specify an action to
+perform on one or more objects, and any other arguments required to complete
+the desired action.
+

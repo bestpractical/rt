@@ -1,0 +1,134 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+#requestor-accordion .ui-accordion-content {
+    padding: 0 0 0 20px;
+    margin: -0.5em 0 0.5em 0;
+    border: none;
+    background: none;
+    color: black !important;
+}
+
+#requestor-accordion {
+    margin: 0.5em 0 0 0;
+}
+
+#requestor-accordion h3 .ui-icon {
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/jquery_ui/ui-icons_4488cc_256x240.png);
+    left: 0;
+}
+
+#requestor-accordion h3 {
+    padding: 0;
+    background: none !important;
+}
+
+#requestor-accordion h3, #requestor-accordion h3 a {
+    color: black !important;
+    border: none !important;
+    margin: 0;
+}
+
+#requestor-accordion h3 a {
+    font-size: 90%;
+    padding: 0 0 0.25em 20px;
+}
+
+#requestor-accordion h3 a:hover,
+#requestor-accordion h3.ui-state-active a {
+    text-decoration: underline;
+}
+
+#requestor-accordion a.modify-user {
+    font-size: 80%;
+    color: black !important;
+}
+
+/* More about requestor ticket lists */
+
+.more-about-requestor-tickets {
+    background: none;
+    border: none;
+    font-family: arial,helvetica,sans-serif !important;
+    padding: 0 !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav {
+    background: none;
+    border: none;
+    font-size: 80%;
+    padding: 0;
+    margin: 0;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav li {
+    border: none !important;
+    background: none !important;
+    padding-right: 1em;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a {
+    padding: 0 !important;
+    margin: 0 !important;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a:hover,
+.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-selected a {
+    text-decoration: underline;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel {
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel a {
+    color: black !important;
+}

@@ -1,0 +1,1 @@
+ALTER TABLE Tickets Modify Status varchar(64);

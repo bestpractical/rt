@@ -16,7 +16,7 @@ BEGIN {
 
 use_ok('RT::Shredder::Plugin::Tickets');
 {
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     is(lc $plugin->Type, 'search', 'correct type');
@@ -28,15 +28,14 @@ use_ok('RT::Ticket');
 use_ok('RT::Tickets');
 
 { # create parent and child and check functionality of 'with_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Ticket->new( RT->SystemUser );
     my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
-
-    my $child = RT::Ticket->new( $RT::SystemUser );
+    my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my ($status, $msg, @objs);
@@ -67,18 +66,18 @@ use_ok('RT::Tickets');
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and link them reqursively to check that we don't hang
-    my $parent = RT::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Ticket->new( RT->SystemUser );
     my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
 
-    my $child = RT::Ticket->new( $RT::SystemUser );
+    my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
 
     my ($status, $msg) = $child->AddLink( Target => $pid, Type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my (@objs);
@@ -109,18 +108,20 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 { # create parent and child and check functionality of 'apply_query_to_linked' arg
-    my $parent = RT::Ticket->new( $RT::SystemUser );
-    my ($pid) = $parent->Create( Subject => 'parent', Queue => 1, Status => 'resolved' );
+    my $parent = RT::Ticket->new( RT->SystemUser );
+    my ($pid) = $parent->Create( Subject => 'parent', Queue => 1 );
     ok( $pid, "created new ticket" );
+    $parent->SetStatus('resolved');
 
-    my $child1 = RT::Ticket->new( $RT::SystemUser );
+    my $child1 = RT::Ticket->new( RT->SystemUser );
     my ($cid1) = $child1->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid1, "created new ticket" );
-    my $child2 = RT::Ticket->new( $RT::SystemUser );
-    my ($cid2) = $child2->Create( Subject => 'child', Queue => 1, MemberOf => $pid, Status => 'resolved' );
+    my $child2 = RT::Ticket->new( RT->SystemUser );
+    my ($cid2) = $child2->Create( Subject => 'child', Queue => 1, MemberOf => $pid);
     ok( $cid2, "created new ticket" );
+    $child2->SetStatus('resolved');
 
-    my $plugin = new RT::Shredder::Plugin::Tickets;
+    my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my ($status, $msg) = $plugin->TestArgs( query => 'Status = "resolved"', apply_query_to_linked => 1 );
@@ -140,7 +141,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
 
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $cid1 );
     is($ticket->id, $cid1, 'loaded ticket');
 

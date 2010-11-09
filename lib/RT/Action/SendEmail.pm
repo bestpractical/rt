@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
@@ -54,8 +54,6 @@ use strict;
 use warnings;
 
 use base qw(RT::Action);
-
-use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use RT::Interface::Email;
@@ -82,13 +80,12 @@ RT::Action::SendEmail.
 
 =head2 CleanSlate
 
-Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
+Cleans class-wide options, like L</AttachTickets>.
 
 =cut
 
 sub CleanSlate {
     my $self = shift;
-    $self->SquelchMailTo(undef);
     $self->AttachTickets(undef);
 }
 
@@ -184,11 +181,11 @@ sub Prepare {
 
     for my $header (@EMAIL_RECIPIENT_HEADERS) {
 
-    $self->SetHeader( $header, join( ', ', @{ $self->{$header} } ) )
-        if ( !$MIMEObj->head->get($header)
-        && $self->{$header}
-        && @{ $self->{$header} } );
-}
+        $self->SetHeader( $header, join( ', ', @{ $self->{$header} } ) )
+          if (!$MIMEObj->head->get($header)
+            && $self->{$header}
+            && @{ $self->{$header} } );
+    }
     # PseudoTo (fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
@@ -208,7 +205,9 @@ sub Prepare {
     foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
         $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
-        $part->head->mime_attr( "Content-Type"         => $type );
+        $part->head->mime_attr( "Content-Type" => $type );
+        # utf-8 here is for _FindOrGuessCharset in I18N.pm
+        # it's not the final charset/encoding sent
         $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
 
@@ -349,7 +348,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Attachments->new($RT::SystemUser);
+    my $attachments = RT::Attachments->new(RT->SystemUser);
     $attachments->Limit(
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
@@ -413,10 +412,7 @@ sub AddAttachment {
         Type     => $attach->ContentType,
         Charset  => $attach->OriginalEncoding,
         Data     => $attach->OriginalContent,
-        Filename => defined( $attach->Filename )
-        ? $self->MIMEEncodeString( $attach->Filename,
-            RT->Config->Get('EmailOutputEncoding') )
-        : undef,
+        Filename => $self->MIMEEncodeString( $attach->Filename ),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
@@ -471,7 +467,7 @@ sub AddTicket {
     my $tid  = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs   = RT::Attachments->new($RT::SystemUser);
+    my $attachs   = RT::Attachments->new(RT->SystemUser);
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(
@@ -612,8 +608,11 @@ sub SetRTSpecialHeaders {
         }
     }
 
-    $self->SetHeader( 'Precedence', "bulk" )
-        unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
+    if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
+        and !$self->TemplateObj->MIMEObj->head->get("Precedence")
+    ) {
+        $self->SetHeader( 'Precedence', $precedence );
+    }
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
     $self->SetHeader( 'RT-Ticket',
@@ -623,7 +622,9 @@ sub SetRTSpecialHeaders {
 
 # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
 #            refactored into user's method.
-    if ( my $email = $self->TransactionObj->CreatorObj->EmailAddress ) {
+    if ( my $email = $self->TransactionObj->CreatorObj->EmailAddress
+         and RT->Config->Get('UseOriginatorHeader')
+    ) {
         $self->SetHeader( 'RT-Originator', $email );
     }
 
@@ -658,7 +659,7 @@ sub DeferDigestRecipients {
         $RT::Logger->debug( $self->TemplateObj->MIMEObj->head->as_string );
         foreach my $rcpt ( map { $_->address } $self->AddressesFromHeader($mailfield) ) {
             next unless $rcpt;
-            my $user_obj = RT::User->new($RT::SystemUser);
+            my $user_obj = RT::User->new(RT->SystemUser);
             $user_obj->LoadByEmail($rcpt);
             if  ( ! $user_obj->id ) {
                 # If there's an email address in here without an associated
@@ -727,26 +728,15 @@ sub RecordDeferredRecipients {
     return ($ret,$msg);
 }
 
-=head2 SquelchMailTo [@ADDRESSES]
+=head2 SquelchMailTo
 
-Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
-To empty list pass undefined argument.
-
-B<Note> that this method can be called as class method and works globaly. Don't forget to
-clean this list when blocking is not required anymore, pass undef to do this.
+Returns list of the addresses to squelch on this transaction.
 
 =cut
 
-{
-    my $squelch = [];
-
-    sub SquelchMailTo {
-        my $self = shift;
-        if (@_) {
-            $squelch = [ grep defined, @_ ];
-        }
-        return @$squelch;
-    }
+sub SquelchMailTo {
+    my $self = shift;
+    return map $_->Content, $self->TransactionObj->SquelchMailTo;
 }
 
 =head2 RemoveInappropriateRecipients
@@ -787,7 +777,7 @@ sub RemoveInappropriateRecipients {
                 # Only send to "privileged" watchers.
                 foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
                     foreach my $addr ( @{ $self->{$type} } ) {
-                        my $user = RT::User->new($RT::SystemUser);
+                        my $user = RT::User->new(RT->SystemUser);
                         $user->LoadByEmail($addr);
                         push @blacklist, $addr if ( !$user->Privileged );
                     }
@@ -804,9 +794,8 @@ sub RemoveInappropriateRecipients {
         }
     }
 
-# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
-    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo;
-    push @blacklist, $self->SquelchMailTo;
+    # Let's grab the SquelchMailTo attributes and push those entries into the @blacklisted
+    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo, $self->TransactionObj->SquelchMailTo;
 
     # Cycle through the people we're sending to and pull out anyone on the
     # system blacklist
@@ -862,35 +851,66 @@ sub SetReturnAddress {
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        if ( RT->Config->Get('UseFriendlyFromLine') ) {
-            my $friendly_name = $args{friendly_name};
-
-            unless ( $friendly_name ) {
-                $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
-                if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-                    $friendly_name = $1;
-                }
-            }
-
-            $friendly_name =~ s/"/\\"/g;
-            $self->SetHeader(
-                'From',
-                sprintf(
-                    RT->Config->Get('FriendlyFromLineFormat'),
-                    $self->MIMEEncodeString(
-                        $friendly_name, RT->Config->Get('EmailOutputEncoding')
-                    ),
-                    $replyto
-                ),
-            );
-        } else {
-            $self->SetHeader( 'From', $replyto );
-        }
+        $self->SetFrom( %args, From => $replyto );
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
         $self->SetHeader( 'Reply-To', "$replyto" );
     }
+
+}
+
+=head2 SetFrom ( From => emailaddress )
+
+Set the From: address for outgoing email
+
+=cut
+
+sub SetFrom {
+    my $self = shift;
+    my %args = @_;
+
+    if ( RT->Config->Get('UseFriendlyFromLine') ) {
+        my $friendly_name = $self->GetFriendlyName(%args);
+        $self->SetHeader(
+            'From',
+            sprintf(
+                RT->Config->Get('FriendlyFromLineFormat'),
+                $self->MIMEEncodeString(
+                    $friendly_name, RT->Config->Get('EmailOutputEncoding')
+                ),
+                $args{From}
+            ),
+        );
+    } else {
+        $self->SetHeader( 'From', $args{From} );
+    }
+}
+
+=head2 GetFriendlyName
+
+Calculate the proper Friendly Name based on the creator of the transaction
+
+=cut
+
+sub GetFriendlyName {
+    my $self = shift;
+    my %args = (
+        is_comment => 0,
+        friendly_name => '',
+        @_
+    );
+    my $friendly_name = $args{friendly_name};
+
+    unless ( $friendly_name ) {
+        $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
+        if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+            $friendly_name = $1;
+        }
+    }
+
+    $friendly_name =~ s/"/\\"/g;
+    return $friendly_name;
 
 }
 
@@ -1075,74 +1095,21 @@ sub SetHeaderAsEncoding {
 
 }
 
-=head2 MIMEEncodeString STRING ENCODING
+=head2 MIMEEncodeString
 
-Takes a string and a possible encoding and returns the string wrapped in MIME goo.
+Takes a perl string and optional encoding pass it over
+L<RT::Interface::Email/EncodeToMIME>.
+
+Basicly encode a string using B encoding according to RFC2047.
 
 =cut
 
 sub MIMEEncodeString {
     my $self  = shift;
-    my $value = shift;
-
-    # using RFC2047 notation, sec 2.
-    # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
-    my $charset  = shift;
-    my $encoding = 'B';
-
-    # An 'encoded-word' may not be more than 75 characters long
-    #
-    # MIME encoding increases 4/3*(number of bytes), and always in multiples
-    # of 4. Thus we have to find the best available value of bytes available
-    # for each chunk.
-    #
-    # First we get the integer max which max*4/3 would fit on space.
-    # Then we find the greater multiple of 3 lower or equal than $max.
-    my $max = int(
-        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
-            * 3
-        ) / 4
-    );
-    $max = int( $max / 3 ) * 3;
-
-    chomp $value;
-
-    if ( $max <= 0 ) {
-
-        # gives an error...
-        $RT::Logger->crit("Can't encode! Charset or encoding too big.");
-        return ($value);
-    }
-
-    return ($value) unless $value =~ /[^\x20-\x7e]/;
-
-    $value =~ s/\s+$//;
-
-    # we need perl string to split thing char by char
-    Encode::_utf8_on($value) unless Encode::is_utf8($value);
-
-    my ( $tmp, @chunks ) = ( '', () );
-    while ( length $value ) {
-        my $char = substr( $value, 0, 1, '' );
-        my $octets = Encode::encode( $charset, $char );
-        if ( length($tmp) + length($octets) > $max ) {
-            push @chunks, $tmp;
-            $tmp = '';
-        }
-        $tmp .= $octets;
-    }
-    push @chunks, $tmp if length $tmp;
-
-    # encode an join chuncks
-    $value = join "\n ",
-        map encode_mimeword( $_, $encoding, $charset ), @chunks;
-    return ($value);
+    return RT::Interface::Email::EncodeToMIME( String => $_[0], Charset => $_[1] );
 }
 
-eval "require RT::Action::SendEmail_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm} );
-eval "require RT::Action::SendEmail_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;
 

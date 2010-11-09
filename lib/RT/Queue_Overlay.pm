@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -56,13 +56,9 @@
 
 =head1 DESCRIPTION
 
+An RT queue object.
 
 =head1 METHODS
-
-=begin testing 
-
-use RT::Queue;
-
 
 =cut
 
@@ -88,37 +84,69 @@ our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 
 
 our $RIGHTS = {
-    SeeQueue            => 'Can this principal see this queue',       # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    SeeCustomField     => 'See custom field values',                 # loc_pair
-    ModifyCustomField  => 'Modify custom field values',              # loc_pair
-    AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
-    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+    SeeQueue            => 'View queue',                                                # loc_pair
+    AdminQueue          => 'Create, modify and delete queue',                           # loc_pair
+    ShowACL             => 'Display Access Control List',                               # loc_pair
+    ModifyACL           => 'Create, modify and delete Access Control List entries',     # loc_pair
+    ModifyQueueWatchers => 'Modify queue watchers',                                     # loc_pair
+    SeeCustomField      => 'View custom field values',                                  # loc_pair
+    ModifyCustomField   => 'Modify custom field values',                                # loc_pair
+    AssignCustomFields  => 'Assign and remove queue custom fields',                     # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates',                                    # loc_pair
+    ShowTemplate        => 'View Scrip templates',                                      # loc_pair
 
-    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+    ModifyScrips        => 'Modify Scrips',                                             # loc_pair
+    ShowScrips          => 'View Scrips',                                               # loc_pair
 
-    ShowTicket         => 'See ticket summaries',                    # loc_pair
-    ShowTicketComments => 'See ticket private commentary',           # loc_pair
-    ShowOutgoingEmail => 'See exact outgoing email messages and their recipeients',           # loc_pair
+    ShowTicket          => 'View ticket summaries',                                     # loc_pair
+    ShowTicketComments  => 'View ticket private commentary',                            # loc_pair
+    ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients',   # loc_pair
 
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
-    CreateTicket    => 'Create tickets in this queue',                # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    CommentOnTicket => 'Comment on tickets',                          # loc_pair
-    OwnTicket       => 'Own tickets',                                 # loc_pair
-    ModifyTicket    => 'Modify tickets',                              # loc_pair
-    DeleteTicket    => 'Delete tickets',                              # loc_pair
-    TakeTicket      => 'Take tickets',                                # loc_pair
-    StealTicket     => 'Steal tickets',                               # loc_pair
+    Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc',       # loc_pair
+    WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc',                      # loc_pair
+    CreateTicket        => 'Create tickets',                                            # loc_pair
+    ReplyToTicket       => 'Reply to tickets',                                          # loc_pair
+    CommentOnTicket     => 'Comment on tickets',                                        # loc_pair
+    OwnTicket           => 'Own tickets',                                               # loc_pair
+    ModifyTicket        => 'Modify tickets',                                            # loc_pair
+    ModifyTicketStatus  => 'Modify ticket status',                                      # loc_pair
+    DeleteTicket        => 'Delete tickets',                                            # loc_pair
+    RejectTicket        => 'Reject tickets',                                            # loc_pair
+    TakeTicket          => 'Take tickets',                                              # loc_pair
+    StealTicket         => 'Steal tickets',                                             # loc_pair
 
-    ForwardMessage  => 'Forward messages to third person(s)',         # loc_pair
+    ForwardMessage      => 'Forward messages outside of RT',                            # loc_pair
+};
 
+our $RIGHT_CATEGORIES = {
+    SeeQueue            => 'General',
+    AdminQueue          => 'Admin',
+    ShowACL             => 'Admin',
+    ModifyACL           => 'Admin',
+    ModifyQueueWatchers => 'Admin',
+    SeeCustomField      => 'General',
+    ModifyCustomField   => 'Staff',
+    AssignCustomFields  => 'Admin',
+    ModifyTemplate      => 'Admin',
+    ShowTemplate        => 'Admin',
+    ModifyScrips        => 'Admin',
+    ShowScrips          => 'Admin',
+    ShowTicket          => 'General',
+    ShowTicketComments  => 'Staff',
+    ShowOutgoingEmail   => 'Staff',
+    Watch               => 'General',
+    WatchAsAdminCc      => 'Staff',
+    CreateTicket        => 'General',
+    ReplyToTicket       => 'General',
+    CommentOnTicket     => 'General',
+    OwnTicket           => 'Staff',
+    ModifyTicket        => 'Staff',
+    ModifyTicketStatus  => 'Staff',
+    DeleteTicket        => 'Staff',
+    RejectTicket        => 'Staff',
+    TakeTicket          => 'Staff',
+    StealTicket         => 'Staff',
+    ForwardMessage      => 'Staff',
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
@@ -127,9 +155,8 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
+__PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -144,6 +171,19 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 sub AddLink {
@@ -190,7 +230,39 @@ sub AvailableRights {
     return($RIGHTS);
 }
 
-# {{{ ActiveStatusArray
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
+
+
+sub lifecycle {
+    my $self = shift;
+    unless (ref $self && $self->id) { 
+        return RT::Lifecycle->load('')
+    }
+
+    my $name = '';
+
+    # If you don't have Lifecycles set, name is default
+    my $lifecycles = RT->Config->Get('LifecycleMap');
+    if ($lifecycles && $self->Name && defined $lifecycles->{$self->Name}) {
+        $name = $lifecycles->{$self->Name};
+    } else {
+        $name = 'default';
+    }
+
+    my $res = RT::Lifecycle->load( $name );
+    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist") unless $res;
+    return $res;
+}
 
 =head2 ActiveStatusArray
 
@@ -200,17 +272,11 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    if (RT->Config->Get('ActiveStatus')) {
-    	return (RT->Config->Get('ActiveStatus'))
-    } else {
-        $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
-        return (@DEFAULT_ACTIVE_STATUS);
-    }
+
+    my %seen;
+    my @active_statuses = grep !$seen{$_}++, $self->lifecycle->valid('initial', 'active');
+    return @active_statuses;
 }
-
-# }}}
-
-# {{{ InactiveStatusArray
 
 =head2 InactiveStatusArray
 
@@ -220,17 +286,8 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    if (RT->Config->Get('InactiveStatus')) {
-    	return (RT->Config->Get('InactiveStatus'))
-    } else {
-        $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
-        return (@DEFAULT_INACTIVE_STATUS);
-    }
+    return $self->lifecycle->inactive;
 }
-
-# }}}
-
-# {{{ StatusArray
 
 =head2 StatusArray
 
@@ -240,73 +297,46 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return ($self->ActiveStatusArray(), $self->InactiveStatusArray());
+    return $self->lifecycle->valid( @_ );
 }
 
-# }}}
+=head2 IsValidStatus value
 
-# {{{ IsValidStatus
-
-=head2 IsValidStatus VALUE
-
-Returns true if VALUE is a valid status.  Otherwise, returns 0.
-
+Returns true if value is a valid status.  Otherwise, returns 0.
 
 =cut
 
 sub IsValidStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->StatusArray );
-    return ($retval);
-
+    return $self->lifecycle->is_valid( shift );
 }
 
-# }}}
+=head2 IsActiveStatus value
 
-# {{{ IsActiveStatus
-
-=head2 IsActiveStatus VALUE
-
-Returns true if VALUE is a Active status.  Otherwise, returns 0
-
+Returns true if value is a Active status.  Otherwise, returns 0
 
 =cut
 
 sub IsActiveStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->ActiveStatusArray );
-    return ($retval);
-
+    return $self->lifecycle->is_valid( shift, 'initial', 'active');
 }
 
-# }}}
 
-# {{{ IsInactiveStatus
 
-=head2 IsInactiveStatus VALUE
+=head2 IsInactiveStatus value
 
-Returns true if VALUE is a Inactive status.  Otherwise, returns 0
+Returns true if value is a Inactive status.  Otherwise, returns 0
 
 
 =cut
 
 sub IsInactiveStatus {
     my $self  = shift;
-    my $value = shift;
-
-    my $retval = grep ( $_ eq $value, $self->InactiveStatusArray );
-    return ($retval);
-
+    return $self->lifecycle->is_inactive( shift );
 }
 
-# }}}
 
-
-# {{{ sub Create
 
 
 
@@ -385,12 +415,12 @@ sub Create {
             unless $status;
     }
 
+    RT->System->QueueCacheNeedsUpdate(1);
+
     return ( $id, $self->loc("Queue created") );
 }
 
-# }}}
 
-# {{{ sub Delete 
 
 sub Delete {
     my $self = shift;
@@ -398,9 +428,7 @@ sub Delete {
         $self->loc('Deleting this object would break referential integrity') );
 }
 
-# }}}
 
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -415,7 +443,7 @@ sub SetDisabled {
     my $val = shift;
 
     $RT::Handle->BeginTransaction();
-    my $set_err = $self->SUPER::SetDisabled($val);
+    my $set_err = $self->_Set( Field =>'Disabled', Value => $val);
     unless ($set_err) {
         $RT::Handle->Rollback();
         $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->PrincipalObj->Id);
@@ -425,6 +453,8 @@ sub SetDisabled {
 
     $RT::Handle->Commit();
 
+    RT->System->QueueCacheNeedsUpdate(1);
+
     if ( $val == 1 ) {
         return (1, $self->loc("Queue disabled"));
     } else {
@@ -433,9 +463,7 @@ sub SetDisabled {
 
 }
 
-# }}}
 
-# {{{ sub Load 
 
 =head2 Load
 
@@ -462,9 +490,7 @@ sub Load {
 
 }
 
-# }}}
 
-# {{{ sub ValidateName
 
 =head2 ValidateName NAME
 
@@ -477,7 +503,7 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = new RT::Queue($RT::SystemUser);
+    my $tempqueue = RT::Queue->new(RT->SystemUser);
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
@@ -492,7 +518,6 @@ sub ValidateName {
 
 }
 
-# }}}
 
 =head2 SetSign
 
@@ -582,7 +607,6 @@ sub SetSubjectTag {
     ))
 }
 
-# {{{ sub Templates
 
 =head2 Templates
 
@@ -602,11 +626,8 @@ sub Templates {
     return ($templates);
 }
 
-# }}}
 
-# {{{ Dealing with custom fields
 
-# {{{  CustomField
 
 =head2 CustomField NAME
 
@@ -623,7 +644,6 @@ sub CustomField {
 }
 
 
-# {{{ TicketCustomFields
 
 =head2 TicketCustomFields
 
@@ -640,13 +660,12 @@ sub TicketCustomFields {
         $cfs->SetContextObject( $self );
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+        $cfs->ApplySortOrder;
     }
     return ($cfs);
 }
 
-# }}}
 
-# {{{ TicketTransactionCustomFields
 
 =head2 TicketTransactionCustomFields
 
@@ -662,18 +681,73 @@ sub TicketTransactionCustomFields {
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
+        $cfs->ApplySortOrder;
     }
     return ($cfs);
 }
 
-# }}}
-
-# }}}
 
 
-# {{{ Routines dealing with watchers.
 
-# {{{ _CreateQueueGroups 
+
+=head2 AllRoleGroupTypes
+
+Returns a list of the names of the various role group types that this queue
+has, including Requestor and Owner. If you don't want them, see
+L</ManageableRoleGroupTypes>.
+
+=cut
+
+sub AllRoleGroupTypes {
+    my $self = shift;
+    return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
+}
+
+=head2 IsRoleGroupType
+
+Returns whether the passed-in type is a role group type.
+
+=cut
+
+sub IsRoleGroupType {
+    my $self = shift;
+    my $type = shift;
+
+    for my $valid_type ($self->AllRoleGroupTypes) {
+        return 1 if $type eq $valid_type;
+    }
+
+    return 0;
+}
+
+=head2 ManageableRoleGroupTypes
+
+Returns a list of the names of the various role group types that this queue
+has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
+
+=cut
+
+sub ManageableRoleGroupTypes {
+    return qw(Cc AdminCc);
+}
+
+=head2 IsManageableRoleGroupType
+
+Returns whether the passed-in type is a manageable role group type.
+
+=cut
+
+sub IsManageableRoleGroupType {
+    my $self = shift;
+    my $type = shift;
+
+    for my $valid_type ($self->ManageableRoleGroupTypes) {
+        return 1 if $type eq $valid_type;
+    }
+
+    return 0;
+}
+
 
 =head2 _CreateQueueGroups
 
@@ -687,31 +761,67 @@ It will return true on success and undef on failure.
 
 =cut
 
-
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = qw(Cc AdminCc Requestor Owner);
+    my @types = $self->AllRoleGroupTypes;
 
     foreach my $type (@types) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
-                                                     Type => $type,
-                                                     Domain => 'RT::Queue-Role');
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
-                               $self->Id.": ".$msg);
-            return(undef);
-        }
-     }
-    return(1);
-   
+        my $ok = $self->_CreateQueueRoleGroup($type);
+        return undef if !$ok;
+    }
+
+    return 1;
+}
+
+sub _CreateQueueRoleGroup {
+    my $self = shift;
+    my $type = shift;
+
+    my $type_obj = RT::Group->new($self->CurrentUser);
+    my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
+                                                    Type => $type,
+                                                    Domain => 'RT::Queue-Role');
+    unless ($id) {
+        $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
+                            $self->Id.": ".$msg);
+        return(undef);
+    }
+
+    return $id;
 }
 
 
-# }}}
 
-# {{{ sub AddWatcher
+# _HasModifyWatcherRight {{{
+sub _HasModifyWatcherRight {
+    my $self = shift;
+    my %args = (
+        Type  => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
+
+    return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
+
+    #If the watcher we're trying to add is for the current user
+    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+        if ( $args{'Type'} eq 'AdminCc' ) {
+            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
+        }
+        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
+            return 1 if $self->CurrentUserHasRight('Watch');
+        }
+        else {
+            $RT::Logger->warning( "$self -> _HasModifyWatcher got passed a bogus type $args{Type}");
+            return ( 0, $self->loc('Invalid queue role group type [_1]', $args{Type}) );
+        }
+    }
+
+    return ( 0, $self->loc("Permission Denied") );
+}
+
 
 =head2 AddWatcher
 
@@ -747,32 +857,13 @@ sub AddWatcher {
         $args{'PrincipalId'} = $user->PrincipalId if $user->id;
     }
 
-    # {{{ Check ACLS
-    return ( $self->_AddWatcher(%args) )
-        if $self->CurrentUserHasRight('ModifyQueueWatchers');
+    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+        unless $self->IsRoleGroupType($args{Type});
 
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
-            return ( $self->_AddWatcher(%args) )
-                if $self->CurrentUserHasRight('WatchAsAdminCc');
-        }
+    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
+    return ($ok, $msg) if !$ok;
 
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
-            return ( $self->_AddWatcher(%args) )
-                if $self->CurrentUserHasRight('Watch');
-        }
-        else {
-            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
-        }
-    }
-
-    return ( 0, $self->loc("Permission Denied") );
+    return $self->_AddWatcher(%args);
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
@@ -791,8 +882,15 @@ sub _AddWatcher {
     my $principal = RT::Principal->new( $self->CurrentUser );
     if ( $args{'PrincipalId'} ) {
         $principal->Load( $args{'PrincipalId'} );
+        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, $self->loc($args{'Type'})))
+                if RT::EmailParser->IsRTAddress( $email );
+        }
     }
     elsif ( $args{'Email'} ) {
+        if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
+        }
         my $user = RT::User->new($self->CurrentUser);
         $user->LoadByEmail( $args{'Email'} );
         $user->Load( $args{'Email'} )
@@ -802,7 +900,7 @@ sub _AddWatcher {
             $principal->Load( $user->PrincipalId );
         } else {
             # if the user doesn't exist, we need to create a new user
-            my $new_user = RT::User->new($RT::SystemUser);
+            my $new_user = RT::User->new(RT->SystemUser);
 
             my ( $Address, $Name ) =  
                RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
@@ -845,12 +943,10 @@ sub _AddWatcher {
 
         return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
     }
-    return ( 1, $self->loc('Added principal as a [_1] for this queue', $args{'Type'}) );
+    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ sub DeleteWatcher
 
 =head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -908,44 +1004,11 @@ sub DeleteWatcher {
         return(0,$self->loc("Group not found"));
     }
 
-    my $can_modify_queue = $self->CurrentUserHasRight('ModifyQueueWatchers');
+    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+        unless $self->IsRoleGroupType($args{Type});
 
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} and $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
-        #   'WatchAsAdminCc' or 'ModifyQueue', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $can_modify_queue
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyQueue', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $can_modify_queue
-                or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
-        }
-        else {
-            $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->DeleteWatcher') );
-        }
-    }
-
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyQueueWathcers' bail
-    else {
-        unless ( $can_modify_queue ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # }}}
-
+    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
+    return ($ok, $msg) if !$ok;
 
     # see if this user is already a watcher.
 
@@ -962,12 +1025,10 @@ sub DeleteWatcher {
         return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
 
-# }}}
 
-# {{{ AdminCcAddresses
 
 =head2 AdminCcAddresses
 
@@ -986,9 +1047,7 @@ sub AdminCcAddresses {
     
 }   
 
-# }}}
 
-# {{{ CcAddresses
 
 =head2 CcAddresses
 
@@ -1006,10 +1065,8 @@ sub CcAddresses {
     return ( $self->Cc->MemberEmailAddressesAsString);
 
 }
-# }}}
 
 
-# {{{ sub Cc
 
 =head2 Cc
 
@@ -1030,9 +1087,7 @@ sub Cc {
 
 }
 
-# }}}
 
-# {{{ sub AdminCc
 
 =head2 AdminCc
 
@@ -1053,11 +1108,8 @@ sub AdminCc {
 
 }
 
-# }}}
 
-# {{{ IsWatcher, IsCc, IsAdminCc
 
-# {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
@@ -1095,10 +1147,8 @@ sub IsWatcher {
     return ($group->HasMemberRecursively($principal));
 }
 
-# }}}
 
 
-# {{{ sub IsCc
 
 =head2 IsCc PRINCIPAL_ID
 
@@ -1116,9 +1166,7 @@ sub IsCc {
 
 }
 
-# }}}
 
-# {{{ sub IsAdminCc
 
 =head2 IsAdminCc PRINCIPAL_ID
 
@@ -1135,20 +1183,15 @@ sub IsAdminCc {
 
 }
 
-# }}}
-
-
-# }}}
 
 
 
 
 
-# }}}
 
-# {{{ ACCESS CONTROL
 
-# {{{ sub _Set
+
+
 sub _Set {
     my $self = shift;
 
@@ -1158,9 +1201,7 @@ sub _Set {
     return ( $self->SUPER::_Set(@_) );
 }
 
-# }}}
 
-# {{{ sub _Value
 
 sub _Value {
     my $self = shift;
@@ -1172,9 +1213,7 @@ sub _Value {
     return ( $self->__Value(@_) );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -1197,9 +1236,7 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 HasRight
 
@@ -1230,8 +1267,6 @@ sub HasRight {
     );
 }
 
-# }}}
 
-# }}}
 
 1;

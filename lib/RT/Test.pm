@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Test;
@@ -54,30 +54,24 @@ use warnings;
 use base 'Test::More';
 
 use Socket;
-use File::Temp;
+use File::Temp qw(tempfile);
+use File::Path qw(mkpath);
 use File::Spec;
 
-our $SKIP_REQUEST_WORK_AROUND = 0;
-
-use HTTP::Request::Common ();
-use Hook::LexWrap;
-wrap 'HTTP::Request::Common::form_data',
-   post => sub {
-       return if $SKIP_REQUEST_WORK_AROUND;
-       my $data = $_[-1];
-       if (ref $data) {
-       $data->[0] = Encode::encode_utf8($data->[0]);
-       }
-       else {
-       $_[-1] = Encode::encode_utf8($_[-1]);
-       }
-   };
-
-
-our @EXPORT = qw(is_empty);
-
+our @EXPORT = qw(is_empty diag parse_mail works fails);
 our ($port, $dbname);
-my $mailsent;
+our @SERVERS;
+
+my %tmp = (
+    directory => undef,
+    config    => {
+        RT => undef,
+        apache => undef,
+    },
+    mailbox   => undef,
+);
+
+my %rttest_opt;
 
 =head1 NAME
 
@@ -119,26 +113,23 @@ BEGIN {
     $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
 };
 
-use RT::Interface::Web::Standalone;
-use Test::HTTP::Server::Simple::StashWarnings;
-use Test::WWW::Mechanize;
-use File::Path 'mkpath';
-
-unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple::StashWarnings';
-sub RT::Interface::Web::Standalone::test_warning_path { "/__test_warnings" }
-
 sub import {
     my $class = shift;
-    my %args = @_;
+    my %args = %rttest_opt = @_;
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
         $class->builder->plan( tests => $args{'tests'} )
           unless $args{'tests'} eq 'no_declare';
     }
+    elsif ( exists $args{'tests'} ) {
+        # do nothing if they say "tests => undef" - let them make the plan
+    }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
+
+    $class->bootstrap_tempdir;
 
     $class->bootstrap_config( %args );
 
@@ -147,20 +138,24 @@ sub import {
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    # make it another function
-    $mailsent = 0;
-    my $mailfunc = sub { 
-        my $Entity = shift;
-        $mailsent++;
-        return 1;
-    };
-    RT->Config->Set( 'MailCommand' => $mailfunc );
-
     $class->bootstrap_db( %args );
 
-    RT->Init;
+    RT::InitPluginPaths();
+
+    RT::ConnectToDatabase()
+        unless $args{nodb};
+
+    RT::InitClasses();
+    RT::InitLogging();
 
     $class->bootstrap_plugins( %args );
+
+    RT->Plugins;
+    
+    RT::I18N->Init();
+    RT->Config->PostLoadCheck;
+
+    $class->set_config_wrapper;
 
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
@@ -182,6 +177,12 @@ sub import {
     }
 
     Test::More->export_to_level($level);
+
+    # blow away their diag so we can redefine it without warning
+    # better than "no warnings 'redefine'" because we might accidentally
+    # suppress a mistaken redefinition
+    no strict 'refs';
+    delete ${ caller($level) . '::' }{diag};
     __PACKAGE__->export_to_level($level);
 }
 
@@ -201,18 +202,35 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
-my $config;
+sub bootstrap_tempdir {
+    my $self = shift;
+    my $test_file = (
+        File::Spec->rel2abs((caller)[1])
+            =~ m{(?:^|[\\/])t[/\\](.*)}
+    );
+    my $dir_name = File::Spec->rel2abs('t/tmp/'. $test_file);
+    mkpath( $dir_name );
+    return $tmp{'directory'} = File::Temp->newdir(
+        DIR => $dir_name
+    );
+}
+
 sub bootstrap_config {
     my $self = shift;
     my %args = @_;
 
-    $config = File::Temp->new;
+    $tmp{'config'}{'RT'} = File::Spec->catfile(
+        "$tmp{'directory'}", 'RT_SiteConfig.pm'
+    );
+    open my $config, '>', $tmp{'config'}{'RT'}
+        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+
     print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
-Set( \$MailCommand, 'testfile');
+Set( \$WebDomain, "localhost");
+Set( \$WebPort,   $port);
+Set( \$WebPath,   "");
+Set( \@LexiconLanguages, qw(en zh_TW fr));
+Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
         print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
@@ -224,13 +242,89 @@ Set( \$MailCommand, 'testfile');
     print $config "Set( \$DevelMode, 0 );\n"
         if $INC{'Devel/Cover.pm'};
 
+    $self->bootstrap_logging( $config );
+
+    # set mail catcher
+    my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
+        $tmp{'directory'}->dirname, 'mailbox.eml'
+    );
+    print $config <<END;
+Set( \$MailCommand, sub {
+    my \$MIME = shift;
+
+    open my \$handle, '>>', '$mail_catcher'
+        or die "Unable to open '$mail_catcher' for appending: \$!";
+
+    \$MIME->print(\$handle);
+    print \$handle "%% split me! %%\n";
+    close \$handle;
+} );
+END
+    
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
     close $config;
 
     return $config;
+}
+
+sub bootstrap_logging {
+    my $self = shift;
+    my $config = shift;
+
+    # prepare file for logging
+    $tmp{'log'}{'RT'} = File::Spec->catfile(
+        "$tmp{'directory'}", 'rt.debug.log'
+    );
+    open my $fh, '>', $tmp{'log'}{'RT'}
+        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+    # make world writable so apache under different user
+    # can write into it
+    chmod 0666, $tmp{'log'}{'RT'};
+
+    print $config <<END;
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
+Set( \$LogToFile, 'debug' );
+Set( \$LogDir, q{$tmp{'directory'}} );
+Set( \$LogToFileNamed, 'rt.debug.log' );
+END
+}
+
+sub set_config_wrapper {
+    my $self = shift;
+
+    my $old_sub = \&RT::Config::Set;
+    no warnings 'redefine';
+    *RT::Config::Set = sub {
+        my @caller = caller;
+        if ( ($caller[1]||'') =~ /\.t$/ ) {
+            my ($self, $name) = @_;
+            my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
+            my %sigils = (
+                HASH   => '%',
+                ARRAY  => '@',
+                SCALAR => '$',
+            );
+            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+            open my $fh, '>>', $tmp{'config'}{'RT'}
+                or die "Couldn't open config file: $!";
+            require Data::Dumper;
+            my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
+            $dump =~ s/;\s+$//;
+            print $fh
+                "\nSet(${sigil}${name}, \@{". $dump ."}); 1;\n";
+            close $fh;
+
+            if ( @SERVERS ) {
+                warn "you're changing config option in a test file"
+                    ." when server is active";
+            }
+        }
+        return $old_sub->(@_);
+    };
 }
 
 sub bootstrap_db {
@@ -249,44 +343,60 @@ sub bootstrap_db {
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
-    unless ( $ENV{RT_TEST_PARALLEL} ) {
-        # already dropped db in parallel tests, need to do so for other cases.
-        RT::Handle->DropDatabase( $dbh, Force => 1 );
+    if (my $forceopt = $ENV{RT_TEST_FORCE_OPT}) {
+        Test::More::diag "forcing $forceopt";
+        $args{$forceopt}=1;
     }
 
-    RT::Handle->CreateDatabase( $dbh );
-    $dbh->disconnect;
-    $created_new_db++;
-
-    $dbh = _get_dbh(RT::Handle->DSN,
-            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( $dbh );
-    $RT::Handle->InsertSchema( $dbh );
-
-    my $db_type = RT->Config->Get('DatabaseType');
-    $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-    RT->InitLogging;
-    RT->InitSystemObjects;
-    $RT::Handle->InsertInitialData;
-
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->Init;
-
-    $RT::Handle->PrintError;
-    $RT::Handle->dbh->{PrintError} = 1;
-
-    unless ( $args{'nodata'} ) {
-        $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+    if ($args{nodb}) {
+        $args{noinitialdata} = 1;
+        $args{nodata} = 1;
     }
-    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    elsif ($args{noinitialdata}) {
+        $args{nodata} = 1;
+    }
+
+    unless ($args{nodb}) {
+        unless ( $ENV{RT_TEST_PARALLEL} ) {
+            # already dropped db in parallel tests, need to do so for other cases.
+            RT::Handle->DropDatabase( $dbh, Force => 1 )
+        }
+        RT::Handle->CreateDatabase( $dbh );
+        $dbh->disconnect;
+        $created_new_db++;
+
+        $dbh = _get_dbh(RT::Handle->DSN,
+                        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( $dbh );
+        $RT::Handle->InsertSchema( $dbh );
+
+        my $db_type = RT->Config->Get('DatabaseType');
+        $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase;
+        RT->InitLogging;
+
+        unless ($args{noinitialdata}) {
+            $RT::Handle->InsertInitialData;
+
+            DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        }
+
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase();
+        $RT::Handle->PrintError;
+        $RT::Handle->dbh->{PrintError} = 1;
+
+        unless ( $args{'nodata'} ) {
+            $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+            DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        }
+    }
 }
 
 sub bootstrap_plugins {
@@ -322,7 +432,13 @@ sub bootstrap_plugins {
     };
 
     RT->Config->Set( Plugins => @plugins );
-    RT->InitPluginPaths;
+    RT->InitPluginPaths();
+
+    my $dba_dbh;
+    $dba_dbh = _get_dbh(
+        RT::Handle->DSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD},
+    ) if @plugins;
 
     require File::Spec;
     foreach my $name ( @plugins ) {
@@ -335,10 +451,10 @@ sub bootstrap_plugins {
             if $ENV{'TEST_VERBOSE'};
 
         if ( -e $etc_path ) {
-            my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
+            my ($ret, $msg) = $RT::Handle->InsertSchema( $dba_dbh, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
 
-            ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
+            ($ret, $msg) = $RT::Handle->InsertACL( $dba_dbh, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
 
             my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
@@ -358,6 +474,7 @@ sub bootstrap_plugins {
 
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
+    $dba_dbh->disconnect if $dba_dbh;
 }
 
 sub _get_dbh {
@@ -377,29 +494,6 @@ sub _get_dbh {
     return $dbh;
 }
 
-sub open_mailgate_ok {
-    my $class   = shift;
-    my $baseurl = shift;
-    my $queue   = shift || 'general';
-    my $action  = shift || 'correspond';
-    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
-    return $mail;
-}
-
-
-sub close_mailgate_ok {
-    my $class = shift;
-    my $mail  = shift;
-    close $mail;
-    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
-}
-
-sub mailsent_ok {
-    my $class = shift;
-    my $expected  = shift;
-    Test::More::is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
-}
-
 =head1 UTILITIES
 
 =head2 load_or_create_user
@@ -414,7 +508,7 @@ sub load_or_create_user {
     $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
     $MemberOf ||= [];
 
-    my $obj = RT::User->new( $RT::SystemUser );
+    my $obj = RT::User->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
     } elsif ( $args{'EmailAddress'} ) {
@@ -436,7 +530,7 @@ sub load_or_create_user {
     # clean group membership
     {
         require RT::GroupMembers;
-        my $gms = RT::GroupMembers->new( $RT::SystemUser );
+        my $gms = RT::GroupMembers->new( RT->SystemUser );
         my $groups_alias = $gms->Join(
             FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
         );
@@ -465,7 +559,7 @@ sub load_or_create_user {
 sub load_or_create_queue {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::Queue->new( $RT::SystemUser );
+    my $obj = RT::Queue->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByCols( Name => $args{'Name'} );
     } else {
@@ -490,6 +584,73 @@ sub load_or_create_queue {
     return $obj;
 }
 
+sub create_tickets {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my $defaults = shift;
+    my @data = @_;
+    @data = sort { rand(100) <=> rand(100) } @data
+        if delete $defaults->{'RandomOrder'};
+
+    $defaults->{'Queue'} ||= 'General';
+
+    my @res = ();
+    while ( @data ) {
+        my %args = %{ shift @data };
+        $args{$_} = $res[ $args{$_} ]->id foreach
+            grep $args{ $_ }, keys %RT::Ticket::LINKTYPEMAP;
+        push @res, $self->create_ticket( %$defaults, %args );
+    }
+    return @res;
+}
+
+sub create_ticket {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my %args = @_;
+
+    if ( my $content = delete $args{'Content'} ) {
+        $args{'MIMEObj'} = MIME::Entity->build(
+            From    => $args{'Requestor'},
+            Subject => $args{'Subject'},
+            Data    => $content,
+        );
+    }
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $ticket->Create( %args );
+    Test::More::ok( $id, "ticket created" )
+        or Test::More::diag("error: $msg");
+
+    # hackish, but simpler
+    if ( $args{'LastUpdatedBy'} ) {
+        $ticket->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
+    }
+
+
+    for my $field ( keys %args ) {
+        #TODO check links and watchers
+
+        if ( $field =~ /CustomField-(\d+)/ ) {
+            my $cf = $1;
+            my $got = join ',', sort map $_->Content,
+                @{ $ticket->CustomFieldValues($cf)->ItemsArrayRef };
+            my $expected = ref $args{$field}
+                ? join( ',', sort @{ $args{$field} } )
+                : $args{$field};
+            Test::More::is( $got, $expected, 'correct CF values' );
+        }
+        else {
+            next if ref $args{$field} || !$ticket->can($field) || ref $ticket->$field();
+            Test::More::is( $ticket->$field(), $args{$field}, "$field is correct" );
+        }
+    }
+
+    return $ticket;
+}
+
 =head2 load_or_create_custom_field
 
 =cut
@@ -497,7 +658,7 @@ sub load_or_create_queue {
 sub load_or_create_custom_field {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::CustomField->new( $RT::SystemUser );
+    my $obj = RT::CustomField->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
     } else {
@@ -511,22 +672,33 @@ sub load_or_create_custom_field {
     return $obj;
 }
 
+sub last_ticket {
+    my $self = shift;
+    my $current = shift;
+    $current = $current ? RT::CurrentUser->new($current) : RT->SystemUser;
+    my $tickets = RT::Tickets->new( $current );
+    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    $tickets->RowsPerPage( 1 );
+    return $tickets->First;
+}
+
 sub store_rights {
     my $self = shift;
 
     require RT::ACE;
     # fake construction
-    RT::ACE->new( $RT::SystemUser );
+    RT::ACE->new( RT->SystemUser );
     my @fields = keys %{ RT::ACE->_ClassAccessible };
 
     require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
+    my $acl = RT::ACL->new( RT->SystemUser );
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
 
     my @res;
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
 
@@ -543,7 +715,7 @@ sub restore_rights {
     my $self = shift;
     my @entries = @_;
     foreach my $entry ( @entries ) {
-        my $ace = RT::ACE->new( $RT::SystemUser );
+        my $ace = RT::ACE->new( RT->SystemUser );
         my ($status, $msg) = $ace->RT::Record::Create( %$entry );
         unless ( $status ) {
             Test::More::diag "couldn't create a record: $msg";
@@ -555,11 +727,11 @@ sub set_rights {
     my $self = shift;
 
     require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
+    my $acl = RT::ACL->new( RT->SystemUser );
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
         $ace->Delete;
@@ -576,8 +748,15 @@ sub add_rights {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
-                $principal = RT::Group->new( $RT::SystemUser );
+                $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadSystemInternalGroup($1);
+            } elsif ( $principal =~ /^(Owner|Requestor|(?:Admin)?Cc)$/i ) {
+                $principal = RT::Group->new( RT->SystemUser );
+                $principal->LoadByCols(
+                    Domain => (ref($e->{'Object'})||'RT::System').'-Role',
+                    Type => $1,
+                    ref($e->{'Object'})? (Instance => $e->{'Object'}->id): (),
+                );
             } else {
                 die "principal is not an object, but also is not name of a system group";
             }
@@ -605,14 +784,35 @@ sub run_mailgate {
         message => '',
         action  => 'correspond',
         queue   => 'General',
+        debug   => 1,
+        command => $RT::BinPath .'/rt-mailgate',
         @_
     );
     my $message = delete $args{'message'};
 
-    my $cmd = $RT::BinPath .'/rt-mailgate';
-    die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
+    $args{after_open} = sub {
+        my $child_in = shift;
+        if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
+            $message->print( $child_in );
+        } else {
+            print $child_in $message;
+        }
+    };
 
-    $cmd .= ' --debug';
+    $self->run_and_capture(%args);
+}
+
+sub run_and_capture {
+    my $self = shift;
+    my %args = @_;
+
+    my $after_open = delete $args{after_open};
+
+    my $cmd = delete $args{'command'};
+    die "Couldn't find command ($cmd)" unless -f $cmd;
+
+    $cmd .= ' --debug' if delete $args{'debug'};
+
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
@@ -625,11 +825,8 @@ sub run_mailgate {
     my ($child_out, $child_in);
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
 
-    if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
-        $message->print( $child_in );
-    } else {
-        print $child_in $message;
-    }
+    $after_open->($child_in, $child_out) if $after_open;
+
     close $child_in;
 
     my $result = do { local $/; <$child_out> };
@@ -638,81 +835,100 @@ sub run_mailgate {
     return ($?, $result);
 }
 
-sub send_via_mailgate {
+sub send_via_mailgate_and_http {
     my $self = shift;
     my $message = shift;
     my %args = (@_);
 
-    my ($status, $gate_result) = $self->run_mailgate( message => $message, %args );
+    my ($status, $gate_result) = $self->run_mailgate(
+        message => $message, %args
+    );
 
     my $id;
     unless ( $status >> 8 ) {
         ($id) = ($gate_result =~ /Ticket:\s*(\d+)/i);
         unless ( $id ) {
-            Test::More::diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+            Test::More::diag "Couldn't find ticket id in text:\n$gate_result"
+                if $ENV{'TEST_VERBOSE'};
         }
     } else {
-        Test::More::diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+        Test::More::diag "Mailgate output:\n$gate_result"
+            if $ENV{'TEST_VERBOSE'};
     }
     return ($status, $id);
 }
 
-my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
+
+sub send_via_mailgate {
+    my $self    = shift;
+    my $message = shift;
+    my %args = ( action => 'correspond',
+                 queue  => 'General',
+                 @_
+               );
+
+    if ( UNIVERSAL::isa( $message, 'MIME::Entity' ) ) {
+        $message = $message->as_string;
+    }
+
+    my ( $status, $error_message, $ticket )
+        = RT::Interface::Email::Gateway( {%args, message => $message} );
+    return ( $status, $ticket->id );
+
+}
+
+
+sub open_mailgate_ok {
+    my $class   = shift;
+    my $baseurl = shift;
+    my $queue   = shift || 'general';
+    my $action  = shift || 'correspond';
+    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    return $mail;
+}
+
+
+sub close_mailgate_ok {
+    my $class = shift;
+    my $mail  = shift;
+    close $mail;
+    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
+}
+
+sub mailsent_ok {
+    my $class = shift;
+    my $expected  = shift;
+
+    my $mailsent = scalar grep /\S/, split /%% split me! %%\n/,
+        RT::Test->file_content(
+            $tmp{'mailbox'},
+            'unlink' => 0,
+            noexist => 1
+        );
+
+    Test::More::is(
+        $mailsent, $expected,
+        "The number of mail sent ($expected) matches. yay"
+    );
+}
+
 sub set_mail_catcher {
     my $self = shift;
-    my $catcher = sub {
-        my $MIME = shift;
-
-        open my $handle, '>>', $mailbox_catcher
-            or die "Unable to open $mailbox_catcher for appending: $!";
-
-        $MIME->print($handle);
-        print $handle "%% split me! %%\n";
-        close $handle;
-    };
-    RT->Config->Set( MailCommand => $catcher );
+    return 1;
 }
 
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+    return grep /\S/, split /%% split me! %%\n/,
+        RT::Test->file_content(
+            $tmp{'mailbox'},
+            'unlink' => 1,
+            noexist => 1
+        );
 }
 
 sub clean_caught_mails {
-    unlink $mailbox_catcher;
-}
-
-sub file_content {
-    my $self = shift;
-    my $path = shift;
-    my %args = @_;
-
-    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
-
-    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-
-    open my $fh, "<:raw", $path
-        or do { warn "couldn't open file '$path': $!" unless $args{noexist}; return '' };
-    my $content = do { local $/; <$fh> };
-    close $fh;
-
-    unlink $path if $args{'unlink'};
-
-    return $content;
-}
-
-sub find_executable {
-    my $self = shift;
-    my $name = shift;
-
-    require File::Spec;
-    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
-        my $fpath = File::Spec->catpath( (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name );
-        next unless -e $fpath && -r _ && -x _;
-        return $fpath;
-    }
-    return undef;
+    unlink $tmp{'mailbox'};
 }
 
 =head2 get_relocatable_dir
@@ -757,6 +973,14 @@ sub get_abs_relocatable_dir {
     }
 }
 
+sub gnupg_homedir {
+    my $self = shift;
+    File::Temp->newdir(
+        DIR => $tmp{directory},
+        CLEANUP => 0,
+    );
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key  = shift;
@@ -795,7 +1019,7 @@ sub lsign_gnupg_key {
     my $key = shift;
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = new GnuPG::Interface;
+    my $gnupg = GnuPG::Interface->new();
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
@@ -804,12 +1028,12 @@ sub lsign_gnupg_key {
 
     my %handle; 
     my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
+        stdin   => ($handle{'input'}   = IO::Handle->new()),
+        stdout  => ($handle{'output'}  = IO::Handle->new()),
+        stderr  => ($handle{'error'}   = IO::Handle->new()),
+        logger  => ($handle{'logger'}  = IO::Handle->new()),
+        status  => ($handle{'status'}  = IO::Handle->new()),
+        command => ($handle{'command'} = IO::Handle->new()),
     );
 
     eval {
@@ -852,7 +1076,7 @@ sub trust_gnupg_key {
     my $key = shift;
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = new GnuPG::Interface;
+    my $gnupg = GnuPG::Interface->new();
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
@@ -861,12 +1085,12 @@ sub trust_gnupg_key {
 
     my %handle; 
     my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
+        stdin   => ($handle{'input'}   = IO::Handle->new()),
+        stdout  => ($handle{'output'}  = IO::Handle->new()),
+        stderr  => ($handle{'error'}   = IO::Handle->new()),
+        logger  => ($handle{'logger'}  = IO::Handle->new()),
+        status  => ($handle{'status'}  = IO::Handle->new()),
+        command => ($handle{'command'} = IO::Handle->new()),
     );
 
     eval {
@@ -915,13 +1139,19 @@ sub trust_gnupg_key {
     return %res;
 }
 
-my @SERVERS;
 sub started_ok {
     my $self = shift;
 
     require RT::Test::Web;
 
-    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
+    if ($rttest_opt{nodb}) {
+        die "you are trying to use a test web server without db, try use noinitialdata => 1 instead";
+    }
+
+
+    $ENV{'RT_TEST_WEB_HANDLER'} = undef
+        if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'plack';
     my ($server, $variant) = split /\+/, $which, 2;
 
     my $function = 'start_'. $server .'_server';
@@ -931,67 +1161,213 @@ sub started_ok {
     return $self->$function( $variant, @_ );
 }
 
-sub start_standalone_server {
+sub start_plack_server {
     my $self = shift;
 
-    my $s = RT::Interface::Web::Standalone->new($port);
+    require Plack::Loader;
+    my $plack_server = Plack::Loader->load
+        ('Standalone',
+         port => $port,
+         server_ready => sub {
+             kill 'USR1' => getppid();
+         });
 
-    my $ret = $s->started_ok;
-    push @SERVERS, $s->pids;
+    my $pid = fork();
+    die "failed to fork" unless defined $pid;
 
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
+    if ($pid) {
+        # We are expecting a USR1 from the child process after it's
+        # ready to listen.
+        my $handled;
+        $SIG{USR1} = sub { $handled = 1};
+        sleep 15;
+        Test::More::diag "did not get expected USR1 for test server readiness"
+            unless $handled;
+        push @SERVERS, $pid;
+        my $Tester = Test::Builder->new;
+        $Tester->ok(1, @_);
 
-    return ($ret, RT::Test::Web->new);
+        $RT::Handle = RT::Handle->new;
+        $RT::Handle->dbh( undef );
+        RT->ConnectToDatabase;
+        # the attribute cache holds on to a stale dbh
+        delete $RT::System->{attributes};
+
+        return ("http://localhost:$port", RT::Test::Web->new);
+    }
+
+    require POSIX;
+    if ( $^O !~ /MSWin32/ ) {
+        POSIX::setsid()
+            or die "Can't start a new session: $!";
+    }
+
+    # stick this in a scope so that when $app is garbage collected,
+    # StashWarnings can complain about unhandled warnings
+    do {
+        require RT::Interface::Web::Handler;
+        my $app = RT::Interface::Web::Handler->PSGIApp;
+
+        require Plack::Middleware::Test::StashWarnings;
+        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+        $plack_server->run($app);
+    };
+
+    exit;
 }
 
-use File::Temp qw(tempfile);
+sub start_inline_server {
+    my $self = shift;
+
+    require Test::WWW::Mechanize::PSGI;
+    unshift @RT::Test::Web::ISA, 'Test::WWW::Mechanize::PSGI';
+
+    Test::More::ok(1, "psgi test server ok");
+    return ("http://localhost:$port", RT::Test::Web->new);
+}
 
 sub start_apache_server {
     my $self = shift;
-    my $variant = shift || 'mod_perl2';
+    my $variant = shift || 'mod_perl';
 
-    my $apache_bin = $ENV{'RT_TEST_APACHE'} || $self->find_apache_server
-        || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
+    my %info = $self->apache_server_info( variant => $variant );
 
-    Test::More::diag("Using apache - '$apache_bin'") if $ENV{'TEST_VERBOSE'};
+    Test::More::diag(do {
+        open my $fh, '<', $tmp{'config'}{'RT'};
+        local $/;
+        <$fh>
+    });
 
-    my $apache_info = `$apache_bin -V`;
-    my ($version) = ($apache_info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
-    die "Couldn't figure out version of the server" unless $version;
-
-    my %apache_opts = ($apache_info =~ m/^\s*-D\s+([A-Z_]+)="(.*)"$/mg);
-
-    my ($log_fh, $log_fn) = tempfile();
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
-        't', 'data', 'configs', 'apache'. $version .'+'. $variant .'.conf'
+        't', 'data', 'configs',
+        'apache'. $info{'version'} .'+'. $variant .'.conf'
     ) );
     my %opt = (
-        listen => $port,
-        server_root   => $apache_opts{'HTTPD_ROOT'}
+        listen         => $port,
+        server_root    => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
-        document_root => $RT::MasonComponentRoot,
-        rt_bin_path   => $RT::BinPath,
-        log_file      => $log_fn,
+        document_root  => $RT::MasonComponentRoot,
+        tmp_dir        => "$tmp{'directory'}",
+        rt_bin_path    => $RT::BinPath,
+        rt_sbin_path   => $RT::SbinPath,
+        rt_site_config => $ENV{'RT_SITE_CONFIG'},
     );
-    my ($conf_fh, $conf_fn) = $self->process_in_file(
-        in => $tmpl, options => \%opt, out => $tmpl .'.final',
+    foreach (qw(log pid lock)) {
+        $opt{$_ .'_file'} = File::Spec->catfile(
+            "$tmp{'directory'}", "apache.$_"
+        );
+    }
+    {
+        my $method = 'apache_'.$variant.'_server_options';
+        $self->$method( \%info, \%opt );
+    }
+    $tmp{'config'}{'apache'} = File::Spec->catfile(
+        "$tmp{'directory'}", "apache.conf"
+    );
+    $self->process_in_file(
+        in      => $tmpl, 
+        out     => $tmp{'config'}{'apache'},
+        options => \%opt,
     );
 
-    my $pid = $self->fork_exec($apache_bin, '-f', $conf_fn);
-    Test::More::diag("Started apache server #$pid");
+    $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
+    my $pid = do {
+        my $tries = 10;
+        while ( !-e $opt{'pid_file'} ) {
+            $tries--;
+            last unless $tries;
+            sleep 1;
+        }
+        Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
+            unless -e $opt{'pid_file'};
+        open my $pid_fh, '<', $opt{'pid_file'}
+            or Test::More::BAIL_OUT("Couldn't open pid file: $!");
+        my $pid = <$pid_fh>;
+        chomp $pid;
+        $pid;
+    };
+
+    Test::More::ok($pid, "Started apache server #$pid");
+
     push @SERVERS, $pid;
 
-    sleep 1;
-
     return (RT->Config->Get('WebURL'), RT::Test::Web->new);
+}
+
+sub apache_server_info {
+    my $self = shift;
+    my %res = @_;
+
+    my $bin = $res{'executable'} = $ENV{'RT_TEST_APACHE'}
+        || $self->find_apache_server
+        || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
+
+    Test::More::diag("Using '$bin' apache executable for testing")
+        if $ENV{'TEST_VERBOSE'};
+
+    my $info = `$bin -V`;
+    ($res{'version'}) = ($info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
+    Test::More::BAIL_OUT(
+        "Couldn't figure out version of the server"
+    ) unless $res{'version'};
+
+    my %opts = ($info =~ m/^\s*-D\s+([A-Z_]+?)(?:="(.*)")$/mg);
+    %res = (%res, %opts);
+
+    $res{'modules'} = [
+        map {s/^\s+//; s/\s+$//; $_}
+        grep $_ !~ /Compiled in modules/i,
+        split /\r*\n/, `$bin -l`
+    ];
+
+    return %res;
+}
+
+sub apache_mod_perl_server_options {
+    my $self = shift;
+    my %info = %{ shift() };
+    my $current = shift;
+
+    my %required_modules = (
+        '2.2' => [qw(authz_host env alias perl)],
+    );
+    my @mlist = @{ $required_modules{ $info{'version'} } };
+
+    $current->{'load_modules'} = '';
+    foreach my $mod ( @mlist ) {
+        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
+
+        $current->{'load_modules'} .=
+            "LoadModule ${mod}_module modules/mod_${mod}.so\n";
+    }
+    return;
+}
+
+sub apache_fastcgi_server_options {
+    my $self = shift;
+    my %info = %{ shift() };
+    my $current = shift;
+
+    my %required_modules = (
+        '2.2' => [qw(authz_host env alias mime fastcgi)],
+    );
+    my @mlist = @{ $required_modules{ $info{'version'} } };
+
+    $current->{'load_modules'} = '';
+    foreach my $mod ( @mlist ) {
+        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
+
+        $current->{'load_modules'} .=
+            "LoadModule ${mod}_module modules/mod_${mod}.so\n";
+    }
+    return;
 }
 
 sub find_apache_server {
     my $self = shift;
     return $_ foreach grep defined,
-        map $self->find_bin($_),
+        map $self->find_executable($_),
         qw(httpd apache apache2 apache1);
     return undef;
 }
@@ -1006,16 +1382,44 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
+
+    @SERVERS = ();
 }
 
-sub find_bin {
+sub file_content {
+    my $self = shift;
+    my $path = shift;
+    my %args = @_;
+
+    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
+
+    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+
+    open my $fh, "<:raw", $path
+        or do {
+            warn "couldn't open file '$path': $!" unless $args{noexist};
+            return ''
+        };
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    unlink $path if $args{'unlink'};
+
+    return $content;
+}
+
+sub find_executable {
     my $self = shift;
     my $name = shift;
 
-    return $_ foreach
-        grep -e $_ && -x $_,
-        map File::Spec->catfile($_, $name),
-        split /:/, $ENV{'PATH'};
+    require File::Spec;
+    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
+        my $fpath = File::Spec->catpath(
+            (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name
+        );
+        next unless -e $fpath && -r _ && -x _;
+        return $fpath;
+    }
     return undef;
 }
 
@@ -1037,14 +1441,8 @@ sub process_in_file {
     my $self = shift;
     my %args = ( in => undef, options => undef, @_ );
 
-    my $in_fn = $args{'in'};
-    my $text = do {
-        open my $fh, '<', $in_fn
-            or die "Couldn't open '$in_fn': $!";
-        local $/;
-        <$fh>
-    };
-    while ( my ($opt) = ($text =~ /\%\%(.+)\%\%/) ) {
+    my $text = $self->file_content( $args{'in'} );
+    while ( my ($opt) = ($text =~ /\%\%(.+?)\%\%/) ) {
         my $value = $args{'options'}{ lc $opt };
         die "no value for $opt" unless defined $value;
 
@@ -1052,7 +1450,7 @@ sub process_in_file {
     }
 
     my ($out_fh, $out_conf);
-    if ( $args{'out'} ) {
+    unless ( $args{'out'} ) {
         ($out_fh, $out_conf) = tempfile();
     } else {
         $out_conf = $args{'out'};
@@ -1065,12 +1463,47 @@ sub process_in_file {
     return ($out_fh, $out_conf);
 }
 
+sub diag {
+    return unless $ENV{RT_TEST_VERBOSE} || $ENV{TEST_VERBOSE};
+    goto \&Test::More::diag;
+}
+
+sub parse_mail {
+    my $mail = shift;
+    require RT::EmailParser;
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar( $mail );
+    return $parser->Entity;
+}
+
+sub works {
+    Test::More::ok($_[0], $_[1] || 'This works');
+}
+
+sub fails {
+    Test::More::ok(!$_[0], $_[1] || 'This should fail');
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
-    Test::More::diag("Cleaning");
+
+
+    # we are in END block and should protect our exit code
+    # so calls below may call system or kill that clobbers $?
+    local $?;
 
     RT::Test->stop_server;
+
+    # not success
+    if ( !$Test->is_passing ) {
+        $tmp{'directory'}->unlink_on_destroy(0);
+
+        Test::More::diag(
+            "Some tests failed or we bailed out, tmp directory"
+            ." '$tmp{directory}' is not cleaned"
+        );
+    }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
 

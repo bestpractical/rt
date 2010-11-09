@@ -82,7 +82,11 @@ CREATE TABLE Groups (
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
-  Instance integer
+  Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 
@@ -165,8 +169,10 @@ CREATE TABLE ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId INTEGER default 0,
-  DelegatedBy integer NOT NULL default 0, 
-  DelegatedFrom integer NOT NULL default 0
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 
@@ -178,7 +184,11 @@ CREATE TABLE ACL (
 CREATE TABLE GroupMembers (
   id INTEGER PRIMARY KEY  ,
   GroupId integer NULL,
-  MemberId integer NULL
+  MemberId integer NULL,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL
   
 ) ;
 
@@ -269,7 +279,7 @@ CREATE TABLE Tickets (
   Priority integer NULL  ,
   TimeEstimated integer NULL  ,
   TimeWorked integer NULL  ,
-  Status varchar(10) NULL  ,
+  Status varchar(64) NULL  ,
   TimeLeft integer NULL  ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
@@ -333,7 +343,6 @@ CREATE TABLE Templates (
 
 
 
-# {{{ ObjectCustomFieldValues 
 
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  ,
@@ -358,9 +367,7 @@ CREATE TABLE ObjectCustomFieldValues (
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
-# }}}
 
-# {{{ CustomFields
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
@@ -381,9 +388,7 @@ CREATE TABLE CustomFields (
   PRIMARY KEY (id)
 ) ;
 
-# }}}
 
-# {{{ ObjectCustomFields 
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  ,
@@ -398,9 +403,7 @@ CREATE TABLE ObjectCustomFields (
   PRIMARY KEY (id)
 ) ;
 
-# }}}
 
-# {{{ CustomFieldValues 
 
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  ,
@@ -408,6 +411,7 @@ CREATE TABLE CustomFieldValues (
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
+  Category varchar(255) NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -418,7 +422,6 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
  
-# }}}
 
 --- {{{ Attributes
 CREATE TABLE Attributes (

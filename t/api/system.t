@@ -2,12 +2,12 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 7;
+use RT::Test nodata => 1, tests => 7;
 
 
 {
 
-my $s = RT::System->new($RT::SystemUser);
+my $s = RT::System->new(RT->SystemUser);
 my $rights = $s->AvailableRights;
 ok ($rights, "Rights defined");
 ok ($rights->{'AdminUsers'},"AdminUsers right found");
@@ -30,4 +30,3 @@ is ($sys->id, 1);
 
 }
 
-1;

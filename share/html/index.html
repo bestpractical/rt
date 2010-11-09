@@ -29,42 +29,42 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 % }
 
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -73,25 +73,26 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    Title          => loc("RT at a glance"),
-    current_tab    => 'index.html',
-    current_toptab => 'index.html',
-    tabs           => $tabs,
-    actions        => $actions,
-    &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>    
 <& /Elements/MyRT &>
 <%init>
 
-my @results;
+if ( RT::Interface::Web->MobileClient()) {
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."m/");
+    $m->abort();
+}
 
-$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
+my @results;
+my $skip_create = 0;
+
+$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial', 
+              skip_create => \$skip_create );
 
 if ( $ARGS{'QuickCreate'} ) {
-    my $QueueObj = new RT::Queue($session{'CurrentUser'});
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
     $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
     
     my $CFs = $QueueObj->TicketCustomFields();
@@ -103,11 +104,11 @@ if ( $ARGS{'QuickCreate'} ) {
     );
 
 
-    if ( $ValidCFs ) {
+    if ( $ValidCFs && !$skip_create ) {
         my ($t, $msg) = CreateTicket( 
                         Queue => $ARGS{'Queue'},
                         Owner => $ARGS{'Owner'},
-                        Status => 'new',
+                        Status => $ARGS{'Status'}||'new',
                         # yes! it's Requestors, not Requestor
                         Requestors => $ARGS{'Requestors'},
                         From => $session{'CurrentUser'}->EmailAddress,
@@ -115,7 +116,7 @@ if ( $ARGS{'QuickCreate'} ) {
                         Subject => $ARGS{'Subject'});
         push @results, $msg;
     }
-    else {
+    elsif ( !$ValidCFs ) {
         push @results, "can't quickly create ticket in queue " .
             $QueueObj->Name . ' because some custom fields need to be set, please go to normal ticket creation page to do that.';
     }
@@ -126,16 +127,6 @@ if ( $ARGS{'q'} ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
-my $actions;
-if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
-    $actions = {
-        A => { title => loc('Edit'),
-               path  => 'Prefs/MyRT.html',
-             },
-    };
-}
-
-my $tabs = $m->comp("/Elements/DashboardTabs");
 </%init>
 
 %# --></body></html>

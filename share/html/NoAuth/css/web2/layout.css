@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,31 +43,30 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 /* body */
 
 body {
-
-
     padding:0;
     margin:0;
-
     background: #547CCC url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
     font-family: arial, helvetica, sans-serif;
-
     color: #000000;
 }
 
 div#body {
     position: relative;
     padding: 1em;
+    padding-right: 0.5em;
     padding-top: 1.8em;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    margin-left: 10.5em;
-    margin-top: 5.2em;
-    margin-right: 1em;
+    -moz-border-radius-topleft: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    margin-left: 10em;
+    margin-top: 5.8em;
+    margin-right: 0;
     margin-bottom: 0em;
     min-height: 10%;
     background: #fff;
@@ -78,75 +77,18 @@ div#body {
 
 }
 
-#topactions {
- position: absolute;
- background: transparent;
- top: 3.8em; 
- right: 1em;
- width: auto;
- min-width: 42em;
- font-size: 0.9em;
- z-index: 99;
-}
-
-#topactions form * {
-    vertical-align: top;
-}
-
-#topactions button, #topactions select, #topactions input{
- padding-top: 0em;
- padding-bottom: 0em;
- width: 8em;
-
-}
-
-#topactions form {
- display: block;
-
-}
-
-#topactions #CreateTicketInQueue {
- text-align: right; 
-
-}
-#topactions #simple-search {
-    float: right;
-}
-
-#topactions #simple-search .field{
- margin-left: 1em;
- color: #787;
- }
-
-#topactions #simple-search .field:focus {
- color: #000;
- }
-
-#topactions #GotoTicket {
- text-align: right; 
-
-}
-
 div#footer {
  position: absolute;
  right: 0;
-  text-align: right;
+ text-align: right;
  font-size: 0.9em;
  margin-top: 2em;
  background: #fff;
  margin-bottom: 0;
  padding-left: 3em;
  padding-right: 1em;
-
-
-
-
-
  border-top: 2px solid #aaa;
  border-left: 2px solid #aaa;
-
-
-
  -moz-border-radius-topleft: 0.5em;
  -webkit-border-top-left-radius: 0.5em;
  -moz-border-radius-bottomleft: 0.5em;
@@ -154,36 +96,39 @@ div#footer {
 }
 
 div#footer #time {
-display: none ;
+    display: none ;
 }
 
 div#footer #bpscredits {
  text-align: right;
- background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//bplogo.gif) no-repeat top right;
+ background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
  padding-top: 4em;
-} 
+}
 
 
 /* logo stuff */
 
 div#logo {
-}
-
-
-div#logo a {
-     display: none;
     position: absolute;
-    left: 0;
-    bottom: 0;
+    right: 2px;
+    top: 0;
+    height: 2.3em;
 }
+
 div#logo a img {
     border: 0;
+    height: 100% !important;
+    width: auto !important;
+    float: right;
 }
+
 div#logo .rtname {
-    position: absolute;
+    position: relative;
     font-weight: bold;
-    top: 1em;
-    left: 1em;
+    text-align: center;
+    top: 0.7em;
+    padding-right: 1em;
+    float:left;
 }
 
 
@@ -204,16 +149,42 @@ div#quickbar {
  border-bottom: 1px solid #ccc;
 
 }
-div#quick-personal {
-    float: right;
-    margin-right: 1em;
+
+#prefs-menu.sf-menu li li {
+    background: #eaeaea;
 }
+
+#prefs-menu.sf-menu #li-preferences {
+    background: none;
+}
+
+#prefs-menu.sf-menu li:hover,
+#prefs-menu.sf-menu li.sfHover,
+#prefs-menu.sf-menu #li-preferences.sfHover,
+#prefs-menu.sf-menu #li-preferences:hover,
+#prefs-menu.sf-menu a:focus,
+#prefs-menu.sf-menu a:hover,
+#prefs-menu.sf-menu a:active,
+{
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+    border: none;
+}
+
+#prefs-menu .sfHover a,
+#prefs-menu .sfHover a:visited {
+    color: #000;
+    border: none;
+}
+
 
 
 div#header h1 {
  position: absolute;
- left: 7.25em;
+ left: 7em;
  right: 20em;
+ top: 1.4em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;

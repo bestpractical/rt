@@ -1,0 +1,380 @@
+#!/usr/bin/perl -w 
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+# Portions Copyright 2002 Autrijus Tang <autrijus@autrijus.org>
+
+use strict;
+
+use File::Find;
+use File::Copy;
+use Regexp::Common;
+use Carp;
+
+use vars qw($DEBUG $FILECAT);
+
+$DEBUG = 1;
+
+# po dir is for extensions
+@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
+
+$FILECAT = {};
+
+# extract all strings and stuff them into $FILECAT
+# scan html dir for extensions
+File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
+
+# remove msgid with $ in it.  XXX: perhaps give some warnings here
+$FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
+
+# ensure proper escaping and [_1] => %1 transformation
+foreach my $str ( sort keys %{$FILECAT} ) {
+    my $entry = $FILECAT->{$str};
+    my $oldstr = $str;
+
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/\"/\\"/g;
+    $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
+    $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
+    $str =~ s/~([\[\]])/$1/g;
+
+    delete $FILECAT->{$oldstr};
+    $FILECAT->{$str} = $entry;
+}
+
+# update all language dictionaries
+foreach my $dict (@ARGV) {
+    $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
+    $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
+
+    my $lang = $dict;
+    $lang =~ s|.*/||;
+    $lang =~ s|\.po$||;
+    $lang =~ s|\.pot$||;
+
+    update($lang, $dict);
+}
+
+
+
+sub extract_strings_from_code {
+    my $file = $_;
+
+    local $/;
+    return if ( -d $_ );
+    return
+      if ( $File::Find::dir =~
+        qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
+    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
+    return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
+    return if ( /^[\.#]/ );
+    return if ( -f "$_.in" );
+
+    print "Looking at $File::Find::name\n";
+    my $filename = $File::Find::name;
+    $filename =~ s'^\./'';
+    $filename =~ s'\.in$'';
+
+    unless (open _, $file) {
+        print "Cannot open $file for reading ($!), skipping.\n";
+        return;
+    }
+
+    my $re_space_wo_nl = qr{(?!\n)\s};
+    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
+    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
+    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
+    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
+    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
+
+    $_ = <_>;
+
+    # Mason filter: <&|/l>...</&>
+    my $line = 1;
+    while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
+        my ( $vars, $str ) = ( $1, $2 );
+        $vars =~ s/[\n\r]//g;
+        $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        $str =~ s/\\'/\'/g;
+        #print "STR IS $str\n";
+        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+    }
+
+    # Localization function: loc(...)
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {
+        my $match = $1;
+        $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+
+        my ( $vars, $str );
+        if ( $match =~
+                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+
+            $str = substr( $1, 1, -1 );       # $str comes before $vars now
+            $vars = $9;
+        }
+        else {
+            next;
+        }
+
+        $vars =~ s/[\n\r]//g;
+        $str  =~ s/\\'/\'/g;
+
+        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+    }
+
+    # Comment-based mark: "..." # loc
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?($re_delim)[\}\)\],;]*$re_loc_suffix/smgo) {
+	my $str = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $str ) {
+            warn "Couldn't process loc at $filename:$line";
+            next;
+        }
+        $str = substr($str, 1, -1);
+	$str =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$str} }, [ $filename, $line, '' ];
+    }
+
+    # Comment-based qw mark: "qw(...)" # loc_qw
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(qw\([^)]+\))[\}\)\],;]*)?$re_loc_qw_suffix/smgo) {
+        my $str = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $str ) {
+            warn "Couldn't process loc_qw at $filename:$line";
+            next;
+        }
+        foreach my $value (eval($str)) {
+            push @{ $FILECAT->{$value} }, [ $filename, $line, '' ];
+        }
+    }
+
+    # Comment-based left pair mark: "..." => ... # loc_left_pair
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(\w+)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smgo) {
+	my $key = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $key ) {
+            warn "Couldn't process loc_left_pair at $filename:$line";
+            next;
+        }
+	$key  =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+    }
+
+    # Comment-based pair mark: "..." => "..." # loc_pair
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(\w+)\s*=>\s*($re_delim)[\}\)\],;]*)?$re_loc_pair_suffix/smgo) {
+	my $key = $1;
+	my $val = $2;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $key && defined $val ) {
+            warn "Couldn't process loc_pair at $filename:$line";
+            next;
+        }
+	$val = substr($val, 1, -1);
+	$key  =~ s/\\'/\'/g;
+	$val  =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+	push @{ $FILECAT->{$val} }, [ $filename, $line, '' ];
+    }
+
+    close (_);
+}
+
+sub update {
+    my $lang = shift;
+    my $file = shift;
+    my ( %Lexicon, %Header);
+    my $out = '';
+
+    unless (!-e $file or -w $file) {
+	warn "Can't write to $lang, skipping...\n";
+	return;
+    }
+
+    print "Updating $lang...\n";
+
+    my @lines;
+    @lines = (<LEXICON>) if open (LEXICON, $file);
+    @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
+    while (@lines) {
+        my $msghdr = "";
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
+        
+        my $msgid  = "";
+
+# '#~ ' is the prefix of launchpad for msg that's not found the the source
+# we'll remove the prefix later so we can still show them with our own mark
+
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
+        my $msgstr = "";
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
+
+        last unless $msgid;
+
+        chomp $msgid;
+        chomp $msgstr;
+
+        $msgid  =~ s/^#~ //mg;
+        $msgstr =~ s/^#~ //mg;
+
+        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
+
+        if ( $msgid eq '' ) {
+            # null msgid, msgstr will have head info
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        }
+        else {
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
+        }
+
+        if ( $msgid ne ''  ) {
+            for my $msg ( \$msgid, \$msgstr ) {
+                if ( $$msg =~ /\n/ ) {
+                    my @lines = split /\n/, $$msg;
+                    $$msg =
+                      shift @lines;   # first line don't need to handle any more
+                    for (@lines) {
+                        if (/^"(.*)"\s*$/) {
+                            $$msg .= $1;
+                        }
+                    }
+                }
+
+                # convert \\n back to \n
+                $$msg =~ s/(?!\\)\\n/\n/g;
+            }
+        }
+
+        $Lexicon{$msgid} = $msgstr;
+        $Header{$msgid}  = $msghdr;
+    }
+
+    my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
+
+    foreach my $str ( sort keys %{$FILECAT} ) {
+        $Lexicon{$str} ||= '';
+    }
+    foreach ( sort keys %Lexicon ) {
+        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
+        my $nospace = $_;
+        $nospace =~ s/ +$//;
+
+        if ( !$Lexicon{$_} and $Lexicon{$nospace} ) {
+            $Lexicon{$_} =
+              $Lexicon{$nospace} . ( ' ' x ( length($_) - length($nospace) ) );
+        }
+
+        next if !length( $Lexicon{$_} ) and $is_english;
+
+        my %seen;
+        $out .= $Header{$_} if exists $Header{$_};
+
+
+
+        next if (!$f && $_ && !$Lexicon{$_});
+        if ( $f && $f !~ /^\s+$/ ) {
+
+            $out .= "#: $f\n";
+        }
+        elsif ($_) {
+            $out .= "#: NOT FOUND IN SOURCE\n";
+        }
+        foreach my $entry ( grep { $_->[2] } @{ $FILECAT->{$_} } ) {
+            my ( $file, $line, $var ) = @{$entry};
+            $var =~ s/^\s*,\s*//;
+            $var =~ s/\s*$//;
+            $out .= "#. ($var)\n" unless $seen{$var}++;
+        }
+        $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
+    }
+
+    open PO, ">$file" or die "Couldn't open '$file' for writing: $!";
+    print PO $out;
+    close PO;
+
+    return 1;
+}
+
+sub escape {
+    my $text = shift;
+    $text =~ s/\b_(\d+)/%$1/;
+    return $text;
+}
+
+sub fmt {
+    my $str = shift;
+    return "\"$str\"\n" unless $str =~ /\n/;
+
+    my $multi_line = ($str =~ /\n(?!\z)/);
+    $str =~ s/\n/\\n"\n"/g;
+
+    if ($str =~ /\n"$/) {
+        chop $str;
+    }
+    else {
+        $str .= "\"\n";
+    }
+    return $multi_line ? qq(""\n"$str) : qq("$str);
+}
+
+
+__END__
+# Local variables:
+# c-indentation-style: bsd
+# c-basic-offset: 4
+# indent-tabs-mode: nil
+# End:
+# vim: expandtab shiftwidth=4:

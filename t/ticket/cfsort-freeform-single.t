@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test tests => 57;
+use RT::Test nodata => 1, tests => 61;
 
 use strict;
 use warnings;
@@ -11,11 +11,11 @@ use RT::CustomField;
 
 # Test Sorting by FreeformSingle custom field.
 
-diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
+diag "Create a queue to test with.";
 my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
-    $queue = RT::Queue->new( $RT::SystemUser );
+    $queue = RT::Queue->new( RT->SystemUser );
     my ($ret, $msg) = $queue->Create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
@@ -27,10 +27,10 @@ my $queue;
 my %CF;
 my $cf_name;
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 {
     $cf_name = $CF{'CF'}{'name'} = "Order$$";
-    $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'CF'}{'obj'} = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $CF{'CF'}{'obj'}->Create(
         Name  => $CF{'CF'}{'name'},
         Queue => $queue->id,
@@ -41,39 +41,6 @@ diag "create a CF\n" if $ENV{TEST_VERBOSE};
 
 my ($total, @data, @tickets, @test) = (0, ());
 
-sub add_tix_from_data {
-    my @res = ();
-    @data = sort { rand(100) <=> rand(100) } @data;
-    while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
-        my %args = %{ shift(@data) };
-
-        my $subject = '-';
-        foreach my $e ( grep exists $CF{$_} && defined $CF{$_}, keys %args ) {
-            my @values = ();
-            if ( ref $args{ $e } ) {
-                @values = @{ delete $args{ $e } };
-            } else {
-                @values = (delete $args{ $e });
-            }
-            $args{ 'CustomField-'. $CF{ $e }{'obj'}->id } = \@values
-                if @values;
-            $subject = join(",", sort @values) || '-'
-                if $e eq 'CF';
-        }
-
-        my ( $id, undef $msg ) = $t->Create(
-            %args,
-            Queue => $queue->id,
-            Subject => $subject,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
-
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $test ( @test ) {
@@ -82,7 +49,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Tickets->new( RT->SystemUser );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
@@ -121,11 +88,12 @@ sub run_tests {
 }
 
 @data = (
-    { },
-    { CF => 'a' },
-    { CF => 'b' },
+    { Subject => '-' },
+    { Subject => 'a', 'CustomField-' . $CF{CF}{obj}->id => 'a' },
+    { Subject => 'b', 'CustomField-' . $CF{CF}{obj}->id => 'b' },
 );
-@tickets = add_tix_from_data();
+
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}" },
     { Order => "CF.$queue_name.{$cf_name}" },
@@ -133,11 +101,11 @@ sub run_tests {
 run_tests();
 
 @data = (
-    { },
-    { CF => 'aa' },
-    { CF => 'ab' },
+    { Subject => '-' },
+    { Subject => 'aa', 'CustomField-' . $CF{CF}{obj}->id => 'aa' },
+    { Subject => 'bb', 'CustomField-' . $CF{CF}{obj}->id => 'bb' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.{$cf_name}" },
     { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.$queue_name.{$cf_name}" },
@@ -150,7 +118,7 @@ run_tests();
     { Subject => 'b', CF => 'b' },
     { Subject => 'c', CF => 'c' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Query => "CF.{$cf_name} != 'c'", Order => "CF.{$cf_name}" },
     { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
@@ -159,10 +127,10 @@ run_tests();
 
 
 
-diag "create another CF\n" if $ENV{TEST_VERBOSE};
+diag "create another CF";
 {
     $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
-    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->Create(
         Name  => $CF{'AnotherCF'}{'name'},
         Queue => $queue->id,
@@ -178,7 +146,7 @@ diag "create another CF\n" if $ENV{TEST_VERBOSE};
     { Subject => 'b', CF => 'b', AnotherCF => 'ya' },
     { Subject => 'c', CF => 'c', AnotherCF => 'xa' },
 );
-@tickets = add_tix_from_data();
+@tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @data);
 @test = (
     { Order => "CF.{$cf_name}" },
     { Order => "CF.$queue_name.{$cf_name}" },
@@ -187,5 +155,5 @@ diag "create another CF\n" if $ENV{TEST_VERBOSE};
 );
 run_tests();
 
-
+@tickets = ();
 

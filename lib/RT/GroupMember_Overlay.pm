@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -77,7 +77,6 @@ use strict;
 no warnings qw(redefine);
 use RT::CachedGroupMembers;
 
-# {{{ sub Create
 
 =head2 Create { Group => undef, Member => undef }
 
@@ -212,9 +211,7 @@ sub Create {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub _StashUser
 
 =head2 _StashUser PRINCIPAL
 
@@ -272,9 +269,7 @@ sub _StashUser {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -334,16 +329,6 @@ sub Delete {
         return (undef);
     }
 
-    # Since this deletion may have changed the former member's
-    # delegation rights, we need to ensure that no invalid delegations
-    # remain.
-    $err = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
-    unless ($err) {
-	$RT::Logger->warning("Unable to revoke delegated rights for principal ".$self->Id);
-	$RT::Handle->Rollback();
-	return (undef);
-    }
-
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
     RT::Principal->InvalidateACLCache();
@@ -353,13 +338,11 @@ sub Delete {
 
 }
 
-# }}}
 
-# {{{ sub MemberObj
 
 =head2 MemberObj
 
-Returns an RT::Principal object for the Principal specified by $self->PrincipalId
+Returns an RT::Principal object for the Principal specified by $self->MemberId
 
 =cut
 
@@ -372,9 +355,7 @@ sub MemberObj {
     return ( $self->{'Member_obj'} );
 }
 
-# }}}
 
-# {{{ sub GroupObj
 
 =head2 GroupObj
 
@@ -391,6 +372,5 @@ sub GroupObj {
     return ( $self->{'Group_obj'} );
 }
 
-# }}}
 
 1;

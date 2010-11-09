@@ -17,7 +17,99 @@ accidentally damage your database and lose data or worse.
 If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
+
+
 *******
+
+UPGRADING FROM RT 3.8.x - Changes:
+
+The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
+have been removed, but you shouldn't have been using them anyway. You should have been using
+RT::Action, RT::Condition and RT::Search, respectively.
+
+* The "Rights Delegation" and "Personal Groups" features have been removed.
+
+* Replace the following code in templates:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
+with
+
+    { $Ticket->SubjectTag }
+
+
+*******
+UPGRADING FROM 3.8.8 and earlier - Changes:
+
+We've proved that it's possible to delete set of records
+from Transactions table without losing functionality. To delete
+record run the following script:
+
+    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
+
+The default for $MessageBoxWrap is now SOFT and $MessageBoxWidth is now unset
+by default.  This means the message box will expand to fill all the available
+width.  $MessageBoxWrap is also overridable by the user now.  These changes
+accommodate the new default two column layout for ticket create and update
+pages.  You may turn this layout off by setting $UseSideBySideLayout to 0.  To
+retain the original behavior, set $MessageBoxWrap to HARD and $MessageBoxWidth
+to 72.
+
+UPGRADING FROM 3.8.7 and earlier - Changes:
+
+RT's ChartFont option has been changed from a string to a hash which
+lets you specify per-language fonts. RT now comes with a better default
+font for charts, too.
+
+You should either update your 'ChartFont' option to match the new format
+or consider trying the new default
+
+RT now gives you more precise control over the order in which custom fields
+are displayed.  This change requires some small changes to your currently saved
+custom field orders.
+
+RT will automatically clean up your existing custom fields when you run:
+
+
+  /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+
+After that cleanup, you should make sure that custom fields are ordered in
+a way that you and your users find pleasing.
+
+UPGRADING FROM 3.8.6 and earlier - Changes:
+
+For MySQL and Oracle users:
+If you upgraded from a version of RT earlier than 3.7.81 you should
+already have a CachedGroupMembers3 index on your CachedGroupMembers table.
+If you did a clean install of RT somewhere in the 3.8 release series, you 
+most likely don't have this index.  You can add it manually with
+
+  CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+
+UPGRADING FROM 3.8.5 and earlier - Changes:
+
+You can now forward an entire Ticket history (in addition to specific transactions)
+but this requires a new Template called forward ticket.  This template will be added
+when you run.
+
+/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+
+Custom fields with categories can optionally be split out into
+hierarchical custom fields.  If you wish to convert your old
+category-based custom fields, run:
+
+    perl etc/upgrade/split-out-cf-categories
+
+It will prompt you for each custom field with categories that it
+finds, and the name of the custom field to create to store the
+categories.
+
+If you were using the LocalizedDateTime RT::Date formatter from code
+and passing a DateFormat or TimeFormat argument, you need to switch from 
+the strftime methods to the cldr methods (ie full_date_format becomes date_format_full)
+You may have done this from your RT_SiteConfig.pm by using
+Set($DateTimeFormat, { Format => 'LocalizedDateTime', DateFormat => 'medium_date_format' );
+
 UPGRADING FROM 3.8.3 and earlier - Changes:
 
 Arguments to the NotifyGroup Scrip Action need

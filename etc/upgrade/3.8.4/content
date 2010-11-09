@@ -4,7 +4,7 @@
         $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
         use strict;
 
-        my $actions = RT::ScripActions->new( $RT::SystemUser );
+        my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
             FIELD => 'ExecModule',
             VALUE => 'NotifyGroup',
@@ -21,9 +21,9 @@
                 my $obj;
                 next unless $r->{'Type'};
                 if( lc $r->{'Type'} eq 'user' ) {
-                    $obj = RT::User->new( $RT::SystemUser );
+                    $obj = RT::User->new( RT->SystemUser );
                 } elsif ( lc $r->{'Type'} eq 'group' ) {
-                    $obj = RT::Group->new( $RT::SystemUser );
+                    $obj = RT::Group->new( RT->SystemUser );
                 } else {
                     next;
                 }

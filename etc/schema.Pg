@@ -11,7 +11,7 @@
 
 CREATE SEQUENCE attachments_id_seq;
 
--- {{{ Attachments
+
 
 CREATE TABLE Attachments (
   id INTEGER DEFAULT nextval('attachments_id_seq'),
@@ -33,9 +33,9 @@ CREATE TABLE Attachments (
 CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
--- }}}
 
--- {{{ Queues
+
+
 
 
 --
@@ -63,9 +63,9 @@ CREATE TABLE Queues (
 );
 CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
 
--- }}}
 
--- {{{ Links
+
+
 
 
 
@@ -92,9 +92,9 @@ CREATE TABLE Links (
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
 CREATE INDEX Links4 ON Links(Type,LocalBase);
 
--- }}}
 
--- {{{ Principals
+
+
 
 
 
@@ -116,9 +116,9 @@ CREATE TABLE Principals (
 CREATE INDEX Principals2 ON Principals (ObjectId);
 
 
--- }}}
 
--- {{{ Groups
+
+
 
 
 
@@ -135,6 +135,10 @@ CREATE TABLE Groups (
   Domain varchar(64),
   Type varchar(64),
   Instance integer,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -142,9 +146,9 @@ CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, Name);
 CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
 
 
--- }}}
 
--- {{{ ScripConditions
+
+
 
 
 
@@ -170,9 +174,9 @@ CREATE TABLE ScripConditions (
 
 );
 
--- }}}
 
--- {{{ Transactions
+
+
 
 
 --
@@ -202,9 +206,9 @@ CREATE TABLE Transactions (
 );
 CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
--- }}}
 
--- {{{ Scrips 
+
+
 
 
 
@@ -235,9 +239,9 @@ CREATE TABLE Scrips (
 
 );
 
--- }}}
 
--- {{{ ACL
+
+
 
 
 --
@@ -254,8 +258,10 @@ CREATE TABLE ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId integer NOT NULL DEFAULT 0,
-  DelegatedBy integer NOT NULL DEFAULT 0, 
-  DelegatedFrom integer NOT NULL DEFAULT 0, 
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -263,9 +269,9 @@ CREATE TABLE ACL (
 CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
 
--- }}}
 
--- {{{ GroupMembers 
+
+
 
 
 
@@ -279,15 +285,19 @@ CREATE TABLE GroupMembers (
   id INTEGER DEFAULT nextval('groupmembers_id_seq'),
   GroupId integer NOT NULL DEFAULT 0,
   MemberId integer NOT NULL DEFAULT 0,  
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
 
 CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers(GroupId, MemberId);
 
--- }}}
 
--- {{{ GroupMembersCache
+
+
 
 
 
@@ -312,9 +322,9 @@ CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (GroupId);
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled); 
 
--- }}}
 
--- {{{ Users
+
+
 
 
 
@@ -370,9 +380,9 @@ CREATE INDEX Users3 ON Users (id, EmailAddress);
 CREATE INDEX Users4 ON Users (EmailAddress);
 
 
--- }}}
 
--- {{{ Tickets
+
+
 
 
 
@@ -396,7 +406,7 @@ CREATE TABLE Tickets (
   Priority integer NOT NULL DEFAULT 0  ,
   TimeEstimated integer NOT NULL DEFAULT 0  ,
   TimeWorked integer NOT NULL DEFAULT 0  ,
-  Status varchar(10) NULL  ,
+  Status varchar(64) NULL  ,
   TimeLeft integer NOT NULL DEFAULT 0  ,
   Told TIMESTAMP NULL  ,
   Starts TIMESTAMP NULL  ,
@@ -420,9 +430,9 @@ CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
 CREATE INDEX Tickets4 ON Tickets (id, Status) ;
 CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
--- }}}
 
--- {{{ ScripActions
+
+
 
 
 
@@ -446,9 +456,9 @@ CREATE TABLE ScripActions (
 
 );
 
--- }}}
 
--- {{{ Templates
+
+
 
 
 
@@ -475,9 +485,9 @@ CREATE TABLE Templates (
 
 );
 
--- }}}
 
--- {{{ ObjectCustomFieldValues 
+
+
 
 
 
@@ -511,9 +521,9 @@ CREATE TABLE ObjectCustomFieldValues (
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
--- }}}
 
--- {{{ CustomFields
+
+
 
 
 
@@ -543,9 +553,9 @@ CREATE TABLE CustomFields (
 
 );
 
--- }}}
 
--- {{{ ObjectCustomFields 
+
+
 
 CREATE SEQUENCE objectcustomfields_id_s;
 
@@ -563,9 +573,9 @@ CREATE TABLE ObjectCustomFields (
 
 );
 
--- }}}
 
--- {{{ CustomFieldValues 
+
+
 
 
 
@@ -581,6 +591,7 @@ CREATE TABLE CustomFieldValues (
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
+  Category varchar(255) NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -592,10 +603,10 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
--- }}}
 
 
--- {{{ Attributes
+
+
 
 CREATE SEQUENCE attributes_id_seq;
 
@@ -618,9 +629,9 @@ CREATE TABLE Attributes (
 CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
--- }}}
 
--- {{{ Sessions
+
+
 
 -- sessions is used by Apache::Session to keep sessions in the database.
 -- We should have a reaper script somewhere.
@@ -633,5 +644,5 @@ CREATE TABLE sessions (
 
 );
 
--- }}}
+
 

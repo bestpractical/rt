@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Base;
@@ -68,7 +68,6 @@ RT::Base
 
 =cut
 
-# {{{ sub CurrentUser 
 
 =head2 CurrentUser
 
@@ -87,7 +86,7 @@ sub CurrentUser {
         $self->{'original_user'} = $self->{'user'};
         my $current_user = $_[0];
         if ( ref $current_user eq 'RT::User' ) {
-            $self->{'user'} = new RT::CurrentUser;
+            $self->{'user'} = RT::CurrentUser->new;
             $self->{'user'}->Load( $current_user->id );
         } else {
             $self->{'user'} = $current_user;
@@ -99,20 +98,9 @@ sub CurrentUser {
             if ref $self->{'user'} && $self->{'user'} == $self;
     }
 
-    unless ( ref $self->{'user'} && $self->{'user'}->isa('RT::CurrentUser') ) {
-        my $msg = "$self was created without a CurrentUser."
-            ." Any RT object which is subclass of RT::Base must be created"
-            ." with a RT::CurrentUser or a RT::User object as the first argument.";
-        $msg .= "\n". Carp::longmess() if @_;
-
-        $RT::Logger->error( $msg );
-        return $self->{'user'} = undef;
-    }
-
     return ( $self->{'user'} );
 }
 
-# }}}
 
 sub OriginalUser {
     my $self = shift;
@@ -163,10 +151,17 @@ sub loc_fuzzy {
     }
 }
 
-eval "require RT::Base_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
-eval "require RT::Base_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
+sub _ImportOverlays {
+    my $class = shift;
+    my ($package,undef,undef) = caller();
+    $package =~ s|::|/|g;
+    for (qw(Overlay Vendor Local)) {
+        my $filename = $package."_".$_.".pm";
+        eval { require $filename };
+        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+    }
+}
 
+__PACKAGE__->_ImportOverlays();
 
 1;

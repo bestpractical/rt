@@ -1,0 +1,149 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<% JSON::to_json( \@suggestions ) |n %>
+% $m->abort;
+<%ARGS>
+$return => 'Name'
+$limit => undef
+$term => undef
+$max => 10
+</%ARGS>
+<%INIT>
+require JSON;
+
+# Only allow certain return fields
+$return = 'Name'
+    unless $return =~ /^(?:EmailAddress|Name|RealName|id)$/;
+
+$m->abort unless defined $return
+             and defined $term
+             and defined $limit;
+
+my $CurrentUser = $session{'CurrentUser'};
+
+my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
+
+my %user_uniq_hash;
+my $isSU = $session{CurrentUser}
+    ->HasRight( Right => 'SuperUser', Object => $RT::System );
+
+# Turn RT::Ticket-1|RT::Queue-2 into ['RT::Ticket', 1], ['RT::Queue', 2]
+foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
+    my $object = $spec->[0]->new( $session{'CurrentUser'} );
+
+    if ( $spec->[1] ) {
+        $object->Load( $spec->[1] );
+
+        # Warn if we couldn't load an object
+        unless ( $object->id ) {
+            $RT::Logger->warn("Owner autocomplete couldn't load an '$spec->[0]' with id '$spec->[1]'");
+            next;
+        }
+    }
+
+    my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->RowsPerPage( $max );
+
+    # Limit by our autocomplete term BEFORE we limit to OwnTicket because that
+    # does a funky union hack
+    while (my ($name, $op) = each %fields) {
+        $op = 'STARTSWITH'
+            unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
+
+        $Users->Limit(
+            FIELD           => $name,
+            OPERATOR        => $op,
+            VALUE           => $term,
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => 'autocomplete',
+        );
+    }
+
+    $Users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $object,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => $isSU
+    );
+
+    while ( my $User = $Users->Next() ) {
+        next if $user_uniq_hash{ $User->Id };
+        $user_uniq_hash{ $User->Id() } = [
+            $User,
+            $m->scomp('/Elements/ShowUser', User => $User, NoEscape => 1)
+        ];
+    }
+}
+
+# Make sure we add Nobody if we don't already have it
+my $nobody = qr/^n(?:o(?:b(?:o(?:d(?:y)?)?)?)?)?$/i;
+if ( not $user_uniq_hash{RT->Nobody->id} and $term =~ $nobody ) {
+    $user_uniq_hash{RT->Nobody->id} = [
+        RT->Nobody,
+        $m->scomp('/Elements/ShowUser', User => RT->Nobody, NoEscape => 1)
+    ];
+}
+
+my @users = sort { lc $a->[1] cmp lc $b->[1] }
+                 values %user_uniq_hash;
+
+my @suggestions;
+my $count = 1;
+
+for my $tuple ( @users ) {
+    last if $count > $max;
+    my $formatted = $tuple->[1];
+    $formatted =~ s/\n//g;
+    push @suggestions, {
+        label => $formatted,
+        value => $tuple->[0]->$return
+    };
+    $count++;
+}
+</%INIT>

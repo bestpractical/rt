@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,18 +43,48 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Select a user') &>
-<& /Admin/Elements/UserTabs, current_tab => 'Admin/Users/', 
-    current_subtab => 'Admin/Users/',
-    Title => loc('Select a user') &>
-
+<& /Elements/Tabs &>
+    
 <h1><% $caption %></h1>
-<p><&|/l&>Select a user</&>:</p>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
+<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
+% }
+<input type="hidden" name="UserField" value="Name" />
+<&|/l&>Go to user</&>
+<input type="text" name="UserString" value="" id="autocomplete-UserString" />
+<script type="text/javascript">
+    jQuery("#autocomplete-UserString").autocomplete({
+        source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name",
+        // Auto-submit once a user is chosen
+        select: function( event, ui ) {
+            jQuery(event.target).closest("form").submit();
+        }
+    });
+</script>
+</form>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
+<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
+% }
+<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &><br />
+<input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
+<&|/l&>Include disabled users in search.</&>
+<br />
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
+</form>
+
 % unless ( $users->Count ) {
 <em><&|/l&>No users matching search criteria found.</&></em>
 % } else {
+<p><&|/l&>Select a user</&>:</p>
 
 <& /Elements/CollectionList,
     OrderBy => 'Name',
@@ -74,26 +104,12 @@
 <&|/l&>Download as a tab-delimited file</&>
 </a>)</em></div>
 % }
-
-<br /><br />
 % }
-
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
-% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
-%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
-<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
-% }
-<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS &><br />
-<input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-<&|/l&>Include disabled users in search.</&>
-<br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
-</form>
 
 <%INIT>
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
-$users->{'find_disabled_rows'} = 1 if $FindDisabledUsers;
+$users->FindAllRows if $FindDisabledUsers;
 
 if ( defined($UserString) && length $UserString ) {
     $caption = loc("Users matching search criteria");
@@ -109,18 +125,42 @@ if ( defined($UserString) && length $UserString ) {
             FIELD => $UserField,
             OPERATOR => $UserOp,
             VALUE => $UserString,
+            CASESENSITIVE => 0,
         ); 
     }
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Users/Modify.html?id=".$users->First->id)
+          if $users->Count == 1;
 }
 else {
     $caption = loc("Privileged users");
     $users->LimitToPrivileged;
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__RealName__, __EmailAddress__};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 
+# Build up the list of fields to display for searching
+my $i = 0;
+my %sorted = map { $_ => $i++ } qw(
+    Name EmailAddress RealName Organization NickName WorkPhone HomePhone
+    MobilePhone PagerPhone Address1 Address2 City State Zip Country
+    Timezone Lang Gecos Comments
+);
+
+my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
+            grep { !/(?:^id$|ContactInfo|Encoding|^External|System|PGPKey|^Last|^Creat(?:ed|or)$|^Signature$)/ }
+            RT::User->ReadableAttributes;
+my @fields;
+
+for my $name (@attrs) {
+    my $label = $m->comp(
+        '/Elements/ColumnMap',
+        Class   => 'RT__User',
+        Name    => $name,
+        Attr    => 'title'
+    );
+
+    push @fields, [ $name, $label || $name ];
+}
 </%INIT>
 <%ARGS>
 $Format => undef,

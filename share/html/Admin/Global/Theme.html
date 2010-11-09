@@ -1,0 +1,294 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header,
+    Title => loc("Theme"),
+    LinkRel => { stylesheet => '/NoAuth/css/farbtastic.css' }
+    &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/farbtastic.js"></script>
+<style type="text/css" id="test"></style>
+
+<div id="simple-customize">
+<div id="upload-logo">
+  <h2>Logo</h2>
+% if ($img) {
+  <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo?<% time() %>" />
+% }
+  <form method="POST" enctype="multipart/form-data">
+    <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
+    <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <input name="reset_logo" value="Reset to default RT Logo" type="submit" />
+    <input type="submit" value="Upload" />
+  </form>
+</div>
+
+<div id="customize-theme">
+  <h2>Customize the RT theme</h2>
+  <ol>
+    <li>
+      <label for="section"><&|/l&>Select a section</&>:</label>
+      <select id="section"></select>
+    </li>
+    <li>
+      <div class="description"><&|/l&>Select a color for the section</&>:</div>
+% if ($colors) {
+<div class="primary-colors">
+%   for (@$colors) {
+%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
+<button type="button" class="color-template"
+        style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+  <&|/l&>Text</&>
+</button>
+%   }
+</div>
+% }
+      <div id="color-picker"></div>
+    </li>
+  </ol>
+</div>
+</div>
+
+<div id="custom-css">
+  <h2>Custom CSS (Advanced)</h2>
+  
+  <form method="POST">
+    <textarea rows=20 id="user_css" name="user_css"><% $user_css %></textarea><br />
+    <input id="try" type="button" class="button" value="Try" />
+    <input id="reset" type="reset" value="Reset" type="submit" />
+    <input name="reset_css" value="Reset to default RT Theme" type="submit" />
+    <input value="Save" type="submit" />
+  </form>
+</div>
+
+<script type="text/javascript">
+var section_css_mapping = {
+    'Page': ['body'],
+    'Header': ['div#quickbar', '#main-navigation #app-nav > li', '#main-navigation #app-nav > li > a'],
+    'Page title': ['div#header h1'],
+    'Page content': ['div#body'],
+    'Buttons': ['input[type="reset"], input[type="submit"], input[class="button"]'],
+};
+
+jQuery(function($) {
+
+    for (var section in section_css_mapping) {
+        $('select#section').append($("<option/>").attr('value', section).text(section));
+    }
+
+    $("style#test").text($('#user_css').val());
+    $('#try').click(function() {
+        $("style#test").text($('#user_css').val());
+    });
+
+    $('#reset').click(function() {
+        setTimeout(function() {
+          $("style#test").text($('#user_css').val());
+        }, 1000);
+    });
+
+    function change_color(bg, fg) {
+      var section = $('select#section').val();
+
+      var applying = section_css_mapping[section];
+      var css = $('#user_css').val();
+      if (applying) {
+          var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
+          for (var name in applying) {
+              var selector = (applying[name]).replace(specials, "\\$1");
+              //var rule = new RegExp('\\b'+selector+'\\s*\{.*?\}');
+              var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
+              console.log(rule);
+              var newcss = "background: " + bg;
+
+              /* Don't set the text color on <body> as it affects too much */
+              if (applying[name] != "body")
+                  newcss += "; color: " + fg;
+
+              /* Kill the border on the quickbar if we're styling it */
+              if (applying[name].match(/quickbar/))
+                  newcss += "; border: none;"
+
+              /* Page title's text color is the selected color */
+              if (applying[name].match(/#header/))
+                  newcss = "color: " + bg;
+
+              /* Navigation wants border color too */
+              if (applying[name].match(/#app-nav > li > a/))
+                  newcss += "; border-color: " + fg;
+
+              //css = css.replace(rule, applying[name]+" { "+newcss+" }");
+              css = css.replace(rule, applying[name]+" { "+newcss+" }");
+          }
+      }
+      $('#user_css').val(css);
+      $("style#test").text(css);
+    }
+
+    $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });
+
+    $('button.color-template').click(function() {
+      change_color($(this).css('background-color'), $(this).css('color'));
+  });
+
+
+});
+</script>
+
+<%INIT>
+my $text_threshold = 0.6;
+my @results;
+
+my $has_color_analyzer =
+eval { require Imager; require Convert::Color; 1 };
+
+my $img;
+if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+    my ($id, $msg) = $RT::System->SetAttribute( Name => "UserLogo",
+                                                Description => "User-provided logo",
+                                                Content => {
+                                                    type => $file_hash->{ContentType},
+                                                    data => $file_hash->{LargeContent} } );
+    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
+
+    $img = Imager->new;
+    unless ( $img->read(data => $file_hash->{LargeContent}) ) {
+        push @results, loc("Unable to read image: [_1]", $img->errstr);
+        undef $img;
+    }
+}
+elsif ($ARGS{'reset_logo'}) {
+    $RT::System->DeleteAttribute('UserLogo');
+}
+else {
+    if (my $attr = $RT::System->FirstAttribute('UserLogo')) {
+        my $content = $attr->Content;
+        if (ref($content) eq 'HASH') {
+            $img = Imager->new;
+            unless ( $img->read(data => $content->{data}) ) {
+                push @results, loc("Unable to read image: [_1]", $img->errstr);
+                undef $img;
+            }
+        }
+        else {
+            $RT::System->DeleteAttribute('UserLogo');
+        }
+    }
+}
+
+if ($user_css) {
+    if ($ARGS{'reset_css'}) {
+        $RT::System->DeleteAttribute('UserCSS');
+        undef $user_css;
+    }
+    else {
+        my ($id, $msg) = $RT::System->SetAttribute( Name => "UserCSS",
+                                                    Description => "User-provided css",
+                                                    Content => $user_css );
+        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
+    }
+}
+
+if (!$user_css) {
+    my $attr = $RT::System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : '/* Page */
+body {}
+
+/* Header */
+div#quickbar {}
+#main-navigation #app-nav > li {}
+#main-navigation #app-nav > li > a {}
+
+/* Page title */
+div#header h1 {}
+
+/* Page content */
+div#body {}
+
+/* Buttons */
+input[type="reset"], input[type="submit"], input[class="button"] {}
+';
+
+}
+
+# XXX: move this to some other modules
+
+my $colors = $img && $has_color_analyzer? analyze_img($img) : undef;
+use List::MoreUtils qw(uniq);
+
+sub analyze_img {
+    my $img = shift;
+    my $color;
+
+    for my $i (0..$img->getwidth-1) {
+        for my $j (0..$img->getheight-1) {
+            my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
+            pop @color;
+            my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
+            my $c = join(',',@color);
+            next if $hsl->lightness < 0.1;
+            $color->{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
+            $color->{$c}->{cnt}++;
+        }
+    }
+
+    for (values %$color) {
+        $_->{rank} = $_->{s} * $_->{cnt};
+    }
+    my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
+                    (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
+    if ((scalar uniq map {$_->{rank}} @top5) == 1) {
+        warn "bad";
+    }
+    return \@top5;
+}
+</%INIT>
+<%ARGS>
+$user_css => ''
+</%ARGS>

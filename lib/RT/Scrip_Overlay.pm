@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -68,7 +68,6 @@ package RT::Scrip;
 use strict;
 no warnings qw(redefine);
 
-# {{{ sub Create
 
 =head2 Create
 
@@ -105,6 +104,14 @@ sub Create {
         CustomIsApplicableCode => undef,
         @_
     );
+
+    if ($args{CustomPrepareCode} || $args{CustomCommitCode} || $args{CustomIsApplicableCode}) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                               Right  => 'ExecuteCode' ) )
+        {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
 
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
@@ -171,9 +178,7 @@ sub Create {
     }
 }
 
-# }}}
 
-# {{{ sub Delete
 
 =head2 Delete
 
@@ -191,9 +196,7 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
-# }}}
 
-# {{{ sub QueueObj
 
 =head2 QueueObj
 
@@ -212,9 +215,7 @@ sub QueueObj {
     return ( $self->{'QueueObj'} );
 }
 
-# }}}
 
-# {{{ sub ActionObj
 
 =head2 ActionObj
 
@@ -237,9 +238,7 @@ sub ActionObj {
     return ( $self->{'ScripActionObj'} );
 }
 
-# }}}
 
-# {{{ sub ConditionObj
 
 =head2 ConditionObj
 
@@ -255,9 +254,20 @@ sub ConditionObj {
     return $res;
 }
 
-# }}}
 
-# {{{ sub TemplateObj
+=head2 LoadModules
+
+Loads scrip's condition and action modules.
+
+=cut
+
+sub LoadModules {
+    my $self = shift;
+
+    $self->ConditionObj->LoadCondition;
+    $self->ActionObj->LoadAction;
+}
+
 
 =head2 TemplateObj
 
@@ -276,11 +286,8 @@ sub TemplateObj {
     return ( $self->{'TemplateObj'} );
 }
 
-# }}}
 
-# {{{ Dealing with this instance of a scrip
 
-# {{{ sub Apply
 
 =head2 Apply { TicketObj => undef, TransactionObj => undef}
 
@@ -337,9 +344,7 @@ sub Apply {
 
 }
 
-# }}}
 
-# {{{ sub IsApplicable
 
 =head2 IsApplicable
 
@@ -409,9 +414,7 @@ sub IsApplicable {
 
 }
 
-# }}}
 
-# {{{ SUb Prepare
 
 =head2 Prepare
 
@@ -443,9 +446,7 @@ sub Prepare {
         return ($return);
 }
 
-# }}}
 
-# {{{ sub Commit
 
 =head2 Commit
 
@@ -479,29 +480,39 @@ sub Commit {
     return ($return);
 }
 
-# }}}
 
-# }}}
 
-# {{{ ACL related methods
 
-# {{{ sub _Set
 
 # does an acl check and then passes off the call
 sub _Set {
     my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_,
+    );
 
     unless ( $self->CurrentUserHasRight('ModifyScrips') ) {
         $RT::Logger->debug(
                  "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
         return ( 0, $self->loc('Permission Denied') );
     }
+
+
+    if (length($args{Value})) {
+        if ($args{Field} eq 'CustomIsApplicableCode' || $args{Field} eq 'CustomPrepareCode' || $args{Field} eq 'CustomCommitCode') {
+            unless ( $self->CurrentUser->HasRight( Object => $RT::System,
+                                                   Right  => 'ExecuteCode' ) ) {
+                return ( 0, $self->loc('Permission Denied') );
+            }
+        }
+    }
+
     return $self->__Set(@_);
 }
 
-# }}}
 
-# {{{ sub _Value
 # does an acl check and then passes off the call
 sub _Value {
     my $self = shift;
@@ -516,9 +527,7 @@ sub _Value {
     return $self->__Value(@_);
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -535,9 +544,7 @@ sub CurrentUserHasRight {
 
 }
 
-# }}}
 
-# {{{ sub HasRight
 
 =head2 HasRight
 
@@ -567,9 +574,97 @@ sub HasRight {
     }
 }
 
-# }}}
 
-# }}}
+
+=head2 CompileCheck
+
+This routine compile-checks the custom prepare, commit, and is-applicable code
+to see if they are syntactically valid Perl. We eval them in a codeblock to
+avoid actually executing the code.
+
+If one of the fields has a compile error, only the first is reported.
+
+Returns an (ok, message) pair.
+
+=cut
+
+sub CompileCheck {
+    my $self = shift;
+
+    for my $method (qw/CustomPrepareCode CustomCommitCode CustomIsApplicableCode/) {
+        my $code = $self->$method;
+        next if !defined($code);
+
+        do {
+            no strict 'vars';
+            eval "sub { $code }";
+        };
+        next if !$@;
+
+        my $error = $@;
+        return (0, $self->loc("Couldn't compile [_1] codeblock '[_2]': [_3]", $method, $code, $error));
+    }
+}
+
+
+=head2 SetScripAction
+
+=cut
+
+sub SetScripAction {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Action is mandatory argument") ) unless $value;
+
+    require RT::ScripAction;
+    my $action = RT::ScripAction->new( $self->CurrentUser );
+    $action->Load($value);
+    return ( 0, $self->loc( "Action '[_1]' not found", $value ) )
+      unless $action->Id;
+
+    return $self->_Set( Field => 'ScripAction', Value => $action->Id );
+}
+
+=head2 SetScripCondition
+
+=cut
+
+sub SetScripCondition {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Condition is mandatory argument") )
+      unless $value;
+
+    require RT::ScripCondition;
+    my $condition = RT::ScripCondition->new( $self->CurrentUser );
+    $condition->Load($value);
+
+    return ( 0, $self->loc( "Condition '[_1]' not found", $value ) )
+      unless $condition->Id;
+
+    return $self->_Set( Field => 'ScripCondition', Value => $condition->Id );
+}
+
+=head2 SetTemplate
+
+=cut
+
+sub SetTemplate {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc("Template is mandatory argument") ) unless $value;
+
+    require RT::Template;
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->Load($value);
+    return ( 0, $self->loc( "Template '[_1]' not found", $value ) )
+      unless $template->Id;
+
+    return $self->_Set( Field => 'Template', Value => $template->Id );
+}
 
 1;
 

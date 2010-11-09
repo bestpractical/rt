@@ -1,68 +1,9 @@
 ServerRoot %%SERVER_ROOT%%
+PidFile %%PID_FILE%%
+LockFile %%LOCK_FILE%%
 ServerAdmin root@localhost
-#LoadModule authn_file_module modules/mod_authn_file.so
-#LoadModule authn_dbm_module modules/mod_authn_dbm.so
-#LoadModule authn_anon_module modules/mod_authn_anon.so
-#LoadModule authn_dbd_module modules/mod_authn_dbd.so
-#LoadModule authn_default_module modules/mod_authn_default.so
-LoadModule authz_host_module modules/mod_authz_host.so
-#LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-#LoadModule authz_user_module modules/mod_authz_user.so
-#LoadModule authz_dbm_module modules/mod_authz_dbm.so
-#LoadModule authz_owner_module modules/mod_authz_owner.so
-#LoadModule authz_default_module modules/mod_authz_default.so
-#LoadModule auth_basic_module modules/mod_auth_basic.so
-#LoadModule auth_digest_module modules/mod_auth_digest.so
-#LoadModule file_cache_module modules/mod_file_cache.so
-#LoadModule cache_module modules/mod_cache.so
-#LoadModule disk_cache_module modules/mod_disk_cache.so
-#LoadModule mem_cache_module modules/mod_mem_cache.so
-#LoadModule dbd_module modules/mod_dbd.so
-#LoadModule dumpio_module modules/mod_dumpio.so
-#LoadModule ext_filter_module modules/mod_ext_filter.so
-#LoadModule include_module modules/mod_include.so
-#LoadModule filter_module modules/mod_filter.so
-#LoadModule substitute_module modules/mod_substitute.so
-#LoadModule deflate_module modules/mod_deflate.so
-LoadModule log_config_module modules/mod_log_config.so
-#LoadModule log_forensic_module modules/mod_log_forensic.so
-#LoadModule logio_module modules/mod_logio.so
-LoadModule env_module modules/mod_env.so
-#LoadModule mime_magic_module modules/mod_mime_magic.so
-#LoadModule cern_meta_module modules/mod_cern_meta.so
-#LoadModule expires_module modules/mod_expires.so
-#LoadModule headers_module modules/mod_headers.so
-#LoadModule ident_module modules/mod_ident.so
-#LoadModule usertrack_module modules/mod_usertrack.so
-#LoadModule unique_id_module modules/mod_unique_id.so
-#LoadModule setenvif_module modules/mod_setenvif.so
-#LoadModule version_module modules/mod_version.so
-#LoadModule proxy_module modules/mod_proxy.so
-#LoadModule proxy_connect_module modules/mod_proxy_connect.so
-#LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
-#LoadModule proxy_http_module modules/mod_proxy_http.so
-#LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
-#LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
-#LoadModule ssl_module modules/mod_ssl.so
-#LoadModule mime_module modules/mod_mime.so
-#LoadModule dav_module modules/mod_dav.so
-#LoadModule status_module modules/mod_status.so
-#LoadModule autoindex_module modules/mod_autoindex.so
-#LoadModule asis_module modules/mod_asis.so
-#LoadModule info_module modules/mod_info.so
-#LoadModule cgi_module modules/mod_cgi.so
-#LoadModule dav_fs_module modules/mod_dav_fs.so
-#LoadModule vhost_alias_module modules/mod_vhost_alias.so
-#LoadModule negotiation_module modules/mod_negotiation.so
-#LoadModule dir_module modules/mod_dir.so
-#LoadModule imagemap_module modules/mod_imagemap.so
-#LoadModule actions_module modules/mod_actions.so
-#LoadModule speling_module modules/mod_speling.so
-#LoadModule userdir_module modules/mod_userdir.so
-LoadModule alias_module modules/mod_alias.so
-#LoadModule rewrite_module modules/mod_rewrite.so
-#LoadModule rewrite_module modules/mod_rewrite.so
-LoadModule perl_module modules/mod_perl.so
+
+%%LOAD_MODULES%%
 
 <IfModule !mpm_netware_module>
 <IfModule !mpm_winnt_module>
@@ -84,7 +25,7 @@ LogLevel debug
 </Directory>
 
 AddDefaultCharset UTF-8
-PerlRequire %%RT_BIN_PATH%%/webmux.pl
+PerlSetEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
 
 RedirectMatch permanent (.*)/$ $1/index.html
 
@@ -94,6 +35,8 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
     Allow from all
 
     SetHandler perl-script
-    PerlResponseHandler RT::Mason
+    PerlResponseHandler Plack::Handler::Apache2
+    PerlSetVar psgi_app %%RT_SBIN_PATH%%/rt-server
+    PerlSetEnv RT_TESTING 1
 </Directory>
 

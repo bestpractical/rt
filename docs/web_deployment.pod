@@ -1,0 +1,199 @@
+=head1 Setting up the web interface
+
+As of RT 3.9, RT's web interface speaks PSGI
+(L<http://plackperl.org>) which lets you use RT with any PSGI-supported web
+server (which includes Apache, nginx, lighttpd, etc).
+
+=head2 Standalone
+
+The standalone RT web server is backed by a pure-Perl server engine
+(L<HTTP::Server::PSGI>). This standalone server is appropriate for development
+and testing, but is not appropriate for production use.
+
+You should not run this server against port 80 (which is the default port)
+because that requires root-level privileges and may conflict with any existing
+listeners. So choose a high port (for example 8080) and start the standalone
+server with:
+
+    /opt/rt3/sbin/rt-server --port 8080
+
+=head2 mod_perl
+
+=head3 mod_perl 1.xx
+
+B<WARNING: mod_perl 1.99_xx is not supported.>
+
+See below configuration instructions for mod_perl 2.x.
+
+To install RT with mod_perl 1.x, you'll need to install the
+Apache database connection cache. To make sure it's installed, run
+the following command:
+
+    perl -MCPAN -e'install "Apache::DBI"'
+
+Next, add a few lines to your Apache 1.3.xx configuration file, so that
+it knows where to find RT:
+
+    <IfModule !mpm_netware_module>
+    <IfModule !mpm_winnt_module>
+    User rt
+    Group staff
+    </IfModule>
+    </IfModule>
+
+    <VirtualHost rt.example.com>
+        ServerRoot /usr
+        ServerAdmin root@localhost
+
+        LoadModule authz_host_module modules/mod_authz_host.so
+        LoadModule env_module modules/mod_env.so
+        LoadModule alias_module modules/mod_alias.so
+        LoadModule perl_module modules/mod_perl.so
+
+        PerlModule Apache::DBI
+
+        # optional apache logs for RT
+        # ErrorLog /opt/rt3/var/log/apache.error
+        # TransferLog /opt/rt3/var/log/apache.access
+        # LogLevel debug
+
+        <Directory />
+            Options FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Deny from all
+        </Directory>
+
+        AddDefaultCharset UTF-8
+        PerlSetEnv RT_SITE_CONFIG /opt/rt3/etc/RT_SiteConfig.pm
+
+        RedirectMatch permanent (.*)/$ $1/index.html
+
+        DocumentRoot "/opt/rt3/share/html"
+        <Directory "/opt/rt3/share/html">
+            Order allow,deny
+            Allow from all
+
+            SetHandler perl-script
+            PerlHandler Plack::Handler::Apache1
+            PerlSetVar psgi_app /opt/rt3/sbin/rt-server
+        </Directory>
+    </VirtualHost>
+
+=head3 mod_perl 2.xx
+
+B<WARNING: mod_perl 1.99_xx is not supported.>
+
+Add a few lines to your Apache 2.xx configuration file, so that
+it knows where to find RT:
+
+    <IfModule !mpm_netware_module>
+    <IfModule !mpm_winnt_module>
+    User rt
+    Group staff
+    </IfModule>
+    </IfModule>
+
+    <VirtualHost rt.example.com>
+        ServerRoot /usr
+        ServerAdmin root@localhost
+
+        LoadModule authz_host_module modules/mod_authz_host.so
+        LoadModule env_module modules/mod_env.so
+        LoadModule alias_module modules/mod_alias.so
+        LoadModule perl_module modules/mod_perl.so
+
+        # optional apache logs for RT
+        # ErrorLog /opt/rt3/var/log/apache2.error
+        # TransferLog /opt/rt3/var/log/apache2.access
+        # LogLevel debug
+
+        <Directory />
+            Options FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Deny from all
+        </Directory>
+
+        AddDefaultCharset UTF-8
+        PerlSetEnv RT_SITE_CONFIG /opt/rt3/etc/RT_SiteConfig.pm
+
+        RedirectMatch permanent (.*)/$ $1/index.html
+
+        DocumentRoot "/opt/rt3/share/html"
+        <Directory "/opt/rt3/share/html">
+            Order allow,deny
+            Allow from all
+
+            SetHandler perl-script
+            PerlResponseHandler Plack::Handler::Apache2
+            PerlSetVar psgi_app /opt/rt3/sbin/rt-server
+        </Directory>
+    </VirtualHost>
+
+=head2 FastCGI
+
+Installation with FastCGI is a little bit more complex than mod_perl and is
+documented in detail at
+L<http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration>
+
+In the most basic configuration, you can set up your webserver to run
+as a user who is a member of the "rt" unix group so that the FastCGI script
+can read RT's configuration file.  It's important to understand the security
+implications of this configuration, which are discussed in the document
+mentioned above.
+
+To run RT using FastCGI, you'll need to add a few lines to your
+Apache configuration file telling it about RT:
+
+    # Tell FastCGI to put its temporary files somewhere sane.
+    FastCgiIpcDir /tmp
+
+    FastCgiServer /opt/rt3/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt3/etc/RT_SiteConfig.pm
+
+    <IfModule !mpm_netware_module>
+    <IfModule !mpm_winnt_module>
+    User rt
+    Group staff
+    </IfModule>
+    </IfModule>
+
+    <VirtualHost rt.example.com>
+        ServerRoot /usr
+        ServerAdmin root@localhost
+
+        LoadModule authz_host_module modules/mod_authz_host.so
+        LoadModule env_module modules/mod_env.so
+        LoadModule alias_module modules/mod_alias.so
+        LoadModule mime_module modules/mod_mime.so
+        LoadModule fastcgi_module modules/mod_fastcgi.so
+
+        # optional apache logs for RT
+        # ErrorLog /opt/rt3/var/log/apache2.error
+        # TransferLog /opt/rt3/var/log/apache2.access
+        # LogLevel debug
+
+        <Directory />
+            Options FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Deny from all
+        </Directory>
+
+        AddDefaultCharset UTF-8
+
+        Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
+        ScriptAlias / /opt/rt3/sbin/rt-server.fcgi/
+
+        DocumentRoot "/opt/rt3/share/html"
+        <Location />
+            Order allow,deny
+            Allow from all
+
+            Options +ExecCGI
+            AddHandler fastcgi-script fcgi
+        </Location>
+    </VirtualHost>
+
+=cut
+

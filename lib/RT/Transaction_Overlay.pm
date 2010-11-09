@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -83,7 +83,6 @@ use RT::Ruleset;
 use HTML::FormatText;
 use HTML::TreeBuilder;
 
-# {{{ sub Create 
 
 =head2 Create
 
@@ -110,12 +109,13 @@ sub Create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
-        CommitScrips => 1,
-	ObjectType => 'RT::Ticket',
-	ObjectId => 0,
-	ReferenceType => undef,
-        OldReference       => undef,
-        NewReference       => undef,
+        CommitScrips   => 1,
+        ObjectType     => 'RT::Ticket',
+        ObjectId       => 0,
+        ReferenceType  => undef,
+        OldReference   => undef,
+        NewReference   => undef,
+        SquelchMailTo  => undef,
         @_
     );
 
@@ -144,7 +144,7 @@ sub Create {
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy) {
+    foreach my $attr (qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
  
@@ -158,11 +158,15 @@ sub Create {
         }
     }
 
+    $self->AddAttribute(
+        Name    => 'SquelchMailTo',
+        Content => RT::User->CanonicalizeEmailAddress($_)
+    ) for @{$args{'SquelchMailTo'} || []};
 
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
-       $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
+       $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
@@ -174,9 +178,9 @@ sub Create {
         );
 
        # Entry point of the rule system
-       my $ticket = RT::Ticket->new($RT::SystemUser);
+       my $ticket = RT::Ticket->new(RT->SystemUser);
        $ticket->Load($args{'ObjectId'});
-       my $rules = RT::Ruleset->FindAllRules(
+       my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             TicketObj   => $ticket,
@@ -193,7 +197,6 @@ sub Create {
     return ( $id, $self->loc("Transaction Created") );
 }
 
-# }}}
 
 =head2 Scrips
 
@@ -211,7 +214,22 @@ sub Scrips {
 }
 
 
-# {{{ sub Delete
+=head2 Rules
+
+Returns the array of Rule objects for this transaction.
+This routine is only useful on a freshly created transaction object.
+Rules do not get persisted to the database with transactions.
+
+
+=cut
+
+
+sub Rules {
+    my $self = shift;
+    return($self->{'rules'});
+}
+
+
 
 =head2 Delete
 
@@ -243,11 +261,8 @@ sub Delete {
     return ($id,$msg);
 }
 
-# }}}
 
-# {{{ Routines dealing with Attachments
 
-# {{{ sub Message 
 
 =head2 Message
 
@@ -275,9 +290,7 @@ sub Message {
     return $self->{'message'};
 }
 
-# }}}
 
-# {{{ sub Content
 
 =head2 Content PARAMHASH
 
@@ -292,33 +305,35 @@ If $args{'Type'} is set to C<text/html>, this will return an HTML
 part of the message, if available.  Otherwise it looks for a text/plain
 part. If $args{'Type'} is missing, it defaults to the value of 
 C<$RT::Transaction::PreferredContentType>, if that's missing too, 
-defaults to 'text/plain'.
+defaults to textual.
 
 =cut
 
 sub Content {
     my $self = shift;
     my %args = (
-        Type  => $PreferredContentType || 'text/plain',
+        Type => '',
         Quote => 0,
         Wrap  => 70,
         @_
     );
 
     my $content;
-    if ( my $content_obj = $self->ContentObj( Type => $args{Type} ) ) {
+    if ( my $content_obj =
+        $self->ContentObj( $args{Type} ? ( Type => $args{Type} ) : () ) )
+    {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
+                my $tree = HTML::TreeBuilder->new_from_content( $content );
                 $content = HTML::FormatText->new(
                     leftmargin  => 0,
                     rightmargin => 78,
-                )->format(
-                    HTML::TreeBuilder->new_from_content( $content )
-                );
+                )->format( $tree);
+                $tree->delete;
             }
         }
         else {
@@ -348,7 +363,7 @@ sub Content {
 
         if ( $max > 76 ) {
             require Text::Wrapper;
-            my $wrapper = new Text::Wrapper(
+            my $wrapper = Text::Wrapper->new(
                 columns    => $args{'Wrap'},
                 body_start => ( $max > 70 * 3 ? '   ' : '' ),
                 par_start  => ''
@@ -364,7 +379,6 @@ sub Content {
     return ($content);
 }
 
-# }}}
 
 
 =head2 Addresses
@@ -386,7 +400,6 @@ sub Addresses {
 }
 
 
-# {{{ ContentObj
 
 =head2 ContentObj 
 
@@ -397,12 +410,16 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 sub ContentObj {
     my $self = shift;
-    my %args = ( Type => $PreferredContentType || 'text/plain',
-                 @_ );
+    my %args = ( Type => $PreferredContentType, Attachment => undef, @_ );
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
-    return undef unless my $Attachment = $self->Attachments->First;
+
+    my $Attachment = $args{'Attachment'};
+
+    $Attachment ||= $self->Attachments->First;
+
+    return undef unless ($Attachment);
 
     # If it's a textual part, just return the body.
     if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
@@ -412,14 +429,23 @@ sub ContentObj {
     # If it's a multipart object, first try returning the first part with preferred
     # MIME type ('text/plain' by default).
 
-    elsif ( $Attachment->ContentType =~ '^multipart/' ) {
-        my $plain_parts = $Attachment->Children;
-        $plain_parts->ContentType( VALUE => $args{Type} );
-        $plain_parts->LimitNotEmpty;
+    elsif ( $Attachment->ContentType =~ m|^multipart/mixed|i ) {
+        my $kids = $Attachment->Children;
+        while (my $child = $kids->Next) {
+            my $ret =  $self->ContentObj(%args, Attachment => $child);
+            return $ret if ($ret);
+        }
+    }
+    elsif ( $Attachment->ContentType =~ m|^multipart/|i ) {
+        if ( $args{Type} ) {
+            my $plain_parts = $Attachment->Children;
+            $plain_parts->ContentType( VALUE => $args{Type} );
+            $plain_parts->LimitNotEmpty;
 
-        # If we actully found a part, return its content
-        if ( my $first = $plain_parts->First ) {
-            return $first;
+            # If we actully found a part, return its content
+            if ( my $first = $plain_parts->First ) {
+                return $first;
+            }
         }
 
         # If that fails, return the first textual part which has some content.
@@ -435,9 +461,7 @@ sub ContentObj {
     return (undef);
 }
 
-# }}}
 
-# {{{ sub Subject
 
 =head2 Subject
 
@@ -452,9 +476,7 @@ sub Subject {
     return $first->Subject;
 }
 
-# }}}
 
-# {{{ sub Attachments 
 
 =head2 Attachments
 
@@ -491,9 +513,7 @@ sub Attachments {
     return $self->{'attachments'};
 }
 
-# }}}
 
-# {{{ sub _Attach 
 
 =head2 _Attach
 
@@ -518,13 +538,52 @@ sub _Attach {
     return ( $Attachment, $msg || $self->loc("Attachment created") );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with Transaction Attributes
+sub ContentAsMIME {
+    my $self = shift;
 
-# {{{ sub Description 
+    my $main_content = $self->ContentObj;
+    my $entity = $main_content->ContentAsMIME;
+
+    if ( $main_content->Parent ) {
+        # main content is not top most entity, we shouldn't loose
+        # From/To/Cc headers that are on a top part
+        my $attachments = RT::Attachments->new( $self->CurrentUser );
+        $attachments->Columns(qw(id Parent TransactionId Headers));
+        $attachments->Limit( FIELD => 'TransactionId', VALUE => $self->id );
+        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
+        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
+        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+        my $tmp = $attachments->First;
+        if ( $tmp && $tmp->id ne $main_content->id ) {
+            $entity->make_multipart;
+            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
+            $entity->make_singlepart;
+        }
+    }
+
+    my $attachments = RT::Attachments->new( $self->CurrentUser );
+    $attachments->Limit( FIELD => 'TransactionId', VALUE => $self->id );
+    $attachments->Limit(
+        FIELD => 'id',
+        OPERATOR => '!=',
+        VALUE => $main_content->id,
+    );
+    $attachments->Limit(
+        FIELD => 'ContentType',
+        OPERATOR => 'NOT STARTSWITH',
+        VALUE => 'multipart/',
+    );
+    $attachments->LimitNotEmpty;
+    while ( my $a = $attachments->Next ) {
+        $entity->make_multipart unless $entity->is_multipart;
+        $entity->add_part( $a->ContentAsMIME );
+    }
+    return $entity;
+}
+
+
 
 =head2 Description
 
@@ -546,9 +605,7 @@ sub Description {
     return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
 }
 
-# }}}
 
-# {{{ sub BriefDescription 
 
 =head2 BriefDescription
 
@@ -608,6 +665,16 @@ sub BriefDescription {
             )
         );
     }
+    elsif ( $type =~ /SystemError/ ) {
+        return $self->loc("System error");
+    }
+    elsif ( $type =~ /Forward Transaction/ ) {
+        return $self->loc( "Forwarded Transaction #[_1] to [_2]",
+            $self->Field, $self->Data );
+    }
+    elsif ( $type =~ /Forward Ticket/ ) {
+        return $self->loc( "Forwarded Ticket to [_1]", $self->Data );
+    }
 
     if ( my $code = $_BriefDescriptions{$type} ) {
         return $code->($self);
@@ -651,17 +718,20 @@ sub BriefDescription {
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->Load( $self->Field );
             $field = $cf->Name();
+            $field = $self->loc('a custom field') if !defined($field);
         }
 
-        if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
-            return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
-        }
-        elsif ( !defined $self->NewValue || $self->NewValue eq '' ) {
-            return ( $self->loc("[_1] [_2] deleted", $field, $self->OldValue) );
+        my $new = $self->NewValue;
+        my $old = $self->OldValue;
 
+        if ( !defined($old) || $old eq '' ) {
+            return $self->loc("[_1] [_2] added", $field, $new);
+        }
+        elsif ( !defined($new) || $new eq '' ) {
+            return $self->loc("[_1] [_2] deleted", $field, $old);
         }
         else {
-            return $self->loc("[_1] [_2] changed to [_3]", $field, $self->OldValue, $self->NewValue );
+            return $self->loc("[_1] [_2] changed to [_3]", $field, $old, $new);
         }
     },
     Untake => sub {
@@ -788,9 +858,9 @@ sub BriefDescription {
     Told => sub {
         my $self = shift;
         if ( $self->Field eq 'Told' ) {
-            my $t1 = new RT::Date($self->CurrentUser);
+            my $t1 = RT::Date->new($self->CurrentUser);
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
-            my $t2 = new RT::Date($self->CurrentUser);
+            my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
         }
@@ -806,9 +876,9 @@ sub BriefDescription {
             return $self->loc('Password changed');
         }
         elsif ( $self->Field eq 'Queue' ) {
-            my $q1 = new RT::Queue( $self->CurrentUser );
+            my $q1 = RT::Queue->new( $self->CurrentUser );
             $q1->Load( $self->OldValue );
-            my $q2 = new RT::Queue( $self->CurrentUser );
+            my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
             return $self->loc("[_1] changed from [_2] to [_3]",
                               $self->loc($self->Field) , $q1->Name , $q2->Name);
@@ -816,9 +886,9 @@ sub BriefDescription {
 
         # Write the date/time change at local time:
         elsif ($self->Field =~  /Due|Starts|Started|Told/) {
-            my $t1 = new RT::Date($self->CurrentUser);
+            my $t1 = RT::Date->new($self->CurrentUser);
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
-            my $t2 = new RT::Date($self->CurrentUser);
+            my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
         }
@@ -855,11 +925,8 @@ sub BriefDescription {
     }
 );
 
-# }}}
 
-# {{{ Utility methods
 
-# {{{ sub IsInbound
 
 =head2 IsInbound
 
@@ -874,9 +941,7 @@ sub IsInbound {
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
-# }}}
 
-# }}}
 
 sub _OverlayAccessible {
     {
@@ -887,20 +952,15 @@ sub _OverlayAccessible {
     }
 };
 
-# }}}
 
-# }}}
 
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
     return ( 0, $self->loc('Transactions are immutable') );
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -925,9 +985,7 @@ sub _Value {
     return $self->SUPER::_Value( $field );
 }
 
-# }}}
 
-# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -993,7 +1051,6 @@ sub CurrentUserCanSee {
     return 1;
 }
 
-# }}}
 
 sub Ticket {
     my $self = shift;
@@ -1088,7 +1145,7 @@ sub UpdateCustomFields {
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
-            next unless length($value);
+            next unless (defined($value) && length($value));
             $self->_AddCustomFieldValue(
                 Field             => $cfid,
                 Value             => $value,
@@ -1127,9 +1184,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues($field);
 }
 
-# }}}
 
-# {{{ sub CustomFieldLookupType
 
 =head2 CustomFieldLookupType
 
@@ -1138,12 +1193,56 @@ be passed to RT::CustomField->Create() via the 'LookupType' hash key.
 
 =cut
 
-# }}}
 
 sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
+
+=head2 SquelchMailTo
+
+Similar to Ticket class SquelchMailTo method - returns a list of
+transaction's squelched addresses.  As transactions are immutable, the
+list of squelched recipients cannot be modified after creation.
+
+=cut
+
+sub SquelchMailTo {
+    my $self = shift;
+    return () unless $self->CurrentUserCanSee;
+    return $self->Attributes->Named('SquelchMailTo');
+}
+
+=head2 Recipients
+
+Returns the list of email addresses (as L<Email::Address> objects)
+that this transaction would send mail to.  There may be duplicates.
+
+=cut
+
+sub Recipients {
+    my $self = shift;
+    my @recipients;
+    foreach my $scrip ( @{ $self->Scrips->Prepared } ) {
+        my $action = $scrip->ActionObj->Action;
+        next unless $action->isa('RT::Action::SendEmail');
+
+        foreach my $type (qw(To Cc Bcc)) {
+            push @recipients, $action->$type();
+        }
+    }
+
+    if ( $self->Rules ) {
+        for my $rule (@{$self->Rules}) {
+            next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
+            my $data = $rule->{hints}{recipients};
+            foreach my $type (qw(To Cc Bcc)) {
+                push @recipients, map {Email::Address->new($_)} @{$data->{$type}};
+            }
+        }
+    }
+    return @recipients;
+}
 
 =head2 DeferredRecipients($freq, $include_sent )
 

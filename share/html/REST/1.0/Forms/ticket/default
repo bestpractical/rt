@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 %# REST/1.0/Forms/ticket/default
 %#
@@ -62,7 +62,7 @@ my $cf_spec = RT::Interface::REST->custom_field_spec(1);
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new($session{CurrentUser});
 my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
@@ -92,9 +92,9 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = new RT::Date $session{CurrentUser};
-        my $queue = new RT::Queue $session{CurrentUser};
-        my $starts = new RT::Date $session{CurrentUser};
+        my $due = RT::Date->new($session{CurrentUser});
+        my $queue = RT::Queue->new($session{CurrentUser});
+        my $starts = RT::Date->new($session{CurrentUser});
         $queue->Load(1);
         $due->SetToNow;
         $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
@@ -132,7 +132,7 @@ else {
         foreach my $k (keys %data) {
             # flexibly parse any dates
             if ($dates{lc $k}) {
-                my $time = new RT::Date $session{CurrentUser};
+                my $time = RT::Date->new($session{CurrentUser});
                 $time->Set(Format => 'unknown', Value => $data{$k});
                 $data{$k} = $time->ISO;
             }
@@ -142,7 +142,7 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^$cf_spec/) {
-                my $cf = RT::CustomField->new( $RT::SystemUser );
+                my $cf = RT::CustomField->new( RT->SystemUser );
                 my $cfk = $1 || $2;
                 unless($cf->LoadByName( Name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
@@ -205,14 +205,14 @@ if (!keys(%data)) {
         push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
     }
 
-    $time = new RT::Date ($session{CurrentUser});
+    $time = RT::Date->new ($session{CurrentUser});
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->Set(Format => 'sql', Value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
-    $time = new RT::Date ($session{CurrentUser});
+    $time = RT::Date->new ($session{CurrentUser});
     foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
@@ -280,7 +280,7 @@ else {
             $key = $simple{$key};
             $set = "Set$key";
 
-            next if (($val eq $ticket->$key)|| ($ticket->$key =~ /^\d+$/ && $val == $ticket->$key));
+            next if (($val eq ($ticket->$key||''))|| ($ticket->$key =~ /^\d+$/ && $val =~ /^\d+$/ && $val == $ticket->$key));
             ($n, $s) = $ticket->$set("$val");
         }
         elsif (exists $dates{$key}) {
@@ -295,7 +295,7 @@ else {
 
             $set = "Set$key";
 
-            my $time = new RT::Date $session{CurrentUser};
+            my $time = RT::Date->new($session{CurrentUser});
             $time->Set(Format => 'sql', Value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->AsString);
 
@@ -341,7 +341,7 @@ else {
         }
         # Set custom field
         elsif ($key =~ /^$cf_spec/) {
-            my $cf = RT::CustomField->new( $RT::SystemUser );
+            my $cf = RT::CustomField->new( RT->SystemUser );
             $key = $1 || $2;
             if (not $cf->LoadByName( Name => $key )) {
                 $n = 0;
@@ -368,14 +368,14 @@ else {
                 }
                 else {
                     my @new;
-                    my ( $a, $b ) = split /,/, $val, 2;
+                    my ( $a, $b ) = split /\s*,\s*/, $val, 2;
                     while ($a) {
                         no warnings 'uninitialized';
                         if ( $a =~ /^'/ ) {
                             my $s = $a;
                             while ( $a !~ /'$/ || ( $a !~ /(\\\\)+'$/
                                             && $a =~ /(\\)+'$/ ) ) {
-                                ( $a, $b ) = split /,/, $b, 2;
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
                             $s =~ s/^'//;
@@ -386,7 +386,7 @@ else {
                         elsif ( $a =~ /^q{/ ) {
                             my $s = $a;
                             while ( $a !~ /}$/ ) {
-                                ( $a, $b ) = split /,/, $b, 2;
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
                             $s =~ s/^q{//;
@@ -396,7 +396,7 @@ else {
                         else {
                             push @new, $a;
                         }
-                        ( $a, $b ) = split /,/, $b, 2;
+                        ( $a, $b ) = split /\s*,\s*/, $b, 2;
                     }
 
                     my %new;
@@ -431,9 +431,8 @@ else {
             $e = 1;
             push @comments, "# $key: $s";
             unless (@$o) {
-                my %o = keys %$changes;
-                delete $o{id};
-                @$o = ("id", keys %o);
+                # move id forward
+                @$o = ("id", grep { $_ ne 'id' } keys %$changes);
                 $k = $changes;
             }
         }

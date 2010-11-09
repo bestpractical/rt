@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 109;
+use RT::Test tests => 108;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
 
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer');
@@ -15,14 +15,14 @@ $user_obj->SetPrivileged(1);
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
-my $onlooker = RT::User->new($RT::SystemUser);
+my $onlooker = RT::User->new(RT->SystemUser);
 ($ret, $msg) = $onlooker->LoadOrCreateByEmail('onlooker@example.com');
 ok($ret, 'ACL test user creation');
 $onlooker->SetName('onlooker');
 $onlooker->SetPrivileged(1);
 ($ret, $msg) = $onlooker->SetPassword('onlooker');
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
 
 for my $user ($user_obj, $onlooker) {
@@ -63,20 +63,17 @@ $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
-
-$m->follow_link_ok({text => "New"});
+$m->follow_link_ok({ id => 'tools-dashboards-create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
-$m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
-
-$m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
-
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
+$m->get($url."Dashboards/index.html");
+$m->follow_link_ok({ text => 'different dashboard'});
+$m->content_lacks("Permission denied", "we now have SeeOwnDashboard");
+$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -84,16 +81,20 @@ $m->content_lacks("Permission denied");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
-$m->content_contains("Queries");
+$m->content_contains("Content");
 $m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
 
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
 
-$m->follow_link_ok({text => "Queries"});
+$m->follow_link_ok({text => "Content"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
-$m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
+my $form = $m->form_name('Dashboard-Searches-body');
+my @input = $form->find_input('Searches-body-Available');
+my ($unowned) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: Unowned Tickets' } @input;
+$form->value('Searches-body-Available' => $unowned );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -110,8 +111,13 @@ my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
-$m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ["search-1-RT::System-1"]);
+$form = $m->form_name('Dashboard-Searches-body');
+@input = $form->find_input('Searches-body-Available');
+my ($my_tickets) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: My Tickets' } @input;
+$form->value('Searches-body-Available' => $my_tickets );
+$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -124,7 +130,7 @@ is(@searches, 2, "two saved searches in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
 like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(
     Queue     => $queue->Id,
 	Requestor => [ $user_obj->Name ],
@@ -132,19 +138,21 @@ $ticket->Create(
 	Subject   => 'dashboard test',
 );
 
-$m->follow_link_ok({text => 'different dashboard'});
-$m->content_contains("20 highest priority tickets I own");
-$m->content_contains("20 newest unowned tickets");
-$m->content_lacks("Bookmarked Tickets");
+$m->follow_link_ok({id => 'page-show'});
+$m->content_contains("50 highest priority tickets I own");
+$m->content_contains("50 newest unowned tickets");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
-$m->content_contains("20 highest priority tickets I own");
-$m->content_contains("20 newest unowned tickets");
-$m->content_lacks("Bookmarked Tickets");
+$m->content_contains("50 highest priority tickets I own");
+$m->content_contains("50 newest unowned tickets");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
-$m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
+$m->get_ok("/Dashboards/Subscription.html?id=$id");
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
 $m->content_contains("Permission denied");
@@ -160,7 +168,8 @@ $m->follow_link_ok({text => "Subscription"});
 $m->content_contains("Subscribe to dashboard different dashboard");
 $m->content_contains("Unowned Tickets");
 $m->content_contains("My Tickets");
-$m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
+$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
+    'only dashboard queries show up' );
 
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
@@ -189,7 +198,7 @@ $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDas
 
 $m->form_name('ModifyDashboard');
 $m->click_button(name => 'Delete');
-$m->content_contains("Deleted dashboard $id");
+$m->content_contains("Deleted dashboard");
 
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
@@ -222,16 +231,20 @@ $m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard system dashboard");
 
-$m->follow_link_ok({text => 'Queries'});
+$m->follow_link_ok({id => 'page-content'});
 
-$m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-7-RT::User-22']); # XXX: :( :(
+$form = $m->form_name('Dashboard-Searches-body');
+@input = $form->find_input('Searches-body-Available');
+my ($personal) =
+  map { ( $_->possible_values )[1] }
+  grep { ( $_->value_names )[1] =~ 'Saved Search: personal search' } @input;
+$form->value('Searches-body-Available' => $personal );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
 $m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
 
-$m->follow_link_ok({text => 'system dashboard'});
+$m->follow_link_ok({id => 'page-show'});
 $m->content_contains("personal search", "saved search shows up");
 $m->content_contains("dashboard test", "matched ticket shows up");
 
@@ -246,5 +259,5 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$m->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
+$omech->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
 

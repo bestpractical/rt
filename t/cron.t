@@ -3,13 +3,13 @@
 use strict;
 
 use RT;
-use RT::Test tests => 18;
+use RT::Test nodata => 1, tests => 18;
 
 
 ### Set up some testing data.  Test the testing data because why not?
 
 # Create a user with rights, a queue, and some tickets.
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('tara@example.com');
 ok($ret, 'record test user creation');
 $user_obj->SetName('tara');
@@ -87,4 +87,3 @@ my ($trans, $desc, $transaction) = $ticket2->Comment(MIMEObj => $template_obj->M
 my $bogus_action = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->Prepare(), "Comment aborted to prevent loop");
 
-1;

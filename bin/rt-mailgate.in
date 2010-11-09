@@ -1,41 +1,41 @@
 #!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
@@ -56,85 +56,171 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+
+my $opts = {};
+GetOptions( $opts,   "queue=s", "action=s", "url=s",
+            "jar=s", "help",    "debug",    "extension=s",
+            "timeout=i"
+          );
+
+my $gateway = RT::Client::MailGateway->new();
+
+$gateway->run($opts);
+
+package RT::Client::MailGateway;
+
 use LWP::UserAgent;
 use HTTP::Request::Common qw($DYNAMIC_FILE_UPLOAD);
+use File::Temp qw(tempfile tempdir);
 $DYNAMIC_FILE_UPLOAD = 1;
 
 use constant EX_TEMPFAIL => 75;
 use constant BUFFER_SIZE => 8192;
 
-my %opts;
-GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s", "timeout=i" );
-
-if ( $opts{'help'} ) {
-    require Pod::Usage;
-    import Pod::Usage;
-    pod2usage("RT Mail Gateway\n");
-    exit 1;    # Don't want to succeed if this is really an email!
+sub new {
+    my $class = shift;
+    my $self = bless {}, $class;
+    return $self;
 }
 
-unless ( $opts{'url'} ) {
-    print STDERR "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
-    exit 1;
+sub run {
+    my $self = shift;
+    my $opts = shift;
+
+    if ( $opts->{running_in_test_harness} ) {
+        $self->{running_in_test_harness} = 1;
+    }
+
+    $self->validate_cli_flags($opts);
+
+    my $ua          = $self->get_useragent($opts);
+    my $post_params = $self->setup_session($opts);
+    $self->upload_message( $ua => $post_params );
+    $self->exit_with_success();
 }
 
-my $ua = new LWP::UserAgent;
-$ua->cookie_jar( { file => $opts{'jar'} } ) if $opts{'jar'};
-
-my %args = (
-    SessionType => 'REST', # Surpress login box
-);
-foreach ( qw(queue action) ) {
-    $args{$_} = $opts{$_} if defined $opts{$_};
-};
-
-if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
-    $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'} || $opts{$opts{'extension'}};
-} elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
-    print STDERR "Value of the --extension argument is not action, queue or ticket"
-        .", but environment variable EXTENSION is also defined. The former is ignored.\n";
+sub exit_with_success {
+    my $self = shift;
+    if ( $self->{running_in_test_harness} ) {
+        return 1;
+    } else {
+        exit 0;
+    }
 }
 
-# add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
-if ( my $value = ( $ENV{'EXTENSION'} || $opts{'extension'} ) ) {
-    # prepare value to avoid MIME format breakage
-    # strip trailing newline symbols
-    $value =~ s/(\r*\n)+$//;
-    # make a correct multiline header field,
-    # with tabs in the beginning of each line
-    $value =~ s/(\r*\n)/$1\t/g;
-    $opts{'headers'} .= "X-RT-Mail-Extension: $value\n";
+sub tempfail {
+    my $self = shift;
+    if ( $self->{running_in_test_harness} ) {
+        die "tempfail";
+    } else {
+
+        exit EX_TEMPFAIL;
+    }
 }
 
-# Read the message in from STDIN
-my %message = write_down_message();
-unless( $message{'filename'} ) {
-    $args{'message'} = [
-        undef, '',
-        'Content-Type' => 'application/octet-stream',
-        Content => ${ $message{'content'} },
-    ];
-} else {
-    $args{'message'} = [
-        $message{'filename'}, '',
-        'Content-Type' => 'application/octet-stream',
-    ];
+sub permfail {
+    my $self = shift;
+    if ( $self->{running_in_test_harness} ) {
+        die "permfail";
+    } else {
+
+        exit 1;
+    }
 }
 
-my $full_url = $opts{'url'}. "/REST/1.0/NoAuth/mail-gateway";
-print STDERR "$0: connecting to $full_url\n" if $opts{'debug'};
+sub validate_cli_flags {
+    my $self = shift;
+    my $opts = shift;
+    if ( $opts->{'help'} ) {
+        require Pod::Usage;
+        Pod::Usage::pod2usage( { verbose => 2 } );
+        return $self->permfail()
+            ;    # Don't want to succeed if this is really an email!
+    }
 
-$ua->timeout( exists( $opts{'timeout'} )? $opts{'timeout'}: 180 );
-my $r = $ua->post( $full_url, \%args, Content_Type => 'form-data' );
-check_failure($r);
+    unless ( $opts->{'url'} ) {
+        print STDERR
+            "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
+        return $self->permfail();
+    }
+}
 
-my $content = $r->content;
-print STDERR $content ."\n" if $opts{'debug'};
+sub get_useragent {
+    my $self = shift;
+    my $opts = shift;
+    my $ua   = LWP::UserAgent->new();
+    $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
+    return $ua;
+}
 
-if ( $content !~ /^(ok|not ok)/ ) {
+sub setup_session {
+    my $self = shift;
+    my $opts = shift;
+    my %post_params;
+    $post_params{SessionType} = 'REST';    # Surpress login box
+    foreach (qw(queue action)) {
+        $post_params{$_} = $opts->{$_} if defined $opts->{$_};
+    }
 
-    # It's not the server's fault if the mail is bogus. We just want to know that
-    # *something* came out of the server.
+    if ( ( $opts->{'extension'} || '' ) =~ /^(?:action|queue|ticket)$/i ) {
+        $post_params{ lc $opts->{'extension'} } = $ENV{'EXTENSION'}
+            || $opts->{ $opts->{'extension'} };
+    } elsif ( $opts->{'extension'} && $ENV{'EXTENSION'} ) {
+        print STDERR
+            "Value of the --extension argument is not action, queue or ticket"
+            . ", but environment variable EXTENSION is also defined. The former is ignored.\n";
+    }
+
+    # add ENV{'EXTENSION'} as X-RT-MailExtension to the message header
+    if ( my $value = ( $ENV{'EXTENSION'} || $opts->{'extension'} ) ) {
+
+        # prepare value to avoid MIME format breakage
+        # strip trailing newline symbols
+        $value =~ s/(\r*\n)+$//;
+
+        # make a correct multiline header field,
+        # with tabs in the beginning of each line
+        $value =~ s/(\r*\n)/$1\t/g;
+        $opts->{'headers'} .= "X-RT-Mail-Extension: $value\n";
+    }
+
+    # Read the message in from STDIN
+    # _raw_message is used for testing
+    my $message = $opts->{'_raw_message'} || $self->slurp_message();
+    unless ( $message->{'filename'} ) {
+        $post_params{'message'} = [
+                                 undef, '',
+                                 'Content-Type' => 'application/octet-stream',
+                                 Content        => ${ $message->{'content'} },
+        ];
+    } else {
+        $post_params{'message'} = [
+                                 $message->{'filename'}, '',
+                                 'Content-Type' => 'application/octet-stream',
+        ];
+    }
+
+    return \%post_params;
+}
+
+sub upload_message {
+    my $self        = shift;
+    my $ua          = shift;
+    my $post_params = shift;
+    my $full_url    = $opts->{'url'} . "/REST/1.0/NoAuth/mail-gateway";
+    print STDERR "$0: connecting to $full_url\n" if $opts->{'debug'};
+
+    $ua->timeout( exists( $opts->{'timeout'} ) ? $opts->{'timeout'} : 180 );
+    my $r = $ua->post( $full_url, $post_params, Content_Type => 'form-data' );
+    $self->check_failure($r);
+
+    my $content = $r->content;
+    print STDERR $content . "\n" if $opts->{'debug'};
+
+    return if ( $content =~ /^(ok|not ok)/ );
+
+ # It's not the server's fault if the mail is bogus. We just want to know that
+ # *something* came out of the server.
     print STDERR <<EOF;
 RT server error.
 
@@ -144,18 +230,12 @@ said:
 $content
 EOF
 
-    exit EX_TEMPFAIL;
+    return $self->tempfail();
 }
-
-exit;
-
-END {
-    unlink $message{'filename'} if $message{'filename'};
-}
-
 
 sub check_failure {
-    my $r = shift;
+    my $self = shift;
+    my $r    = shift;
     return if $r->is_success;
 
     # This ordinarily oughtn't to be able to happen, suggests a bug in RT.
@@ -164,64 +244,66 @@ sub check_failure {
     require HTML::FormatText;
 
     my $error = $r->error_as_HTML;
-    my $tree  = HTML::TreeBuilder->new->parse( $error );
+    my $tree  = HTML::TreeBuilder->new->parse($error);
     $tree->eof;
 
     # It'll be a cold day in hell before RT sends out bounces in HTML
-    my $formatter = HTML::FormatText->new(
-        leftmargin  => 0,
-        rightmargin => 50,
-    );
-    print STDERR $formatter->format( $tree );
-    print STDERR "\n$0: undefined server error\n" if $opts{'debug'};
-    exit EX_TEMPFAIL;
+    my $formatter =
+        HTML::FormatText->new( leftmargin  => 0,
+                               rightmargin => 50, );
+    print STDERR $formatter->format($tree);
+    print STDERR "\n$0: undefined server error\n" if $opts->{'debug'};
+    return $self->tempfail();
 }
 
-sub write_down_message {
-    use File::Temp qw(tempfile);
+sub slurp_message {
+    my $self = shift;
 
     local $@;
-    my ($fh, $filename) = eval { tempfile() };
+
+    my %message;
+    my ( $fh, $filename )
+        = eval { tempfile( DIR => tempdir( CLEANUP => 1 ) ) };
     if ( !$fh || $@ ) {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local (@ARGV, $/); <> };
+        my $message = \do { local ( @ARGV, $/ ); <> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
-            exit 0;
+            $self->exit_with_success;
         }
-        $$message = $opts{'headers'} . $$message if $opts{'headers'};
-        return ( content => $message );
+        $$message = $opts->{'headers'} . $$message if $opts->{'headers'};
+        return ( { content => $message } );
     }
 
     binmode $fh;
     binmode \*STDIN;
-    
-    print $fh $opts{'headers'} if $opts{'headers'};
 
-    my $buf; my $empty = 1;
-    while(1) {
+    print $fh $opts->{'headers'} if $opts->{'headers'};
+
+    my $buf;
+    my $empty = 1;
+    while (1) {
         my $status = read \*STDIN, $buf, BUFFER_SIZE;
         unless ( defined $status ) {
             print STDERR "$0: couldn't read message: $!\n";
-            exit EX_TEMPFAIL;
+            return $self->tempfail();
         } elsif ( !$status ) {
             last;
         }
         $empty = 0 if $buf =~ /\S/;
         print $fh $buf;
-    };
+    }
     close $fh;
 
-    if ( $empty ) {
+    if ($empty) {
         print STDERR "$0: no message passed on STDIN\n";
-        exit 0;
+        $self->exit_with_success;
     }
-    print STDERR "$0: temp file is '$filename'\n" if $opts{'debug'};
-    return (filename => $filename);
+    print STDERR "$0: temp file is '$filename'\n" if $opts->{'debug'};
+    return ( { filename => $filename } );
 }
-
 
 =head1 SYNOPSIS
 
@@ -236,8 +318,6 @@ Usual invocation (from MTA):
                 [ --timeout seconds ]
 
 
-
-See C<man rt-mailgate> for more.
 
 =head1 OPTIONS
 
@@ -291,6 +371,8 @@ Print debugging output to standard error
 
 Configure the timeout for posting the message to the web server.  The
 default timeout is 3 minutes (180 seconds).
+
+=back
 
 
 =head1 DESCRIPTION
@@ -381,7 +463,7 @@ If we don't already have a ticket id, we need to know which queue we're talking 
 
 The action being performed. At the moment, it's one of "comment" or "correspond"
 
-=back 4
+=back
 
 It returns two values, the new C<RT::CurrentUser> object, and the new
 authentication level. The authentication level can be zero, not allowed
@@ -405,7 +487,7 @@ See also C<--extension> option. Note that value of the environment variable is
 always added to the message header when it's not empty even if C<--extension>
 option is not provided.
 
-=back 4
+=back
 
 =cut
 

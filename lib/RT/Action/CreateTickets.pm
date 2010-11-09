@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::CreateTickets;
@@ -130,14 +130,14 @@ A convoluted example
    # of which the creator of this ticket is a member
     my $name = "HR";
    
-    my $groups = RT::Groups->new($RT::SystemUser);
+    my $groups = RT::Groups->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->Id);
  
     my $groupid = $groups->First->Id;
  
-    my $adminccs = RT::Users->new($RT::SystemUser);
+    my $adminccs = RT::Users->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
 	Object =>$groups->First,
@@ -290,9 +290,7 @@ my %LINKTYPEMAP = (
 
 );
 
-# {{{ Scrip methods (Commit, Prepare)
 
-# {{{ sub Commit
 #Do what we need to do and send it out.
 sub Commit {
     my $self = shift;
@@ -305,9 +303,7 @@ sub Commit {
     return (1);
 }
 
-# }}}
 
-# {{{ sub Prepare
 
 sub Prepare {
     my $self = shift;
@@ -334,9 +330,7 @@ sub Prepare {
 
 }
 
-# }}}
 
-# }}}
 
 sub CreateByTemplate {
     my $self = shift;
@@ -347,12 +341,12 @@ sub CreateByTemplate {
     my @results;
 
     # XXX: cargo cult programming that works. i'll be back.
-    use bytes;
 
     local %T::Tickets = %T::Tickets;
     local $T::TOP     = $T::TOP;
     local $T::ID      = $T::ID;
     $T::Tickets{'TOP'} = $T::TOP = $top if $top;
+    local $T::TransactionObj = $self->TransactionObj;
 
     my $ticketargs;
     my ( @links, @postponed );
@@ -409,7 +403,6 @@ sub UpdateByTemplate {
     my $top  = shift;
 
     # XXX: cargo cult programming that works. i'll be back.
-    use bytes;
 
     my @results;
     local %T::Tickets = %T::Tickets;
@@ -580,11 +573,15 @@ sub _ParseMultilineTemplate {
     my %args = (@_);
 
     my $template_id;
+    require Encode;
+    require utf8;
     my ( $queue, $requestor );
         $RT::Logger->debug("Line: ===");
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
-            $RT::Logger->debug("Line: $line");
+            $RT::Logger->debug( "Line: " . utf8::is_utf8($line)
+                ? Encode::encode_utf8($line)
+                : $line );
             if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id}
@@ -724,7 +721,7 @@ sub ParseLines {
         }
     }
 
-    foreach my $date qw(due starts started resolved) {
+    foreach my $date (qw(due starts started resolved)) {
         my $dateobj = RT::Date->new( $self->CurrentUser );
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
@@ -1081,7 +1078,7 @@ sub UpdateWatchers {
 
     my @results;
 
-    foreach my $type qw(Requestor Cc AdminCc) {
+    foreach my $type (qw(Requestor Cc AdminCc)) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
 
@@ -1240,10 +1237,7 @@ sub PostProcess {
 
 }
 
-eval "require RT::Action::CreateTickets_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm} );
-eval "require RT::Action::CreateTickets_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;
 

@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,26 +43,18 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
-package RT::URI::fsck_com_rt;
-
-use RT::Ticket;
-
-use base 'RT::URI::base';
-
 use strict;
+use warnings;
 
-
-
+package RT::URI::fsck_com_rt;
+use base 'RT::URI::base';
 
 =head2 LocalURIPrefix  
 
 Returns the prefix for a local URI. 
-
-
-
 
 =cut
 
@@ -84,19 +76,16 @@ sub ObjectType {
 
     my $type = 'ticket';
     if (ref($object) && (ref($object) ne 'RT::Ticket')) {
-            $type = ref($object);
+        $type = ref($object);
     }
 
     return ($type);
 }
 
 
-
-
 =head2 URIForObject RT::Record
 
 Returns the RT URI for a local RT::Record object
-
 
 =cut
 
@@ -119,6 +108,7 @@ sub ParseURI {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
+        use RT::Ticket;
         my $ticket = RT::Ticket->new( $self->CurrentUser );
         $ticket->Load( $uri );
         $self->{'uri'} = $ticket->URI;
@@ -160,21 +150,18 @@ sub ParseURI {
 Returns true if this URI is for a local ticket.
 Returns undef otherwise.
 
-
-
 =cut
 
 sub IsLocal {
-	my $self = shift;
+    my $self = shift;
     my $local_uri_prefix = $self->LocalURIPrefix;
     if ( $self->{'uri'} =~ /^\Q$local_uri_prefix/i ) {
         return 1;
     }
-	else {
-		return undef;
-	}
+    else {
+        return undef;
+    }
 }
-
 
 
 =head2 Object
@@ -186,7 +173,6 @@ Returns the object for this URI, if it's local. Otherwise returns undef.
 sub Object {
     my $self = shift;
     return ($self->{'object'});
-
 }
 
 =head2 Scheme
@@ -198,7 +184,7 @@ Return the URI scheme for RT records
 
 sub Scheme {
     my $self = shift;
-	return "fsck.com-rt";
+    return "fsck.com-rt";
 }
 
 =head2 HREF
@@ -211,12 +197,14 @@ Otherwise, return its URI
 
 sub HREF {
     my $self = shift;
-    if ($self->IsLocal && $self->Object && ($self->ObjectType eq 'ticket')) {
-        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->Id);
-    }   
-    else {
-        return ($self->URI);
+    return $self->URI unless $self->IsLocal;
+
+    my $obj = $self->Object;
+    if ( $obj && $self->ObjectType eq 'ticket' ) {
+        return RT->Config->Get('WebURL') ."Ticket/Display.html?id=". $obj->id;
     }
+
+    return $self->URI;
 }
 
 =head2 AsString
@@ -228,16 +216,13 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
+        return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
     }
     else {
-	    return $self->URI;
+        return $self->URI;
     }
 }
 
-eval "require RT::URI::fsck_com_rt_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/fsck_com_rt_Vendor.pm});
-eval "require RT::URI::fsck_com_rt_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/fsck_com_rt_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

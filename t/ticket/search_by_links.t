@@ -3,35 +3,18 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 80;
+use RT::Test nodata => 1, tests => 86;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 
-my ($total, @data, @tickets, %test) = (0, ());
-
-sub add_tix_from_data {
-    my @res = ();
-    while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
-        my %args = %{ shift(@data) };
-        $args{$_} = $res[ $args{$_} ]->id foreach grep $args{$_}, keys %RT::Ticket::LINKTYPEMAP;
-        my ( $id, undef $msg ) = $t->Create(
-            Queue => $q->id,
-            %args,
-        );
-        ok( $id, "ticket created" ) or diag("error: $msg");
-        push @res, $t;
-        $total++;
-    }
-    return @res;
-}
+my ($total, @tickets, %test) = (0, ());
 
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Tickets->new($RT::SystemUser);
+        my $tix = RT::Tickets->new(RT->SystemUser);
         $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -53,12 +36,13 @@ sub run_tests {
 }
 
 # simple set with "no links", "parent and child"
-@data = (
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
     { Subject => '-', },
     { Subject => 'p', },
     { Subject => 'c', MemberOf => -1 },
 );
-@tickets = add_tix_from_data();
+$total += @tickets;
 %test = (
     'Linked     IS NOT NULL'  => { '-' => 0, c => 1, p => 1 },
     'Linked     IS     NULL'  => { '-' => 1, c => 0, p => 0 },
@@ -82,14 +66,15 @@ sub run_tests {
     'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
 
 # another set with tests of combinations searches
-@data = (
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
     { Subject => '-', },
     { Subject => 'p', },
     { Subject => 'rp',  RefersTo => -1 },
@@ -97,7 +82,7 @@ run_tests();
     { Subject => 'rc1', RefersTo => -1 },
     { Subject => 'rc2', RefersTo => -2 },
 );
-@tickets = add_tix_from_data();
+$total += @tickets;
 my $pid = $tickets[1]->id;
 %test = (
     'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
@@ -124,9 +109,11 @@ my $pid = $tickets[1]->id;
     "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
+
+@tickets = ();
 

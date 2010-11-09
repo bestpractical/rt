@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -95,21 +95,20 @@ while ( my $ace = $ACLObj->Next ) {
     }
 
 
-    my $ACLObj = new RT::ACL($session{'CurrentUser'});
-    my $ACE = new RT::ACE($session{'CurrentUser'});
+    my $ACLObj = RT::ACL->new($session{'CurrentUser'});
+    my $ACE = RT::ACE->new($session{'CurrentUser'});
 
 
     $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
     $ACLObj->OrderBy(FIELD=>'RightName'); 
 
-    if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
+    eval {
         %Rights = %{$Object->AvailableRights};
-    } 
-
-        else {
-                %Rights = ( loc('System Error') => loc("No rights found") );
-        }
+    };
+    if ($@) {
+        %Rights = ( loc('System Error') => loc("No rights found") );
+    }
         
     $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;
 </%INIT>

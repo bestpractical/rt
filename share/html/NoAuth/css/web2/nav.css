@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,161 +43,249 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-div#nav {
- position: absolute;
- left: 0;
- font-size: 0.9em;
- top: 3.2em;
- width: 10.5em;
- background: #fff;
- -moz-border-radius-bottomright: 0.5em;
- -webkit-border-bottom-right-radius: 0.5em;
-  border-left: 1px solid #999;  
-border-top: 1px solid #999;
 
- -moz-border-radius-topright: 0.5em;
- -webkit-border-top-right-radius: 0.5em;
- z-index: 99;
-
-
+#main-navigation {
+    background-color: #fff;
+    -moz-border-radius-bottomright: 0.5em;
+    -webkit-border-bottom-right-radius: 0.5em;
+    -moz-border-radius-topright: 0.5em;
+    -webkit-border-top-right-radius: 0.5em;
+    width: 10em;
+    font-size: 0.85em;
+    position: absolute;
+    top: 3.4em;
+    left: 0em;
+    z-index: 9997;
+    background-color: none;
+    padding-top: 1em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
 }
 
-div#nav ul {
- padding-left: 0.75em;
- margin-left: 0;
- padding-right: 0.75em;
- list-style-type: none;
+#app-nav .sf-sub-indicator {
+    background-image: url(../images/arrows-grey.png);
+    margin-top: -3px;
 }
 
-div#nav li:first-child {
- border-top: 1px solid #ccc;
- padding-top: 0.25em;
-
+#app-nav.sf-vertical li:hover ul,
+#app-nav.sf-vertical li.sfHover ul {
+    top: -1px;
 }
 
-div#nav li {
- padding: 0.125em;
- padding-bottom: 0.25em;
- margin-bottom: 0.25em;
- border-bottom: 1px solid #ccc;
- padding-left: 0.5em;
- margin-right: 0.25em;
- margin-left: 0em;
-}
-
-div#nav li li:first-child {
-    margin-top: 0.25em;
-}
-div#nav li li {
-    margin-left: -0.5em;
-    padding-left: 0.25em;
-    margin-right: -0.5em;
-}
-
-div#nav li li:last-child {
-    margin-bottom: 0; 
-    padding-bottom: 0;
+#prefs-menu.sf-menu a,
+#prefs-menu .sf-menu a
+{
     border: none;
 }
 
-div#nav .bullet {
- display: none;
+#prefs-menu.sf-menu li li li {
+    border-left: 1px solid #ccc;
 }
 
-div#nav .separator {
-display: none;
+#prefs-menu.sf-menu li:hover ul,
+#prefs-menu.sf-menu li.sfHover ul {
+    top: 2.4em; /* match the height of the top level li */
 }
 
-
-div#nav a, div#page-navigation a{
- text-decoration: none;
- font-weight: normal;
- color: #000;
+#prefs-menu.sf-menu li li:hover ul,
+#prefs-menu.sf-menu li li.sfHover ul {
+    top: 0;
 }
 
-div#nav a:hover, div#page-navigation a:hover {
- text-decoration: underline;
+#prefs-menu .sf-sub-indicator {
+    background-image: url(../images/arrows-grey.png);
 }
 
-
-
-div#nav a.selected, div#page-navigation a.selected {
-  font-weight: bold;
+#main-navigation ul li {
 }
 
 
-div#nav a.selected:after {
-/* content: " > " */
+#main-navigation .sf-menu {
+    text-color: #000;
 }
 
-div#page-navigation {
- background: white;
- position: relative;
- width:100%;
- z-index: 10;
+#main-navigation .sf-menu li {
+    background: none;
+}
+
+#main-navigation .sf-menu li:first-child {
+    border-top: 1px solid #ccc;
+}
+
+#main-navigation .sf-menu a,
+#main-navigation .sf-menu a:visited {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    color: #000;
+    border: none;
+}
+
+#main-navigation .sf-menu li {
+    border-bottom: 1px solid #ccc;
 
 }
 
 
-div#page-navigation ul {
+#main-navigation .sf-menu ul a,
+#main-navigation .sf-menu ul a:visited {
+    color: #000;
+}
+
+
+#main-navigation .sf-menu li li, #main-navigation .sf-menu li li li {
+    border-left: none;
+    background-color: #fff;
+    text-color: #547CCC;
+}
+
+#main-navigation .sf-menu li:hover, #main-navigation .sf-menu li.sfHover, #main-navigation .sf-menu a:focus, #main-navigation .sf-menu a:hover, #main-navigation .sf-menu a:active {
+    background-color: #CFDEFF;
+    text-color: #000;
+    color: #000;
+}
+
+#main-navigation .sfHover a,
+#main-navigation .sfHover a:visited {
+    color: #000;
+}
+
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+#app-nav.toplevel { display: none; }
+#app-nav.toplevel.sf-menu { display:block; }
+#page-menu.toplevel { display: none; }
+#page-menu.toplevel.sf-menu { display:block; }
+
+
+
+#page-navigation {
+    position: absolute;
+    top: 5.7em;
+    left: 10em;
+    right: 0em;
+    height: 2.1em;
+    z-index: 9995;
+    font-size: 0.9em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    border-right: none;
+}
+
+#page-navigation .sf-menu {
+    margin: 0;
+}
+
+#page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
+    background: none;
+    height: 2em;
+    padding-top: 0.25em;
+    padding-bottom: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    display: inline-block;
+}
+
+
+#page-navigation .sf-menu ul {
+    background: #eee;
+}
+
+
+#page-navigation .sf-menu li:hover, #page-navigation .sf-menu li.sfHover, #page-navigation .sf-menu a:focus, #page-navigation .sf-menu a:hover, #page-navigation .sf-menu a:active {
+    background: none;
 
 }
 
-div#page-navigation ul#page-menu {
- display: block;
+#page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
+    border: none;
+    padding: 0.25em;
+    color: #000;
+}
+
+
+
+#page-actions {
+    display: none;
+}
+
+#page-action-menu {
+    position: absolute;
+    display: block;
+    top: 8em;
+    right: 0em;
+    left: auto;
+    z-index: 9995;
+    font-size: 0.9em;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    border-right: none;
+    border-top: none;
+    list-style-type: none;
+    padding: 0.5em;
+}
+
+
+#page-action-menu li {
+    display: inline;
+}
+
+#page-action-menu a, #page-action-menu a:visited{
+    border: none;
+    padding: 0.25em;
+    color: #000;
+}
+
+
+#topactions {
  position: absolute;
- left: 8em;
+ background: transparent;
+ top: 3.2em;
+ right: 0.7em;
+ width: auto;
+ min-width: 42em;
  font-size: 0.9em;
- top: 2.3em;
- min-height: 1em;
- background-color: white;
- right: 0em;
- padding-top:0.3em;
- padding-bottom:0.5em;
- border-top: 1px solid #aaa;
+ z-index: 99;
+}
+
+#topactions form * {
+    vertical-align: top;
+}
+
+#topactions button, #topactions select, #topactions input{
+ padding-top: 0em;
+ padding-bottom: 0em;
+ width: 8em;
 
 }
 
-/* ie hack */
-* html div#page-navigation ul#page-menu {
-    left: 6.5em;
-    top: 3.2em;
-    padding-left: 2em;
-}
-
-
-div#page-navigation ul#actions-menu {
- position: absolute;
- right: 1em;
- top: 5.2em;
- margin-top: 0em;
- padding: 0.25em;
- padding-left: 0.5em;
- padding-right: 0.5em;
-
- background: #dedede;
- border-left: 1px solid #aaa;
- border-bottom: 2px solid #aaa;
- -moz-border-radius-bottomleft: 0.5em;
- -webkit-border-bottom-left-radius: 0.5em;
- -moz-border-radius-topright: 0.25em;
- -webkit-border-top-right-radius: 0.25em;
-
-
+#topactions form {
+ display: block;
 
 }
 
-
-
-div#page-navigation ul li{
- display: inline;
+#topactions #GotoTicket, #topactions #CreateTicketInQueue {
+ text-align: right;
 
 }
-
-
-ul.page-navigation ul.page-menu {
+#topactions #simple-search {
  float: right;
 }
 
+#topactions #simple-search .field{
+ margin-left: 1em;
+ color: #787;
+ }
+
+#topactions #simple-search .field:focus {
+ color: #000;
+ }
+
+#topactions #GotoTicket {
+ text-align: right;
+
+}

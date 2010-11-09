@@ -1,28 +1,24 @@
-
 use strict;
 use warnings;
-use Test::More;
+use RT::Test tests => undef;
 BEGIN {
-    eval { require Email::Abstract; require Test::Email; 1 }
-        or plan skip_all => 'require Email::Abstract and Test::Email';
+    plan skip_all => 'Email::Abstract and Test::Email required.'
+        unless eval { require Email::Abstract; require Test::Email; 1 };
+    plan tests => 38;
 }
 
-
-use RT;
-use RT::Test tests => 39;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( UseTransactionBatch => 1 );
-my ($baseurl, $m) = RT::Test->started_ok;
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 $q->Load('___Approvals');
 $q->SetDisabled(0);
 
 my %users;
 for my $user_name (qw(minion cfo ceo )) {
-    my $user = $users{$user_name} = RT::User->new($RT::SystemUser);
+    my $user = $users{$user_name} = RT::User->new(RT->SystemUser);
     $user->Create( Name => uc($user_name),
                    Privileged => 1,
                    EmailAddress => $user_name.'@company.com');
@@ -61,16 +57,16 @@ Your CFO approved PO ticket {$Tickets{"TOP"}->Id} for minion. you ok with that?
 ENDOFCONTENT
 ';
 
-my $apptemp = RT::Template->new($RT::SystemUser);
+my $apptemp = RT::Template->new(RT->SystemUser);
 $apptemp->Create( Content => $approvals, Name => "PO Approvals", Queue => "0");
 
 ok($apptemp->Id);
 
-$q = RT::Queue->new($RT::SystemUser);
+$q = RT::Queue->new(RT->SystemUser);
 $q->Create(Name => 'PO');
 ok ($q->Id, "Created PO queue");
 
-my $scrip = RT::Scrip->new($RT::SystemUser);
+my $scrip = RT::Scrip->new(RT->SystemUser);
 my ($sval, $smsg) =$scrip->Create( ScripCondition => 'On Create',
                 ScripAction => 'Create Tickets',
                 Template => 'PO Approvals',
@@ -82,7 +78,7 @@ ok ($scrip->TemplateObj->Id, "Created the scrip template");
 ok ($scrip->ConditionObj->Id, "Created the scrip condition");
 ok ($scrip->ActionObj->Id, "Created the scrip action");
 
-my $t = RT::Ticket->new($RT::SystemUser);
+my $t = RT::Ticket->new(RT->SystemUser);
 my ($tid, $ttrans, $tmsg);
 
 mail_ok {

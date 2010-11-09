@@ -1,0 +1,82 @@
+<%args>
+$Context
+$Principal => undef
+$id
+$acldesc => ''
+</%args>
+<%init>
+# XXX OPTIMIZATION: Moving the calls to AvailableRights and RightCategories up
+# one component to avoid calling them for every principal would be a win, but
+# it's cleaner to do it here.  The values can really be computed once per
+# $Context.
+
+# Find all our available rights...
+my (%available_rights, %categories);
+if ( blessed($Context) and $Context->can('AvailableRights') ) {
+    %available_rights = %{$Context->AvailableRights};
+} else {
+    %available_rights = ( loc('System Error') => loc("No rights found") );
+}
+
+# ...and their categories
+if ( blessed($Context) and $Context->can('RightCategories') ) {
+    my %right_categories = %{$Context->RightCategories};
+
+    for my $right (keys %available_rights) {
+        push @{$categories{$right_categories{$right}}}, $right;
+    }
+}
+
+# Find all the current rights for this principal
+my %current_rights;
+if ($Principal) {
+    my $acls = RT::ACL->new($session{'CurrentUser'});
+    $acls->LimitToObject( $Context );
+    $acls->LimitToPrincipal( Id => $Principal->PrincipalId );
+
+    while ( my $ace = $acls->Next ) {
+        my $right = $ace->RightName;
+        $current_rights{$right} = 1;
+    }
+}
+
+my %category_desc = (
+    'General' => 'General rights',
+    'Staff'   => 'Rights for Staff',
+    'Admin'   => 'Rights for Administrators',
+    'Status'  => 'Status changes',
+);
+
+my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
+
+$acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
+                       ref($Context), $Context->Id;
+</%init>
+    <div class="category-tabs">
+      <ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+        <li><a href="#<% "$id-$category" %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+% }
+      </ul>
+% for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
+    <div id="<% "$id-$category" %>">
+    <ul class="rights-list">
+%     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
+      <li>
+        <input type="checkbox" class="checkbox"
+               name="SetRights-<% $acldesc %>"
+               id="SetRights-<% $acldesc %>-<% $right %>"
+               value="<% $right %>"
+               <% $current_rights{$right} ? 'checked' : '' %> />
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+          <% loc($available_rights{$right}) %>
+          <span class="separator">&mdash;</span>
+          <span class="rightname"><% $right %></span>
+        </label>
+      </li>
+%     }
+    </ul>
+    </div>
+% }
+    </div>
+    <input type="hidden" name="CheckACL" value="<% $acldesc %>" />

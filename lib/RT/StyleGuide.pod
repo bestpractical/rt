@@ -892,6 +892,22 @@ There are some legacy fields that did not follow this rule, namely
 C<ACL.PrincipalId>, C<GroupMembers.GroupId> and C<Attachments.TransactionId>,
 but new tables are expected to be consistent.
 
+
+=head1 EXTENDING RT CLASSES
+
+=head2 The Overlay mechansim
+
+RT's classes allow "overlay" methods to be placed into files named Filename_Vendor.pm and Filename_Local.pm
+_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.
+
+These overlay files can contain new subs or subs to replace existing subs in this module.
+
+Each of these files should begin with the line
+
+   no warnings qw(redefine);
+
+so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
+
 =head1 TO DO
 
 Talk about DBIx::SearchBuilder

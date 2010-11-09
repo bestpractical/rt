@@ -4,7 +4,7 @@ add_description_to_all_scrips();
 
 sub add_description_to_all_scrips {
     require RT::Scrips;
-    my $scrips = RT::Scrips->new( $RT::SystemUser );
+    my $scrips = RT::Scrips->new( RT->SystemUser );
     $scrips->Limit( FIELD => 'Description', OPERATOR => 'IS', VALUE => 'NULL' );
     $scrips->Limit( FIELD => 'Description', VALUE => '' );
     while ( my $scrip = $scrips->Next ) {

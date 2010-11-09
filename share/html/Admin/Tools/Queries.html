@@ -1,0 +1,112 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $title = loc('SQL Queries');
+unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+ Abort(loc('This feature is only available to system administrators'));
+}
+</%init>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+<&|/Widgets/TitleBox, title => loc('SQL Queries') &>
+% my $history = $RT::Handle->QueryHistory;
+% if (!RT->Config->Get('StatementLog')) {
+    <p><&|/l&>You must set StatementLog to true to enable this query history page.</&></p>
+% } elsif (!$history) {
+    <p><&|/l&>This server process has recorded no SQL queries.</&></p>
+% } else {
+    <script type="text/javascript">
+        jQuery(function () { jQuery(".tablesorter").tablesorter(); });
+    </script>
+
+    <ol>
+%     my $r = 0;
+%     for my $request (@$history) {
+%         ++$r;
+
+%         my ($total, $count) = (0, 0);
+%         for my $statement (@{ $request->{Queries} }) {
+%             $total += $statement->[3];
+%             $count++;
+%         }
+
+          <li>
+              <&|/l, $request->{Path}, sprintf('%.4f', $total) &><tt>[_1]</tt> - <i>[_2]s</i></&>
+              <a href="#" onclick="return hideshow('queries-<%$r%>');"><&|/l, $count &>Toggle [quant,_1,query,queries]</&></a>
+              <table id="queries-<%$r%>" class="tablesorter hidden">
+                  <thead>
+                      <tr>
+                          <th><&|/l&>index</&></th>
+                          <th><&|/l&>duration</&></th>
+                          <th><&|/l&>statement</&></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+%                 my $s = 0;
+%                 for my $statement (@{ $request->{Queries} }) {
+%                      my ( $time, $sql, $bind, $duration, $trace ) = @$statement;
+%                      $sql = $RT::Handle->FillIn($sql, $bind);
+
+                       <tr>
+                           <td><% ++$s %></td>
+                           <td><&|/l, sprintf('%.4f', $duration) &><i>[_1]s</i></&></td>
+                           <td>
+                               <tt><% $sql %></tt>
+                               <a class="query-stacktrace-toggle" href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
+                               <pre id="trace-<%$r%>-<%$s%>" class="hidden"><% $trace %></pre>
+                           </td>
+                       </tr>
+%                 }
+                  </tbody>
+              </table>
+          </li>
+%     }
+    </ol>
+% }
+</&>

@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('#[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
 
@@ -93,13 +93,13 @@ my ( $field, @results );
 
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
-# {{{ Load the ticket
+# Load the ticket
 #If we get handed two ids, mason will make them an array. bleck.
 # We want teh first one. Just because there's no other sensible way
 # to deal
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
-my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
 # store the uploaded attachment in session
 if ( $ARGS{'Attach'} ) {    # attachment?
@@ -120,7 +120,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         $m->comp( 'Error.html', Why => loc('Queue not found') );
         $m->abort;
@@ -142,14 +142,12 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
               $m->abort();
         }
 
-        # }}}
 
         # delete temporary storage entry to make WebUI clean
         unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
             delete $session{'Attachments'};
         }
 
-        # }}}
     }
     else {
         unless ( $Ticket->Load( $id[0] ) ) {
@@ -185,7 +183,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
 
-    # }}}
 
     #Update the status
     if (    ( defined $ARGS{'Status'} )
@@ -195,7 +192,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
         push @results, "$msg";
     }
-    # }}}
 
 
     }

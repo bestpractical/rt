@@ -2,14 +2,14 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 29;
+use RT::Test nodata => 1, tests => 29;
 use Test::Warn;
 
 
 {
 
 use_ok('RT::CustomField');
-ok(my $cf = RT::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::CustomField->new(RT->SystemUser));
 ok(my ($id, $msg)=  $cf->Create( Name => 'TestingCF',
                                  Queue => '0',
                                  SortOrder => '1',
@@ -28,7 +28,7 @@ ok(!$cf->SingleValue );
 ok(my ($bogus_val, $bogus_msg) = $cf->SetType('BogusType') , "Trying to set a custom field's type to a bogus type");
 is($bogus_val , 0, "Unable to set a custom field's type to a bogus type");
 
-ok(my $bad_cf = RT::CustomField->new($RT::SystemUser));
+ok(my $bad_cf = RT::CustomField->new(RT->SystemUser));
 ok(my ($bad_id, $bad_msg)=  $cf->Create( Name => 'TestingCF-bad',
                                  Queue => '0',
                                  SortOrder => '1',
@@ -41,7 +41,7 @@ is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a
 
 {
 
-ok(my $cf = RT::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::CustomField->new(RT->SystemUser));
 $cf->Load(1);
 is($cf->Id , 1);
 ok(my ($val,$msg)  = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
@@ -54,7 +54,7 @@ ok ($delval,"Deleting a cf value: $delmsg");
 
 {
 
-ok(my $cf = RT::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::CustomField->new(RT->SystemUser));
 
 warning_like {
 ok($cf->ValidateType('SelectSingle'));
@@ -71,4 +71,3 @@ ok(!$cf->ValidateType('SelectFooMultiple'));
 
 }
 
-1;

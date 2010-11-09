@@ -22,7 +22,6 @@ ok $queue && $queue->id, 'loaded or created queue';
 my $url = $agent->rt_base_url;
 ok $agent->login, "logged in";
 
-# {{{ Query Builder tests
 
 my $response = $agent->get($url."Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
@@ -43,7 +42,7 @@ sub selectedClauses {
 }
 
 
-diag "add the first condition" if $ENV{'TEST_VERBOSE'};
+diag "add the first condition";
 {
     ok $agent->form_name('BuildQuery'), "found the form once";
     $agent->field("ActorField", "Owner");
@@ -53,7 +52,7 @@ diag "add the first condition" if $ENV{'TEST_VERBOSE'};
     is getQueryFromForm, "Owner = 'Nobody'", 'correct query';
 }
 
-diag "set the next condition" if $ENV{'TEST_VERBOSE'};
+diag "set the next condition";
 {
     ok($agent->form_name('BuildQuery'), "found the form again");
     $agent->field("QueueOp", "!=");
@@ -63,7 +62,7 @@ diag "set the next condition" if $ENV{'TEST_VERBOSE'};
         'correct query';
 }
 
-diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
+diag "We're going to delete the owner";
 {
     $agent->select("clauses", ["0"] );
     $agent->click("DeleteClause");
@@ -71,7 +70,7 @@ diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
     is getQueryFromForm, "Queue != 'Regression'", 'correct query';
 }
 
-diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
+diag "add a cond with OR and se number by the way";
 {
     $agent->field("AndOr", "OR");
     $agent->select("idOp", ">");
@@ -84,7 +83,7 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 
 }
 
-diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
+diag "Move the second one up a level";
 {
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
@@ -92,7 +91,7 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
 }
 
-diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
+diag "Move the second one right";
 {
     $agent->click("Right");
     ok $agent->form_name('BuildQuery'), "found the form again";
@@ -101,7 +100,7 @@ diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
     is_deeply selectedClauses, ["2"], 'the one we moved right is selected';
 }
 
-diag "Move the block up" if $ENV{'TEST_VERBOSE'};
+diag "Move the block up";
 {
     $agent->select("clauses", ["1"]);
     $agent->click("Up");
@@ -111,24 +110,24 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
 }
 
 
-diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
+diag "Can not move up the top most clause";
 {
     $agent->select("clauses", ["0"]);
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
+    $agent->content_contains("error: can&#39;t move up", "i shouldn't have been able to hit up");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
-diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
+diag "Can not move left the left most clause";
 {
     $agent->click("Left");
     ok($agent->form_name('BuildQuery'), "found the form again");
-    $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
+    $agent->content_contains("error: can&#39;t move left", "i shouldn't have been able to hit left");
     is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
 }
 
-diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
+diag "Add a condition into a nested block";
 {
     $agent->select("clauses", ["1"]);
     $agent->select("ValueOfStatus" => "stalled");
@@ -140,12 +139,11 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
         "added new one";
 }
 
-diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same."
-    if $ENV{'TEST_VERBOSE'};
+diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same.";
 {
     my $response = $agent->get($url."Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
-    ok($agent->form_number(3), "found the form");
+    ok($agent->form_name('BuildQueryAdvanced'), "found the form");
     $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND Subject LIKE 'office' )");
     $agent->submit;
     is( getQueryFromForm,
@@ -194,11 +192,10 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 # - clears entire query
 # - clears it from the session, too
 
-# }}}
 
 # create a custom field with nonascii name and try to add a condition
 {
-    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my $cf = RT::CustomField->new( RT->SystemUser );
     $cf->LoadByName( Name => "\x{442}", Queue => 0 );
     if ( $cf->id ) {
         is($cf->Type, 'Freeform', 'loaded and type is correct');
@@ -224,12 +221,11 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 
 }
 
-diag "input a condition, select (several conditions), click delete"
-    if $ENV{'TEST_VERBOSE'};
+diag "input a condition, select (several conditions), click delete";
 {
     my $response = $agent->get( $url."Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";
-    ok $agent->form_number(3), "found the form";
+    ok $agent->form_name('BuildQueryAdvanced'), "found the form";
     $agent->field("Query", "( Status = 'new' OR Status = 'open' )");
     $agent->submit;
     is( getQueryFromForm,
@@ -246,4 +242,3 @@ diag "input a condition, select (several conditions), click delete"
     );
 }
 
-1;

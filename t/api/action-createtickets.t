@@ -14,7 +14,7 @@ use_ok('RT::ScripAction');
 use_ok('RT::ScripCondition');
 use_ok('RT::Ticket');
 
-my $approvalsq = RT::Queue->new($RT::SystemUser);
+my $approvalsq = RT::Queue->new(RT->SystemUser);
 $approvalsq->Create(Name => 'Approvals');
 ok ($approvalsq->Id, "Created Approvals test queue");
 
@@ -45,16 +45,16 @@ ENDOFCONTENT
 
 like ($approvals , qr/Content/, "Read in the approvals template");
 
-my $apptemp = RT::Template->new($RT::SystemUser);
+my $apptemp = RT::Template->new(RT->SystemUser);
 $apptemp->Create( Content => $approvals, Name => "Approvals", Queue => "0");
 
 ok ($apptemp->Id);
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 $q->Create(Name => 'WorkflowTest');
 ok ($q->Id, "Created workflow test queue");
 
-my $scrip = RT::Scrip->new($RT::SystemUser);
+my $scrip = RT::Scrip->new(RT->SystemUser);
 my ($sval, $smsg) =$scrip->Create( ScripCondition => 'On Transaction',
                 ScripAction => 'Create Tickets',
                 Template => 'Approvals',
@@ -65,7 +65,7 @@ ok ($scrip->TemplateObj->Id, "Created the scrip template");
 ok ($scrip->ConditionObj->Id, "Created the scrip condition");
 ok ($scrip->ActionObj->Id, "Created the scrip action");
 
-my $t = RT::Ticket->new($RT::SystemUser);
+my $t = RT::Ticket->new(RT->SystemUser);
 my($tid, $ttrans, $tmsg) = $t->Create(Subject => "Sample workflow test",
            Owner => "root",
            Queue => $q->Id);
@@ -80,7 +80,7 @@ unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
-my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);
+my $action =  RT::Action::CreateTickets->new( CurrentUser => RT->SystemUser);
 
 # comma-delimited templates
 my $commas = <<"EOF";
@@ -237,4 +237,3 @@ foreach my $id ( sort keys %expected ) {
 
 }
 
-1;

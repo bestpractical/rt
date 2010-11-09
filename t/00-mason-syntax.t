@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 1, tests => 1;
+use RT::Test nodb => 1;
 
-my $ok = 1;
 
 use File::Find;
 find( {
@@ -14,13 +13,10 @@ find( {
         return if /(?:\.(?:jpe?g|png|gif|rej)|\~)$/i;
         return if m{/\.[^/]+\.swp$}; # vim swap files
         return unless -f $_;
-        diag "testing $_" if $ENV{'TEST_VERBOSE'};
-        eval { compile_file($_) } and return;
-        $ok = 0;
-        diag "error in ${File::Find::name}:\n$@";
+        local ($@);
+        ok( eval { compile_file($_) }, "Compiled $File::Find::name ok: $@");
     },
 }, RT::Test::get_relocatable_dir('../share/html'));
-ok($ok, "mason syntax is ok");
 
 use HTML::Mason;
 use HTML::Mason::Compiler;

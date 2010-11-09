@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Query => "id > 0"
@@ -66,22 +66,64 @@ if ($ChartStyle eq 'pie') {
 
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
 my ($count_name, $value_name) = $tix->SetupGroupings(
     Query => $Query, GroupBy => $PrimaryGroupBy,
 );
 
-my $chart = $chart_class->new( 600 => 400 );
+my %class = (
+    Queue => 'RT::Queue',
+    Owner => 'RT::User',
+    Creator => 'RT::User',
+    LastUpdatedBy => 'RT::User',
+);
+my $class = $class{ $PrimaryGroupBy };
 
-my $font = RT->Config->Get('ChartFont') || ['verdana', 'arial', gdMediumBoldFont];
-$chart->set_title_font( $font, 12 ) if $chart->can('set_title_font');
-$chart->set_legend_font( $font, 12 ) if $chart->can('set_legend_font');
-$chart->set_x_label_font( $font, 10 ) if $chart->can('set_x_label_font');
-$chart->set_y_label_font( $font, 10 ) if $chart->can('set_y_label_font');
-$chart->set_label_font( $font, 10 ) if $chart->can('set_label_font');
-$chart->set_x_axis_font( $font, 9 ) if $chart->can('set_x_axis_font');
-$chart->set_y_axis_font( $font, 9 ) if $chart->can('set_y_axis_font');
-$chart->set_values_font( $font, 9 ) if $chart->can('set_values_font');
-$chart->set_value_font( $font, 9 ) if $chart->can('set_value_font');
+my %data;
+my $max_value = 0;
+my $max_key_length = 0;
+while ( my $entry = $tix->Next ) {
+    my $key;
+    if ( $class ) {
+        my $q = $class->new( $session{'CurrentUser'} );
+        $q->Load( $entry->LabelValue( $value_name ) );
+        $key = $q->Name;
+    }
+    else {
+        $key = $entry->LabelValue($value_name);
+    }
+    $key ||= '(no value)';
+    
+    my $value = $entry->__Value( $count_name );
+    if ($chart_class eq 'GD::Graph::pie') {
+        $key = loc($key) ." - ". $value;
+    } else {
+        $key = loc($key);
+    }
+    $data{ $key } = $value;
+    $max_value = $value if $max_value < $value;
+    $max_key_length = length $key if $max_key_length < length $key;
+}
+
+unless (keys %data) {
+    $data{''} = 0;
+}
+
+
+my $chart = $chart_class->new( 600 => 400 );
+$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
+my %font_config = RT->Config->Get('ChartFont');
+my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
+  || $font_config{'others'};
+$chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
+$chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
+$chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
+$chart->set_y_label_font( $font, 14 ) if $chart->can('set_y_label_font');
+$chart->set_label_font( $font, 14 ) if $chart->can('set_label_font');
+$chart->set_x_axis_font( $font, 12 ) if $chart->can('set_x_axis_font');
+$chart->set_y_axis_font( $font, 12 ) if $chart->can('set_y_axis_font');
+$chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
+$chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 
 # Pie charts don't like having no input, so we show a special image
 # that indicates an error message. Because this is used in an <img>
@@ -97,67 +139,48 @@ if ($tix->Count == 0) {
         color => $black,
         text  => loc("No tickets found."),
     );
-    $error->set_font( $font, 12 );
+    $error->set_font( $font, 16 );
     $error->draw(0, 0);
 
     $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 }
 
 if ($chart_class eq "GD::Graph::bars") {
+    my $count = keys %data;
     $chart->set(
         x_label => $tix->Label( $PrimaryGroupBy ),
-        x_labels_vertical => 1,
         y_label => loc('Tickets'),
-        show_values => 1
+        show_values => 1,
+        x_label_position => 0.6,
+        y_label_position => 0.6,
+        values_space => -1,
+# use a top margin enough to display values over the top line if needed
+        t_margin => 18,
+# the following line to make sure there's enough space for values to show
+        y_max_value => 5*(int($max_value/5) + 2),
+# if there're too many bars or at least one key is too long, use vertical
+        x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
+        $count > 30 ? ( bar_spacing => 1 ) : ( $count > 20 ? ( bar_spacing => 2 ) : 
+            ( $count > 10 ? ( bar_spacing => 3 ) : ( bar_spacing => 5 ) )
+        ),
     );
 }
 
-my %class = (
-    Queue => 'RT::Queue',
-    Owner => 'RT::User',
-    Creator => 'RT::User',
-    LastUpdatedBy => 'RT::User',
-);
-my $class = $class{ $PrimaryGroupBy };
+# refine values' colors, with both Color::Scheme's help and my own tweak
+$chart->{dclrs} = [
+    '66cc66', 'ff6666', 'ffcc66', '663399',
+    '3333cc', 
+    '339933', '993333', '996633', '663399',
+    '33cc33', 'cc3333', 'cc9933', '6633cc'
+];
 
-my %data;
-while ( my $entry = $tix->Next ) {
-    my $key;
-    if ( $class ) {
-        my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->__Value( $value_name ) );
-        $key = $q->Name;
-    }
-    else {
-        $key = $entry->__Value($value_name);
-    }
-    $key ||= '(no value)';
-    
-    my $value = $entry->__Value( $count_name );
-    if ($chart_class eq 'GD::Graph::pie') {
-        $key = loc($key) ." - ". $value;
-    } else {
-        $key = loc($key);
-    }
-    $data{ $key } = $value;
-}
-
-# XXX: Convert 1970-01-01 date to the 'Not Set'
-# this code should be generalized!!!
-if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
-    my $re;
-    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
-    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
-    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
-    foreach my $k (keys %data) {
-        my $tmp = $k;
-        $tmp =~ s/^$re/loc('Not Set')/e or next;
-        $data{$tmp} = delete $data{$k};
-    }
-}
-
-unless (keys %data) {
-    $data{''} = 0;
+{
+    no warnings 'redefine';
+    *GD::Graph::pick_data_clr = sub {
+        my $self      = shift;
+        my $color_hex = $self->{dclrs}[ $_[0] % @{ $self->{dclrs} } - 1 ];
+        return map { hex } ( $color_hex =~ /(..)(..)(..)/ );
+    };
 }
 
 my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
@@ -170,7 +193,6 @@ $plot => undef
 </%ARGS>
 <%INIT>
 my @types = ('png', 'gif');
-
 for my $type (@types) {
     $plot->can($type)
         or next;

@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,103 +43,121 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
-    Title => loc("Create a new ticket"),
-    onload => "function () { hide(document.getElementById('Ticket-Create-details')) }" &>
-<& /Elements/Tabs, 
-    current_toptab => "Ticket/Create.html", 
-    Title => loc("Create a new ticket"),
-    actions => $actions &>
+    Title => $title,
+    onload => "function () { hide('Ticket-Create-details') }" &>
+<& /Elements/Tabs &>
+    
 <& /Elements/ListActions, actions => \@results &>
+
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
-<input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+  <input type="hidden" class="hidden" name="id" value="new" />
+  
+% $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+
 % if ($gnupg_widget) {
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+  <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
+
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
-<&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
-<table border="0" cellpadding="0" cellspacing="0">
-<tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
-<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Name %>" />
-</td>
-<td class="label"><&|/l&>Status</&>:
-</td>
-<td class="value">
-<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0, SkipDeleted => 1 &>
-</td>
-<td class="label">
-<&|/l&>Owner</&>:
-</td>
-<td class="value">
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
-</td>
+
+<div id="ticket-create-metadata">
+    <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
+    <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
+    <table width="100%" border="0">
+    <& /Ticket/Elements/EditBasics,
+        InTable => 1,
+        fields  => [
+            {   name => 'Queue',
+                comp => '/Ticket/Elements/ShowQueue',
+                args => {
+                    QueueObj => $QueueObj,
+                },
+            },
+            {   name => 'Status',
+                comp => '/Elements/SelectStatus',
+                args => {
+                    Name            => "Status",
+                    Default         => $ARGS{Status} || 'new',
+                    DefaultValue    => 0,
+                    SkipDeleted     => 1,
+                    QueueObj        => $QueueObj
+                },
+            },
+            {   name => 'Owner',
+                comp => '/Elements/SelectOwner',
+                args => {
+                    Name            => "Owner",
+                    Default         => $ARGS{Owner} || RT->Nobody->Id,
+                    DefaultValue    => 0,
+                    QueueObj        => $QueueObj,
+                },
+            }
+        ]
+        &>
+
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
-</tr>
+
+      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
+      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
+    </table>
+  </&>
+% $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj );
+</div>
+
+<div id="ticket-create-message">
+  <&| /Widgets/TitleBox, title => $title, class => 'messagedetails' &>
+<table border="0" cellpadding="0" cellspacing="0">
 <tr>
 <td class="label">
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
 </td>
 </tr>
 <tr>
 <td class="label">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, Name => 'Cc', Size => '40', Default => $ARGS{Cc} &></td>
-<td class="comment" colspan="2"><i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
-</td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc} &></td>
 </tr>
+
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&>
+    </font></i>
+  </td>
+</tr>
+
 <tr>
 <td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} &></td>
-<td class="comment" colspan="2"><i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
-</td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc} &></td>
 </tr>
+
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&>
+    </font></i>
+  </td>
+</tr>
+
 <tr>
 <td class="label">
 <&|/l&>Subject</&>:
 </td>
 <td class="value" colspan="5">
-<input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
-</td>
-</tr>
-<tr>
-<td colspan="6">
-<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
-</td>
-</tr>
-<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
-<tr>
-% if (exists $session{'Attachments'}) {
-<td class="label">
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
-<td class="label">
-<&|/l&>Attach file</&>:
-</td>
-<td class="value" colspan="5">
-<input type="file" name="Attach" />
-<input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+<input type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+% $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </td>
 </tr>
 
@@ -158,13 +176,17 @@
 % } else {
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 %}
+% $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
 <br />
 </td>
 </tr>
-</table>
-</&>
-<& /Elements/Submit, Label => loc("Create")&>
+
+        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+      </table>
+    </&>
+    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+  </div>
 </div>
 
 <div id="Ticket-Create-details">
@@ -248,84 +270,93 @@
 <%INIT>
 $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
+$session{DefaultQueue} = $Queue;
 
-my $CloneTicketObj;
-if ( $CloneTicket ) {
-    $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
-    $CloneTicketObj->Load($CloneTicket) or Abort(loc("Ticket could not be loaded"));
-    
+if ($CloneTicket) {
+    my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
+    $CloneTicketObj->Load($CloneTicket)
+        or Abort( loc("Ticket could not be loaded") );
+
     my $clone = {
-        Requestors       => join( ',', $CloneTicketObj->RequestorAddresses ),
-        Cc               => join( ',', $CloneTicketObj->CcAddresses),
-        AdminCc          => join( ',', $CloneTicketObj->AdminCcAddresses),
-        InitialPriority => $CloneTicketObj->Priority, 
+        Requestors => join( ',', $CloneTicketObj->RequestorAddresses ),
+        Cc         => join( ',', $CloneTicketObj->CcAddresses ),
+        AdminCc    => join( ',', $CloneTicketObj->AdminCcAddresses ),
+        InitialPriority => $CloneTicketObj->Priority,
     };
-    
-    $clone->{$_} = $CloneTicketObj->$_() 
-        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked 
-                Status TimeLeft Starts Started Due Resolved/;
-    
-        my $members = $CloneTicketObj->Members;
-        my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
-        my $refers = $CloneTicketObj->RefersTo;
-        while ( my $refer = $refers->Next ) {
-            push @refers, $refer->LocalTarget;
+
+    $clone->{$_} = $CloneTicketObj->$_()
+        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked
+        Status TimeLeft/;
+
+    $clone->{$_} = $CloneTicketObj->$_->AsString
+        for grep { $CloneTicketObj->$_->Unix }
+        map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
+
+    my $members = $CloneTicketObj->Members;
+    my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
+    my $refers = $CloneTicketObj->RefersTo;
+    while ( my $refer = $refers->Next ) {
+        push @refers, $refer->LocalTarget;
+    }
+    $clone->{'new-RefersTo'} = join ' ', @refers;
+
+    my $refers_by = $CloneTicketObj->ReferredToBy;
+    while ( my $refer_by = $refers_by->Next ) {
+        push @refers_by, $refer_by->LocalBase;
+    }
+    $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    if (0) {    # Temporarily disabled
+        my $depends = $CloneTicketObj->DependsOn;
+        while ( my $depend = $depends->Next ) {
+            push @depends, $depend->LocalTarget;
         }
-        $clone->{'new-RefersTo'} = join ' ', @refers;
-    
-        my $refers_by = $CloneTicketObj->ReferredToBy;
-        while ( my $refer_by = $refers_by->Next ) {
-            push @refers_by, $refer_by->LocalBase;
+        $clone->{'new-DependsOn'} = join ' ', @depends;
+
+        my $depends_by = $CloneTicketObj->DependedOnBy;
+        while ( my $depend_by = $depends_by->Next ) {
+            push @depends_by, $depend_by->LocalBase;
         }
-        $clone->{'RefersTo-new'} = join ' ', @refers_by;
-        if (0) { # Temporarily disabled
-            my $depends = $CloneTicketObj->DependsOn;
-            while ( my $depend = $depends->Next ) {
-                push @depends, $depend->LocalTarget;
-            }
-            $clone->{'new-DependsOn'} = join ' ', @depends;
+        $clone->{'DependsOn-new'} = join ' ', @depends_by;
 
-            my $depends_by = $CloneTicketObj->DependedOnBy;
-            while ( my $depend_by = $depends_by->Next ) {
-                push @depends_by, $depend_by->LocalBase;
-            }
-            $clone->{'DependsOn-new'} = join ' ', @depends_by;
-
-            while ( my $member = $members->Next ) {
-                push @members, $member->LocalBase;
-            }
-            $clone->{'MemberOf-new'} = join ' ', @members;
-
-            my $members_of = $CloneTicketObj->MemberOf;
-            while ( my $member_of = $members_of->Next ) {
-                push @members_of, $member_of->LocalTarget;
-            }
-            $clone->{'new-MemberOf'} = join ' ', @members_of;
-
+        while ( my $member = $members->Next ) {
+            push @members, $member->LocalBase;
         }
-    
+        $clone->{'MemberOf-new'} = join ' ', @members;
+
+        my $members_of = $CloneTicketObj->MemberOf;
+        while ( my $member_of = $members_of->Next ) {
+            push @members_of, $member_of->LocalTarget;
+        }
+        $clone->{'new-MemberOf'} = join ' ', @members_of;
+
+    }
+
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {
-        my $cf_id = $cf->id;
+        my $cf_id     = $cf->id;
         my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
         my @cf_values;
         while ( my $cf_value = $cf_values->Next ) {
             push @cf_values, $cf_value->Content;
         }
-        $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} 
-            = join "\n", @cf_values;
+        $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} = join "\n",
+            @cf_values;
     }
-    
+
     for ( keys %$clone ) {
         $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
     }
 
 }
+
 my @results;
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+
+my $title = loc("Create a new ticket");
+
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 
-$m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
+$m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
@@ -337,16 +368,15 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
-# {{{ deal with deleting uploaded attachments
+# deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
 	delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
-# }}}
 
-# {{{ store the uploaded attachment in session
+# store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
@@ -358,7 +388,6 @@ if ($ARGS{'Attach'}) {			# attachment?
 	$file_path => $attachment,
     };
 }
-# }}}
 
 # delete temporary storage entry to make WebUI clean
 unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
@@ -383,6 +412,22 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
     $checks_failure = 1 unless $status;
 }
 
+# check email addresses for RT's
+{
+    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+        my $value = $ARGS{ $field };
+        next unless defined $value && length $value;
+
+        my @emails = Email::Address->parse( $value );
+        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
+            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+            $checks_failure = 1;
+            $email = undef;
+        }
+        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+    }
+}
+
 my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
               checks_failure => $checks_failure, results => \@results );
@@ -401,15 +446,8 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
         }
     }
 }
-
-my $actions = {
-    A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Show basics') . q[</a>],
-    },
-    B => {
-        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Show details') . q[</a>],
-    },
-};
+PageMenu->child( basics => title =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>], escape_title => 0, link_item => 0);
+PageMenu->child( details => title =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>], escape_title => 0, link_item => 0);
 </%INIT>
 
 <%ARGS>

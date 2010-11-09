@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -70,7 +70,7 @@ package RT::Handle;
 
 use strict;
 use warnings;
-use vars qw/@ISA/;
+use File::Spec;
 
 =head1 METHODS
 
@@ -82,8 +82,9 @@ L<DBIx::SearchBuilder::Handle>, using the C<DatabaseType> configuration.
 =cut
 
 sub FinalizeDatabaseType {
-    eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
-    \@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
+    eval {
+        use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
+    };
 
     if ($@) {
         die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
@@ -119,6 +120,15 @@ sub Connect {
         $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
     }
 
+
+    if ( $db_type eq 'Pg' ) {
+        my $version = $self->DatabaseVersion;
+        ($version) = $version =~ /^(\d+\.\d+)/;
+        $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
+    }
+
+
+
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
 
@@ -129,7 +139,6 @@ from the config.
 
 =cut
 
-require File::Spec;
 
 sub BuildDSN {
     my $self = shift;
@@ -201,10 +210,6 @@ sub SystemDSN {
         # with postgres, you want to connect to template1 database
         $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
     }
-    elsif ( $db_type eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:\Q$db_name/Informix:/;
-    }
     return $dsn;
 }
 
@@ -233,13 +238,13 @@ sub CheckIntegrity {
     RT::InitLogging();
 
     require RT::CurrentUser;
-    my $test_user = new RT::CurrentUser;
+    my $test_user = RT::CurrentUser->new;
     $test_user->Load('RT_System');
     unless ( $test_user->id ) {
         return (0, 'no system user', "Couldn't find RT_System user in the DB '$dsn'");
     }
 
-    $test_user = new RT::CurrentUser;
+    $test_user = RT::CurrentUser->new;
     $test_user->Load('Nobody');
     unless ( $test_user->id ) {
         return (0, 'no nobody user', "Couldn't find Nobody user in the DB '$dsn'");
@@ -341,10 +346,6 @@ sub CreateDatabase {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0")
             || $dbh->do("CREATE DATABASE $db_name TEMPLATE template0");
     }
-    elsif ( $db_type eq 'Informix' ) {
-        local $ENV{'DB_LOCALE'} = 'en_us.utf8';
-        $status = $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
-    }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
     }
@@ -370,7 +371,7 @@ sub DropDatabase {
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
 
-    if ( $db_type eq 'Oracle' || $db_type eq 'Informix' ) {
+    if ( $db_type eq 'Oracle' ) {
         my $db_user = RT->Config->Get('DatabaseUser');
         my $status = $dbh->do( "DROP USER $db_user CASCADE" );
         unless ( $status ) {
@@ -583,13 +584,13 @@ sub InsertInitialData {
     {
         require RT::CurrentUser;
 
-        my $test_user = RT::User->new( new RT::CurrentUser );
+        my $test_user = RT::User->new( RT::CurrentUser->new() );
         $test_user->Load('RT_System');
         if ( $test_user->id ) {
             push @warns, "Found system user in the DB.";
         }
         else {
-            my $user = RT::User->new( new RT::CurrentUser );
+            my $user = RT::User->new( RT::CurrentUser->new() );
             my ( $val, $msg ) = $user->_BootstrapCreate(
                 Name     => 'RT_System',
                 RealName => 'The RT System itself',
@@ -605,15 +606,15 @@ sub InsertInitialData {
 
     # init RT::SystemUser and RT::System objects
     RT::InitSystemObjects();
-    unless ( $RT::SystemUser->id ) {
+    unless ( RT->SystemUser->id ) {
         return (0, "Couldn't load system user");
     }
 
     # grant SuperUser right to system user
     {
-        my $test_ace = RT::ACE->new( $RT::SystemUser );
+        my $test_ace = RT::ACE->new( RT->SystemUser );
         $test_ace->LoadByCols(
-            PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+            PrincipalId   => ACLEquivGroupId( RT->SystemUser->Id ),
             PrincipalType => 'Group',
             RightName     => 'SuperUser',
             ObjectType    => 'RT::System',
@@ -622,9 +623,9 @@ sub InsertInitialData {
         if ( $test_ace->id ) {
             push @warns, "System user has global SuperUser right.";
         } else {
-            my $ace = RT::ACE->new( $RT::SystemUser );
+            my $ace = RT::ACE->new( RT->SystemUser );
             my ( $val, $msg ) = $ace->_BootstrapCreate(
-                PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+                PrincipalId   => ACLEquivGroupId( RT->SystemUser->Id ),
                 PrincipalType => 'Group',
                 RightName     => 'SuperUser',
                 ObjectType    => 'RT::System',
@@ -640,14 +641,14 @@ sub InsertInitialData {
     # $self->loc('Privileged'); # For the string extractor to get a string to localize
     # $self->loc('Unprivileged'); # For the string extractor to get a string to localize
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         $group->LoadSystemInternalGroup( $name );
         if ( $group->id ) {
             push @warns, "System group '$name' already exists.";
             next;
         }
 
-        $group = RT::Group->new( $RT::SystemUser );
+        $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->_Create(
             Type        => $name,
             Domain      => 'SystemInternal',
@@ -660,7 +661,7 @@ sub InsertInitialData {
 
     # nobody
     {
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         $user->Load('Nobody');
         if ( $user->id ) {
             push @warns, "Found 'Nobody' user in the DB.";
@@ -692,14 +693,14 @@ sub InsertInitialData {
 
     # system role groups
     foreach my $name (qw(Owner Requestor Cc AdminCc)) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         $group->LoadSystemRoleGroup( $name );
         if ( $group->id ) {
             push @warns, "System role '$name' already exists.";
             next;
         }
 
-        $group = RT::Group->new( $RT::SystemUser );
+        $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->_Create(
             Type        => $name,
             Domain      => 'RT::System-Role',
@@ -725,6 +726,7 @@ Load some sort of data into the database, takes path to a file.
 sub InsertData {
     my $self     = shift;
     my $datafile = shift;
+    my $root_password = shift;
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
@@ -748,7 +750,7 @@ sub InsertData {
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
-            my $new_entry = RT::Group->new( $RT::SystemUser );
+            my $new_entry = RT::Group->new( RT->SystemUser );
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             unless ( $return ) {
@@ -760,7 +762,7 @@ sub InsertData {
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
-                    my $parent = RT::Group->new($RT::SystemUser);
+                    my $parent = RT::Group->new(RT->SystemUser);
                     if ( ref $_ eq 'HASH' ) {
                         $parent->LoadByCols( %$_ );
                     }
@@ -794,7 +796,10 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
-            my $new_entry = new RT::User( $RT::SystemUser );
+            if ( $item->{'Name'} eq 'root' && $root_password ) {
+                $item->{'Password'} = $root_password;
+            }
+            my $new_entry = RT::User->new( RT->SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -807,7 +812,7 @@ sub InsertData {
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
-            my $new_entry = new RT::Queue($RT::SystemUser);
+            my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -820,7 +825,7 @@ sub InsertData {
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
-            my $new_entry = new RT::CustomField( $RT::SystemUser );
+            my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
             my @queues;
@@ -843,18 +848,18 @@ sub InsertData {
 
             # apply by default
             if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
-                my $ocf = RT::ObjectCustomField->new($RT::SystemUser);
+                my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
                 $ocf->Create( CustomField => $new_entry->Id );
             }
 
             for my $q (@queues) {
-                my $q_obj = RT::Queue->new($RT::SystemUser);
+                my $q_obj = RT::Queue->new(RT->SystemUser);
                 $q_obj->Load($q);
                 unless ( $q_obj->Id ) {
                     $RT::Logger->error("Could not find queue ". $q );
                     next;
                 }
-                my $OCF = RT::ObjectCustomField->new($RT::SystemUser);
+                my $OCF = RT::ObjectCustomField->new(RT->SystemUser);
                 ( $return, $msg ) = $OCF->Create(
                     CustomField => $new_entry->Id,
                     ObjectId    => $q_obj->Id,
@@ -873,12 +878,12 @@ sub InsertData {
 
             # Global rights or Queue rights?
             if ( $item->{'CF'} ) {
-                $object = RT::CustomField->new( $RT::SystemUser );
+                $object = RT::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
                 $object->LoadByName( @columns );
             } elsif ( $item->{'Queue'} ) {
-                $object = RT::Queue->new($RT::SystemUser);
+                $object = RT::Queue->new(RT->SystemUser);
                 $object->Load( $item->{'Queue'} );
             } else {
                 $object = $RT::System;
@@ -888,7 +893,7 @@ sub InsertData {
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
-                $princ = RT::Group->new($RT::SystemUser);
+                $princ = RT::Group->new(RT->SystemUser);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
@@ -904,7 +909,7 @@ sub InsertData {
                   $princ->Load( $item->{'GroupId'} );
                 }
             } else {
-                $princ = RT::User->new($RT::SystemUser);
+                $princ = RT::User->new(RT->SystemUser);
                 $princ->Load( $item->{'UserId'} );
             }
 
@@ -927,7 +932,7 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripActions...");
 
         for my $item (@ScripActions) {
-            my $new_entry = RT::ScripAction->new($RT::SystemUser);
+            my $new_entry = RT::ScripAction->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -944,7 +949,7 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripConditions...");
 
         for my $item (@ScripConditions) {
-            my $new_entry = RT::ScripCondition->new($RT::SystemUser);
+            my $new_entry = RT::ScripCondition->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -961,7 +966,7 @@ sub InsertData {
         $RT::Logger->debug("Creating templates...");
 
         for my $item (@Templates) {
-            my $new_entry = new RT::Template($RT::SystemUser);
+            my $new_entry = RT::Template->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -976,7 +981,7 @@ sub InsertData {
         $RT::Logger->debug("Creating scrips...");
 
         for my $item (@Scrips) {
-            my $new_entry = new RT::Scrip($RT::SystemUser);
+            my $new_entry = RT::Scrip->new(RT->SystemUser);
 
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
@@ -995,7 +1000,7 @@ sub InsertData {
     }
     if ( @Attributes ) {
         $RT::Logger->debug("Creating predefined searches...");
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {
             my $obj = delete $item->{Object}; # XXX: make this something loadable
@@ -1041,10 +1046,10 @@ Given a userid, return that user's acl equivalence group
 sub ACLEquivGroupId {
     my $id = shift;
 
-    my $cu = $RT::SystemUser;
+    my $cu = RT->SystemUser;
     unless ( $cu ) {
         require RT::CurrentUser;
-        $cu = new RT::CurrentUser;
+        $cu = RT::CurrentUser->new;
         $cu->LoadByName('RT_System');
         warn "Couldn't load RT_System user" unless $cu->id;
     }
@@ -1054,11 +1059,72 @@ sub ACLEquivGroupId {
     return $equiv_group->Id;
 }
 
+=head2 QueryHistory
+
+Returns the SQL query history associated with this handle. The top level array
+represents a lists of request. Each request is a hash with metadata about the
+request (such as the URL) and a list of queries. You'll probably not be using this.
+
+=cut
+
+sub QueryHistory {
+    my $self = shift;
+
+    return $self->{QueryHistory};
+}
+
+=head2 AddRequestToHistory
+
+Adds a web request to the query history. It must be a hash with keys Path (a
+string) and Queries (an array reference of arrays, where elements are time,
+sql, bind parameters, and duration).
+
+=cut
+
+sub AddRequestToHistory {
+    my $self    = shift;
+    my $request = shift;
+
+    push @{ $self->{QueryHistory} }, $request;
+}
+
+=head2 Quote
+
+Returns the parameter quoted by DBI. B<You almost certainly do not need this.>
+Use bind parameters (C<?>) instead. This is used only outside the scope of interacting
+with the database.
+
+=cut
+
+sub Quote {
+    my $self = shift;
+    my $value = shift;
+
+    return $self->dbh->quote($value);
+}
+
+=head2 FillIn
+
+Takes a SQL query and an array reference of bind parameters and fills in the
+query's C<?> parameters.
+
+=cut
+
+sub FillIn {
+    my $self = shift;
+    my $sql  = shift;
+    my $bind = shift;
+
+    my $b = 0;
+
+    # is this regex sufficient?
+    $sql =~ s{\?}{$self->Quote($bind->[$b++])}eg;
+
+    return $sql;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
-eval "require RT::Handle_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});
-eval "require RT::Handle_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

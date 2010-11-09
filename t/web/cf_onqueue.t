@@ -1,18 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 14;
+use RT::Test tests => 12;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
-diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
+diag "Create a queue CF";
 {
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( id => 'tools-config-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -22,10 +18,10 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
             Description => 'QueueCFTest',
         },
     );
-    $m->content_like( qr/Object created/, 'CF QueueCFTest created' );
+    $m->content_contains('Object created', 'CF QueueCFTest created' );
 }
 
-diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
+diag "Apply the new CF globally";
 {
     $m->follow_link( text => 'Global' );
     $m->title_is(q!Admin/Global configuration!, 'global configuration screen');
@@ -33,23 +29,22 @@ diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Global custom field configuration/, 'global custom field configuration screen');
     $m->follow_link( url => 'Queues.html' );
     $m->title_is(q/Edit Custom Fields for all queues/, 'global custom field for all queues configuration screen');
-    $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on page' );
-    $m->submit_form(
-        form_name => "EditCustomFields",
-        fields => {
-            'Object--CF-1' => '1',
-        },
-    );
-    $m->content_like( qr/Object created/, 'CF QueueCFTest enabled globally' );
+    $m->content_contains('QueueCFTest', 'CF QueueCFTest displayed on page' );
+
+    $m->form_name('EditCustomFields');
+    $m->tick( AddCustomField => 1 );
+    $m->click('UpdateCFs');
+
+    $m->content_contains('Object created', 'CF QueueCFTest enabled globally' );
 }
 
-diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
+diag "Edit the CF value for default queue";
 {
     $m->follow_link( url => '/Admin/Queues/' );
     $m->title_is(q/Admin queues/, 'queues configuration screen');
     $m->follow_link( text => "1" );
-    $m->title_is(q/Editing Configuration for queue General/, 'default queue configuration screen');
-    $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on default queue' );
+    $m->title_is(q/Configuration for queue General/, 'default queue configuration screen');
+    $m->content_contains('QueueCFTest', 'CF QueueCFTest displayed on default queue' );
     $m->submit_form(
         form_number => 3,
         # The following doesn't want to works :(
@@ -58,7 +53,7 @@ diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
             'Object-RT::Queue-1-CustomField-1-Value' => 'QueueCFTest content',
         },
     );
-    $m->content_like( qr/QueueCFTest QueueCFTest content added/, 'Content filed in CF QueueCFTest for default queue' );
+    $m->content_contains('QueueCFTest QueueCFTest content added', 'Content filed in CF QueueCFTest for default queue' );
 
 }
 

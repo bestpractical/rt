@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::EmailParser;
@@ -129,6 +129,8 @@ sub SmartParseMIMEEntityFromScalar {
             }
         }
     };
+
+    $self->RescueOutlook;
 
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
@@ -233,7 +235,7 @@ sub _DecodeBody {
 
     require MIME::Decoder;
     my $encoding = $entity->head->mime_encoding;
-    my $decoder = new MIME::Decoder $encoding;
+    my $decoder = MIME::Decoder->new($encoding);
     unless ( $decoder ) {
         $RT::Logger->error("Couldn't find decoder for '$encoding', switching to binary");
         $old->is_encoded(0);
@@ -242,7 +244,7 @@ sub _DecodeBody {
 
     require MIME::Body;
     # XXX: use InCore for now, but later must switch to files
-    my $new = new MIME::Body::InCore;
+    my $new = MIME::Body::InCore->new();
     $new->binmode(1);
     $new->is_encoded(0);
 
@@ -289,9 +291,7 @@ email address and anything that the RT->Config->Get('RTAddressRegexp') matches.
 =cut
 
 sub ParseCcAddressesFromHead {
-
     my $self = shift;
-
     my %args = (
         QueueObj    => undef,
         CurrentUser => undef,
@@ -305,19 +305,15 @@ sub ParseCcAddressesFromHead {
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
-        my $user = RT::User->new($RT::SystemUser);
+        my $user = RT::User->new(RT->SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
-        next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CommentAddress    eq lc $Address );
-        next if ( $self->IsRTAddress($Address) );
+        next if lc $args{'CurrentUser'}->EmailAddress eq lc $Address;
+        next if $self->IsRTAddress($Address);
 
         push ( @Addresses, $Address );
     }
     return (@Addresses);
 }
-
-
 
 
 =head2 IsRTaddress ADDRESS
@@ -333,16 +329,27 @@ sub IsRTAddress {
     my $self = shift;
     my $address = shift;
 
-    # Example: the following rule would tell RT not to Cc 
-    #   "tickets@noc.example.com"
-    my $address_re = RT->Config->Get('RTAddressRegexp');
-    if ( defined $address_re && $address =~ /$address_re/i ) {
-        return 1;
+    if ( my $address_re = RT->Config->Get('RTAddressRegexp') ) {
+        return $address =~ /$address_re/i ? 1 : undef;
     }
+
+    # we don't warn here, but do in config check
+    if ( my $correspond_address = RT->Config->Get('CorrespondAddress') ) {
+        return 1 if lc $correspond_address eq lc $address;
+    }
+    if ( my $comment_address = RT->Config->Get('CommentAddress') ) {
+        return 1 if lc $comment_address eq lc $address;
+    }
+
+    my $queue = RT::Queue->new( RT->SystemUser );
+    $queue->LoadByCols( CorrespondAddress => $address );
+    return 1 if $queue->id;
+
+    $queue->LoadByCols( CommentAddress => $address );
+    return 1 if $queue->id;
+
     return undef;
 }
-
-
 
 
 =head2 CullRTAddresses ARRAY
@@ -538,7 +545,7 @@ sub ParseEmailAddress {
     my @addresses;
     # if it looks like a username / local only email
     if ($address_string !~ /@/ && $address_string =~ /^\w+$/) {
-        my $user = RT::User->new( $RT::SystemUser );
+        my $user = RT::User->new( RT->SystemUser );
         my ($id, $msg) = $user->Load($address_string);
         if ($id) {
             push @addresses, Email::Address->new($user->Name,$user->EmailAddress);
@@ -553,6 +560,66 @@ sub ParseEmailAddress {
 
 }
 
+=head2 RescueOutlook 
+
+Outlook 2007/2010 have a bug when you write an email with the html format.
+it will send a 'multipart/alternative' with both 'text/plain' and 'text/html'
+in it.  it's cool to have a 'text/plain' part, but the problem is the part is
+not so right: all the "\n" in your main message will become "\n\n" :/
+
+this method will fix this bug, i.e. replaces "\n\n" to "\n".
+return 1 if it does find the problem in the entity and get it fixed.
+
+=cut
+
+
+sub RescueOutlook {
+    my $self = shift;
+    my $mime = $self->Entity();
+    return unless $mime;
+
+    my $mailer = $mime->head->get('X-Mailer');
+    # 12.0 is outlook 2007, 14.0 is 2010
+    if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ ) {
+        my $text_part;
+        if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
+            my $first = $mime->parts(0);
+            if ( $first->head->get('Content-Type') =~ m{multipart/alternative} )
+            {
+                my $inner_first = $first->parts(0);
+                if ( $inner_first->head->get('Content-Type') =~ m{text/plain} )
+                {
+                    $text_part = $inner_first;
+                }
+            }
+        }
+        elsif ( $mime->head->get('Content-Type') =~ m{multipart/alternative} ) {
+            my $first = $mime->parts(0);
+            if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
+                $text_part = $first;
+            }
+        }
+
+        if ($text_part) {
+
+            # use the unencoded string
+            my $content = $text_part->bodyhandle->as_string;
+            if ( $content =~ s/\n\n/\n/g ) {
+                # only write only if we did change the content
+                if ( my $io = $text_part->open("w") ) {
+                    $io->print($content);
+                    $io->close;
+                    return 1;
+                }
+                else {
+                    $RT::Logger->error("can't write to body");
+                }
+            }
+        }
+    }
+    return;
+}
+
 
 sub DESTROY {
     my $self = shift;
@@ -562,9 +629,6 @@ sub DESTROY {
 
 
 
-eval "require RT::EmailParser_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm});
-eval "require RT::EmailParser_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

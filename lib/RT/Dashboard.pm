@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -88,6 +88,19 @@ RT::System::AddRights(
     DeleteOwnDashboard => 'Delete personal dashboards', #loc_pair
 );
 
+RT::System::AddRightCategories(
+    SubscribeDashboard => 'Staff',
+
+    SeeDashboard       => 'General',
+    CreateDashboard    => 'Admin',
+    ModifyDashboard    => 'Admin',
+    DeleteDashboard    => 'Admin',
+
+    SeeOwnDashboard    => 'Staff',
+    CreateOwnDashboard => 'Staff',
+    ModifyOwnDashboard => 'Staff',
+    DeleteOwnDashboard => 'Staff',
+);
 
 =head2 ObjectName
 
@@ -230,44 +243,24 @@ sub PossibleHiddenSearches {
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
-# dashboards from. If the Modify parameter is true, then check modify rights.
-# If the Create parameter is true, then check create rights. Otherwise, check
-# read rights.
+# dashboards from. You probably want to use the wrapper methods like
+# ObjectsForLoading, ObjectsForCreating, etc.
 
 sub _PrivacyObjects {
     my $self = shift;
-    my %args = @_;
 
-    my $CurrentUser = $self->CurrentUser;
     my @objects;
 
-    my $prefix = $args{Modify} ? "Modify"
-               : $args{Create} ? "Create"
-                               : "See";
-
-    push @objects, $CurrentUser->UserObj
-        if $self->CurrentUser->HasRight(
-            Right  => "${prefix}OwnDashboard",
-            Object => $RT::System,
-        );
+    my $CurrentUser = $self->CurrentUser;
+    push @objects, $CurrentUser->UserObj;
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->Id,
                          Recursively => 1 );
+    push @objects, @{ $groups->ItemsArrayRef };
 
-    push @objects, grep {
-        $self->CurrentUser->HasRight(
-            Right  => "${prefix}GroupDashboard",
-            Object => $_,
-        )
-    } @{ $groups->ItemsArrayRef };
-
-    push @objects, RT::System->new($CurrentUser)
-        if $CurrentUser->HasRight(
-            Right  => "${prefix}Dashboard",
-            Object => $RT::System,
-        );
+    push @objects, RT::System->new($CurrentUser);
 
     return @objects;
 }
@@ -350,9 +343,6 @@ sub CurrentUserCanSubscribe {
     $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
 }
 
-eval "require RT::Dashboard_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Dashboard_Vendor.pm});
-eval "require RT::Dashboard_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Dashboard_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

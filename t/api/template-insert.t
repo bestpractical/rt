@@ -12,7 +12,7 @@ use RT::Test tests => 7;
 # This tiny little test script triggers an interaction bug between DBD::Oracle 1.16, SB 1.15 and RT 3.4
 
 use_ok('RT::Template');
-my $template = RT::Template->new($RT::SystemUser);
+my $template = RT::Template->new(RT->SystemUser);
 
 isa_ok($template, 'RT::Template');
 my ($val,$msg) = $template->Create(Queue => 1,

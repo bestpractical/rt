@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,56 +43,144 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
-<%PERL>
-# Unsure sane default
-unless ( @$conditions ) {
-    foreach (RT::Queue->ActiveStatusArray()) {
-        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
-    }
-}
-my $rows = 10;
-my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
-my $people = $Ticket->Requestors->UserMembersObj;
-while ( my $requestor = $people->Next ) {
-    next if $requestor->Privileged;
-    my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
+<script type="text/javascript">
+    jQuery(function() {
+        jQuery("#requestor-accordion").accordion({
+            active: <% $count == 1 ? 0 : 'false' %>,
+            collapsible: true,
+            autoHeight: false
+        });
 
-    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (".join( " OR ", map $_->{cond}, @$conditions).")" );
-    $tickets->RowsPerPage( $rows );
-    $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
-</%PERL>
+% if ($ShowTickets) {
+        jQuery(".more-about-requestor-tickets").tabs({
+            cache: true,
+            collapsible: true,
+            selected: <% $selected %>
+        });
+% }
+    });
+</script>
 
 <&| /Widgets/TitleBox,
-    title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
-    title_raw => loc("More about [_1]", $name),
+    title_raw => loc("More about the requestors"),
     class => 'ticket-info-requestor'
 &>
 
+<div id="requestor-accordion">
+
+% while ( my $requestor = $people->Next ) {
+  <h3><a href="#"><& /Elements/ShowUser, User => $requestor &></a></h3>
+  <div class="details">
+
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
+<& ShowRequestorExtraInfo, Requestor => $requestor &>
 
-<&|/l&>Comments about this user</&>:<br />
-<b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
-
-<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
-<ul>
-%while (my $w=$tickets->Next) {
-<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
-%}
-</ul>
-
-<&|/l&>Groups this user belongs to</&>:<br />
-
-<& /Elements/ShowMemberships, UserObj => $requestor &>
-
-</&>
-
+% if ( $ShowComments ) {
+<div class="comments-about-user">
+  <span class="label"><&|/l&>Comments about this user</&>:</span>
+  <span class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span>
+</div>
 % }
+
+% if ( $ShowTickets ) {
+<div class="more-about-requestor-tickets ui-tabs" id="more-about-requestor-tickets-<%$requestor->Id%>">
+  <ul>
+% my $index = 1;
+% for my $status ( @$status_order ) {
+    <li>
+% if ( $status eq $DefaultTicketsTab ) {
+      <a href="#requestor-<%$requestor->Id%>-ticket-tab-default">\
+% } else {
+%     my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
+%     $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
+      <a href="<% $url | n %>" title="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>">\
+% }
+<% $status_link_text->{$status} %></a>
+    </li>
+% }
+  </ul>
+% $index = 1;
+% for my $status (@$status_order) {
+% if ( $status eq $DefaultTicketsTab ) {
+  <div id="requestor-<%$requestor->Id%>-ticket-tab-default">
+    <& $TicketTemplate, Requestor => $requestor &>
+% } else {
+  <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="ui-tabs-hide">
+    <span class="label"><&|/l&>Loading...</&></span>
+% }
+  </div>
+% }
+</div>
+% }
+
+% if ( $ShowGroups ) {
+<div class="more-about-user-groups">
+  <span class="label">
+    <&|/l&>Groups this user belongs to</&>
+    
+% if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
+%      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
+  [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
+% }
+  </span>
+  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => RT->Config->Get('MoreAboutRequestorGroupsLimit') &></span>
+</div>
+% }
+
+% if ( $has_right_adminusers ) {
+    <a class="modify-user" href="<% RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id %>">Modify this user</a>
+% }
+
+%# end of individual requestor details <div>
+  </div>
+% }
+%# end of requestors loop
+
+</div>
+</&>
+<%INIT>
+my $show_privileged = RT->Config->Get('ShowMoreAboutPrivilegedUsers');
+
+my $people = $Ticket->Requestors->UserMembersObj;
+$people->LimitToUnprivileged unless $show_privileged;
+
+my $count = $people->Count;
+return unless $count;
+
+my $has_right_adminusers = $session{'CurrentUser'}->HasRight(
+    Object => $RT::System, Right => 'AdminUsers'
+);
+$has_right_adminusers &&= $session{'CurrentUser'}->HasRight(
+    Object => $RT::System, Right => 'ShowConfigTab'
+);
+
+# Ticket list tabs
+my $selected = -1;
+$DefaultTicketsTab ||= RT->Config->Get('MoreAboutRequestorTicketList', $session{CurrentUser}) || 'Active';
+my $status_link_text = {Active   => loc('Active Tickets'),
+                        Inactive => loc('Inactive Tickets'),
+                        All      => loc('All Tickets')};
+my $status_order = [qw/Active Inactive All/];
+$m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_text, status_order => \$status_order );
+
+unless ( $DefaultTicketsTab eq 'None' ) {
+    for (0 .. (@$status_order - 1)) {
+        $selected = $_ && last
+            if $status_order->[$_] eq $DefaultTicketsTab;
+    }
+}
+
+my $TicketTemplate = "ShowRequestorTickets$DefaultTicketsTab";
+$TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
+</%INIT>
 <%ARGS>
 $Ticket=>undef
-$DisplayPath => "/Ticket/Display.html"
-$conditions => []
+$DefaultTicketsTab => undef
+$ShowComments => 1
+$ShowTickets => 1
+$ShowGroups => 1
+$Title => 'More about [_1]'
 </%ARGS>

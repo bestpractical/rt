@@ -10,19 +10,19 @@ use RT::Test tests => 63;
 
 
 #Get the current user all loaded
-my $CurrentUser = $RT::SystemUser;
+my $CurrentUser = RT->SystemUser;
 
-my $queue = new RT::Queue($CurrentUser);
+my $queue = RT::Queue->new($CurrentUser);
 $queue->Load('General') || Abort(loc("Queue could not be loaded."));
 
-my $child_ticket = new RT::Ticket( $CurrentUser );
+my $child_ticket = RT::Ticket->new( $CurrentUser );
 my ($childid) = $child_ticket->Create(
     Subject => 'test child',
     Queue => $queue->Id,
 );
 ok($childid, "We created a child ticket");
 
-my $parent_ticket = new RT::Ticket( $CurrentUser );
+my $parent_ticket = RT::Ticket->new( $CurrentUser );
 my ($parentid) = $parent_ticket->Create(
     Subject => 'test parent',
     Children => [ $childid ],
@@ -155,7 +155,7 @@ while (my $t = $Collection->Next) {
 ok( $has{$parentid}, "The collection has our parent - $parentid");
 ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 
-my $grand_child_ticket = new RT::Ticket( $CurrentUser );
+my $grand_child_ticket = RT::Ticket->new( $CurrentUser );
 my ($grand_childid) = $child_ticket->Create(
     Subject => 'test child',
     Queue   => $queue->Id,
@@ -163,7 +163,7 @@ my ($grand_childid) = $child_ticket->Create(
 );
 ok($childid, "We created a grand child ticket");
 
-my $unlinked_ticket = new RT::Ticket( $CurrentUser );
+my $unlinked_ticket = RT::Ticket->new( $CurrentUser );
 my ($unlinked_id) = $child_ticket->Create(
     Subject => 'test unlinked',
     Queue   => $queue->Id,
@@ -242,5 +242,3 @@ ok( $has{$parentid}, "The collection has our parent");
 ok( $has{$grand_childid}, "The collection have our child");
 ok( !$has{$unlinked_id}, "unlinked is not in collection");
 
-
-1;

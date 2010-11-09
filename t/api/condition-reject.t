@@ -10,12 +10,12 @@ use RT::Test tests => 7;
 
 {
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 $q->Create(Name =>'rejectTest');
 
 ok($q->Id, "Created a scriptest queue");
 
-my $s1 = RT::Scrip->new($RT::SystemUser);
+my $s1 = RT::Scrip->new(RT->SystemUser);
 my ($val, $msg) =$s1->Create( Queue => $q->Id,
              ScripAction => 'User Defined',
              ScripCondition => 'On reject',
@@ -29,7 +29,7 @@ my ($val, $msg) =$s1->Create( Queue => $q->Id,
     );
 ok($val,$msg);
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
+my $ticket = RT::Ticket->new(RT->SystemUser);
 my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
                                     Subject => "hair on fire",
                                     InitialPriority => '20'
@@ -42,4 +42,3 @@ is ($ticket->Priority , '21', "Condition is false, scrip skipped");
 
 }
 
-1;

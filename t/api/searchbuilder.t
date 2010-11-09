@@ -15,7 +15,7 @@ ok (require RT::SearchBuilder);
 {
 
 use_ok('RT::Queues');
-ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');
+ok(my $queues = RT::Queues->new(RT->SystemUser), 'Created a queues object');
 ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
 my $items = $queues->ItemsArrayRef();
 my @items = @{$items};
@@ -37,4 +37,3 @@ is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name
 
 }
 
-1;

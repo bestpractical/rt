@@ -1,0 +1,268 @@
+#!/usr/bin/env perl 
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use Locale::PO;
+use Getopt::Long;
+
+my %commands = (
+    stats   => { },
+    shrink  => { 'update!' => 1, 'keep=s@' => [] },
+    clean   => { 'update!' => 1 },
+    rosetta => { 'boundary=i' => 20 },
+    extract => { },
+);
+
+my $command = shift;
+usage() unless $command;
+usage("Unknown command '$command'")
+    unless $commands{ $command };
+
+my $opt = $commands{ $command };
+my %opt = ();
+if ( $opt && keys %$opt ) {
+    while ( my ($k, $v) = each %$opt ) {
+        my ($target) = ($k =~ /^(.*?)(?:[:!+=|]|$)/);
+        $opt{$target} = $v;
+    }
+    GetOptions( \%opt, keys %$opt );
+}
+
+{ no strict 'refs'; &$command( \%opt, @ARGV ); }
+
+exit;
+
+sub stats {
+    my %opt = %{ shift() };
+    my $dir = shift || 'lib/RT/I18N';
+
+    my $max = 0;
+    my %res = ();
+
+    use constant TRANSLATED => 0;
+    use constant DISTINCT => 1;
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file );
+
+        $res{$po_file} = [0, 0];
+
+        my $size = 0;
+        foreach my $entry ( splice @$array, 1 ) {
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+            $size++;
+            next unless $entry->dequote( $entry->msgstr );
+            $res{$po_file}[TRANSLATED]++;
+            next if $entry->msgstr eq $entry->msgid;
+            $res{$po_file}[DISTINCT]++;
+        }
+        $max = $size if $max < $size;
+    }
+
+    my $legend = "<file>: <translated>[(<distinct>)]/<size> (<%>)";
+
+    print "\n$legend\n\n";
+
+    foreach my $po_file ( sort { $res{$b}[TRANSLATED] <=> $res{$a}[TRANSLATED] } keys %res ) {
+        my ($tr, $dist) = @{ $res{$po_file} };
+        my $perc = int($tr*1000/$max)/10;
+        if ( $tr == $dist ) {
+            printf "%s:\t%d/%d\t(%.1f%%)\n", $po_file, $tr, $max, $perc;
+        } else {
+            printf "%s:\t%d(%d)/%d\t(%.1f%%)\n", $po_file, $tr, $dist, $max, $perc;
+        }
+    }
+
+    print "\n$legend\n";
+}
+
+sub shrink {
+    my %opt = %{ shift() };
+    my $dir = shift || 'lib/RT/I18N';
+
+    my %keep = map { $_ => 1 } @{ $opt{'keep'} };
+
+    my %stats = ();
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file );
+        $stats{ $po_file } = { };
+        foreach my $entry ( splice @$array, 1 ) {
+            if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
+                $stats{ $po_file }{'not-referenced'}++;
+                next;
+            }
+            elsif ( !$keep{'not-translated'} && !$entry->dequote( $entry->msgstr ) ) {
+                $stats{ $po_file }{'not-translated'}++;
+                next;
+            }
+            elsif ( !$keep{'equal'} && $entry->msgstr eq $entry->msgid ) {
+                $stats{ $po_file }{'equal'}++;
+                next;
+            }
+            push @$array, $entry;
+        }
+        $stats{ $po_file }{'total'} += $_ for values %{ $stats{ $po_file } };
+        Locale::PO->save_file_fromarray($po_file, $array) if $opt{'update'};
+    }
+
+    my $legend = "<file>: <total> (<details>)";
+    print "\n$legend\n\n";
+
+    foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
+        my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
+        my @tmp;
+        foreach ( qw(not-referenced not-translated equal) ) {
+            next unless my $v = $stats{ $po_file }{ $_ };
+            push @tmp, "$_: $v";
+        }
+        if ( @tmp > 1 ) {
+            $res .= " (". join( ', ', @tmp ) .")";
+        }
+        elsif ( @tmp == 1 ) {
+            $res .= " (". (split /:/, $tmp[0])[0] .")";
+        }
+        print $res, "\n";
+    }
+
+    print "\n$legend\n";
+}
+
+sub clean {
+    my %opt = %{ shift() };
+    $opt{'keep'} = [qw(not-translated equal)];
+    return shrink( \%opt, @_ );
+}
+
+sub rosetta {
+    my %opt = %{ shift() };
+    my $url = shift or die 'must provide rosseta download url or directory with new po files';
+
+    my $dir;
+    if ( $url =~ m/^[a-z+]:\/\// ) {
+        $dir = File::Temp::tempdir();
+        my ($fname) = $url =~ m{([^/]+)$};
+
+        print "Downloading $url\n";
+        require LWP::Simple;
+        LWP::Simple::getstore($url => "$dir/$fname");
+
+        print "Extracting $dir/$fname\n";
+        require Archive::Extract;
+        my $ae = Archive::Extract->new(archive => "$dir/$fname");
+        my $ok = $ae->extract( to => $dir );
+    }
+    elsif ( -e $url && -d _ ) {
+        $dir = $url;
+    }
+    else {
+        die "Is not URL or directory: '$url'";
+    }
+
+    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    unless ( @files ) {
+        print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
+        exit;
+    }
+
+    require Locale::Maketext::Extract;
+    Locale::Maketext::Lexicon::set_option('use_fuzzy', 1);
+    Locale::Maketext::Lexicon::set_option('allow_empty', 1);
+
+    require Locale::PO;
+
+    for ( @files ) {
+        my ($lang) = m/([\w_]+)\.po/;
+        my $fn_orig = "lib/RT/I18N/$lang.po";
+
+        print "$_ -> $fn_orig\n";
+
+        # retain the "NOT FOUND IN SOURCE" entries
+        require File::Temp;
+        my $tmp = File::Temp->new;
+        system("sed -e 's/^#~ //' $_ > $tmp");
+        my $ext = Locale::Maketext::Extract->new;
+        $ext->read_po($tmp);
+
+        my $po_orig = Locale::PO->load_file_ashash( -e $fn_orig? $fn_orig : 'lib/RT/I18N/rt.pot' );
+        # don't want empty vales to override ours.
+        # don't want fuzzy flag as when uploading to rosetta again it's not accepted by rosetta.
+        foreach my $msgid ($ext->msgids) {
+            my $entry = $po_orig->{Locale::PO->quote($msgid)} or next;
+            my $msgstr = $entry->dequote($entry->{msgstr}) or next;
+            $ext->set_msgstr($msgid, $msgstr)
+                if $ext->msgstr($msgid) eq '' && $msgstr;
+        }
+        if ( $opt{'boundary'} && $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
+            my @ids = $ext->msgids;
+            my $translated = 0;
+            foreach my $id ( @ids ) {
+                next unless $ext->msgstr( $id );
+                next if $ext->msgstr( $id ) eq $id;
+                $translated++;
+            }
+            my $perc = int($translated/@ids * 100 + 0.5);
+            if ( $perc < $opt{'boundary'} ) {
+                print "Only $perc% translated for '$lang' when $opt{'boundary'}% required.\n";
+                print "Deleting '$fn_orig'...\n";
+                unlink $fn_orig;
+                next;
+            }
+        }
+        $ext->write_po($fn_orig);
+    }
+    extract({});
+}
+
+sub extract {
+    shift;
+    system($^X, 'sbin/extract-message-catalog', @_);
+}
+

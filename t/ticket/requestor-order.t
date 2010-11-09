@@ -6,7 +6,7 @@ use_ok('RT');
 
 use RT::Ticket;
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Queue->new(RT->SystemUser);
 my $queue = 'SearchTests-'.rand(200);
 $q->Create(Name => $queue);
 
@@ -15,7 +15,7 @@ my @requestors = ( ('bravo@example.com') x 6, ('alpha@example.com') x 6,
                    (undef) x 6);
 my @subjects = ("first test", "second test", "third test", "fourth test", "fifth test") x 6;
 while (@requestors) {
-    my $t = RT::Ticket->new($RT::SystemUser);
+    my $t = RT::Ticket->new(RT->SystemUser);
     my ( $id, undef $msg ) = $t->Create(
         Queue      => $q->id,
         Subject    => shift @subjects,
@@ -25,13 +25,13 @@ while (@requestors) {
 }
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     is($tix->Count, 30, "found thirty tickets");
 }
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue' AND requestor = 'alpha\@example.com'");
     $tix->OrderByCols({ FIELD => "Subject" });
     my @subjects;
@@ -60,7 +60,7 @@ sub check_emails_order
 }
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue' AND subject = 'first test' AND Requestor.EmailAddress LIKE 'example.com'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     check_emails_order($tix, 5, 'ASC');
@@ -69,7 +69,7 @@ sub check_emails_order
 }
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Subject = 'first test'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     check_emails_order($tix, 6, 'ASC');
@@ -79,7 +79,7 @@ sub check_emails_order
 
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue' AND Subject = 'first test'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     check_emails_order($tix, 6, 'ASC');
@@ -89,7 +89,7 @@ sub check_emails_order
 
 {
     # create ticket with group as member of the requestors group
-    my $t = RT::Ticket->new($RT::SystemUser);
+    my $t = RT::Ticket->new(RT->SystemUser);
     my ( $id, $msg ) = $t->Create(
         Queue      => $q->id,
         Subject    => "first test",
@@ -97,7 +97,7 @@ sub check_emails_order
     );
     ok( $id, "ticket created" ) or diag( "error: $msg" );
 
-    my $g = RT::Group->new($RT::SystemUser);
+    my $g = RT::Group->new(RT->SystemUser);
 
     my ($gid);
     ($gid, $msg) = $g->CreateUserDefinedGroup(Name => '20-sort-by-requestor.t-'.rand(200));
@@ -107,7 +107,7 @@ sub check_emails_order
     ok($id, "added group to requestors group") or diag("error: $msg");
 }
 
-    my $tix = RT::Tickets->new($RT::SystemUser);    
+    my $tix = RT::Tickets->new(RT->SystemUser);    
     $tix->FromSQL("Queue = '$queue' AND Subject = 'first test'");
 
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
@@ -117,7 +117,7 @@ sub check_emails_order
     check_emails_order($tix, 7, 'DESC');
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     $tix->RowsPerPage(30);
@@ -128,7 +128,7 @@ sub check_emails_order
 }
 
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL("Queue = '$queue'");
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     $tix->RowsPerPage(30);

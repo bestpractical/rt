@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 SYNOPSIS
@@ -120,8 +120,9 @@ sub Create {
 
     # Get the subject
     my $Subject = $Attachment->head->get( 'subject', 0 );
-    defined($Subject) or $Subject = '';
-    chomp($Subject);
+    $Subject = '' unless defined $Subject;
+    chomp $Subject;
+    utf8::decode( $Subject ) unless utf8::is_utf8( $Subject );
 
     #Get the Message-ID
     my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
@@ -131,11 +132,13 @@ sub Create {
 
     #Get the filename
     my $Filename = $Attachment->head->recommended_filename;
+    # remove path part. 
+    $Filename =~ s!.*/!! if $Filename;
 
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
     my $head = $Attachment->head->as_string;
-    utf8::decode( $head );
+    utf8::decode( $head ) unless utf8::is_utf8( $head );
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
@@ -154,7 +157,7 @@ sub Create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = new RT::Attachment( $self->CurrentUser );
+            my $SubAttachment = RT::Attachment->new( $self->CurrentUser );
             my ($id) = $SubAttachment->Create(
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,
@@ -170,14 +173,15 @@ sub Create {
     #If it's not multipart
     else {
 
-        my ($ContentEncoding, $Body) = $self->_EncodeLOB(
+        my ($ContentEncoding, $Body, $ContentType, $Filename) = $self->_EncodeLOB(
             $Attachment->bodyhandle->as_string,
-            $Attachment->mime_type
+            $Attachment->mime_type,
+            $Filename
         );
 
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
-            ContentType     => $Attachment->mime_type,
+            ContentType     => $ContentType,
             ContentEncoding => $ContentEncoding,
             Parent          => $args{'Parent'},
             Headers         => $head,
@@ -347,7 +351,7 @@ sub ContentLength {
     unless ( defined $len ) {
         use bytes;
         no warnings 'uninitialized';
-        $len = length($self->Content);
+        $len = length($self->Content) || 0;
         $self->SetHeader('Content-Length' => $len);
     }
     return $len;
@@ -382,7 +386,7 @@ sub Quote {
 
 	if ($max>76) {
 	    require Text::Wrapper;
-	    my $wrapper=new Text::Wrapper
+	    my $wrapper = Text::Wrapper->new
 		(
 		 columns => 70, 
 		 body_start => ($max > 70*3 ? '   ' : ''),
@@ -417,9 +421,16 @@ Returns MIME entity built from this attachment.
 sub ContentAsMIME {
     my $self = shift;
 
-    my $entity = new MIME::Entity;
-    $entity->head->add( split /:/, $_, 2 )
-        foreach $self->SplitHeaders;
+    my $entity = MIME::Entity->new();
+    foreach my $header ($self->SplitHeaders) {
+        my ($h_key, $h_val) = split /:/, $header, 2;
+        $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );
+    }
+    
+    # since we want to return original content, let's use original encoding
+    $entity->head->mime_attr(
+        "Content-Type.charset" => $self->OriginalEncoding )
+      if $self->OriginalEncoding;
 
     use MIME::Body;
     $entity->bodyhandle(
@@ -444,24 +455,20 @@ sub Addresses {
 
     my %data = ();
     my $current_user_address = lc $self->CurrentUser->EmailAddress;
-    my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
-    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
-        my $line      = $self->GetHeader($hdr);
+        my $line = $self->GetHeader($hdr);
         
         foreach my $AddrObj ( Email::Address->parse( $line )) {
             my $address = $AddrObj->address;
             $address = lc RT::User->CanonicalizeEmailAddress($address);
-            next if ( $current_user_address eq $address );
-            next if ( $comment              eq $address );
-            next if ( $correspond           eq $address );
-            next if ( RT::EmailParser->IsRTAddress($address) );
+            next if $current_user_address eq $address;
+            next if RT::EmailParser->IsRTAddress($address);
             push @Addresses, $AddrObj ;
         }
-		$data{$hdr} = \@Addresses;
+        $data{$hdr} = \@Addresses;
     }
-	return \%data;
+    return \%data;
 }
 
 =head2 NiceHeaders
@@ -494,6 +501,21 @@ an abstraction barrier that makes it impossible to pass this data directly.
 
 sub Headers {
     return join("\n", $_[0]->SplitHeaders);
+}
+
+=head2 EncodedHeaders
+
+Takes encoding as argument and returns the attachment's headers as octets in encoded
+using the encoding.
+
+This is not protection using quoted printable or base64 encoding.
+
+=cut
+
+sub EncodedHeaders {
+    my $self = shift;
+    my $encoding = shift || 'utf8';
+    return Encode::encode( $encoding, $self->Headers );
 }
 
 =head2 GetHeader $TAG
@@ -603,7 +625,7 @@ per array entry. multiple lines are folded.
 
 sub _SplitHeaders {
     my $self = shift;
-    my $headers = (shift || $self->SUPER::Headers());
+    my $headers = (shift || $self->_Value('Headers'));
     my @headers;
     for (split(/\n(?=\w|\z)/,$headers)) {
         push @headers, $_;

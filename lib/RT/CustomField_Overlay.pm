@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::CustomField;
@@ -52,50 +52,120 @@ use strict;
 no warnings qw(redefine);
 
 use RT::CustomFieldValues;
+use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
 
-
 our %FieldTypes = (
-    Select => [
-        'Select multiple values',    # loc
-        'Select one value',        # loc
-        'Select up to [_1] values',    # loc
-    ],
-    Freeform => [
-        'Enter multiple values',    # loc
-        'Enter one value',        # loc
-        'Enter up to [_1] values',    # loc
-    ],
-    Text => [
-        'Fill in multiple text areas',    # loc
-        'Fill in one text area',    # loc
-        'Fill in up to [_1] text areas',# loc
-    ],
-    Wikitext => [
-        'Fill in multiple wikitext areas',    # loc
-        'Fill in one wikitext area',    # loc
-        'Fill in up to [_1] wikitext areas',# loc
-    ],
-    Image => [
-        'Upload multiple images',    # loc
-        'Upload one image',        # loc
-        'Upload up to [_1] images',    # loc
-    ],
-    Binary => [
-        'Upload multiple files',    # loc
-        'Upload one file',        # loc
-        'Upload up to [_1] files',    # loc
-    ],
-    Combobox => [
-        'Combobox: Select or enter multiple values',    # loc
-        'Combobox: Select or enter one value',        # loc
-        'Combobox: Select or enter up to [_1] values',    # loc
-    ],
-    Autocomplete => [
-        'Enter multiple values with autocompletion',    # loc
-        'Enter one value with autocompletion',            # loc
-        'Enter up to [_1] values with autocompletion',    # loc
-    ],
+    Select => {
+        selection_type => 1,
+
+        labels => [ 'Select multiple values',      # loc
+                    'Select one value',            # loc
+                    'Select up to [_1] values',    # loc
+                  ],
+
+        render_types => {
+            multiple => [
+
+                # Default is the first one
+                'Select box',              # loc
+                'List',                    # loc
+            ],
+            single => [ 'Select box',              # loc
+                        'Dropdown',                # loc
+                        'List',                    # loc
+                      ]
+        },
+
+    },
+    Freeform => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple values',       # loc
+                    'Enter one value',             # loc
+                    'Enter up to [_1] values',     # loc
+                  ]
+                },
+    IPAddress => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP addresses',       # loc
+                    'Enter one IP address',             # loc
+                    'Enter up to [_1] IP addresses',     # loc
+                  ]
+                },
+    IPAddressRange => {
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP address ranges',       # loc
+                    'Enter one IP address range',             # loc
+                    'Enter up to [_1] IP address ranges',     # loc
+                  ]
+                },
+    Text => {
+        selection_type => 0,
+        labels         => [
+                    'Fill in multiple text areas',      # loc
+                    'Fill in one text area',            # loc
+                    'Fill in up to [_1] text areas',    # loc
+                  ]
+            },
+    Wikitext => {
+        selection_type => 0,
+        labels         => [
+                    'Fill in multiple wikitext areas',      # loc
+                    'Fill in one wikitext area',            # loc
+                    'Fill in up to [_1] wikitext areas',    # loc
+                  ]
+                },
+    Image => {
+        selection_type => 0,
+        labels         => [
+                    'Upload multiple images',               # loc
+                    'Upload one image',                     # loc
+                    'Upload up to [_1] images',             # loc
+                  ]
+             },
+    Binary => {
+        selection_type => 0,
+        labels         => [
+                    'Upload multiple files',                # loc
+                    'Upload one file',                      # loc
+                    'Upload up to [_1] files',              # loc
+                  ]
+              },
+    Combobox => {
+        selection_type => 1,
+        labels         => [
+                    'Combobox: Select or enter multiple values',      # loc
+                    'Combobox: Select or enter one value',            # loc
+                    'Combobox: Select or enter up to [_1] values',    # loc
+                  ]
+                },
+    Autocomplete => {
+        selection_type => 1,
+        labels         => [
+                    'Enter multiple values with autocompletion',      # loc
+                    'Enter one value with autocompletion',            # loc
+                    'Enter up to [_1] values with autocompletion',    # loc
+                  ]
+    },
+    Date => {
+        selection_type => 0,
+        labels         => [
+                    'Select multiple dates',                          # loc
+                    'Select date',                                    # loc
+                    'Select up to [_1] dates',                        # loc
+                  ]
+            },
+    DateTime => {
+        selection_type => 0,
+        labels         => [
+                    'Select multiple datetimes',                      # loc
+                    'Select datetime',                                # loc
+                    'Select up to [_1] datetimes',                    # loc
+                  ]
+                },
 );
 
 
@@ -109,17 +179,24 @@ RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                   
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
 our $RIGHTS = {
-    SeeCustomField            => 'See custom fields',       # loc_pair
-    AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
-    ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
+    SeeCustomField            => 'View custom fields',                                    # loc_pair
+    AdminCustomField          => 'Create, modify and delete custom fields',               # loc_pair
+    AdminCustomFieldValues    => 'Create, modify and delete custom fields values',        # loc_pair
+    ModifyCustomField         => 'Add, modify and delete custom field values for objects' # loc_pair
+};
+
+our $RIGHT_CATEGORIES = {
+    SeeCustomField          => 'General',
+    AdminCustomField        => 'Admin',
+    AdminCustomFieldValues  => 'Admin',
+    ModifyCustomField       => 'Staff',
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
+__PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -139,6 +216,30 @@ sub AddRights {
 sub AvailableRights {
     my $self = shift;
     return $RIGHTS;
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 =head1 NAME
@@ -223,7 +324,7 @@ sub Create {
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
     if ( $args{'MaxValues'} != 1 && $args{'Type'} =~ /(text|combobox)$/i ) {
-        $RT::Logger->warning("Support for 'multiple' Texts or Comboboxes is not implemented");
+        $RT::Logger->debug("Support for 'multiple' Texts or Comboboxes is not implemented");
         $args{'MaxValues'} = 1;
     }
 
@@ -284,7 +385,6 @@ sub Load {
 }
 
 
-# {{{ sub LoadByName
 
 =head2 LoadByName (Queue => QUEUEID, Name => NAME)
 
@@ -342,7 +442,7 @@ sub LoadByName {
 
     # When loading by name, we _can_ load disabled fields, but prefer
     # non-disabled fields.
-    $CFs->{'find_disabled_rows'}=1;
+    $CFs->FindAllRows;
     $CFs->OrderByCols(
         { FIELD => "Disabled", ORDER => 'ASC' },
     );
@@ -357,9 +457,7 @@ sub LoadByName {
     return $self->LoadById( $first->id );
 }
 
-# }}}
 
-# {{{ Dealing with custom field values 
 
 
 =head2 Custom field values
@@ -387,7 +485,6 @@ sub Values {
     return ($cf_values);
 }
 
-# {{{ AddValue
 
 =head3 AddValue HASH
 
@@ -399,7 +496,7 @@ sub AddValue {
     my $self = shift;
     my %args = @_;
 
-    unless ($self->CurrentUserHasRight('AdminCustomField')) {
+    unless ($self->CurrentUserHasRight('AdminCustomField') || $self->CurrentUserHasRight('AdminCustomFieldValues')) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -413,9 +510,7 @@ sub AddValue {
 }
 
 
-# }}}
 
-# {{{ DeleteValue
 
 =head3 DeleteValue ID
 
@@ -428,7 +523,7 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
     my $self = shift;
     my $id = shift;
-    unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomField') || $self->CurrentUserHasRight('AdminCustomFieldValues') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -448,7 +543,6 @@ sub DeleteValue {
     return ($retval, $self->loc("Custom field value deleted"));
 }
 
-# }}}
 
 
 =head2 ValidateQueue Queue
@@ -465,14 +559,13 @@ sub ValidateQueue {
     # 0 means "Global" null would _not_ be ok.
     return 1 if $id eq '0';
 
-    my $q = RT::Queue->new( $RT::SystemUser );
+    my $q = RT::Queue->new( RT->SystemUser );
     $q->Load( $id );
     return undef unless $q->id;
     return 1;
 }
 
 
-# {{{ Types
 
 =head2 Types 
 
@@ -484,9 +577,23 @@ sub Types {
     return (keys %FieldTypes);
 }
 
-# }}}
 
-# {{{ IsSelectionType
+=head2 HasRenderTypes [TYPE_COMPOSITE]
+
+Returns a boolean value indicating whether the L</RenderTypes> and
+L</RenderType> methods make sense for this custom field.
+
+Currently true only for type C<Select>.
+
+=cut
+
+sub HasRenderTypes {
+    my $self = shift;
+    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
+    return undef unless $type;
+    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
+}
+
 
 =head2 IsSelectionType 
 
@@ -499,11 +606,9 @@ sub IsSelectionType {
     my $self = shift;
     my $type = @_? shift : $self->Type;
     return undef unless $type;
-
-    $type =~ /(?:Select|Combobox|Autocomplete)/;
+    return $FieldTypes{$type}->{selection_type};
 }
 
-# }}}
 
 
 =head2 IsExternalValues
@@ -554,7 +659,7 @@ sub FriendlyType {
     my $max  = @_ ? shift : $self->MaxValues;
     $max = 0 unless $max;
 
-    if (my $friendly_type = $FieldTypes{$type}[$max>2 ? 2 : $max]) {
+    if (my $friendly_type = $FieldTypes{$type}->{labels}->[$max>2 ? 2 : $max]) {
         return ( $self->loc( $friendly_type, $max ) );
     }
     else {
@@ -601,7 +706,7 @@ sub SetType {
         $RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
         $self->SetMaxValues($1 ? 1 : 0);
     }
-    $self->SUPER::SetType($type);
+    $self->_Set(Field => 'Type', Value =>$type);
 }
 
 =head2 SetPattern STRING
@@ -618,7 +723,7 @@ sub SetPattern {
 
     my ($ok, $msg) = $self->_IsValidRegex($regex);
     if ($ok) {
-        return $self->SUPER::SetPattern($regex);
+        return $self->_Set(Field => 'Pattern', Value => $regex);
     }
     else {
         return (0, $self->loc("Invalid pattern: [_1]", $msg));
@@ -649,7 +754,6 @@ sub _IsValidRegex {
     return (0, $err);
 }
 
-# {{{ SingleValue
 
 =head2 SingleValue
 
@@ -678,7 +782,6 @@ sub UnlimitedValues {
     }
 }
 
-# }}}
 
 =head2 CurrentUserHasRight RIGHT
 
@@ -729,7 +832,6 @@ sub ContextObject {
     return $self->{'context_object'};
 }
   
-# {{{ sub _Set
 
 sub _Set {
     my $self = shift;
@@ -741,9 +843,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _Value 
 
 =head2 _Value
 
@@ -767,8 +867,6 @@ sub _Value {
     return $self->__Value( @_ );
 }
 
-# }}}
-# {{{ sub SetDisabled
 
 =head2 SetDisabled
 
@@ -778,7 +876,6 @@ Takes a boolean.
 
 =cut
 
-# }}}
 
 =head2 SetTypeComposite
 
@@ -801,29 +898,17 @@ sub SetTypeComposite {
         my ($status, $msg) = $self->SetMaxValues( $max_values );
         return ($status, $msg) unless $status;
     }
+    my $render = $self->RenderType;
+    if ( $render and not grep { $_ eq $render } $self->RenderTypes ) {
+        # We switched types and our render type is no longer valid, so unset it
+        # and use the default
+        $self->SetRenderType( undef );
+    }
     return 1, $self->loc(
         "Type changed from '[_1]' to '[_2]'",
         $self->FriendlyTypeComposite( $old ),
         $self->FriendlyTypeComposite( $composite ),
     );
-}
-
-=head2 SetLookupType
-
-Autrijus: care to doc how LookupTypes work?
-
-=cut
-
-sub SetLookupType {
-    my $self = shift;
-    my $lookup = shift;
-    if ( $lookup ne $self->LookupType ) {
-        # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCustomFields->LimitToCustomField($self->Id);
-        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
-    }
-    return $self->SUPER::SetLookupType($lookup);
 }
 
 =head2 TypeComposite
@@ -846,7 +931,98 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
+}
+
+=head2 RenderType
+
+Returns the type of form widget to render for this custom field.  Currently
+this only affects fields which return true for L</HasRenderTypes>. 
+
+=cut
+
+sub RenderType {
+    my $self = shift;
+    return '' unless $self->HasRenderTypes;
+
+    my $type = $self->FirstAttribute( 'RenderType' );
+    $type = $type->Content if $type;
+    return $type || $self->DefaultRenderType;
+}
+
+=head2 SetRenderType TYPE
+
+Sets this custom field's render type.
+
+=cut
+
+sub SetRenderType {
+    my ($self, $type) = @_;
+    return unless $self->HasRenderTypes;
+
+    if ( not defined $type ) {
+        return $self->DeleteAttribute( 'RenderType' );
+    }
+
+    if ( not grep { $_ eq $type } $self->RenderTypes ) {
+        return (0, $self->loc("Invalid Render Type for custom field of type [_1]",
+                                $self->FriendlyType));
+    }
+
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->BasedOnObj->id and $type =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
+
+    return $self->SetAttribute( Name => 'RenderType', Content => $type );
+}
+
+=head2 DefaultRenderType [TYPE COMPOSITE]
+
+Returns the default render type for this custom field's type or the TYPE
+COMPOSITE specified as an argument.
+
+=cut
+
+sub DefaultRenderType {
+    my $self = shift;
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
+}
+
+=head2 RenderTypes [TYPE COMPOSITE]
+
+Returns the valid render types for this custom field's type or the TYPE
+COMPOSITE specified as an argument.
+
+=cut
+
+sub RenderTypes {
+    my $self = shift;
+    my $composite    = @_ ? shift : $self->TypeComposite;
+    my ($type, $max) = split /-/, $composite, 2;
+    return unless $type and $self->HasRenderTypes($composite);
+    return @{$FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }};
+}
+
+=head2 SetLookupType
+
+Autrijus: care to doc how LookupTypes work?
+
+=cut
+
+sub SetLookupType {
+    my $self = shift;
+    my $lookup = shift;
+    if ( $lookup ne $self->LookupType ) {
+        # Okay... We need to invalidate our existing relationships
+        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
+        $ObjectCustomFields->LimitToCustomField($self->Id);
+        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+    }
+    return $self->_Set(Field => 'LookupType', Value =>$lookup);
 }
 
 =head2 LookupTypes
@@ -867,7 +1043,7 @@ my @FriendlyObjectTypes = (
     "[_1]'s [_2]'s [_3] objects",   # loc
 );
 
-=head2 FriendlyTypeLookup
+=head2 FriendlyLookupType
 
 Returns a localized description of the type of this custom field
 
@@ -887,6 +1063,137 @@ sub FriendlyLookupType {
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
+sub RecordClassFromLookupType {
+    my $self = shift;
+    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    unless ( $class ) {
+        $RT::Logger->error(
+            "Custom Field #". $self->id 
+            ." has incorrect LookupType '". $self->LookupType ."'"
+        );
+        return undef;
+    }
+    return $class;
+}
+
+sub CollectionClassFromLookupType {
+    my $self = shift;
+
+    my $record_class = $self->RecordClassFromLookupType;
+    return undef unless $record_class;
+
+    my $collection_class;
+    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
+        $collection_class = $record_class.'Collection';
+    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
+        $collection_class = $record_class.'es';
+    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
+        $collection_class = $record_class.'s';
+    } else {
+        $RT::Logger->error("Can not find a collection class for record class '$record_class'");
+        return undef;
+    }
+    return $collection_class;
+}
+
+=head1 AppliedTo
+
+Returns collection with objects this custom field is applied to.
+Class of the collection depends on L</LookupType>.
+See all L</NotAppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub AppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS NOT',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+=head1 NotAppliedTo
+
+Returns collection with objects this custom field is not applied to.
+Class of the collection depends on L</LookupType>.
+See all L</AppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub NotAppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+sub _AppliedTo {
+    my $self = shift;
+
+    my ($class) = $self->CollectionClassFromLookupType;
+    return undef unless $class;
+
+    my $res = $class->new( $self->CurrentUser );
+
+    # If CF is a Group CF, only display user-defined groups
+    if ( $class eq 'RT::Groups' ) {
+        $res->LimitToUserDefinedGroups;
+    }
+
+    $res->OrderBy( FIELD => 'Name' );
+    my $ocfs_alias = $res->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFields',
+        FIELD2 => 'ObjectId',
+    );
+    $res->Limit(
+        LEFTJOIN => $ocfs_alias,
+        ALIAS    => $ocfs_alias,
+        FIELD    => 'CustomField',
+        VALUE    => $self->id,
+    );
+    return ($res, $ocfs_alias);
+}
+
+=head2 IsApplied
+
+Takes object id and returns corresponding L<RT::ObjectCustomField>
+record if this custom field is applied to the object. Use 0 to check
+if custom field is applied globally.
+
+=cut
+
+sub IsApplied {
+    my $self = shift;
+    my $id = shift;
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    $ocf->LoadByCols( CustomField => $self->id, ObjectId => $id || 0 );
+    return undef unless $ocf->id;
+    return $ocf;
+}
 
 =head2 AddToObject OBJECT
 
@@ -910,14 +1217,27 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    if ( $ObjectCF->Id ) {
-        return ( 0, $self->loc("That is already the current value") );
+    if ( $self->IsApplied( $id ) ) {
+        return ( 0, $self->loc("Custom field is already applied to the object") );
     }
-    my ( $oid, $msg ) =
-      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
+    if ( $id ) {
+        # applying locally
+        return (0, $self->loc("Couldn't apply custom field to an object as it's global already") )
+            if $self->IsApplied( 0 );
+    }
+    else {
+        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
+        $applied->LimitToCustomField( $self->id );
+        while ( my $record = $applied->Next ) {
+            $record->Delete;
+        }
+    }
+
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    my ( $oid, $msg ) = $ocf->Create(
+        ObjectId => $id, CustomField => $self->id,
+    );
     return ( $oid, $msg );
 }
 
@@ -929,7 +1249,6 @@ Remove this custom field  for a single object, such as a queue or group.
 Takes an object 
 
 =cut
-
 
 sub RemoveFromObject {
     my $self = shift;
@@ -944,18 +1263,16 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    unless ( $ObjectCF->Id ) {
+    my $ocf = $self->IsApplied( $id );
+    unless ( $ocf ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ObjectCF->Delete;
 
+    # XXX: Delete doesn't return anything
+    my ( $oid, $msg ) = $ocf->Delete;
     return ( $oid, $msg );
 }
 
-# {{{ AddValueForObject
 
 =head2 AddValueForObject HASH
 
@@ -1017,8 +1334,15 @@ sub AddValueForObject {
             $extra_values--;
         }
     }
+
+    if (my $canonicalizer = $self->can('_CanonicalizeValue'.$self->Type)) {
+         $canonicalizer->($self, \%args);
+    }
+
+
+
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-    my $val    = $newval->Create(
+    my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
         ObjectId     => $obj->Id,
         Content      => $args{'Content'},
@@ -1029,7 +1353,7 @@ sub AddValueForObject {
 
     unless ($val) {
         $RT::Handle->Rollback();
-        return ($val, $self->loc("Couldn't create record"));
+        return ($val, $self->loc("Couldn't create record: [_1]", $msg));
     }
 
     $RT::Handle->Commit();
@@ -1037,9 +1361,31 @@ sub AddValueForObject {
 
 }
 
-# }}}
 
-# {{{ MatchPattern
+
+sub _CanonicalizeValueDateTime {
+    my $self    = shift;
+    my $args    = shift;
+    my $DateObj = RT::Date->new( $self->CurrentUser );
+    $DateObj->Set( Format => 'unknown',
+                   Value  => $args->{'Content'} );
+    $args->{'Content'} = $DateObj->ISO;
+}
+
+# For date, we need to store Content as ISO date
+sub _CanonicalizeValueDate {
+    my $self = shift;
+    my $args = shift;
+
+    # in case user input date with time, let's omit it by setting timezone
+    # to utc so "hour" won't affect "day"
+    my $DateObj = RT::Date->new( $self->CurrentUser );
+    $DateObj->Set( Format   => 'unknown',
+                   Value    => $args->{'Content'},
+                   Timezone => 'UTC',
+                 );
+    $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+}
 
 =head2 MatchPattern STRING
 
@@ -1056,9 +1402,7 @@ sub MatchPattern {
 }
 
 
-# }}}
 
-# {{{ FriendlyPattern
 
 =head2 FriendlyPattern
 
@@ -1081,9 +1425,7 @@ sub FriendlyPattern {
 }
 
 
-# }}}
 
-# {{{ DeleteValueForObject
 
 =head2 DeleteValueForObject HASH
 
@@ -1149,7 +1491,7 @@ sub ValuesForObject {
     my $self = shift;
     my $object = shift;
 
-    my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
+    my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
     unless ($self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);
@@ -1273,6 +1615,11 @@ sub SetBasedOn {
     return (0, "Permission denied")
         unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
 
+    # XXX: Remove this restriction once we support lists and cascaded selects
+    if ( $self->RenderType =~ /List/ ) {
+        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    }
+
     return $self->AddAttribute(
         Name => "BasedOn",
         Description => "Custom field whose CF we depend on",
@@ -1287,18 +1634,6 @@ sub BasedOnObj {
     my $attribute = $self->FirstAttribute("BasedOn");
     $obj->Load($attribute->Content) if defined $attribute;
     return $obj;
-}
-
-sub DerivativeCFs {
-    my $self = shift;
-    my $attrs = RT::Attributes->new( $self->CurrentUser );
-    $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::CustomField' );
-    $attrs->Limit( FIELD => 'Name',       VALUE => 'BasedOn' );
-    $attrs->Limit( FIELD => 'Content',    VALUE => $self->id );
-
-    my @cfs;
-    push @cfs, $_->Object while $_ = $attrs->Next;
-    return @cfs;
 }
 
 1;

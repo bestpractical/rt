@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,47 +43,48 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <table>
-  <tr>
-    <td class="label date created"><&|/l&>Created</&>:</td>
-    <td class="value date created"><% $Ticket->CreatedObj->AsString %></td>
+  <tr class="date created">
+    <td class="label"><&|/l&>Created</&>:</td>\
+    <td class="value"><% $Ticket->CreatedObj->AsString %></td>
   </tr>
-  <tr>
-    <td class="label date starts"><&|/l&>Starts</&>:</td>
-    <td class="value date starts"><% $Ticket->StartsObj->AsString %></td>
+  <tr class="date starts">
+    <td class="label"><&|/l&>Starts</&>:</td>\
+    <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
-  <tr>
-    <td class="label date started"><&|/l&>Started</&>:</td>
-    <td class="value date started"><% $Ticket->StartedObj->AsString %></td>
+  <tr class="date started">
+    <td class="label"><&|/l&>Started</&>:</td>\
+    <td class="value"><% $Ticket->StartedObj->AsString %></td>
   </tr>
-  <tr>
-    <td class="label date told"><a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
-    <td class="value date told"><% $Ticket->ToldObj->AsString %></td>
+  <tr class="date told">
+    <td class="label"><a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>\
+    <td class="value"><% $Ticket->ToldObj->AsString %></td>
   </tr>
-  <tr>
-    <td class="label date due"><&|/l&>Due</&>:</td>
+  <tr class="date due">
+    <td class="label"><&|/l&>Due</&>:</td>\
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
-    <td class="value date due"><span class="overdue"><% $due->AsString  %></span></td>
+    <td class="value"><% $due->AsString  %></span></td>
 % } else {
-    <td class="value date due"><% $due->AsString  %></td>
+    <td class="value"><% $due->AsString  %></td>
 % }
   </tr>
-  <tr>
-    <td class="label date resolved"><&|/l&>Closed</&>:</td>
-    <td class="value date resolved"><% $Ticket->ResolvedObj->AsString  %></td>
+  <tr class="date resolved">
+    <td class="label"><&|/l&>Closed</&>:</td>\
+    <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
   </tr>
-  <tr>
-    <td class="label date updated"><&|/l&>Updated</&>:</td>
+  <tr class="date updated">
+    <td class="label"><&|/l&>Updated</&>:</td>\
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name) : loc("Never");
 % if ($UpdatedLink) {
-    <td class="value date updated"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
+    <td class="value"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {
-    <td class="value date updated"><% $UpdatedString | h %></td>
+    <td class="value"><% $UpdatedString | h %></td>
 % }
   </tr>
+% $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef

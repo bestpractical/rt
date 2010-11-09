@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 # Find all the attachments which have parent $Parent
@@ -63,15 +63,15 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
  / <a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
-<br /> 
+% $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Ticket => $Ticket, Transaction => $Transaction, Attachment => $message);
+<br />
 <span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
 </div>
 %   }
-
 %# If there is sub-messages, open a dedicated div
 % if ( scalar ( grep $_->__Value('Parent') == $message->id, @$Attachments ) ) {
 <div class="messageattachments">
@@ -122,11 +122,13 @@ elsif (!$ShowHeaders)  {
     push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
 }
 
+$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction);
+
 my $size_to_str = sub {
     my $size = shift;
     # show a download link
     if ( $size > 1024*1024 ) {
-        $size = loc( "[_1]b", int( $size / 1024 / 102.4 ) / 10 );
+        $size = loc( "[_1]M", int( $size / 1024 / 102.4 ) / 10 );
     }
     elsif ( $size > 1024 ) {
         $size = loc( "[_1]k", int( $size / 102.4 ) / 10 );
@@ -143,7 +145,7 @@ my $render_attachment = sub {
     # if it has a content-disposition: attachment, don't show inline
     my $disposition = $message->GetHeader('Content-Disposition');
     if ( $disposition && $disposition =~ /attachment/i && $disposition !~ /^\s*inline/ ) {
-        $disposition = 'attachemnt';
+        $disposition = 'attachment';
     } else {
         $disposition = 'inline';
     }
@@ -182,24 +184,47 @@ my $render_attachment = sub {
                     && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
                 )
             )
-          )
-        {
+        ) {
 
             my $content;
-            if ( $AttachmentContent->{ $message->id } ) {
-                $content = $AttachmentContent->{ $message->id }->Content;
+            # If we've cached the content, use it from there
+            if (my $x = $AttachmentContent->{ $Transaction->id }->{$message->id}) {
+                $content = $x->Content;
             }
             else {
                 $content = $message->Content;
             }
 
+            my $content_type = lc $message->ContentType;
+            $RT::Logger->debug(
+                "Rendering attachment #". $message->id
+                ." of '$content_type' type"
+            );
+
             # if it's a text/html clean the body and show it
-            if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
+            if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
-                if ( $message->ContentType eq 'text/html' ) {
-                    $m->comp('/Elements/MakeClicky', 
-                            content => \$content, html => 1 );
-                }
+
+                $m->comp(
+                    '/Elements/MakeClicky',
+                    content => \$content,
+                    html    => 1,
+                    ticket  => $Ticket,
+                );
+
+                require HTML::Quoted;
+                $content = HTML::Quoted->extract( $content );
+
+                $m->comp(
+                    'ShowHTMLMessageStanza',
+                    Depth       => 0,
+                    Message     => $content,
+                    Transaction => $Transaction
+                );
+            }
+
+            elsif ( $content_type eq 'text/enriched' ) {
+                $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
                 $m->out( $content );
             }
 
@@ -240,7 +265,7 @@ my $render_attachment = sub {
               . $message->Id
               . '/" />' );
     }
-    elsif ( $message->ContentLength > 0 ) {
+    elsif ( $message->ContentLength && $message->ContentLength > 0 ) {
         $m->out( '<p>' .
             loc( 'Message body not shown because it is not plain text.' ) .
             '</p>'

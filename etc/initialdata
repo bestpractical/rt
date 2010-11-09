@@ -206,11 +206,11 @@ creation of a trouble ticket regarding:
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id()}].
+assigned an ID of { $Ticket->SubjectTag }.
 
 Please include the string:
 
-         [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+         { $Ticket->SubjectTag }
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -270,7 +270,7 @@ you may reply to this message.
        Name        => 'Admin Comment',                           # loc
        Description => 'Default admin comment template',          # loc
        Content     =>
-'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $s =~ s/^Re//i; $s;}
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
 RT-Attach-Message: yes
 
 
@@ -331,7 +331,7 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Your ticket has been approved by { eval { $Approver->Name } }.
 Other approvals may be pending.
 
 Approver\'s notes: { $Notes }
@@ -345,7 +345,7 @@ Approver\'s notes: { $Notes }
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Your ticket has been approved by { eval { $Approver->Name } }.
 Its Owner may now start to act on it.
 
 Approver\'s notes: { $Notes }
@@ -380,8 +380,15 @@ The ticket has been approved, you may now start to act on it.
        Name        => "Forward",    # loc
        Description => "Heading of a forwarded message", # loc
        Content => q{
+This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
+}
+    },
+    {  Queue       => 0,
+       Name        => "Forward Ticket",    # loc
+       Description => "Heading of a forwarded Ticket", # loc
+       Content => q{
 
-This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
+This is a forward of ticket #{ $Ticket->id }
 }
     },
     {  Queue       => 0,
@@ -480,7 +487,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 },
 );
-# }}}
 
 @Scrips = (
     {  Description    => 'On Correspond Open Tickets',
@@ -580,18 +586,18 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       Description => 'HomepageSettings',
       Content =>
       { 'body' => # loc
-	[ { type => 'system', name => 'My Tickets' },
-	  { type => 'system', name => 'Unowned Tickets' },
-	  { type => 'system', name => 'Bookmarked Tickets' },
-	  { type => 'component',  name => 'QuickCreate'},
-	],
+        [ { type => 'system', name => 'My Tickets' },
+          { type => 'system', name => 'Unowned Tickets' },
+          { type => 'system', name => 'Bookmarked Tickets' },
+          { type => 'component', name => 'QuickCreate' },
+        ],
         'summary' => # loc
-	[ 
-	  { type => 'component', name => 'MyReminders' },
+        [
+          { type => 'component', name => 'MyReminders' },
           { type => 'component', name => 'Quicksearch' },
-	  { type => 'component', name => 'Dashboards' },
-	  { type => 'component', name => 'RefreshHomepage' },
-	]
+          { type => 'component', name => 'Dashboards' },
+          { type => 'component', name => 'RefreshHomepage' },
+        ],
+      },
     },
-}
 );

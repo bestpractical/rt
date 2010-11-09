@@ -3,5 +3,6 @@
 # properly configured their webserver to stop RT from passing 
 # images through the mason handler.
 my $file = $m->base_comp->source_file;
-RT::Interface::Web->SendStaticFile( File => $file );
+my $relfile = $m->base_comp->path;
+RT::Interface::Web->SendStaticFile( File => $file, RelativeFile => $relfile );
 </%INIT>

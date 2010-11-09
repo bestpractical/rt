@@ -9,7 +9,7 @@ my $url = $m->rt_base_url;
 
 
 
-my $t = RT::Ticket->new($RT::SystemUser);
+my $t = RT::Ticket->new(RT->SystemUser);
 $t->Create(Subject => 'for custom search'.$$, Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'created ticket for custom search');
@@ -24,7 +24,7 @@ $m->get ( $url.'Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
 my $cus_qs = $m->find_link( text => "Quick search" );
 $m->get ($cus_hp);
-$m->content_like (qr'highest priority tickets');
+$m->content_contains('highest priority tickets');
 
 # add Requestor to the fields
 $m->form_name ('BuildQuery');

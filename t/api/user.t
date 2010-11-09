@@ -16,38 +16,38 @@ ok(require RT::User);
 
 # Make sure we can create a user
 
-my $u1 = RT::User->new($RT::SystemUser);
+my $u1 = RT::User->new(RT->SystemUser);
 is(ref($u1), 'RT::User');
 my ($id, $msg) = $u1->Create(Name => 'CreateTest1'.$$, EmailAddress => $$.'create-test-1@example.com');
 ok ($id, "Creating user CreateTest1 - " . $msg );
 
 # Make sure we can't create a second user with the same name
-my $u2 = RT::User->new($RT::SystemUser);
+my $u2 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u2->Create(Name => 'CreateTest1'.$$, EmailAddress => $$.'create-test-2@example.com');
 ok (!$id, $msg);
 
 
 # Make sure we can't create a second user with the same EmailAddress address
-my $u3 = RT::User->new($RT::SystemUser);
+my $u3 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u3->Create(Name => 'CreateTest2'.$$, EmailAddress => $$.'create-test-1@example.com');
 ok (!$id, $msg);
 
 # Make sure we can create a user with no EmailAddress address
-my $u4 = RT::User->new($RT::SystemUser);
+my $u4 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u4->Create(Name => 'CreateTest3'.$$);
 ok ($id, $msg);
 
 # make sure we can create a second user with no EmailAddress address
-my $u5 = RT::User->new($RT::SystemUser);
+my $u5 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u5->Create(Name => 'CreateTest4'.$$);
 ok ($id, $msg);
 
 # make sure we can create a user with a blank EmailAddress address
-my $u6 = RT::User->new($RT::SystemUser);
+my $u6 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u6->Create(Name => 'CreateTest6'.$$, EmailAddress => '');
 ok ($id, $msg);
 # make sure we can create a second user with a blankEmailAddress address
-my $u7 = RT::User->new($RT::SystemUser);
+my $u7 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u7->Create(Name => 'CreateTest7'.$$, EmailAddress => '');
 ok ($id, $msg);
 
@@ -61,17 +61,17 @@ is_empty ($u7->EmailAddress);
 
 RT->Config->Set('ValidateUserEmailAddresses' => 1);
 # Make sur we can't create a user with multiple email adresses separated by comma
-my $u8 = RT::User->new($RT::SystemUser);
+my $u8 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u8->Create(Name => 'CreateTest8'.$$, EmailAddress => $$.'create-test-81@example.com, '.$$.'create-test-82@example.com');
 ok (!$id, $msg);
 
 # Make sur we can't create a user with multiple email adresses separated by space
-my $u9 = RT::User->new($RT::SystemUser);
+my $u9 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u9->Create(Name => 'CreateTest9'.$$, EmailAddress => $$.'create-test-91@example.com '.$$.'create-test-92@example.com');
 ok (!$id, $msg);
 
 # Make sur we can't create a user with invalid email address
-my $u10 = RT::User->new($RT::SystemUser);
+my $u10 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
 ok (!$id, $msg);
 RT->Config->Set('ValidateUserEmailAddresses' => undef);
@@ -81,7 +81,7 @@ RT->Config->Set('ValidateUserEmailAddresses' => undef);
 {
 
 
-ok(my $user = RT::User->new($RT::SystemUser));
+ok(my $user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 ok($user->Privileged, "User 'root' is privileged");
 ok(my ($v,$m) = $user->SetPrivileged(0));
@@ -96,7 +96,7 @@ ok($user->Privileged, "User 'root' is privileged again");
 
 {
 
-ok(my $u = RT::User->new($RT::SystemUser));
+ok(my $u = RT::User->new(RT->SystemUser));
 ok($u->Load(1), "Loaded the first user");
 is($u->PrincipalObj->ObjectId , 1, "user 1 is the first principal");
 is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
@@ -106,7 +106,7 @@ is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group
 
 {
 
-my $root = RT::User->new($RT::SystemUser);
+my $root = RT::User->new(RT->SystemUser);
 $root->Load('root');
 ok($root->Id, "Found the root user");
 my $rootq = RT::Queue->new($root);
@@ -115,7 +115,7 @@ ok($rootq->Id, "Loaded the first queue");
 
 ok ($rootq->CurrentUser->HasRight(Right=> 'CreateTicket', Object => $rootq), "Root can create tickets");
 
-my $new_user = RT::User->new($RT::SystemUser);
+my $new_user = RT::User->new(RT->SystemUser);
 my ($id, $msg) = $new_user->Create(Name => 'ACLTest'.$$);
 
 ok ($id, "Created a new user for acl test $msg");
@@ -140,13 +140,13 @@ ok (!$q->CurrentUser->HasRight(Right => 'CreateTicket', Object => $q), "The user
 
 
 # Create a ticket in the queue
-my $new_tick = RT::Ticket->new($RT::SystemUser);
+my $new_tick = RT::Ticket->new(RT->SystemUser);
 my ($tickid, $tickmsg) = $new_tick->Create(Subject=> 'ACL Test', Queue => 'General');
 ok($tickid, "Created ticket: $tickid");
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 # Create a new group
-my $group = RT::Group->new($RT::SystemUser);
+my $group = RT::Group->new(RT->SystemUser);
 $group->CreateUserDefinedGroup(Name => 'ACLTest'.$$);
 ok($group->Id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
@@ -166,12 +166,12 @@ ok ($did,"Deleted the group member: $dmsg");
 ok (!$new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
-my $q_as_system = RT::Queue->new($RT::SystemUser);
+my $q_as_system = RT::Queue->new(RT->SystemUser);
 $q_as_system->Load(1);
 ok($q_as_system->Id, "Loaded the first queue");
 
 # Create a ticket in the queue
-my $new_tick2 = RT::Ticket->new($RT::SystemUser);
+my $new_tick2 = RT::Ticket->new(RT->SystemUser);
 (my $tick2id, $tickmsg) = $new_tick2->Create(Subject=> 'ACL Test 2', Queue =>$q_as_system->Id);
 ok($tick2id, "Created ticket: $tick2id");
 is($new_tick2->QueueObj->id, $q_as_system->Id, "Created a new ticket in queue 1");
@@ -181,7 +181,7 @@ is($new_tick2->QueueObj->id, $q_as_system->Id, "Created a new ticket in queue 1"
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 # Create a subgroup
-my $subgroup = RT::Group->new($RT::SystemUser);
+my $subgroup = RT::Group->new(RT->SystemUser);
 $subgroup->CreateUserDefinedGroup(Name => 'Subgrouptest'.$$);
 ok($subgroup->Id, "Created a new group ".$subgroup->Id."Ok");
 #Add the subgroup as a subgroup of the group
@@ -210,7 +210,6 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
  ok ($id,$msg);
 ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket without group membership");
 
-# }}}
 
 
 my ($usrid, $usrmsg) =  $subgroup->DeleteMember($new_user->PrincipalId);
@@ -222,7 +221,6 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 ok(($gv,$gm) = $group->PrincipalObj->RevokeRight( Object => $q, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
 ok($gv,"revoke succeeed - $gm");
 
-# {{{ Test the user's right to modify a ticket as a _queue_ admincc for a right granted at the _queue_ level
 
 # Grant queue admin cc the right to modify ticket in the queue 
 ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight( Object => $q_as_system, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
@@ -240,9 +238,7 @@ ok (my ($del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', Prin
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
-# }}}
 
-# {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the right granted at the _queue_ level
 
 # Add the user as a ticket admincc
 ok (my( $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Added the new user as a queue admincc");
@@ -262,11 +258,9 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight( Object => $q_as_system, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
-# }}}
 
 
 
-# {{{ Test the user's right to modify a ticket as a _queue_ admincc for a right granted at the _system_ level
 
 # Before we start Make sure the user does not have the right to modify tickets in the queue
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can not modify the ticket without it being granted");
@@ -294,9 +288,7 @@ ok (($del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', Princip
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket'), "User can't modify tickets in the queue without group membership");
 
-# }}}
 
-# {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the right granted at the _queue_ level
 
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can not modify the ticket without being an admincc");
 ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket'), "User can not modify tickets in the queue obj without being an admincc");
@@ -322,7 +314,6 @@ ok (!$new_user->HasRight( Object => $new_tick2->QueueObj, Right => 'ModifyTicket
 ok(($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight( Object => $RT::System, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
-# }}}
 
 
 
@@ -336,4 +327,3 @@ ok($rqv, "Revoked the right successfully - $rqm");
 
 }
 
-1;

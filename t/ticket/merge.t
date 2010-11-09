@@ -5,18 +5,21 @@ use warnings;
 
 
 use RT;
-use RT::Test tests => '17';
+use RT::Test tests => '29';
 
 
 # validate that when merging two tickets, the comments from both tickets
 # are integrated into the new ticket
 {
-    my $queue = RT::Queue->new($RT::SystemUser);
+    my $queue = RT::Queue->new(RT->SystemUser);
     my ($id,$msg) = $queue->Create(Name => 'MergeTest-'.rand(25));
     ok ($id,$msg);
 
-    my $t1 = RT::Ticket->new($RT::SystemUser);
-    my ($tid,$transid, $t1msg) =$t1->Create ( Queue => $queue->Name, Subject => 'Merge test. orig');
+    my $t1 = RT::Ticket->new(RT->SystemUser);
+    my ($tid,$transid, $t1msg) =$t1->Create(
+        Queue => $queue->Name,
+        Subject => 'Merge test. orig',
+    );
     ok ($tid, $t1msg);
     ($id, $msg) = $t1->Comment(Content => 'This is a Comment on the original');
     ok($id,$msg);
@@ -28,7 +31,7 @@ use RT::Test tests => '17';
     }
     is($Comments,1, "our first ticket has only one Comment");
 
-    my $t2 = RT::Ticket->new($RT::SystemUser);
+    my $t2 = RT::Ticket->new(RT->SystemUser);
     my ($t2id,$t2transid, $t2msg) =$t2->Create ( Queue => $queue->Name, Subject => 'Merge test. duplicate');
     ok ($t2id, $t2msg);
 
@@ -68,15 +71,15 @@ use RT::Test tests => '17';
 
 # when you try to merge duplicate links on postgres, eveyrything goes to hell due to referential integrity constraints.
 {
-    my $t = RT::Ticket->new($RT::SystemUser);
+    my $t = RT::Ticket->new(RT->SystemUser);
     $t->Create(Subject => 'Main', Queue => 'general');
 
     ok ($t->id);
-    my $t2 = RT::Ticket->new($RT::SystemUser);
+    my $t2 = RT::Ticket->new(RT->SystemUser);
     $t2->Create(Subject => 'Second', Queue => 'general');
     ok ($t2->id);
 
-    my $t3 = RT::Ticket->new($RT::SystemUser);
+    my $t3 = RT::Ticket->new(RT->SystemUser);
     $t3->Create(Subject => 'Third', Queue => 'general');
 
     ok ($t3->id);
@@ -89,4 +92,46 @@ use RT::Test tests => '17';
 
     ($id,$val) = $t->MergeInto($t2->id);
     ok($id,$val);
+}
+
+my $user = RT::Test->load_or_create_user(
+    Name => 'a user', Password => 'password',
+);
+ok $user && $user->id, 'loaded or created user';
+
+# check rights
+{
+    RT::Test->set_rights(
+        { Principal => 'Everyone', Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket)] },
+        { Principal => 'Owner',    Right => [qw(ModifyTicket)] },
+    );
+
+    my $t = RT::Ticket->new(RT::CurrentUser->new($user));
+    $t->Create(Subject => 'Main', Queue => 'general');
+    ok ($t->id, "Created ticket");
+
+    my $t2 = RT::Ticket->new(RT::CurrentUser->new($user));
+    $t2->Create(Subject => 'Second', Queue => 'general');
+    ok ($t2->id, "Created ticket");
+
+    foreach my $ticket ( $t, $t2 ) {
+        ok( !$ticket->CurrentUserHasRight('ModifyTicket'), "can not modify" );
+    }
+
+    my ($status,$msg) = $t->MergeInto($t2->id);
+    ok(!$status, "Can not merge: $msg");
+    
+    ($status, $msg) = $t->SetOwner( $user->id );
+    ok( $status, "User took ticket");
+    ok( $t->CurrentUserHasRight('ModifyTicket'), "can modify after take" );
+
+    ($status,$msg) = $t->MergeInto($t2->id);
+    ok(!$status, "Can not merge: $msg");
+
+    ($status, $msg) = $t2->SetOwner( $user->id );
+    ok( $status, "User took ticket");
+    ok( $t2->CurrentUserHasRight('ModifyTicket'), "can modify after take" );
+
+    ($status,$msg) = $t->MergeInto($t2->id);
+    ok($status, "Merged tickets: $msg");
 }

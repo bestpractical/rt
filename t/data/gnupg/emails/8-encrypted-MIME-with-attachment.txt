@@ -9,7 +9,7 @@ Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
 	boundary="FFoLq8A0u+X9iRU8"
 Content-Disposition: inline
 User-Agent: Mutt/1.5.13 (2006-08-11)
-From: ternus@mit.edu (Christian Ternus)
+From: rt-test@example.com
 
 
 --FFoLq8A0u+X9iRU8

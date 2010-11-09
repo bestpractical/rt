@@ -1,40 +1,40 @@
 %# BEGIN BPS TAGGED BLOCK {{{
-%# 
+%#
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
-%# 
+%#
 %# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
+%#
+%#
 %# LICENSE:
-%# 
+%#
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
 %# from www.gnu.org.
-%# 
+%#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
-%# 
+%#
 %# You should have received a copy of the GNU General Public License
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
 %# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
+%#
+%#
 %# CONTRIBUTION SUBMISSION POLICY:
-%# 
+%#
 %# (The following paragraph is not intended to limit the rights granted
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%#
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,16 +43,17 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%# 
+%#
 %# END BPS TAGGED BLOCK }}}
+<div class="edit-saved-searches">
 <&| /Widgets/TitleBox, title => loc($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
-<&|/l&>Privacy:</&>
+<span class="label"><&|/l&>Privacy</&>:</span>
 <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
 <br />
-<&|/l&>Description</&>:
+<span class="label"><&|/l&>Description</&>:</span>
 <input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
 
 % if ($Id ne 'new') {
@@ -74,12 +75,12 @@
 % }
 <br />
 <hr />
-<&|/l&>Load saved search:</&>
+<span class="label"><&|/l&>Load saved search</&>:</span>
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
 
 </&>
-
+</div>
 <%INIT>
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',
@@ -91,8 +92,8 @@ my $can_modify = $session{'CurrentUser'}->HasRight(
     Object => $RT::System,
 );
 
-use RT::SavedSearches;
-my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
+use RT::SavedSearch;
+my @Objects = RT::SavedSearch->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser' );
@@ -143,7 +144,8 @@ $SavedSearch => {}
 </%ARGS>
 <%INIT>
 
-$SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
+$SavedSearch->{'Id'}          = ( $ARGS{Type} && $ARGS{Type} eq 'Chart' ?
+$ARGS{'SavedChartSearchId'} : $ARGS{'SavedSearchId'} ) || 'new';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || undef;
 $SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
 
@@ -155,17 +157,23 @@ if ( $ARGS{'SavedSearchRevert'} ) {
 
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
-    my $search = $container->Attributes->WithId( $id );
+    if ( $container ) {
+        my $search = $container->Attributes->WithId( $id );
+        $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
+        $SavedSearch->{'Object'}      = $search;
+        $SavedSearch->{'Description'} = $search->Description;
+        $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
 
-    $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
-    $SavedSearch->{'Object'}      = $search;
-    $SavedSearch->{'Description'} = $search->Description;
-    $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
-
-    if ( $ARGS{'SavedSearchRevert'} ) {
-        push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
-    } else {
-        push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+        if ( $ARGS{'SavedSearchRevert'} ) {
+            push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
+        } else {
+            push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+        }
+    }
+    else {
+        push @results, loc( 'Can not load saved search "[_1]"',
+                $ARGS{'SavedSearchLoad'} );
+        return @results;
     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
@@ -173,7 +181,11 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
-        $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+        my ($val, $msg) = $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+        unless ( $val ) {
+            push @results, $msg;
+            return @results;
+        }
     }
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
@@ -243,13 +255,35 @@ if ( $obj && $obj->id ) {
 
     if ( $new_obj_type && $new_obj_id ) {
         my ($val, $msg);
-        if ( $new_obj_type ne $obj_type ) {
-            ($val, $msg ) = $obj->SetObjectType($new_obj_type);
-            push @results, loc ('Unable to set privacy object: [_1]', $msg) unless ( $val );
+
+        # we need to check right before we change any of ObjectType and ObjectId, 
+        # or it will fail the 2nd change if we use SetObjectType and
+        # SetObjectId sequentially
+
+        if ( $obj->CurrentUserHasRight('update') ) {
+            if ( $new_obj_type ne $obj_type ) {
+                ( $val, $msg ) = $obj->__Set(
+                    Field => 'ObjectType',
+                    Value => $new_obj_type,
+                );
+                push @results, loc( 'Unable to set privacy object: [_1]', $msg )
+                  unless ($val);
+            }
+            if ( $new_obj_id != $obj_id ) {
+                ( $val, $msg ) = $obj->__Set(
+                    Field => 'ObjectId',
+                    Value => $new_obj_id,
+                );
+                push @results, loc( 'Unable to set privacy id: [_1]', $msg )
+                  unless ($val);
+            }
         }
-        if ( $new_obj_id != $obj_id ) {
-            ($val, $msg) = $obj->SetObjectId($new_obj_id);
-            push @results, loc ('Unable to set privacy id: [_1]', $msg) unless ( $val );
+        else {
+            # two loc are just for convenience so we don't need to
+            # write an extra i18n translation item
+            push @results,
+              loc( 'Unable to set privacy object or id: [_1]',
+                loc('Permission Denied') )
         }
     } else {
         push @results, loc('Unable to determine object type or id');

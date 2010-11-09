@@ -1,41 +1,41 @@
 #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
@@ -74,19 +74,31 @@ BEGIN {
 
 }
 
-use RT;
-use RT::Interface::Web;
-use RT::Interface::Web::Handler;
-use RT::Dashboard;
-use RT::Interface::CLI qw{ CleanEnv loc };
-
+# Read in the options
+my %opts;
 use Getopt::Long;
-use HTML::Mason;
-use HTML::RewriteAttributes::Resources;
-use HTML::RewriteAttributes::Links;
-use MIME::Types;
-use POSIX 'tzset';
-use File::Temp 'tempdir';
+GetOptions( \%opts,
+    "help|h", "dryrun", "verbose", "debug", "epoch=i", "all", "skip-acl"
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage(-verbose => 2);
+    exit;
+}
+
+require RT;
+require RT::Interface::CLI;
+RT::Interface::CLI->import(qw{ CleanEnv loc });
+
+require HTML::Mason;
+require HTML::RewriteAttributes::Resources;
+require HTML::RewriteAttributes::Links;
+require MIME::Types;
+require POSIX;
+POSIX->import('tzset');
+require File::Temp;
+File::Temp->import('tempdir');
 
 # Clean out all the nasties from the environment
 CleanEnv();
@@ -97,28 +109,18 @@ RT::LoadConfig();
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
+require RT::Interface::Web;
+require RT::Interface::Web::Handler;
+require RT::Dashboard;
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
 no warnings 'once';
 
-# Read in the options
-my %opts;
-GetOptions( \%opts,
-    "help", "dryrun", "verbose", "debug", "epoch=i", "all", "skip-acl"
-);
-
-if ($opts{'help'}) {
-    require Pod::Usage;
-    import Pod::Usage;
-    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
-    exit 1;
-}
-
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; 1 }
-sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
-sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
-sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
+sub verbose  { print @_, "\n" if $opts{debug} || $opts{verbose}; 1 }
+sub debug    { print @_, "\n" if $opts{debug}; 1 }
+sub error    { $RT::Logger->error(@_); verbose(@_); 1 }
+sub warning  { $RT::Logger->warning(@_); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
 verbose "Using time [_1]", scalar localtime($now);
@@ -127,7 +129,7 @@ my $from = get_from();
 debug "Sending email from [_1]", $from;
 
 # look through each user for her subscriptions
-my $Users = RT::Users->new($RT::SystemUser);
+my $Users = RT::Users->new(RT->SystemUser);
 $Users->LimitToPrivileged;
 
 while (defined(my $user = $Users->Next)) {
@@ -506,7 +508,7 @@ rt-email-dashboards - Send email dashboards
 
 =head1 SYNOPSIS
 
-    /opt/rt3/local/sbin/rt-email-dashboards [options]
+    rt-email-dashboards [options]
 
 =head1 DESCRIPTION
 
@@ -532,6 +534,8 @@ tweaking to be run as the correct user.
 This tool supports a few options. Most are for debugging.
 
 =over 8
+
+=item -h
 
 =item --help
 
@@ -559,8 +563,8 @@ being considered)
 
 =item --all
 
-Disable checking of whether each subscription should be sent right now (should
-only be used with --dryrun)
+Ignore subscription frequency when considering each dashboard (should only be
+used with --dryrun)
 
 =back
 

@@ -10,7 +10,7 @@ use RT::Test tests => 20;
 # Create test queues
 use_ok ('RT::Queue');
 
-ok(my $testqueue = RT::Queue->new($RT::SystemUser), 'Instantiate RT::Queue');
+ok(my $testqueue = RT::Queue->new(RT->SystemUser), 'Instantiate RT::Queue');
 ok($testqueue->Create( Name => 'reminders tests'), 'Create new queue: reminders tests');
 isnt($testqueue->Id , 0, 'Success creating queue');
 
@@ -20,10 +20,10 @@ isnt($testqueue->Id , 0, 'Success creating queue');
 # Create test ticket
 use_ok('RT::Ticket');
 
-my $u = RT::User->new($RT::SystemUser);
+my $u = RT::User->new(RT->SystemUser);
 $u->Load("root");
 ok ($u->Id, "Found the root user");
-ok(my $t = RT::Ticket->new($RT::SystemUser), 'Instantiate RT::Ticket');
+ok(my $t = RT::Ticket->new(RT->SystemUser), 'Instantiate RT::Ticket');
 ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
                Subject => 'Testing',
                Owner => $u->Id
@@ -31,7 +31,7 @@ ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
 isnt($id , 0, 'Success creating ticket');
 
 # Add reminder
-my $due_obj = RT::Date->new( $RT::SystemUser );
+my $due_obj = RT::Date->new( RT->SystemUser );
 $due_obj->SetToNow;
 ok(my ( $add_id, $add_msg, $txnid ) = $t->Reminders->Add(
     Subject => 'TestReminder',
@@ -85,4 +85,4 @@ while ( my $reminder = $reminders->Next ) {
 is($r_resolved, 1, 'Reminder resolved');
 
 }
-1;
+

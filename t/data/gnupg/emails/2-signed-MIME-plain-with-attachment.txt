@@ -9,7 +9,7 @@ Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature"; boundary="bKyqfOwhbdpXa4YI"
 Content-Disposition: inline
 User-Agent: Mutt/1.5.13 (2006-08-11)
-From: ternus@mit.edu (Christian Ternus)
+From: rt-test@example.com
 
 
 --bKyqfOwhbdpXa4YI

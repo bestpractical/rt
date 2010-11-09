@@ -7,7 +7,7 @@ BEGIN {
     sub wanted {
         -f && /\.html$/ && $_ !~ /Logout.html$/;
     }
-    my $tests = 7;
+    my $tests = 6;
     find( sub { wanted() and $tests += 4 }, 'share/html/' );
     plan tests => $tests;
 }
@@ -28,41 +28,36 @@ $agent->cookie_jar($cookie_jar);
 
 # get the top page
 my $url = $agent->rt_base_url;
-diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 
-is ($agent->{'status'}, 200, "Loaded a page");
-
-# {{{ test a login
+is($agent->status, 200, "Loaded a page");
 
 # follow the link marked "Login"
-
-ok($agent->{form}->find_input('user'));
-
-ok($agent->{form}->find_input('pass'));
-like ($agent->{'content'} , qr/username:/i);
-$agent->field( 'user' => 'root' );
-$agent->field( 'pass' => 'password' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
-is($agent->{'status'}, 200, "Fetched the page ok");
-like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
+$agent->login(root => 'password');
+is($agent->status, 200, "Fetched the page ok");
+$agent->content_contains('Logout', "Found a logout link");
 
 
 find ( sub { wanted() and test_get($File::Find::name) } , 'share/html/');
+
+TODO: {
+    local $TODO = "we spew *lots* of undef warnings";
+    $agent->no_warnings_ok;
+};
 
 sub test_get {
         my $file = shift;
 
         $file =~ s#^share/html/##;
-        diag( "testing $url/$file" ) if $ENV{TEST_VERBOSE};
-        ok ($agent->get("$url/$file", "GET $url/$file"), "Can Get $url/$file");
-        is ($agent->{'status'}, 200, "Loaded $file");
-#        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
-        ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
-        ok( $agent->{'content'} !~ /raw error/i, "Didn't get a Mason compilation error on $file");
+        diag( "testing $url/$file" );
+
+        $agent->get_ok("$url/$file");
+        is($agent->status, 200, "Loaded $file");
+        $agent->content_lacks('Not logged in', "Still logged in for  $file");
+        $agent->content_lacks('raw error', "Didn't get a Mason compilation error on $file") or do {
+            if (my ($error) = $agent->content =~ /<pre>(.*?line.*?)$/s) {
+                diag "$file: $error";
+            }
+        };
 }
 
-# }}}
-
-1;

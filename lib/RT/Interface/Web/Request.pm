@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::Request;
@@ -53,18 +53,19 @@ use warnings;
 
 our $VERSION = '0.30';
 use base qw(HTML::Mason::Request);
+use Params::Validate qw(:all);
 
 sub new {
     my $class = shift;
 
-    my $new_class = $HTML::Mason::ApacheHandler::VERSION ?
-        'HTML::Mason::Request::ApacheHandler' :
-            $HTML::Mason::CGIHandler::VERSION ?
-                'HTML::Mason::Request::CGI' :
-                    'HTML::Mason::Request';
+    my $new_class =
+         $HTML::Mason::ApacheHandler::VERSION ? 'HTML::Mason::Request::ApacheHandler' :
+         $HTML::Mason::PSGIHandler::VERSION   ? 'HTML::Mason::Request::PSGI' :
+         $HTML::Mason::CGIHandler::VERSION    ? 'HTML::Mason::Request::CGI' :
+                                                'HTML::Mason::Request';
 
     $class->alter_superclass( $new_class );
-    $class->valid_params( %{ $new_class->valid_params } );
+    $class->valid_params( %{ $new_class->valid_params },cgi_request => { type => OBJECT, optional => 1 } );
     return $class->SUPER::new(@_);
 }
 
@@ -160,11 +161,11 @@ sub callback {
 
         my %seen;
         @$callbacks = (
-            sort grep defined && length,
+            grep defined && length,
             # Skip backup files, files without a leading package name,
             # and files we've already seen
             grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
-            map $self->interp->resolver->glob_path($path, $_),
+            map { sort $self->interp->resolver->glob_path($path, $_) }
             @roots
         );
         foreach my $comp (keys %seen) {

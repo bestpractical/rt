@@ -1,41 +1,41 @@
 #!@PERL@ -w
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -44,7 +44,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
@@ -74,16 +74,17 @@ BEGIN {
 
 }
 
-use RT;
-RT::LoadConfig();
-RT->InitLogging();
-if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+use Getopt::Long;
+no warnings 'once';
 
-RT::CheckPerlRequirements();
-RT->InitPluginPaths();
+if (grep { m/help/ } @ARGV) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( { verbose => 2 } );
+    exit;
+}
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
-
+require RT;
+RT->LoadConfig();
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
@@ -107,7 +108,9 @@ EOF
     require RT::Installer;
     # don't enter install mode if the file exists but is unwritable
     if (-e RT::Installer->ConfigFile && !-w _) {
-        die "Since your configuration exists but is not writable, I'm refusing to do anything.\n";
+        die 'Since your configuration exists ('
+          . RT::Installer->ConfigFile
+          . ") but is not writable, I'm refusing to do anything.\n";
     }
 
     RT->Config->Set( 'LexiconLanguages' => '*' );
@@ -115,15 +118,106 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->ConnectToDatabase();
-    RT->InitSystemObjects();
-    RT->InitClasses();
-    RT->InitPlugins();
+    RT->Init();
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post');
+    unless ( $status ) {
+        print STDERR $msg, "\n\n";
+        exit -1;
+    }
 }
 
-require RT::Interface::Web::Standalone;
-my $server = RT::Interface::Web::Standalone->new;
-$server->net_server('RT::Interface::Web::Standalone::PreFork');
-$server->port($port);
-$server->run();
+require RT::Interface::Web::Handler;
+my $app = RT::Interface::Web::Handler->PSGIApp;
+
+if ($ENV{RT_TESTING}) {
+    require Plack::Middleware::Test::StashWarnings;
+    $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+}
+
+# when used as a psgi file
+unless ($0 eq __FILE__) {
+    return $app;
+}
+
+
+# load appropriate server
+
+my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
+warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
+my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
+
+require Plack::Runner;
+
+my $is_fastcgi = $0 =~ m/fcgi$/;
+my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
+                            $is_fastcgi        ? ( server => 'FCGI' )
+                                               : (),
+                            env => 'deployment' );
+my @args = @ARGV;
+push @args, '--port', $port unless grep { m/port/ } @args;
+push @args, '--server', 'Starlet' unless $r->{server} || grep { m/server/ } @args;
+
+$r->parse_options(@args);
+
+delete $r->{options} if $is_fastcgi; ### mangle_host_port_socket ruins everything
+
+unless ($r->{env} eq 'development') {
+    push @{$r->{options}}, server_ready => sub {
+        my($args) = @_;
+        my $name  = $args->{server_software} || ref($args); # $args is $server
+        my $host  = $args->{host} || 0;
+        my $proto = $args->{proto} || 'http';
+        print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
+    };
+}
+eval { $r->run($app) };
+if (my $err = $@) {
+    handle_startup_error($err);
+}
+
+exit 0;
+
+sub handle_startup_error {
+    my $err = shift;
+    if ( $err =~ /listen.*Permission denied/ ) {
+        handle_bind_error();
+    } else {
+        die
+            "Something went wrong while trying to run RT's standalone web server:\n\t"
+            . $err;
+    }
+}
+
+
+sub handle_bind_error {
+
+    print STDERR <<EOF;
+WARNING: RT couldn't start up a web server on port @{[$port]}.
+This is often the case if you're running @{[$0]} as 
+someone other than your system's "root" user.  
+EOF
+
+    if ($explicit_port) {
+        print STDERR
+            "Please check your system configuration or choose another port\n\n";
+    }
+}
+
+__END__
+
+=head1 NAME
+
+rt-server - RT standalone server
+
+=head1 SYNOPSIS
+
+    # runs prefork server listening on port 8080, requires Starlet
+    rt-server --port 8080
+
+    # runs server listening on port 8080
+    rt-server -s Standalone --port 8080
+    # or
+    standalone_httpd --port 8080
 

@@ -1,0 +1,131 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+
+my $req_uri;
+
+if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/m/(.*)}) {
+    $req_uri = '/m/'.$1;
+}
+
+my $default_path = RT->Config->Get('WebPath') ."/m/";
+
+my $form_action = defined $goto             ? $goto
+                : defined $req_uri          ? $req_uri
+                :                             $default_path
+                ;
+
+# sanitize $form_action
+my $uri = URI->new($form_action);
+
+# You get undef scheme with a relative uri like "/Search/Build.html"
+unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'https') {
+    $form_action = $default_path;
+}
+
+# Make sure we're logging in to the same domain
+# You can get an undef authority with a relative uri like "index.html"
+my $uri_base_url = URI->new(RT->Config->Get('WebURL')."m/");
+unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority) {
+    $form_action = $default_path;
+}
+</%INIT>
+<&| /m/_elements/wrapper, show_home_button => 0 &>
+<style>
+<& /m/_elements/raw_style &>
+</style>
+<h1><&|/l, RT->Config->Get('rtname') &>RT for [_1]</&></h1>
+<div id="body" class="login-body">
+% if ($Error) {
+<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
+<% $Error %>
+</&>
+% }
+
+
+<div id="login-box">
+<&| /Widgets/TitleBox, title => loc('Login'), hideable => 0 &>
+
+% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+<form id="login" name="login" method="post" action="<% $form_action %>">
+
+<div class="entry">
+    <span class="label"><&|/l&>Username</&>:</span><span class="value"><input name="user" value="<%$user%>" id="user" /></span>
+</div>
+
+<div class="entry">
+    <span class="label"><&|/l&>Password</&>:</span><span class="value"><input type="password" name="pass"/></span>
+</div>
+
+<& /Elements/Submit, Label => loc('Login')&>
+
+% foreach my $key (keys %ARGS) {
+%  if (($key ne 'user') and ($key ne 'pass')) {
+% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
+% 		foreach my $val (@{$ARGS{$key}}) {
+<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
+% 		}
+% 	}
+%	else {
+<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
+% 	}
+%  }
+% }
+</form>
+% }
+</&>
+</div><!-- #login-box -->
+</div><!-- #login-body -->
+<& _elements/full_site_link &>
+</&>
+<%ARGS>
+$user => ""
+$pass => undef
+$goto => undef
+$Error => undef
+</%ARGS>

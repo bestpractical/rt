@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+#
+# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 =head1 NAME
@@ -72,17 +72,9 @@ use RT::Attributes;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
+use base RT->Config->Get('RecordBaseClass');
+use base 'RT::Base';
 
-use RT::Base;
-my $base = 'DBIx::SearchBuilder::Record::Cachable';
-if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
-    $base = 'DBIx::SearchBuilder::Record';
-}
-eval "require $base" or die $@;
-our @ISA = 'RT::Base';
-push @ISA, $base;
-
-# {{{ sub _Init 
 
 sub _Init {
     my $self = shift;
@@ -90,9 +82,7 @@ sub _Init {
     $self->CurrentUser(@_);
 }
 
-# }}}
 
-# {{{ _PrimaryKeys
 
 =head2 _PrimaryKeys
 
@@ -101,8 +91,23 @@ The primary keys for RT classes is 'id'
 =cut
 
 sub _PrimaryKeys { return ['id'] }
+# short circuit many, many thousands of calls from searchbuilder
+sub _PrimaryKey { 'id' }
 
-# }}}
+=head2 Id
+
+Override L<DBIx::SearchBuilder/Id> to avoid a few lookups RT doesn't do
+on a very common codepath
+
+C<id> is an alias to C<Id> and is the preferred way to call this method.
+
+=cut
+
+sub Id {
+    return shift->{'values'}->{id};
+}
+
+*id = \&Id;
 
 =head2 Delete
 
@@ -219,7 +224,9 @@ Deletes all attributes with the matching name for this object.
 sub DeleteAttribute {
     my $self = shift;
     my $name = shift;
-    return $self->Attributes->DeleteEntry( Name => $name );
+    my ($val,$msg) =  $self->Attributes->DeleteEntry( Name => $name );
+    $self->ClearAttributes;
+    return ($val,$msg);
 }
 
 =head2 FirstAttribute NAME
@@ -240,12 +247,15 @@ sub FirstAttribute {
 }
 
 
-# {{{ sub _Handle 
+sub ClearAttributes {
+    my $self = shift;
+    delete $self->{'attributes'};
+
+}
+
 sub _Handle { return $RT::Handle }
 
-# }}}
 
-# {{{ sub Create 
 
 =head2  Create PARAMHASH
 
@@ -263,8 +273,8 @@ sub Create {
     my $self    = shift;
     my %attribs = (@_);
     foreach my $key ( keys %attribs ) {
-        my $method = "Validate$key";
-        unless ( $self->$method( $attribs{$key} ) ) {
+        if (my $method = $self->can("Validate$key")) {
+        if (! $method->( $self, $attribs{$key} ) ) {
             if (wantarray) {
                 return ( 0, $self->loc('Invalid value for [_1]', $key) );
             }
@@ -272,15 +282,22 @@ sub Create {
                 return (0);
             }
         }
+        }
     }
-    my $now = RT::Date->new( $self->CurrentUser );
-    $now->Set( Format => 'unix', Value => time );
-    $attribs{'Created'} = $now->ISO() if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
+
+
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();
+
+    my $now_iso =
+     sprintf("%04d-%02d-%02d %02d:%02d:%02d", ($year+1900), ($mon+1), $mday, $hour, $min, $sec);
+
+    $attribs{'Created'} = $now_iso if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
 
     if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'}) {
          $attribs{'Creator'} = $self->CurrentUser->id || '0'; 
     }
-    $attribs{'LastUpdated'} = $now->ISO()
+    $attribs{'LastUpdated'} = $now_iso
       if ( $self->_Accessible( 'LastUpdated', 'auto' ) && !$attribs{'LastUpdated'});
 
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
@@ -330,9 +347,7 @@ sub Create {
 
 }
 
-# }}}
 
-# {{{ sub LoadByCols
 
 =head2 LoadByCols
 
@@ -345,7 +360,7 @@ sub LoadByCols {
     my $self = shift;
 
     # We don't want to hang onto this
-    delete $self->{'attributes'};
+    $self->ClearAttributes;
 
     return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
 
@@ -368,38 +383,31 @@ sub LoadByCols {
     return $self->SUPER::LoadByCols( %hash );
 }
 
-# }}}
 
-# {{{ Datehandling
 
 # There is room for optimizations in most of those subs:
 
-# {{{ LastUpdatedObj
 
 sub LastUpdatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = RT::Date->new( $self->CurrentUser );
 
     $obj->Set( Format => 'sql', Value => $self->LastUpdated );
     return $obj;
 }
 
-# }}}
 
-# {{{ CreatedObj
 
 sub CreatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = RT::Date->new( $self->CurrentUser );
 
     $obj->Set( Format => 'sql', Value => $self->Created );
 
     return $obj;
 }
 
-# }}}
 
-# {{{ AgeAsString
 #
 # TODO: This should be deprecated
 #
@@ -408,9 +416,7 @@ sub AgeAsString {
     return ( $self->CreatedObj->AgeAsString() );
 }
 
-# }}}
 
-# {{{ LastUpdatedAsString
 
 # TODO this should be deprecated
 
@@ -425,9 +431,7 @@ sub LastUpdatedAsString {
     }
 }
 
-# }}}
 
-# {{{ CreatedAsString
 #
 # TODO This should be deprecated 
 #
@@ -436,9 +440,7 @@ sub CreatedAsString {
     return ( $self->CreatedObj->AsString() );
 }
 
-# }}}
 
-# {{{ LongSinceUpdateAsString
 #
 # TODO This should be deprecated
 #
@@ -454,11 +456,8 @@ sub LongSinceUpdateAsString {
     }
 }
 
-# }}}
 
-# }}} Datehandling
 
-# {{{ sub _Set 
 #
 sub _Set {
     my $self = shift;
@@ -506,9 +505,7 @@ sub _Set {
 
 }
 
-# }}}
 
-# {{{ sub _SetLastUpdated
 
 =head2 _SetLastUpdated
 
@@ -520,7 +517,7 @@ It takes no options. Arguably, this is a bug
 sub _SetLastUpdated {
     my $self = shift;
     use RT::Date;
-    my $now = new RT::Date( $self->CurrentUser );
+    my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     if ( $self->_Accessible( 'LastUpdated', 'auto' ) ) {
@@ -537,9 +534,7 @@ sub _SetLastUpdated {
     }
 }
 
-# }}}
 
-# {{{ sub CreatorObj 
 
 =head2 CreatorObj
 
@@ -557,9 +552,7 @@ sub CreatorObj {
     return ( $self->{'CreatorObj'} );
 }
 
-# }}}
 
-# {{{ sub LastUpdatedByObj
 
 =head2 LastUpdatedByObj
 
@@ -576,9 +569,7 @@ sub LastUpdatedByObj {
     return $self->{'LastUpdatedByObj'};
 }
 
-# }}}
 
-# {{{ sub URI 
 
 =head2 URI
 
@@ -592,7 +583,6 @@ sub URI {
     return($uri->URIForObject($self));
 }
 
-# }}}
 
 =head2 ValidateName NAME
 
@@ -630,19 +620,22 @@ sub SQLType {
 sub __Value {
     my $self  = shift;
     my $field = shift;
-    my %args = ( decode_utf8 => 1, @_ );
+    my %args  = ( decode_utf8 => 1, @_ );
 
-    unless ( $field ) {
+    unless ($field) {
         $RT::Logger->error("__Value called with undef field");
     }
 
-    my $value = $self->SUPER::__Value( $field );
-    if( $args{'decode_utf8'} ) {
-        return Encode::decode_utf8( $value ) unless Encode::is_utf8( $value );
-    } else {
-        return Encode::encode_utf8( $value ) if Encode::is_utf8( $value );
+    my $value = $self->SUPER::__Value($field);
+
+    if ( $args{'decode_utf8'} && !utf8::is_utf8($value) ) {
+        utf8::decode($value);
+    } elsif ( utf8::is_utf8($value) ) {
+        utf8::encode($value);
     }
+
     return $value;
+
 }
 
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
@@ -724,6 +717,7 @@ sub _EncodeLOB {
         my $self = shift;
         my $Body = shift;
         my $MIMEType = shift;
+        my $Filename = shift;
 
         my $ContentEncoding = 'none';
 
@@ -767,7 +761,8 @@ sub _EncodeLOB {
                 $RT::Logger->info( "$self: Dropped an attachment of size "
                                    . length($Body));
                 $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-                return ("none", "Large attachment dropped" );
+                $Filename .= ".txt" if $Filename;
+                return ("none", "Large attachment dropped", "plain/text", $Filename );
             }
         }
 
@@ -784,7 +779,7 @@ sub _EncodeLOB {
         }
 
 
-        return ($ContentEncoding, $Body);
+        return ($ContentEncoding, $Body, $MIMEType, $Filename );
 
 }
 
@@ -853,8 +848,9 @@ sub Update {
 
     my $attributes = $args{'AttributesRef'};
     my $ARGSRef    = $args{'ARGSRef'};
-    my @results;
+    my %new_values;
 
+    # gather all new values
     foreach my $attribute (@$attributes) {
         my $value;
         if ( defined $ARGSRef->{$attribute} ) {
@@ -875,7 +871,6 @@ sub Update {
 
         $value =~ s/\r\n/\n/gs;
 
-
         # If Queue is 'General', we want to resolve the queue name for
         # the object.
 
@@ -894,6 +889,29 @@ sub Update {
             next if ($value || 0) eq $self->$attribute();
         };
 
+        $new_values{$attribute} = $value;
+    }
+
+    return $self->_UpdateAttributes(
+        Attributes => $attributes,
+        NewValues  => \%new_values,
+    );
+}
+
+sub _UpdateAttributes {
+    my $self = shift;
+    my %args = (
+        Attributes => [],
+        NewValues  => {},
+        @_,
+    );
+
+    my @results;
+
+    foreach my $attribute (@{ $args{Attributes} }) {
+        next if !exists($args{NewValues}{$attribute});
+
+        my $value = $args{NewValues}{$attribute};
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
@@ -935,11 +953,8 @@ sub Update {
     return @results;
 }
 
-# {{{ Routines dealing with Links
 
-# {{{ Link Collections
 
-# {{{ sub Members
 
 =head2 Members
 
@@ -953,9 +968,7 @@ sub Members {
     return ( $self->_Links( 'Target', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ sub MemberOf
 
 =head2 MemberOf
 
@@ -969,9 +982,7 @@ sub MemberOf {
     return ( $self->_Links( 'Base', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ RefersTo
 
 =head2 RefersTo
 
@@ -984,9 +995,7 @@ sub RefersTo {
     return ( $self->_Links( 'Base', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ ReferredToBy
 
 =head2 ReferredToBy
 
@@ -999,9 +1008,7 @@ sub ReferredToBy {
     return ( $self->_Links( 'Target', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ DependedOnBy
 
 =head2 DependedOnBy
 
@@ -1014,7 +1021,6 @@ sub DependedOnBy {
     return ( $self->_Links( 'Target', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
@@ -1054,7 +1060,6 @@ sub HasUnresolvedDependencies {
 }
 
 
-# {{{ UnresolvedDependencies 
 
 =head2 UnresolvedDependencies
 
@@ -1079,9 +1084,7 @@ sub UnresolvedDependencies {
 
 }
 
-# }}}
 
-# {{{ AllDependedOnBy
 
 =head2 AllDependedOnBy
 
@@ -1138,7 +1141,7 @@ sub _AllLinkedTickets {
 	    $args{_found}{$obj->Id} = $obj;
 	    $obj->_AllLinkedTickets( %args, _top => 0 );
 	}
-	elsif ($obj->Type eq $args{Type}) {
+	elsif ($obj->Type and $obj->Type eq $args{Type}) {
 	    $args{_found}{$obj->Id} = $obj;
 	}
 	else {
@@ -1154,9 +1157,7 @@ sub _AllLinkedTickets {
     }
 }
 
-# }}}
 
-# {{{ DependsOn
 
 =head2 DependsOn
 
@@ -1169,12 +1170,10 @@ sub DependsOn {
     return ( $self->_Links( 'Base', 'DependsOn' ) );
 }
 
-# }}}
 
 
 
 
-# {{{ sub _Links 
 
 =head2 Links DIRECTION [TYPE]
 
@@ -1198,7 +1197,7 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
+        $self->{"$field$type"} = RT::Links->new( $self->CurrentUser );
             # at least to myself
             $self->{"$field$type"}->Limit( FIELD => $field,
                                            VALUE => $self->URI,
@@ -1210,11 +1209,8 @@ sub _Links {
     return ( $self->{"$field$type"} );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub FormatType
 
 =head2 FormatType
 
@@ -1228,13 +1224,12 @@ sub FormatType{
 		 @_
 	       );
     $args{Type} =~ s/([A-Z])/" " . lc $1/ge;
+    $args{Type} =~ s/^\s+//;
     return $args{Type};
 }
 
 
-# }}}
 
-# {{{ sub FormatLink
 
 =head2 FormatLink
 
@@ -1255,9 +1250,7 @@ sub FormatLink {
     return $text;
 }
 
-# }}}
 
-# {{{ sub _AddLink
 
 =head2 _AddLink
 
@@ -1299,7 +1292,7 @@ sub _AddLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    # {{{ Check if the link already exists - we don't want duplicates
+    # Check if the link already exists - we don't want duplicates
     use RT::Link;
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},
@@ -1334,9 +1327,7 @@ sub _AddLink {
     return ( $linkid, $TransString ) ;
 }
 
-# }}}
 
-# {{{ sub _DeleteLink 
 
 =head2 _DeleteLink
 
@@ -1380,7 +1371,7 @@ sub _DeleteLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $link = new RT::Link( $self->CurrentUser );
+    my $link = RT::Link->new( $self->CurrentUser );
     $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
 
 
@@ -1406,13 +1397,9 @@ sub _DeleteLink {
     }
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with transactions
 
-# {{{ sub _NewTransaction
 
 =head2 _NewTransaction  PARAMHASH
 
@@ -1435,6 +1422,7 @@ sub _NewTransaction {
         MIMEObj   => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
+        SquelchMailTo => undef,
         @_
     );
 
@@ -1452,7 +1440,7 @@ sub _NewTransaction {
     }
 
     require RT::Transaction;
-    my $trans = new RT::Transaction( $self->CurrentUser );
+    my $trans = RT::Transaction->new( $self->CurrentUser );
     my ( $transaction, $msg ) = $trans->Create(
 	ObjectId  => $self->Id,
 	ObjectType => ref($self),
@@ -1468,6 +1456,7 @@ sub _NewTransaction {
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
         CommitScrips => $args{'CommitScrips'},
+        SquelchMailTo => $args{'SquelchMailTo'},
     );
 
     # Rationalize the object since we may have done things to it during the caching.
@@ -1486,9 +1475,7 @@ sub _NewTransaction {
     return ( $transaction, $msg, $trans );
 }
 
-# }}}
 
-# {{{ sub Transactions 
 
 =head2 Transactions
 
@@ -1515,10 +1502,7 @@ sub Transactions {
     return ($transactions);
 }
 
-# }}}
-# }}}
 #
-# {{{ Routines dealing with custom fields
 
 sub CustomFields {
     my $self = shift;
@@ -1530,6 +1514,7 @@ sub CustomFields {
     $cfs->LimitToGlobalOrObjectId(
         $self->_LookupId( $self->CustomFieldLookupType )
     );
+    $cfs->ApplySortOrder;
 
     return $cfs;
 }
@@ -1562,7 +1547,6 @@ sub CustomFieldLookupType {
     return ref($self);
 }
 
-# {{{ AddCustomFieldValue
 
 =head2 AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1711,6 +1695,26 @@ sub _AddCustomFieldValue {
         }
 
         my $new_content = $new_value->Content;
+
+        # For datetime, we need to display them in "human" format in result message
+        #XXX TODO how about date without time?
+        if ($cf->Type eq 'DateTime') {
+            my $DateObj = RT::Date->new( $self->CurrentUser );
+            $DateObj->Set(
+                Format => 'ISO',
+                Value  => $new_content,
+            );
+            $new_content = $DateObj->AsString;
+
+            if ( defined $old_content && length $old_content ) {
+                $DateObj->Set(
+                    Format => 'ISO',
+                    Value  => $old_content,
+                );
+                $old_content = $DateObj->AsString;
+            }
+        }
+
         unless ( defined $old_content && length $old_content ) {
             return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
         }
@@ -1751,9 +1755,7 @@ sub _AddCustomFieldValue {
     }
 }
 
-# }}}
 
-# {{{ DeleteCustomFieldValue
 
 =head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
 
@@ -1799,18 +1801,26 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
     }
 
+    my $old_value = $TransactionObj->OldValue;
+    # For datetime, we need to display them in "human" format in result message
+    if ( $cf->Type eq 'DateTime' ) {
+        my $DateObj = RT::Date->new( $self->CurrentUser );
+        $DateObj->Set(
+            Format => 'ISO',
+            Value  => $old_value,
+        );
+        $old_value = $DateObj->AsString;
+    }
     return (
         $TransactionId,
         $self->loc(
             "[_1] is no longer a value for custom field [_2]",
-            $TransactionObj->OldValue, $cf->Name
+            $old_value, $cf->Name
         )
     );
 }
 
-# }}}
 
-# {{{ FirstCustomFieldValue
 
 =head2 FirstCustomFieldValue FIELD
 
@@ -1828,9 +1838,30 @@ sub FirstCustomFieldValue {
     return $first->Content;
 }
 
+=head2 CustomFieldValuesAsString FIELD
+
+Return the content of the CustomField FIELD for this ticket.
+If this is a multi-value custom field, values will be joined with newlines.
+
+Takes a field id or name as the first argument
+
+Takes an optional Separator => "," second and third argument
+if you want to join the values using something other than a newline
+
+=cut
+
+sub CustomFieldValuesAsString {
+    my $self  = shift;
+    my $field = shift;
+    my %args  = @_;
+    my $separator = $args{Separator} || "\n";
+
+    my $values = $self->CustomFieldValues( $field );
+    return join ($separator, grep { defined $_ }
+                 map { $_->Content } @{$values->ItemsArrayRef});
+}
 
 
-# {{{ CustomFieldValues
 
 =head2 CustomFieldValues FIELD
 
@@ -1902,9 +1933,6 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
-eval "require RT::Record_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});
-eval "require RT::Record_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
+use RT::Test nodata => 1, tests => 35;
 use RT::Ticket;
 use RT::CustomField;
 
@@ -11,11 +11,11 @@ my $queue_name = "CFSortQueue-$$";
 my $queue = RT::Test->load_or_create_queue( Name => $queue_name );
 ok($queue && $queue->id, "$queue_name - test queue creation");
 
-diag "create a CF\n" if $ENV{TEST_VERBOSE};
+diag "create a CF";
 my $cf_name = "Rights$$";
 my $cf;
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf = RT::CustomField->new( RT->SystemUser );
     my ($ret, $msg) = $cf->Create(
         Name  => $cf_name,
         Queue => $queue->id,
@@ -98,7 +98,7 @@ ok( RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login( tester => 'password' ), 'logged in';
 
-diag "check that we have no the CF on the create" if $ENV{'TEST_VERBOSE'};
+diag "check that we don't have the cf on create";
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -115,46 +115,46 @@ diag "check that we have no the CF on the create" if $ENV{'TEST_VERBOSE'};
     );
     my ($tid) = ($m->content =~ /Ticket (\d+) created/i);
     ok $tid, "created a ticket succesfully";
-    $m->content_unlike(qr/$cf_name/, "don't see CF");
+    $m->content_lacks($cf_name, "don't see CF");
 
-    $m->follow_link( text => 'Custom Fields' );
-    $form = $m->form_number(3);
+    $m->follow_link( id => 'page-basics');
+    $form = $m->form_name('TicketModify');
     $cf_field = "Object-RT::Ticket-$tid-CustomField-". $cf->id ."-Value";
     ok !$form->find_input( $cf_field ), 'no form field on the page';
 }
 
-diag "check that we see CF as Cc" if $ENV{'TEST_VERBOSE'};
+diag "check that we see CF as Cc";
 {
     my $ticket = RT::Ticket->new( $tester );
     my ($tid, $msg) = $ticket->Create( Queue => $queue, Subject => 'test', Cc => $tester->id );
     ok $tid, "created ticket";
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "see CF");
+    $m->content_contains($cf_name, "see CF");
 }
 
-diag "check that owner can see and edit CF" if $ENV{'TEST_VERBOSE'};
+diag "check that owner can see and edit CF";
 {
     my $ticket = RT::Ticket->new( $tester );
     my ($tid, $msg) = $ticket->Create( Queue => $queue, Subject => 'test', Cc => $tester->id, Owner => $tester->id );
     ok $tid, "created ticket";
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "see CF");
+    $m->content_contains($cf_name, "see CF");
 
-    $m->follow_link( text => 'Custom Fields' );
-    my $form = $m->form_number(3);
+    $m->follow_link( id => 'page-basics');
+    my $form = $m->form_name('TicketModify');
     my $cf_field = "Object-RT::Ticket-$tid-CustomField-". $cf->id ."-Value";
     ok $form->find_input( $cf_field ), 'form field on the page';
 
     $m->submit_form(
-        form_number => 3,
+        form_name => 'TicketModify',
         fields => {
             $cf_field => "changed cf",
         },
     );
 
     ok $m->goto_ticket( $tid ), "opened ticket";
-    $m->content_like(qr/$cf_name/, "changed cf");
+    $m->content_contains($cf_name, "changed cf");
 }
 

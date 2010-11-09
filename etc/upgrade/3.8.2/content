@@ -1,20 +1,20 @@
 @Initial = (
     sub {
         $RT::Logger->warning(
-            "Going to add [OLD] prefix to all temlates in approvals queue."
+            "Going to add [OLD] prefix to all templates in approvals queue."
             ." If you never used approvals then you can delete all these"
-            ." templates with [OLD] prefix. Leave new there may be you will"
-            ." want to use approvals some time."
+            ." templates with [OLD] prefix. Leave the new ones there because"
+            ." maybe you will eventually want to use start using approvals."
         );
 
-        my $approvals_q = RT::Queue->new( $RT::SystemUser );
+        my $approvals_q = RT::Queue->new( RT->SystemUser );
         $approvals_q->Load('___Approvals');
         unless ( $approvals_q->id ) {
             $RT::Logger->error("You have no approvals queue.");
             return 1;
         }
 
-        my $templates = RT::Templates->new( $RT::SystemUser );
+        my $templates = RT::Templates->new( RT->SystemUser );
         $templates->LimitToQueue( $approvals_q->id );
         while ( my $tmpl = $templates->Next ) {
             my ($status, $msg) = $tmpl->SetName( "[OLD] ". $tmpl->Name );
@@ -109,9 +109,9 @@ The ticket has been approved, you may now start to act on it.
 @Final = (
     sub {
         $RT::Logger->debug("Going to adjust dashboards");
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
 
-        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        my $attrs = RT::Attributes->new( RT->SystemUser );
         $attrs->UnLimit;
         my @dashboards = $attrs->Named('Dashboard');
 
@@ -147,7 +147,7 @@ The ticket has been approved, you may now start to act on it.
         return 1;
     },
     sub {
-        my $approvals_q = RT::Queue->new( $RT::SystemUser );
+        my $approvals_q = RT::Queue->new( RT->SystemUser );
         $approvals_q->Load('___Approvals');
         unless ( $approvals_q->id ) {
             $RT::Logger->error("You have no approvals queue.");
@@ -168,7 +168,7 @@ The ticket has been approved, you may now start to act on it.
 
         require Data::Dumper;
 
-        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        my $scrips = RT::Scrips->new( RT->SystemUser );
         $scrips->LimitToQueue( $approvals_q->id );
         while ( my $scrip = $scrips->Next ) {
             my %tmp =

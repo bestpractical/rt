@@ -1,0 +1,1 @@
+ALTER TABLE Tickets MODIFY ( Status TYPE VARCHAR2(64) );

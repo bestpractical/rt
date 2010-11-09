@@ -1,0 +1,118 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<% JSON::to_json( \@suggestions ) |n %>
+% $m->abort;
+<%ARGS>
+$return => ''
+$term => undef
+$delim => undef
+$max => 10
+$privileged => undef
+</%ARGS>
+<%INIT>
+require JSON;
+
+# Only allow certain return fields
+$return = 'EmailAddress'
+    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
+
+$m->abort unless defined $return
+             and defined $term
+             and length $term;
+
+# Use our delimeter if we have one
+if ( defined $delim and length $delim ) {
+    if ( $delim eq ',' ) {
+        $delim = qr/,\s*/;
+    } else {
+        $delim = qr/\Q$delim\E/;
+    }
+
+    # If the field handles multiple values, pop the last one off
+    $term = (split $delim, $term)[-1] if $term =~ $delim;
+}
+
+my $CurrentUser = $session{'CurrentUser'};
+
+# Require privileged users or overriding config
+$m->abort unless $CurrentUser->Privileged
+              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
+
+my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
+
+my $users = RT::Users->new( $CurrentUser );
+$users->RowsPerPage( $max );
+
+$users->LimitToPrivileged() if $privileged;
+
+while (my ($name, $op) = each %fields) {
+    $op = 'STARTSWITH'
+        unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
+
+    $users->Limit(
+        FIELD           => $name,
+        OPERATOR        => $op,
+        VALUE           => $term,
+        ENTRYAGGREGATOR => 'OR',
+        SUBCLAUSE       => 'autocomplete',
+    );
+}
+
+my @suggestions;
+
+while ( my $user = $users->Next ) {
+    next if $user->id == RT->SystemUser->id
+         or $user->id == RT->Nobody->id;
+
+    my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
+    $formatted =~ s/\n//g;
+    push @suggestions, { label => $formatted, value => $user->$return };
+}
+
+</%INIT>

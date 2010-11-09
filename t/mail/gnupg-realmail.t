@@ -2,32 +2,13 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 197;
-
-plan skip_all => 'GnuPG required.'
-    unless eval 'use GnuPG::Interface; 1';
-plan skip_all => 'gpg executable is required.'
-    unless RT::Test->find_executable('gpg');
-
+use RT::Test::GnuPG tests => 196, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
 
-use File::Temp qw(tempdir);
-my $homedir = tempdir( CLEANUP => 1 );
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+RT::Test->trust_gnupg_key('rt-test@example.com');
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we did log in';
@@ -37,26 +18,12 @@ $m->submit_form( form_number => 3,
          fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 
-diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
-my $everyone;
-{
-    $everyone = RT::Group->new( $RT::SystemUser );
-    $everyone->LoadSystemInternalGroup('Everyone');
-    ok $everyone->id, "loaded 'everyone' group";
-}
-
-RT::Test->set_rights(
-    Principal => $everyone,
-    Right => ['CreateTicket'],
-);
-
-
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
     for my $format (qw/MIME inline/) {
         for my $attachment (qw/plain text-attachment binary-attachment/) {
             ++$eid;
-            diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
+            diag "Email $eid: $usage, $attachment email with $format format";
             eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
@@ -66,13 +33,13 @@ $eid = 18;
 {
     my ($usage, $format, $attachment) = ('signed', 'inline', 'plain');
     ++$eid;
-    diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
+    diag "Email $eid: $usage, $attachment email with $format format";
     eval { email_ok($eid, $usage, $format, $attachment) };
 }
 
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
-    diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
+    diag "email_ok $eid: $usage, $format, $attachment";
 
     my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
         qw(data gnupg emails));
@@ -83,7 +50,7 @@ sub email_ok {
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
     ok ($id, "$eid: got id of a newly created ticket - $id");
 
-    my $tick = RT::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Ticket->new( RT->SystemUser );
     $tick->Load( $id );
     ok ($tick->id, "$eid: loaded ticket #$id");
 
