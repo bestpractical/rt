@@ -65,7 +65,7 @@ div#body {
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
     margin-left: 10em;
-    margin-top: 3em;
+    margin-top: 5.8em;
     margin-right: 0;
     margin-bottom: 0em;
     min-height: 10%;
@@ -182,9 +182,9 @@ div#quickbar {
 
 div#header h1 {
  position: absolute;
- left: 0.5em;
+ left: 7em;
  right: 20em;
- top: 1.6em;
+ top: 1.4em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;

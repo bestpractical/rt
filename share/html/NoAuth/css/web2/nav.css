@@ -55,7 +55,7 @@
     width: 10em;
     font-size: 0.85em;
     position: absolute;
-    top: 6.2em;
+    top: 3.4em;
     left: 0em;
     z-index: 9997;
     background-color: none;
@@ -161,12 +161,13 @@
 
 #page-navigation {
     position: absolute;
-    top: 6em;
+    top: 5.7em;
+    left: 10em;
     right: 0em;
-    left: auto;
+    height: 2.1em;
     z-index: 9995;
     font-size: 0.9em;
-    background-color: #eee;
+    background-color: #fff;
     border: 1px solid #ccc;
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
@@ -198,6 +199,39 @@
 }
 
 #page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
+    border: none;
+    padding: 0.25em;
+    color: #000;
+}
+
+
+
+#page-actions {
+    display: none;
+}
+
+#page-action-menu {
+    position: absolute;
+    display: block;
+    top: 8em;
+    right: 0em;
+    left: auto;
+    z-index: 9995;
+    font-size: 0.9em;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    list-style-type: none;
+    padding: 0.5em;
+}
+
+
+#page-action-menu li {
+    display: inline;
+}
+
+#page-action-menu a, #page-action-menu a:visited{
     border: none;
     padding: 0.25em;
     color: #000;
