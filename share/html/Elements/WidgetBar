@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% return unless ($menu);
 % for my $child ($menu->children) {
 % if ($child->escape_title) {
 <%$child->title%>\

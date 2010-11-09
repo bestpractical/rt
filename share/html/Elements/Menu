@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
+% return unless ($menu);
 <%" " x $depth%><ul<%$id ? ' id="'.$id.'"' : '' |n%><% $toplevel? ' class="toplevel"' : '' |n %>>
 % for my $child ($menu->children) {
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
