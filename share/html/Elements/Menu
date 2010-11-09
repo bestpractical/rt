@@ -56,7 +56,8 @@ class="has-children" \
 % }
 >\
 % if ($child->link_item) {
-<a id="<%$item_id%>" <% $child->path ? ' href="'.RT->Config->Get('WebPath').$child->path.'"' : '' |n%>>\
+% my $url = (not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path;
+<a id="<%$item_id%>" <% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$child->target.'"' : '' %>>\
 % }
 % if ($child->escape_title) {
 <%$child->title%>\
