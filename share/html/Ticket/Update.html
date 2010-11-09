@@ -88,6 +88,12 @@
                 .addClass("action-"+ev.target.value);
         });
     });
+    jQuery(function() {
+        jQuery("input[name=TxnSendMailTo]").change(function(ev) {
+            jQuery("input[name=TxnSendMailTo][value="+ev.target.value+"]")
+                  .attr("checked",jQuery(ev.target).attr('checked'));
+        });
+    });
 </script>
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
@@ -137,6 +143,8 @@
 </div>
 
 <div id="ticket-update-message">
+  <& /Ticket/Elements/ShowSimplifiedRecipients, TicketObj => $TicketObj, %ARGS &>
+
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
   <table width="100%" border="0">
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
@@ -178,11 +186,15 @@
   <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
-  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips' &>
+  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) &>
     <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
   </&>
 % }
 </div>
+
+% if (my $recips = $m->notes("DryRun-Recipients-".$TicketObj->Id)) {
+<input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %{$recips} %>" />
+% }
 
 </form>
 <hr class="clear" />

@@ -1,0 +1,53 @@
+<%args>
+$TicketObj
+</%args>
+<%init>
+return unless RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'});
+
+my $Object = $m->notes("DryRun-".$TicketObj->Id) || $TicketObj->DryRun(%ARGS);
+$m->notes("DryRun-".$TicketObj->Id, $Object);
+return unless $Object;
+
+my %headers = (To => {}, Cc => {}, Bcc => {});
+if ($Object->Scrips) {
+    for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @{$Object->Scrips->Prepared}) {
+        for my $type qw(To Cc Bcc) {
+            $headers{$type}{$_->address} = $_
+                for $scrip->ActionObj->Action->$type();
+        }
+    }
+}
+if ($Object->Rules) {
+    for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @{$Object->Rules}) {
+        for my $type qw(To Cc Bcc) {
+            $headers{$type}{$_} ||= @{[Email::Address->parse($_)]}[0] # Hate list context
+                for @{$rule->{hints}{recipients}{$type}};
+        }
+    }
+}
+my %recips;
+</%init>
+<&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
+<table>
+<tr>
+% for my $type qw(To Cc Bcc) {
+%     next unless keys %{$headers{$type}};
+<td valign="top"><% $type %>:</td>
+<td valign="top">
+%     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
+%         my $checked = 1;
+%         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
+%         $recips{$addr->address}++;
+<input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+<label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+%         $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
+<br />
+%     }
+</td></tr>
+% }
+</table>
+<i>(Uncheck boxes to disable notifications to the listed
+recipients. Does <b>not</b> change who will receive future
+updates.)</i>
+</&>
+% $m->notes("DryRun-Recipients-".$TicketObj->Id, \%recips);

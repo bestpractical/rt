@@ -394,6 +394,15 @@ our %META = (
             },
         },
     },
+    SimplifiedRecipients => {
+        Section         => 'Ticket display',                       #loc
+        Overridable     => 1,
+        SortOrder       => 7,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => q|Show simplified recipient list on ticket update|,                #loc
+        },
+    },
 
     # User overridable locale options
     DateTimeFormat => {
