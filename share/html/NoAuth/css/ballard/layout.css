@@ -150,13 +150,6 @@ div#quickbar {
 
 }
 
-#quick-personal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9999
-}
-
 div#header h1 {
  position: absolute;
  left: 0.5em;

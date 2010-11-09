@@ -149,11 +149,6 @@ div#quickbar {
  border-bottom: 1px solid #ccc;
 
 }
-div#quick-personal {
-    float: left;
-    margin-left: 1em;
-}
-
 
 div#header h1 {
  position: absolute;

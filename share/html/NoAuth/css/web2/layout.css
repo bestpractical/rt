@@ -150,13 +150,6 @@ div#quickbar {
 
 }
 
-#quick-personal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9999
-}
-
 #prefs-menu.sf-menu li li {
     background: #eaeaea;
 }

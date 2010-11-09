@@ -50,9 +50,8 @@ $Prefs => '/Prefs/Other.html'
 </%ARGS>
 <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
-% if ($session{'CurrentUser'}->Name) {
-% } else {
-    <&|/l&>Not logged in.</&>
+% unless ($session{'CurrentUser'}->Id) {
+    <span id="not-logged-in"><&|/l&>Not logged in.</&></span>
 % }
 % $m->callback( %ARGS );
 </div>
