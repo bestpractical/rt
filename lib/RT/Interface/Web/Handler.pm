@@ -58,7 +58,7 @@ use Time::ParseDate;
 use Time::HiRes;
 use HTML::Entities;
 use HTML::Scrubber;
-use RT::Interface::Web::Handler;
+use RT::Interface::Web;
 use RT::Interface::Web::Request;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
