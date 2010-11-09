@@ -189,7 +189,7 @@ foreach my $action ( @actions ) {
     no strict 'refs';
     my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
     error($action, $msg) unless $status;
-    print $msg ."\n" if $msg;
+    print $msg .".\n" if $msg;
     print "Done.\n";
 }
 
@@ -237,7 +237,7 @@ sub action_acl {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting database ACLs\n";
+    print "Now inserting database ACLs.\n";
     return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
 }
 
@@ -250,7 +250,7 @@ sub action_coredata {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting RT core system objects\n";
+    print "Now inserting RT core system objects.\n";
     return $RT::Handle->InsertInitialData;
 }
 
@@ -261,7 +261,7 @@ sub action_insert {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
-    print "Now inserting data\n";
+    print "Now inserting data.\n";
     my $file = $args{'datafile'};
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
