@@ -44,11 +44,11 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->id, current_tab =>
-$current_subtab, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" method="post">
+<form action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/Modify.html" method="post">
 <input type="hidden" name="Submitted" value="1" />
 %if ($Create ) {
 <input type="hidden" name="id" value="new" />
@@ -94,7 +94,7 @@ $current_subtab, Title => $title &>
 
 <%INIT>
 
-my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
+my $ClassObj = new RT::Class($session{'CurrentUser'});
 my  ($title, @results, $Disabled);
 
 if ($Create) {

@@ -171,7 +171,9 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         }
 
         my $article_admin = $admin->child( articles => title => loc('Articles') => path => "/Admin/Articles/index.html" );
-        $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/index.html');
+        my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/');
+        $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/' );
+        $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1' );
         $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
         $article_admin->child( cfs => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
 
@@ -347,6 +349,21 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 $tabs->child( create => title => loc('Create'), path => "/Admin/Global/$type.html?Create=1" );
             }
         }
+    }
+
+    if ( $request_path =~ qr{Admin/Articles/Classes/} ) {
+        if ( my $id = $m->request_args->{'id'} ) {
+            my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+            $obj->Load($id);
+            my $tabs = PageMenu();
+            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Articles/Classes/Modify.html?id=".$id, );
+            $tabs->child( topics => title => loc('Topics') => path => "/Admin/Articles/Classes/Topics.html?id=".$id, );
+            $tabs->child( 'custom-fields'  => title => loc('Custom Fields') => path => '/Admin/Articles/Classes/CustomFields.html?id='.$id, );
+            $tabs->child( 'group-rights' => title => loc('Group Rights') => path => "/Admin/Articles/Classes/GroupRights.html?id=".$id, );
+            $tabs->child( 'user-rights'  => title => loc('User Rights') => path => "/Admin/Articles/Classes/UserRights.html?id=".$id, );
+            $tabs->child( 'applies-to'  => title => loc('Applies to') =>  path => "/Admin/Articles/Classes/Objects.html?id=$id", );
+        }
+
     }
 
     if ( $request_path =~ qr{^/Ticket/} ) {

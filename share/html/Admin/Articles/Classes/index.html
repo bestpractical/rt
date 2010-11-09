@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, current_tab => 'Admin/RTFM/Classes/', current_subtab => 'Admin/RTFM/Classes/', Title => loc("Select a Class") &>
+<& /Admin/Elements/Header, Title => loc("Select a Class") &>
+<& /Elements/Tabs &>
 
 <table>
 <tr>
@@ -74,7 +75,7 @@
 </table>
 <%INIT>
 my $caption;
-my $Classes = new RT::FM::ClassCollection($session{'CurrentUser'});
+my $Classes = new RT::Classes($session{'CurrentUser'});
 my @allowed_classes;
 
 if ($FindDisabledClasses) {
