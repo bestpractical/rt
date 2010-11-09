@@ -272,7 +272,10 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return $self->lifecycle->valid('initial', 'active');
+
+    my %seen;
+    my @active_statuses = grep !$seen{$_}++, $self->lifecycle->valid('initial', 'active');
+    return @active_statuses;
 }
 
 =head2 InactiveStatusArray
