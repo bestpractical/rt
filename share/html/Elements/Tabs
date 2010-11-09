@@ -374,23 +374,30 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 my $current   = $obj->Status;
                 my $lifecycle = $obj->QueueObj->lifecycle;
                 my $i         = 1;
-                foreach my $next ( $lifecycle->transitions($current) ) {
-                    my $action = $lifecycle->transition_action( $current => $next );
-                    next if $action eq 'hide';
+
+                foreach my $info ( $lifecycle->actions($current) ) {
+                    my $next = $info->{'to'};
+                    next unless $lifecycle->is_transition( $current => $next );
+
                     my $check = $lifecycle->check_right( $current => $next );
                     $can{$check} = $obj->CurrentUserHasRight($check) unless exists $can{$check};
                     next unless $can{$check};
+
+
+                   my $action = $info->{'update'} || '';
+
 
                     my $url = '/Ticket/';
                     if ($action) {
 
                         $url .= "Update.html?" . $query_string->(Action => $action,
                                                DefaultStatus => $next,
-                                               id            => $id);
+                                               id            => $id
+                                             );
                     } else {
                         $url .= "Display.html?" . $query_string->( Status => $next, id => $id );
                     }
-                    $actions->child( loc($lifecycle->transition_label( $current => $next )) => path => $url);
+                    $actions->child( loc( $info->{'label'} || ucfirst($next) ) => path => $url);
                 }
 
             }
