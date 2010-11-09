@@ -47,36 +47,30 @@
 <& /Admin/Elements/Header, Title => loc("Select a Class") &>
 <& /Elements/Tabs &>
 
-<table>
-<tr>
-<td><%$caption%>:<br />
-<ul>
-% if (scalar @allowed_classes == 0) {
-<li><i><&|/l&>No Classes matching search criteria found.</&></i></li>
-% }
-% foreach my $class ( @allowed_classes ) {
-% if ($session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class)) {
-<li><a href="Modify.html?id=<%$class->id%>"><%$class->Name%></a></li>
+<h1><%$caption%>:</h1>
+<p><&|/l&>Select a Class</&>:</p>
+% unless ($Classes->Count) {
+<em><&|/l&>No Classes matching search criteria found.</&></em>
 % } else {
-<li><a href="Topics.html?id=<%$class->id%>"><%$class->Name%></a></li>
+<& /Elements/CollectionList,
+    Class => 'RT__Class',
+    OrderBy => 'Name',
+    Order => 'ASC',
+    %ARGS,
+    Format => $Format,
+    Collection => $Classes,
+    AllowSorting => 1,
+    PassArguments => [qw( Format Rows Page Order OrderBy FindDisabledClasses  )],
+&>
 % }
-%}
-</ul>
-</td>
-</tr>
-<tr>
-<td valign="top">
-<form method="post" action="<% $RT::WebPath %>/Admin/RTFM/Classes/index.html">
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/index.html">
 <input type="checkbox" name="FindDisabledClasses" value="1" /><&|/l&>Include disabled classes in listing.</&><br />
 <div align="right"><input type="submit" value="<&|/l&>Go!</&>" /></div> 
 </form>
-</td>
-</tr>
-</table>
 <%INIT>
 my $caption;
-my $Classes = new RT::Classes($session{'CurrentUser'});
-my @allowed_classes;
+my $Classes = RT::Classes->new($session{'CurrentUser'});
 
 if ($FindDisabledClasses) {
     $caption = loc("All Classes");
@@ -87,13 +81,11 @@ if ($FindDisabledClasses) {
     $Classes->LimitToEnabled(); 
 
 }
-# Limit to only those classes that the user may admin.
-while (my $class = $Classes->Next()) {
-    push(@allowed_classes, $class) if $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminClass', Object => $class)
-      or $session{'CurrentUser'}->UserObj->HasRight(Right => 'AdminTopics', Object => $class);
-}
+
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Classes'};
 
 </%INIT>
 <%ARGS>
 $FindDisabledClasses => 0
+$Format => undef
 </%ARGS>
