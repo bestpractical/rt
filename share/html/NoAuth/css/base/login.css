@@ -83,9 +83,11 @@ margin-right:auto;margin-left:auto;
 
 #quick-personal {
     position: absolute;
-    top: 0;
-    left: 0;
     z-index: 9999;
+    left: 0;
+    /* This avoids a very weird bug in Chrome where opening a select causes a
+     * hover event at (0,0), which will be over top of the menu sometimes */
+    top: 1px;
 }
 
 #quick-personal #not-logged-in {
