@@ -22,7 +22,7 @@ RT::Test->clean_caught_mails;
 
 diag "Foward Ticket" if $ENV{TEST_VERBOSE};
 {
-    $m->follow_link_ok( { id => 'page-transitions-forward'},
+    $m->follow_link_ok( { id => 'page-actions-forward'},
         'follow 1st Forward to forward ticket' );
 
     $m->submit_form(

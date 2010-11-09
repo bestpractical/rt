@@ -128,7 +128,7 @@ diag "on reply correct owner is selected";
     is $ticket->Owner, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
-    $agent_a->follow_link_ok( { id => 'page-transitions-reply' }, 'Reply' );
+    $agent_a->follow_link_ok( { id => 'page-actions-reply' }, 'Reply' );
 
     my $form = $agent_a->form_number(3);
     is $form->value('Owner'), '', 'empty value selected';
