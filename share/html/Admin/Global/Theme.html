@@ -195,6 +195,8 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                 Content => {
                                                     type => $file_hash->{ContentType},
                                                     data => $file_hash->{LargeContent} } );
+    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
+
     $img = Imager->new;
     unless ( $img->read(data => $file_hash->{LargeContent}) ) {
         push @results, loc("Unable to read image: [_1]", $img->errstr);
@@ -229,6 +231,7 @@ if ($user_css) {
         my ($id, $msg) = $RT::System->SetAttribute( Name => "UserCSS",
                                                     Description => "User-provided css",
                                                     Content => $user_css );
+        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
     }
 }
 
