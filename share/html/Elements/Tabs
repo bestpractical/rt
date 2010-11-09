@@ -533,6 +533,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
     PageWidgets()->child( simple_search => title => $m->scomp('SimpleSearch'), escape_title => 0 );
     PageWidgets()->child( create_ticket => title => $m->scomp('CreateTicket'), escape_title => 0 );
+
+    $m->callback( CallbackName => 'Privileged' );
 }
 
 if ( $request_path =~ qr'/SelfService' ) {
@@ -578,6 +580,8 @@ if ( $request_path =~ qr'/SelfService' ) {
     }
 
     PageWidgets->child( goto         => title => $m->scomp('/SelfService/Elements/GotoTicket'), escape_title => 0 );
+
+    $m->callback( CallbackName => 'SelfService' );
 }
 
 </%INIT>
