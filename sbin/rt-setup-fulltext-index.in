@@ -131,7 +131,7 @@ $dbh->{'RaiseError'} = 1;
 $dbh->{'PrintError'} = 1;
 
 if ( $DB{'type'} eq 'mysql' ) {
-    my $dbh = Jifty->handle->dbh;
+    my $dbh = $RT::Handle->dbh;
 
     check_sphinx();
     my $table = prompt(
