@@ -67,7 +67,13 @@ use warnings;
 use base qw(RT::Search);
 
 use Regexp::Common qw/delimited/;
-my $re_delim = qr[$RE{delimited}{-delim=>qq{\'\"}}];
+
+# Only a subset of limit types AND themselves together.  "queue:foo
+# queue:bar" is an OR, but "subject:foo subject:bar" is an AND
+our %AND = (
+    content => 1,
+    subject => 1,
+);
 
 sub _Init {
     my $self = shift;
@@ -79,49 +85,7 @@ sub _Init {
 
 sub Describe {
     my $self = shift;
-    return ( $self->loc( "No description for [_1]", ref $self ) );
-}
-
-sub QueryToSQL {
-    my $self = shift;
-    my $query = shift || $self->Argument;
-
-    my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
-        split /((?:fulltext:)?$re_delim|\s+)/o, $query;
-
-    my ( @keyvalue_clauses, @status_clauses, @other_clauses );
-
-    for my $keyword (@keywords) {
-        my @clauses;
-        if (   ( @clauses = $self->TranslateCustom($keyword) )
-            || ( @clauses = $self->TranslateKeyValue($keyword) ) )
-        {
-            push @keyvalue_clauses, @clauses;
-            next;
-        } elsif ( @clauses = $self->TranslateStatus($keyword) ) {
-            push @status_clauses, @clauses;
-            next;
-        }
-
-        for my $action (qw/Number User Queue Owner Others/) {
-            my $translate = 'Translate' . $action;
-            if ( my @clauses = $self->$translate($keyword) ) {
-                push @other_clauses, @clauses;
-                next;
-            }
-        }
-    }
-
-    push @other_clauses, $self->ProcessExtraQueues;
-    unless (@status_clauses) {
-        push @status_clauses, $self->ProcessExtraStatus;
-    }
-
-    my @tql_clauses = join( " AND ", sort @keyvalue_clauses );    # Yes, AND!
-    push @tql_clauses, join( " OR ", sort @status_clauses );
-    push @tql_clauses, join( " OR ", sort @other_clauses );
-    @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
-    return join " AND ", sort @tql_clauses;
+    return ( $self->loc( "Keyword and intuition-based searching", ref $self ) );
 }
 
 sub Prepare {
@@ -134,135 +98,139 @@ sub Prepare {
     return (1);
 }
 
-sub TranslateKeyValue {
+sub QueryToSQL {
     my $self = shift;
-    my $key  = shift;
+    my $query = shift || $self->Argument;
 
-    if ( $key
-        =~ /(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"]?)(.+)\2/i
-       )
-    {
-        my $field = $1;
-        my $value = $3;
-        $value =~ s/(['"])/\\$1/g;
-
-        if ( $field =~ /id|status|owner|queue/i ) {
-            return "$field = '$value'";
-        } elsif ( $field =~ /fulltext/i ) {
-            return "Content LIKE '$value'";
-        } else {
-            return "$field LIKE '$value'";
+    my %limits;
+    $query =~ s/^\s*//;
+    while ($query =~ /^\S/) {
+        if ($query =~ s/^
+                        (?:
+                            (\w+)  # A straight word
+                            (?:\.  # With an optional .foo
+                                ($RE{delimited}{-delim=>q['"]}
+                                |\w+
+                                ) # Which could be ."foo bar", too
+                            )?
+                        )
+                        :  # Followed by a colon
+                        ($RE{delimited}{-delim=>q['"]}
+                        |\S+
+                        ) # And a possibly-quoted foo:"bar baz"
+                        \s*//ix) {
+            my ($type, $extra, $value) = ($1, $2, $3);
+            $value = $self->Unquote($value);
+            $extra = $self->Unquote($extra) if defined $extra;
+            $self->Dispatch(\%limits, $type, $value, $extra);
+        } elsif ($query =~ s/^($RE{delimited}{-delim=>q['"]}|\S+)\s*//) {
+            # If there's no colon, it's just a word or quoted string
+            my $val = $self->Unquote($1);
+            $self->Dispatch(\%limits, $self->GuessType($val), $val);
         }
     }
-    return;
-}
+    $self->Finalize(\%limits);
 
-sub TranslateNumber {
-    my $self = shift;
-    my $key  = shift;
-
-    if ( $key =~ /^\d+$/ ) {
-        return ( "id = '$key'", "Subject LIKE '$key'" );
-    }
-    return;
-}
-
-sub TranslateStatus {
-    my $self = shift;
-    my $key  = shift;
-
-    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
-    if ( $Queue->IsValidStatus($key) ) {
-        return "Status = '$key'";
-    }
-    return;
-}
-
-sub TranslateQueue {
-    my $self = shift;
-    my $key  = shift;
-
-    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
-    $Queue->Load($key);
-    if ( $Queue->id ) {
-        my $quoted_queue = $Queue->Name;
-        $quoted_queue =~ s/'/\\'/g;
-        return "Queue = '$quoted_queue'";
-    }
-    return;
-}
-
-sub TranslateUser {
-    my $self = shift;
-    my $key  = shift;
-
-    if ( $key =~ /\w+\@\w+/ ) {
-        $key =~ s/(['"])/\\$1/g;
-        return "Requestor LIKE '$key'";
-    }
-    return;
-}
-
-sub TranslateOwner {
-    my $self = shift;
-    my $key  = shift;
-
-    my $User = RT::User->new( $self->TicketsObj->CurrentUser );
-    $User->Load($key);
-    if ( $User->id && $User->Privileged ) {
-        my $name = $User->Name;
-        $name =~ s/(['"])/\\$1/g;
-        return "Owner = '" . $name . "'";
-    }
-    return;
-}
-
-sub TranslateOthers {
-    my $self = shift;
-    my $key  = shift;
-
-    $key =~ s{^(['"])(.*)\1$}{$2};    # 'foo' => foo
-    $key =~ s/(['"])/\\$1/g;          # foo'bar => foo\'bar
-
-    return "Subject LIKE '$key'";
-}
-
-sub ProcessExtraQueues {
-    my $self = shift;
-    my %args = @_;
-
-    # restrict to any queues requested by the caller
     my @clauses;
-    for my $queue ( @{ $self->{'Queues'} } ) {
-        my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
-        next unless $QueueObj->Load($queue);
-        my $quoted_queue = $QueueObj->Name;
-        $quoted_queue =~ s/'/\\'/g;
-        push @clauses, "Queue = '$quoted_queue'";
+    for my $subclause (sort keys %limits) {
+        my $op = $AND{lc $subclause} ? "AND" : "OR";
+        push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
     }
-    return @clauses;
+
+    return join " AND ", @clauses;
 }
 
-sub ProcessExtraStatus {
+sub Dispatch {
     my $self = shift;
+    my ($limits, $type, $contents, $extra) = @_;
+    $contents =~ s/(['\\])/\\$1/g;
+    $extra    =~ s/(['\\])/\\$1/g if defined $extra;
 
-    if (RT::Config->Get(
-            'OnlySearchActiveTicketsInSimpleSearch',
-            $self->TicketsObj->CurrentUser
-        )
-       )
-    {
-        return join( " OR ",
-            map "Status = '$_'",
-            RT::Queue->ActiveStatusArray() );
+    my $method = "Handle" . ucfirst(lc($type));
+    $method = "HandleDefault" unless $self->can($method);
+    my ($key, $tsql) = $self->$method($contents, $extra);
+    push @{$limits->{$key}}, $tsql;
+}
+
+sub Unquote {
+    # Given a word or quoted string, unquote it if it is quoted,
+    # removing escaped quotes.
+    my $self = shift;
+    my ($token) = @_;
+    if ($token =~ /^$RE{delimited}{-delim=>q['"]}{-keep}$/) {
+        my $quote = $2 || $5;
+        my $value = $3 || $6;
+        $value =~ s/\\(\\|$quote)/$1/g;
+        return $value;
+    } else {
+        return $token;
     }
-    return;
 }
 
-sub TranslateCustom {
+sub Finalize {
     my $self = shift;
-    return;
+    my ($limits) = @_;
+
+    # Apply default "active status" limit if we don't have any status
+    # limits ourselves
+    if (not $limits->{status}
+        and RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch', $self->TicketsObj->CurrentUser)) {
+        $limits->{status} = [map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray()];
+    }
+
+    # Respect the "only search these queues" limit if we didn't
+    # specify any queues ourselves
+    if (not $limits->{queue}) {
+        for my $queue ( @{ $self->{'Queues'} } ) {
+            my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
+            next unless $QueueObj->Load($queue);
+            my $name = $QueueObj->Name;
+            $name =~ s/(['\\])/\\$1/g;
+            push @{$limits->{queue}}, "Queue = '$name'";
+        }
+    }
 }
+
+sub GuessType {
+    my $self = shift;
+    my ($val) = @_;
+
+    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
+    my $User = RT::User->new( $self->TicketsObj->CurrentUser );
+    if ($val =~ /^\d+$/) {
+        # Simple numeric => id or subject
+        return "number";
+    } elsif ($val =~ /\w+\@\w+/) {
+        # email => requestor address
+        return "requestor";
+    } elsif ( $Queue->IsValidStatus($val) ) {
+        # a valid status
+        return "status";
+    } elsif ($Queue->Load($val) && $Queue->Id ) {
+        # Matches a queue name (or id, but we dealt with that above)
+        return "queue";
+    } elsif ($User->Load($val) && $User->Id && $User->Privileged ) {
+        # Matches a privileged username
+        return "owner";
+    } else {
+        # Fall through to the default
+        return "default";
+    }
+
+}
+
+sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
+sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
+sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
+sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
+sub HandleId        { return id        => "Id = '$_[1]'";         }
+sub HandleStatus    { return status    => "Status = '$_[1]'";     }
+sub HandleOwner     { return owner     => "Owner = '$_[1]'";      }
+sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
+sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
+
+sub HandleNumber    { return number    => "(Id = '$_[1]' OR Subject LIKE '$_[1]')"; }
+sub HandleCf        { return "cf.$_[2]" => "CF.'$_[2]' LIKE '$_[1]'"; }
 
 RT::Base->_ImportOverlays();
 
