@@ -2137,7 +2137,7 @@ a list of js files to be included in head
 
 Example:
 
-Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js history-folding.js/);
+Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js/);
 
 =cut
 
@@ -2153,7 +2153,6 @@ Set(@JSFilesInHead, qw/
     jquery.event.hover-1.0.js
     superfish.js
     supersubs.js
-    history-folding.js
     late.js
 /);
 

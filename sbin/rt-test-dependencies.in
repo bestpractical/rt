@@ -180,7 +180,6 @@ Text::Template 1.44
 File::ShareDir
 File::Spec 0.8
 HTML::Entities 
-HTML::Quoted
 HTML::Scrubber 0.08
 Log::Dispatch 2.23
 Sys::Syslog 0.16
