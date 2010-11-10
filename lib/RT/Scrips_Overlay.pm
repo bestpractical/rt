@@ -229,17 +229,21 @@ sub Prepare {
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->Next() ) {
 
-        next
           unless ( $scrip->IsApplicable(
                                      TicketObj      => $self->{'TicketObj'},
                                      TransactionObj => $self->{'TransactionObj'}
-                   ) );
+                   ) ) {
+                   $RT::Logger->debug("Skipping Scrip #".$scrip->Id." because it isn't applicable");
+                   next;
+               }
 
         #If it's applicable, prepare and commit it
-        next
           unless ( $scrip->Prepare( TicketObj      => $self->{'TicketObj'},
                                     TransactionObj => $self->{'TransactionObj'}
-                   ) );
+                   ) ) {
+                   $RT::Logger->debug("Skipping Scrip #".$scrip->Id." because it didn't Prepare");
+                   next;
+               }
         push @{$self->{'prepared_scrips'}}, $scrip;
 
     }
@@ -373,6 +377,8 @@ sub _FindScrips {
     $RT::Logger->debug(
         "Found ". $self->Count ." scrips for $args{'Stage'} stage"
         ." with applicable type(s) $args{'Type'}"
+        ." for txn #".$self->{TransactionObj}->Id
+        ." on ticket #".$self->{TicketObj}->Id
     );
 }
 
