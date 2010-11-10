@@ -296,9 +296,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             $tabs->child( 'group-rights' => title => loc('Group Rights') => path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
             $tabs->child( 'user-rights' => title => loc('User Rights') => path => "/Admin/CustomFields/UserRights.html?id=" . $id );
 
-            if ( $obj->LookupType =~ /^RT::Queue-/io ) {
-                $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/CustomFields/Objects.html?id=" . $id );
-            }
+            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/CustomFields/Objects.html?id=" . $id );
 
         }
 
