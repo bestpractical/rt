@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-  RT::Search::Googlish
+  RT::Search::Googleish
 
 =head1 SYNOPSIS
 
