@@ -241,7 +241,7 @@ sub StatusType {
     my $self = shift;
     my $status = shift;
     foreach my $type ( qw(initial active inactive) ) {
-        return $type if $self->IsValid( $status, $set );
+        return $type if $self->IsValid( $status, $type );
     }
     return '';
 }
