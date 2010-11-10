@@ -674,6 +674,8 @@ sub ForLocalization {
             @{ $lifecycle->{'actions'} || [] };
     }
 
+    push @res, $self->RightsDescription;
+
     my %seen;
     return grep !$seen{lc $_}++, @res;
 }
