@@ -47,9 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 if ( ref $Message ) {
-    $m->out('<pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
-    $m->out( qq{<div class="message-stanza-depth-$Depth } .($plain_text_mono ? "plain-text-white-space" : "") .qq{">} );
-
+    $m->comp('FoldStanzaJS', Depth => $Depth);
 
     my @stack;
     my $para = '';
@@ -58,6 +56,9 @@ if ( ref $Message ) {
     AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         my $stanza = $Message->[$i];
         if ( ref $stanza eq "HASH" ) {
+            if ( $stanza->{text} && $stanza->{text} =~ /----- Original Message -----/ ) {
+                $Message->[$i+1] = [ splice @$Message, $i+1 ] if $Message->[$i+1];
+            }
             $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
         }
         next unless ref $stanza eq "ARRAY";
@@ -67,7 +68,8 @@ if ( ref $Message ) {
         $Depth++;
         push @stack, [$Message, $i+1];
         ($Message, $i) = ($stanza, -1);
-        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+
+        $m->comp('FoldStanzaJS', Depth => $Depth);
     }
     if ( length $para ) {
         $print_content->( \$para ); $para = '';
@@ -76,7 +78,7 @@ if ( ref $Message ) {
     if ( @stack ) {
         ($Message, $i) = @{ pop @stack };
         $Depth--;
-        $m->out('</div>');
+        $m->out('</span>');
         goto AGAIN;
     }
 

@@ -1,0 +1,14 @@
+.message-stanza-folder {
+    color: #500050;
+    font-size: 0.9em;
+    padding: 0.2em;
+}
+
+.message-stanza-folder.open {
+    color: #ccc;
+}
+
+    .message-stanza-folder:before, .message-stanza-folder:after
+{
+    content: " - ";
+}
