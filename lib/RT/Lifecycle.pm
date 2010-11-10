@@ -503,6 +503,38 @@ sub Actions {
     return grep defined, @res;
 }
 
+=head2 Localization
+
+=head3 ForLocalization
+
+A class method that takes no arguments and returns list of strings
+that require translation.
+
+=cut
+
+sub ForLocalization {
+    my $self = shift;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
+
+    my @res = ();
+
+    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
+    foreach my $lifecycle ( values %LIFECYCLES ) {
+        push @res,
+            grep defined && length,
+            map $_->{'label'},
+            grep ref($_),
+            @{ $lifecycle->{'actions'} || [] };
+    }
+
+    push @res, $self->RightsDescription;
+
+    my %seen;
+    return grep !$seen{lc $_}++, @res;
+}
+
+sub loc { return RT->SystemUser->loc( @_ ) }
+
 =head2 Creation and manipulation
 
 =head3 create
@@ -659,27 +691,6 @@ sub FillCache {
     return;
 }
 
-sub ForLocalization {
-    my $self = shift;
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
-
-    my @res = ();
-
-    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
-    foreach my $lifecycle ( values %LIFECYCLES ) {
-        push @res,
-            grep defined && length,
-            map $_->{'label'},
-            grep ref($_),
-            @{ $lifecycle->{'actions'} || [] };
-    }
-
-    push @res, $self->RightsDescription;
-
-    my %seen;
-    return grep !$seen{lc $_}++, @res;
-}
-
 sub _store_lifecycles {
     my $self = shift;
     my $name = shift;
@@ -804,7 +815,5 @@ sub NoMaps {
     }
     return @res;
 }
-
-sub loc { return RT->SystemUser->loc( @_ ) }
 
 1;
