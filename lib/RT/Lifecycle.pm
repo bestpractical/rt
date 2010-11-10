@@ -505,43 +505,43 @@ sub Actions {
 
 =head2 Moving tickets between lifecycles
 
-=head3 Map
+=head3 MoveMap
 
 Takes lifecycle as a name string or an object and returns a hash reference with
 move map from this cycle to provided.
 
 =cut
 
-sub Map {
+sub MoveMap {
     my $from = shift; # self
     my $to = shift;
     $to = RT::Lifecycle->Load( $to ) unless ref $to;
     return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
 }
 
-=head3 HasMap
+=head3 HasMoveMap
 
 Takes a lifecycle as a name string or an object and returns true if move map
 defined for move from this cycle to provided.
 
 =cut
 
-sub HasMap {
+sub HasMoveMap {
     my $self = shift;
-    my $map = $self->Map( @_ );
+    my $map = $self->MoveMap( @_ );
     return 0 unless $map && keys %$map;
     return 0 unless grep defined && length, values %$map;
     return 1;
 }
 
-=head3 NoMaps
+=head3 NoMoveMaps
 
 Takes no arguments and returns hash with pairs that has no
 move maps.
 
 =cut
 
-sub NoMaps {
+sub NoMoveMaps {
     my $self = shift;
     my @list = $self->List;
     my @res;
@@ -549,7 +549,7 @@ sub NoMaps {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::Lifecycle->Load( $from )->HasMap( $to );
+                unless RT::Lifecycle->Load( $from )->HasMoveMap( $to );
         }
     }
     return @res;
