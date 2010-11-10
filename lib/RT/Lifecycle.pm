@@ -406,7 +406,40 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
+=head3 RegisterRights
+
+Registers all defined rights in the system, so they can be addigned
+to users. No need to call it, as it's called when module is loaded.
+
+=cut
+
 sub RegisterRights {
+    my $self = shift;
+
+    my %rights = $self->RightsDescription;
+
+    require RT::ACE;
+
+    require RT::Queue;
+    my $RIGHTS = $RT::Queue::RIGHTS;
+
+    while ( my ($right, $description) = each %rights ) {
+        next if exists $RIGHTS->{ $right };
+
+        $RIGHTS->{ $right } = $description;
+        RT::Queue->AddRightCategories( $right => 'Status' );
+        $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    }
+}
+
+=head3 RightsDescription
+
+Returns hash with description of rights that are defined for
+particular transitions.
+
+=cut
+
+sub RightsDescription {
     my $self = shift;
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
@@ -419,12 +452,8 @@ sub RegisterRights {
         }
     }
 
-    require RT::ACE;
-    require RT::Queue;
-    my $RIGHTS = $RT::Queue::RIGHTS;
+    my %res;
     while ( my ($right, $transitions) = each %tmp ) {
-        next if exists $RIGHTS->{ $right };
-
         my (@from, @to);
         foreach ( @$transitions ) {
             ($from[@from], $to[@to]) = split / -> /, $_;
@@ -433,10 +462,9 @@ sub RegisterRights {
             . ( (grep $_ eq '*', @from)? '' : ' from '. join ', ', @from )
             . ( (grep $_ eq '*', @to  )? '' : ' to '. join ', ', @from );
 
-        $RIGHTS->{ $right } = $description;
-        RT::Queue->AddRightCategories( $right => 'Status' );
-        $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+        $res{ $right } = $description;
     }
+    return %res;
 }
 
 =head3 Actions
