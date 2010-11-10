@@ -503,6 +503,58 @@ sub Actions {
     return grep defined, @res;
 }
 
+=head2 Moving tickets between lifecycles
+
+=head3 Map
+
+Takes lifecycle as a name string or an object and returns a hash reference with
+move map from this cycle to provided.
+
+=cut
+
+sub Map {
+    my $from = shift; # self
+    my $to = shift;
+    $to = RT::Lifecycle->Load( $to ) unless ref $to;
+    return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
+}
+
+=head3 HasMap
+
+Takes a lifecycle as a name string or an object and returns true if move map
+defined for move from this cycle to provided.
+
+=cut
+
+sub HasMap {
+    my $self = shift;
+    my $map = $self->Map( @_ );
+    return 0 unless $map && keys %$map;
+    return 0 unless grep defined && length, values %$map;
+    return 1;
+}
+
+=head3 NoMaps
+
+Takes no arguments and returns hash with pairs that has no
+move maps.
+
+=cut
+
+sub NoMaps {
+    my $self = shift;
+    my @list = $self->List;
+    my @res;
+    foreach my $from ( @list ) {
+        foreach my $to ( @list ) {
+            next if $from eq $to;
+            push @res, $from, $to
+                unless RT::Lifecycle->Load( $from )->HasMap( $to );
+        }
+    }
+    return @res;
+}
+
 =head2 Localization
 
 =head3 ForLocalization
@@ -765,13 +817,6 @@ sub _set_actions {
     return 1;
 }
 
-sub Map {
-    my $from = shift;
-    my $to = shift;
-    $to = RT::Lifecycle->Load( $to ) unless ref $to;
-    return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
-}
-
 sub set_map {
     my $self = shift;
     my $to = shift;
@@ -792,28 +837,6 @@ sub set_map {
     return ($status, $msg) unless $status;
 
     return (1, loc('Updated lifecycle with actions data'));
-}
-
-sub HasMap {
-    my $self = shift;
-    my $map = $self->Map( @_ );
-    return 0 unless $map && keys %$map;
-    return 0 unless grep defined && length, values %$map;
-    return 1;
-}
-
-sub NoMaps {
-    my $self = shift;
-    my @list = $self->List;
-    my @res;
-    foreach my $from ( @list ) {
-        foreach my $to ( @list ) {
-            next if $from eq $to;
-            push @res, $from, $to
-                unless RT::Lifecycle->Load( $from )->HasMap( $to );
-        }
-    }
-    return @res;
 }
 
 1;
