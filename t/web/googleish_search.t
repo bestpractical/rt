@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 61;
+use RT::Test tests => 61, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
