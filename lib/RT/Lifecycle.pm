@@ -669,9 +669,9 @@ sub ForLocalization {
     foreach my $lifecycle ( values %LIFECYCLES ) {
         push @res,
             grep defined && length,
-            map $_->[0],
+            map $_->{'label'},
             grep ref($_),
-            values %{ $lifecycle->{'actions'} || {} };
+            @{ $lifecycle->{'actions'} || [] };
     }
 
     my %seen;
