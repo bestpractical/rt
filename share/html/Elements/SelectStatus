@@ -46,12 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-%if ($DefaultValue) {
-<option value=""<% !$Default && qq[ selected="selected"] |n %>><%$DefaultLabel%></option>
-%}
-%foreach my $status (@status) {
-%next if ($SkipDeleted && $status eq 'deleted');
-<option value="<%$status%>"<% (defined $Default && $status eq $Default) && qq[ selected="selected"] |n %>><%loc($status)%></option>
+% if ( $DefaultValue ) {
+<option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
+% }
+% foreach my $status (@status) {
+% next if ($SkipDeleted && $status eq 'deleted');
+% my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+<option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 % }
 </select>
 <%INIT>
