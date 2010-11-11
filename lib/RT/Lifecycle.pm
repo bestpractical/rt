@@ -351,8 +351,11 @@ sub DefaultInactive {
 
 Takes status and returns list of statuses it can be changed to.
 
-If status is ommitted then returns a hash with all possible transitions
-in the following format:
+Is status is empty or undefined then returns list of statuses for
+a new ticket.
+
+If argument is ommitted then returns a hash with all possible
+transitions in the following format:
 
     status_x => [ next_status, next_status, ... ],
     status_y => [ next_status, next_status, ... ],
@@ -361,12 +364,11 @@ in the following format:
 
 sub Transitions {
     my $self = shift;
+    return %{ $self->{'data'}{'transitions'} || {} }
+        unless @_;
+
     my $status = shift;
-    if ( $status ) {
-        return @{ $self->{'data'}{'transitions'}{ $status } || [] };
-    } else {
-        return %{ $self->{'data'}{'transitions'} || {} };
-    }
+    return @{ $self->{'data'}{'transitions'}{ $status || '' } || [] };
 }
 
 =head1 IsTransition
