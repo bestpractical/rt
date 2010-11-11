@@ -148,7 +148,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 #            $workflows->child( loc('Mappings')     => path => "/Admin/Global/Workflows/Mappings.html" );
 #        }
 
-        my $cfadmin = $admin_global->child( loc('Custom Fields'), path => '/Admin/Global/CustomFields/index.html', );
+        my $cfadmin = $admin_global->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/Global/CustomFields/index.html', );
         {
             $cfadmin->child( users => title => loc('Users') => text => loc('Select custom fields for all users'),
                              path => '/Admin/Global/CustomFields/Users.html');
