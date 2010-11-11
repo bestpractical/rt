@@ -613,6 +613,10 @@ sub FillCache {
         my %seen;
         @res = grep !$seen{ lc $_ }++, @res;
         $lifecycle->{''} = \@res;
+
+        unless ( $lifecycle->{'transitions'}{''} ) {
+            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @res ];
+        }
     }
     foreach my $type ( qw(initial active inactive), '' ) {
         my %seen;
