@@ -1818,8 +1818,7 @@ ticket, RT will use the L<"default_initial"> status.
 =item initial
 
 You can define multiple B<initial> statuses for tickets in a
-given lifecycle. Newly created tickets can only have
-a status that's listed as initial.
+given lifecycle.
 
 A ticket's B<Created> date is set immediately upon ticket creation.
 RT will automatically set its B<Started> date when you change
@@ -1870,6 +1869,7 @@ all possible transitions in each lifecycle using the following format:
     default => {
         ...
         transitions => {
+            ''       => [qw(new open resolved)],
             new      => [qw(open resolved rejected deleted)],
             open     => [qw(stalled resolved rejected deleted)],
             stalled  => [qw(open)],
@@ -1879,6 +1879,10 @@ all possible transitions in each lifecycle using the following format:
         },
         ...
     },
+
+By default users can create tickets with any status, except deleted. If
+you want to restrict statuses available during creation then describe
+transition from '' (empty string), like in the example above.
 
 =head3 Protecting status changes with rights
 
