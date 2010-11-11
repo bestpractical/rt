@@ -1820,7 +1820,6 @@ ticket, RT will use the L<"default_initial"> status.
 You can define multiple B<initial> statuses for tickets in a
 given lifecycle.
 
-A ticket's B<Created> date is set immediately upon ticket creation.
 RT will automatically set its B<Started> date when you change
 a ticket's status from an B<initial> state to an B<active> or B<inactive>
 status.
@@ -1842,13 +1841,14 @@ RT will automatically set the B<Resolved> state when a ticket's status is
 changed from an B<Initial> or B<Active> status to an B<Inactive> status.
 
 B<deleted> is still a special status and protected by the B<DeleteTicket>
-right. If you don't want to allow ticket deletion at any time simply
-don't include it in your lifecycle.
+right, unless you re-defined rights (read below). If you don't want to
+allow ticket deletion at any time simply don't include it in your
+lifecycle.
 
 =item default_inactive
 
-you can specify a set of statuses which
-RT will treat as valid "inactive" statuses for tickets.
+You can specify a set of statuses which RT will treat as valid "inactive"
+statuses for tickets.
 
 If you (or your code) doesn't specify a status when resolving a
 ticket, RT will use the L<"default_inactive"> status.
