@@ -114,6 +114,7 @@ var section_css_mapping = {
     'Page title': ['div#header h1'],
     'Page content': ['div#body'],
     'Buttons': ['input[type="reset"], input[type="submit"], input[class="button"]'],
+    'Button hover': ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']
 };
 
 jQuery(function($) {
@@ -253,6 +254,7 @@ div#body {}
 
 /* Buttons */
 input[type="reset"], input[type="submit"], input[class="button"] {}
+input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover {}
 ';
 
 }
