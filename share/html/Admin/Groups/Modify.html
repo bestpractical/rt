@@ -102,38 +102,30 @@ my $Group = RT::Group->new($session{'CurrentUser'});
 
 if ($Create) {
     $title = loc("Create a new group");
-} 
-
-else {
+} else {
     if ($id eq 'new' ) {
-	
-	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name =>
-    "$Name");
+	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
         unless ($create_id) {
             Abort (loc("Group could not be created: [_1]", $create_msg));
-     }
+        }
 	$id = $Group->Id;
-    }
-    else {
+        push @results, $create_msg;
+    } else {
 	$Group->Load($id) || Abort('Could not load group');
     }
 
-
     if ($id) {
 	$title = loc("Modify the group [_1]", $Group->Name);
-
-    }	
+    }
 
     # If the create failed
     else {
 	$title = loc("Create a new group");
 	$Create = 1;
-    }    
-    
+    }
 }
 
 if ($id) {
-    
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $Group,
@@ -145,8 +137,7 @@ if ($id) {
 #we're asking about enabled on the web page but really care about disabled.
 if (defined $Enabled && $Enabled == 1) {
     $Disabled = 0;
-}	
-else {
+} else {
     $Disabled = 1;
 }
 if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
@@ -159,13 +150,9 @@ $m->comp(
     '/Elements/MaybeRedirectForResults',
     Actions     => \@results,
     Path        => '/Admin/Groups/Modify.html',
-    id              => $id,
+    id          => $Group->Id,
     ARGSRef     => \%ARGS
 );
-
-
-
-
 
 unless ($Group->Disabled()) {
     $EnabledChecked ='checked="checked"';

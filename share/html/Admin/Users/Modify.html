@@ -367,9 +367,14 @@ if (!$Create && $UserObj->Privileged()) {
     $PrivilegedChecked = 'checked="checked"';
 }
 
-# set the id, so the the menu will have the right info, this needs to
-# be done here to avoid creating and then modifying a user
-$id = $UserObj->Id;
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/Users/Modify.html',
+    id          => $UserObj->Id,
+    ARGSRef     => \%ARGS
+);
 
 </%INIT>
 

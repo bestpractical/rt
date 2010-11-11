@@ -52,7 +52,7 @@ $Path
 $id
 </%args>
 <%init>
-if ( @$Actions ) {
+if ( grep {defined} @$Actions ) {
     # We've done something, so we need to clear the decks to avoid
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
