@@ -183,7 +183,7 @@ sub clean {
 
 sub rosetta {
     my %opt = %{ shift() };
-    my $url = shift or die 'must provide rosseta download url or directory with new po files';
+    my $url = shift or die 'must provide Rosetta download url or directory with new po files';
 
     my $dir;
     if ( $url =~ m/^[a-z+]:\/\// ) {
