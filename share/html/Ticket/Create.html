@@ -102,7 +102,7 @@
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
 
       <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
-      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
+      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
     </table>
   </&>
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj );
