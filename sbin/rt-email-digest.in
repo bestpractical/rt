@@ -85,7 +85,7 @@ RT::Init();
 
 sub usage {
     my ($error) = @_;
-    print loc("Usage: ") . "$0 -m (daily|weekly) [--print] [--help]\n";
+    print loc("Usage:") . " $0 -m (daily|weekly) [--print] [--help]\n";
     print loc(
         "[_1] is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest.",
         $0
