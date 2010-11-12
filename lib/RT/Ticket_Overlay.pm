@@ -299,17 +299,24 @@ sub Create {
             $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
     }
 
-    if ( ! defined $args{'Status'}) {
-        $args{'Status'} = $QueueObj->Lifecycle->DefaultInitial();
+    my $cycle = $QueueObj->Lifecycle;
+    unless ( defined $args{'Status'} && length $args{'Status'} ) {
+        $args{'Status'} = $cycle->DefaultInitial;
     }
 
-    unless ( $QueueObj->IsValidStatus( $args{'Status'} )
-            && $QueueObj->Lifecycle->IsInitial( $args{'Status'} )) {
+    unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
-                $self->loc($args{'Status'})));
+                $self->loc($args{'Status'}))
+        );
     }
 
+    unless ( $cycle->IsTransition( '' => $args{'Status'} ) ) {
+        return ( 0, 0,
+            $self->loc("New tickets can not have status '[_1]' in this queue.",
+                $self->loc($args{'Status'}))
+        );
+    }
 
 
 
@@ -353,17 +360,9 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
-    # We sort of want to ask "is this not an initial state
-    # But some schemes require active statuses to be duplicated
-    # in the initial state list so that tickets can be created
-    # in those states already open
-    #
-    # Instead, we check to make sure that it's either an "active" or "inactive" status
-    elsif (
-        $QueueObj->Lifecycle->IsActive($args{'Status'}) ||
-        $QueueObj->Lifecycle->IsInactive($args{'Status'})
 
-    ){
+    # If the status is not an initial status, set the started date
+    elsif ( !$cycle->IsInitial($args{'Status'}) ) {
         $Started->SetToNow;
     }
 
@@ -373,7 +372,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->Lifecycle->IsInactive( $args{'Status'} ) )
+    elsif ( $cycle->IsInactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -607,7 +606,7 @@ sub Create {
     # TODO: Adding link may fire scrips on other end and those scrips
     # could create transactions on this ticket before 'Create' transaction.
     #
-    # We should implement different Lifecycle: record 'Create' transaction,
+    # We should implement different lifecycle: record 'Create' transaction,
     # create links and only then fire create transaction's scrips.
     #
     # Ideal variant: add all links without firing scrips, record create
