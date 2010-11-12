@@ -57,6 +57,10 @@
     NamePrefix => $NamePrefix
 &>
 <em><% $CF->FriendlyType %></em>
+%  if (my $msg = $m->notes('InvalidField-' . $CF->Id)) {
+        <br />
+        <span class="cfinvalidfield"><% $msg %></span>
+%  }
 </td>
 </td></tr>
 % }
