@@ -617,40 +617,42 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 
 =cut
 
+sub _try_enable_plugin {
+    my ($self, $plugin_name, $explicit) = @_;
+
+    my $plugin = $PLUGINS->{$plugin_name};
+    unless ($plugin) {
+        # XXX: this is mostly for testing for rt plugin dists.
+        $PLUGINS->{$plugin_name} = $plugin = RT::Plugin->new(Name => $plugin_name);
+    }
+    return if $plugin->Enabled;
+
+    if ( $explicit || -e $plugin->Path(".enabled")) {
+        eval { $plugin->Enable; 1 }
+            or do {
+                # XXX: the rt bootstrapping sequence loads RT_Config
+                # first, which requires scanning plugin directories,
+                # so the very first initplugins calls is actually
+                # before initlogging.
+                warn "Unable to load plugin: $plugin_name: $@";
+                return;
+            };
+        push @$LOADED_PLUGINS, $plugin;
+    }
+}
+
 sub InitPlugins {
     my $self    = shift;
     $LOADED_PLUGINS ||= [];
     require RT::Plugin;
-    my %explicit_plugins = map { $_ => 1 } grep $_, RT->Config->Get('Plugins');
 
-    for (keys %explicit_plugins) {
+    for (grep $_, RT->Config->Get('Plugins')) {
         s/::/-/g;
-        warn "Unable to find plugin: $_, skipping"
-            unless $PLUGINS->{$_};
+        $self->_try_enable_plugin($_, 1);
     }
 
-    foreach my $plugin_name (keys %$PLUGINS) {
-        my $plugin = $PLUGINS->{$plugin_name};
-        unless ($plugin) {
-            # XXX: this is mostly for testing for rt plugin dists.
-            $PLUGINS->{$plugin_name} = $plugin = RT::Plugin->new(Name => $plugin_name);
-        }
-        next if $plugin->Enabled;
-
-        my $plugin_module = $plugin_name;
-        $plugin_module =~ s/-/::/g;
-        if ( $explicit_plugins{$plugin_module} || -e $plugin->Path(".enabled")) {
-            eval { $plugin->Enable; 1 }
-                or do {
-                    # XXX: the rt bootstrapping sequence loads RT_Config
-                    # first, which requires scanning plugin directories,
-                    # so the very first initplugins calls is actually
-                    # before initlogging.
-                    warn "Unable to load plugin: $plugin_name: $@";
-                    next;
-                };
-            push @$LOADED_PLUGINS, $plugin;
-        }
+    for (keys %$PLUGINS) {
+        $self->_try_enable_plugin($_);
     }
 
     return @$LOADED_PLUGINS;
