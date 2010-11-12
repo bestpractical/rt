@@ -73,7 +73,7 @@ if ( $TicketObj ) {
     }
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->Lifecycle->Valid;
+    @status = $QueueObj->Lifecycle->Transitions('');
 }
 else {
     @status = RT::Queue->Lifecycle->Valid;
