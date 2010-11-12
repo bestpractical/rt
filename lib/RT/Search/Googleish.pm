@@ -172,15 +172,15 @@ sub Finalize {
     my ($limits) = @_;
 
     # Apply default "active status" limit if we don't have any status
-    # limits ourselves
-    if (not $limits->{status}
+    # limits ourselves, and we're not limited by id
+    if (not $limits->{status} and not $limits->{id}
         and RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch', $self->TicketsObj->CurrentUser)) {
         $limits->{status} = [map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray()];
     }
 
     # Respect the "only search these queues" limit if we didn't
     # specify any queues ourselves
-    if (not $limits->{queue}) {
+    if (not $limits->{queue} and not $limits->{id}) {
         for my $queue ( @{ $self->{'Queues'} } ) {
             my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
             next unless $QueueObj->Load($queue);
