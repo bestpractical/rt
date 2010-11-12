@@ -631,7 +631,9 @@ sub InitPlugins {
         }
         next if $plugin->Enabled;
 
-        if ( $explicit_plugins{$plugin_name} || -e $plugin->Path(".enabled")) {
+        my $plugin_module = $plugin_name;
+        $plugin_module =~ s/-/::/g;
+        if ( $explicit_plugins{$plugin_module} || -e $plugin->Path(".enabled")) {
             eval { $plugin->Enable; 1 }
                 or do {
                     # XXX: the rt bootstrapping sequence loads RT_Config
