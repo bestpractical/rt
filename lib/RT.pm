@@ -621,7 +621,9 @@ sub InitPlugins {
     my $self    = shift;
     $LOADED_PLUGINS ||= [];
     require RT::Plugin;
-    foreach my $plugin_name (grep $_, RT->Config->Get('Plugins')) {
+    my %explicit_plugins = map { $_ => 1 } grep $_, RT->Config->Get('Plugins');
+
+    foreach my $plugin_name (keys %$PLUGINS) {
         my $plugin = $PLUGINS->{$plugin_name};
         unless ($plugin) {
             # XXX: this is mostly for testing for rt plugin dists.
@@ -629,16 +631,18 @@ sub InitPlugins {
         }
         next if $plugin->Enabled;
 
-        eval { $plugin->Enable; 1 }
-            or do {
-                # XXX: the rt bootstrapping sequence loads RT_Config
-                # first, which requires scanning plugin directories,
-                # so the very first initplugins calls is actually
-                # before initlogging.
-                warn "Unable to load plugin: $plugin_name: $@";
-                next;
-            };
-        push @$LOADED_PLUGINS, $plugin;
+        if ( $explicit_plugins{$plugin_name} || -e $plugin->Path(".enabled")) {
+            eval { $plugin->Enable; 1 }
+                or do {
+                    # XXX: the rt bootstrapping sequence loads RT_Config
+                    # first, which requires scanning plugin directories,
+                    # so the very first initplugins calls is actually
+                    # before initlogging.
+                    warn "Unable to load plugin: $plugin_name: $@";
+                    next;
+                };
+            push @$LOADED_PLUGINS, $plugin;
+        }
     }
 
     return @$LOADED_PLUGINS;
