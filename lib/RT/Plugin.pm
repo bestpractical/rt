@@ -53,6 +53,7 @@ package RT::Plugin;
 use File::ShareDir;
 use Class::Accessor "antlers";
 use Parse::CPAN::Meta;
+use UNIVERSAL::require;
 
 =head1 NAME
 
@@ -93,6 +94,10 @@ sub Enable {
     else {
         push @INC, $add;
     }
+    my $module = $self->Name;
+    $module =~ s/-/::/g;
+    $module->require;
+    die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
     $self->Enabled(1);
     $self->_added_inc_path( $add );
 }

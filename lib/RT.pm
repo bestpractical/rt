@@ -629,9 +629,15 @@ sub InitPlugins {
         }
         next if $plugin->Enabled;
 
-        $plugin->Enable;
-        $plugin_name->require;
-        die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        eval { $plugin->Enable; 1 }
+            or do {
+                # XXX: the rt bootstrapping sequence loads RT_Config
+                # first, which requires scanning plugin directories,
+                # so the very first initplugins calls is actually
+                # before initlogging.
+                warn "Unable to load plugin: $plugin_name: $@";
+                next;
+            };
         push @$LOADED_PLUGINS, $plugin;
     }
 
