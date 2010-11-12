@@ -201,7 +201,7 @@ sub GuessType {
     my $User = RT::User->new( $self->TicketsObj->CurrentUser );
     if ($val =~ /^#?\d+$/) {
         # Simple numeric => id or subject
-        return "number";
+        return "id";
     } elsif ($val =~ /\w+\@\w+/) {
         # email => requestor address
         return "requestor";
@@ -230,8 +230,6 @@ sub HandleStatus    { return status    => "Status = '$_[1]'";     }
 sub HandleOwner     { return owner     => "Owner = '$_[1]'";      }
 sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
 sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
-
-sub HandleNumber    { return number    => "(Id = '$_[1]' OR Subject LIKE '$_[1]')"; }
 sub HandleCf        { return "cf.$_[3]" => "CF.'$_[3]' LIKE '$_[1]'"; }
 
 RT::Base->_ImportOverlays();
