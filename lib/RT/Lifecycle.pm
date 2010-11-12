@@ -380,7 +380,7 @@ transition and false otherwise.
 
 sub IsTransition {
     my $self = shift;
-    my $from = shift or return 0;
+    my $from = shift;
     my $to   = shift or return 0;
     return 1 if grep lc($_) eq lc($to), $self->Transitions($from);
     return 0;
