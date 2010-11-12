@@ -172,6 +172,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html', );
         $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html', );
+        $admin_global->child( 'rt-features' => title => loc('RT Features'), path => '/Admin/Global/Plugins.html', );
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', );
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html', );

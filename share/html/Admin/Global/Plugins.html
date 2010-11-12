@@ -45,43 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-    <& /Elements/ListMenu, items => $items &>
-<%INIT>
-  my $items = {
-                
-               A => { title => loc('Scrips'),
-                           text => loc('Modify scrips which apply to all queues'),
-                           path => '/Admin/Global/Scrips.html',
-                         },
-               B => { title => loc('Templates'),
-                        text => loc('Edit system templates'),
-                        path => '/Admin/Global/Templates.html',
-                      },
-              
-                F => { title => loc('Custom Fields'),
-                text => loc('Modify global custom fields'),
-                        path => '/Admin/Global/CustomFields/index.html',
-                        },
 
-                G => { title => loc('Group Rights'),
-                                text => loc('Modify global group rights'),
-                                path => '/Admin/Global/GroupRights.html',
-                      },
-                H => { title => loc('User Rights'),
-                                text => loc('Modify global user rights'),
-                                path => '/Admin/Global/UserRights.html',
-                      },
-                I => { title => loc('RT at a glance'),
-                                text => loc('Modify the default "RT at a glance" view'),
-                                path => '/Admin/Global/MyRT.html',
-                      },
-                J => { title => loc('Theme'),
-                                path => '/Admin/Global/Theme.html',
-                      },
-                K => { title => loc('RT Features'),
-                                path => '/Admin/Global/Plugins.html',
-                      },
-};
-</%INIT>
+<style type="text/css">
+li.plugin-enabled {
+  background: lightgreen;
+}
+</style>
+
+
+<& /Elements/ListActions, actions => \@results &>
+<h1>RT Features</h1>
+<ul>
+% for my $plugin (values %$plugins) {
+% my $enabled = $plugin->Enabled;
+<li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
+<span><% $plugin->Name %></span>
+<span><% $plugin->Description || loc('(No Descrition') %></span>
+<span><% $enabled ? 'Enabled' : 'Not enabled' %></span>
+</li>
+% }
+
+</ul>
+
+<%init>
+my $title = loc("RT Features");
+my (@results);
+
+my $plugins = RT->ProbePlugins;
+</%init>
