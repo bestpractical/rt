@@ -10,10 +10,11 @@ $config = <<END;
 Set(\%Lifecycles,
     default => {
         default_initial => 'new',
-        initial  => [qw(new open resolved )],
+        initial  => [qw(new)],
         active   => [qw(open stalled)],
         inactive => [qw(resolved rejected deleted)],
         transitions => {
+            ''       => [qw(new open resolved)],
             new      => [qw(open resolved rejected deleted)],
             open     => [qw(stalled resolved rejected deleted)],
             stalled  => [qw(open)],

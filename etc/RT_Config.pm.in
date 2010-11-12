@@ -1987,12 +1987,13 @@ you can not move tickets between queues with these lifecycles.
 Set(%Lifecycles,
     default => {
         default_initial => 'new',
-        initial         => [ 'new', 'open' ],
+        initial         => [ 'new' ],
         active          => [ 'open', 'stalled' ],
         inactive        => [ 'resolved', 'rejected', 'deleted' ],
         default_inactive => 'resolved',
 
         transitions => {
+            ''       => [qw(new open resolved)],
 
             # from   => [ to list ],
             new      => [qw(open stalled resolved rejected deleted)],
