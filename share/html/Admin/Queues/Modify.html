@@ -137,7 +137,7 @@
 
 
 <%INIT>
-my ($title, @results, $Disabled, $EnabledChecked);
+my ($title, @results, @no_redirect_results, $Disabled, $EnabledChecked);
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
@@ -197,7 +197,7 @@ if ( $QueueObj->Id ) {
         foreach my $address ( $QueueObj->CorrespondAddress, $QueueObj->CommentAddress ) {
             next unless defined $address && length $address;
             next if RT::EmailParser->IsRTAddress( $address );
-            push @results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
+            push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
         }
     }
 }
@@ -210,6 +210,8 @@ $m->comp(
     id          => $QueueObj->Id,
     ARGSRef     => \%ARGS
 );
+
+push @results, @no_redirect_results;
 </%INIT>
 
 
