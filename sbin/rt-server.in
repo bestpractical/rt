@@ -217,7 +217,9 @@ rt-server - RT standalone server
     rt-server --port 8080
 
     # runs server listening on port 8080
-    rt-server -s Standalone --port 8080
+    rt-server --server Standalone --port 8080
     # or
     standalone_httpd --port 8080
 
+    # runs other PSGI server on port 8080
+    rt-server --server Starman --port 8080
