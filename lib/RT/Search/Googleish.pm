@@ -191,34 +191,34 @@ sub Finalize {
     }
 }
 
+our @GUESS = (
+    [ 10 => sub { return "subject" if $_[1] } ],
+    [ 20 => sub { return "id" if /^#?\d+$/ } ],
+    [ 30 => sub { return "requestor" if /\w+@\w+/} ],
+    [ 40 => sub {
+          return "status" if RT::Queue->new( $_[2] )->IsValidStatus( $_ )
+      }],
+    [ 50 => sub {
+          my $q = RT::Queue->new( $_[2] );
+          return "queue" if $q->Load($_) and $q->Id
+      }],
+    [ 60 => sub {
+          my $u = RT::User->new( $_[2] );
+          return "owner" if $u->Load($_) and $u->Id and $u->Privileged
+      }],
+);
+
 sub GuessType {
     my $self = shift;
     my ($val, $quoted) = @_;
 
-    return "subject" if $quoted;
-
-    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
-    my $User = RT::User->new( $self->TicketsObj->CurrentUser );
-    if ($val =~ /^#?\d+$/) {
-        # Simple numeric => id or subject
-        return "id";
-    } elsif ($val =~ /\w+\@\w+/) {
-        # email => requestor address
-        return "requestor";
-    } elsif ( $Queue->IsValidStatus($val) ) {
-        # a valid status
-        return "status";
-    } elsif ($Queue->Load($val) && $Queue->Id ) {
-        # Matches a queue name (or id, but we dealt with that above)
-        return "queue";
-    } elsif ($User->Load($val) && $User->Id && $User->Privileged ) {
-        # Matches a privileged username
-        return "owner";
-    } else {
-        # Fall through to the default
-        return "default";
+    my $cu = $self->TicketsObj->CurrentUser;
+    for my $sub (map $_->[1], sort {$a->[0] <=> $b->[0]} @GUESS) {
+        local $_ = $val;
+        my $ret = $sub->($val, $quoted, $cu);
+        return $ret if $ret;
     }
-
+    return "default";
 }
 
 sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
