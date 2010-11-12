@@ -58,12 +58,22 @@ li.plugin-enabled {
 <& /Elements/ListActions, actions => \@results &>
 <h1>RT Features</h1>
 <ul>
-% for my $plugin (values %$plugins) {
+% for my $plugin_name (sort keys %$plugins) {
+% my $plugin = $plugins->{$plugin_name};
 % my $enabled = $plugin->Enabled;
 <li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
 <span><% $plugin->Name %></span>
-<span><% $plugin->Description || loc('(No Descrition') %></span>
-<span><% $enabled ? 'Enabled' : 'Not enabled' %></span>
+<span><% $plugin->Description || loc('(No Description)') %></span>
+  <form method="POST">
+    <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
+% if ($enabled) {
+    <input name="Disable" value="Disable" type="submit" />
+% }
+% else {
+    <input name="Enable" value="Enable" type="submit" />
+% }
+  </form>
+
 </li>
 % }
 
@@ -74,4 +84,57 @@ my $title = loc("RT Features");
 my (@results);
 
 my $plugins = RT->ProbePlugins;
+
+if ($PluginName) {
+    my $plugin = $plugins->{$PluginName};
+    unless ($plugin) {
+        push @results, loc("Plugin [_1] not found", $PluginName);
+        return;
+    }
+
+    my $plugin_enable = $plugin->Path(".enabled");
+    if ($Enable) {
+        if ( eval { die loc("You need to make the directory [_1] writable first.\n", $plugin->Path)
+                        unless -w $plugin->Path;
+                    $plugin->Enable;
+                    open my $fh, '>', $plugin_enable
+                        or die $!;
+                    close $fh;
+                    RT->RestartRequired(1);
+                    1 } ) {
+            push @results, loc("Plugin [_1] enabled.", $PluginName);
+            push @results, loc("Server restart required");
+        }
+        else {
+            push @results, loc("Failed to enable plugin [_1]: [_2].", $PluginName, $@);
+        }
+    }
+    elsif ($Disable) {
+        if (-e $plugin_enable) {
+            if ( eval { unlink($plugin_enable)
+                            or die loc("You need to make the directory [_1] writable first.", $plugin->Path);
+                        RT->RestartRequired(1);
+                        RT->UnloadPlugins;
+                        $plugins = RT->ProbePlugins(1);
+                        RT->InitPlugins;
+                        1 } ) {
+                push @results, loc("Plugin [_1] disabled.", $PluginName);
+                push @results, loc("Server restart required");
+            }
+            else {
+                push @results, loc("Failed to disable plugin [_1]: [_2].", $PluginName, $@);
+            }
+        }
+        else {
+            push @results, loc("Plugin [_1] is enabled through RT_SiteConfig.pm, please disable it there.",
+                               $PluginName);
+        }
+    }
+}
+
 </%init>
+<%args>
+$Enable => ''
+$Disable => ''
+$PluginName => ''
+</%args>

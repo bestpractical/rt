@@ -623,6 +623,12 @@ sub InitPlugins {
     require RT::Plugin;
     my %explicit_plugins = map { $_ => 1 } grep $_, RT->Config->Get('Plugins');
 
+    for (keys %explicit_plugins) {
+        s/::/-/g;
+        warn "Unable to find plugin: $_, skipping"
+            unless $PLUGINS->{$_};
+    }
+
     foreach my $plugin_name (keys %$PLUGINS) {
         my $plugin = $PLUGINS->{$plugin_name};
         unless ($plugin) {
