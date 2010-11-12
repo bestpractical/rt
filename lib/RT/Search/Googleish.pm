@@ -120,13 +120,13 @@ sub QueryToSQL {
                         ) # And a possibly-quoted foo:"bar baz"
                         \s*//ix) {
             my ($type, $extra, $value) = ($1, $2, $3);
-            $value = $self->Unquote($value);
+            ($value, my ($quoted)) = $self->Unquote($value);
             $extra = $self->Unquote($extra) if defined $extra;
-            $self->Dispatch(\%limits, $type, $value, $extra);
+            $self->Dispatch(\%limits, $type, $value, $quoted, $extra);
         } elsif ($query =~ s/^($RE{delimited}{-delim=>q['"]}|\S+)\s*//) {
             # If there's no colon, it's just a word or quoted string
-            my $val = $self->Unquote($1);
-            $self->Dispatch(\%limits, $self->GuessType($val), $val);
+            my($val, $quoted) = $self->Unquote($1);
+            $self->Dispatch(\%limits, $self->GuessType($val, $quoted), $val, $quoted);
         }
     }
     $self->Finalize(\%limits);
@@ -142,13 +142,13 @@ sub QueryToSQL {
 
 sub Dispatch {
     my $self = shift;
-    my ($limits, $type, $contents, $extra) = @_;
+    my ($limits, $type, $contents, $quoted, $extra) = @_;
     $contents =~ s/(['\\])/\\$1/g;
     $extra    =~ s/(['\\])/\\$1/g if defined $extra;
 
     my $method = "Handle" . ucfirst(lc($type));
     $method = "HandleDefault" unless $self->can($method);
-    my ($key, $tsql) = $self->$method($contents, $extra);
+    my ($key, $tsql) = $self->$method($contents, $quoted, $extra);
     push @{$limits->{$key}}, $tsql;
 }
 
@@ -161,9 +161,9 @@ sub Unquote {
         my $quote = $2 || $5;
         my $value = $3 || $6;
         $value =~ s/\\(\\|$quote)/$1/g;
-        return $value;
+        return wantarray ? ($value, 1) : $value;
     } else {
-        return $token;
+        return wantarray ? ($token, 0) : $token;
     }
 }
 
@@ -193,7 +193,9 @@ sub Finalize {
 
 sub GuessType {
     my $self = shift;
-    my ($val) = @_;
+    my ($val, $quoted) = @_;
+
+    return "subject" if $quoted;
 
     my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
     my $User = RT::User->new( $self->TicketsObj->CurrentUser );
@@ -230,7 +232,7 @@ sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
 sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
 
 sub HandleNumber    { return number    => "(Id = '$_[1]' OR Subject LIKE '$_[1]')"; }
-sub HandleCf        { return "cf.$_[2]" => "CF.'$_[2]' LIKE '$_[1]'"; }
+sub HandleCf        { return "cf.$_[3]" => "CF.'$_[3]' LIKE '$_[1]'"; }
 
 RT::Base->_ImportOverlays();
 
