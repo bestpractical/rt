@@ -27,6 +27,7 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     );
     is $parser->QueryToSQL("foo"), "$active AND ( Subject LIKE 'foo' )", "correct parsing";
     is $parser->QueryToSQL("1"), "( Id = 1 )", "correct parsing";
+    is $parser->QueryToSQL("#1"), "( Id = 1 )", "correct parsing";
     is $parser->QueryToSQL("'1'"), "$active AND ( Subject LIKE '1' )", "correct parsing";
 
     is $parser->QueryToSQL("foo bar"),

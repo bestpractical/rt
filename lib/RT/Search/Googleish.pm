@@ -199,7 +199,7 @@ sub GuessType {
 
     my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
     my $User = RT::User->new( $self->TicketsObj->CurrentUser );
-    if ($val =~ /^\d+$/) {
+    if ($val =~ /^#?\d+$/) {
         # Simple numeric => id or subject
         return "number";
     } elsif ($val =~ /\w+\@\w+/) {
@@ -225,7 +225,7 @@ sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
 sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
-sub HandleId        { return id        => "Id = '$_[1]'";         }
+sub HandleId        { $_[1] =~ s/^#//; return id => "Id = $_[1]"; }
 sub HandleStatus    { return status    => "Status = '$_[1]'";     }
 sub HandleOwner     { return owner     => "Owner = '$_[1]'";      }
 sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
