@@ -2,13 +2,59 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 61, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
+use RT::Test tests => 77, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Create( Name => 'other' );
 ok( $queue->id, 'created queue other');
+
+my $two_words_queue = RT::Test->load_or_create_queue(
+    Name => 'Two Words',
+);
+ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
+
+
+diag "just test an API";
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+
+    require RT::Search::Googleish;
+    my $parser = RT::Search::Googleish->new(
+        TicketsObj => $tickets,
+        Argument   => '',
+    );
+    is $parser->QueryToSQL("foo"), "( Subject LIKE 'foo' )", "correct parsing";
+    is $parser->QueryToSQL("1"), "( Id = 1 )", "correct parsing";
+    is $parser->QueryToSQL("'1'"), "( Subject LIKE '1' )", "correct parsing";
+
+    is $parser->QueryToSQL("foo bar"),
+        "( Subject LIKE 'foo' AND Subject LIKE 'bar' )",
+        "correct parsing";
+    is $parser->QueryToSQL("'foo bar'"),
+        "( Subject LIKE 'foo bar' )",
+        "correct parsing";
+
+    is $parser->QueryToSQL("'foo \\' bar'"),
+        "( Subject LIKE 'foo \\' bar' )",
+        "correct parsing";
+    is $parser->QueryToSQL('"foo \' bar"'),
+        "( Subject LIKE 'foo \\' bar' )",
+        "correct parsing";
+    is $parser->QueryToSQL('"\f\o\o"'),
+        "( Subject LIKE 'foo' )",
+        "correct parsing";
+
+    is $parser->QueryToSQL("General"), "( Queue = 'General' )", "correct parsing";
+    is $parser->QueryToSQL("'Two Words'"), "( Queue = 'Two Words' )", "correct parsing";
+    is $parser->QueryToSQL("subject:'Two Words'"), "( Subject LIKE 'Two Words' )", "correct parsing";
+
+    is $parser->QueryToSQL("me"), "( Watcher.id = '__CurrentUser__' )", "correct parsing";
+    is $parser->QueryToSQL("'me'"), "( Subject LIKE 'me' )", "correct parsing";
+    is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' )", "correct parsing";
+    is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' )", "correct parsing";
+}
 
 my $ticket_found_1 = RT::Ticket->new($RT::SystemUser);
 my $ticket_found_2 = RT::Ticket->new($RT::SystemUser);
