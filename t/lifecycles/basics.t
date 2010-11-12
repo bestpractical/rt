@@ -23,9 +23,47 @@ diag "check basic API";
     my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->Name, 'default', "it's a default schema";
-    is join(', ', sort $schema->Valid),
-        join(', ', sort qw(new open stalled resolved rejected deleted)),
+    is_deeply [$schema->Valid],
+        [qw(new open stalled resolved rejected deleted)],
         'this is the default set from our config file';
+
+    foreach my $s ( qw(new open stalled resolved rejected deleted) ) {
+        ok $schema->IsValid($s), "valid";
+    }
+    ok !$schema->IsValid(), 'invalid';
+    ok !$schema->IsValid(''), 'invalid';
+    ok !$schema->IsValid(undef), 'invalid';
+    ok !$schema->IsValid('foo'), 'invalid';
+
+    is_deeply [$schema->Initial], ['new'], 'initial set';
+    ok $schema->IsInitial('new'), "initial";
+    ok !$schema->IsInitial('open'), "not initial";
+    ok !$schema->IsInitial, "not initial";
+    ok !$schema->IsInitial(''), "not initial";
+    ok !$schema->IsInitial(undef), "not initial";
+    ok !$schema->IsInitial('foo'), "not initial";
+
+    is_deeply [$schema->Active], [qw(open stalled)], 'active set';
+    ok( $schema->IsActive($_), "active" )
+        foreach qw(open stalled);
+    ok !$schema->IsActive('new'), "not active";
+    ok !$schema->IsActive, "not active";
+    ok !$schema->IsActive(''), "not active";
+    ok !$schema->IsActive(undef), "not active";
+    ok !$schema->IsActive('foo'), "not active";
+
+    is_deeply [$schema->Inactive], [qw(resolved rejected deleted)], 'inactive set';
+    ok( $schema->IsInactive($_), "inactive" )
+        foreach qw(resolved rejected deleted);
+    ok !$schema->IsInactive('new'), "not inactive";
+    ok !$schema->IsInactive, "not inactive";
+    ok !$schema->IsInactive(''), "not inactive";
+    ok !$schema->IsInactive(undef), "not inactive";
+    ok !$schema->IsInactive('foo'), "not inactive";
+
+    is_deeply [$schema->Transitions('')], [qw(new open resolved)], 'on create transitions';
+    ok $schema->IsTransition('' => $_), 'good transition'
+        foreach qw(new open resolved);
 }
 
 my ($baseurl, $m) = RT::Test->started_ok;
