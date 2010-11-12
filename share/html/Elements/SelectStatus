@@ -60,7 +60,10 @@
 
 
 my @status;
-if ( $TicketObj ) {
+if ( @Statuses ) {
+    @status = @Statuses;
+}
+elsif ( $TicketObj ) {
     my $current = $TicketObj->Status;
     my $lifecycle = $TicketObj->QueueObj->Lifecycle;
 
@@ -81,8 +84,11 @@ else {
 </%INIT>
 <%ARGS>
 $Name => undef
+
+@Statuses => ()
 $TicketObj => undef
 $QueueObj => undef
+
 $Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1
