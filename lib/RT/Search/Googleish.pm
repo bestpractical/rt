@@ -206,6 +206,7 @@ our @GUESS = (
           my $u = RT::User->new( $_[2] );
           return "owner" if $u->Load($_) and $u->Id and $u->Privileged
       }],
+    [ 70 => sub { return "owner" if $_ eq "me" } ],
 );
 
 sub GuessType {
@@ -227,7 +228,9 @@ sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
 sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
 sub HandleId        { $_[1] =~ s/^#//; return id => "Id = $_[1]"; }
 sub HandleStatus    { return status    => "Status = '$_[1]'";     }
-sub HandleOwner     { return owner     => "Owner = '$_[1]'";      }
+sub HandleOwner     {
+    return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
+}
 sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
 sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
 sub HandleCf        { return "cf.$_[3]" => "CF.'$_[3]' LIKE '$_[1]'"; }
