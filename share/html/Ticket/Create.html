@@ -86,6 +86,7 @@
 </td>
 <td class="value" colspan="5">
 <& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
+% $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </td>
 </tr>
 <tr>
