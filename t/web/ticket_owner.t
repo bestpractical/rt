@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 89;
+use RT::Test nodata => 1, tests => 100;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -128,7 +128,7 @@ diag "on reply correct owner is selected";
     is $ticket->Owner, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
-    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Basics');
+    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Reply');
 
     my $form = $agent_a->form_name('TicketUpdate');
     is $form->value('Owner'), '', 'empty value selected';
@@ -350,5 +350,57 @@ diag "no Take link when owner is not nobody";
         'no Take link';
     ok( ($agent_a->find_all_links( text => 'Steal' ))[0],
         'but have Steal link');
+}
+
+ok(
+    RT::Test->set_rights(
+        {
+            Principal => $user_a,
+            Right     => [
+                qw(SeeQueue ShowTicket CreateTicket ReplyToTicket OwnTicket TakeTicket StealTicket)
+            ]
+        },
+        { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    ),
+    'set rights'
+);
+
+diag "action is Take when old owner is nobody and new owner is current user";
+{ 
+    my $ticket = RT::Ticket->new( $user_a );
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #'. $id or diag "error: $msg";
+    is $ticket->Owner, RT->Nobody->id, 'correct owner';
+
+    $agent_a->goto_ticket( $id );
+    $agent_a->content_lacks('Taken', 'No Taken in display page');
+    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Reply');
+    $agent_a->form_name('TicketUpdate');
+    $agent_a->select( Owner => $user_a->id );
+    $agent_a->click('SubmitTicket');
+    $agent_a->content_contains('Taken', 'action is Take');
+}
+
+diag "action is Steal when old owner isn't nobody and new owner is current user";
+{ 
+    my $ticket = RT::Ticket->new( $user_a );
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Subject => 'test',
+        Owner => $user_b->id,
+    );
+    ok $id, 'created a ticket #'. $id or diag "error: $msg";
+    is $ticket->Owner, $user_b->id, 'correct owner';
+
+    $agent_a->goto_ticket( $id );
+    $agent_a->content_lacks('Stolen', 'No Stolen in display page');
+    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Reply');
+    $agent_a->form_name('TicketUpdate');
+    $agent_a->select( Owner => $user_a->id );
+    $agent_a->click('SubmitTicket');
+    $agent_a->content_contains('Stolen from user_b', 'action is Steal');
 }
 
