@@ -13,6 +13,7 @@ ok $general && $general->id, 'loaded or created a queue';
 
 my $delivery = RT::Test->load_or_create_queue(
     Name => 'delivery',
+    Lifecycle => 'delivery',
 );
 ok $delivery && $delivery->id, 'loaded or created a queue';
 
