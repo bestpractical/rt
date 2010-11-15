@@ -373,7 +373,7 @@ a working Scalar::Util with a non-working one. If your system was working
 correctly up until now, this is likely the cause of the problem.
 
 Please reinstall Scalar::Util, being careful to let it build with your C
-compiler. Ususally this is as simple as running the following command as
+compiler. Usually this is as simple as running the following command as
 root.
 
     perl -MCPAN -e'install Scalar::Util'
