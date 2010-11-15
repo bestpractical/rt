@@ -50,6 +50,7 @@ CREATE TABLE Queues (
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
+  Lifecycle varchar(32) NULL,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,
   DefaultDueIn integer NOT NULL DEFAULT 0  ,
