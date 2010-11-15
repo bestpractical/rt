@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 77, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
+use RT::Test tests => 79, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
@@ -48,7 +48,8 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
         "correct parsing";
 
     is $parser->QueryToSQL("General"), "( Queue = 'General' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("'Two Words'"), "( Queue = 'Two Words' ) AND $active", "correct parsing";
+    is $parser->QueryToSQL("'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
+    is $parser->QueryToSQL("queue:'Two Words'"), "( Queue = 'Two Words' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("subject:'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
 
     is $parser->QueryToSQL("me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
