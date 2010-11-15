@@ -202,7 +202,7 @@ diag "dates on create for delivery schema";
         ok $id, 'created a ticket';
         my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
         ok($statusval,$statusmsg);
-        ($statusval,$statusmsg) = $ticket->SetStatus('delievered');
+        ($statusval,$statusmsg) = $ticket->SetStatus('delivered');
         ok($statusval,$statusmsg);
         is $ticket->StartedObj->ISO, $test_date, 'started is set';
         is $ticket->ResolvedObj->ISO, $test_date, 'resolved is set';
