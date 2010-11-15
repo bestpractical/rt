@@ -1,1 +1,2 @@
 ALTER TABLE Tickets ALTER Status TYPE varchar(64);
+ALTER TABLE Queues ADD COLUMN Lifecycle VARCHAR(32) NULL;

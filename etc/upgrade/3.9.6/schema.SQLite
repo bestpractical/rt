@@ -68,3 +68,4 @@ INSERT INTO Tickets SELECT * FROM Tickets_backup;
 DROP TABLE Tickets_backup;
 COMMIT;
 
+ALTER TABLE Queues ADD COLUMN Lifecycle VARCHAR(32) NULL;
