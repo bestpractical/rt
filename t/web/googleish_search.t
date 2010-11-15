@@ -51,7 +51,7 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL("'Two Words'"), "( Queue = 'Two Words' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("subject:'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
 
-    is $parser->QueryToSQL("me"), "$active AND ( Watcher.id = '__CurrentUser__' )", "correct parsing";
+    is $parser->QueryToSQL("me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("'me'"), "$active AND ( Subject LIKE 'me' )", "correct parsing";
     is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND $active", "correct parsing";
