@@ -66,6 +66,7 @@ An RT queue object.
 package RT::Queue;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Groups;
@@ -157,6 +158,7 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+require RT::Lifecycle;
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -242,27 +244,49 @@ sub RightCategories {
 }
 
 
-
 sub Lifecycle {
     my $self = shift;
     unless (ref $self && $self->id) { 
         return RT::Lifecycle->Load('')
     }
 
-    my $name = '';
-
-    # If you don't have Lifecycles set, name is default
-    my $lifecycles = RT->Config->Get('LifecycleMap');
-    if ($lifecycles && $self->Name && defined $lifecycles->{$self->Name}) {
-        $name = $lifecycles->{$self->Name};
-    } else {
-        $name = 'default';
-    }
+    my $name = $self->_Value( Lifecycle => @_ );
+    $name ||= 'default';
 
     my $res = RT::Lifecycle->Load( $name );
-    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist") unless $res;
+    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist")
+        unless $res;
     return $res;
 }
+
+sub SetLifecycle {
+    my $self = shift;
+    my $value = shift;
+
+    if ( $value && $value ne 'default' ) {
+        return (0, $self->loc('[_1] is not valid lifecycle', $value ))
+            unless $self->ValidateLifecycle( $value );
+    } else {
+        $value = undef;
+    }
+
+    return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
+}
+
+=head2 ValidateLifecycle NAME
+
+Takes a lifecycle name. Returns true if it's an ok name and such
+lifecycle is configured. Returns undef otherwise.
+
+=cut
+
+sub ValidateLifecycle {
+    my $self = shift;
+    my $value = shift;
+    return undef unless RT::Lifecycle->Load( $value );
+    return 1;
+}
+
 
 =head2 ActiveStatusArray
 
@@ -359,9 +383,10 @@ sub Create {
     my $self = shift;
     my %args = (
         Name              => undef,
-        CorrespondAddress => '',
         Description       => '',
+        CorrespondAddress => '',
         CommentAddress    => '',
+        Lifecycle         => 'default',
         SubjectTag        => '',
         InitialPriority   => 0,
         FinalPriority     => 0,
@@ -379,6 +404,13 @@ sub Create {
 
     unless ( $self->ValidateName( $args{'Name'} ) ) {
         return ( 0, $self->loc('Queue already exists') );
+    }
+
+    if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
+        return ( 0, $self->loc('Invalid lifecycle name') )
+            unless $self->ValidateLifecycle( $args{'Lifecycle'} );
+    } else {
+        $args{'Lifecycle'} = undef;
     }
 
     my %attrs = map {$_ => 1} $self->ReadableAttributes;
