@@ -2026,30 +2026,6 @@ Set(%Lifecycles,
     },
 );
 
-
-
-=item %LifecycleMap
-
-LifecycleMap maps lifecycles to individual queues.
-
-If there is no record for a given queue then RT uses the
-B<default> lifecycle
-
-For example:
-
-    Set( %LifecycleMap,
-        General => 'some_lifecycle',
-        'Another Queue' => 'another_lifecycle',
-    );
-
-=cut
-
-
-Set( %LifecycleMap,
-     General => 'default',
-);
-
-
 =head1 Ticket Relationships
 
 =item C<$LinkTransactionsRun1Scrip>
