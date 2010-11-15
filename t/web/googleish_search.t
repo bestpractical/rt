@@ -44,7 +44,7 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
         "$active AND ( Subject LIKE 'foo \\' bar' )",
         "correct parsing";
     is $parser->QueryToSQL('"\f\o\o"'),
-        "$active AND ( Subject LIKE 'foo' )",
+        "$active AND ( Subject LIKE '\\\\f\\\\o\\\\o' )",
         "correct parsing";
 
     is $parser->QueryToSQL("General"), "( Queue = 'General' ) AND $active", "correct parsing";
