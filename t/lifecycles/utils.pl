@@ -58,7 +58,6 @@ Set(\%Lifecycles,
         },
     },
 );
-Set(\%LifecycleMap, delivery => 'delivery');
 END
 }
 
