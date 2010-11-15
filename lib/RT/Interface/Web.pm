@@ -1703,7 +1703,17 @@ sub ProcessTicketBasics {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
-        } else {
+        }
+        elsif ( $session{CurrentUser}->id == $ARGSRef->{'Owner'} )
+        {
+            if ( $OrigOwner == RT->Nobody->id ) {
+                $ChownType = "Take";
+            }
+            else {
+                $ChownType = "Steal";
+            }
+        }
+        else {
             $ChownType = "Give";
         }
 
