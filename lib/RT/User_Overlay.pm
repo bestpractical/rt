@@ -954,14 +954,14 @@ readers and other.
 
 sub AuthToken {
     my $self = shift;
-    my $secret = $self->FirstAttribute("AuthToken");
-    return $secret->Content if $secret;
+    my $secret = $self->_Value( AuthToken => @_ );
+    return $secret if $secret;
 
-    my $id = $self->id;
-    $self = RT::User->new( RT->SystemUser );
-    $self->Load( $id );
     $secret = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
-    my ($status, $msg) = $self->SetAttribute( Name => "AuthToken", Content => $secret );
+
+    my $tmp = RT::User->new( RT->SystemUser );
+    $tmp->Load( $self->id );
+    my ($status, $msg) = $tmp->SetAuthToken( $secret );
     unless ( $status ) {
         $RT::Logger->error( "Couldn't set auth token: $msg" );
         return undef;
@@ -978,7 +978,7 @@ Generate a random authentication string for the user.
 sub GenerateAuthToken {
     my $self = shift;
     my $token = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
-    return $self->SetAttribute( Name => "AuthToken", Content => $token );
+    return $self->SetAuthToken( $token );
 }
 
 =head3 GenerateAuthString
