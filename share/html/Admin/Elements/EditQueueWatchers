@@ -56,10 +56,11 @@
         unchecked />
 % if ($watcher->MemberObj->IsUser) { 
 <a href="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
+<& /Elements/ShowUser, User => $watcher->MemberObj->Object &></a>
 % } else {
 <a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->ObjectId%>">
-% }
 <%$watcher->MemberObj->Object->Name%></a>
+% }
 % }
 % }
 </ul>

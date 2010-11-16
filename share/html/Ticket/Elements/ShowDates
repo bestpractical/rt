@@ -77,11 +77,11 @@
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name) : loc("Never");
+% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
-    <td class="value date updated"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
+    <td class="value date updated"><a href="#lasttrans"><% $UpdatedString |n%></a></td>
 % } else {
-    <td class="value date updated"><% $UpdatedString | h %></td>
+    <td class="value date updated"><% $UpdatedString |n%></td>
 % }
   </tr>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );

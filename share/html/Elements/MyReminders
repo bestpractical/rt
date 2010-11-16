@@ -59,7 +59,7 @@
 <tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
-<%$reminder->OwnerObj->Name %>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>
+<& /Elements/ShowUser, User => $reminder->OwnerObj &>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>
 </blockquote>
 </td>
 </tr>

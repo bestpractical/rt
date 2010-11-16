@@ -52,18 +52,14 @@ $SearchType => 'Ticket',
 </%args>
 <select id="<%$Name%>" name="<%$Name%>">
 % foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
+<optgroup label="<& SearchPrivacy, Object => $object &>">
 % my @searches = $object->Attributes->Named('SavedSearch');
 % foreach my $search (@searches) { 
 %     # Skip it if it is not of search type we want.
 %     next if ($search->SubValue('SearchType')
 %              && $search->SubValue('SearchType') ne $SearchType);
-<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"> -<%$search->Description||loc('Unnamed search')%></option>
+<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"><%$search->Description||loc('Unnamed search')%></option>
 % }
+</optgroup>
 % }
 </select>

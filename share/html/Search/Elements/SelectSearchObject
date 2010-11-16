@@ -59,10 +59,6 @@ if ( $Object && $Object->Id ) {
 <select id="<%$Name%>" name="<%$Name%>">
 % foreach my $object (@Objects) {
 % my $privacy = ref($object).'-'.$object->id;
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %> ><&|/l&>My saved searches</&></option>
-% } else {
-<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %> ><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
+<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %>><& SearchPrivacy, Object => $object &></option>
 % }
 </select>

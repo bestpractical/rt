@@ -174,6 +174,6 @@ $Ticket
     <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <%$Reminder->Subject%> &bull; 
-    <%$Reminder->OwnerObj->Name%>
+    <& /Elements/ShowUser, User => $Reminder->OwnerObj &>
     <%$Reminder->DueObj->Unix>0  ? "&bull; ". $Reminder->DueObj->AgeAsString : '' |n%><br />
 </%method>
