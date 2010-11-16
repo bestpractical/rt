@@ -567,11 +567,8 @@ sub _DowngradeFromHTML {
     require HTML::FormatText::WithLinks::AndTables;
     require Encode;
     $new_entity->bodyhandle(MIME::Body::InCore->new(
-        \( HTML::FormatText::WithLinks::AndTables->convert(
-                # need to decode_utf8, see the doc of MIMEObj method
-                Encode::decode_utf8($new_entity->bodyhandle->as_string),
-                { no_rowspacing => 1 }
-         ))
+        # need to decode_utf8, see the doc of MIMEObj method
+        \(RT::Interface::Email::ConvertHTMLToText(Encode::decode_utf8($new_entity->bodyhandle->as_string)))
     ));
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html

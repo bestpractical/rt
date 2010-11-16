@@ -327,7 +327,7 @@ sub Content {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
-                $content = HTML::FormatText::WithLinks::AndTables->convert($content, { no_rowspacing => 1 });
+                $content = RT::Interface::Email::ConvertHTMLToText($content);
             }
         }
         else {
