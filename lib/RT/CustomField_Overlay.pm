@@ -333,6 +333,7 @@ sub Create {
         Type        => $args{'Type'},
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
+        BasedOn     => $args{'BasedOn'},
         Description => $args{'Description'},
         Disabled    => $args{'Disabled'},
         LookupType  => $args{'LookupType'},
@@ -349,10 +350,6 @@ sub Create {
 
     if ( exists $args{'ValuesClass'} ) {
         $self->SetValuesClass( $args{'ValuesClass'} );
-    }
-
-    if ( exists $args{'BasedOn'} ) {
-        $self->SetBasedOn( $args{'BasedOn'} );
     }
 
     return ($rv, $msg) unless exists $args{'Queue'};
