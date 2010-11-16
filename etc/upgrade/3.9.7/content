@@ -17,4 +17,22 @@
         }
         return 1;
     },
+    sub {
+        my $query = 'UPDATE CustomFields SET BasedOn = (SELECT Content FROM Attributes WHERE'
+            .' Name = ? AND ObjectType = ? AND CustomFields.id = Attributes.ObjectId)';
+
+        my $res = $RT::Handle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField');
+        unless ( $res ) {
+            $RT::Logger->error("Failed move BasedOn from Attributes into CustomFields table");
+            return;
+        }
+
+        $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
+        $res = $RT::Handle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField');
+        unless ( $res ) {
+            $RT::Logger->error("Failed to delete BasedOn Attributes");
+            return;
+        }
+        return 1;
+    },
 );
