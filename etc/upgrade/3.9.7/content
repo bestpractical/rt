@@ -1,0 +1,20 @@
+@Initial = (
+    sub {
+        my $query = 'UPDATE Users SET AuthToken = (SELECT Content FROM Attributes WHERE'
+            .' Name = ? AND ObjectType = ? AND Users.id = Attributes.ObjectId)';
+
+        my $res = $RT::Handle->SimpleQuery( $query, 'AuthToken', 'RT::User');
+        unless ( $res ) {
+            $RT::Logger->error("Failed move AuthTokens from Attributes into Users table");
+            return;
+        }
+
+        $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
+        $res = $RT::Handle->SimpleQuery( $query, 'AuthToken', 'RT::User');
+        unless ( $res ) {
+            $RT::Logger->error("Failed to delete AuthTokens Attributes");
+            return;
+        }
+        return 1;
+    },
+);
