@@ -511,7 +511,7 @@ Content-Type: text/html
 Content-Type: text/html
 
 { my $c = $Transaction->Content(Type => 'text/html');
-  my $url = $RT::WebURL."Ticket/Display.html?id=".$Ticket->id;
+  my $url = RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id;
   if (substr($c,0,500) =~ qr/\Q$url\E/) {
      $OUT = $c;
   } else {
@@ -535,7 +535,7 @@ EOF
 RT-Attach-Message: yes
 Content-Type: text/html
 
-<p>This is a comment about <a href="{$RT::WebURL}?q={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
+<p>This is a comment about <a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
 <br/>
 {$Transaction->Content(Type => 'text/html')}
 ],
@@ -547,7 +547,7 @@ Content-Type: text/html
 RT-Attach-Message: yes
 Content-Type: text/html
 
-<a href="{$RT::WebURL}?q={$Ticket->id}">{$RT::WebURL}?q={$Ticket->id}</a>
+<a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}</a>
 <br/>
 <br/>
 {$Transaction->Content(Type => 'text/html')}
@@ -609,7 +609,7 @@ Content-Type: text/html
 <tr><td align="right"><b>Owner:</b></td><td>{$Ticket->OwnerObj->Name}</td></tr>
 <tr><td align="right"><b>Requestors:</b></td><td>{$Ticket->RequestorAddresses}</td></tr>
 <tr><td align="right"><b>Status:</b></td><td>{$Ticket->Status}</td></tr>
-<tr><td align="right"><b>Ticket URL:</b></td><td>{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}</td></tr>
+<tr><td align="right"><b>Ticket URL:</b></td><td><a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}</a></td></tr>
 </table>
 
 <br/>
