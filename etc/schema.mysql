@@ -210,6 +210,7 @@ CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NOT NULL  ,
   Password VARBINARY(40) NULL  ,
+  AuthToken VARCHAR(16) CHARACTER SET ascii NULL  ,
   Comments TEXT NULL  ,
   Signature TEXT NULL  ,
   EmailAddress varchar(120) NULL  ,

@@ -202,6 +202,7 @@ CREATE TABLE Users (
   	Name 			VARCHAR2(200) CONSTRAINT Users_Name_Unique 
 		unique  NOT NULL,
   	Password 		VARCHAR2(40),
+  	AuthToken 		VARCHAR2(16),
   	Comments 		CLOB,
   	Signature 		CLOB,
   	EmailAddress 		VARCHAR2(120),

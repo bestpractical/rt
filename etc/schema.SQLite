@@ -219,6 +219,7 @@ CREATE TABLE Users (
   id INTEGER ,
   Name varchar(200) NOT NULL  ,
   Password varchar(40) NULL  ,
+  AuthToken varchar(16) NULL  ,
   Comments blob NULL  ,
   Signature blob NULL  ,
   EmailAddress varchar(120) NULL  ,
