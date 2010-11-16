@@ -540,6 +540,7 @@ CREATE TABLE CustomFields (
   Type varchar(200) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   Repeated integer NOT NULL DEFAULT 0 , 
+  BasedOn integer NULL, 
   Pattern varchar(65536) NULL  ,
   LookupType varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,

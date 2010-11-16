@@ -355,6 +355,7 @@ CREATE TABLE CustomFields (
 	MaxValues	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Pattern		CLOB,
         Repeated        NUMBER(11,0) DEFAULT 0 NOT NULL,
+        BasedOn         NUMBER(11,0) NULL,
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	LookupType	VARCHAR2(255),
