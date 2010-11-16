@@ -51,6 +51,7 @@ use warnings;
 
 use Locale::PO;
 use Getopt::Long;
+use File::Temp 'tempdir';
 
 my %commands = (
     stats   => { },
@@ -187,7 +188,7 @@ sub rosetta {
 
     my $dir;
     if ( $url =~ m{^[a-z]+://} ) {
-        $dir = File::Temp::tempdir();
+        $dir = tempdir();
         my ($fname) = $url =~ m{([^/]+)$};
 
         print "Downloading $url\n";
@@ -225,7 +226,6 @@ sub rosetta {
         print "$_ -> $fn_orig\n";
 
         # retain the "NOT FOUND IN SOURCE" entries
-        require File::Temp;
         my $tmp = File::Temp->new;
         system("sed -e 's/^#~ //' $_ > $tmp");
         my $ext = Locale::Maketext::Extract->new;
