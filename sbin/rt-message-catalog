@@ -186,7 +186,7 @@ sub rosetta {
     my $url = shift or die 'must provide Rosetta download url or directory with new po files';
 
     my $dir;
-    if ( $url =~ m/^[a-z+]:\/\// ) {
+    if ( $url =~ m{^[a-z]+://} ) {
         $dir = File::Temp::tempdir();
         my ($fname) = $url =~ m{([^/]+)$};
 
