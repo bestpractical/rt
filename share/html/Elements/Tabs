@@ -255,6 +255,11 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
             $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
             $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
+
+
+                $m->callback( CallbackName => 'PrivilegedQueue',
+                              queue_id => $id, page_menu => $queue);
+
         }
     }
     if ( $request_path =~ qr'/Admin/Users' ) {
