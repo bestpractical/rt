@@ -1606,33 +1606,28 @@ sub SetBasedOn {
     my $self = shift;
     my $value = shift;
 
-    return $self->DeleteAttribute( "BasedOn" )
+    return $self->_Set( Field => 'BasedOn', Value => $value, @_ )
         unless defined $value and length $value;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
-    $cf->Load( ref $value ? $value->Id : $value );
+    $cf->Load( ref $value ? $value->id : $value );
 
     return (0, "Permission denied")
-        unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
+        unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
 
     # XXX: Remove this restriction once we support lists and cascaded selects
     if ( $self->RenderType =~ /List/ ) {
         return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
     }
 
-    return $self->AddAttribute(
-        Name => "BasedOn",
-        Description => "Custom field whose CF we depend on",
-        Content => $cf->Id,
-    );
+    return $self->_Set( Field => 'BasedOn', Value => $value, @_ )
 }
 
 sub BasedOnObj {
     my $self = shift;
-    my $obj = RT::CustomField->new( $self->CurrentUser );
 
-    my $attribute = $self->FirstAttribute("BasedOn");
-    $obj->Load($attribute->Content) if defined $attribute;
+    my $obj = RT::CustomField->new( $self->CurrentUser );
+    $obj->Load( $self->BasedOn );
     return $obj;
 }
 
