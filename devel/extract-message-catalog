@@ -60,7 +60,7 @@ use vars qw($DEBUG $FILECAT);
 $DEBUG = 1;
 
 # po dir is for extensions
-@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
+@ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
 
 $FILECAT = {};
 
@@ -88,8 +88,8 @@ foreach my $str ( sort keys %{$FILECAT} ) {
 
 # update all language dictionaries
 foreach my $dict (@ARGV) {
-    $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
-    $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
+    $dict = "share/po/$dict.pot" if ( $dict eq 'rt' );
+    $dict = "share/po/$dict.po" unless -f $dict or $dict =~ m!/!;
 
     my $lang = $dict;
     $lang =~ s|.*/||;
