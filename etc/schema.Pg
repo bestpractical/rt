@@ -538,6 +538,7 @@ CREATE TABLE CustomFields (
   id INTEGER DEFAULT nextval('customfields_id_seq'),
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
+  RenderType varchar(64) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   Repeated integer NOT NULL DEFAULT 0 , 
   BasedOn integer NULL, 

@@ -352,6 +352,7 @@ CREATE TABLE CustomFields (
 		CONSTRAINT CustomFields_Key PRIMARY KEY,
 	Name		VARCHAR2(200),
 	Type		VARCHAR2(200),
+	RenderType	VARCHAR2(64),
 	MaxValues	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Pattern		CLOB,
         Repeated        NUMBER(11,0) DEFAULT 0 NOT NULL,
