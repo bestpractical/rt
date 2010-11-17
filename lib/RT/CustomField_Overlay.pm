@@ -328,9 +328,24 @@ sub Create {
         $args{'MaxValues'} = 1;
     }
 
+    if ( $args{'RenderType'} ||= undef ) {
+        my $composite = join '-', @args{'Type', 'MaxValues'};
+        return (0, $self->loc("This custom field has no Render Types"))
+            unless $self->HasRenderTypes( $composite );
+
+        if ( $args{'RenderType'} eq $self->DefaultRenderType( $composite ) ) {
+            $args{'RenderType'} = undef;
+        } else {
+            return (0, $self->loc("Invalid Render Type") )
+                unless grep $_ eq  $args{'RenderType'}, $self->RenderTypes( $composite );
+        }
+
+    }
+
     (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},
+        RenderType  => $args{'RenderType'},
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
         BasedOn     => $args{'BasedOn'},
