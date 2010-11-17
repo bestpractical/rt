@@ -51,7 +51,7 @@ $Dashboard => undef
 $Subscription => undef
 </%ARGS>
 <%INIT>
-my $url = sprintf '%s/Dashboards/Subscription.html?DashboardId=%d',
+my $url = sprintf '%s/Dashboards/Subscription.html?id=%d',
           RT->Config->Get('WebPath'),
           $Dashboard->Id,;
 
