@@ -52,7 +52,7 @@
 
 =head1 SYNOPSIS
 
-  use RT::SavedSearch
+  use RT::SavedSearches
 
 =head1 DESCRIPTION
 
