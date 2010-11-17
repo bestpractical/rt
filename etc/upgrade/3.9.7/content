@@ -28,4 +28,24 @@ my $move_attributes = sub {
     sub {
         return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
     },
+    sub {
+        my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
+        return 1 unless $attr;
+
+        my $map = $attr->Content || {};
+        while ( my ($qid, $tag) = each %$map ) {
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $qid );
+            unless ( $queue->id ) {
+                $RT::Logger->warning("Couldn't load queue #$qid. Skipping...");
+                next;
+            }
+
+            my ($status, $msg) = $queue->SetSubjectTag($tag);
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't set subject tag for queue #$qid: $msg");
+                next;
+            }
+        }
+    },
 );
