@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
+    title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
     titleright => loc("Edit"),
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
