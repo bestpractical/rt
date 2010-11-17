@@ -62,6 +62,38 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         value     => sub { return $_[0]->Name()||loc("Unnamed dashboard") },
     },
+    Subscription => {
+        title     => 'Subscription', # loc
+        attribute => 'Subscription',
+        value     => sub {
+            my $Dashboard = shift;
+            my $Subscription = $Dashboard->Subscription;
+
+            my $url = sprintf '%s/Dashboards/Subscription.html?DashboardId=%d',
+                    RT->Config->Get('WebPath'),
+                    $Dashboard->Id;
+
+            my $frequency = loc("None");
+
+            if (defined $Subscription) {
+                my $freq = $Subscription->SubValue('Frequency');
+                my $hour = $Subscription->SubValue('Hour');
+
+                if ($freq eq 'weekly') {
+                    my $day = $Subscription->SubValue('Dow');
+                    $frequency = loc("weekly (on [_1]) at [_2]", loc($day), $hour);
+                }
+                elsif ($freq eq 'monthly') {
+                    $frequency = loc("monthly (day [_1]) at [_2]", $Subscription->SubValue('Dom'), $hour);
+                }
+                elsif ($freq eq 'daily') {
+                    $frequency = loc("daily at [_1]", $hour);
+                }
+            }
+
+            return \('<a href="'.$url.'">'.$frequency.'</a>');
+        },
+    },
     ShowURL => {
         title     => '',
         attribute => 'ShowURL',

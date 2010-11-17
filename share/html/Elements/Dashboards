@@ -63,7 +63,7 @@
 %   $title = $m->interp->apply_escapes($title, 'h');
 <& /Elements/CollectionList,
     %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title'},
+    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__},
     Collection => $Dashboards,
 &>
 % }
