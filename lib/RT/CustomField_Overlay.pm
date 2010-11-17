@@ -925,9 +925,8 @@ sub RenderType {
     my $self = shift;
     return '' unless $self->HasRenderTypes;
 
-    my $type = $self->FirstAttribute( 'RenderType' );
-    $type = $type->Content if $type;
-    return $type || $self->DefaultRenderType;
+    return $self->_Value( 'RenderType', @_ )
+        || $self->DefaultRenderType;
 }
 
 =head2 SetRenderType TYPE
@@ -937,11 +936,13 @@ Sets this custom field's render type.
 =cut
 
 sub SetRenderType {
-    my ($self, $type) = @_;
-    return unless $self->HasRenderTypes;
+    my $self = shift;
+    my $type = shift;
+    return (0, $self->loc("This custom field has no Render Types"))
+        unless $self->HasRenderTypes;
 
-    if ( not defined $type ) {
-        return $self->DeleteAttribute( 'RenderType' );
+    if ( !$type || $type eq $self->DefaultRenderType ) {
+        return $self->_Set( Field => 'RenderType', Value => undef, @_ );
     }
 
     if ( not grep { $_ eq $type } $self->RenderTypes ) {
@@ -954,7 +955,7 @@ sub SetRenderType {
         return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
     }
 
-    return $self->SetAttribute( Name => 'RenderType', Content => $type );
+    return $self->_Set( Field => 'RenderType', Value => $type, @_ );
 }
 
 =head2 DefaultRenderType [TYPE COMPOSITE]
