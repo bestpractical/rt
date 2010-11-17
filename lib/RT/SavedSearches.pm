@@ -107,7 +107,7 @@ sub LimitToPrivacy {
         foreach my $att (@search_atts) {
             my $search = RT::SavedSearch->new($self->CurrentUser);
             $search->Load($privacy, $att->Id);
-            next if $type && $search->Type ne $type;
+            next if $type && $search->Type && $search->Type ne $type;
             push(@{$self->{'objects'}}, $search);
         }
     } else {
