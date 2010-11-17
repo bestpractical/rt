@@ -102,16 +102,16 @@ sub LimitToPrivacy {
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
-	$self->{'objects'} = [];
-	my @search_atts = $object->Attributes->Named('SavedSearch');
-	foreach my $att (@search_atts) {
-	    my $search = RT::SavedSearch->new($self->CurrentUser);
-	    $search->Load($privacy, $att->Id);
-	    next if $type && $search->Type ne $type;
-	    push(@{$self->{'objects'}}, $search);
-	}
+        $self->{'objects'} = [];
+        my @search_atts = $object->Attributes->Named('SavedSearch');
+        foreach my $att (@search_atts) {
+            my $search = RT::SavedSearch->new($self->CurrentUser);
+            $search->Load($privacy, $att->Id);
+            next if $type && $search->Type ne $type;
+            push(@{$self->{'objects'}}, $search);
+        }
     } else {
-	$RT::Logger->error("Could not load object $privacy");
+        $RT::Logger->error("Could not load object $privacy");
     }
 }
 
@@ -127,10 +127,10 @@ sub Next {
     my $self = shift;
     my $search = $self->{'objects'}->[$self->{'idx'}];
     if ($search) {
-	$self->{'idx'}++;
+        $self->{'idx'}++;
     } else {
-	# We have run out of objects; reset the counter.
-	$self->{'idx'} = 0;
+        # We have run out of objects; reset the counter.
+        $self->{'idx'} = 0;
     }
     return $search;
 }
