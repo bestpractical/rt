@@ -45,31 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&|/Widgets/TitleBox,
-    title => loc('Dashboards'),
-    titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-&>
+<%ARGS>
+$Name
+$Attr => undef
+</%ARGS>
+<%ONCE>
+my $COLUMN_MAP = {
+    id => {
+        title     => '#', # loc
+        attribute => 'id',
+        align     => 'right',
+        value     => sub { return $_[0]->Id },
+    },
+    Name => {
+        title     => sub { return "foo" }, #'Name', # loc
+        attribute => 'Name',
+        value     => sub { return $_[0]->Name()||loc("Unnamed dashboard") },
+    },
+    ShowURL => {
+        title     => '',
+        attribute => 'ShowURL',
+        value     => sub {
+            my $dashboard = shift;
+            my $id = $dashboard->Id;
+            my $name = $dashboard->Name;
 
-% foreach my $Object (@Objects) {
-%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
-%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title = $m->interp->apply_escapes($title, 'h');
-<& /Elements/CollectionList,
-    %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title'},
-    Collection => $Dashboards,
-&>
-% }
-</&>
-<%init>
-use RT::Dashboards;
+            return "Dashboards/$id/$name";
+        },
+    }
+};
 
-my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
-</%init>
+</%ONCE>
+<%INIT>
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
+</%INIT>
