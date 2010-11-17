@@ -45,7 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&|/Widgets/TitleBox, title => loc('Dashboards') &>
+<&|/Widgets/TitleBox,
+    title => loc('Dashboards'),
+    titleright => loc("Edit"),
+    titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
+&>
+
 % foreach my $Object (@Objects) {
 %   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
 %   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
