@@ -198,6 +198,7 @@ our @GUESS = (
     [ 40 => sub {
           return "status" if RT::Queue->new( $_[2] )->IsValidStatus( $_ )
       }],
+    [ 40 => sub { return "status" if /^(in)?active$/i } ],
     [ 50 => sub {
           my $q = RT::Queue->new( $_[2] );
           return "queue" if $q->Load($_) and $q->Id
@@ -227,7 +228,15 @@ sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
 sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
 sub HandleId        { $_[1] =~ s/^#//; return id => "Id = $_[1]"; }
-sub HandleStatus    { return status    => "Status = '$_[1]'";     }
+sub HandleStatus    {
+    if ($_[1] =~ /^active$/i and !$_[2]) {
+        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray();
+    } elsif ($_[1] =~ /^inactive$/i and !$_[2]) {
+        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->InactiveStatusArray();
+    } else {
+        return status => "Status = '$_[1]'";
+    }
+}
 sub HandleOwner     {
     return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
 }

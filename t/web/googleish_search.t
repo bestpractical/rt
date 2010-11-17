@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 79, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
+use RT::Test tests => 84, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
@@ -19,6 +19,7 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
 {
     my $tickets = RT::Tickets->new( RT->SystemUser );
     my $active = "( ".join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray())." )";
+    my $inactive = "( ".join( " OR ", map "Status = '$_'", RT::Queue->InactiveStatusArray())." )";
 
     require RT::Search::Googleish;
     my $parser = RT::Search::Googleish->new(
@@ -56,6 +57,12 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL("'me'"), "$active AND ( Subject LIKE 'me' )", "correct parsing";
     is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND $active", "correct parsing";
+
+    is $parser->QueryToSQL("resolved me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' )", "correct parsing";
+    is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = 'new' OR Status = 'open' OR Status = 'stalled' )", "correct parsing";
+    is $parser->QueryToSQL("status:active"), $active, "Explicit active search";
+    is $parser->QueryToSQL("status:'active'"), "( Status = 'active' )", "Quoting active makes it the actual word";
+    is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND $inactive", "correct parsing";
 }
 
 my $ticket_found_1 = RT::Ticket->new($RT::SystemUser);
