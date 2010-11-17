@@ -1,4 +1,3 @@
-
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -49,7 +48,7 @@
 
 =head1 NAME
 
-  RT::Search::Googlish
+  RT::Search::Googleish
 
 =head1 SYNOPSIS
 
@@ -58,9 +57,6 @@
 Use the argument passed in as a "Google-style" set of keywords
 
 =head1 METHODS
-
-
-
 
 =cut
 
@@ -71,129 +67,186 @@ use warnings;
 use base qw(RT::Search);
 
 use Regexp::Common qw/delimited/;
-my $re_delim = qr[$RE{delimited}{-delim=>qq{\'\"}}];
 
-# sub _Init {{{
+# Only a subset of limit types AND themselves together.  "queue:foo
+# queue:bar" is an OR, but "subject:foo subject:bar" is an AND
+our %AND = (
+    content => 1,
+    subject => 1,
+);
+
 sub _Init {
     my $self = shift;
     my %args = @_;
 
-    $self->{'Queues'} = delete($args{'Queues'}) || [];
+    $self->{'Queues'} = delete( $args{'Queues'} ) || [];
     $self->SUPER::_Init(%args);
 }
 
-sub Describe  {
-  my $self = shift;
-  return ($self->loc("No description for [_1]", ref $self));
+sub Describe {
+    my $self = shift;
+    return ( $self->loc( "Keyword and intuition-based searching", ref $self ) );
+}
+
+sub Prepare {
+    my $self = shift;
+    my $tql  = $self->QueryToSQL( $self->Argument );
+
+    $RT::Logger->debug($tql);
+
+    $self->TicketsObj->FromSQL($tql);
+    return (1);
 }
 
 sub QueryToSQL {
-    my $self     = shift;
-    my $query    = shift || $self->Argument;
+    my $self = shift;
+    my $query = shift || $self->Argument;
 
-    my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
-        split /((?:fulltext:)?$re_delim|\s+)/o, $query;
-
-    my (
-        @tql_clauses,  @owner_clauses, @queue_clauses,
-        @user_clauses, @id_clauses,    @status_clauses
-    );
-    my ( $Queue, $User );
-    for my $key (@keywords) {
-
-        # Is this a ticket number? If so, go to it.
-        # But look into subject as well
-        if ( $key =~ m/^\d+$/ ) {
-            push @id_clauses, "id = '$key'", "Subject LIKE '$key'";
-        }
-
-        # if it's quoted string then search it "as is" in subject or fulltext
-        elsif ( $key =~ /^(fulltext:)?($re_delim)$/io ) {
-            if ( $1 ) {
-                push @tql_clauses, "Content LIKE $2";
-            } else {
-                push @tql_clauses, "Subject LIKE $2";
-            }
-        }
-
-        elsif ( $key =~ /^fulltext:(.*?)$/i ) {
-            $key = $1;
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "Content LIKE '$key'";
-
-        }
-
-        elsif ( $key =~ /\w+\@\w+/ ) {
-            push @user_clauses, "Requestor LIKE '$key'";
-        }
-
-        # Is there a status with this name?
-        elsif (
-            $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
-            and $Queue->IsValidStatus($key)
-          )
-        {
-            push @status_clauses, "Status = '" . $key . "'";
-        }
-
-        # Is there a queue named $key?
-        elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
-            and $Queue->Load($key)
-            and $Queue->id
-            and not $Queue->Disabled )
-        {
-            my $quoted_queue = $Queue->Name;
-            $quoted_queue =~ s/'/\\'/g;
-            push @queue_clauses, "Queue = '$quoted_queue'";
-        }
-
-        # Is there a owner named $key?
-        elsif ( $User = RT::User->new( $self->TicketsObj->CurrentUser )
-            and $User->Load($key)
-            and $User->id
-            and $User->Privileged )
-        {
-            push @owner_clauses, "Owner = '" . $User->Name . "'";
-        }
-
-        # Else, subject must contain $key
-        else {
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "Subject LIKE '$key'";
+    my %limits;
+    $query =~ s/^\s*//;
+    while ($query =~ /^\S/) {
+        if ($query =~ s/^
+                        (?:
+                            (\w+)  # A straight word
+                            (?:\.  # With an optional .foo
+                                ($RE{delimited}{-delim=>q['"]}
+                                |\w+
+                                ) # Which could be ."foo bar", too
+                            )?
+                        )
+                        :  # Followed by a colon
+                        ($RE{delimited}{-delim=>q['"]}
+                        |\S+
+                        ) # And a possibly-quoted foo:"bar baz"
+                        \s*//ix) {
+            my ($type, $extra, $value) = ($1, $2, $3);
+            ($value, my ($quoted)) = $self->Unquote($value);
+            $extra = $self->Unquote($extra) if defined $extra;
+            $self->Dispatch(\%limits, $type, $value, $quoted, $extra);
+        } elsif ($query =~ s/^($RE{delimited}{-delim=>q['"]}|\S+)\s*//) {
+            # If there's no colon, it's just a word or quoted string
+            my($val, $quoted) = $self->Unquote($1);
+            $self->Dispatch(\%limits, $self->GuessType($val, $quoted), $val, $quoted);
         }
     }
+    $self->Finalize(\%limits);
 
-    # restrict to any queues requested by the caller
-    for my $queue (@{ $self->{'Queues'} }) {
-        my $QueueObj = RT::Queue->new($self->TicketsObj->CurrentUser);
-        $QueueObj->Load($queue) or next;
-        my $quoted_queue = $QueueObj->Name;
-        $quoted_queue =~ s/'/\\'/g;
-        push @queue_clauses, "Queue = '$quoted_queue'";
+    my @clauses;
+    for my $subclause (sort keys %limits) {
+        my $op = $AND{lc $subclause} ? "AND" : "OR";
+        push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
     }
 
-    push @tql_clauses, join( " OR ", sort @id_clauses );
-    push @tql_clauses, join( " OR ", sort @owner_clauses );
-    if ( ! @status_clauses ) {
-        push @tql_clauses, join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
+    return join " AND ", @clauses;
+}
+
+sub Dispatch {
+    my $self = shift;
+    my ($limits, $type, $contents, $quoted, $extra) = @_;
+    $contents =~ s/(['\\])/\\$1/g;
+    $extra    =~ s/(['\\])/\\$1/g if defined $extra;
+
+    my $method = "Handle" . ucfirst(lc($type));
+    $method = "HandleDefault" unless $self->can($method);
+    my ($key, @tsql) = $self->$method($contents, $quoted, $extra);
+    push @{$limits->{$key}}, @tsql;
+}
+
+sub Unquote {
+    # Given a word or quoted string, unquote it if it is quoted,
+    # removing escaped quotes.
+    my $self = shift;
+    my ($token) = @_;
+    if ($token =~ /^$RE{delimited}{-delim=>q['"]}{-keep}$/) {
+        my $quote = $2 || $5;
+        my $value = $3 || $6;
+        $value =~ s/\\(\\|$quote)/$1/g;
+        return wantarray ? ($value, 1) : $value;
     } else {
-        push @tql_clauses, join( " OR ", sort @status_clauses );
+        return wantarray ? ($token, 0) : $token;
     }
-    push @tql_clauses, join( " OR ", sort @user_clauses );
-    push @tql_clauses, join( " OR ", sort @queue_clauses );
-    @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
-    return join " AND ", sort @tql_clauses;
 }
 
-sub Prepare  {
-  my $self = shift;
-  my $tql = $self->QueryToSQL($self->Argument);
+sub Finalize {
+    my $self = shift;
+    my ($limits) = @_;
 
-  $RT::Logger->debug($tql);
+    # Apply default "active status" limit if we don't have any status
+    # limits ourselves, and we're not limited by id
+    if (not $limits->{status} and not $limits->{id}
+        and RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch', $self->TicketsObj->CurrentUser)) {
+        $limits->{status} = [map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray()];
+    }
 
-  $self->TicketsObj->FromSQL($tql);
-  return(1);
+    # Respect the "only search these queues" limit if we didn't
+    # specify any queues ourselves
+    if (not $limits->{queue} and not $limits->{id}) {
+        for my $queue ( @{ $self->{'Queues'} } ) {
+            my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
+            next unless $QueueObj->Load($queue);
+            my $name = $QueueObj->Name;
+            $name =~ s/(['\\])/\\$1/g;
+            push @{$limits->{queue}}, "Queue = '$name'";
+        }
+    }
 }
+
+our @GUESS = (
+    [ 10 => sub { return "subject" if $_[1] } ],
+    [ 20 => sub { return "id" if /^#?\d+$/ } ],
+    [ 30 => sub { return "requestor" if /\w+@\w+/} ],
+    [ 40 => sub {
+          return "status" if RT::Queue->new( $_[2] )->IsValidStatus( $_ )
+      }],
+    [ 40 => sub { return "status" if /^(in)?active$/i } ],
+    [ 50 => sub {
+          my $q = RT::Queue->new( $_[2] );
+          return "queue" if $q->Load($_) and $q->Id
+      }],
+    [ 60 => sub {
+          my $u = RT::User->new( $_[2] );
+          return "owner" if $u->Load($_) and $u->Id and $u->Privileged
+      }],
+    [ 70 => sub { return "owner" if $_ eq "me" } ],
+);
+
+sub GuessType {
+    my $self = shift;
+    my ($val, $quoted) = @_;
+
+    my $cu = $self->TicketsObj->CurrentUser;
+    for my $sub (map $_->[1], sort {$a->[0] <=> $b->[0]} @GUESS) {
+        local $_ = $val;
+        my $ret = $sub->($val, $quoted, $cu);
+        return $ret if $ret;
+    }
+    return "default";
+}
+
+sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
+sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
+sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
+sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
+sub HandleId        { $_[1] =~ s/^#//; return id => "Id = $_[1]"; }
+sub HandleStatus    {
+    if ($_[1] =~ /^active$/i and !$_[2]) {
+        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray();
+    } elsif ($_[1] =~ /^inactive$/i and !$_[2]) {
+        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->InactiveStatusArray();
+    } else {
+        return status => "Status = '$_[1]'";
+    }
+}
+sub HandleOwner     {
+    return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
+}
+sub HandleWatcher     {
+    return watcher => (!$_[2] and $_[1] eq "me") ? "Watcher.id = '__CurrentUser__'" : "Watcher = '$_[1]'";
+}
+sub HandleRequestor { return requestor => "Requestor LIKE '$_[1]'";  }
+sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
+sub HandleQ         { return queue     => "Queue = '$_[1]'";      }
+sub HandleCf        { return "cf.$_[3]" => "CF.'$_[3]' LIKE '$_[1]'"; }
 
 RT::Base->_ImportOverlays();
 

@@ -76,26 +76,26 @@ package RT::Search;
 
 use strict;
 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->_Init(@_);
-  return $self;
+sub new {
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    bless( $self, $class );
+    $self->_Init(@_);
+    return $self;
 }
 
-sub _Init  {
-  my $self = shift;
-  my %args = ( 
-           TicketsObj => undef,
-	       Argument => undef,
-	       @_ );
-  
-  $self->{'TicketsObj'} = $args{'TicketsObj'}; 
-  $self->{'Argument'} = $args{'Argument'};
-}
+sub _Init {
+    my $self = shift;
+    my %args = (
+        TicketsObj => undef,
+        Argument   => undef,
+        @_
+    );
 
+    $self->{'TicketsObj'} = $args{'TicketsObj'};
+    $self->{'Argument'}   = $args{'Argument'};
+}
 
 =head2 Argument
 
@@ -103,13 +103,12 @@ Return the optional argument associated with this Search
 
 =cut
 
-sub Argument  {
-  my $self = shift;
-  return($self->{'Argument'});
+sub Argument {
+    my $self = shift;
+    return ( $self->{'Argument'} );
 }
 
-
-=head2 TicketsObj 
+=head2 TicketsObj
 
 Return the Tickets object passed into this search
 
@@ -117,17 +116,17 @@ Return the Tickets object passed into this search
 
 sub TicketsObj {
     my $self = shift;
-    return($self->{'TicketsObj'});
+    return ( $self->{'TicketsObj'} );
 }
 
-sub Describe  {
-  my $self = shift;
-  return ($self->loc("No description for [_1]", ref $self));
+sub Describe {
+    my $self = shift;
+    return ( $self->loc( "No description for [_1]", ref $self ) );
 }
 
-sub Prepare  {
-  my $self = shift;
-  return(1);
+sub Prepare {
+    my $self = shift;
+    return (1);
 }
 
 RT::Base->_ImportOverlays();

@@ -155,6 +155,12 @@ my $genpage = sub {
         Page    => shift(@_),
     );
 };
+
+if ( RT->Config->Get('SearchResultsAutoRedirect') && $ticketcount == 1 ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
+            ."Ticket/Display.html?id=". $session{tickets}->First->id );
+}
+
 my $BaseURL = RT->Config->Get('WebPath')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
