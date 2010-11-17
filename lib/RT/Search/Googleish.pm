@@ -148,8 +148,8 @@ sub Dispatch {
 
     my $method = "Handle" . ucfirst(lc($type));
     $method = "HandleDefault" unless $self->can($method);
-    my ($key, $tsql) = $self->$method($contents, $quoted, $extra);
-    push @{$limits->{$key}}, $tsql;
+    my ($key, @tsql) = $self->$method($contents, $quoted, $extra);
+    push @{$limits->{$key}}, @tsql;
 }
 
 sub Unquote {
