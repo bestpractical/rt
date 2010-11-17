@@ -45,18 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="dashboards">
-<& /Dashboards/Elements/ShowDashboards,
-    Dashboards => \@dashboards,
-    Verbose => 0,
-    Title => loc("Dashboards"),
-    title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    bodyclass => "",
-    titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Dashboards/',
+<&|/Widgets/TitleBox, title => loc('Dashboards') &>
+% foreach my $Object (@Objects) {
+%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
+%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
+%   my $title;
+%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
+%       $title = loc("My dashboards");
+%   } else {
+%       $title = loc("[_1]'s dashboards",$Object->Name);
+%   }
+%   $title = $m->interp->apply_escapes($title, 'h');
+<& /Elements/CollectionList,
+    %ARGS,
+    Format => qq{'<a href="__WebPath__/Dashboards/__id__/__Name__">__Name__</a>/TITLE:$title'},
+    Collection => $Dashboards,
 &>
-</div>
-<%INIT>
-my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
-</%INIT>
+% }
+</&>
+<%init>
+use RT::Dashboards;
 
+my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
+</%init>
