@@ -90,6 +90,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Description'.
   varchar(120) 'CorrespondAddress'.
   varchar(120) 'CommentAddress'.
+  varchar(120) 'SubjectTag'.
   int(11) 'InitialPriority'.
   int(11) 'FinalPriority'.
   int(11) 'DefaultDueIn'.
@@ -107,6 +108,7 @@ sub Create {
                 Description => '',
                 CorrespondAddress => '',
                 CommentAddress => '',
+                SubjectTag => '',
                 InitialPriority => '0',
                 FinalPriority => '0',
                 DefaultDueIn => '0',
@@ -118,6 +120,7 @@ sub Create {
                          Description => $args{'Description'},
                          CorrespondAddress => $args{'CorrespondAddress'},
                          CommentAddress => $args{'CommentAddress'},
+                         SubjectTag => $args{'SubjectTag'},
                          InitialPriority => $args{'InitialPriority'},
                          FinalPriority => $args{'FinalPriority'},
                          DefaultDueIn => $args{'DefaultDueIn'},
@@ -204,6 +207,24 @@ Returns the current value of CommentAddress.
 Set CommentAddress to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, CommentAddress will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 SubjectTag
+
+Returns the current value of SubjectTag. 
+(In the database, SubjectTag is stored as varchar(120).)
+
+
+
+=head2 SetSubjectTag VALUE
+
+
+Set SubjectTag to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SubjectTag will be stored as a varchar(120).)
 
 
 =cut
@@ -330,6 +351,8 @@ sub _CoreAccessible {
         CorrespondAddress => 
 		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         CommentAddress => 
+		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        SubjectTag => 
 		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         InitialPriority => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
