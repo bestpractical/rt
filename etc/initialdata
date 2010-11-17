@@ -194,7 +194,7 @@
       Content     => '', },
     {  Queue       => '0',
        Name        => 'Autoreply',                                         # loc
-       Description => 'Default Autoresponse template',                     # loc
+       Description => 'Plain text Autoresponse template',                     # loc
        Content     => 'Subject: AutoReply: {$Ticket->Subject}
 
 
@@ -225,7 +225,7 @@ you may reply to this message.
 
     {  Queue       => '0',
        Name        => 'Transaction',                     # loc
-       Description => 'Default transaction template',    # loc
+       Description => 'Plain text transaction template',    # loc
        Content     => 'RT-Attach-Message: yes
 
 
@@ -247,7 +247,7 @@ you may reply to this message.
 
       Queue       => '0',
       Name        => 'Admin Correspondence',                     # loc
-      Description => 'Default admin correspondence template',    # loc
+      Description => 'Plain text admin correspondence template',    # loc
       Content     => 'RT-Attach-Message: yes
 
 
@@ -259,7 +259,7 @@ you may reply to this message.
 
     {  Queue       => '0',
        Name        => 'Correspondence',                          # loc
-       Description => 'Default correspondence template',         # loc
+       Description => 'Plain text correspondence template',         # loc
        Content     => 'RT-Attach-Message: yes
 
 {$Transaction->Content()}
@@ -268,7 +268,7 @@ you may reply to this message.
 
     {  Queue       => '0',
        Name        => 'Admin Comment',                           # loc
-       Description => 'Default admin comment template',          # loc
+       Description => 'Plain text admin comment template',          # loc
        Content     =>
 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
 RT-Attach-Message: yes
@@ -486,13 +486,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 }
 },
-# HTML version of the templates
-# TODO
-# needs the approval templates to be converted
-# possibly the error templates
-# probably not the Forward templates
-# needs an upgrade step
-# needs docs on how to swap your scrips to use the new templates
     {
      Name        => 'Correspondence in HTML',                            # loc
      Description => 'HTML correspondence template',         # loc
@@ -566,7 +559,7 @@ Content-Type: text/html
 ],
    },
    {  Queue       => '0',
-      Name        => 'Autoreply in HTML',                                         # loc
+      Name        => 'Autoreply in HTML',                              # loc
       Description => 'HTML Autoresponse template',                     # loc
       Content     => q[Subject: AutoReply: {$Ticket->Subject}
 Content-Type: text/html
@@ -596,7 +589,7 @@ you may reply to this message.</p>
    {  
       Queue       => '0',
       Name        => 'Transaction in HTML',                     # loc
-      Description => 'Default transaction template',    # loc
+      Description => 'HTML transaction template',    # loc
       Content     => q[RT-Attach-Message: yes
 Content-Type: text/html
 
