@@ -575,23 +575,6 @@ sub Types {
 }
 
 
-=head2 HasRenderTypes [TYPE_COMPOSITE]
-
-Returns a boolean value indicating whether the L</RenderTypes> and
-L</RenderType> methods make sense for this custom field.
-
-Currently true only for type C<Select>.
-
-=cut
-
-sub HasRenderTypes {
-    my $self = shift;
-    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
-    return undef unless $type;
-    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
-}
-
-
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -987,6 +970,23 @@ sub DefaultRenderType {
     my ($type, $max) = split /-/, $composite, 2;
     return unless $type and $self->HasRenderTypes($composite);
     return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
+}
+
+=head2 HasRenderTypes [TYPE_COMPOSITE]
+
+Returns a boolean value indicating whether the L</RenderTypes> and
+L</RenderType> methods make sense for this custom field.
+
+Currently true only for type C<Select>.
+
+=cut
+
+sub HasRenderTypes {
+    my $self = shift;
+    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
+    return undef unless $type;
+    return defined $FieldTypes{$type}->{render_types}
+        ->{ $max == 1 ? 'single' : 'multiple' };
 }
 
 =head2 RenderTypes [TYPE COMPOSITE]
