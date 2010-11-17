@@ -48,15 +48,15 @@
 
 =head1 NAME
 
-  RT::SavedSearches - a pseudo-collection for SavedSearch objects.
+  RT::SharedSettings - a pseudo-collection for SharedSetting objects.
 
 =head1 SYNOPSIS
 
-  use RT::SavedSearches
+  use RT::SharedSettings
 
 =head1 DESCRIPTION
 
-  SavedSearches is an object consisting of a number of SavedSearch objects.
+  SharedSettings is an object consisting of a number of SharedSetting objects.
   It works more or less like a DBIx::SearchBuilder collection, although it
   is not.
 
@@ -65,58 +65,91 @@
 
 =cut
 
-package RT::SavedSearches;
+package RT::SharedSettings;
 
-use RT::SavedSearch;
+use RT::SharedSetting;
 
 use strict;
-use base 'RT::SharedSettings';
+use base 'RT::Base';
 
-sub RecordClass {
-    return 'RT::SavedSearch';
+sub new  {
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    bless ($self, $class);
+    $self->CurrentUser(@_);
+    $self->{'idx'} = 0;
+    $self->{'objects'} = [];
+    return $self;
 }
 
-=head2 LimitToPrivacy
+### Accessor methods
 
-Takes two argumets: a privacy string, of the format "<class>-<id>", as
-produced by RT::SavedSearch::Privacy(); and a type string, as produced
-by RT::SavedSearch::Type().  The SavedSearches object will load the
-searches belonging to that user or group that are of the type
-specified.  If no type is specified, all the searches belonging to the
-user/group will be loaded.  Repeated calls to the same object should DTRT.
+=head2 Next
+
+Returns the next object in the collection.
 
 =cut
 
-sub LimitToPrivacy {
+sub Next {
     my $self = shift;
-    my $privacy = shift;
-    my $type = shift;
-
-    my $object = $self->_GetObject($privacy);
-
-    if ($object) {
-        $self->{'objects'} = [];
-        my @search_atts = $object->Attributes->Named('SavedSearch');
-        foreach my $att (@search_atts) {
-            my $search = RT::SavedSearch->new($self->CurrentUser);
-            $search->Load($privacy, $att->Id);
-            next if $type && $search->Type && $search->Type ne $type;
-            push(@{$self->{'objects'}}, $search);
-        }
+    my $search = $self->{'objects'}->[$self->{'idx'}];
+    if ($search) {
+        $self->{'idx'}++;
     } else {
-        $RT::Logger->error("Could not load object $privacy");
+        # We have run out of objects; reset the counter.
+        $self->{'idx'} = 0;
     }
+    return $search;
+}
+
+=head2 Count
+
+Returns the number of search objects found.
+
+=cut
+
+sub Count {
+    my $self = shift;
+    return scalar @{$self->{'objects'}};
+}
+
+=head2 CountAll
+
+Returns the number of search objects found
+
+=cut
+
+sub CountAll {
+    my $self = shift;
+    return $self->Count;
+}
+
+=head2 GotoPage
+
+Act more like a normal L<DBIx::SearchBuilder> collection.
+Moves the internal index around
+
+=cut
+
+sub GotoPage {
+    my $self = shift;
+    $self->{idx} = shift;
 }
 
 ### Internal methods
 
-sub _PrivacyObjects {
+# _GetObject: helper routine to load the correct object whose parameters
+#  have been passed.
+
+sub _GetObject {
     my $self = shift;
-    Carp::carp("RT::SavedSearches->_PrivacyObjects is deprecated. Please use RT::SavedSearch->_PrivacyObjects");
-    my $search = RT::SavedSearch->new($self->CurrentUser);
-    return $search->_PrivacyObjects(@_);
+    my $privacy = shift;
+
+    return $self->RecordClass->new($self->CurrentUser)->_GetObject($privacy);
 }
 
 RT::Base->_ImportOverlays();
 
 1;
+
