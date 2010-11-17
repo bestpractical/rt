@@ -51,6 +51,7 @@ $Name => undef
 $SearchType => 'Ticket',
 </%args>
 <select id="<%$Name%>" name="<%$Name%>">
+<option value="" selected>&nbsp;</option>
 % foreach my $object (@Objects) {
 <optgroup label="<& SearchPrivacy, Object => $object &>">
 % my @searches = $object->Attributes->Named('SavedSearch');
