@@ -88,6 +88,7 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
   varchar(200) 'Type'.
+  varchar(64) 'RenderType'.
   int(11) 'MaxValues'.
   text 'Pattern'.
   smallint(6) 'Repeated'.
@@ -107,6 +108,7 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
+                RenderType => '',
                 MaxValues => '',
                 Pattern => '',
                 Repeated => '0',
@@ -120,6 +122,7 @@ sub Create {
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
+                         RenderType => $args{'RenderType'},
                          MaxValues => $args{'MaxValues'},
                          Pattern => $args{'Pattern'},
                          Repeated => $args{'Repeated'},
@@ -174,6 +177,24 @@ Returns the current value of Type.
 Set Type to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Type will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 RenderType
+
+Returns the current value of RenderType. 
+(In the database, RenderType is stored as varchar(64).)
+
+
+
+=head2 SetRenderType VALUE
+
+
+Set RenderType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, RenderType will be stored as a varchar(64).)
 
 
 =cut
@@ -369,6 +390,8 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Type => 
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        RenderType => 
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         MaxValues => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
