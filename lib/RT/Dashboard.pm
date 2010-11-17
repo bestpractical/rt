@@ -343,6 +343,27 @@ sub CurrentUserCanSubscribe {
     $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
 }
 
+=head2 Subscription
+
+Returns the L<RT::Attribute> representing the current user's subscription
+to this dashboard if there is one; otherwise, returns C<undef>.
+
+=cut
+
+sub Subscription {
+    my $self = shift;
+
+    # no subscription to unloaded dashboards
+    return unless $self->id;
+
+    for my $sub ($self->CurrentUser->UserObj->Attributes->Named('Subscription')) {
+        return $sub if $sub->SubValue('DashboardId') == $self->id;
+    }
+
+    return;
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;

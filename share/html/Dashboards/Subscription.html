@@ -171,7 +171,7 @@
 </tr>
 </table>
 
-% if ($SubscriptionObj->Id) {
+% if ($SubscriptionObj) {
     <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
 % } else {
     <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
@@ -187,22 +187,12 @@ my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Ti
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-
-my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
-
-# first let's see if we already have a subscription to this DashboardId
-for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $id;
-    $SubscriptionObj = $sub;
-    last;
-}
-
-$id = $SubscriptionObj->Id
-             ? $SubscriptionObj->SubValue('DashboardId')
-             : $ARGS{'id'};
-
 ($val, $msg) = $DashboardObj->LoadById($id);
 $val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $id, $msg));
+
+my $SubscriptionObj = $DashboardObj->Subscription;
+
+$id = $SubscriptionObj ? $SubscriptionObj->SubValue('DashboardId') : $ARGS{'id'};
 
 my %fields = (
     DashboardId => $id,
@@ -217,7 +207,7 @@ my %fields = (
 );
 
 # update any fields with the values from the subscription object
-if ($SubscriptionObj->Id) {
+if ($SubscriptionObj) {
     for my $field (keys %fields) {
         $fields{$field} = $SubscriptionObj->SubValue($field);
     }
@@ -232,7 +222,7 @@ for my $field (keys %fields) {
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
     # update
-    if ($SubscriptionObj->Id) {
+    if ($SubscriptionObj) {
         $id = delete $fields{'DashboardId'}; # immutable
         ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
         $fields{'DashboardId'} = $id;
@@ -249,6 +239,7 @@ if (defined $ARGS{Save}) {
         Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
             unless $DashboardObj->CurrentUserCanSubscribe;
 
+        $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
         my ($val, $msg) = $SubscriptionObj->Create(
             Name        => 'Subscription',
             Description => 'Subscription to dashboard ' . $id,
@@ -267,7 +258,7 @@ if (defined $ARGS{Save}) {
     }
 }
 
-if ($SubscriptionObj->Id) {
+if ($SubscriptionObj) {
     $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
 }
 else {
