@@ -25,4 +25,7 @@ my $move_attributes = sub {
     sub {
         return $move_attributes->( 'CustomFields', 'RT::CustomField', 'BasedOn');
     },
+    sub {
+        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
+    },
 );
