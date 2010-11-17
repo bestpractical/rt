@@ -27,6 +27,7 @@ CREATE TABLE Queues (
 	Description 		VARCHAR2(255),
 	CorrespondAddress 	VARCHAR2(120),
 	CommentAddress 		VARCHAR2(120),
+	SubjectTag 		VARCHAR2(120),
 	InitialPriority 	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	FinalPriority 		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	DefaultDueIn 		NUMBER(11,0) DEFAULT 0 NOT NULL,
