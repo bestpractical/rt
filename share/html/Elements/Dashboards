@@ -52,25 +52,6 @@
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 
-% foreach my $Object (@Objects) {
-%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
-%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title = $m->interp->apply_escapes($title, 'h');
-<& /Elements/CollectionList,
-    %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__},
-    Collection => $Dashboards,
-&>
-% }
-</&>
-<%init>
-use RT::Dashboards;
+<& /Dashboards/Elements/ShowDashboards &>
 
-my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
-</%init>
+</&>

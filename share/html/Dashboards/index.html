@@ -45,55 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, Title => loc("Dashboards") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions, actions => \@actions &>
-
-<& /Dashboards/Elements/ShowDashboards,
-    Title      => loc('Personal Dashboards'),
-    Dashboards => \@personal_dashboards,
-&>
-
-<& /Dashboards/Elements/ShowDashboards,
-    Title      => loc('System Dashboards'),
-    Dashboards => \@system_dashboards,
-&>
-
-% for (@grouped_dashboards) {
-%   my $group = $_->{name};
-%   my $dashboards = $_->{dashboards};
-
-    <& /Dashboards/Elements/ShowDashboards,
-        Title      => loc('[_1] Dashboards', $group),
-        Dashboards => $dashboards,
-    &>
-% }
-
-<%INIT>
-my $title = loc("Dashboards");
-use RT::Dashboard;
-
-my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects");
-
-my @actions;
-
-my @personal_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] };
-my @system_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{system} || [] };
-
-my @groups = sort keys %{ $dashboards->{group} || {} };
-my @grouped_dashboards = map {
-    {
-        name => $_,
-        dashboards => [ sort { $a->Id <=> $b->Id } @{ $dashboards->{group}{$_} || [] } ],
-    }
-} @groups;
-
-$m->callback(
-    PersonalDashboards => \@personal_dashboards,
-    SystemDashboards   => \@system_dashboards,
-    GroupedDashboards  => \@grouped_dashboards,
-    CallbackName       => 'MassageDashboards',
-);
-</%INIT>
-
+<& /Dashboards/Elements/ShowDashboards &>

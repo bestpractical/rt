@@ -45,68 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Dashboards => undef
-$Verbose => 1
-$Title => loc("Dashboards"),
-$title_href => ""
-$bodyclass => ""
-$titleright => ""
-$titleright_href => ""
-</%ARGS>
-<%INIT>
-# map each subscription to a dashboard ID
-my %subscription_for;
-
-for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    $subscription_for{$attr->SubValue('DashboardId')} = $attr;
-}
-</%INIT>
-<&| /Widgets/TitleBox, title => $Title,
-    title_href => $title_href,
-    bodyclass => $bodyclass,
-    titleright => $titleright,
-    titleright_href => $titleright_href
-
- &>
-
-% if (@$Dashboards == 0) {
-%   if ($Verbose) {
-        <p><% loc("No dashboards.") %></p>
+% foreach my $Object (@Objects) {
+%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
+%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
+%   my $title;
+%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
+%       $title = loc("My dashboards");
+%   } else {
+%       $title = loc("[_1]'s dashboards",$Object->Name);
 %   }
-% } else {
-    <table class="collection-as-table">
-        <tr class="collection-as-table">
-% if ($Verbose) {
-            <th class="collection-as-table"><% loc("#") %></th>
+%   $title = $m->interp->apply_escapes($title, 'h');
+<& /Elements/CollectionList,
+    %ARGS,
+    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__},
+    Collection => $Dashboards,
+&>
 % }
-            <th class="collection-as-table"><% loc("Name") %></th>
-            <th class="collection-as-table"><% loc("Subscription") %></th>
-        </tr>
+<%init>
+use RT::Dashboards;
 
-%   my $i = 0;
-%   for my $dashboard (@$Dashboards) {
-%       my $url = sprintf '%s/Dashboards/%d/%s', RT->Config->Get('WebPath'), $dashboard->Id, $dashboard->Name;
-        <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
-% if ($Verbose) {
-            <td class="collection-as-table">
-                <a href="<% $url %>">
-                    <% $dashboard->Id %>
-                </a>
-            </td>
-% }
-            <td class="collection-as-table">
-                <a href="<% $url %>">
-                    <% $dashboard->Name %>
-                </a>
-            </td>
-            <td class="collection-as-table">
-                <& /Dashboards/Elements/ShowSubscription, Dashboard => $dashboard, Subscription => $subscription_for{$dashboard->Id} &>
-            </td>
-        </tr>
-%   }
-
-    </table>
-% }
-</&>
-
+my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
+</%init>
