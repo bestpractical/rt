@@ -80,6 +80,12 @@
 
 % $m->callback(CallbackName => 'AfterTable', Dashboard => $DashboardObj, show_cb => $show_cb);
 
+% if (!$Preview) {
+% my $edit = RT->Config->Get('WebPath') . '/Dashboards/Modify.html?id='.$id;
+% my $subscription = RT->Config->Get('WebPath') . '/Dashboards/Subscription.html?id='.$id;
+<p><&|/l, $edit, $subscription &>You <a href="[_1]">may edit this dashboard</a> and <a href="[_2]">your subscription</a> to it in RT.</&></p>
+% }
+
 %# Matches the closing div in /Elements/Footer that it expects
 %# from PageLayout (which we don't use here)
 <div>
