@@ -439,6 +439,8 @@ sub get_resource {
     $path = "/$path"
         unless $path =~ m{^/};
 
+    $HTML::Mason::Commands::r->path_info($path);
+
     # grab the query arguments
     my %args;
     for (split /&/, ($uri->query||'')) {
@@ -500,6 +502,11 @@ sub content_type {
     my $self = shift;
     $self->{content_type} = shift if @_;
     return $self->{content_type};
+}
+sub path_info {
+    my $self = shift;
+    $self->{path_info} = shift if @_;
+    return $self->{path_info};
 }
 
 =head1 NAME
