@@ -520,7 +520,7 @@ Content-Type: text/html
 
 <p>Greetings,</p>
 
-<p>Your ticket has been rejected by <b>{ eval { $Approval->OwnerObj->Name } }</b>.</p>
+<p>Your ticket has been rejected by <b>{ eval { $Approver->Name } }</b>.</p>
 
 <p>Approver\'s notes:</p>
 <blockquote>{ $Notes }</blockquote>
