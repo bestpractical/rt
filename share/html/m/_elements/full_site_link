@@ -45,4 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a id="fullsite" href="<%RT->Config->Get('WebPath')%>/m?NotMobile=1"><&|/l&>Not using a mobile browser?</&></a>
+<a id="fullsite" href="<%RT->Config->Get('WebPath')%>/m/index.html?NotMobile=1"><&|/l&>Not using a mobile browser?</&></a>
