@@ -227,8 +227,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     if ( $request_path =~ qr'Admin/Queues' ) {
-        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue' ) ) {
-        }
         if ( my $id = $m->request_args->{'id'} || $m->request_args->{'Queue'} ) {
             my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
             $queue_obj->Load($id);
