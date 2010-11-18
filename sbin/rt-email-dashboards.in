@@ -530,7 +530,8 @@ Display this documentation
 
 =item --dryrun
 
-Figure out which dashboards would be sent, but don't actually generate them
+Figure out which dashboards would be sent, but don't actually generate or email
+any of them
 
 =item --epoch SECONDS
 
@@ -541,7 +542,7 @@ be Oct 12 19:06:58 GMT 2007).
 =item --all
 
 Ignore subscription frequency when considering each dashboard (should only be
-used with --dryrun)
+used with --dryrun for testing and debugging)
 
 =back
 
