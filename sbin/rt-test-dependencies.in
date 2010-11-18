@@ -340,7 +340,7 @@ Net::SMTP
 .
 
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
-HTML::RewriteAttributes 0.02
+HTML::RewriteAttributes 0.04
 MIME::Types
 .
 
