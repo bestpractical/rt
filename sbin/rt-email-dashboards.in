@@ -78,7 +78,7 @@ BEGIN {
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "verbose", "epoch=i", "all", "skip-acl"
+    "help|h", "dryrun", "epoch=i", "all", "skip-acl"
 );
 
 if ($opts{'help'}) {
@@ -116,11 +116,8 @@ $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
 no warnings 'once';
 
-# helper functions
-sub verbose  { print @_, "\n" if $opts{verbose}; 1 }
-
 my $now = $opts{epoch} || time;
-verbose("Using time " . scalar(localtime($now)));
+$RT::Logger->info("Using time " . scalar(localtime($now)) . " for dashboard generation");
 
 my $from = get_from();
 $RT::Logger->debug("Sending email from $from");
@@ -224,7 +221,7 @@ sub send_dashboard {
         if ($ok) {
             my ($deleted, $msg) = $subscription->Delete();
             if ($deleted) {
-                verbose("Deleted an obsolete subscription: $msg");
+                $RT::Logger->info("Deleted an obsolete subscription: $msg");
             }
             else {
                 $RT::Logger->warning("Unable to delete an obsolete subscription: $msg");
@@ -237,7 +234,7 @@ sub send_dashboard {
         return;
     }
 
-    verbose('Creating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
+    $RT::Logger->info('Generating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
 
     if ($opts{'dryrun'}) {
         print << "SUMMARY";
@@ -271,7 +268,7 @@ SUMMARY
 sub email_dashboard {
     my ($currentuser, $email, $dashboard, $subscription, $content) = @_;
 
-    verbose('Sending dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name.' <'.$email.'>');
+    $RT::Logger->info('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name.' <'.$email.'>');
 
     my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
         RT->Config->Get('rtname'),
@@ -416,7 +413,7 @@ sub get_resource {
     my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
 
-    verbose("Getting resource $uri");
+    $RT::Logger->info("Getting resource $uri");
 
     # strip out the equivalent of WebURL, so we start at the correct /
     my $path = $uri->path;
@@ -540,11 +537,6 @@ Figure out which dashboards would be sent, but don't actually generate them
 Instead of using the current time to figure out which dashboards should be
 sent, use SECONDS (usually since midnight Jan 1st, 1970, so C<1192216018> would
 be Oct 12 19:06:58 GMT 2007).
-
-=item --verbose
-
-Print out some tracing information (such as which dashboards are being
-generated and sent out)
 
 =item --all
 
