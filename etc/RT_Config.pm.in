@@ -837,6 +837,8 @@ This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
   web2            The default layout for RT 3.8
+  aileron         New default layout for RT 4.0
+  ballard         Theme which doesn't rely on JavaScript for menuing
 
 This value actually specifies a directory in F<share/html/NoAuth/css/>
 from which RT will try to load the file main.css (which should
@@ -846,7 +848,7 @@ option can be overridden by users in their preferences.
 
 =cut
 
-Set($WebDefaultStylesheet, 'web2');
+Set($WebDefaultStylesheet, 'aileron');
 
 =item C<$UsernameFormat>
 
