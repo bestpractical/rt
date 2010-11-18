@@ -58,8 +58,7 @@
 
 % $m->callback(CallbackName => 'BeforeTable', Dashboard => $DashboardObj, show_cb => $show_cb);
 
-<table class="dashboard">
-<!-- Dashboard #<%$id%> -->
+<table class="dashboard" id="dashboard-<%$id%>">
 
 % $m->callback(CallbackName => 'BeforePanes', Dashboard => $DashboardObj, show_cb => $show_cb);
 
