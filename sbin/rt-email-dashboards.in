@@ -78,7 +78,7 @@ BEGIN {
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "epoch=i", "all", "skip-acl"
+    "help|h", "dryrun", "epoch=i", "all"
 );
 
 if ($opts{'help'}) {
