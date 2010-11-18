@@ -222,10 +222,35 @@ you may reply to this message.
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Autoreply in HTML',                              # loc
+       Description => 'HTML Autoresponse template',                     # loc
+       Content     => q[Subject: AutoReply: {$Ticket->Subject}
+Content-Type: text/html
 
+<p>Greetings,</p>
+
+<p>This message has been automatically generated in response to the
+creation of a trouble ticket regarding <b>{$Ticket->Subject()}</b>,
+a summary of which appears below.</p>
+
+<p>There is no need to reply to this message right now.  Your ticket has been
+assigned an ID of <b>{$Ticket->SubjectTag}</b>.</p>
+
+<p>Please include the string <b>{$Ticket->SubjectTag}</b>
+in the subject line of all future correspondence about this issue. To do so,
+you may reply to this message.</p>
+
+<p>Thank you,<br/>
+{$Ticket->QueueObj->CorrespondAddress()}</p>
+
+<hr/>
+{$Transaction->Content(Type => 'text/html')}
+],
+    },
     {  Queue       => '0',
        Name        => 'Transaction',                     # loc
-       Description => 'Plain text transaction template',    # loc
+       Description => 'Plain text transaction template', # loc
        Content     => 'RT-Attach-Message: yes
 
 
@@ -242,7 +267,28 @@ you may reply to this message.
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Transaction in HTML',          # loc
+       Description => 'HTML transaction template',    # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
 
+<b>{$Transaction->CreatedAsString}: {$Transaction->CreatorObj->Name} updated ticket <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{$Ticket->id}</a>.</b>
+<br>
+<table border="0">
+<tr><td align="right"><b>Transaction:</b></td><td>{$Transaction->Description}</td></tr>
+<tr><td align="right"><b>Queue:</b></td><td>{$Ticket->QueueObj->Name}</td></tr>
+<tr><td align="right"><b>Subject:</b></td><td>{$Transaction->Subject || $Ticket->Subject || "(No subject given)"} </td></tr>
+<tr><td align="right"><b>Owner:</b></td><td>{$Ticket->OwnerObj->Name}</td></tr>
+<tr><td align="right"><b>Requestors:</b></td><td>{$Ticket->RequestorAddresses}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{$Ticket->Status}</td></tr>
+<tr><td align="right"><b>Ticket URL:</b></td><td><a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a></td></tr>
+</table>
+<br/>
+<br/>
+{$Transaction->Content( Type => "text/html")}
+'
+    },
     {
 
       Queue       => '0',
@@ -256,7 +302,18 @@ you may reply to this message.
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Admin Correspondence in HTML',                     # loc
+       Description => 'HTML admin correspondence template',    # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
 
+Ticket URL: <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
+<br />
+<br />
+{$Transaction->Content(Type => "text/html");}
+'
+    },
     {  Queue       => '0',
        Name        => 'Correspondence',                          # loc
        Description => 'Plain text correspondence template',         # loc
@@ -265,7 +322,15 @@ you may reply to this message.
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Correspondence in HTML',                 # loc
+       Description => 'HTML correspondence template',           # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
 
+{$Transaction->Content( Type => "text/html")}
+'
+    },
     {  Queue       => '0',
        Name        => 'Admin Comment',                           # loc
        Description => 'Plain text admin comment template',          # loc
@@ -280,7 +345,18 @@ This is a comment.  It is not sent to the Requestor(s):
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Admin Comment in HTML',                  # loc
+       Description => 'HTML admin comment template',            # loc
+       Content     => 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\[Comment\]//g; $comment =~ s/^Re//i; $s;}
+RT-Attach-Message: yes
+Content-Type: text/html
 
+<p>This is a comment about <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
+
+{$Transaction->Content(Type => "text/html")}
+'
+    },
     {  Queue       => '0',
        Name        => 'Status Change',                                     # loc
        Description => 'Ticket status changed',                             # loc
@@ -292,7 +368,18 @@ This is a comment.  It is not sent to the Requestor(s):
 {$Transaction->Content()}
 '
     },
+    {  Queue       => '0',
+       Name        => 'Status Change in HTML',              # loc
+       Description => 'Ticket status changed',              # loc
+       Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
+Content-Type: text/html
 
+<a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
+<br/>
+<br/>
+{$Transaction->Content(Type => "text/html")}
+'
+    },
     {
 
       Queue       => '0',
@@ -302,6 +389,15 @@ This is a comment.  It is not sent to the Requestor(s):
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Resolved in HTML',               # loc
+       Description => 'HTML Ticket Resolved',           # loc
+       Content     => 'Subject: Resolved: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>According to our records, your request has been resolved.  If you have any further questions or concerns, please respond to this message.</p>
 '
     },
     {  Queue       => '___Approvals',
@@ -486,130 +582,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 }
 },
-    {
-     Name        => 'Correspondence in HTML',                            # loc
-     Description => 'HTML correspondence template',         # loc
-     Content     => q[RT-Attach-Message: yes
-Content-Type: text/html
-
-{$Transaction->Content( Type => 'text/html')}
-],
-   },
-
-   {
-     Queue       => '0',
-     Name        => 'Admin Correspondence in HTML',                     # loc
-     Description => 'HTML admin correspondence template',    # loc
-     Content     => q[RT-Attach-Message: yes
-Content-Type: text/html
-
-{ my $c = $Transaction->Content(Type => 'text/html');
-  my $url = RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id;
-  if (substr($c,0,500) =~ qr/\Q$url\E/) {
-     $OUT = $c;
-  } else {
-    $OUT = <<EOF;
-Ticket URL: <a href="$url">$url</a>
-<br/>
-<br/>
-<br/>
-$c
-EOF
-
-  }
-}
-],
-   },
-   {  
-      Queue       => '0',
-      Name        => 'Admin Comment in HTML',                           # loc
-      Description => 'HTML admin comment template',          # loc
-      Content     => q[Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\[Comment\]//g; $comment =~ s/^Re//i; $s;}
-RT-Attach-Message: yes
-Content-Type: text/html
-
-<p>This is a comment about <a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
-<br/>
-{$Transaction->Content(Type => 'text/html')}
-],
-   },
-   {  Queue       => '0',
-      Name        => 'Status Change in HTML',                                     # loc
-      Description => 'Ticket status changed',                             # loc
-      Content     => q[Subject: Status Changed to: {$Transaction->NewValue}
-RT-Attach-Message: yes
-Content-Type: text/html
-
-<a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}</a>
-<br/>
-<br/>
-{$Transaction->Content(Type => 'text/html')}
-],
-   },
-   {
-     Queue       => '0',
-     Name        => 'Resolved in HTML',                 # loc
-     Description => 'HTML Ticket Resolved',          # loc
-     Content     => q[Subject: Resolved: {$Ticket->Subject}
-Content-Type: text/html
-
-<p>According to our records, your request has been resolved.</p>
-
-<p>If you have any further questions or concerns, please respond to this message.</p>
-],
-   },
-   {  Queue       => '0',
-      Name        => 'Autoreply in HTML',                              # loc
-      Description => 'HTML Autoresponse template',                     # loc
-      Content     => q[Subject: AutoReply: {$Ticket->Subject}
-Content-Type: text/html
-
-
-<p>Greetings,</p>
-
-<p>This message has been automatically generated in response to the
-creation of a trouble ticket regarding <b>{$Ticket->Subject()}</b>,
-a summary of which appears below.</p>
-
-<p>There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$rtname} #{$Ticket->id()}].</p>
-
-<p>Please include the string <b>[{$rtname} #{$Ticket->id}]</b>
-in the subject line of all future correspondence about this issue. To do so,
-you may reply to this message.</p>
-
-
-<p>Thank you,<br/>
-{$Ticket->QueueObj->CorrespondAddress()}</p>
-
-<hr/>
-{$Transaction->Content(Type => 'text/html')}
-],
-   },
-   {  
-      Queue       => '0',
-      Name        => 'Transaction in HTML',                     # loc
-      Description => 'HTML transaction template',    # loc
-      Content     => q[RT-Attach-Message: yes
-Content-Type: text/html
-
-<b>{$Transaction->CreatedAsString}: {$Transaction->CreatorObj->Name} updated ticket {$Ticket->id}.</b>
-<br>
-<table border="0">
-<tr><td align="right"><b>Transaction:</b></td><td>{$Transaction->Description}</td></tr>
-<tr><td align="right"><b>Queue:</b></td><td>{$Ticket->QueueObj->Name}</td></tr>
-<tr><td align="right"><b>Subject:</b></td><td>{$Transaction->Subject || $Ticket->Subject || "(No subject given)"} </td></tr>
-<tr><td align="right"><b>Owner:</b></td><td>{$Ticket->OwnerObj->Name}</td></tr>
-<tr><td align="right"><b>Requestors:</b></td><td>{$Ticket->RequestorAddresses}</td></tr>
-<tr><td align="right"><b>Status:</b></td><td>{$Ticket->Status}</td></tr>
-<tr><td align="right"><b>Ticket URL:</b></td><td><a href="{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get('WebURL')}Ticket/Display.html?id={$Ticket->id}</a></td></tr>
-</table>
-
-<br/>
-<br/>
-{$Transaction->Content( Type => 'text/html')}
-],
-   },
 );
 
 @Scrips = (
