@@ -119,8 +119,6 @@ no warnings 'once';
 # helper functions
 sub verbose  { print @_, "\n" if $opts{debug} || $opts{verbose}; 1 }
 sub debug    { print @_, "\n" if $opts{debug}; 1 }
-sub error    { $RT::Logger->error(@_); verbose(@_); 1 }
-sub warning  { $RT::Logger->warning(@_); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
 verbose("Using time " . scalar(localtime($now)));
@@ -190,7 +188,7 @@ while (defined(my $user = $Users->Next)) {
 
         eval { send_dashboard($currentuser, $email, $subscription) };
         if ( $@ ) {
-            error("Caught exception: $@");
+            $RT::Logger->error("Caught exception: $@");
         }
         else {
             $subscription->SetSubValues(
@@ -212,7 +210,7 @@ sub send_dashboard {
 
     # failed to load dashboard. perhaps it was deleted or it changed privacy
     if (!$ok) {
-        warning("Unable to load dashboard $DashboardId of subscription ".$subscription->Id." for user ".$currentuser->Name.": $msg");
+        $RT::Logger->warning("Unable to load dashboard $DashboardId of subscription ".$subscription->Id." for user ".$currentuser->Name.": $msg");
 
         my $ok = RT::Interface::Email::SendEmailUsingTemplate(
             From      => $from,
@@ -230,11 +228,11 @@ sub send_dashboard {
                 verbose("Deleted an obsolete subscription: $msg");
             }
             else {
-                warning("Unable to delete an obsolete subscription: $msg");
+                $RT::Logger->warning("Unable to delete an obsolete subscription: $msg");
             }
         }
         else {
-            warning("Unable to notify ".$currentuser->Name." of an obsolete subscription");
+            $RT::Logger->warning("Unable to notify ".$currentuser->Name." of an obsolete subscription");
         }
 
         return;
@@ -290,7 +288,7 @@ sub email_dashboard {
     debug("Done sending dashboard to ".$currentuser->Name." <$email>")
         and return if $ok;
 
-    error("Failed to email dashboard to user ".$currentuser->Name." <$email>");
+    $RT::Logger->error("Failed to email dashboard to user ".$currentuser->Name." <$email>");
 }
 
 sub build_email {
@@ -310,7 +308,7 @@ sub build_email {
             # downgrade non-text strings, because all strings are utf8 by
             # default, which is wrong for non-text strings.
             if ( $mimetype !~ m{text/} ) {
-                utf8::downgrade( $data, 1 ) or warning("downgrade $data failed");
+                utf8::downgrade( $data, 1 ) or $RT::Logger->warning("downgrade $data failed");
             }
 
             push @parts, MIME::Entity->build(
