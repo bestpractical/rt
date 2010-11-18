@@ -53,6 +53,7 @@ $term => undef
 $delim => undef
 $max => 10
 $privileged => undef
+$exclude => ''
 </%ARGS>
 <%INIT>
 require JSON;
@@ -102,6 +103,11 @@ while (my ($name, $op) = each %fields) {
         ENTRYAGGREGATOR => 'OR',
         SUBCLAUSE       => 'autocomplete',
     );
+}
+
+# Exclude users we don't want
+foreach (split /\s*,\s*/, $exclude) {
+    $users->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
 }
 
 my @suggestions;

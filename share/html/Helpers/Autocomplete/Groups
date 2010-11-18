@@ -50,6 +50,7 @@
 <%ARGS>
 $term => undef
 $max => 10
+$exclude => ''
 </%ARGS>
 <%INIT>
 require JSON;
@@ -70,6 +71,11 @@ $groups->Limit(
     OPERATOR        => 'LIKE',
     VALUE           => $term,
 );
+
+# Exclude groups we don't want
+foreach (split /\s*,\s*/, $exclude) {
+    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
+}
 
 my @suggestions;
 

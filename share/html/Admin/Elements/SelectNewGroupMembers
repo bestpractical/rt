@@ -46,58 +46,36 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $Show ne 'Groups' ) {
-<b><&|/l&>Users</&></b>
-<br />
-<select multiple="multiple" name="<% $Name %>Users" size="10">
-<%perl>
-my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
-            map { [$m->scomp("/Elements/ShowUser", User => $_), $_] }
-            @{ $users->ItemsArrayRef };
-</%perl>
-% for (@users) {
-% my ($rendered, $user) = @$_;
-% next if $SkipUsers->{ $user->id };
-<option value="User-<% $user->id %>"><% $rendered |n%></option>
-% }
-</select>
-<br />
+<label for="<% $Name %>Users"><&|/l&>Add user</&>:</label>
+<input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" /><br />
+<script type="text/javascript">
+    jQuery("#<% $Name %>Users").autocomplete({
+        source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name;privileged=1;exclude=<% $user_ids |u %>",
+        // Auto-submit once a user is chosen
+        select: function( event, ui ) {
+            jQuery(event.target).closest("form").submit();
+        }
+    });
+</script>
 % }
 
 % if ( $Show ne 'Users' ) {
-<b><&|/l&>Groups</&></b>
-<br />
-<select multiple="multiple" name="<% $Name %>Groups" size="10">
-% while ( my $group = $groups->Next ) {
-% next if $SkipGroups->{ $group->id };
-<option value="Group-<% $group->id %>"><% $group->Name %></option>
+<label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label>
+<input type="text" value="" name="<% $Name %>Groups-Name" id="<% $Name %>Groups-Name" /><br />
+<input type="hidden" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" />
+<script type="text/javascript">
+    jQuery("#<% $Name %>Groups-Name").autocomplete({
+        source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups?exclude=<% $group_ids |u %>",
+        // Auto-submit once a user is chosen
+        select: function( event, ui ) {
+            jQuery(event.target).closest("form").submit();
+        }
+    });
+</script>
 % }
-</select>
-% }
-
 <%INIT>
-my $users = RT::Users->new($session{'CurrentUser'});
-
-$users->Limit(
-    FIELD           => 'id',
-    VALUE           => RT->SystemUser->id,
-    OPERATOR        => '!=',
-    ENTRYAGGREGATOR => 'AND'
-);
-$users->Limit(
-    FIELD           => 'id',
-    VALUE           => RT->Nobody->id,
-    OPERATOR        => '!=',
-    ENTRYAGGREGATOR => 'AND'
-);
-$users->LimitToPrivileged();
-
-my $groups = RT::Groups->new($session{'CurrentUser'});
-
-# self-recursive group membership considered harmful!
-$groups->Limit(FIELD => 'id', VALUE => $Group->id, OPERATOR => '!=' );
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-
-
+my $user_ids  = join(',', grep { $SkipUsers->{$_} } keys %$SkipUsers);
+my $group_ids = join(',', grep { $SkipGroups->{$_} } keys %$SkipGroups);
 </%INIT>
 <%ARGS>
 $Name => 'Users'
