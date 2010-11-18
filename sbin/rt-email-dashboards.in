@@ -123,10 +123,10 @@ sub error    { $RT::Logger->error(@_); verbose(@_); 1 }
 sub warning  { $RT::Logger->warning(@_); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
-verbose "Using time [_1]", scalar localtime($now);
+verbose("Using time " . scalar(localtime($now)));
 
 my $from = get_from();
-debug "Sending email from [_1]", $from;
+debug("Sending email from $from");
 
 # look through each user for her subscriptions
 my $Users = RT::Users->new(RT->SystemUser);
@@ -134,16 +134,13 @@ $Users->LimitToPrivileged;
 
 while (defined(my $user = $Users->Next)) {
     if ($user->PrincipalObj->Disabled) {
-        debug "Skipping over "
-            . $user->Name
-            . " due to having a disabled account.";
+        debug("Skipping over " . $user->Name . " due to having a disabled account.");
         next;
     }
 
     my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->Config->Get('Timezone'));
     $hour .= ':00';
-    debug "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
-          $user->Name, $hour, $dow, $dom;
+    debug("Checking ".$user->Name."'s subscriptions: hour $hour, dow $dow, dom $dom");
 
     my $currentuser = RT::CurrentUser->new;
     $currentuser->LoadByName($user->Name);
@@ -154,19 +151,23 @@ while (defined(my $user = $Users->Next)) {
         my $counter = $subscription->SubValue('Counter') || 0;
 
         if (!$opts{all}) {
-            debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]",
-                $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'),
-                $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+            my $sub_frequency = $subscription->SubValue('Frequency');
+            my $sub_hour = $subscription->SubValue('Hour');
+            my $sub_dow = $subscription->SubValue('Dow');
+            my $sub_dom = $subscription->SubValue('Dom');
+            my $sub_fow = $subscription->SubValue('Fow');
 
-            next if $subscription->SubValue('Frequency') eq 'never';
+            debug("Checking against subscription with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow");
+
+            next if $sub_frequency eq 'never';
 
             # correct hour?
-            next if $subscription->SubValue('Hour') ne $hour;
+            next if $sub_hour ne $hour;
 
             # if weekly, correct day of week?
-            if ( $subscription->SubValue('Frequency') eq 'weekly' ) {
-                next if $subscription->SubValue('Dow') ne $dow;
-                my $fow       = $subscription->SubValue('Fow') || 1;
+            if ( $sub_frequency eq 'weekly' ) {
+                next if $sub_frequency ne $dow;
+                my $fow = $sub_fow || 1;
                 if ( $counter % $fow ) {
                     $subscription->SetSubValues( Counter => $counter + 1 )
                       unless $opts{'dryrun'};
@@ -175,11 +176,11 @@ while (defined(my $user = $Users->Next)) {
             }
 
             # if monthly, correct day of month?
-            elsif ($subscription->SubValue('Frequency') eq 'monthly') {
-                next if $subscription->SubValue('Dom') != $dom;
+            elsif ($sub_frequency eq 'monthly') {
+                next if $sub_dom != $dom;
             }
 
-            elsif ($subscription->SubValue('Frequency') eq 'm-f') {
+            elsif ($sub_frequency eq 'm-f') {
                 next if $dow eq 'Sunday' || $dow eq 'Saturday';
             }
         }
@@ -189,7 +190,7 @@ while (defined(my $user = $Users->Next)) {
 
         eval { send_dashboard($currentuser, $email, $subscription) };
         if ( $@ ) {
-            error 'Caught exception: ' . $@;
+            error("Caught exception: $@");
         }
         else {
             $subscription->SetSubValues(
@@ -204,17 +205,14 @@ sub send_dashboard {
 
     my $rows = $subscription->SubValue('Rows');
 
-    my $dashboard = RT::Dashboard->new($currentuser);
+    my $DashboardId = $subscription->SubValue('DashboardId');
 
-    my ($ok, $msg) = $dashboard->LoadById($subscription->SubValue('DashboardId'));
+    my $dashboard = RT::Dashboard->new($currentuser);
+    my ($ok, $msg) = $dashboard->LoadById($DashboardId);
 
     # failed to load dashboard. perhaps it was deleted or it changed privacy
     if (!$ok) {
-        warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]: [_4]",
-            $subscription->SubValue('DashboardId'),
-            $subscription->Id,
-            $currentuser->Name,
-            $msg;
+        warning("Unable to load dashboard $DashboardId of subscription ".$subscription->Id." for user ".$currentuser->Name.": $msg");
 
         my $ok = RT::Interface::Email::SendEmailUsingTemplate(
             From      => $from,
@@ -229,22 +227,20 @@ sub send_dashboard {
         if ($ok) {
             my ($deleted, $msg) = $subscription->Delete();
             if ($deleted) {
-                verbose("Deleted an obsolete subscription: [_1]", $msg);
+                verbose("Deleted an obsolete subscription: $msg");
             }
             else {
-                warning("Unable to delete an obsolete subscription: [_1]", $msg);
+                warning("Unable to delete an obsolete subscription: $msg");
             }
         }
         else {
-            warning("Unable to notify [_1] of an obsolete subscription", $currentuser->Name);
+            warning("Unable to notify ".$currentuser->Name." of an obsolete subscription");
         }
 
         return;
     }
 
-    verbose 'Creating dashboard "[_1]" for user "[_2]":',
-            $dashboard->Name,
-            $currentuser->Name;
+    verbose('Creating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
 
     if ($opts{'dryrun'}) {
         print << "SUMMARY";
@@ -265,7 +261,7 @@ SUMMARY
         $contents =~ s/$_//g;
     }
 
-    debug "Got [_1] characters of output.", length $contents;
+    debug("Got ".length($contents)." characters of output.");
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
@@ -278,10 +274,7 @@ SUMMARY
 sub email_dashboard {
     my ($currentuser, $email, $dashboard, $subscription, $content) = @_;
 
-    verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
-            $dashboard->Name,
-            $currentuser->Name,
-            $email;
+    verbose('Sending dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name.' <'.$email.'>');
 
     my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
         RT->Config->Get('rtname'),
@@ -294,12 +287,10 @@ sub email_dashboard {
         Entity => $entity,
     );
 
-    debug "Done sending dashboard to [_1] <[_2]>",
-          $currentuser->Name, $email
-              and return if $ok;
+    debug("Done sending dashboard to ".$currentuser->Name." <$email>")
+        and return if $ok;
 
-    error 'Failed to email dashboard to user [_1] <[_2]>',
-          $currentuser->Name, $email;
+    error("Failed to email dashboard to user ".$currentuser->Name." <$email>");
 }
 
 sub build_email {
@@ -319,7 +310,7 @@ sub build_email {
             # downgrade non-text strings, because all strings are utf8 by
             # default, which is wrong for non-text strings.
             if ( $mimetype !~ m{text/} ) {
-                utf8::downgrade( $data, 1 ) or warning "downgrade $data failed";
+                utf8::downgrade( $data, 1 ) or warning("downgrade $data failed");
             }
 
             push @parts, MIME::Entity->build(
@@ -374,7 +365,7 @@ sub get_from {
 
     sub mason {
         unless ($mason) {
-            debug "Creating Mason object.";
+            debug("Creating Mason object.");
 
             # user may not have permissions on the data directory, so create a
             # new one
@@ -428,7 +419,7 @@ sub get_resource {
     my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
 
-    verbose "Getting resource [_1]", $uri;
+    verbose("Getting resource $uri");
 
     # strip out the equivalent of WebURL, so we start at the correct /
     my $path = $uri->path;
@@ -463,7 +454,7 @@ sub get_resource {
         }
     }
 
-    debug "Running component '[_1]'", $path;
+    debug("Running component '$path'");
     $content = run_component($path, %args);
 
     # guess at the filename from the component name
@@ -484,12 +475,7 @@ sub get_resource {
     $mimetype ||= 'application/octet-stream';
     $encoding ||= 'base64';
 
-    debug "Resource [_1]: length=[_2] filename='[_3]' mimetype='[_4]', encoding='[_5]'",
-        $uri,
-        length($content),
-        $filename,
-        $mimetype,
-        $encoding;
+    debug("Resource $uri: length=".length($content)." filename='$filename' mimetype='$mimetype', encoding='$encoding'");
 
     return ($content, $filename, $mimetype, $encoding);
 }
