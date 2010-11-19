@@ -413,6 +413,12 @@ sub _Create {
         @_
     );
 
+    # Enforce uniqueness on user defined group names
+    if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
+        my ($ok, $msg) = $self->_ValidateUserDefinedName($args{'Name'});
+        return ($ok, $msg) if not $ok;
+    }
+
     $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal Id for it.
@@ -422,7 +428,6 @@ sub _Create {
         ObjectId      => '0'
     );
     $principal->__Set(Field => 'ObjectId', Value => $principal_id);
-
 
     $self->SUPER::Create(
         id          => $principal_id,
@@ -487,7 +492,37 @@ sub CreateUserDefinedGroup {
     return($self->_Create( Domain => 'UserDefined', Type => '', Instance => '', @_));
 }
 
+=head2 ValidateName VALUE
 
+Enforces unique user defined group names when updating
+
+=cut
+
+sub ValidateName {
+    my ($self, $value) = @_;
+
+    if ($self->Domain and $self->Domain eq 'UserDefined') {
+        my ($ok, $msg) = $self->_ValidateUserDefinedName($value);
+        # It's really too bad we can't pass along the actual error
+        return 0 if not $ok;
+    }
+    return 1;
+}
+
+=head2 _ValidateUserDefinedName VALUE
+
+Returns true if the user defined group name isn't in use, false otherwise.
+
+=cut
+
+sub _ValidateUserDefinedName {
+    my ($self, $value) = @_;
+    my $dupcheck = RT::Group->new(RT->SystemUser);
+    $dupcheck->LoadUserDefinedGroup($value);
+    return (0, $self->loc("Group name '[_1]' is already in use", $value))
+        if $dupcheck->id;
+    return 1;
+}
 
 =head2 _CreateACLEquivalenceGroup { Principal }
 
