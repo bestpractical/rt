@@ -20,7 +20,6 @@ well.
 
 
 *******
-
 UPGRADING FROM RT 3.8.x - Changes:
 
 The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
@@ -37,6 +36,21 @@ with
 
     { $Ticket->SubjectTag }
 
+* Unique names are now enforced for user defined groups.  New groups cannot be
+  created with a duplicate name and existing groups cannot be renamed to an
+  in-use name.  The admin interface will warn about existing groups with
+  duplicate names.  Although the groups will still function, some parts of the
+  interface (rights management, subgroup membership) may not work as expected
+  with duplicate names.  Running
+
+    /opt/rt3/sbin/rt-validator --check
+
+  will report duplicate group names, and running it with --resolve will fix
+  duplicates by appending the group id to the name.
+
+  Nota Bene: As a result of differing indexes in the schema files, Postgres and
+  SQLite RT databases have enforced group name uniqueness for many years at the
+  database level.
 
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:

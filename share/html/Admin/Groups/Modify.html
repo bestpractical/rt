@@ -96,7 +96,7 @@
 </form>
 <%INIT>
 
-my  ($title, @results, $Disabled, $EnabledChecked);
+my  ($title, @results, @warnings, $Disabled, $EnabledChecked);
 
 my $Group = RT::Group->new($session{'CurrentUser'});
 
@@ -132,6 +132,14 @@ if ($id) {
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Group );
+
+    # Warn about duplicate groups
+    my $dupcheck = RT::Groups->new(RT->SystemUser);
+    $dupcheck->LimitToUserDefinedGroups();
+    $dupcheck->Limit( FIELD => 'Name', VALUE => $Group->Name );
+    if ($dupcheck->Count > 1) {
+        push @warnings, loc("There is more than one group with the name '[_1]'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups.", $Group->Name);
+    }
 }
 
 #we're asking about enabled on the web page but really care about disabled.
@@ -153,6 +161,8 @@ $m->comp(
     id          => $Group->Id,
     ARGSRef     => \%ARGS
 );
+
+push @results, @warnings;
 
 unless ($Group->Disabled()) {
     $EnabledChecked ='checked="checked"';

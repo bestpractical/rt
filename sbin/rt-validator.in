@@ -179,6 +179,9 @@ $redo_on{'Create'} = {
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
 };
+$redo_on{'Update'} = {
+    Groups => ['User Defined Group Name uniqueness'],
+};
 
 my %describe_cb;
 %describe_cb = (
@@ -355,6 +358,24 @@ push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
     );
 };
 
+# CHECK that user defined group names are unique
+push @CHECKS, 'User Defined Group Name uniqueness' => sub {
+    check_uniqueness(
+        'Groups',
+        columns     => ['Name'],
+        condition   => '.Domain = ?',
+        bind_values => [ 'UserDefined' ],
+        action      => sub {
+            return unless prompt(
+                'Rename', "Found a user defined group with a non-unique Name."
+            );
+
+            my $id = shift;
+            my %cols = @_;
+            update_records('Groups', { id => $id }, { Name => join('-', $cols{'Name'}, $id) });
+        },
+    );
+};
 
 push @CHECKS, 'GMs -> Groups, Members' => sub {
     my $msg = "A record in GroupMembers references an object that doesn't exist."
@@ -990,6 +1011,7 @@ sub check_uniqueness {
         for ( my $i = 0; $i < @columns; $i++ ) {
             print STDERR "\t$columns[$i] => '$set[$i]'\n";
         }
+        $args{'action'}->( $tid, map { $columns[$_] => $set[$_] } (0 .. (@columns-1)) ) if $args{'action'};
     }
 }
 
