@@ -29,6 +29,18 @@ my $move_attributes = sub {
         return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
     },
     sub {
+        $move_attributes->( 'CustomFields', 'RT::CustomField', 'ValuesClass')
+            or return;
+
+        my $query = "UPDATE CustomFields SET ValuesClass = NULL WHERE ValuesClass = ?";
+        my $res = $RT::Handle->SimpleQuery( $query, 'RT::CustomFieldValues' );
+        unless ( $res ) {
+            $RT::Logger->error("Failed to replace default with NULLs");
+            return;
+        }
+        return 1;
+    },
+    sub {
         my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
         return 1 unless $attr;
 
