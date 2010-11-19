@@ -380,6 +380,7 @@ CREATE TABLE CustomFields (
   Pattern varchar(65536) NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   BasedOn INTEGER NULL,
+  ValuesClass varchar(64) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
   LookupType varchar(255) NOT NULL,
