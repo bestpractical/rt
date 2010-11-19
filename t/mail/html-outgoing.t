@@ -4,10 +4,8 @@ use RT::Test tests => undef;
 BEGIN {
     plan skip_all => 'Email::Abstract and Test::Email required.'
         unless eval { require Email::Abstract; require Test::Email; 1 };
-    plan tests => 19;
+    plan tests => 18;
 }
-
-RT::Test->switch_templates_ok('html');
 
 use RT::Test::Email;
 

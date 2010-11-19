@@ -189,6 +189,12 @@ sub import {
         $level++;
     }
 
+    # By default we test HTML templates, but text templates are
+    # available on request
+    if ( $args{'text_templates'} ) {
+        $class->switch_templates_ok('text');
+    }
+
     Test::More->export_to_level($level);
     Test::NoWarnings->export_to_level($level);
 
