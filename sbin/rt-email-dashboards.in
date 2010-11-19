@@ -268,14 +268,14 @@ SUMMARY
 sub email_dashboard {
     my ($currentuser, $email, $dashboard, $subscription, $content) = @_;
 
-    $RT::Logger->info('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name.' <'.$email.'>');
-
     my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
         RT->Config->Get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
         $dashboard->Name;
 
     my $entity = build_email($content, $from, $email, $subject);
+
+    $RT::Logger->info('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name.' <'.$email.'>');
 
     my $ok = RT::Interface::Email::SendEmail(
         Entity => $entity,
