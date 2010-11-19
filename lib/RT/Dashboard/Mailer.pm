@@ -267,6 +267,7 @@ sub EmailDashboard {
 
     my $entity = $self->BuildEmail(
         %args,
+        To      => $email,
         Subject => $subject,
     );
 
