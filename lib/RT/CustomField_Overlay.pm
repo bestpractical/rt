@@ -339,7 +339,16 @@ sub Create {
             return (0, $self->loc("Invalid Render Type") )
                 unless grep $_ eq  $args{'RenderType'}, $self->RenderTypes( $composite );
         }
+    }
 
+    $args{'ValuesClass'} = undef if ($args{'ValuesClass'} || '') eq 'RT::CustomFieldValues';
+    if ( $args{'ValuesClass'} ||= undef ) {
+        return (0, $self->loc("This Custom Field can not have list of values"))
+            unless $self->IsSelectionType( $args{'Type'} );
+
+        unless ( $self->ValidateValuesClass( $args{'ValuesClass'} ) ) {
+            return (0, $self->loc("Invalid Custom Field values source"));
+        }
     }
 
     (my $rv, $msg) = $self->SUPER::Create(
@@ -349,6 +358,7 @@ sub Create {
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
         BasedOn     => $args{'BasedOn'},
+        ValuesClass => $args{'ValuesClass'},
         Description => $args{'Description'},
         Disabled    => $args{'Disabled'},
         LookupType  => $args{'LookupType'},
@@ -361,10 +371,6 @@ sub Create {
 
     if ( exists $args{'IncludeContentForValue'}) {
 	$self->SetIncludeContentForValue($args{'IncludeContentForValue'});
-    }
-
-    if ( exists $args{'ValuesClass'} ) {
-        $self->SetValuesClass( $args{'ValuesClass'} );
     }
 
     return ($rv, $msg) unless exists $args{'Queue'};
@@ -487,8 +493,10 @@ of the C<ValuesClass> method.
 sub Values {
     my $self = shift;
 
-    my $class = $self->ValuesClass || 'RT::CustomFieldValues';
-    eval "require $class" or die "$@";
+    my $class = $self->ValuesClass;
+    if ( $class ne 'RT::CustomFieldValues') {
+        eval "require $class" or die "$@";
+    }
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
@@ -612,31 +620,39 @@ sub IsSelectionType {
 
 sub IsExternalValues {
     my $self = shift;
-    my $selectable = $self->IsSelectionType( @_ );
-    return $selectable unless $selectable;
-
-    my $class = $self->ValuesClass;
-    return 0 if $class eq 'RT::CustomFieldValues';
-    return 1;
+    return 0 unless $self->IsSelectionType( @_ );
+    return $self->ValuesClass eq 'RT::CustomFieldValues'? 0 : 1;
 }
 
 sub ValuesClass {
     my $self = shift;
-    return '' unless $self->IsSelectionType;
-
-    my $class = $self->FirstAttribute( 'ValuesClass' );
-    $class = $class->Content if $class;
-    return $class || 'RT::CustomFieldValues';
+    return $self->_Value( ValuesClass => @_ ) || 'RT::CustomFieldValues';
 }
 
 sub SetValuesClass {
     my $self = shift;
     my $class = shift || 'RT::CustomFieldValues';
-
-    if( $class eq 'RT::CustomFieldValues' ) {
-        return $self->DeleteAttribute( 'ValuesClass' );
+    
+    if ( $class eq 'RT::CustomFieldValues' ) {
+        return $self->_Set( Field => 'ValuesClass', Value => undef, @_ );
     }
-    return $self->SetAttribute( Name => 'ValuesClass', Content => $class );
+
+    return (0, $self->loc("This Custom Field can not have list of values"))
+        unless $self->IsSelectionType;
+
+    unless ( $self->ValidateValuesClass( $class ) ) {
+        return (0, $self->loc("Invalid Custom Field values source"));
+    }
+    return $self->_Set( Field => 'ValuesClass', Value => $class, @_ );
+}
+
+sub ValidateValuesClass {
+    my $self = shift;
+    my $class = shift;
+
+    return 1 if $class eq 'RT::CustomFieldValues';
+    return 1 if grep $class eq $_, RT->Config->Get('CustomFieldValuesSources');
+    return undef;
 }
 
 
