@@ -88,3 +88,16 @@ UPGRADING FROM RT 4.0.0 and greater
 
   This command deletes records from Transactions table. This script can only fix
   TimeWorked mismatch, but not TimeLeft or TimeEstimated.
+
+* There are now HTML versions of the standard plain text templates.  Running
+  make upgrade as described in the README will insert the new templates into
+  existing installs.  While new installs use the HTML templates by default,
+  upgrades from older versions don't automatically switch to the HTML versions.
+  To switch existing scrips, run:
+
+    /opt/rt4/etc/upgrade/switch-templates-to html
+
+  To switch from HTML back to text, run:
+
+    /opt/rtr/etc/upgrade/switch-templates-to text
+
