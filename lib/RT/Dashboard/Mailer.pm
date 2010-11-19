@@ -141,6 +141,7 @@ sub MailDashboards {
                     CurrentUser  => $currentuser,
                     Email        => $email,
                     Subscription => $subscription,
+                    From         => $from,
                 )
             };
             if ( $@ ) {
