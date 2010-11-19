@@ -105,6 +105,7 @@ RT::Dashboard::Mailer->MailDashboards(
     All    => $opts{all},
     DryRun => $opts{dryrun},
     Time   => ($opts{epoch} || time),
+    Opts   => \%opts,
 );
 
 =head1 NAME
