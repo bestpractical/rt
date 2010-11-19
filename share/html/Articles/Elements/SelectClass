@@ -85,10 +85,10 @@ $Lite => 0
 
 my @Default = ref($Default) eq 'ARRAY' ? @$Default : ( $Default);
 
-my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
+my $Classes= RT::Classes->new($session{'CurrentUser'});
 $Classes->LimitToEnabled();
 
-my $d = new RT::FM::Class($session{'CurrentUser'});
+my $d = RT::Class->new($session{'CurrentUser'});
 $d->Load($Default[0]);
 
 </%INIT>

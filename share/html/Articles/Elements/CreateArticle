@@ -52,7 +52,7 @@
 </ul>
 <& /Elements/TitleBoxEnd &>
 <%init>
-my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+my $Classes = RT::Classes->new($session{'CurrentUser'});
 $Classes->LimitToEnabled;
 </%init>
 

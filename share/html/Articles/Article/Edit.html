@@ -44,17 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-% if ($id && $id ne 'new') {
-<& /RTFM/Article/Elements/Tabs, 
-    Article => $ArticleObj, 
-    current_subtab => "RTFM/Article/Edit.html?id=".$ArticleObj->Id , 
-    id => $id, 
-    Title => $title &>
-% } else {
-<& /RTFM/Article/Elements/Tabs, 
-    current_tab => "RTFM/Article/PreCreate.html",
-       Title => loc('Create a new article') &>
-% }
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
@@ -121,8 +112,8 @@ my @results;
 my $title;
 
 my $Entries    = {};
-my $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
-my $ClassObj   = RT::FM::Class->new( $session{'CurrentUser'} );
+my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
+my $ClassObj   = RT::Class->new( $session{'CurrentUser'} );
 my %create_args;
 my %CFContent;
 my $EditClass = 1;
@@ -139,7 +130,7 @@ if ( !$id ) {
 
     $ClassObj->Load($Class);
     unless ( $ClassObj->Id ) {
-        $m->comp( "/RTFM/Elements/Error",
+        $m->comp( "/Articles/Elements/Error",
             Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
     }
     $EditClass = 0;
@@ -161,8 +152,8 @@ elsif ( $id eq 'new' ) {
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
         $RT::Logger->debug("Conteplating CF arg $arg"); 
-        # Object-RT::FM::Article--CustomField-3-Values
-        if ( $arg =~ /^Object-RT::FM::Article--CustomField-(\d+)(.*?)$/ ) {
+        # Object-RT::Article--CustomField-3-Values
+        if ( $arg =~ /^Object-RT::Article--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1; 
         
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
@@ -221,10 +212,10 @@ elsif ( $id eq 'new' ) {
    if (!$id) {
         $ClassObj->Load($Class);
         unless ( $ClassObj->Id ) {
-            $m->comp( "/RTFM/Elements/Error",
+            $m->comp( "/Articles/Elements/Error",
                 Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
         }
-        $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
+        $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
         $id        = 'new';
         $EditClass = 0;
         $title     = loc('Create a new article');
@@ -234,7 +225,7 @@ else {
 
     $ArticleObj->Load($id);
     unless ( $ArticleObj->id ) {
-        $m->comp( "/RTFM/Elements/Error",
+        $m->comp( "/Articles/Elements/Error",
             Why => loc("Unable to load article") );
     }
 
@@ -296,7 +287,7 @@ else {
     if ( $ARGS{'EditTopics'} ) {
         $topics{$_}++ for @{ $ARGS{'Topics'} };
         my $objTopics =
-          new RT::FM::ObjectTopicCollection( $session{'CurrentUser'} );
+          new RT::ObjectTopics( $session{'CurrentUser'} );
         $objTopics->LimitToObject($ArticleObj);
         while ( my $t = $objTopics->Next ) {
             $topics{ $t->Topic }--;
@@ -319,7 +310,7 @@ else {
 # if they're working on an existing article
 if ( $ArticleObj->id ) {
     unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
-        $m->comp( "/RTFM/Elements/Error",
+        $m->comp( "/Articles/Elements/Error",
             Why => "No permission to view Article" );
     }
 }

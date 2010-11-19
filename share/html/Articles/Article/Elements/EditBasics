@@ -56,7 +56,7 @@
 <td class="label"><&|/l&>Class</&></td>
 <td>
 % if ($EditClass) {
-<& /RTFM/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
+<& /Articles/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
 % } else {
 <%$ClassObj->Name%>
 <input type="hidden" name="Class" value="<%$ClassObj->Id%>" />
