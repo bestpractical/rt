@@ -68,12 +68,10 @@ sub MailDashboards {
         @_,
     );
 
-    $RT::Logger->info("Using time " . $args{Time} . " for dashboard generation");
+    $RT::Logger->info("Using time $args{Time} for dashboard generation");
 
     my $from = $self->GetFrom();
     $RT::Logger->debug("Sending email from $from");
-
-    local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
     # look through each user for her subscriptions
     my $Users = RT::Users->new(RT->SystemUser);
@@ -220,7 +218,9 @@ SUMMARY
         return;
     }
 
-    $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+    local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+    local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
+
     my $content = RunComponent(
         '/Dashboards/Render.html',
         id      => $dashboard->Id,
