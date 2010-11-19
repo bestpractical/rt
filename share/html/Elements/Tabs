@@ -95,6 +95,9 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     my $articles = $tools->child( articles => title => loc('Articles') => path => "/Articles/index.html", sort_order => 10 );
+    $articles->child( search   => title => loc('Search') => path => "/Articles/Article/Search.html" );
+    $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
+    $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
 
     my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 15 );
     $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html', );
@@ -175,7 +178,9 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/' );
         $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1' );
         $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
-        $article_admin->child( cfs => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
+        my $cfs = $article_admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
+        $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
+        $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
 
         $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html', );
         $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );
