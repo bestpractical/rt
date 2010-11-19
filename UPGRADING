@@ -37,6 +37,14 @@ with
 
     { $Ticket->SubjectTag }
 
+* There are now HTML versions of the standard plain text templates.  Running
+  make upgrade as described in the README will insert the new templates into
+  existing installs.  While new installs use the HTML templates by default,
+  upgrades from older versions don't automatically switch to the HTML versions.
+  To switch existing scrips, run:
+
+    /opt/rt3/etc/upgrade/switch-to-html-templates
+
 
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:

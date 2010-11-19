@@ -1,0 +1,129 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use RT;
+RT::LoadConfig();
+RT->Config->Set('LogToScreen' => 'debug');
+RT::Init();
+
+$| = 1;
+
+my @templates = (
+    "Autoreply",
+    "Transaction",
+    "Admin Correspondence",
+    "Correspondence",
+    "Admin Comment",
+    "Status Change",
+    "Resolved",
+    "New Pending Approval",
+    "Approval Passed",
+    "All Approvals Passed",
+    "Approval Rejected",
+    "Approval Ready for Owner",
+);
+
+$RT::Handle->BeginTransaction();
+
+use RT::Scrips;
+my $scrips = RT::Scrips->new( RT->SystemUser );
+$scrips->UnLimit;
+
+my $templates = $scrips->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'Template',
+    TABLE2 => 'Templates',
+    FIELD2 => 'id'
+);
+
+for (@templates) {
+    $scrips->Limit(
+        ALIAS => $templates,
+        FIELD => 'Name',
+        VALUE => $_,
+        ENTRYAGGREGATOR => 'OR'
+    );
+}
+
+my $switched = 0;
+while ( my $s = $scrips->Next ) {
+    my $html = $s->TemplateObj->Name . ' in HTML';
+
+    print $s->id, ": ", $s->Description, "\n";
+    print "    ", $s->TemplateObj->Name, " -> $html\n\n";
+
+    my ($ok, $msg) = $s->SetTemplate($html);
+
+    if ($ok) {
+        $switched++;
+    } else {
+        warn "    Couldn't switch templates: $msg\n";
+    }
+}
+
+$RT::Handle->Commit;
+
+if ($switched) {
+    print <<"    EOT";
+Switched $switched scrips to HTML templates.  You should now manually port your
+customizations from the old templates to the new HTML templates.
+    EOT
+}
+else {
+    print <<"    EOT";
+No scrips were found using the plain text templates, so none were switched to
+the HTML templates.
+    EOT
+}
+
