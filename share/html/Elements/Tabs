@@ -475,6 +475,10 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id);
             }
 
+            # TODO needs a "Can extract article into a class applied to this queue" check
+            $actions->child( 'extract-article' => title => loc('Extract Article') => 
+                             path => "/Article/ExtractIntoClass.html?Ticket=".$obj->id );
+
             if ( defined $session{"tickets"} ) {
                 # we have to update session data if we get new ItemMap
                 my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
