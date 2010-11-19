@@ -892,6 +892,39 @@ sub BriefDescription {
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
         }
+        elsif ( $self->Field eq 'Owner' ) {
+            my $Old = RT::User->new( $self->CurrentUser );
+            $Old->Load( $self->OldValue );
+            my $New = RT::User->new( $self->CurrentUser );
+            $New->Load( $self->NewValue );
+
+            if ( $Old->id == RT->Nobody->id ) {
+                if ( $New->id == $self->CurrentUser->id ) {
+                    return $self->loc("Taken");
+                }
+                else {
+                    return $self->loc( "Given to [_1]",  $New->Name );
+                }
+            }
+            else {
+                if ( $New->id == $self->CurrentUser->id ) {
+                    return $self->loc("Stolen from [_1]",  $Old->Name);
+                }
+                elsif ( $Old->id == $self->CurrentUser->id ) {
+                    if ( $New->id == RT->Nobody->id ) {
+                        return $self->loc("Untaken");
+                    }
+                    else {
+                        return $self->loc( "Given to [_1]", $New->Name );
+                    }
+                }
+                else {
+                    return $self->loc(
+                        "Owner forcibly changed from [_1] to [_2]",
+                        $Old->Name, $New->Name );
+                }
+            }
+        }
         else {
             return $self->loc( "[_1] changed from [_2] to [_3]",
                                $self->loc($self->Field),

@@ -2845,7 +2845,7 @@ sub OwnerAsString {
 Takes two arguments:
      the Id or Name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
-to 'Give'.  'Steal' is also a valid option.
+to 'Set'.  'Steal' is also a valid option.
 
 
 =cut
@@ -2853,7 +2853,7 @@ to 'Give'.  'Steal' is also a valid option.
 sub SetOwner {
     my $self     = shift;
     my $NewOwner = shift;
-    my $Type     = shift || "Give";
+    my $Type     = shift || "Set";
 
     $RT::Handle->BeginTransaction();
 
@@ -2956,7 +2956,7 @@ sub SetOwner {
                       RecordTransaction => 0,
                       Value             => $NewOwnerObj->Id,
                       TimeTaken         => 0,
-                      TransactionType   => $Type,
+                      TransactionType   => 'Set',
                       CheckACL          => 0,                  # don't check acl
     );
 
@@ -2966,7 +2966,7 @@ sub SetOwner {
     }
 
     ($val, $msg) = $self->_NewTransaction(
-        Type      => $Type,
+        Type      => 'Set',
         Field     => 'Owner',
         NewValue  => $NewOwnerObj->Id,
         OldValue  => $OldOwnerObj->Id,

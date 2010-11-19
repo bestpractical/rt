@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 100;
+use RT::Test nodata => 1, tests => 101;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -365,7 +365,8 @@ ok(
     'set rights'
 );
 
-diag "action is Take when old owner is nobody and new owner is current user";
+diag
+"action is Take if old owner is nobody and new owner is current user in update page";
 { 
     my $ticket = RT::Ticket->new( $user_a );
     my ( $id, $txn, $msg ) = $ticket->Create(
@@ -376,31 +377,37 @@ diag "action is Take when old owner is nobody and new owner is current user";
     is $ticket->Owner, RT->Nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
-    $agent_a->content_lacks('Taken', 'No Taken in display page');
+    $agent_a->content_lacks('Taken', 'no Taken');
     $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Reply');
-    $agent_a->form_name('TicketUpdate');
-    $agent_a->select( Owner => $user_a->id );
-    $agent_a->click('SubmitTicket');
-    $agent_a->content_contains('Taken', 'action is Take');
+    $agent_a->submit_form(
+        form_name => 'TicketUpdate',
+        fields    => { Owner => $user_a->id },
+        button => 'SubmitTicket',
+    );
+    $agent_a->content_contains('Taken', 'got Taken msg');
 }
 
-diag "action is Steal when old owner isn't nobody and new owner is current user";
-{ 
-    my $ticket = RT::Ticket->new( $user_a );
+diag
+"action is Take if old owner is nobody and new owner is current user in basics page";
+{
+    my $ticket = RT::Ticket->new($user_a);
     my ( $id, $txn, $msg ) = $ticket->Create(
         Queue   => $queue->id,
         Subject => 'test',
-        Owner => $user_b->id,
     );
-    ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $user_b->id, 'correct owner';
+    ok $id, 'created a ticket #' . $id or diag "error: $msg";
+    is $ticket->Owner, RT->Nobody->id, 'correct owner';
 
-    $agent_a->goto_ticket( $id );
-    $agent_a->content_lacks('Stolen', 'No Stolen in display page');
-    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Reply');
-    $agent_a->form_name('TicketUpdate');
-    $agent_a->select( Owner => $user_a->id );
-    $agent_a->click('SubmitTicket');
-    $agent_a->content_contains('Stolen from user_b', 'action is Steal');
+    $agent_a->goto_ticket($id);
+    $agent_a->content_lacks('Taken', 'no Taken');
+    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->submit_form(
+        form_name => 'TicketModify',
+        fields    => { Owner => $user_a->id },
+    );
+    $agent_a->content_contains( 'Owner changed from Nobody to user_a',
+        'got set message in Basics' );
+    $agent_a->goto_ticket($id);
+    $agent_a->content_contains( 'Taken', 'got Taken message' );
 }
 
