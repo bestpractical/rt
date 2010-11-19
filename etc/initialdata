@@ -370,7 +370,7 @@ Content-Type: text/html
     },
     {  Queue       => '0',
        Name        => 'Status Change in HTML',              # loc
-       Description => 'Ticket status changed',              # loc
+       Description => 'HTML Ticket status changed',              # loc
        Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
 Content-Type: text/html
 
