@@ -49,28 +49,24 @@
     margin-top: 0;
 }
 
-div#page-navigation ul#page-menu {
-    margin-top: -3.2em;
-}
-
 .titlebox-title .widget {
-    top: -1em;
+    top: -1.25em;
     left: 0.5em;
 
 }
 .titlebox .titlebox-title .right{
     position: absolute;
-    top: 0.25em;
-    right: 1em;
+    right: -0.2em;
+    top: 0.6em;
 }
 
 /* nested things. like the ticket dates tab */
 .titlebox .titlebox .titlebox-title .right{
-    right: 1.3em;
+    right: 0.3em;
 }
 
 #login-box .titlebox .titlebox-title .right {
-    margin-top: -0.1em;
+    margin-top: 0em;
     right: 0em;
 }
 
@@ -84,4 +80,19 @@ div#page-navigation ul#page-menu {
 .ticket-transaction .messagebody img {
     /* ie6 does not support max-width */
     width: expression(this.width > 401 ? 400 : true);
+}
+
+
+div#logo .rtname {
+    float: none;
+    right: 12em;
+    position: absolute;
+}
+
+.sf-sub-indicator {
+	background:		url('../images/arrows-ffffff.gif') no-repeat -10px -100px;
+}
+
+#page-navigation ul {
+    width: auto;
 }

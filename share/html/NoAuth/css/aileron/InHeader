@@ -48,6 +48,9 @@
 <!--[if lt IE 8]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie.css" type="text/css" media="all" />
 <![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie6.css" type="text/css" media="all" />
+<![endif]-->
 <script type="text/javascript">
 jQuery(document).ready(function(){
     jQuery.fn.supersubs.defaults = {
