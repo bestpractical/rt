@@ -51,6 +51,9 @@ div#body {
     top: 6em;
 }
 
+#main-navigation {
+    padding-bottom: 1em;
+}
 
 #footer {
     padding: 1em;
