@@ -650,7 +650,7 @@ sub ValidateValuesClass {
     my $self = shift;
     my $class = shift;
 
-    return 1 if $class eq 'RT::CustomFieldValues';
+    return 1 if !defined $class || $class eq 'RT::CustomFieldValues';
     return 1 if grep $class eq $_, RT->Config->Get('CustomFieldValuesSources');
     return undef;
 }
