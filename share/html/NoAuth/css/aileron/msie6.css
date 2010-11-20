@@ -45,6 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+div#body {
+
+    top: 0em;
+}
+
 .topaction .select-queue {
     margin-top: 0;
 }
@@ -83,11 +89,6 @@
 }
 
 
-div#logo .rtname {
-    float: none;
-    right: 12em;
-    position: absolute;
-}
 
 .sf-sub-indicator {
 	background:		url('../images/arrows-ffffff.gif') no-repeat -10px -100px;

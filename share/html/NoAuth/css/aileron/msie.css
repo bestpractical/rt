@@ -46,9 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
+div#body {
+    top: 3em;
+    padding-top: 3em;
+}
 
-#footer {
-    padding: 1em;
+div#logo .rtname {
+    float: none;
+    right: 12em;
+    position: absolute;
+}
+
+div#footer {
+    margin-top: 5em;
 }
 
 
@@ -105,12 +115,9 @@ div#nav li.last {
 }
 
 .titlebox .titlebox-title .left {
-    padding: 0.25em;
-    padding-left: 0.5em;
+    padding: 0.5em;
 }
 
-.titlebox {
-}
 
 .titlebox .titlebox-title .right {
     border-right: 2px solid #aaa;
@@ -143,14 +150,14 @@ table.queue-summary td, td.collection-as-table {
 
 .titlebox-title .widget {
     position: absolute;
-    top: -0.25em;
+    top: -0.75em;
     left: -0.25em;
 
 }
 .titlebox-title .left {
     position: absolute;
     top: -0.75em;
-    left: 0.5em;
+    left: 1em;
 }
 
 
