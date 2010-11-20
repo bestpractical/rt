@@ -77,6 +77,11 @@ div#body {
 
 }
 
+div#body.login-body {
+    top: -2.5em;
+    margin-right: 10em;
+}
+
 div#footer {
  position: absolute;
  right: 0;
