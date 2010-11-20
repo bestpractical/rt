@@ -48,8 +48,7 @@
 div#body {
     left: 0.25em;
     height: 100%;
-    top: 1em;
-
+    top: 6em;
 }
 
 
@@ -71,9 +70,10 @@ div#header h1 {
 
 
 #topactions {
-    top: 4.1em;
+    top: 3.5em;
     width: auto;
 }
+
 .topaction form * { 
     vertical-align: top;
 }
@@ -101,8 +101,6 @@ div#page-navigation {
 
 
 div#page-navigation ul#page-menu {
-    margin-top: -2.5em;
-    margin-left: 4em;
     background: none;
     border: none;
 }
@@ -236,3 +234,11 @@ table.queue-summary td, td.collection-as-table {
   word-wrap  */
 }
 
+div#logo .rtname {
+    float: right;
+    padding-right: 1em;
+}
+
+#page-action-menu {
+    top: 9.5em;
+}
