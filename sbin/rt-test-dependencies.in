@@ -175,7 +175,7 @@ Digest::base
 Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.57
+DBIx::SearchBuilder 1.59
 Text::Template 1.44
 File::ShareDir
 File::Spec 0.8
