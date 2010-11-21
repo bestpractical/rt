@@ -170,6 +170,9 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             $cfadmin->child( transactions => title => loc('Ticket Transactions') => text =>
                     loc( 'Select custom fields for transactions on tickets in all queues'),
                 path => '/Admin/Global/CustomFields/Queue-Transactions.html');
+            $cfadmin->child( 'custom-fields' => title => loc('Articles') => text =>
+                    loc('Select Custom Fields for Articles in all Classes'),
+                    path => '/Admin/Global/CustomFields/Class-Article.html');
 
         }
 
