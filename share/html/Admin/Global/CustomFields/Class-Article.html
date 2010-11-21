@@ -44,8 +44,10 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/ObjectCustomFields, 
-    %ARGS, 
-    ObjectType => 'RT::FM::Class',
-    SubType => 'RT::FM::Article' &>
-
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Class', Object => $object, SubType => 'RT::Article' &>
+<%INIT>
+  my $title = loc( 'Edit Custom Fields for articles in all classes');
+  my $object = RT::Class->new($session{'CurrentUser'});
+</%INIT>
