@@ -278,10 +278,12 @@ sub EmailDashboard {
         Entity => $entity,
     );
 
-    $RT::Logger->debug("Done sending dashboard to ".$currentuser->Name." <$email>")
-        and return if $ok;
+    if (!$ok) {
+        $RT::Logger->error("Failed to email dashboard to user ".$currentuser->Name." <$email>");
+        return;
+    }
 
-    $RT::Logger->error("Failed to email dashboard to user ".$currentuser->Name." <$email>");
+    $RT::Logger->debug("Done sending dashboard to ".$currentuser->Name." <$email>");
 }
 
 sub BuildEmail {
