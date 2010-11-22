@@ -399,6 +399,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
+                 etc/upgrade/switch-to-html-templates
                  sbin/rt-attributes-viewer
                  sbin/rt-session-viewer
                  sbin/rt-dump-database
