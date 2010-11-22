@@ -6,7 +6,6 @@ use RT::Test tests => 17;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
-RT::Test->set_mail_catcher;
 ok($m->login, 'logged in');
 
 # first, create and populate a dashboard
