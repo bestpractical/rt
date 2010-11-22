@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 17;
+use RT::Test tests => 18;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -60,4 +60,6 @@ RT::Dashboard::Mailer->MailDashboards(
 
 @mails = RT::Test->fetch_caught_mails;
 is @mails, 1, "got a dashboard mail";
+my $mail = parse_mail( $mails[0] );
+is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
 
