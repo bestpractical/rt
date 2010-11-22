@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 27;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -64,4 +64,52 @@ RT::Dashboard::Mailer->MailDashboards(
 is @mails, 1, "got a dashboard mail";
 my $mail = parse_mail( $mails[0] );
 is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
+
+SKIP: {
+    skip 'Weird MIME failure', 2;
+    my $body = $mail->stringify_body;
+    like($body, qr{My dashboards});
+    like($body, qr{<a href="/Dashboards/\d+/Testing!">Testing!</a>});
+};
+
+RT::Dashboard::Mailer->MailDashboards(
+    All    => 1,
+    DryRun => 1,
+);
+
+@mails = RT::Test->fetch_caught_mails;
+is @mails, 0, "no mail because it's a dry run";
+
+
+RT::Dashboard::Mailer->MailDashboards(
+    Time => 1290337260, # 6:01 EST on a monday
+);
+
+@mails = RT::Test->fetch_caught_mails;
+is @mails, 1, "got a dashboard mail";
+$mail = parse_mail( $mails[0] );
+is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
+
+SKIP: {
+    skip 'Weird MIME failure', 2;
+    my $body = $mail->stringify_body;
+    like($body, qr{My dashboards});
+    like($body, qr{<a href="/Dashboards/\d+/Testing!">Testing!</a>});
+};
+
+RT::Dashboard::Mailer->MailDashboards(
+    Time   => 1290337260, # 6:01 EST on a monday
+    DryRun => 1,
+);
+
+@mails = RT::Test->fetch_caught_mails;
+is @mails, 0, "no mails because of DryRun";
+
+
+RT::Dashboard::Mailer->MailDashboards(
+    Time => 1290340860, # 7:01 EST on a monday
+);
+
+@mails = RT::Test->fetch_caught_mails;
+is @mails, 0, "no mail because it's the wrong time";
 
