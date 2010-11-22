@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 
 div#body {
-
     top: 0em;
 }
 
@@ -62,18 +61,7 @@ div#body {
 }
 .titlebox .titlebox-title .right{
     position: absolute;
-    right: -0.2em;
     top: 0.6em;
-}
-
-/* nested things. like the ticket dates tab */
-.titlebox .titlebox .titlebox-title .right{
-    right: 0.3em;
-}
-
-#login-box .titlebox .titlebox-title .right {
-    margin-top: 0em;
-    right: 0em;
 }
 
 .titlebox

@@ -77,6 +77,8 @@ div#ticket-history {
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
  white-space: nowrap;
+
+ border-radius: 0 0 0 0.5em;
 }
 
 .ticket-transaction div.metadata  span.type {
@@ -88,8 +90,11 @@ div#ticket-history {
  padding: 0.75em 0 0 0;
  border-right: 1px solid #999;
  border-bottom: 1px solid #999;
- -moz-border-radius: 0.25em;
+ -moz-border-radius-bottomright: 0.25em;
  -webkit-border-bottom-right-radius: 0.25em;
+
+ border-radius: 0 0 0.25em 0;
+
 }
 
 div#ticket-history span.type a {
@@ -155,7 +160,7 @@ border-bottom: 2px solid #aaa;
 margin-top: 0.5em;
 -moz-border-radius: 0.5em;
 -webkit-border-radius: 0.5em;
-
+ border-radius: 0.5em;
 }
 
 div#ticket-history div.downloadattachment .downloadcontenttype{
