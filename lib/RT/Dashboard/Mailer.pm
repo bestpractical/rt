@@ -68,7 +68,7 @@ sub MailDashboards {
         @_,
     );
 
-    $RT::Logger->info("Using time $args{Time} for dashboard generation");
+    $RT::Logger->debug("Using time $args{Time} for dashboard generation");
 
     my $from = $self->GetFrom();
     $RT::Logger->debug("Sending email from $from");
@@ -417,7 +417,7 @@ sub GetResource {
     my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
 
-    $RT::Logger->info("Getting resource $uri");
+    $RT::Logger->debug("Getting resource $uri");
 
     # strip out the equivalent of WebURL, so we start at the correct /
     my $path = $uri->path;
