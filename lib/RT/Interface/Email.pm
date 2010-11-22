@@ -1856,7 +1856,7 @@ sub ConvertHTMLToText {
             rightmargin     => 78,
             no_rowspacing   => 1,
             before_link     => '',
-            after_link      => ' (%1)',
+            after_link      => ' (%l)',
             footnote        => '',
         }
     );
