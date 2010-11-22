@@ -92,44 +92,44 @@
 <&|/l&>Frequency</&>:
 </td><td class="value">
 
-<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
+<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>>
     <&|/l&>daily</&>
 </input><br />
 
-<input type="radio" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" %>>
+<input type="radio" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" |n %>>
     <&|/l&>Monday through Friday</&>
 </input><br />
 
-<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
+<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>>
 <&|/l&>weekly</&></input>, <&|/l&>on</&>
 <select name="Dow">
-    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' %>><&|/l&>Monday</&></option>
-    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' %>><&|/l&>Tuesday</&></option>
-    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' %>><&|/l&>Wednesday</&></option>
-    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' %>><&|/l&>Thursday</&></option>
-    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' %>><&|/l&>Friday</&></option>
-    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
-    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
+    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
+    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
+    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' |n %>><&|/l&>Wednesday</&></option>
+    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' |n %>><&|/l&>Thursday</&></option>
+    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' |n %>><&|/l&>Friday</&></option>
+    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' |n %>><&|/l&>Saturday</&></option>
+    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' |n %>><&|/l&>Sunday</&></option>
 </select>
 <&|/l&>every</&>
 <select name="Fow">
 % for my $f ( qw/1 2 3 4/ ) {
-    <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' %>><% $f %></option>
+    <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
 % }
 </select>
 <&|/l&>weeks</&>
 <br />
 
-<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
+<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %>>
 <&|/l&>monthly</&></input> , <&|/l&>on day</&>
 <select name="Dom">
 %   for my $dom (1..31) {
-    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
+    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
+<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %>>
     <&|/l&>never</&>
 </input>
 
@@ -144,7 +144,7 @@
 %                  ? 'selected="selected"'
 %                  : '';
 
-    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
+    <option value="<% $formatted %>" <%$selected|n %>><% $formatted %></option>
 % }
 </select>
 (<%$timezone%>)
@@ -154,7 +154,7 @@
 </td><td class="value">
 <select name="Rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
-    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
+    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
 %   }
 </select>
 </td></tr>
