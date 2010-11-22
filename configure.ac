@@ -47,7 +47,7 @@ fi
 AC_SUBST(WEB_HANDLER)
 
 dnl Defaults paths for installation
-AC_PREFIX_DEFAULT([/opt/rt3])
+AC_PREFIX_DEFAULT([/opt/rt4])
 RT_ENABLE_LAYOUT
 
 

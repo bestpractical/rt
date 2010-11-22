@@ -66,10 +66,10 @@ want to read a more comprehensive installation guide at:
        ./configure --help to see the list of options
        ./configure (with the flags you want)
 
-    RT defaults to installing in /opt/rt3 with MySQL as its database. It
+    RT defaults to installing in /opt/rt4 with MySQL as its database. It
     tries to guess which of www-data, www, apache or nobody your webserver
     will run as, but you can override that behavior.  Note that the
-    default install directory in /opt/rt3 does not work under SELinux's
+    default install directory in /opt/rt4 does not work under SELinux's
     default configuration.
 
     If you're upgrading RT then it is worth reading the UPGRADING document at
@@ -148,11 +148,11 @@ want to read a more comprehensive installation guide at:
 
      You should back up your database before running this command.
 
-       /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+       /opt/rt4/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
      Clear mason cache dir:
 
-       rm -fr /opt/rt3/var/mason_data/obj
+       rm -fr /opt/rt4/var/mason_data/obj
 
      Stop and start web-server.
 
@@ -183,9 +183,9 @@ want to read a more comprehensive installation guide at:
 
         crontab -e    # as the RT administrator (probably root)
         # insert the following lines:
-        0 0 * * * /opt/rt3/sbin/rt-email-digest -m daily
-        0 0 * * 0 /opt/rt3/sbin/rt-email-digest -m weekly
-        0 * * * * /opt/rt3/sbin/rt-email-dashboards
+        0 0 * * * /opt/rt4/sbin/rt-email-digest -m daily
+        0 0 * * 0 /opt/rt4/sbin/rt-email-digest -m weekly
+        0 * * * * /opt/rt4/sbin/rt-email-dashboards
 
 
 11   Set up users, groups, queues, scrips and access control.
@@ -208,14 +208,14 @@ incoming email messages from your mail server to RT.
 
 Add the following lines to /etc/aliases (or your local equivalent) on your mail server:
 
-rt:         "|/opt/rt3/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
-rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
+rt:         "|/opt/rt4/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
+rt-comment: "|/opt/rt4/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
 
 You'll need to add similar lines for each queue you want to be able
 to send email to. To find out more about how to configure RT's email
 gateway, type:
 
-       perldoc /opt/rt3/bin/rt-mailgate
+       perldoc /opt/rt4/bin/rt-mailgate
 
 
 

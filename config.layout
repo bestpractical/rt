@@ -17,7 +17,7 @@
 
 #   Default RT3 path layout.
 <Layout RT3>
-  prefix:		/opt/rt3
+  prefix:		/opt/rt4
   exec_prefix:		${prefix}
   bindir:		${exec_prefix}/bin
   sbindir:		${exec_prefix}/sbin
@@ -177,7 +177,7 @@
 
 
 <Layout relative>
-  prefix:		/opt/rt3
+  prefix:		/opt/rt4
   exec_prefix:		${prefix}
   bindir:		bin
   sbindir:		sbin
@@ -202,7 +202,7 @@
   customplugindir:  ${customdir}/plugins
 </Layout>
 <Layout vessel>
-  prefix:		/opt/rt3
+  prefix:		/opt/rt4
   exec_prefix:		${prefix}
   bindir:		bin
   sbindir:		sbin

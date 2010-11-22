@@ -15,12 +15,12 @@ because that requires root-level privileges and may conflict with any existing
 listeners. So choose a high port (for example 8080) and start the standalone
 server with:
 
-    /opt/rt3/sbin/rt-server --port 8080
+    /opt/rt4/sbin/rt-server --port 8080
 
 You can also run C<rt-server> with any other PSGI server, for example,
 to use L<Starman>, a high performance preforking server:
 
-    /opt/rt3/sbin/rt-server --server Starman --port 8080
+    /opt/rt4/sbin/rt-server --server Starman --port 8080
 
 =head2 mod_perl
 
@@ -58,8 +58,8 @@ it knows where to find RT:
         PerlModule Apache::DBI
 
         # optional apache logs for RT
-        # ErrorLog /opt/rt3/var/log/apache.error
-        # TransferLog /opt/rt3/var/log/apache.access
+        # ErrorLog /opt/rt4/var/log/apache.error
+        # TransferLog /opt/rt4/var/log/apache.access
         # LogLevel debug
 
         <Directory />
@@ -70,18 +70,18 @@ it knows where to find RT:
         </Directory>
 
         AddDefaultCharset UTF-8
-        PerlSetEnv RT_SITE_CONFIG /opt/rt3/etc/RT_SiteConfig.pm
+        PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
 
         RedirectMatch permanent (.*)/$ $1/index.html
 
-        DocumentRoot "/opt/rt3/share/html"
-        <Directory "/opt/rt3/share/html">
+        DocumentRoot "/opt/rt4/share/html"
+        <Directory "/opt/rt4/share/html">
             Order allow,deny
             Allow from all
 
             SetHandler perl-script
             PerlHandler Plack::Handler::Apache1
-            PerlSetVar psgi_app /opt/rt3/sbin/rt-server
+            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
         </Directory>
     </VirtualHost>
 
@@ -109,8 +109,8 @@ it knows where to find RT:
         LoadModule perl_module modules/mod_perl.so
 
         # optional apache logs for RT
-        # ErrorLog /opt/rt3/var/log/apache2.error
-        # TransferLog /opt/rt3/var/log/apache2.access
+        # ErrorLog /opt/rt4/var/log/apache2.error
+        # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
 
         <Directory />
@@ -121,18 +121,18 @@ it knows where to find RT:
         </Directory>
 
         AddDefaultCharset UTF-8
-        PerlSetEnv RT_SITE_CONFIG /opt/rt3/etc/RT_SiteConfig.pm
+        PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
 
         RedirectMatch permanent (.*)/$ $1/index.html
 
-        DocumentRoot "/opt/rt3/share/html"
-        <Directory "/opt/rt3/share/html">
+        DocumentRoot "/opt/rt4/share/html"
+        <Directory "/opt/rt4/share/html">
             Order allow,deny
             Allow from all
 
             SetHandler perl-script
             PerlResponseHandler Plack::Handler::Apache2
-            PerlSetVar psgi_app /opt/rt3/sbin/rt-server
+            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
         </Directory>
     </VirtualHost>
 
@@ -154,7 +154,7 @@ Apache configuration file telling it about RT:
     # Tell FastCGI to put its temporary files somewhere sane.
     FastCgiIpcDir /tmp
 
-    FastCgiServer /opt/rt3/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt3/etc/RT_SiteConfig.pm
+    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt4/etc/RT_SiteConfig.pm
 
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
@@ -174,8 +174,8 @@ Apache configuration file telling it about RT:
         LoadModule fastcgi_module modules/mod_fastcgi.so
 
         # optional apache logs for RT
-        # ErrorLog /opt/rt3/var/log/apache2.error
-        # TransferLog /opt/rt3/var/log/apache2.access
+        # ErrorLog /opt/rt4/var/log/apache2.error
+        # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
 
         <Directory />
@@ -187,10 +187,10 @@ Apache configuration file telling it about RT:
 
         AddDefaultCharset UTF-8
 
-        Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
-        ScriptAlias / /opt/rt3/sbin/rt-server.fcgi/
+        Alias /NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
+        ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
 
-        DocumentRoot "/opt/rt3/share/html"
+        DocumentRoot "/opt/rt4/share/html"
         <Location />
             Order allow,deny
             Allow from all

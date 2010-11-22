@@ -43,7 +43,7 @@ with
   interface (rights management, subgroup membership) may not work as expected
   with duplicate names.  Running
 
-    /opt/rt3/sbin/rt-validator --check
+    /opt/rt4/sbin/rt-validator --check
 
   will report duplicate group names, and running it with --resolve will fix
   duplicates by appending the group id to the name.
@@ -59,7 +59,7 @@ We've proved that it's possible to delete set of records
 from Transactions table without losing functionality. To delete
 record run the following script:
 
-    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
+    perl -I /opt/rt4/local/lib -I /opt/rt4/lib etc/upgrade/shrink_transactions_table.pl
 
 The default for $MessageBoxWrap is now SOFT and $MessageBoxWidth is now unset
 by default.  This means the message box will expand to fill all the available
@@ -85,7 +85,7 @@ custom field orders.
 RT will automatically clean up your existing custom fields when you run:
 
 
-  /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+  /opt/rt4/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
 After that cleanup, you should make sure that custom fields are ordered in
 a way that you and your users find pleasing.
@@ -106,7 +106,7 @@ You can now forward an entire Ticket history (in addition to specific transactio
 but this requires a new Template called forward ticket.  This template will be added
 when you run.
 
-/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+/opt/rt4/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
 Custom fields with categories can optionally be split out into
 hierarchical custom fields.  If you wish to convert your old
@@ -129,7 +129,7 @@ UPGRADING FROM 3.8.3 and earlier - Changes:
 Arguments to the NotifyGroup Scrip Action need
 to be corrected in the database using 
 
-/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+/opt/rt4/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
 
 UPGRADING FROM 3.8.2 and earlier - Changes:
@@ -178,7 +178,7 @@ We've proved that it's possible to delete pretty big set of records
 from CachedGroupMembers table without losing functionality. To delete
 record run the following script:
 
-    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_cgm_table.pl
+    perl -I /opt/rt4/local/lib -I /opt/rt4/lib etc/upgrade/shrink_cgm_table.pl
 
 UPGRADING FROM 3.7.81 and earlier - Changes:
 
@@ -278,7 +278,7 @@ UPGRADING FROM 3.0.x - Changes:
 
 = Installation =
 
-We recommend you move your existing /opt/rt3 tree completely out
+We recommend you move your existing /opt/rt4 tree completely out
 of the way before installing the new version of RT, to make sure
 that you don't inadvertently leave old files hanging around.
 
