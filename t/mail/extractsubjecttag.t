@@ -7,7 +7,6 @@ use RT::Test tests => 14;
 
 
 my ($baseurl, $m) = RT::Test->started_ok;
-RT::Test->set_mail_catcher;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',

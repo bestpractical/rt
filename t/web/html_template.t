@@ -8,8 +8,6 @@ use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
-RT::Test->set_mail_catcher;
-
 use utf8;
 
 diag('make Autoreply template a html one and add utf8 chars')

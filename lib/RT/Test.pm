@@ -912,11 +912,6 @@ sub mailsent_ok {
     );
 }
 
-sub set_mail_catcher {
-    my $self = shift;
-    return 1;
-}
-
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%\n/,

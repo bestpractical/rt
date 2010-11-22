@@ -18,8 +18,6 @@ my %string = (
     },
 );
 
-RT::Test->set_mail_catcher;
-
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
     CorrespondAddress => 'rt-recipient@example.com',

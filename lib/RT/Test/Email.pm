@@ -56,8 +56,6 @@ use Email::Abstract;
 use base 'Exporter';
 our @EXPORT = qw(mail_ok);
 
-RT::Test->set_mail_catcher;
-
 =head1 NAME
 
 RT::Test::Email - 

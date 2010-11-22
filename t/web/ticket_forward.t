@@ -15,7 +15,6 @@ my $att_name = ( File::Spec->splitpath($att_file) )[-1];
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
-RT::Test->set_mail_catcher;
 $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
 
 $m->submit_form(

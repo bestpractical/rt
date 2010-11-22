@@ -45,7 +45,6 @@ sub import {
         Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
     );
 
-    $class->set_mail_catcher;
     $class->export_to_level(1);
 }
 
