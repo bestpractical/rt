@@ -51,6 +51,8 @@ is @mails, 0, "no mail yet since there's no subscription";
 $m->follow_link_ok({text => 'Subscription'});
 $m->title_is('Subscribe to dashboard Testing!');
 $m->form_name('SubscribeDashboard');
+$m->field('Frequency' => 'daily');
+$m->field('Hour' => '06:00');
 $m->click_button(name => 'Save');
 $m->content_contains("Subscribed to dashboard Testing!");
 
