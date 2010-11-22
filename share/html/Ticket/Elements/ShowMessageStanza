@@ -78,7 +78,7 @@ if ( ref $Message ) {
     if ( @stack ) {
         ($Message, $i) = @{ pop @stack };
         $Depth--;
-        $m->out('</span>');
+        $m->out('</div>');
         goto AGAIN;
     }
 

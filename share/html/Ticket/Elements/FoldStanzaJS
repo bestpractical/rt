@@ -3,7 +3,7 @@
     class="message-stanza-folder"
     onclick="fold_message_stanza(this, '<%loc('Show quoted text')%>', '<%loc('Hide quoted text')%>');"><%loc('Show quoted text')%></div>
 % }
-<div class="message-stanza message-stanza-depth-<%$Depth%>" <%($Depth == 1)? 'style="display: none;" ' : ''|n%>>
+<div class="message-stanza" <%($Depth == 1)? 'style="display: none;" ' : ''|n%>>
 <%ARGS>
 $Depth => 0
 </%ARGS>

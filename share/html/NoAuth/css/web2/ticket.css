@@ -229,12 +229,6 @@ table.ticket-summary td.boxcontainer:first-child {
   width: 50%;
 }
 
-/* Message quoting */
-
-.message-stanza-depth-1 {
-    color: #1a1aa6;
-}
-
 div.requestor-ticket-links {
     text-align: left;
     font-size: 0.8em;
