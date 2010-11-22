@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
 <!--[if lt IE 8]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie.css" type="text/css" media="all" />
 
@@ -72,3 +73,8 @@ jQuery(document).ready(function(){
     jQuery("#prefs-menu").addClass("sf-menu sf-js-enabled").supersubs().superfish();
 });
 </script>
+<!--[if lt IE 9]>
+<!--[if gt IE 6]>
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie-pie.css" type="text/css" media="all" />
+<![endif]-->
+<![endif]-->

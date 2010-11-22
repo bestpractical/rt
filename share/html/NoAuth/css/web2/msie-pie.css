@@ -1,0 +1,13 @@
+.search-result-views,
+.ticket-transaction div.metadata span.actions,
+div#ticket-history div.downloadattachment, 
+.ticket-transaction div.metadata  span.type,
+.titlebox,
+.titlebox .titlebox-title .right,
+.titlebox .titlebox-title .left,
+div#footer,
+#main-navigation,
+#page-navigation,
+div#body {
+    behavior: url(/NoAuth/css/images/PIE.htc);
+}

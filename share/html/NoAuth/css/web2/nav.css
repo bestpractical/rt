@@ -49,9 +49,10 @@
 #main-navigation {
     background-color: #fff;
     -moz-border-radius-bottomright: 0.5em;
-    -webkit-border-bottom-right-radius: 0.5em;
     -moz-border-radius-topright: 0.5em;
     -webkit-border-top-right-radius: 0.5em;
+    -webkit-border-bottom-right-radius: 0.5em;
+    border-radius: 0 0.5em 0.5em 0;
     width: 10em;
     font-size: 0.85em;
     position: absolute;
@@ -171,6 +172,7 @@
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
     border-right: none;
+    border-radius: 0 0 0 0.5em;
 }
 
 #page-navigation .sf-menu {
@@ -233,7 +235,7 @@
     display: inline;
 }
 
-#page-action-menu a, #page-action-menu a:visited{
+#page-action-menu a, #page-action-menu a:visited {
     border: none;
     padding: 0.25em;
     color: #000;

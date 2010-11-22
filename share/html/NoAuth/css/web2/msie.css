@@ -159,6 +159,9 @@ div#nav li.last {
 
 .titlebox .titlebox-title .right {
     border-right: 2px solid #aaa;
+    display: block;
+    margin-top: 0.1em;
+    right: -0.2em;
 
 }
 
@@ -166,6 +169,7 @@ div#nav li.last {
 .titlebox .titlebox-content {
     padding-top: 2.2em;
 }
+
 
 .titlebox table.collection-as-table, .titlebox table.queue-summary {
     width: 95%;
@@ -196,12 +200,6 @@ table.queue-summary td, td.collection-as-table {
     position: absolute;
     top: -0.75em;
     left: 0.5em;
-}
-
-
-.titlebox .titlebox-title .right{
-    top: 0.2em;
-    right: -0.2em;
 }
 
 /* nested things. like the ticket dates tab */

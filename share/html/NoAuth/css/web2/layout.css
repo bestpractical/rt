@@ -73,7 +73,7 @@ div#body {
     border-top: 2px solid #ccc;
     border-left: 2px solid #ccc;
     z-index:1;
-
+    border-radius: 0.5em 0 0 0.5em;
 
 }
 
@@ -98,6 +98,8 @@ div#footer {
  -webkit-border-top-left-radius: 0.5em;
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
+
+  border-radius: 0.5em 0 0.5em 0;
 }
 
 div#footer #time {
