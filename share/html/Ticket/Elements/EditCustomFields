@@ -50,15 +50,18 @@
 % my $i = 0;
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
+% my $escaped_name = lc $CustomField->Name;
+% $escaped_name =~ s/[^a-z0-9_-]/_/;
+% my $type = $CustomField->Type || 'Unknown';
 % $i++;
 % if ( $i % 2 ) {
-<tr>
+<tr class="edit-custom-field">
 % }
-    <td class="cflabel">
+    <td class="cflabel <% $type %> <% $escaped_name %>" id="cflabel-<% $CustomField->Id %>" >
       <b><% loc($CustomField->Name) %></b><br />
       <i><% $CustomField->FriendlyType %></i>
     </td>
-    <td class="entry">
+    <td class="entry <% $type %> <% $escaped_name %>" id="cfentry-<% $CustomField->Id %>">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField, 
@@ -70,7 +73,7 @@
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
-        <span class="cfinvalidfield"><% $msg %></span>
+        <span class="cfinvalidfield <% $type %> <% $escaped_name %>"><% $msg %></span>
 %  }
     </td>
 
