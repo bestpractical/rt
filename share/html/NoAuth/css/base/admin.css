@@ -50,6 +50,7 @@ ul.list-menu .menu-item {
 }
 ul.list-menu {
  list-style: none;
+    width: 45%;
 
 }
 ul.list-menu .description {
@@ -57,4 +58,19 @@ ul.list-menu .description {
  padding: 0.5em;
  font-style: italic;
  padding-left: 1em;
+}
+
+#rt-news .titlebox iframe {
+    height: 100%;
+    width: 100%;
+    border: 0;
+}
+
+#rt-news .titlebox {
+    position: absolute;
+    top: 1em;;
+    right: 1em;
+    bottom: 0em;
+    width: 45%;
+    padding-bottom: 1em;
 }

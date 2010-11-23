@@ -1,0 +1,5 @@
+<div id="rt-news">
+<&| /Widgets/TitleBox, title => 'RT News' &>
+<iframe src="http://bestpractical.com/rt/integration/news?version=<%$RT::VERSION%>"></iframe>
+</&>
+</div>
