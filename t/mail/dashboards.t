@@ -56,8 +56,12 @@ $m->field('Hour' => '06:00');
 $m->click_button(name => 'Save');
 $m->content_contains("Subscribed to dashboard Testing!");
 
-sub got_dashboard_mail_ok { # {{{
+sub produces_dashboard_mail_ok { # {{{
+    my %args = @_;
+
     local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    RT::Dashboard::Mailer->MailDashboards(%args);
 
     my @mails = RT::Test->fetch_caught_mails;
     is @mails, 1, "got a dashboard mail";
@@ -73,10 +77,13 @@ sub got_dashboard_mail_ok { # {{{
     };
 } # }}}
 
-sub got_no_dashboard_mail_ok { # {{{
-    my $name = shift;
+sub produces_no_dashboard_mail_ok { # {{{
+    my %args = @_;
+    my $name = delete $args{Name};
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    RT::Dashboard::Mailer->MailDashboards(%args);
 
     @mails = RT::Test->fetch_caught_mails;
     is @mails, 0, $name;
@@ -85,45 +92,39 @@ sub got_no_dashboard_mail_ok { # {{{
 my $good_time = 1290337260; # 6:01 EST on a monday
 my $bad_time  = 1290340860; # 7:01 EST on a monday
 
-# options that produce dashboard mail
-RT::Dashboard::Mailer->MailDashboards(
+produces_dashboard_mail_ok(
     Time => $good_time,
 );
-got_dashboard_mail_ok;
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_dashboard_mail_ok(
     All => 1,
 );
-got_dashboard_mail_ok;
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_dashboard_mail_ok(
     All  => 1,
     Time => $good_time,
 );
-got_dashboard_mail_ok;
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_dashboard_mail_ok(
     All  => 1,
     Time => $bad_time,
 );
-got_dashboard_mail_ok;
 
-# options that produce no dashboard mail
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_no_dashboard_mail_ok(
+    Name   => "no dashboard mail it's a dry run",
     All    => 1,
     DryRun => 1,
 );
-got_no_dashboard_mail_ok "no dashboard mail it's a dry run";
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_no_dashboard_mail_ok(
+    Name   => "no dashboard mail it's a dry run",
     Time   => $good_time,
     DryRun => 1,
 );
-got_no_dashboard_mail_ok "no dashboard mail it's a dry run";
 
-RT::Dashboard::Mailer->MailDashboards(
+produces_no_dashboard_mail_ok(
+    Name => "no mail because it's the wrong time",
     Time => $bad_time,
 );
-got_no_dashboard_mail_ok "no mail because it's the wrong time";
 
