@@ -5,14 +5,14 @@ my $move_attributes = sub {
 
     my $res = $RT::Handle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {
-        $RT::Logger->error("Failed move $type from Attributes into $table table");
+        $RT::Logger->error("Failed to move $column on $type from Attributes into $table table");
         return;
     }
 
     $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
     $res = $RT::Handle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {
-        $RT::Logger->error("Failed to delete AuthTokens Attributes");
+        $RT::Logger->error("Failed to delete $column on $type from Attributes");
         return;
     }
     return 1;
