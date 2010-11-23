@@ -260,7 +260,9 @@ Set( \$MailCommand, sub {
     close \$handle;
 } );
 END
-    
+
+    $self->bootstrap_more_config($config, \%args);
+
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
@@ -269,6 +271,8 @@ END
 
     return $config;
 }
+
+sub bootstrap_more_config { }
 
 sub bootstrap_logging {
     my $self = shift;

@@ -21,24 +21,9 @@ sub import {
     $t->plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
-    RT->Config->Set(
-        GnuPG                  => Enable => 1,
-        OutgoingMessagesFormat => 'RFC',
-    );
-
-    my %gnupg_options = (
-        'no-permission-warning' => undef,
-        $args{gnupg_options} ? %{ $args{gnupg_options} } : (),
-    );
-    $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
-
-    RT->Config->Set( GnuPGOptions => %gnupg_options );
+    $class->SUPER::import(%args);
 
     RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-    RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
-    $class->SUPER::import(%args);
 
     $class->set_rights(
         Principal => 'Everyone',
@@ -46,6 +31,34 @@ sub import {
     );
 
     $class->export_to_level(1);
+}
+
+sub bootstrap_more_config {
+    my $self = shift;
+    my $handle = shift;
+    my $args = shift;
+
+    $self->SUPER::bootstrap_more_config($handle, $args, @_);
+
+    my %gnupg_options = (
+        'no-permission-warning' => undef,
+        $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
+    );
+    $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
+
+    use Data::Dumper;
+    local $Data::Dumper::Terse = 1; # "{...}" instead of "$VAR1 = {...};"
+    my $dumped_gnupg_options = Dumper(\%gnupg_options);
+
+    print $handle qq{
+Set(\%GnuPG, (
+    Enable                 => 1,
+    OutgoingMessagesFormat => 'RFC',
+));
+Set(\%GnuPGOptions => \%{ $dumped_gnupg_options });
+Set(\@MailPlugins => qw(Auth::MailFrom Auth::GnuPG));
+};
+
 }
 
 sub create_a_ticket {
