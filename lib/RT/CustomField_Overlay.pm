@@ -328,11 +328,37 @@ sub Create {
         $args{'MaxValues'} = 1;
     }
 
+    if ( $args{'RenderType'} ||= undef ) {
+        my $composite = join '-', @args{'Type', 'MaxValues'};
+        return (0, $self->loc("This custom field has no Render Types"))
+            unless $self->HasRenderTypes( $composite );
+
+        if ( $args{'RenderType'} eq $self->DefaultRenderType( $composite ) ) {
+            $args{'RenderType'} = undef;
+        } else {
+            return (0, $self->loc("Invalid Render Type") )
+                unless grep $_ eq  $args{'RenderType'}, $self->RenderTypes( $composite );
+        }
+    }
+
+    $args{'ValuesClass'} = undef if ($args{'ValuesClass'} || '') eq 'RT::CustomFieldValues';
+    if ( $args{'ValuesClass'} ||= undef ) {
+        return (0, $self->loc("This Custom Field can not have list of values"))
+            unless $self->IsSelectionType( $args{'Type'} );
+
+        unless ( $self->ValidateValuesClass( $args{'ValuesClass'} ) ) {
+            return (0, $self->loc("Invalid Custom Field values source"));
+        }
+    }
+
     (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},
+        RenderType  => $args{'RenderType'},
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
+        BasedOn     => $args{'BasedOn'},
+        ValuesClass => $args{'ValuesClass'},
         Description => $args{'Description'},
         Disabled    => $args{'Disabled'},
         LookupType  => $args{'LookupType'},
@@ -345,14 +371,6 @@ sub Create {
 
     if ( exists $args{'IncludeContentForValue'}) {
 	$self->SetIncludeContentForValue($args{'IncludeContentForValue'});
-    }
-
-    if ( exists $args{'ValuesClass'} ) {
-        $self->SetValuesClass( $args{'ValuesClass'} );
-    }
-
-    if ( exists $args{'BasedOn'} ) {
-        $self->SetBasedOn( $args{'BasedOn'} );
     }
 
     return ($rv, $msg) unless exists $args{'Queue'};
@@ -475,8 +493,10 @@ of the C<ValuesClass> method.
 sub Values {
     my $self = shift;
 
-    my $class = $self->ValuesClass || 'RT::CustomFieldValues';
-    eval "require $class" or die "$@";
+    my $class = $self->ValuesClass;
+    if ( $class ne 'RT::CustomFieldValues') {
+        eval "require $class" or die "$@";
+    }
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
@@ -578,23 +598,6 @@ sub Types {
 }
 
 
-=head2 HasRenderTypes [TYPE_COMPOSITE]
-
-Returns a boolean value indicating whether the L</RenderTypes> and
-L</RenderType> methods make sense for this custom field.
-
-Currently true only for type C<Select>.
-
-=cut
-
-sub HasRenderTypes {
-    my $self = shift;
-    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
-    return undef unless $type;
-    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' };
-}
-
-
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -617,31 +620,39 @@ sub IsSelectionType {
 
 sub IsExternalValues {
     my $self = shift;
-    my $selectable = $self->IsSelectionType( @_ );
-    return $selectable unless $selectable;
-
-    my $class = $self->ValuesClass;
-    return 0 if $class eq 'RT::CustomFieldValues';
-    return 1;
+    return 0 unless $self->IsSelectionType( @_ );
+    return $self->ValuesClass eq 'RT::CustomFieldValues'? 0 : 1;
 }
 
 sub ValuesClass {
     my $self = shift;
-    return '' unless $self->IsSelectionType;
-
-    my $class = $self->FirstAttribute( 'ValuesClass' );
-    $class = $class->Content if $class;
-    return $class || 'RT::CustomFieldValues';
+    return $self->_Value( ValuesClass => @_ ) || 'RT::CustomFieldValues';
 }
 
 sub SetValuesClass {
     my $self = shift;
     my $class = shift || 'RT::CustomFieldValues';
-
-    if( $class eq 'RT::CustomFieldValues' ) {
-        return $self->DeleteAttribute( 'ValuesClass' );
+    
+    if ( $class eq 'RT::CustomFieldValues' ) {
+        return $self->_Set( Field => 'ValuesClass', Value => undef, @_ );
     }
-    return $self->SetAttribute( Name => 'ValuesClass', Content => $class );
+
+    return (0, $self->loc("This Custom Field can not have list of values"))
+        unless $self->IsSelectionType;
+
+    unless ( $self->ValidateValuesClass( $class ) ) {
+        return (0, $self->loc("Invalid Custom Field values source"));
+    }
+    return $self->_Set( Field => 'ValuesClass', Value => $class, @_ );
+}
+
+sub ValidateValuesClass {
+    my $self = shift;
+    my $class = shift;
+
+    return 1 if !defined $class || $class eq 'RT::CustomFieldValues';
+    return 1 if grep $class eq $_, RT->Config->Get('CustomFieldValuesSources');
+    return undef;
 }
 
 
@@ -945,9 +956,8 @@ sub RenderType {
     my $self = shift;
     return '' unless $self->HasRenderTypes;
 
-    my $type = $self->FirstAttribute( 'RenderType' );
-    $type = $type->Content if $type;
-    return $type || $self->DefaultRenderType;
+    return $self->_Value( 'RenderType', @_ )
+        || $self->DefaultRenderType;
 }
 
 =head2 SetRenderType TYPE
@@ -957,11 +967,13 @@ Sets this custom field's render type.
 =cut
 
 sub SetRenderType {
-    my ($self, $type) = @_;
-    return unless $self->HasRenderTypes;
+    my $self = shift;
+    my $type = shift;
+    return (0, $self->loc("This custom field has no Render Types"))
+        unless $self->HasRenderTypes;
 
-    if ( not defined $type ) {
-        return $self->DeleteAttribute( 'RenderType' );
+    if ( !$type || $type eq $self->DefaultRenderType ) {
+        return $self->_Set( Field => 'RenderType', Value => undef, @_ );
     }
 
     if ( not grep { $_ eq $type } $self->RenderTypes ) {
@@ -974,7 +986,7 @@ sub SetRenderType {
         return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
     }
 
-    return $self->SetAttribute( Name => 'RenderType', Content => $type );
+    return $self->_Set( Field => 'RenderType', Value => $type, @_ );
 }
 
 =head2 DefaultRenderType [TYPE COMPOSITE]
@@ -990,6 +1002,23 @@ sub DefaultRenderType {
     my ($type, $max) = split /-/, $composite, 2;
     return unless $type and $self->HasRenderTypes($composite);
     return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
+}
+
+=head2 HasRenderTypes [TYPE_COMPOSITE]
+
+Returns a boolean value indicating whether the L</RenderTypes> and
+L</RenderType> methods make sense for this custom field.
+
+Currently true only for type C<Select>.
+
+=cut
+
+sub HasRenderTypes {
+    my $self = shift;
+    my ($type, $max) = split /-/, (@_ ? shift : $self->TypeComposite), 2;
+    return undef unless $type;
+    return defined $FieldTypes{$type}->{render_types}
+        ->{ $max == 1 ? 'single' : 'multiple' };
 }
 
 =head2 RenderTypes [TYPE COMPOSITE]
@@ -1606,33 +1635,28 @@ sub SetBasedOn {
     my $self = shift;
     my $value = shift;
 
-    return $self->DeleteAttribute( "BasedOn" )
+    return $self->_Set( Field => 'BasedOn', Value => $value, @_ )
         unless defined $value and length $value;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
-    $cf->Load( ref $value ? $value->Id : $value );
+    $cf->Load( ref $value ? $value->id : $value );
 
     return (0, "Permission denied")
-        unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
+        unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
 
     # XXX: Remove this restriction once we support lists and cascaded selects
     if ( $self->RenderType =~ /List/ ) {
         return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
     }
 
-    return $self->AddAttribute(
-        Name => "BasedOn",
-        Description => "Custom field whose CF we depend on",
-        Content => $cf->Id,
-    );
+    return $self->_Set( Field => 'BasedOn', Value => $value, @_ )
 }
 
 sub BasedOnObj {
     my $self = shift;
-    my $obj = RT::CustomField->new( $self->CurrentUser );
 
-    my $attribute = $self->FirstAttribute("BasedOn");
-    $obj->Load($attribute->Content) if defined $attribute;
+    my $obj = RT::CustomField->new( $self->CurrentUser );
+    $obj->Load( $self->BasedOn );
     return $obj;
 }
 

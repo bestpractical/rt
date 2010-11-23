@@ -12,6 +12,7 @@ sub new (*) {
 }
 
 use constant VALUES_CLASS => 'RT::CustomFieldValues::Groups';
+RT->Config->Set(CustomFieldValuesSources => VALUES_CLASS);
 
 my $q = new( RT::Queue );
 isa_ok( $q, 'RT::Queue' );
@@ -27,8 +28,8 @@ my $cf = new( RT::CustomField );
 isa_ok( $cf, 'RT::CustomField' );
 
 {
-    my ($cfid) = $cf->Create( %arg );
-    ok( $cfid, "created cf" );
+    my ($cfid, $msg) = $cf->Create( %arg );
+    ok( $cfid, "created cf" ) or diag "error: $msg";
     is( $cf->ValuesClass, VALUES_CLASS, "right values class" );
     ok( $cf->IsExternalValues, "custom field has external values" );
 }

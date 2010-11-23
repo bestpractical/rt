@@ -88,6 +88,7 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
   varbinary(40) 'Password'.
+  varchar(16) 'AuthToken'.
   text 'Comments'.
   text 'Signature'.
   varchar(120) 'EmailAddress'.
@@ -126,6 +127,7 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Password => '',
+                AuthToken => '',
                 Comments => '',
                 Signature => '',
                 EmailAddress => '',
@@ -158,6 +160,7 @@ sub Create {
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Password => $args{'Password'},
+                         AuthToken => $args{'AuthToken'},
                          Comments => $args{'Comments'},
                          Signature => $args{'Signature'},
                          EmailAddress => $args{'EmailAddress'},
@@ -231,6 +234,24 @@ Returns the current value of Password.
 Set Password to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Password will be stored as a varbinary(40).)
+
+
+=cut
+
+
+=head2 AuthToken
+
+Returns the current value of AuthToken. 
+(In the database, AuthToken is stored as varchar(16).)
+
+
+
+=head2 SetAuthToken VALUE
+
+
+Set AuthToken to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, AuthToken will be stored as a varchar(16).)
 
 
 =cut
@@ -768,6 +789,8 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Password => 
 		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(40)', default => ''},
+        AuthToken => 
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Comments => 
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Signature => 

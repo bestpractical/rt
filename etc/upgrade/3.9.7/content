@@ -1,0 +1,63 @@
+my $move_attributes = sub {
+    my ($table, $type, $column) = @_;
+    my $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
+        ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
+
+    my $res = $RT::Handle->SimpleQuery( $query, $column, $type );
+    unless ( $res ) {
+        $RT::Logger->error("Failed to move $column on $type from Attributes into $table table");
+        return;
+    }
+
+    $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
+    $res = $RT::Handle->SimpleQuery( $query, $column, $type );
+    unless ( $res ) {
+        $RT::Logger->error("Failed to delete $column on $type from Attributes");
+        return;
+    }
+    return 1;
+};
+
+@Initial = (
+    sub {
+        return $move_attributes->( 'Users', 'RT::User', 'AuthToken');
+    },
+    sub {
+        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'BasedOn');
+    },
+    sub {
+        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
+    },
+    sub {
+        $move_attributes->( 'CustomFields', 'RT::CustomField', 'ValuesClass')
+            or return;
+
+        my $query = "UPDATE CustomFields SET ValuesClass = NULL WHERE ValuesClass = ?";
+        my $res = $RT::Handle->SimpleQuery( $query, 'RT::CustomFieldValues' );
+        unless ( $res ) {
+            $RT::Logger->error("Failed to replace default with NULLs");
+            return;
+        }
+        return 1;
+    },
+    sub {
+        my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
+        return 1 unless $attr;
+
+        my $map = $attr->Content || {};
+        while ( my ($qid, $tag) = each %$map ) {
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $qid );
+            unless ( $queue->id ) {
+                $RT::Logger->warning("Couldn't load queue #$qid. Skipping...");
+                next;
+            }
+
+            my ($status, $msg) = $queue->SetSubjectTag($tag);
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't set subject tag for queue #$qid: $msg");
+                next;
+            }
+        }
+    },
+);

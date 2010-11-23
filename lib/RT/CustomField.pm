@@ -88,9 +88,11 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
   varchar(200) 'Type'.
+  varchar(64) 'RenderType'.
   int(11) 'MaxValues'.
   text 'Pattern'.
   smallint(6) 'Repeated'.
+  int(11) 'BasedOn'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
@@ -106,9 +108,11 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
+                RenderType => '',
                 MaxValues => '',
                 Pattern => '',
                 Repeated => '0',
+                BasedOn => '',
                 Description => '',
                 SortOrder => '0',
                 LookupType => '',
@@ -118,9 +122,11 @@ sub Create {
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
+                         RenderType => $args{'RenderType'},
                          MaxValues => $args{'MaxValues'},
                          Pattern => $args{'Pattern'},
                          Repeated => $args{'Repeated'},
+                         BasedOn => $args{'BasedOn'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
                          LookupType => $args{'LookupType'},
@@ -176,6 +182,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 RenderType
+
+Returns the current value of RenderType. 
+(In the database, RenderType is stored as varchar(64).)
+
+
+
+=head2 SetRenderType VALUE
+
+
+Set RenderType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, RenderType will be stored as a varchar(64).)
+
+
+=cut
+
+
 =head2 MaxValues
 
 Returns the current value of MaxValues. 
@@ -225,6 +249,24 @@ Returns the current value of Repeated.
 Set Repeated to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Repeated will be stored as a smallint(6).)
+
+
+=cut
+
+
+=head2 BasedOn
+
+Returns the current value of BasedOn. 
+(In the database, BasedOn is stored as int(11).)
+
+
+
+=head2 SetBasedOn VALUE
+
+
+Set BasedOn to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, BasedOn will be stored as a int(11).)
 
 
 =cut
@@ -348,12 +390,16 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Type => 
 		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        RenderType => 
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         MaxValues => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Repeated => 
 		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+        BasedOn => 
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Description => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         SortOrder => 

@@ -223,14 +223,11 @@ sub SubjectTag {
     my $self = shift;
     my $queue = shift;
 
-    my $map = $self->FirstAttribute('BrandedSubjectTag');
-    $map = $map->Content if $map;
-    return $queue ? undef : () unless $map;
+    return $queue->SubjectTag if $queue;
 
-    return $map->{ $queue->id } if $queue;
-
-    my %seen = ();
-    return grep !$seen{lc $_}++, values %$map;
+    my $queues = RT::Queues->new( $self->CurrentUser );
+    $queues->Limit( FIELD => 'SubjectTag', OPERATOR => 'IS NOT', VALUE => 'NULL' );
+    return $queues->DistinctFieldValues('SubjectTag');
 }
 
 =head2 QueueCacheNeedsUpdate ( 1 )

@@ -28,6 +28,7 @@ CREATE TABLE Queues (
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
+  SubjectTag varchar(120) NULL  ,
   InitialPriority integer NULL  ,
   FinalPriority integer NULL  ,
   DefaultDueIn integer NULL  ,
@@ -219,6 +220,7 @@ CREATE TABLE Users (
   id INTEGER ,
   Name varchar(200) NOT NULL  ,
   Password varchar(40) NULL  ,
+  AuthToken varchar(16) NULL  ,
   Comments blob NULL  ,
   Signature blob NULL  ,
   EmailAddress varchar(120) NULL  ,
@@ -373,9 +375,12 @@ CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  RenderType varchar(64) NULL  ,
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(65536) NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
+  BasedOn INTEGER NULL,
+  ValuesClass varchar(64) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
   LookupType varchar(255) NOT NULL,
