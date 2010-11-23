@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 27;
+use RT::Test tests => 35;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -85,16 +85,30 @@ sub got_no_dashboard_mail_ok { # {{{
 my $good_time = 1290337260; # 6:01 EST on a monday
 my $bad_time  = 1290340860; # 7:01 EST on a monday
 
+# options that produce dashboard mail
+RT::Dashboard::Mailer->MailDashboards(
+    Time => $good_time,
+);
+got_dashboard_mail_ok;
+
 RT::Dashboard::Mailer->MailDashboards(
     All => 1,
 );
 got_dashboard_mail_ok;
 
 RT::Dashboard::Mailer->MailDashboards(
+    All  => 1,
     Time => $good_time,
 );
 got_dashboard_mail_ok;
 
+RT::Dashboard::Mailer->MailDashboards(
+    All  => 1,
+    Time => $bad_time,
+);
+got_dashboard_mail_ok;
+
+# options that produce no dashboard mail
 
 RT::Dashboard::Mailer->MailDashboards(
     All    => 1,
