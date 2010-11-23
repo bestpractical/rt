@@ -71,7 +71,7 @@ foreach my $arg ( keys %$parent_args ) {
         $Queue = $Ticket->QueueObj;
     }
 
-    my $article = RT::FM::Article->new($session{'CurrentUser'});
+    my $article = RT::Article->new($session{'CurrentUser'});
     $article->LoadByInclude(
         Field => substr($arg, length($name_prefix)),
         Value => $parent_args->{$arg},
@@ -79,7 +79,7 @@ foreach my $arg ( keys %$parent_args ) {
     );
     next unless $article && $article->id;
 
-    my $formatted_article = $m->scomp('/RTFM/Article/Elements/Preformatted',
+    my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );
 

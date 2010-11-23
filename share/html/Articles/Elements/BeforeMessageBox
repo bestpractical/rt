@@ -160,7 +160,7 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     foreach my $arg (keys %ARGS) {
         next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
 
-        my $article = RT::FM::Article->new($session{'CurrentUser'});
+        my $article = RT::Article->new($session{'CurrentUser'});
         $article->LoadByInclude(
             Field => substr($arg, length($name_prefix)),
             Value => $ARGS{$arg},
@@ -171,11 +171,11 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     }
 }
 
-use RT::FM::ArticleCollection;
+use RT::Articles;
 
 my $articles_content =
-  RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
-my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+  RT::Articles->new( $session{'CurrentUser'} );
+my $articles_basics = RT::Articles->new( $session{'CurrentUser'} );
 if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
     $articles_content->LimitCustomField(
         VALUE => $tmp, OPERATOR => 'LIKE'
@@ -195,7 +195,7 @@ if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
     $articles_basics->LimitAppliedClasses( Queue => $QueueObj );
 }
 
-my $hotlist = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $hotlist = RT::Articles->new( $session{'CurrentUser'} );
 $hotlist->LimitHotlistClasses;
 $hotlist->LimitAppliedClasses( Queue => $QueueObj );
 
@@ -213,14 +213,14 @@ $hotlist->OrderByCols( {
     );
 
 my ( $topic_articles, $topics, $included_topic );
-$topic_articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
+$topic_articles = RT::Articles->new( $session{CurrentUser} );
 $topics = [];
 
-my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
-$top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
+my $top_topic = RT::Topic->new( $session{CurrentUser} );
+$top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::System', ObjectId => 1);
 
 if ( $top_topic->id ) {
-    my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
+    my $queue_topic = RT::Topic->new( $session{CurrentUser} );
     $queue_topic->LoadByCols( Name => $QueueObj->Name, Parent => $top_topic->id );
     if ( $queue_topic->id ) {
     
@@ -228,7 +228,7 @@ if ( $top_topic->id ) {
         topics( $queue_topic, $topics, 0 );
         
         if ( my $tmp = $ARGS{ $name_prefix .'RTFM-Include-Topic'}  ) {
-            $included_topic = RT::FM::Topic->new( $session{CurrentUser} );
+            $included_topic = RT::Topic->new( $session{CurrentUser} );
             $included_topic->Load( $tmp );
             $topic_articles->LimitTopics( $tmp );
             $topic_articles->OrderBy( FIELD => 'Name' );

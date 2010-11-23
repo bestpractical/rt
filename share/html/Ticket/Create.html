@@ -171,6 +171,9 @@
 <tr>
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
+% if ( RT->Config->Get('ArticleOnTicketCreate')) {
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+% }
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
