@@ -986,7 +986,7 @@ sub check_uniqueness {
     my @columns = @{ $args{'columns'} };
 
     print "Checking uniqueness of ( ", join(', ', map "'$_'", @columns )," ) in table '$on'\n"
-        if $opt{'versbose'};
+        if $opt{'verbose'};
 
     my ($scond, $tcond);
     if ( $scond = $tcond = $args{'condition'} ) {
