@@ -82,13 +82,16 @@ sub got_no_dashboard_mail_ok { # {{{
     is @mails, 0, $name;
 } # }}}
 
+my $good_time = 1290337260; # 6:01 EST on a monday
+my $bad_time  = 1290340860; # 7:01 EST on a monday
+
 RT::Dashboard::Mailer->MailDashboards(
     All => 1,
 );
 got_dashboard_mail_ok;
 
 RT::Dashboard::Mailer->MailDashboards(
-    Time => 1290337260, # 6:01 EST on a monday
+    Time => $good_time,
 );
 got_dashboard_mail_ok;
 
@@ -100,13 +103,13 @@ RT::Dashboard::Mailer->MailDashboards(
 got_no_dashboard_mail_ok "no dashboard mail it's a dry run";
 
 RT::Dashboard::Mailer->MailDashboards(
-    Time   => 1290337260, # 6:01 EST on a monday
+    Time   => $good_time,
     DryRun => 1,
 );
 got_no_dashboard_mail_ok "no dashboard mail it's a dry run";
 
 RT::Dashboard::Mailer->MailDashboards(
-    Time => 1290340860, # 7:01 EST on a monday
+    Time => $bad_time,
 );
 got_no_dashboard_mail_ok "no mail because it's the wrong time";
 
