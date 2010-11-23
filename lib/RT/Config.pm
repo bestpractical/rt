@@ -403,6 +403,15 @@ our %META = (
             Description => q|Show simplified recipient list on ticket update|,                #loc
         },
     },
+    DisplayTicketAfterQuickCreate => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 8,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => q{Display ticket after "Quick Create"}, #loc
+        },
+    },
 
     # User overridable locale options
     DateTimeFormat => {

@@ -1697,6 +1697,17 @@ Default: C<< Set( $AllowUserAutocompleteForUnprivileged, 0 ) >>
 
 Set( $AllowUserAutocompleteForUnprivileged, 0 );
 
+=item C<$DisplayTicketAfterQuickCreate>
+
+Enable this to redirect to the created ticket display page automatically
+when using QuickCreate.
+
+Default: C<< Set( $DisplayTicketAfterQuickCreate, 0 ) >>
+
+=cut
+
+Set( $DisplayTicketAfterQuickCreate, 0 );
+
 =back
 
 =head1 UTF-8 Configuration

@@ -115,6 +115,16 @@ if ( $ARGS{'QuickCreate'} ) {
                         Content => $ARGS{'Content'},
                         Subject => $ARGS{'Subject'});
         push @results, $msg;
+
+        if ( $t && $t->Id && RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
+            $m->comp(
+                '/Elements/MaybeRedirectForResults',
+                'Actions' => \@results,
+                'Path'    => 'Ticket/Display.html',
+                'id'      => $t->Id,
+            );
+        }
+
     }
     elsif ( !$ValidCFs ) {
         push @results, "can't quickly create ticket in queue " .
