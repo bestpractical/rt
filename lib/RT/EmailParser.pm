@@ -362,16 +362,9 @@ Returns the same array with any IsRTAddress()es weeded out.
 
 sub CullRTAddresses {
     my $self = shift;
-    my @addresses= (@_);
-    my @addrlist;
+    my @addresses = (@_);
 
-    foreach my $addr( @addresses ) {
-                                 # We use the class instead of the instance
-                                 # because sloppy code calls this method
-                                 # without a $self
-      push (@addrlist, $addr)    unless RT::EmailParser->IsRTAddress($addr);
-    }
-    return (@addrlist);
+    return grep { !$self->IsRTAddress($_) } @addresses;
 }
 
 
