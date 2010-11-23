@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
+use RT::Test tests => 39;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -68,6 +68,7 @@ sub produces_dashboard_mail_ok { # {{{
 
     my $mail = parse_mail( $mails[0] );
     is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
+    is($mail->head->get('From'), "root\n");
 
     SKIP: {
         skip 'Weird MIME failure', 2;
