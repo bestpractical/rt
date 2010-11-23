@@ -78,7 +78,7 @@ sub produces_dashboard_mail_ok { # {{{
         skip 'Weird MIME failure', 2;
         my $body = $mail->stringify_body;
         like($body, qr{My dashboards});
-        like($body, qr{<a href="/Dashboards/\d+/Testing!">Testing!</a>});
+        like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!">Testing!</a>});
     };
 } # }}}
 
