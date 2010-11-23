@@ -89,6 +89,7 @@ my $COLUMN_MAP = {
 foreach my $field (qw(
     Name Description CorrespondAddress CommentAddress
     InitialPriority FinalPriority DefaultDueIn
+    Lifecycle
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,
