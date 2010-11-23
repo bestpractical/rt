@@ -679,8 +679,7 @@ Set($ShowBccHeader, 0);
 =item C<$DashboardSubject>
 
 Lets you set the subject of dashboards. Arguments are the frequency (Daily,
-Weekly, Monthly) of the dashboard and the dashboard's name. [_1] for the name
-of the dashboard.
+Weekly, Monthly) of the dashboard and the dashboard's name.
 
 =cut
 
