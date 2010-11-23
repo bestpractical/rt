@@ -55,11 +55,7 @@ $SearchType => 'Ticket',
 % foreach my $object (@Objects) {
 % my @searches = $object->Attributes->Named('SavedSearch');
 % if ( @searches ) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<optgroup label="<&|/l&>My saved searches</&>">
-% } else {
-<optgroup label="<&|/l, $object->Name&>[_1]'s saved searches</&>">
-% }
+<optgroup label="<& SearchPrivacy, Object => $object &>">
 % foreach my $search (@searches) { 
 %     # Skip it if it is not of search type we want.
 %     next if ($search->SubValue('SearchType')

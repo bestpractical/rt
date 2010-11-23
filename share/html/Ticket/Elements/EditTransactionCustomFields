@@ -60,6 +60,10 @@
     CustomField => $CF,
     NamePrefix => $NamePrefix
 &>
+%  if (my $msg = $m->notes('InvalidField-' . $CF->Id)) {
+        <br />
+        <span class="cfinvalidfield"><% $msg %></span>
+%  }
 </<% $CELL %>>
 </<% $FIELD %>>
 % }

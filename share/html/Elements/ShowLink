@@ -52,7 +52,7 @@
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">
-<%$member->Id%>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]
+<%$member->Id%>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject%> [<% loc($member->Status) %>]
 </span>
 
 % } elsif ( UNIVERSAL::can($member, 'Name')) {

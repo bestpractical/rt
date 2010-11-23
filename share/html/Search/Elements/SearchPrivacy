@@ -48,8 +48,14 @@
 <%args>
 $Object => undef
 </%args>
-% if (ref($Object) eq 'RT::User' && $Object->id == $session{'CurrentUser'}->Id) {
-<&|/l&>My saved searches</&>
-% } else {
-<&|/l, $Object->Name&>[_1]'s saved searches</&>
-% }
+<%init>
+my $label;
+if (ref($Object) eq 'RT::User') {
+    $label = $Object->id == $session{'CurrentUser'}->Id
+                ? loc("My saved searches")
+                : loc("[_1]'s saved searches", $m->scomp('/Elements/ShowUser', User => $Object));
+} else {
+    $label = loc("[_1]'s saved searches", $m->interp->apply_escapes($Object->Name, 'h'));
+}
+</%init>
+<% $label |n %>\

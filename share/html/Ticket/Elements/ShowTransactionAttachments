@@ -128,7 +128,7 @@ my $size_to_str = sub {
     my $size = shift;
     # show a download link
     if ( $size > 1024*1024 ) {
-        $size = loc( "[_1]M", int( $size / 1024 / 102.4 ) / 10 );
+        $size = loc( "[_1]m", int( $size / 1024 / 102.4 ) / 10 );
     }
     elsif ( $size > 1024 ) {
         $size = loc( "[_1]k", int( $size / 102.4 ) / 10 );

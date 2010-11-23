@@ -61,7 +61,7 @@
 </td>
 <td class="label"><&|/l&>Owner</&>:</td><td class="value">
 <select type="select" name="Owner">  
-<option value="<%$session{'CurrentUser'}->id%>" selected="selected"><%$session{'CurrentUser'}->Name %></option>
+<option value="<%$session{'CurrentUser'}->id%>" selected="selected"><&|/l&>Me</&></option>
 <option value="<%RT->Nobody->id%>"><%loc('Nobody')%></option>
 </select>
 </td>

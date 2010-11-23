@@ -312,7 +312,7 @@ defaults to textual.
 sub Content {
     my $self = shift;
     my %args = (
-        Type => '',
+        Type => $PreferredContentType || '',
         Quote => 0,
         Wrap  => 70,
         @_

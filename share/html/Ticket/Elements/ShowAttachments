@@ -83,7 +83,8 @@ if ($size) {
 
 <li><font size="-2">
 <a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
-<&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
+% my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $size, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
+<% $desc |n%>
 </a>
 </font></li>
 % }

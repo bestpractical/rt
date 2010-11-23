@@ -122,6 +122,7 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <div>
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
+</div>
 <%method NewReminder>
 <%args>
 $Ticket
@@ -163,6 +164,6 @@ $Ticket
 <input type="checkbox" name="Complete-Reminder-<%$Reminder->id%>" \
     <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' %> />
     <%$Reminder->Subject%> &bull; \
-    <%$Reminder->OwnerObj->Name%> \
+    <& /Elements/ShowUser, User => $Reminder->OwnerObj &> \
     <%$Reminder->DueObj->Unix>0  ? "&bull; ". $Reminder->DueObj->AgeAsString : '' |n%><br />
 </%method>

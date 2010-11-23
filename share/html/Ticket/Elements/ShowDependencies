@@ -48,14 +48,15 @@
 <&|/l&>Depends on</&>:<br />
 % while (my $Link = $Ticket->DependsOn->Next) {
 % my $member = $Link->TargetObj;
-<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject%>
+
 [<%$member->Status%>]
  <br />
 % }
 <&|/l&>Depended on by</&>:<br />
 % while (my $Link = $Ticket->DependedOnBy->Next) {
 % my $member = $Link->TargetObj;
-<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
+<a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject%> 
 [<%$member->Status%>]
  <br />
 % }

@@ -119,7 +119,7 @@
                 Name         => "Owner",
                 TicketObj    => $TicketObj,
                 QueueObj     => $TicketObj->QueueObj,
-                DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
+                DefaultLabel => loc("[_1] (Unchanged)", $m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj)),
                 Default      => $ARGS{'Owner'}
             }
         },

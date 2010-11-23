@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="results">
-<&| /Widgets/TitleBox, title => loc('Results') &>
+<&| /Widgets/TitleBox, title => loc('Results'), %{$titlebox || {}} &>
   <ul class="action-results">
 % foreach my $action (@actions) {
     <li><%$action%></li>
@@ -90,5 +90,6 @@ return unless @actions;
 
 </%init>
 <%ARGS>
+$titlebox => {}
 @actions => undef
 </%ARGS>

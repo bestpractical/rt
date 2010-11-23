@@ -45,59 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-if ( $m->request_comp->path =~ '^/REST/\d+\.\d+/' ) {
-    $r->content_type("text/plain");
-    $m->error_format("text");
-    $m->out("RT/$RT::VERSION 401 Credentials required\n");
-    $m->out("\n$Error\n") if $Error;
-    $m->abort;
-} elsif (    RT::Interface::Web->MobileClient()
-          || ( $m->request_comp->path() =~ m{^/m(?:\/|$)} ) ) {
-    $m->comp( '/m/login', %ARGS );
-    $m->abort;
-}
-
-my $req_uri;
-
-if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/(.*)}) {
-    $req_uri = $1;
-}
-
-my $form_action = defined $goto             ? $goto
-                : defined $req_uri          ? $req_uri
-                :                             RT->Config->Get('WebPath')
-                ;
-
-# sanitize $form_action
-my $uri = URI->new($form_action);
-
-# You get undef scheme with a relative uri like "/Search/Build.html"
-unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'https') {
-    $form_action = RT->Config->Get('WebPath');
-}
-
-# Make sure we're logging in to the same domain
-# You can get an undef authority with a relative uri like "index.html"
-my $uri_base_url = URI->new(RT->Config->Get('WebBaseURL'));
-unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority) {
-    $form_action = RT->Config->Get('WebPath');
-}
-</%INIT>
-
 % $m->callback( %ARGS, CallbackName => 'Header' );
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
-
-%# End of div#quickbar from /Elements/Header
-</div>
-
 <div id="body" class="login-body">
-% if ($Error) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
-<% $Error %>
-</&>
-% }
+
+<& /Elements/ListActions,
+    title       => loc('Error'),
+    titlebox    => { class => 'error', hideable => 0 },
+    actions     => $actions
+&>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeForm' );
 
@@ -105,7 +62,7 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 <&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
 
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<form id="login" name="login" method="post" action="<% $form_action %>">
+<form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
 <div class="input-row">
     <span class="label"><&|/l&>Username</&>:</span>
@@ -117,6 +74,8 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
     <span class="input"><input type="password" name="pass" autocomplete="off" /></span>
 </div>
 
+<input type="hidden" name="next" value="<% $next %>" />
+
 <div class="button-row">
     <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
 </div>
@@ -124,25 +83,6 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 %# Give callbacks a chance to add more control elements
 % $m->callback( %ARGS );
 
-% # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
-% # But on Mason 1.15 it's fixed again, so we still use it.
-% # The code below iterates through everything in the passed in arguments
-% # Preserving all the old parameters
-% # This would be easier, except mason is 'smart' and calls multiple values
-% # arrays rather than multiple hash keys
-% my $key; my $val;
-% foreach $key (keys %ARGS) {
-%  if (($key ne 'user') and ($key ne 'pass')) {
-% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
-% 		foreach $val (@{$ARGS{$key}}) {
-<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
-% 		}
-% 	}
-%	else {
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
-% 	}
-%  }
-% }
 </form>
 % }
 </&>
@@ -151,8 +91,7 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 </div><!-- #login-body -->
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
+$next => ''
 $user => ""
-$pass => undef
-$goto => undef
-$Error => undef
+$actions => undef
 </%ARGS>

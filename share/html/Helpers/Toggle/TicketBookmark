@@ -47,8 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $id
+$Toggle => 1
 </%ARGS>
 <%INIT>
-$m->comp('/Ticket/Elements/Bookmark', id => $id, Toggle => 1);
+$m->comp('/Ticket/Elements/Bookmark', id => $id, Toggle => $Toggle );
 $m->abort();
 </%INIT>

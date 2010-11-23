@@ -831,7 +831,7 @@ sub InsertData {
             my @queues;
             # if ref then it's list of queues, so we do things ourself
             if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
-                $item->{'LookupType'} = 'RT::Queue-RT::Ticket';
+                $item->{'LookupType'} ||= 'RT::Queue-RT::Ticket';
                 @queues = @{ delete $item->{'Queue'} };
             }
 

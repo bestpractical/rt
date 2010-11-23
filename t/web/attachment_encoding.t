@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 22;
+use RT::Test tests => 28;
 use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -31,9 +31,10 @@ diag 'test without attachments' if $ENV{TEST_VERBOSE};
     my ( $id ) = $m->uri =~ /(\d+)$/;
     ok( $id, 'found attachment id' );
     my $attachment = RT::Attachment->new( $RT::SystemUser );
-
+    ok($attachment->Load($id), "load att $id");
     # let make original encoding to gbk
-    $attachment->AddHeader( 'X-RT-Original-Encoding' => 'gbk' );
+    ok( $attachment->SetHeader( 'X-RT-Original-Encoding' => 'gbk' ),
+        'set original encoding to gbk' );
     $m->get( $m->uri );
     $m->content_contains( '标题', 'has subject 标题' );
     $m->content_contains( '测试', 'has content 测试' );
@@ -68,9 +69,10 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
     my ( $id ) = $m->uri =~ /(\d+)$/;
     ok( $id, 'found attachment id' );
     my $attachment = RT::Attachment->new( $RT::SystemUser );
-
+    ok($attachment->Load($id), "load att $id");
     # let make original encoding to gbk
-    $attachment->AddHeader( 'X-RT-Original-Encoding' => 'gbk' );
+    ok( $attachment->SetHeader( 'X-RT-Original-Encoding' => 'gbk' ),
+        'set original encoding to gbk' );
     $m->get( $m->uri );
     $m->content_lacks( '标题', 'does not have content 标题' );
     $m->content_contains( '测试', 'has content 测试' );
@@ -78,16 +80,18 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     $m->back;
     $m->back;
-    $m->follow_link_ok( { text_regex => qr/by root/ },
+    $m->follow_link_ok( { text_regex => qr/by Enoch Root/ },
         '-> /Ticket/Attachment/...' );
     $m->content_contains( '附件', 'has content 附件' );
 
     ( $id ) = $m->uri =~ /(\d+)\D+$/;
     ok( $id, 'found attachment id' );
     $attachment = RT::Attachment->new( $RT::SystemUser );
+    ok($attachment->Load($id), "load att $id");
 
     # let make original encoding to gbk
-    $attachment->AddHeader( 'X-RT-Original-Encoding' => 'gbk' );
+    ok( $attachment->SetHeader( 'X-RT-Original-Encoding' => 'gbk' ),
+        'set original encoding to gbk' );
     $m->get( $m->uri );
     $m->content_contains( '附件', 'has content 附件' );
 

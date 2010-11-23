@@ -51,14 +51,20 @@ $Name => undef
 $Default => undef
 </%args>
 <select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% my $privacy = ref($object) . '-' . $object->id;
-% my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
+<%perl>
+foreach my $object (@Objects) {
+    my $privacy = ref($object) . '-' . $object->id;
+    my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
 
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option <%$selected|n%> value="<%$privacy%>"><&|/l&>My dashboards</&></option>
-% } else {
-<option <%$selected|n%> value="<%$privacy%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>
-% }
+    my $label;
+    if (ref($object) eq 'RT::User') {
+        $label = $object->id == $session{'CurrentUser'}->Id
+                    ? loc("My dashboards")
+                    : loc("[_1]'s dashboards", $m->scomp('/Elements/ShowUser', User => $object));
+    } else {
+        $label = loc("[_1]'s dashboards", $m->interp->apply_escapes($object->Name, 'h'));
+    }
+</%perl>
+<option <%$selected|n%> value="<%$privacy%>"><% $label |n %></option>
 % }
 </select>
