@@ -108,9 +108,9 @@ my $get_content = sub {
     my $content = $value->Content;
     return '' unless defined $content && length $content;
 
-    $m->comp('/Elements/Callback',
+    $m->callback(
         %ARGS,
-        _CallbackName => 'ProcessContent', 
+        CallbackName => 'ProcessContent', 
         content => \$content,
     );
 

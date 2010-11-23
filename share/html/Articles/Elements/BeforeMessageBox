@@ -140,7 +140,7 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
 }
 
 my $skip = 0;
-$m->comp('/Elements/Callback', _CallbackName => "Init", skip => \$skip, Queue => $QueueObj);
+$m->callback(CallbackName => "Init", skip => \$skip, Queue => $QueueObj);
 return if $skip;
 
 my $name_prefix = '';
