@@ -52,11 +52,11 @@
 %if ( RT->can('Config') && RT->Config->can('Get') ) {
 %    unless (RT->Config->Get('RTFM_HideArticleSearchOnReplyCreate')) {
 <tr>
-<td><&|/l&>Search for RTFM articles matching</&></td>
+<td><&|/l&>Search for Articles matching</&></td>
 <td><input size=20 name="<% $name_prefix %>RTFM_Content" /></td>
 </tr>
 <tr>
-<td><&|/l&>Include RTFM article:</&></td>
+<td><&|/l&>Include Article:</&></td>
 <td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
 <td><input type="submit" name="Go" value="Go" /></td>
 </tr>
