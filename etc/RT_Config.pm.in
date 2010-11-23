@@ -685,6 +685,15 @@ Weekly, Monthly) of the dashboard and the dashboard's name.
 
 Set($DashboardSubject, '%s Dashboard: %s');
 
+=item C<@EmailDashboardRemove>
+
+A list of regular expressions that will be used to remove content from mailed
+dashboards.
+
+=cut
+
+Set(@EmailDashboardRemove, ());
+
 =back
 
 =head1 GnuPG Configuration
