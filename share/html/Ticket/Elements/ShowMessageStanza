@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 if ( ref $Message ) {
+    $m->out('<pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
     $m->comp('FoldStanzaJS', Depth => $Depth);
 
     my @stack;
