@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 39;
+use RT::Test tests => 45;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -55,6 +55,10 @@ $m->field('Frequency' => 'daily');
 $m->field('Hour' => '06:00');
 $m->click_button(name => 'Save');
 $m->content_contains("Subscribed to dashboard Testing!");
+
+# we're done with the web side; this silences some warnings about changing
+# the config as well
+RT::Test->stop_server;
 
 sub produces_dashboard_mail_ok { # {{{
     my %args = @_;
@@ -128,4 +132,26 @@ produces_no_dashboard_mail_ok(
     Name => "no mail because it's the wrong time",
     Time => $bad_time,
 );
+
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 0, "no mail leftover");
+
+
+RT->Config->Set('DashboardSubject' => 'a %s b %s c');
+RT->Config->Set('DashboardAddress' => 'dashboard@example.com');
+RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
+
+RT::Dashboard::Mailer->MailDashboards(All => 1);
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 1, "one mail");
+my $mail = parse_mail($mails[0]);
+is($mail->head->get('Subject'), "[example.com] a Daily b Testing! c\n");
+is($mail->head->get('From'), "dashboard\@example.com\n");
+
+SKIP: {
+    skip 'Weird MIME failure', 2;
+    my $body = $mail->stringify_body;
+    unlike($body, qr{My dashboards});
+    unlike($body, qr{Testing!});
+};
 
