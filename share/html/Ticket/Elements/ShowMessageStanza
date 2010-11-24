@@ -84,7 +84,7 @@ if ( ref $Message ) {
              && !$Depth
              && !$plain_text_mono );
     $m->out(   '<div class="message-stanza'
-             . ( $plain_text_mono ? ' plain-text-white-space' : '' ) . '"'
+             . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
              . '>' );
 
     my @stack;
@@ -100,7 +100,7 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                 $Message->[ $i + 1 ] = [ splice @$Message, $i + 1 ]
                     if $Message->[ $i + 1 ];
             }
-            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' );
+            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
         }
         next unless ref $stanza eq "ARRAY";
 
