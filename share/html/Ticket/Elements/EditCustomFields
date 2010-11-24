@@ -54,7 +54,7 @@
 % $escaped_name =~ s/[^a-z0-9_-]/_/;
 % my $type = $CustomField->Type || 'Unknown';
 % $i++;
-% if ( $i % 2 ) {
+% if ( $single_column || $i % 2 ) {
 <tr class="edit-custom-field">
 % }
     <td class="cflabel <% $type %> <% $escaped_name %>" id="cflabel-<% $CustomField->Id %>" >
@@ -77,14 +77,14 @@
 %  }
     </td>
 
-% unless ( $i % 2 ) {
+% if ($single_column || not $i % 2 ) {
 </tr>
 % }
 
 % }
 
 %# close row if required
-% if ( $i % 2 ) {
+% if ( !$single_column || $i % 2 ) {
 </tr>
 % }
 
@@ -102,6 +102,8 @@ if ($TicketObj && !$OnCreate) {
 }
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
+
+my $single_column = RT->Config->Get('EditCustomFieldsSingleColumn');
 
 </%INIT>
 <%ARGS>
