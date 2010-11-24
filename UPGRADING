@@ -43,7 +43,12 @@ with
   upgrades from older versions don't automatically switch to the HTML versions.
   To switch existing scrips, run:
 
-    /opt/rt3/etc/upgrade/switch-to-html-templates
+    /opt/rt3/etc/upgrade/switch-templates-to html
+
+  To switch from HTML back to text, run:
+
+    /opt/rt3/etc/upgrade/switch-templates-to text
+
 
 
 *******

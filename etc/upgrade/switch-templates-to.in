@@ -53,8 +53,21 @@ use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
 use RT;
+
+my $to = shift || '';
+my $from;
+
+if ($to =~ /html|text/i) {
+    $to   = $to =~ /html/i  ? 'html' : 'text';
+    $from = $to eq 'html'   ? 'text' : 'html';
+} else {
+    print "Usage: $0 [html|text]\n";
+    warn "Please specify if you'd like to switch to HTML or text templates.\n";
+    exit 1;
+}
+
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'debug');
+RT->Config->Set('LogToScreen' => 'info');
 RT::Init();
 
 $| = 1;
@@ -91,19 +104,25 @@ for (@templates) {
     $scrips->Limit(
         ALIAS => $templates,
         FIELD => 'Name',
-        VALUE => $_,
+        VALUE => ($to eq 'html' ? $_ : "$_ in HTML"),
         ENTRYAGGREGATOR => 'OR'
     );
 }
 
 my $switched = 0;
 while ( my $s = $scrips->Next ) {
-    my $html = $s->TemplateObj->Name . ' in HTML';
+    my $new = $s->TemplateObj->Name;
+
+    if ($to eq 'html') {
+        $new .= ' in HTML';
+    } else {
+        $new =~ s/ in HTML$//;
+    }
 
     print $s->id, ": ", $s->Description, "\n";
-    print "    ", $s->TemplateObj->Name, " -> $html\n\n";
+    print "    ", $s->TemplateObj->Name, " -> $new\n\n";
 
-    my ($ok, $msg) = $s->SetTemplate($html);
+    my ($ok, $msg) = $s->SetTemplate($new);
 
     if ($ok) {
         $switched++;
@@ -116,14 +135,22 @@ $RT::Handle->Commit;
 
 if ($switched) {
     print <<"    EOT";
-Switched $switched scrips to HTML templates.  You should now manually port your
-customizations from the old templates to the new HTML templates.
+Switched $switched scrips to $to templates.  You should now manually port any
+customizations from the old templates to the new templates.
     EOT
+    exit 1 if $switched != $scrips->Count;
+}
+elsif ($scrips->Count) {
+    print <<"    EOT";
+@{[$scrips->Count]} scrips using $from templates were found, but none were
+successfully switched to $to.  See the errors above.
+    EOT
+    exit 1;
 }
 else {
     print <<"    EOT";
-No scrips were found using the plain text templates, so none were switched to
-the HTML templates.
+No scrips were found using the $from templates, so none were switched to
+$to templates.
     EOT
 }
 
