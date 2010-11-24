@@ -348,7 +348,8 @@ This is a comment.  It is not sent to the Requestor(s):
     {  Queue       => '0',
        Name        => 'Admin Comment in HTML',                  # loc
        Description => 'HTML admin comment template',            # loc
-       Content     => 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\[Comment\]//g; $comment =~ s/^Re//i; $s;}
+       Content     => 
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
 RT-Attach-Message: yes
 Content-Type: text/html
 
