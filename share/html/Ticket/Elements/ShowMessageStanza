@@ -45,50 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%perl>
-if ( ref $Message ) {
-    $m->out('<pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
-    $m->out( qq{<div class="message-stanza-depth-$Depth } .($plain_text_mono ? "plain-text-white-space" : "") .qq{">} );
-
-
-    my @stack;
-    my $para = '';
-    my $i = 0;
-
-    AGAIN: foreach ( ; $i < @$Message; $i++ ) {
-        my $stanza = $Message->[$i];
-        if ( ref $stanza eq "HASH" ) {
-            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
-        }
-        next unless ref $stanza eq "ARRAY";
-
-        $print_content->( \$para ); $para = '';
-
-        $Depth++;
-        push @stack, [$Message, $i+1];
-        ($Message, $i) = ($stanza, -1);
-        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
-    }
-    if ( length $para ) {
-        $print_content->( \$para ); $para = '';
-    }
-
-    if ( @stack ) {
-        ($Message, $i) = @{ pop @stack };
-        $Depth--;
-        $m->out('</div>');
-        goto AGAIN;
-    }
-
-    $m->out('</div>');
-    $m->out('</pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
-} else {
-      $print_content->( \$Message );
-}
-</%perl>
 <%INIT>
-my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
-my $plain_text_mono = RT->Config->Get('PlainTextMono', $session{'CurrentUser'});
+my $plain_text_pre
+    = RT->Config->Get( 'PlainTextPre', $session{'CurrentUser'} );
+my $plain_text_mono
+    = RT->Config->Get( 'PlainTextMono', $session{'CurrentUser'} );
+my $Depth = 0;
 
 my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 
@@ -97,15 +59,89 @@ my $print_content = sub {
     return unless defined $$ref && length $$ref;
 
     $m->callback( content => $ref, %ARGS );
-    $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    unless ( $plain_text_pre || $plain_text_mono ) {
-        $$ref =~ s{(\r?\n)}{<br />}g if defined $$ref;
+    if ( $ContentType eq 'text/plain' ) {
+        $m->comp( '/Elements/MakeClicky',
+                  content => $ref,
+                  ticket  => $ticket,
+                  %ARGS
+                );
+
+        if ( defined $$ref && !$plain_text_pre && !$plain_text_mono ) {
+            $$ref =~ s{(\r?\n)}{<br />}g;
+        }
+    } else {
+        if ( defined $$ref ) {
+            $$ref =~ s/^[\r\n]+//g;
+        }
     }
-    $m->out( $$ref );
+    $m->out($$ref);
 };
+
+if ( ref $Message ) {
+    $m->out('<pre>')
+        if (    $ContentType eq 'text/plain'
+             && $plain_text_pre
+             && !$Depth
+             && !$plain_text_mono );
+    $m->out(   '<div class="message-stanza'
+             . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
+             . '>' );
+
+    my @stack;
+    my $para = '';
+    my $i    = 0;
+
+AGAIN: foreach ( ; $i < @$Message; $i++ ) {
+        my $stanza = $Message->[$i];
+        if ( ref $stanza eq "HASH" ) {
+            if (    $stanza->{raw}
+                 && $stanza->{raw} =~ /----- Original Message -----/ )
+            {
+                $Message->[ $i + 1 ] = [ splice @$Message, $i + 1 ]
+                    if $Message->[ $i + 1 ];
+            }
+            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
+        }
+        next unless ref $stanza eq "ARRAY";
+
+        $print_content->( \$para );
+        $para = '';
+
+        $Depth++;
+        push @stack, [ $Message, $i + 1 ];
+        ( $Message, $i ) = ( $stanza, -1 );
+
+        if ( $Depth == 1 ) {
+            $m->comp('FoldStanzaJS');
+        }
+        $m->out(   '<div class="message-stanza"'
+                 . ( $Depth == 1 ? ' style="display: none;" ' : '' )
+                 . '>' );
+    }
+    if ( length $para ) {
+        $print_content->( \$para );
+        $para = '';
+    }
+
+    if (@stack) {
+        ( $Message, $i ) = @{ pop @stack };
+        $Depth--;
+        $m->out('</div>');
+        goto AGAIN;
+    }
+
+    $m->out('</div>');
+    $m->out('</pre>')
+        if (    $ContentType eq 'text/plain'
+             && $plain_text_pre
+             && !$Depth
+             && !$plain_text_mono );
+} else {
+    $print_content->( \$Message );
+}
 </%INIT>
 <%ARGS>
 $Message => undef
-$Depth => 0
 $Transaction => undef
+$ContentType => 'text/plain'
 </%ARGS>

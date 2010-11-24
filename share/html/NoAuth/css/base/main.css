@@ -64,6 +64,7 @@
 @import "portlets.css";
 @import "tools.css";
 @import "login.css";
+@import "history-folding.css";
 
 % $m->callback(CallbackName => 'End');
 

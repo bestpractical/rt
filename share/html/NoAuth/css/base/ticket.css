@@ -132,3 +132,15 @@
 .more-about-requestor-tickets .ui-tabs-panel a {
     color: black !important;
 }
+
+
+.plain-text-white-space {
+ white-space: pre-wrap;
+ font-family: monospace;
+}
+
+.plain-text-white-space br {
+    display: none;
+}
+
+

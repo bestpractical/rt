@@ -184,8 +184,7 @@ my $render_attachment = sub {
                     && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
                 )
             )
-          )
-        {
+        ) {
 
             my $content;
             # If we've cached the content, use it from there
@@ -196,14 +195,36 @@ my $render_attachment = sub {
                 $content = $message->Content;
             }
 
+            my $content_type = lc $message->ContentType;
+            $RT::Logger->debug(
+                "Rendering attachment #". $message->id
+                ." of '$content_type' type"
+            );
+
             # if it's a text/html clean the body and show it
-            if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
+            if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
-                if ( $message->ContentType eq 'text/html' ) {
-                    $m->comp('/Elements/MakeClicky', 
-                            content => \$content, html => 1,
-                            ticket => $Ticket );
-                }
+
+                $m->comp(
+                    '/Elements/MakeClicky',
+                    content => \$content,
+                    html    => 1,
+                    ticket  => $Ticket,
+                );
+
+                require HTML::Quoted;
+                $content = HTML::Quoted->extract( $content );
+
+                $m->comp(
+                    'ShowMessageStanza',
+                    Message     => $content,
+                    Transaction => $Transaction,
+                    ContentType => 'text/html'
+                );
+            }
+
+            elsif ( $content_type eq 'text/enriched' ) {
+                $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
                 $m->out( $content );
             }
 
@@ -215,9 +236,9 @@ my $render_attachment = sub {
 
                 $m->comp(
                     'ShowMessageStanza',
-                    Depth       => 0,
                     Message     => $content,
-                    Transaction => $Transaction
+                    Transaction => $Transaction,
+                    ContentType => 'text/plain'
                 );
             }
         }
