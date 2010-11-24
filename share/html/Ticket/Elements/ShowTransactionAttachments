@@ -216,10 +216,10 @@ my $render_attachment = sub {
                 $content = HTML::Quoted->extract( $content );
 
                 $m->comp(
-                    'ShowHTMLMessageStanza',
-                    Depth       => 0,
+                    'ShowMessageStanza',
                     Message     => $content,
-                    Transaction => $Transaction
+                    Transaction => $Transaction,
+                    ContentType => 'text/html'
                 );
             }
 
@@ -236,9 +236,9 @@ my $render_attachment = sub {
 
                 $m->comp(
                     'ShowMessageStanza',
-                    Depth       => 0,
                     Message     => $content,
-                    Transaction => $Transaction
+                    Transaction => $Transaction,
+                    ContentType => 'text/plain'
                 );
             }
         }
