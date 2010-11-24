@@ -114,13 +114,7 @@ div#ticket-history span.time-taken {
 div#ticket-history div.content {
  padding-right: 1em;
  padding-bottom: 0.7em;
- font-size: 1.1em;
  margin-left: 1.5em;
-}
-
-.plain-text-white-space {
- white-space: pre-wrap;
- font-family: monospace;
 }
 
 .ticket-transaction .messagebody {

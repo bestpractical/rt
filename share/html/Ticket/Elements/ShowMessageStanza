@@ -65,12 +65,18 @@ my $print_content = sub {
                   ticket  => $ticket,
                   %ARGS
                 );
-        unless ( $plain_text_pre || $plain_text_mono ) {
-            $$ref =~ s{(\r?\n)}{<br />}g if defined $$ref;
+
+        if ( defined $$ref && !$plain_text_pre && !$plain_text_mono ) {
+            $$ref =~ s{(\r?\n)}{<br />}g;
+        }
+    } else {
+        if ( defined $$ref ) {
+            $$ref =~ s/^[\r\n]+//g;
         }
     }
     $m->out($$ref);
 };
+
 if ( ref $Message ) {
     $m->out('<pre>')
         if (    $ContentType eq 'text/plain'
@@ -94,7 +100,7 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                 $Message->[ $i + 1 ] = [ splice @$Message, $i + 1 ]
                     if $Message->[ $i + 1 ];
             }
-            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' ) . "\n";
+            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' );
         }
         next unless ref $stanza eq "ARRAY";
 
