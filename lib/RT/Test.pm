@@ -801,6 +801,25 @@ sub switch_templates_to {
     );
 }
 
+=head2 switch_templates_ok TYPE
+
+Calls L<switch_template_to> and tests the return values.
+
+=cut
+
+sub switch_templates_ok {
+    my $self = shift;
+    my $type = shift;
+
+    my ($exit, $output) = $self->switch_templates_to($type);
+
+    Test::More::ok(not ($exit >> 8), "Switched templates to $type cleanly");
+    diag("**** etc/upgrade/switch-templates-to exited with $num:\n$output")
+        if $exit >> 8;
+
+    return ($exit, $output);
+}
+
 sub run_mailgate {
     my $self = shift;
 
