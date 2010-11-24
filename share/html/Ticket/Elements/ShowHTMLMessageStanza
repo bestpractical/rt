@@ -1,4 +1,13 @@
-<%perl>
+<%INIT>
+my $ticket = $Transaction ? $Transaction->TicketObj : undef;
+
+my $print_content = sub {
+    my $ref = shift;
+    return unless defined $$ref && length $$ref;
+
+    $m->callback( content => $ref, %ARGS );
+    $m->out( $$ref );
+};
 if ( ref $Message ) {
     $m->comp('FoldStanzaJS', Depth => $Depth);
     my @stack;
@@ -38,17 +47,6 @@ if ( ref $Message ) {
 } else {
     $print_content->( \$Message );
 }
-</%perl>
-<%INIT>
-my $ticket = $Transaction ? $Transaction->TicketObj : undef;
-
-my $print_content = sub {
-    my $ref = shift;
-    return unless defined $$ref && length $$ref;
-
-    $m->callback( content => $ref, %ARGS );
-    $m->out( $$ref );
-};
 </%INIT>
 <%ARGS>
 $Message => undef

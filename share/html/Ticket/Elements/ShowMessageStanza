@@ -45,7 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%perl>
+<%INIT>
+my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
+my $plain_text_mono = RT->Config->Get('PlainTextMono', $session{'CurrentUser'});
+
+my $ticket = $Transaction ? $Transaction->TicketObj : undef;
+
+my $print_content = sub {
+    my $ref = shift;
+    return unless defined $$ref && length $$ref;
+
+    $m->callback( content => $ref, %ARGS );
+    $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
+    unless ( $plain_text_pre || $plain_text_mono ) {
+        $$ref =~ s{(\r?\n)}{<br />}g if defined $$ref;
+    }
+    $m->out( $$ref );
+};
 if ( ref $Message ) {
     $m->out('<pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
     $m->comp('FoldStanzaJS', Depth => $Depth);
@@ -88,24 +104,6 @@ if ( ref $Message ) {
 } else {
       $print_content->( \$Message );
 }
-</%perl>
-<%INIT>
-my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
-my $plain_text_mono = RT->Config->Get('PlainTextMono', $session{'CurrentUser'});
-
-my $ticket = $Transaction ? $Transaction->TicketObj : undef;
-
-my $print_content = sub {
-    my $ref = shift;
-    return unless defined $$ref && length $$ref;
-
-    $m->callback( content => $ref, %ARGS );
-    $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    unless ( $plain_text_pre || $plain_text_mono ) {
-        $$ref =~ s{(\r?\n)}{<br />}g if defined $$ref;
-    }
-    $m->out( $$ref );
-};
 </%INIT>
 <%ARGS>
 $Message => undef
