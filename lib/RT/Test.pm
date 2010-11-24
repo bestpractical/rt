@@ -588,6 +588,18 @@ sub load_or_create_queue {
     return $obj;
 }
 
+sub delete_queue_watchers {
+    my $self = shift;
+    my @queues = @_;
+
+    foreach my $q ( @queues ) {
+        foreach my $t (qw(Cc AdminCc) ) {
+            $q->DeleteWatcher( Type => $t, PrincipalId => $_->MemberId )
+                foreach @{ $q->$t()->MembersObj->ItemsArrayRef };
+        }
+    }
+}
+
 sub create_tickets {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
@@ -653,6 +665,21 @@ sub create_ticket {
     }
 
     return $ticket;
+}
+
+sub delete_tickets {
+    my $self = shift;
+    my $query = shift;
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    if ( $query ) {
+        $tickets->FromSQL( $query );
+    }
+    else {
+        $tickets->UnLimit;
+    }
+    while ( my $ticket = $tickets->Next ) {
+        $ticket->Delete;
+    }
 }
 
 =head2 load_or_create_custom_field
