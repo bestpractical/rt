@@ -679,12 +679,20 @@ Set($ShowBccHeader, 0);
 =item C<$DashboardSubject>
 
 Lets you set the subject of dashboards. Arguments are the frequency (Daily,
-Weekly, Monthly) of the dashboard and the dashboard's name. [_1] for the name
-of the dashboard.
+Weekly, Monthly) of the dashboard and the dashboard's name.
 
 =cut
 
 Set($DashboardSubject, '%s Dashboard: %s');
+
+=item C<@EmailDashboardRemove>
+
+A list of regular expressions that will be used to remove content from mailed
+dashboards.
+
+=cut
+
+Set(@EmailDashboardRemove, ());
 
 =back
 
