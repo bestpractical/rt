@@ -176,6 +176,14 @@ sub import {
         $level++;
     }
 
+    # By default we test plain text templates for legacy's sake
+    my ($exit, $output) = $class->switch_templates_to('text');
+
+    if (my $num = $exit >> 8) {
+        warn "**** Trouble switching templates to plain text (exited $num):\n";
+        warn $output, "\n";
+    }
+
     Test::More->export_to_level($level);
 
     # blow away their diag so we can redefine it without warning
@@ -775,6 +783,24 @@ sub add_rights {
     return 1;
 }
 
+=head2 switch_templates_to TYPE
+
+This runs etc/upgrade/switch-templates-to in order to change the templates from
+HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
+C<text>.
+
+=cut
+
+sub switch_templates_to {
+    my $self = shift;
+    my $type = shift;
+
+    return $self->run_and_capture(
+        command => "$RT::EtcPath/upgrade/switch-templates-to",
+        args    => $type,
+    );
+}
+
 sub run_mailgate {
     my $self = shift;
 
@@ -813,10 +839,13 @@ sub run_and_capture {
 
     $cmd .= ' --debug' if delete $args{'debug'};
 
+    my $args = delete $args{'args'};
+
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
     }
+    $cmd .= " $args" if defined $args;
     $cmd .= ' 2>&1';
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
