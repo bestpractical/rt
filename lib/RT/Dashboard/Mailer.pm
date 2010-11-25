@@ -227,8 +227,10 @@ SUMMARY
         Preview => 0,
     );
 
-    for (RT->Config->Get('EmailDashboardRemove')) {
-        $content =~ s/$_//g;
+    if ( RT->Config->Get('EmailDashboardRemove') ) {
+        for ( RT->Config->Get('EmailDashboardRemove') ) {
+            $content =~ s/$_//g;
+        }
     }
 
     $RT::Logger->debug("Got ".length($content)." characters of output.");
