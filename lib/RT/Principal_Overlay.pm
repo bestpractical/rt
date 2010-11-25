@@ -323,6 +323,78 @@ sub HasRight {
     return ($hitcount);
 }
 
+sub HasRights {
+    my $self = shift;
+    my %args = (
+        Object       => undef,
+        EquivObjects => undef,
+        @_
+    );
+    return {} if $self->__Value('Disabled');
+
+    my $object = $args{'Object'};
+    unless ( eval { $object->id } ) {
+        $RT::Logger->crit("HasRights called with no valid object");
+    }
+
+    my $cache_key = $self->id .';:;'. ref($object) .'-'. $object->id;
+    my $cached = $_ACL_CACHE->fetch($cache_key);
+    return $cached if $cached;
+
+    push @{ $args{'EquivObjects'} }, $object;
+    unshift @{ $args{'EquivObjects'} },
+        $args{'Object'}->ACLEquivalenceObjects;
+    unshift @{ $args{'EquivObjects'} }, $RT::System
+        unless $self->can('_IsOverrideGlobalACL')
+            && $self->_IsOverrideGlobalACL( $object );
+
+    my %res = ();
+    {
+        my $query
+            = "SELECT DISTINCT ACL.RightName "
+            . $self->_HasGroupRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            );
+        my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($rights) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+        $res{$_} = 1 foreach @$rights;
+    }
+    my $roles;
+    {
+        my $query
+            = "SELECT DISTINCT Groups.Type "
+            . $self->_HasRoleRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            );
+        $roles = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($roles) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+    }
+    if ( @$roles ) {
+        my $query
+            = "SELECT DISTINCT ACL.RightName "
+            . $self->_RolesWithRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            )
+            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @$roles ) .')'
+        ;
+        my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($rights) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+        $res{$_} = 1 foreach @$rights;
+    }
+
+    $_ACL_CACHE->store( $cache_key, \%res );
+    return \%res;
+}
+
 =head2 _HasRight
 
 Low level HasRight implementation, use HasRight method instead.
