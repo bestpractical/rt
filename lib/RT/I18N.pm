@@ -214,9 +214,6 @@ sub SetMIMEEntityToEncoding {
     SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
     my $charset = _FindOrGuessCharset($entity) or return;
-    # one and only normalization
-    $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
-    $enc     = 'utf-8' if $enc     =~ /^utf-?8$/i;
 
     SetMIMEHeadToEncoding(
 	$entity->head,
@@ -433,16 +430,17 @@ sub _FindOrGuessCharset {
     my $head = $entity->head;
 
     if ( my $charset = $head->mime_attr("content-type.charset") ) {
-        return $charset;
+        return _CanonicalizeCharset($charset);
     }
 
-    if ( !$head_only and $head->mime_type =~ m{^text/}) {
-	my $body = $entity->bodyhandle or return;
-	return _GuessCharset( $body->as_string );
+    if ( !$head_only and $head->mime_type =~ m{^text/} ) {
+        my $body = $entity->bodyhandle or return;
+        return _GuessCharset( $body->as_string );
     }
     else {
-	# potentially binary data -- don't guess the body
-	return _GuessCharset( $head->as_string );
+
+        # potentially binary data -- don't guess the body
+        return _GuessCharset( $head->as_string );
     }
 }
 
@@ -497,9 +495,31 @@ sub _GuessCharset {
         $RT::Logger->warning("No EmailInputEncodings set, fallback to $fallback");
     }
 
-    return ($charset || $fallback);
+    return _CanonicalizeCharset($charset || $fallback);
 }
 
+=head2 _CanonicalizeCharset NAME
+
+canonicalize charset, return lowercase version.
+special cases are: gb2312 => gbk, utf8 => utf-8
+
+=cut
+
+sub _CanonicalizeCharset {
+    my $charset = lc shift;
+    return $charset unless $charset;
+
+    if ( $charset eq 'utf8' ) {
+        return 'utf-8';
+    }
+    elsif ( $charset eq 'gb2312' ) {
+        # gbk is superset of gb2312 so it's safe
+        return 'gbk';
+    }
+    else {
+        return $charset;
+    }
+}
 
 
 =head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
@@ -514,8 +534,8 @@ all the time
 sub SetMIMEHeadToEncoding {
     my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
 
-    $charset = 'utf-8' if $charset eq 'utf8';
-    $enc     = 'utf-8' if $enc     eq 'utf8';
+    $charset = _CanonicalizeCharset($charset);
+    $enc     = _CanonicalizeCharset($enc);
 
     return if $charset eq $enc and $preserve_words;
 
