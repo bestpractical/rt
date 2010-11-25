@@ -227,7 +227,7 @@ SUMMARY
         Preview => 0,
     );
 
-    for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
+    for (RT->Config->Get('EmailDashboardRemove')) {
         $content =~ s/$_//g;
     }
 
