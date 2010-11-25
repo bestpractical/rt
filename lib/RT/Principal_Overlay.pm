@@ -286,6 +286,14 @@ sub HasRight {
         return (undef);
     }
 
+    {
+        my $cached = $_ACL_CACHE->fetch(
+            $self->id .';:;'. ref($args{'Object'}) .'-'. $args{'Object'}->id
+        );
+        return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
+            if $cached;
+    }
+
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
 
