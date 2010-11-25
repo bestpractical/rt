@@ -323,39 +323,28 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
             $tabs->child( history => title => loc('History') => path => "/Ticket/History.html?id=" . $id );
 
-            my %can = (
-                ModifyTicket   => $obj->CurrentUserHasRight('ModifyTicket'),
-                Watch          => $obj->CurrentUserHasRight('Watch'),
-                WatchAsAdminCc => $obj->CurrentUserHasRight('WatchAsAdminCc'),
-                OwnTicket      => $obj->CurrentUserHasRight('OwnTicket'),
-                StealTicket    => $obj->CurrentUserHasRight('StealTicket'),
-                TakeTicket     => $obj->CurrentUserHasRight('TakeTicket'),
-                ReplyToTicket  => $obj->CurrentUserHasRight('ReplyToTicket'),
-                CommentOnTicket => $obj->CurrentUserHasRight('CommentOnTicket'),
-                ModifyCustomField => $obj->CurrentUserHasRight('ModifyCustomField'),
-                _ModifyOwner => (
-                                      $obj->CurrentUserHasRight('OwnTicket')
-                                   || $obj->CurrentUserHasRight('TakeTicket')
-                                   || $obj->CurrentUserHasRight('StealTicket')
-                                )
-                      );
+            my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
+            $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
+            my $can = sub {
+                $can{$_[0]} || $can{'SuperUser'}
+            };
 
             # comment out until we can do it for an individual custom field
-            #if ( $can{ModifyTicket} || $can{ModifyCustomField} ) {
+            #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
             $tabs->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id, );
 
             #}
 
-            if ( $can{ModifyTicket} || $can{_ModifyOwner} || $can{Watch} || $can{WatchAsAdminCc} ) {
+            if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
                 $tabs->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id,);
             }
 
-            if ( $can{ModifyTicket} ) {
+            if ( $can->('ModifyTicket') ) {
                 $tabs->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id, );
                 $tabs->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id, );
             }
 
-            #if ( $can{ModifyTicket} || $can{ModifyCustomField} || $can{_ModifyOwner} ) {
+            #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
             $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id, );
             #}
 
@@ -363,15 +352,15 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id, );
             }
 
-            if ( $can{'ModifyTicket'} or $can{'ReplyToTicket'} ) {
+            if ( $can->('ModifyTicket') or $can->('ReplyToTicket') ) {
                 $actions->child( reply => title => loc('Reply'), path => "/Ticket/Update.html?Action=Respond;id=" . $id,);
             }
 
-            if ( $obj->CurrentUserHasRight('ForwardMessage') ) {
+            if ( $can->('ForwardMessage') ) {
                 $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id, );
             }
 
-            if ( $can{'ModifyTicket'} ) {
+            if ( $can->('ModifyTicket') ) {
                 my $current   = $obj->Status;
                 my $lifecycle = $obj->QueueObj->lifecycle;
                 my $i         = 1;
@@ -381,8 +370,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                     next unless $lifecycle->is_transition( $current => $next );
 
                     my $check = $lifecycle->check_right( $current => $next );
-                    $can{$check} = $obj->CurrentUserHasRight($check) unless exists $can{$check};
-                    next unless $can{$check};
+                    next unless $can->($check);
 
 
                    my $action = $info->{'update'} || '';
@@ -402,20 +390,20 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 }
 
             }
-            if ( $can{OwnTicket} ) {
+            if ( $can->('OwnTicket') ) {
                 if ( $obj->OwnerObj->Id == RT->Nobody->id
-                     && ( $can{'ModifyTicket'} or $can{'TakeTicket'} ) ) {
+                     && ( $can->('ModifyTicket') or $can->('TakeTicket') ) ) {
                     $actions->child( take => path => "/Ticket/Display.html?Action=Take;id=" . $id, title => loc('Take'));
                 }
 
                 elsif (    $obj->OwnerObj->id != RT->Nobody->id
                         && $obj->OwnerObj->id != $session{CurrentUser}->id
-                        && ( $can{'ModifyTicket'} or $can{'StealTicket'} ) ) {
+                        && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
                     $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id,);
                 }
             }
 
-            if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
+            if ( $can->('ModifyTicket') || $can->('CommentOnTicket') ) {
                 $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id);
             }
 
