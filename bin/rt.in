@@ -1170,44 +1170,42 @@ sub submit {
     sub load {
         my ($self, $file) = @_;
         $file ||= $self->{file};
-        local *F;
 
-        open(F, $file) && do {
-            $self->{file} = $file;
-            my $sids = $self->{sids} = {};
-            while (<F>) {
-                chomp;
-                next if /^$/ || /^#/;
-                next unless m#^https?://[^ ]+ \w+ [^;,\s]+=[0-9A-Fa-f]+$#;
-                my ($server, $user, $cookie) = split / /, $_;
-                $sids->{$server}{$user} = $cookie;
-            }
-            return 1;
-        };
-        return 0;
+        open(my $handle, $file)
+            or return 0;
+
+        $self->{file} = $file;
+        my $sids = $self->{sids} = {};
+        while (<$handle>) {
+            chomp;
+            next if /^$/ || /^#/;
+            next unless m#^https?://[^ ]+ \w+ [^;,\s]+=[0-9A-Fa-f]+$#;
+            my ($server, $user, $cookie) = split / /, $_;
+            $sids->{$server}{$user} = $cookie;
+        }
+        return 1;
     }
 
     # Writes the current session cache to the specified file.
     sub save {
         my ($self, $file) = shift;
         $file ||= $self->{file};
-        local *F;
 
-        open(F, ">$file") && do {
-            my $sids = $self->{sids};
-            foreach my $server (keys %$sids) {
-                foreach my $user (keys %{ $sids->{$server} }) {
-                    my $sid = $sids->{$server}{$user};
-                    if (defined $sid) {
-                        print F "$server $user $sid\n";
-                    }
+        open(my $handle, ">$file")
+            or return 0;
+
+        my $sids = $self->{sids};
+        foreach my $server (keys %$sids) {
+            foreach my $user (keys %{ $sids->{$server} }) {
+                my $sid = $sids->{$server}{$user};
+                if (defined $sid) {
+                    print $handle "$server $user $sid\n";
                 }
             }
-            close(F);
-            chmod 0600, $file;
-            return 1;
-        };
-        return 0;
+        }
+        close($handle);
+        chmod 0600, $file;
+        return 1;
     }
 
     sub DESTROY {
@@ -1435,19 +1433,20 @@ sub parse_config_file {
     my ($file) = @_;
     local $_; # $_ may be aliased to a constant, from line 1163
 
-    open(CFG, $file) && do {
-        while (<CFG>) {
-            chomp;
-            next if (/^#/ || /^\s*$/);
+    open(my $handle, $file)
+        or return;
 
-            if (/^(externalauth|user|passwd|server|query|orderby|queue)\s+(.*)\s?$/) {
-                $cfg{$1} = $2;
-            }
-            else {
-                die "rt: $file:$.: unknown configuration directive.\n";
-            }
+    while (<$handle>) {
+        chomp;
+        next if (/^#/ || /^\s*$/);
+
+        if (/^(externalauth|user|passwd|server|query|orderby|queue)\s+(.*)\s?$/) {
+            $cfg{$1} = $2;
         }
-    };
+        else {
+            die "rt: $file:$.: unknown configuration directive.\n";
+        }
+    }
 
     return %cfg;
 }
@@ -1482,12 +1481,18 @@ sub vi {
     my $file = "/tmp/rt.form.$$";
     my $editor = $ENV{EDITOR} || $ENV{VISUAL} || "vi";
 
-    local *F;
     local $/ = undef;
 
-    open(F, ">$file") || die "$file: $!\n"; print F $text; close(F);
+    open(my $handle, ">$file") || die "$file: $!\n";
+    print $handle $text;
+    close($handle);
+
     system($editor, $file) && die "Couldn't run $editor.\n";
-    open(F, $file) || die "$file: $!\n"; $text = <F>; close(F);
+
+    open($handle, $file) || die "$file: $!\n";
+    $text = <$handle>;
+    close($handle);
+
     unlink($file);
 
     return $text;
