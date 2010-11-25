@@ -134,6 +134,8 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
 
+    $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
+
     $m->callback( CallbackName => 'BeforeProcessArguments',
         TicketObj => $TicketObj, Tickets => $Tickets,
         ActionsRef => \@Actions, ARGSRef => \%ARGS );
