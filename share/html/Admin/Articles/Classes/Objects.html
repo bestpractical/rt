@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, id => $Class->id, current_tab => "Admin/RTFM/Classes/Objects.html?id=$id", Title => $title &>
-<& /Elements/ListActions, actions => \@results &>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
 <form action="Objects.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
@@ -100,7 +100,7 @@
 </form>
 
 <%INIT>
-my $Class = RT::FM::Class->new($session{'CurrentUser'});
+my $Class = RT::Class->new($session{'CurrentUser'});
 $Class->Load($id) or Abort(loc("Could not load Class [_1]"), $id);
 
 my (@results);

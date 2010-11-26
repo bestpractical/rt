@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, id => $id , Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
+<& /Admin/Elements/Header, Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="UserRights.html">
@@ -73,11 +74,11 @@ my @results =  ProcessACLChanges(\%ARGS);
 # {{{ Deal with setting up the display of current rights.
 
 if (!defined $id) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("No Class defined"));
+    $m->comp("/Articles/Elements/Error", Why => loc("No Class defined"));
 }
 
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
-$ClassObj->Load($id) || $m->comp("/RTFM/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
+my $ClassObj = RT::Class->new($session{'CurrentUser'});
+$ClassObj->Load($id) || $m->comp("/Articles/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
 # Find out which users we want to display ACL selects for
 my $Privileged = RT::Group->new($session{'CurrentUser'});

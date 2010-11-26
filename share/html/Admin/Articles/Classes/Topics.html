@@ -44,14 +44,15 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->Id, Title => $title, current_tab => "Admin/RTFM/Classes/Topics.html?id=$id" &>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
-<& /Admin/RTFM/Elements/Topics, title => $title, RootObj => $ClassObj, %ARGS &>
+<& /Admin/Articles/Elements/Topics, title => $title, RootObj => $ClassObj, %ARGS &>
 
 <%INIT>
 
-my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
-$ClassObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
+my $ClassObj = new RT::Class($session{'CurrentUser'});
+$ClassObj->Load($ARGS{'id'}) || $m->comp("/Articles/Elements/Error", Why => "Couldn't load class '$id'");
 
 my $title = $Modify 
   ? loc("Modify topic for [_1]", $ClassObj->Name) 

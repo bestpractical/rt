@@ -103,12 +103,12 @@ if ($Create) {
     if ($id eq 'new') {
         my ($val, $msg) =  $ClassObj->Create(Name => $Name);
         if ($val == 0 ) {
-            $m->comp("/RTFM/Elements/Error", Why => "$msg");
+            $m->comp("/Articles/Elements/Error", Why => "$msg");
         } else {
             push @results, $msg;
         }    
     } else {
-        $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$Name'");
+        $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/Articles/Elements/Error", Why => "Couldn't load class '$Name'");
     }
     $title = loc('Editing Configuration for Class [_1]', $ClassObj->Name);
 }
@@ -155,9 +155,9 @@ my $HotListChecked = $ClassObj->HotList ? "CHECKED" : "";
 
 my $current_subtab;
 if ($Create && $Create == 1) {
-    $current_subtab = "Admin/RTFM/Classes/Modify.html?Create=1";
+    $current_subtab = "Admin/Articles/Classes/Modify.html?Create=1";
 } else { 
-    $current_subtab = "Admin/RTFM/Classes/Modify.html?id=$id";
+    $current_subtab = "Admin/Articles/Classes/Modify.html?id=$id";
 }
 </%INIT>
 

@@ -44,10 +44,11 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /Admin/RTFM/Elements/ClassTabs, id => $Object->id, Title => $title, current_tab => "Admin/RTFM/Classes/CustomFields.html?id=$id" &>
-<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::FM::Class', SubType => 'RT::FM::Article' &>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Class', SubType => 'RT::Article' &>
 <%INIT>
-my $Object = RT::FM::Class->new( $session{'CurrentUser'} );
+my $Object = RT::Class->new( $session{'CurrentUser'} );
 
 $Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 my $FriendlySubTypes =

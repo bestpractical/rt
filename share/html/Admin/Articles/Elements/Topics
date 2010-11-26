@@ -123,7 +123,7 @@ my @results;
 
 for my $k (keys %ARGS) {
     if ($k =~ /^Topic-(\d+)-(Name|Description)/) {
-        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        my $topic = RT::Topic->new($session{'CurrentUser'});
         $topic->Load($1);
         if ($topic->Id) {
             next if $ARGS{$k} eq $topic->$2;
@@ -134,7 +134,7 @@ for my $k (keys %ARGS) {
             $m->comp("/Elements/Error", Why => loc("Topic not found"));
         }
     } elsif ($k =~ /^Topic-(\d+)-Parent-(\d+)/) {
-        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        my $topic = RT::Topic->new($session{'CurrentUser'});
         $topic->Load($1);
         if ($topic->Id) {
             next if $2 eq $topic->Parent;
@@ -146,7 +146,7 @@ for my $k (keys %ARGS) {
             $m->comp("/Elements/Error", Why => loc("Topic not found"));
         }
     } elsif ($k =~ /^Insert-(\d+)/) {
-        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        my $topic = RT::Topic->new($session{'CurrentUser'});
         my ($id, $msg) = $topic->Create(
                                         Parent => $1,
                                         Name => $ARGS{'Name'},
@@ -159,7 +159,7 @@ for my $k (keys %ARGS) {
 }
 for my $k (keys %ARGS) {
     next unless $k =~ /^Delete-Topic-(\d+)/;
-    my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+    my $topic = RT::Topic->new($session{'CurrentUser'});
     $topic->Load($1);
     if ($topic->Id) {
         my ($val, $msg) = $topic->DeleteAll();
@@ -169,7 +169,7 @@ for my $k (keys %ARGS) {
     }
 }
 
-my $topics = new RT::FM::TopicCollection($session{'CurrentUser'});
+my $topics = new RT::Topics($session{'CurrentUser'});
 $topics->LimitToObject($RootObj);
 $topics->OrderByCols({FIELD => 'Parent'}, {FIELD => 'id'});
 
