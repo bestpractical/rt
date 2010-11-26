@@ -48,30 +48,13 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="UserRights.html">
+<form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
 <input type="hidden" name="id" value="<% $ClassObj->id %>" />
-<& /Elements/TitleBoxStart, title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
-<table>
-% while (my $Member = $Users->Next()) {
-% my $UserObj = $Member->MemberObj->Object();
-% my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup($Member->MemberObj);
-<tr align="right"> 
-	<td valign="top"><% $UserObj->Name %></td>
-	<td><& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
-        Object => $ClassObj &></td>
-</tr>
-% }
-</table>
-<& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
-</form>
+  <& /Admin/Elements/EditRights, Context => $ClassObj, Principals => \@principals &>
+ 
+  <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
 <%INIT>
-#Update the acls.
-
-my @results =  ProcessACLChanges(\%ARGS);
-
-# {{{ Deal with setting up the display of current rights.
+my @results =  ProcessACLs(\%ARGS);
 
 if (!defined $id) {
     $m->comp("/Articles/Elements/Error", Why => loc("No Class defined"));
@@ -80,16 +63,9 @@ if (!defined $id) {
 my $ClassObj = RT::Class->new($session{'CurrentUser'});
 $ClassObj->Load($id) || $m->comp("/Articles/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
-# Find out which users we want to display ACL selects for
-my $Privileged = RT::Group->new($session{'CurrentUser'});
-$Privileged->LoadSystemInternalGroup('Privileged');
-my $Users = $Privileged->MembersObj();
+my @principals = GetPrincipalsMap($ClassObj, 'Users');
 
-# }}}
 </%INIT>
 <%ARGS>
 $id => undef
-$UserString => undef
-$UserOp => undef
-$UserField => undef
 </%ARGS>

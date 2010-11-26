@@ -82,20 +82,31 @@ sub Load {
 
 use vars qw/$RIGHTS/;
 $RIGHTS = {
-
     SeeClass            => 'See that this class exists',               #loc_pair
     CreateArticle       => 'Create articles in this class',            #loc_pair
     ShowArticle         => 'See articles in this class',               #loc_pair
     ShowArticleHistory  => 'See articles in this class',               #loc_pair
     ModifyArticle       => 'Modify or delete articles in this class',  #loc_pair
     ModifyArticleTopics => 'Modify topics for articles in this class', #loc_pair
-    AdminClass  =>
-      'Modify metadata and custom fields for this class',              #loc_pair
-    AdminTopics =>
-      'Modify topic hierarchy associated with this class',             #loc_pair
+    AdminClass          => 'Modify metadata and custom fields for this class',              #loc_pair
+    AdminTopics         => 'Modify topic hierarchy associated with this class',             #loc_pair
     ShowACL             => 'Display Access Control List',              #loc_pair
     ModifyACL           => 'Modify Access Control List',               #loc_pair
     DeleteArticle       => 'Delete articles in this class',            #loc_pair
+};
+
+our $RIGHT_CATEGORIES = {
+    SeeClass            => 'Staff',
+    CreateArticle       => 'Staff',
+    ShowArticle         => 'General',
+    ShowArticleHistory  => 'Staff',
+    ModifyArticle       => 'Staff',
+    ModifyArticleTopics => 'Staff',
+    AdminClass          => 'Admin',
+    AdminTopics         => 'Admin',
+    ShowACL             => 'Admin',
+    ModifyACL           => 'Admin',
+    DeleteArticle       => 'Staff',
 };
 
 # TODO: This should be refactored out into an RT::ACLedObject or something
@@ -104,8 +115,36 @@ $RIGHTS = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::Class'} = 1;
 
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+# TODO this is ripe for a refacor, since this is stolen from Queue
+__PACKAGE__->AddRights(%$RIGHTS);
+__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+
+=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
+
+Adds the given rights to the list of possible rights.  This method
+should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRights {
+    my $self = shift;
+    my %new = @_;
+    $RIGHTS = { %$RIGHTS, %new };
+    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
+                                      map { lc($_) => $_ } keys %new);
+}
+
+=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
+
+Adds the given right and category pairs to the list of right categories.  This
+method should be called during server startup, not at runtime.
+
+=cut
+
+sub AddRightCategories {
+    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
+    my %new = @_;
+    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
 =head2 AvailableRights
@@ -119,6 +158,11 @@ sub AvailableRights {
     my $self = shift;
     return ($RIGHTS);
 }
+
+sub RightCategories {
+    return $RIGHT_CATEGORIES;
+}
+
 
 # }}}
 
