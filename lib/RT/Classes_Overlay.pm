@@ -80,5 +80,8 @@ sub Next {
 
 }
 
+sub ColumnMapClassName {
+    return 'RT__Class';
+}
 
 1;
