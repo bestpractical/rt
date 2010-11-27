@@ -415,9 +415,6 @@ AC_CONFIG_FILES([
                  sbin/standalone_httpd
                  sbin/rt-setup-fulltext-index
                  sbin/rt-fulltext-indexer
-                 bin/fastcgi_server
-                 bin/mason_handler.fcgi
-                 bin/mason_handler.scgi
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],
@@ -429,8 +426,6 @@ AC_CONFIG_FILES([
                  Makefile
                  etc/RT_Config.pm
                  lib/RT/Generated.pm
-                 bin/mason_handler.svc
-                 bin/webmux.pl
                  t/data/configs/apache2.2+mod_perl.conf
                  t/data/configs/apache2.2+fastcgi.conf],
                )
