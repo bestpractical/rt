@@ -1125,6 +1125,21 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
+=head1 ApplyGlobally
+
+Certain custom fields (users, groups) should only be applied globally
+but rather than regexing in code for LookupType =~ RT::Queue, we'll codify
+the rules here.
+
+=cut
+
+sub ApplyGlobally {
+    my $self = shift;
+
+    return ($self->LookupType =~ /^RT::(?:Group|User)/io);
+
+}
+
 =head1 AppliedTo
 
 Returns collection with objects this custom field is applied to.

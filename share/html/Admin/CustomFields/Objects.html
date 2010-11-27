@@ -63,7 +63,7 @@
 <input type="checkbox" name="AddCustomField-<% $CF->id %>" value="0" />
 <&|/l&>check this box to apply this Custom Field to all objects.</&>
 
-% if ( $CF->LookupType =~ /^RT::Queue-/io ) {
+% unless ( $CF->ApplyGlobally ) {
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
     OrderBy => 'id',
