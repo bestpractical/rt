@@ -52,50 +52,14 @@ use strict;
 use warnings;
 
 our $VERSION = '0.30';
-use base qw(HTML::Mason::Request);
+use HTML::Mason::PSGIHandler;
+use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
 
 sub new {
     my $class = shift;
-
-    my $new_class =
-         $HTML::Mason::ApacheHandler::VERSION ? 'HTML::Mason::Request::ApacheHandler' :
-         $HTML::Mason::PSGIHandler::VERSION   ? 'HTML::Mason::Request::PSGI' :
-         $HTML::Mason::CGIHandler::VERSION    ? 'HTML::Mason::Request::CGI' :
-                                                'HTML::Mason::Request';
-
-    $class->alter_superclass( $new_class );
-    $class->valid_params( %{ $new_class->valid_params },cgi_request => { type => OBJECT, optional => 1 } );
+    $class->valid_params( %{ $class->valid_params },cgi_request => { type => OBJECT, optional => 1 } );
     return $class->SUPER::new(@_);
-}
-
-# XXX TODO: This alter_superclass replaces teh funcitonality in Mason 1.39 
-# with code which doesn't trigger a bug in Perl 5.10. 
-# (Perl 5.10.0 does NOT take kindly to having its @INC entries changed)
-# http://rt.perl.org/rt3/Public/Bug/Display.html?id=54566
-#
-# This routine can be removed when either: 
-#   * RT depends on a version of mason which contains this fix
-#   * Perl 5.10.0 is not supported for running RT
-sub alter_superclass {
-    my $class = shift;
-    my $new_super = shift;
-    my $isa_ref;
-    { no strict 'refs'; my @entries = @{$class."::ISA"}; $isa_ref = \@entries; }
-
-    # handles multiple inheritance properly and preserve
-    # inheritance order
-    for ( my $x = 0; $x <= $#{$isa_ref} ; $x++ ) {
-        if ( $isa_ref->[$x]->isa('HTML::Mason::Request') ) {
-            my $old_super = $isa_ref->[$x];
-                $isa_ref->[$x] = $new_super
-            if ( $old_super ne $new_super );
-            last;
-        }
-    } 
-
-    { no strict 'refs'; @{$class."::ISA"} = @$isa_ref; }
-    $class->valid_params( %{ $class->valid_params } );
 }
 
 
