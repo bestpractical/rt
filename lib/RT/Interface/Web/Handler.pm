@@ -82,57 +82,6 @@ sub DefaultHandlerArgs  { (
     named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
 
-
-=head2 new
-
-DEPRECATED: this method is to be removed as it's not the constructor of the class which is confusing
-
-  Constructs a web handler of the appropriate class.
-  Takes options to pass to the constructor.
-
-=cut
-
-sub new {
-    Carp::carp "DEPRECATED: call RT::Interface::Handler->Init instead";
-    my $class = shift;
-    $class->InitSessionDir;
-
-    if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
-        goto &NewApacheHandler;
-    }
-    else {
-        goto &NewCGIHandler;
-    }
-}
-
-=head2 Init
-
-  Initialize and return the mason web handler for current environment.
-
-=cut
-
-my $_handler;
-
-sub Init {
-    my $class = shift;
-    my $handler_class = shift;
-    my @handler_args = @_;
-
-    $class->InitSessionDir;
-
-    unless ($handler_class) {
-        if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
-            $handler_class = 'HTML::Mason::ApacheHandler';
-            unshift @handler_args, args_method => "CGI";
-        }
-        else {
-            $handler_class = 'HTML::Mason::CGIHandler';
-        }
-    }
-
-    $_handler = NewHandler($handler_class, @handler_args);
-}
-
 sub InitSessionDir {
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files created by Mason at startup.
@@ -157,72 +106,6 @@ sub InitSessionDir {
 
 }
 
-
-
-=head2 NewApacheHandler
-
-  Takes extra options to pass to HTML::Mason::ApacheHandler->new
-  Returns a new Mason::ApacheHandler object
-
-=cut
-
-sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
-}
-
-
-
-=head2 NewCGIHandler
-
-  Returns a new Mason::CGIHandler object
-
-=cut
-
-sub NewCGIHandler {
-    require HTML::Mason::CGIHandler;
-    return NewHandler(
-        'HTML::Mason::CGIHandler',
-        out_method => sub {
-            my $m = HTML::Mason::Request->instance;
-            my $r = $m->cgi_request;
-
-            # Send headers if they have not been sent by us or by user.
-            $r->send_http_header unless $r->http_header_sent;
-
-            # Set up a default
-            $r->content_type('text/html; charset=utf-8')
-                unless $r->content_type;
-
-            if ( $r->content_type =~ /charset=([\w-]+)$/ ) {
-                my $enc = $1;
-                if ( lc $enc !~ /utf-?8$/ ) {
-                    for my $str (@_) {
-                        next unless $str;
-
-                        # only encode perl internal strings
-                        next unless utf8::is_utf8($str);
-                        $str = Encode::encode( $enc, $str );
-                    }
-                }
-            }
-
-            # default to utf8 encoding
-            for my $str (@_) {
-                next unless $str;
-                next unless utf8::is_utf8($str);
-                $str = Encode::encode( 'utf8', $str );
-            }
-
-            # We could perhaps install a new, faster out_method here that
-            # wouldn't have to keep checking whether headers have been
-            # sent and what the $r->method is.  That would require
-            # additions to the Request interface, though.
-            print STDOUT grep {defined} @_;
-        },
-        @_
-    );
-}
 
 use UNIVERSAL::require;
 sub NewHandler {
@@ -251,30 +134,6 @@ sub _mason_dir_index {
     }
 
     return $path;
-}
-
-=head2 HandleRequest
-
-
-=cut
-
-sub HandleRequest {
-    my $self = shift;
-    my $cgi = shift;
-
-    Module::Refresh->refresh if RT->Config->Get('DevelMode');
-    RT::ConnectToDatabase() unless RT->InstallMode;
-
-    my $interp = $_handler->interp;
-    $cgi->path_info( $self->_mason_dir_index($interp, $cgi->path_info));
-
-    local $@;
-    eval { $_handler->handle_cgi_object($cgi); };
-    if ($@) {
-        $RT::Logger->crit($@);
-    }
-    $self->CleanupRequest();
-
 }
 
 
