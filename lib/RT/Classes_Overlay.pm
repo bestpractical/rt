@@ -52,8 +52,6 @@ package RT::Classes;
 no warnings qw/redefine/;
 
 
-# {{{ sub Next 
-
 =head2 Next
 
 Returns the next Object that this user can see.
@@ -81,7 +79,6 @@ sub Next {
     }
 
 }
-# }}}
 
 
 1;
