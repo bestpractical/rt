@@ -103,6 +103,9 @@ sub LimitToPrivacy {
     }
 }
 
+sub ColumnMapClassName {
+    return 'RT__Dashboard';
+}
 
 RT::Base->_ImportOverlays();
 

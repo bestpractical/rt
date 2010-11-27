@@ -282,6 +282,22 @@ sub _DoCount {
     return $self->SUPER::_DoCount(@_);
 }
 
+=head2 ColumnMapClassName
+
+ColumnMap needs a Collection name to load the correct list display.
+Depluralization is hard, so provide an easy way to correct the naive
+algorithm that this code uses.
+
+=cut
+
+sub ColumnMapClassName {
+    my $self = shift;
+    my $Class = ref $self;
+    $Class =~ s/s$//;
+    $Class =~ s/:/_/g;
+    return $Class;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

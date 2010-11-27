@@ -105,9 +105,11 @@ foreach my $col (@Format) {
     }
 }
 
-$Class ||= ref $Collection;
-$Class =~ s/s$//;
-$Class =~ s/:/_/g;
+$Class ||= $Collection->ColumnMapClassName;
+if ($Class =~ /::/) { # older passed in value
+    $Class =~ s/s$//;
+    $Class =~ s/:/_/g;
+}
 
 $m->out('<table class="' .
 	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
