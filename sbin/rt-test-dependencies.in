@@ -210,6 +210,8 @@ List::MoreUtils
 Net::CIDR
 Regexp::Common::net::CIDR
 Regexp::IPv6
+HTML::FormatText::WithLinks 0.12
+HTML::FormatText::WithLinks::AndTables
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
