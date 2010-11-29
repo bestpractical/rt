@@ -54,9 +54,9 @@
 <td class="label" colspan="2"><h2><&|/l&>Basics</&></h2></td>
 </tr>
 <tr>
-<td class="label"><&|/l&>Class</&></td><td class="value">is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<td class="label"><&|/l&>Class</&></td><td class="value">is <& /Articles/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
 <&|/l&>and not</&>
-<& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
+<& /Articles/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Name</&></td>
@@ -78,12 +78,12 @@
 <td class="value"><&|/l&>matches</&> 
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
-<& /RTFM/Article/Elements/SearchByCustomField, 
+<& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $matches,
     Values => $ARGS{$matches} &>
     <&|/l&>and not</&>
-<& /RTFM/Article/Elements/SearchByCustomField, 
+<& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $nomatches,
     Values => $ARGS{$nomatches}
@@ -133,7 +133,7 @@
 <tr>
 <td class="label"></td>
 <td>
-<& /RTFM/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
+<& /Articles/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
 <br />
 <input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
 <&|/l&>Include subtopics</&> 
@@ -148,7 +148,7 @@ my @Classes =
       ? @{ $ARGS{'Class'} }
       : ( $ARGS{'Class'} );
 for (@Classes) {
-  my $class = RT::FM::Class->new( $session{'CurrentUser'} );
+  my $class = RT::Class->new( $session{'CurrentUser'} );
   $class->LoadById($_);
   $_ = $class;
 }

@@ -67,11 +67,11 @@ my $NamePrefix;
 
 if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
     $CustomFields = $ArticleObj->CustomFields();
-    $NamePrefix = "Object-RT::FM::Article-".$ArticleObj->Id."-CustomField-";
+    $NamePrefix = "Object-RT::Article-".$ArticleObj->Id."-CustomField-";
 }
 else {
     $CustomFields = $ClassObj->ArticleCustomFields();
-    $NamePrefix = "Object-RT::FM::Article--CustomField-";
+    $NamePrefix = "Object-RT::Article--CustomField-";
 }
 </%INIT>
 <%ARGS>

@@ -65,7 +65,7 @@
 <input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
 %     if ($link->TargetURI->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
-%       if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+%       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
 <%$member->Object->Subject%>
@@ -92,7 +92,7 @@
 <input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
 %     if ($link->BaseURI->IsLocal) {
 <a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
-%       if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+%       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
 <%$member->Object->Subject%>

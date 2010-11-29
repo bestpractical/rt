@@ -44,11 +44,11 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-% my $topics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+% my $topics = new RT::ObjectTopicCollection($session{'CurrentUser'});
 % $topics->LimitToObject($article);
 % my @topics;
 % while (my $t = $topics->Next) {
-<& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &><br />
+<& /Articles/Elements/ShowTopic, topic => $t->TopicObj &><br />
 % }
 <br />
 

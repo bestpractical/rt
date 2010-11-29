@@ -56,15 +56,15 @@
 </table>
 <%init>
 
-my $article = RT::FM::Article->new($session{'CurrentUser'}); 
+my $article = RT::Article->new($session{'CurrentUser'}); 
 
 $article->Load($id);
 unless ($article->Id) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
+    $m->comp("/Articles/Elements/Error", Why => loc("Article not found"));
 }
 
 unless ($article->ClassObj->CurrentUserHasRight('ShowArticle')) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
+    $m->comp("/Articles/Elements/Error", Why => loc("Permission Denied"));
 }
 
 my $transactions = $article->Transactions();

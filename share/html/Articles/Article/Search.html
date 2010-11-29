@@ -44,17 +44,18 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => loc("Search for articles") &>
+<& /Elements/Header, Title => loc("Search for articles") &>
+<& /Elements/Tabs &>
 
 % unless ( keys %ARGS ) {
-%   my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
+%   my $Classes = RT::Classes->new($session{'CurrentUser'});
 %   $Classes->LimitToEnabled();
 <table width="100%" border="0">
 <tr>
 <td valign="top" width="50%">
 <ul>
 % while (my $class = $Classes->Next) {
-<li><a href="<%$RT::WebPath%>/RTFM/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
+<li><a href="<%$RT::WebPath%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
 % }  
 </ul>
 </td>
@@ -80,7 +81,6 @@
 <& /Elements/CollectionList, %ARGS, 
     Collection => $articles, 
     AllowSorting => 1,
-    Class => 'RT::FM::ArticleCollection',
     Format => $format,
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
@@ -101,15 +101,15 @@
 </form>
 
 <div align=right>
-<a href="<%$RT::WebPath%>/RTFM/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link for this search</&></a><br />
+<a href="<%$RT::WebPath%>/Articles/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link for this search</&></a><br />
 </div>
 <%init>
 use RT::SavedSearch;
 my @results;
-my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
 my $format = q{
-    '<a href="/RTFM/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
-    '<a href="/RTFM/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
     '__ClassName__',
     '__CreatedRelative__',
     '__LastUpdatedRelative__',
@@ -121,7 +121,7 @@ my $format = q{
 # If it is a number, load the article with that ID.  Otherwise, search
 # on name and summary.
 if ($ARGS{'q'} && $ARGS{'q'} =~ /^(\d+)$/) {
-    return $m->comp("/RTFM/Article/Display.html", id => $1);
+    return $m->comp("/Articles/Article/Display.html", id => $1);
 }
 # }}}
 
