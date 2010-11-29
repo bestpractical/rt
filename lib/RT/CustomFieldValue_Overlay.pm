@@ -173,4 +173,23 @@ sub Delete {
     return $self->SUPER::Delete(@_);
 }
 
+sub _Set { 
+    my $self = shift; 
+
+    my $cf_id = $self->CustomField; 
+
+    my $cf = RT::CustomField->new( $self->CurrentUser ); 
+    $cf->Load( $cf_id ); 
+
+    unless ( $cf->id ) { 
+        return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id)); 
+    } 
+
+    unless ($cf->CurrentUserHasRight('AdminCustomField') || $cf->CurrentUserHasRight('AdminCustomFieldValues')) { 
+        return (0, $self->loc('Permission Denied')); 
+    } 
+
+    return $self->SUPER::_Set( @_ ); 
+} 
+
 1;
