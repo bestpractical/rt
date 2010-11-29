@@ -218,29 +218,27 @@ sub RevokeRight {
 
 
 
-=head2 sub HasRight (Right => 'right' Object => undef)
-
+=head2 HasRight (Right => 'right' Object => undef)
 
 Checks to see whether this principal has the right "Right" for the Object
-specified. If the Object parameter is omitted, checks to see whether the 
-user has the right globally.
+specified. This takes the params:
 
-This still hard codes to check to see if a user has queue-level rights
-if we ask about a specific ticket.
+=over 4
 
+=item Right
 
-This takes the params:
+name of a right
 
-    Right => name of a right
+=item Object
 
-    And either:
+an RT style object (->id will get its id)
 
-    Object => an RT style object (->id will get its id)
+=back
 
+Returns 1 if a matching ACE was found. Returns undef if no ACE was found.
 
-Returns 1 if a matching ACE was found.
-
-Returns undef if no ACE was found.
+Use L</HasRights> to fill a fast cache, especially if you're going to
+check many different rights with the same principal and object.
 
 =cut
 
@@ -330,6 +328,17 @@ sub HasRight {
 
     return ($hitcount);
 }
+
+=head2 HasRights
+
+Returns a hash reference with all rights this principal has on an
+object. Takes Object as a named argument.
+
+Results are cached and re-used until L</InvalidateACLCache> called.
+Caching makes L</HasRight> calls for this principal and the same
+object much faster as well.
+
+=cut
 
 sub HasRights {
     my $self = shift;
