@@ -112,16 +112,14 @@ our @DAYS_OF_WEEK = (
 );
 
 our @FORMATTERS = (
-    'DefaultFormat', # loc
-    'ISO',           # loc
-    'W3CDTF',        # loc
-    'RFC2822',       # loc
-    'RFC2616',       # loc
-    'iCal',          # loc
+    'DefaultFormat',     # loc
+    'ISO',               # loc
+    'W3CDTF',            # loc
+    'RFC2822',           # loc
+    'RFC2616',           # loc
+    'iCal',              # loc
+    'LocalizedDateTime', # loc
 );
-if (DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
-    push @FORMATTERS, 'LocalizedDateTime'; # loc
-}
 
 =head2 new
 
@@ -636,8 +634,6 @@ time format as specified in DateTime::Locale (default to full_date_format and
 medium_time_format), C<AbbrDay> and C<AbbrMonth> which may be set to 0 if
 you want full Day/Month names instead of abbreviated ones.
 
-Require optionnal DateTime::Locale module.
-
 =cut
 
 sub LocalizedDateTime
@@ -653,10 +649,6 @@ sub LocalizedDateTime
                  @_,
                );
 
-    return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
-        unless DateTime::->can('format_cldr');
-
-
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
@@ -668,8 +660,6 @@ sub LocalizedDateTime
     
 
     my $formatter = DateTime::Locale->load($lang);
-    return $self->loc("DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature") 
-        unless $formatter->can('date_format_full');
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
     $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );

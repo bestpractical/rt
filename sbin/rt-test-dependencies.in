@@ -171,6 +171,8 @@ sub text_to_hash {
 }
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
+DateTime 0.44
+DateTime::Format 0.40
 Digest::base
 Digest::MD5 2.27
 DBI 1.37

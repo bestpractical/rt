@@ -3,23 +3,8 @@
 use Test::MockTime qw(set_fixed_time restore_time);
 use DateTime;
 
-use Test::More;
-my $tests;
-
-my $localized_datetime_tests;
-BEGIN {
-    $tests = 165;
-    $localized_datetime_tests = DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
-
-    if ($localized_datetime_tests) {
-
-        # Include RT::Date::LocalizedDateTime tests
-        $tests += 7;
-    }
-}
-
 use warnings; use strict;
-use RT::Test tests => $tests;
+use RT::Test tests => 172;
 use RT::User;
 use Test::Warn;
 
@@ -111,7 +96,7 @@ my $current_user;
        "RFC2822 format with defaults");
     is($date->Get(Format =>'LocalizedDateTime'),
        'Thu, Jan 1, 1970 12:00:00 AM',
-       "LocalizedDateTime format with defaults") if ( $localized_datetime_tests );
+       "LocalizedDateTime format with defaults");
 
     is($date->ISO(Time => 0),
        '1970-01-01',
@@ -124,7 +109,7 @@ my $current_user;
        "RFC2822 format without time part");
     is($date->LocalizedDateTime(Time => 0),
        'Thu, Jan 1, 1970',
-       "LocalizedDateTime format without time part") if ( $localized_datetime_tests );
+       "LocalizedDateTime format without time part");
 
     is($date->ISO(Date => 0),
        '00:00:00',
@@ -137,7 +122,7 @@ my $current_user;
        "RFC2822 format without date part");
     is($date->LocalizedDateTime(Date => 0),
        '12:00:00 AM',
-       "LocalizedDateTime format without date part") if ( $localized_datetime_tests );
+       "LocalizedDateTime format without date part");
 
     is($date->ISO(Date => 0, Seconds => 0),
        '00:00',
@@ -158,16 +143,16 @@ my $current_user;
 
     is($date->LocalizedDateTime(AbbrDay => 0),
        'Thursday, Jan 1, 1970 12:00:00 AM',
-       "LocalizedDateTime format without abbreviation of day") if ( $localized_datetime_tests );
+       "LocalizedDateTime format without abbreviation of day");
     is($date->LocalizedDateTime(AbbrMonth => 0),
        'Thu, January 1, 1970 12:00:00 AM',
-       "LocalizedDateTime format without abbreviation of month") if ( $localized_datetime_tests );
+       "LocalizedDateTime format without abbreviation of month");
     is($date->LocalizedDateTime(DateFormat => 'date_format_short'),
        '1/1/70 12:00:00 AM',
-       "LocalizedDateTime format with non default DateFormat") if ( $localized_datetime_tests );
+       "LocalizedDateTime format with non default DateFormat");
     is($date->LocalizedDateTime(TimeFormat => 'time_format_short'),
        'Thu, Jan 1, 1970 12:00 AM',
-       "LocalizedDateTime format with non default TimeFormat") if ( $localized_datetime_tests );
+       "LocalizedDateTime format with non default TimeFormat");
 
     is($date->Date,
        '1970-01-01',
