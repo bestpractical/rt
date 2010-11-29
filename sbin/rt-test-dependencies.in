@@ -390,6 +390,16 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     if ( $args{'install'} ) {
         for my $module (keys %missing) {
             resolve_dep($module, $missing{$module}{version});
+            my $m = $module . '.pm';
+            $m =~ s!::!/!g;
+            if ( delete $INC{$m} ) {
+                my $symtab = $module . '::';
+                no strict 'refs';
+                for my $symbol ( keys %{$symtab} ) {
+                    next if substr( $symbol, -2, 2 ) eq '::';
+                    delete $symtab->{$symbol};
+                }
+            }
             delete $missing{$module}
                 if test_dep($module, $missing{$module}{version}, $AVOID{$module});
         }
