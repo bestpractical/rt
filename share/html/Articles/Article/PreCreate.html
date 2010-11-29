@@ -44,12 +44,11 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Article/Elements/Tabs,
-    current_tab => "RTFM/Article/PreCreate.html",
-    Title => loc('Create an article in class...'),
+<& /Elements/Header, Title => loc('Create an article in class...') &>
+<& /Elements/Tabs, Title => loc('Create an article in class...') &>
 &>
 <ul>
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+% my $Classes = RT::Classes->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
 % my $have_classes = 0;
 % while (my $Class = $Classes->Next) {

@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Elements/Tabs, Title => loc('Extract article from ticket #[_1] into class [_2]',$Ticket, $ClassObj->Name) &> 
+<& /Elements/Header, Title => loc('Extract article from ticket #[_1] into class [_2]',$Ticket, $ClassObj->Name) &> 
+<& /Elements/Tabs &>
 <form action="Edit.html" method="post">
 <input type="hidden" name="Class" value="<%$ARGS{'Class'}%>" />
 <input type="hidden" name="Summary" value="<%$ticket->Subject%>" />
@@ -85,10 +86,10 @@
 my $ticket=LoadTicket($Ticket);
 my $transactions = $ticket->Transactions;
 
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+my $ClassObj = RT::Class->new($session{'CurrentUser'});
 $ClassObj->Load($Class);
 unless ($ClassObj->Id) {
-    $m->comp("/RTFM/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
+    $m->comp("/Articles/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
 }
 my     $CustomFields = $ClassObj->ArticleCustomFields();
 

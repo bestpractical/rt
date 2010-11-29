@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
 % if ($ARGS{'Delete'}) {
-<& /RTFM/Article/Elements/Tabs, Title => $title &>
+<& /Articles/Article/Elements/Tabs, Title => $title &>
 
 <%$title%>
 <& /Elements/ListActions, actions => \@results &>
 
-% } else { 
-<& /RTFM/Article/Elements/Tabs, Article => $ArticleObj, current_subtab =>
-"RTFM/Article/Delete.html?id=".$ArticleObj->Id , id => $id, Title => $title &>
+% } else {
+<& /ELements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
 <b><&|/l&>Are you sure you want to delete this article?</&></b>
 <table>
@@ -80,17 +80,17 @@
 my @results;
 
 my $title;
-my $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
+my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
 
 
 $ArticleObj->Load($id);
 unless ( $ArticleObj->id ) {
-    $m->comp("/RTFM/Elements/Error", Why =>  loc("Unable to load article") );
+    $m->comp("/Articles/Elements/Error", Why =>  loc("Unable to load article") );
 }
 
 
 unless ( $ArticleObj->CurrentUserHasRight('ModifyArticle') ) {
-    $m->comp("/RTFM/Elements/Error", Why => "No permission to modify article");
+    $m->comp("/Articles/Elements/Error", Why => "No permission to modify article");
 }
 
 if ($ARGS{'Delete'} eq 'yes') {

@@ -44,12 +44,13 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Elements/Tabs, Title => loc('Extract a new article from ticket #[_1]',$Ticket) &>                  
+<& /Elements/Header, Title => loc('Extract a new article from ticket #[_1]',$Ticket) &>
+<& /Elements/Tabs &>
 
 
 <h2><&|/l&>Create a new article in</&>:</h2>
 <ul>
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+% my $Classes = RT::Classes->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
 % while (my $Class = $Classes->Next) {
 <li><a href="ExtractIntoTopic.html?Ticket=<%$Ticket%>&Class=<%$Class->Id%>" onclick="document.getElementById('topics-<% $Class->Id %>').style.display = (document.getElementById('topics-<% $Class->Id %>').style.display == 'block') ? 'none' : 'block'; return false;"><%$Class->Name%></a>: 

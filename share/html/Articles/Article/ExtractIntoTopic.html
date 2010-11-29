@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Elements/Tabs, Title => loc('Extract a new article from ticket #[_1]',$Ticket) &>
+<& /Elements/Header, Title => loc('Extract a new article from ticket #[_1]',$Ticket) &>
+<& /Elements/Tabs &>
 
 
 <&|/l&>Select topics for this article</&>:<br />
@@ -62,9 +63,9 @@ $Ticket => undef
 $Class => undef
 </%args>
 <%init>
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+my $ClassObj = RT::Class->new($session{'CurrentUser'});
 $ClassObj->Load($Class);
 unless ($ClassObj->Id) {
-    $m->comp("/RTFM/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
+    $m->comp("/Articles/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
 }
 </%init>

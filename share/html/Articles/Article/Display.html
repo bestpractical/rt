@@ -44,10 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Article/Elements/Tabs, 
-    id => $id, 
-    Title => $title, 
-    current_subtab => 'RTFM/Article/Display.html?id='.$id &>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 <h2><&|/l&>Basics</&></h2>
 <span class="label"><&|/l&>Class</&></span>: <span class="value"><%$article->ClassObj->Name%></span><br />
 <em><span class="value"><%$article->Summary%></span></em>
@@ -61,7 +59,7 @@
 <& Elements/ShowTopics, article => $article &>
 <%init>
 
-my $article = RT::FM::Article->new( $session{'CurrentUser'} );
+my $article = RT::Article->new( $session{'CurrentUser'} );
 if ($Name) {
     $article->LoadByCols( Name => $Name );
 }
@@ -80,7 +78,7 @@ unless ( $article->Id ) {
 }
 
 unless ( $article->CurrentUserHasRight('ShowArticle') ) {
-    $m->comp( "/RTFM/Elements/Error", Why => loc("Permission Denied") );
+    $m->comp( "/Articles/Elements/Error", Why => loc("Permission Denied") );
 }
 my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
 

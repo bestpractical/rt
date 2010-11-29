@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title, current_subtab => 'RTFM/Article/History.html?id='.$id &>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 <& Elements/ShowHistory, id => $id &>  
 <%init>
 my $title =loc('History for article #[_1]',$id);
