@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test tests => 15;
+use RT::Test tests => 18;
 
 my $plain = MIME::Entity->build(
     Subject => 'plain mime',
@@ -12,6 +12,9 @@ my $plain = MIME::Entity->build(
 If you have some problems with RT you could find help
 on http://wiki.bestpractical.com or subscribe to
 the rt-users\@lists.bestpractical.com.
+
+to test anchor:
+https://wiki.bestpractical.com/test#anchor
 --
 Best regards. BestPractical Team.
 END
@@ -24,6 +27,9 @@ my $html = MIME::Entity->build(
 If you have some problems with RT you could find help
 on <a href="http://wiki.bestpractical.com">wiki</a> 
 or find known bugs on http://rt3.fsck.com
+
+to test anchor:
+https://wiki.bestpractical.com/test#anchor
 --
 Best regards. BestPractical Team.
 END
@@ -81,6 +87,13 @@ diag 'test httpurl';
     );
     ok( scalar @links, 'found clicky link' );
 
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+        text => 'Open URL',
+    );
+    ok( scalar @links, 'found clicky link with anchor' );
+
     $m->goto_ticket($html_id);
     @links = $m->find_link(
         tag  => 'a',
@@ -95,6 +108,13 @@ diag 'test httpurl';
         text => 'Open URL',
     );
     ok( scalar @links, 'found clicky link' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+        text => 'Open URL',
+    );
+    ok( scalar @links, 'found clicky link with anchor' );
 }
 
 diag 'test httpurl_overwrite';
@@ -111,5 +131,13 @@ diag 'test httpurl_overwrite';
         text => 'http://wiki.bestpractical.com',
     );
     ok( scalar @links, 'found clicky link' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+        # extra space on every 30 chars
+        text => 'https://wiki.bestpractical.com /test#anchor',
+    );
+    ok( scalar @links, 'found clicky link with anchor' );
 }
 

@@ -71,12 +71,12 @@ my %actions = (
 my @types = (
     {
         name   => "httpurl",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#\S+)?/,
         action => "url",
     },
     {
         name   => "httpurl_overwrite",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#\S+)?/,
         action => "url_overwrite",
     },
 );
