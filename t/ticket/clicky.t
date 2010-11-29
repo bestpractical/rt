@@ -3,81 +3,23 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test noinitialdata => 1, tests => 14;
-my %clicky;
+use RT::Test tests => 15;
 
-BEGIN {
-
-    %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
-
-# this's hack: we have to use RT::Test first to get RT->Config work, this
-# results in the fact that we can't plan any more
-    unless ( keys %clicky ) {
-      SKIP: {
-            skip "No active Make Clicky actions", 14;
-        }
-        exit 0;
-    }
-}
-
-my ($baseurl, $m) = RT::Test->started_ok;
-
-use_ok('MIME::Entity');
-
-my $CurrentUser = RT->SystemUser;
-
-my $queue = RT::Queue->new($CurrentUser);
-$queue->Load('General') || Abort(loc("Queue could not be loaded."));
-
-my $message = MIME::Entity->build(
-    Subject => 'test',
+my $plain = MIME::Entity->build(
+    Subject => 'plain mime',
+    Type    => 'text/plain',
     Data    => <<END,
 If you have some problems with RT you could find help
 on http://wiki.bestpractical.com or subscribe to
 the rt-users\@lists.bestpractical.com.
-
 --
 Best regards. BestPractical Team.
 END
 );
 
-my $ticket = RT::Ticket->new( $CurrentUser );
-my ($id) = $ticket->Create(
-    Subject => 'test',
-    Queue => $queue->Id,
-    MIMEObj => $message,
-);
-ok($id, "We created a ticket #$id");
-ok($ticket->Transactions->First->Content, "Has some content");
-
-ok $m->login, 'logged in';
-ok $m->goto_ticket($id), 'opened diplay page of the ticket';
-
-SKIP: {
-    skip "httpurl action disabled", 1 unless $clicky{'httpurl'};
-    my @links = $m->find_link(
-        tag => 'a',
-        url => 'http://wiki.bestpractical.com',
-        text => 'Open URL',
-    );
-    ok( scalar @links, 'found clicky link' );
-}
-
-SKIP: {
-    skip "httpurl_overwrite action disabled", 1 unless $clicky{'httpurl_overwrite'};
-    my @links = $m->find_link(
-        tag => 'a',
-        url => 'http://wiki.bestpractical.com',
-        text => 'http://wiki.bestpractical.com',
-    );
-    ok( scalar @links, 'found clicky link' );
-}
-
-{
-
-my $message = MIME::Entity->build(
+my $html = MIME::Entity->build(
     Type    => 'text/html',
-    Subject => 'test',
+    Subject => 'html mime',
     Data    => <<END,
 If you have some problems with RT you could find help
 on <a href="http://wiki.bestpractical.com">wiki</a> 
@@ -87,21 +29,60 @@ Best regards. BestPractical Team.
 END
 );
 
-my $ticket = RT::Ticket->new($CurrentUser);
-my ($id) = $ticket->Create(
+
+my $ticket = RT::Ticket->new( RT->SystemUser );
+
+my ($plain_id) = $ticket->Create(
     Subject => 'test',
-    Queue   => $queue->Id,
-    MIMEObj => $message,
+    Queue => 'General',
+    MIMEObj => $plain,
 );
-ok( $id,                                   "We created a ticket #$id" );
-ok( $ticket->Transactions->First->Content, "Has some content" );
+ok($plain_id, "We created a ticket #$plain_id");
 
-ok $m->login, 'logged in';
-ok $m->goto_ticket($id), 'opened diplay page of the ticket';
+my ($html_id) = $ticket->Create(
+    Subject => 'test',
+    Queue => 'General',
+    MIMEObj => $html,
+);
+ok($html_id, "We created a ticket #$html_id");
 
-SKIP: {
-    skip "httpurl action disabled", 2 unless $clicky{'httpurl'};
+diag 'test no clicky';
+{
+    RT->Config->Set( 'Active_MakeClicky' => () );
+    my ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    $m->goto_ticket($plain_id);
+
     my @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://wiki.bestpractical.com',
+    );
+    ok( @links == 0, 'no clicky link found with plain message' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://rt3.fsck.com',
+    );
+    ok( @links == 0, 'no extra clicky link found with html message' );
+}
+
+diag 'test httpurl';
+{
+    RT::Test->stop_server;
+    RT->Config->Set( 'Active_MakeClicky' => qw/httpurl/ );
+    my ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    $m->goto_ticket($plain_id);
+
+    my @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://wiki.bestpractical.com',
+        text => 'Open URL',
+    );
+    ok( scalar @links, 'found clicky link' );
+
+    $m->goto_ticket($html_id);
+    @links = $m->find_link(
         tag  => 'a',
         url  => 'http://wiki.bestpractical.com',
         text => 'Open URL',
@@ -116,4 +97,19 @@ SKIP: {
     ok( scalar @links, 'found clicky link' );
 }
 
+diag 'test httpurl_overwrite';
+{
+    RT::Test->stop_server;
+    RT->Config->Set( 'Active_MakeClicky' => 'httpurl_overwrite' );
+    my ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    ok $m->goto_ticket($plain_id), 'opened diplay page of the ticket';
+
+    my @links = $m->find_link(
+        tag => 'a',
+        url => 'http://wiki.bestpractical.com',
+        text => 'http://wiki.bestpractical.com',
+    );
+    ok( scalar @links, 'found clicky link' );
 }
+
