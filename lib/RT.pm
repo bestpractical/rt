@@ -643,6 +643,30 @@ sub UnloadPlugins {
     $LOADED_PLUGINS = undef;
 }
 
+
+=head2 RestartRequired
+
+=cut
+
+sub RestartRequired {
+    my ($class, $arg) = @_;
+    my $restart_file = File::Spec->catdir( $VarPath, 'restart' );
+
+    if ($arg) {
+        my $atime = my $mtime = time;
+        if (-e $restart_file) {
+            utime $atime, $mtime, $restart_file;
+        }
+        else {
+            open my $fh, '>', $restart_file or die $!;
+            close $fh;
+        }
+        return 1;
+    }
+
+    return -e $restart_file && -M $restart_file < 0;
+}
+
 sub InstallMode {
     my $self = shift;
     if (@_) {

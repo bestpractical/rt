@@ -47,6 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Elements/Tabs &>
+
+% if (RT->RestartRequired) {
+<&| /Widgets/TitleBox, title => loc('Server restart required') &>
+Some configuration that you changed requires the web server to be restarted
+</&>
+% }
+
 <& /Elements/ListMenu, items => $tabs &>
 % if (RT->Config->Get('ShowRTNews')) {
 <& /Admin/Elements/Newsbox &>
