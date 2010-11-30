@@ -272,18 +272,6 @@ sub IsInitial {
 }
 
 
-=head3 DefaultInitial
-
-Returns the "default" initial status for this lifecycle
-
-=cut
-
-sub DefaultInitial {
-    my $self = shift;
-    return $self->{data}->{default_initial};
-}
-
-
 =head3 Active
 
 Returns an array of all active statuses for this lifecycle.
@@ -334,15 +322,48 @@ sub IsInactive {
     return 0;
 }
 
-=head3 DefaultInactive
 
-Returns the "default" inactive status for this lifecycle
+=head2 Default statuses
+
+In some cases when status is not provided a default values should
+be used.
+
+=head3 DefaultStatus
+
+Takes a situation name and returns value. Name should be
+spelled following spelling in the RT config file.
 
 =cut
 
-sub DefaultInactive {
+sub DefaultStatus {
     my $self = shift;
-    return $self->{data}->{default_inactive};
+    my $situation = shift;
+    return $self->{data}{defaults}{ $situation };
+}
+
+=head3 DefaultOnCreate
+
+Returns the status that should be used by default
+when ticket is created.
+
+=cut
+
+sub DefaultOnCreate {
+    my $self = shift;
+    return $self->DefaultStatus('on_create');
+}
+
+
+=head3 DefaultOnMerge
+
+Returns the status that should be used when tickets
+are merged.
+
+=cut
+
+sub DefaultOnMerge {
+    my $self = shift;
+    return $self->DefaultStatus('on_merge');
 }
 
 =head2 Transitions, rights, labels and actions.
