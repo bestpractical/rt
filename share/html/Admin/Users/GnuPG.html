@@ -61,9 +61,11 @@
 <h2><% loc("User has empty email address") %></h2>
 % }
 
+
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
+<&|/Widgets/TitleBox, title => 'GnuPG private key'&>
 <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
@@ -71,10 +73,10 @@
     CurrentValue => $UserObj->PrivateKey,
     DefaultLabel => loc('No private key'),
 &>
+</&>
 
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
 </form>
-
 <%ARGS>
 $id         => undef
 $Update     => undef
