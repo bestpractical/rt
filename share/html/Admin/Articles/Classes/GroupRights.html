@@ -58,11 +58,11 @@
 <%INIT>
 
 if (!defined $id) {
-    $m->comp("/Articles/Elements/Error", Why => loc("No Class defined"));
+    $m->comp("/Elements/Error", Why => loc("No Class defined"));
 }
 
 my $ClassObj = RT::Class->new($session{'CurrentUser'});
-$ClassObj->Load($id) || $m->comp("/Articles/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
+$ClassObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
 my @results =  ProcessACLs(\%ARGS);
 my @principals = GetPrincipalsMap($ClassObj, qw(System Groups));

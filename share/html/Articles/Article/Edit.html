@@ -130,7 +130,7 @@ if ( !$id ) {
 
     $ClassObj->Load($Class);
     unless ( $ClassObj->Id ) {
-        $m->comp( "/Articles/Elements/Error",
+        $m->comp( "/Elements/Error",
             Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
     }
     $EditClass = 0;
@@ -212,7 +212,7 @@ elsif ( $id eq 'new' ) {
    if (!$id) {
         $ClassObj->Load($Class);
         unless ( $ClassObj->Id ) {
-            $m->comp( "/Articles/Elements/Error",
+            $m->comp( "/Elements/Error",
                 Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
         }
         $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
@@ -225,7 +225,7 @@ else {
 
     $ArticleObj->Load($id);
     unless ( $ArticleObj->id ) {
-        $m->comp( "/Articles/Elements/Error",
+        $m->comp( "/Elements/Error",
             Why => loc("Unable to load article") );
     }
 
@@ -310,7 +310,7 @@ else {
 # if they're working on an existing article
 if ( $ArticleObj->id ) {
     unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
-        $m->comp( "/Articles/Elements/Error",
+        $m->comp( "/Elements/Error",
             Why => "No permission to view Article" );
     }
 }

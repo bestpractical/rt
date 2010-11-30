@@ -52,7 +52,7 @@
 <%INIT>
 
 my $ClassObj = new RT::Class($session{'CurrentUser'});
-$ClassObj->Load($ARGS{'id'}) || $m->comp("/Articles/Elements/Error", Why => "Couldn't load class '$id'");
+$ClassObj->Load($ARGS{'id'}) || $m->comp("/Elements/Error", Why => "Couldn't load class '$id'");
 
 my $title = $Modify 
   ? loc("Modify topic for [_1]", $ClassObj->Name) 

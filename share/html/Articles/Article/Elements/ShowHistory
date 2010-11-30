@@ -60,11 +60,11 @@ my $article = RT::Article->new($session{'CurrentUser'});
 
 $article->Load($id);
 unless ($article->Id) {
-    $m->comp("/Articles/Elements/Error", Why => loc("Article not found"));
+    $m->comp("/Elements/Error", Why => loc("Article not found"));
 }
 
 unless ($article->ClassObj->CurrentUserHasRight('ShowArticle')) {
-    $m->comp("/Articles/Elements/Error", Why => loc("Permission Denied"));
+    $m->comp("/Elements/Error", Why => loc("Permission Denied"));
 }
 
 my $transactions = $article->Transactions();

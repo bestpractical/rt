@@ -89,7 +89,7 @@ my $transactions = $ticket->Transactions;
 my $ClassObj = RT::Class->new($session{'CurrentUser'});
 $ClassObj->Load($Class);
 unless ($ClassObj->Id) {
-    $m->comp("/Articles/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
+    $m->comp("/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
 }
 my     $CustomFields = $ClassObj->ArticleCustomFields();
 

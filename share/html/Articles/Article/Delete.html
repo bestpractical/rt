@@ -85,12 +85,12 @@ my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
 
 $ArticleObj->Load($id);
 unless ( $ArticleObj->id ) {
-    $m->comp("/Articles/Elements/Error", Why =>  loc("Unable to load article") );
+    $m->comp("/Elements/Error", Why =>  loc("Unable to load article") );
 }
 
 
 unless ( $ArticleObj->CurrentUserHasRight('ModifyArticle') ) {
-    $m->comp("/Articles/Elements/Error", Why => "No permission to modify article");
+    $m->comp("/Elements/Error", Why => "No permission to modify article");
 }
 
 if ($ARGS{'Delete'} eq 'yes') {

@@ -78,7 +78,7 @@ unless ( $article->Id ) {
 }
 
 unless ( $article->CurrentUserHasRight('ShowArticle') ) {
-    $m->comp( "/Articles/Elements/Error", Why => loc("Permission Denied") );
+    $m->comp( "/Elements/Error", Why => loc("Permission Denied") );
 }
 my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
 
