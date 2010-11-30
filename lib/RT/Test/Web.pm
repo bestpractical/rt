@@ -149,7 +149,7 @@ sub goto_ticket {
     }
 
     my $url = $self->rt_base_url;
-    $url .= "/Ticket/Display.html?id=$id";
+    $url .= "Ticket/Display.html?id=$id";
     $self->get($url);
     unless ( $self->status == 200 ) {
         Test::More::diag( "error: status is ". $self->status );
