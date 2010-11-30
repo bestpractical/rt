@@ -1,10 +1,18 @@
 #!perl
 use Cwd qw(abs_path);
 use File::Basename qw(basename dirname);
+use File::Path qw(mkpath);
 
 BEGIN {
     require RT;
     require RT::Generated;
+    require File::Temp;
+
+    # bootstrap a fake LocalLibPath
+    my $dir_name = File::Spec->rel2abs('t/tmp');
+    mkpath( $dir_name );
+    $RT::LocalLibPath =  File::Temp::tempdir( CLEANUP => 1);
+
     unshift @INC, abs_path($RT::LocalLibPath);
     $RT::LocalPluginPath = abs_path(dirname($0)).'/_plugins';
 }
