@@ -17,6 +17,11 @@ server with:
 
     /opt/rt3/sbin/rt-server --port 8080
 
+You can also run C<rt-server> with any other PSGI server, for example,
+to use L<Starman>, a high performance preforking server:
+
+    /opt/rt3/sbin/rt-server --server Starman --port 8080
+
 =head2 mod_perl
 
 =head3 mod_perl 1.xx

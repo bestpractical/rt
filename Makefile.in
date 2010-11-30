@@ -126,16 +126,6 @@ RT_READABLE_DIR_MODE	=	0755
 
 
 
-# RT_MODPERL_HANDLER is the mason handler script for mod_perl
-RT_MODPERL_HANDLER	=	webmux.pl
-# RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
-RT_SPEEDYCGI_HANDLER	=	mason_handler.scgi
-# RT_FASTCGI_HANDLER is the mason handler script for FastCGI
-RT_FASTCGI_HANDLER	=	mason_handler.fcgi
-# RT_FASTCGI_SERVER is the FastCGI server
-RT_FASTCGI_SERVER	=	fastcgi_server
-# RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
-RT_WIN32_FASTCGI_HANDLER	=	mason_handler.svc
 # RT's CLI
 RT_CLI_BIN		=	rt
 # RT's mail gateway
@@ -145,18 +135,9 @@ RT_CRON_BIN		=	rt-crontool
 
 
 
-BINARIES		=	$(RT_MODPERL_HANDLER) \
-				$(RT_MAILGATE_BIN) \
+BINARIES		=	$(RT_MAILGATE_BIN) \
 				$(RT_CLI_BIN) \
-				$(RT_CRON_BIN) \
-				$(RT_SPEEDYCGI_HANDLER) \
-				$(RT_FASTCGI_HANDLER) \
-				$(RT_FASTCGI_SERVER) \
-				$(RT_WIN32_FASTCGI_HANDLER)
-
-
-
-
+				$(RT_CRON_BIN)
 
 SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-clean-sessions \
