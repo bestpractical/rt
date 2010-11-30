@@ -119,9 +119,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         }
         my $groups = $admin->child( loc('Groups'), path => '/Admin/Groups/', );
 
-        $groups->child( select => title => loc('Select'), path => "/Admin/Groups/" );
-        $groups->child( create => title => loc('Create'), path => "/Admin/Groups/Modify.html?Create=1" );
-
         my $queues = $admin->child( queues => title => loc('Queues'), path => '/Admin/Queues/', );
         $queues->child( select => title => loc('Select'), path => "/Admin/Queues/" );
         $queues->child( create => title => loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );

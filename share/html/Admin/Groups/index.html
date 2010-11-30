@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<% $caption %>:<br />
+
+<h3><&|/l&>Create a new group</&></h3>
+<& /Admin/Elements/EditGroup, Group => RT::Group->new($session{'CurrentUser'}) &>
+
+<h3><% $caption %></h3>
 
 % unless ( $Groups->Count ) {
 <em><&|/l&>No groups matching search criteria found.</&></em>
@@ -83,7 +87,7 @@
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
-my $title = loc('Select a group');
+my $title = loc('Groups');
 my $caption;
 
 if ($FindDisabledGroups) {

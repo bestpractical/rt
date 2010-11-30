@@ -1,0 +1,48 @@
+<%args>
+$Group
+</%args>
+<%init>
+my $Create = $Group->Id ? 0 : 1;
+</%init>
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data" id="editgroup">
+
+% if ($Create) {
+<input type="hidden" class="hidden" name="id" value="new" />
+% } else {
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+% }
+<table>
+<tr><td align="right">
+<&|/l&>Name</&>:
+</td>
+<td><input name="Name" value="<%$Group->Name||''%>" /></td>
+</tr>
+<tr>
+<td align="right">
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||''%>" size="60" /></td>
+</tr>
+% my $CFs = $Group->CustomFields;
+% while (my $CF = $CFs->Next) {
+<tr valign="top"><td align="right">
+<% loc($CF->Name) %>:
+</td><td>
+<& /Elements/EditCustomField, CustomField => $CF, 
+                              Object => $Group, 
+                              ($Create ? (NamePrefix => 'Object-RT::Group--CustomField-') 
+                                       : () )&>
+</td></tr>
+% }
+<tr>
+<td colspan="2">
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $Group->Disabled ? '' : 'checked' %> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
+</td>
+</tr>
+% $m->callback( %ARGS, GroupObj => $Group );
+</table>
+% if ($Create) {
+<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+% } else {
+<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+% }
+</form>
