@@ -88,7 +88,7 @@ $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
 
 $m->follow_link_ok({text => "Content"});
-$m->content_contains("Modify the queries of dashboard different dashboard");
+$m->content_contains("Modify the content of dashboard different dashboard");
 my $form = $m->form_name('Dashboard-Searches-body');
 my @input = $form->find_input('Searches-body-Available');
 my ($unowned) =
