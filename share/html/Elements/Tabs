@@ -359,7 +359,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         }
     }
 
-    if ( $request_path =~ qr{Admin/Articles/Classes/} ) {
+    if ( $request_path =~ qr{^/Admin/Articles/Classes/} ) {
         if ( my $id = $m->request_args->{'id'} ) {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
