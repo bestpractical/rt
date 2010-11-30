@@ -58,10 +58,6 @@ RT::Graph::Tickets - view relations between tickets as graphs
 =cut
 
 unless ($RT::DisableGraphViz) {
-    require IPC::Run;
-    IPC::Run->import;
-    require IPC::Run::SafeHandles;
-    IPC::Run::SafeHandles->import;
     require GraphViz;
     GraphViz->import;
 }

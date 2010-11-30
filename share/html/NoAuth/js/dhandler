@@ -69,14 +69,6 @@ if ( $arg =~ m{squished\.js$} ) {
             my $input = $content;
             my ( $output, $error );
 
-            my $stdout = IO::Handle->new;
-            $stdout->fdopen( 1, 'w' );
-            local *STDOUT = $stdout;
-
-            my $stderr = IO::Handle->new;
-            $stderr->fdopen( 2, 'w' );
-            local *STDERR = $stderr;
-
             local $SIG{'CHLD'} = 'DEFAULT';
             require IPC::Run3;
             IPC::Run3::run3( [$jsmin], \$input, \$output, \$error );

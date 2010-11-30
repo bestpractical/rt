@@ -71,12 +71,14 @@ sub safe_run_child (&) {
     my @res;
     my $want = wantarray;
     eval {
+        my $code = shift;
+        local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
         unless ( defined $want ) {
-            _safe_run_child( @_ );
+            $code->();
         } elsif ( $want ) {
-            @res = _safe_run_child( @_ );
+            $code->();
         } else {
-            @res = ( scalar _safe_run_child( @_ ) );
+            $code->();
         }
         1;
     } or do {
@@ -91,29 +93,6 @@ sub safe_run_child (&) {
         die 'System Error: ' . $err;
     };
     return $want? (@res) : $res[0];
-}
-
-sub _safe_run_child {
-    local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
-
-    return shift->() if $ENV{'MOD_PERL'} || $CGI::SpeedyCGI::i_am_speedy;
-
-    # We need to reopen stdout temporarily, because in FCGI
-    # environment, stdout is tied to FCGI::Stream, and the child
-    # of the run3 wouldn't be able to reopen STDOUT properly.
-    my $stdin = IO::Handle->new;
-    $stdin->fdopen( 0, 'r' );
-    local *STDIN = $stdin;
-
-    my $stdout = IO::Handle->new;
-    $stdout->fdopen( 1, 'w' );
-    local *STDOUT = $stdout;
-
-    my $stderr = IO::Handle->new;
-    $stderr->fdopen( 2, 'w' );
-    local *STDERR = $stderr;
-
-    return shift->();
 }
 
 RT::Base->_ImportOverlays();
