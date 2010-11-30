@@ -61,7 +61,7 @@ RT::Test->close_mailgate_ok($mail);
         qr/^X-RT-Incoming-Encryption: Not encrypted/m,
         'recorded incoming mail that is not encrypted'
     );
-    like( $txn->Attachments->First->Content, qr'Blah');
+    like( $txn->Attachments->First->Content, qr/Blah/);
 }
 
 # test for signed mail
@@ -103,7 +103,7 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     # test for some kind of PGP-Signed-By: Header
-    like( $attach->Content, qr'fnord');
+    like( $attach->Content, qr/fnord/);
 }
 
 # test for clear-signed mail
@@ -144,7 +144,7 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     # test for some kind of PGP-Signed-By: Header
-    like( $attach->Content, qr'clearfnord');
+    like( $attach->Content, qr/clearfnord/);
 }
 
 # test for signed and encrypted mail
@@ -190,7 +190,7 @@ RT::Test->close_mailgate_ok($mail);
         'PGP',
         'recorded incoming mail that is encrypted'
     );
-    like( $attach->Content, qr'orz');
+    like( $attach->Content, qr/orz/);
 
     is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
     ok(index($orig->Content, $buf) != -1, 'found original msg');
@@ -264,7 +264,7 @@ RT::Test->close_mailgate_ok($mail);
     TODO:
     {
         local $TODO = "this test requires keys associated with queues";
-        unlike( $attach->Content, qr'should not be there either');
+        unlike( $attach->Content, qr/should not be there either/);
     }
 }
 
@@ -304,6 +304,6 @@ is(@mail, 1, 'caught outgoing mail.');
     my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
-    unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
+    unlike( ($attach ? $attach->Content : ''), qr/really should not be there either/);
 }
 

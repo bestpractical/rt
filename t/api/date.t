@@ -238,7 +238,7 @@ warning_like
     my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Format => 'bad' );
     is($date->Unix, 0, "bad format");
-} qr'Unknown Date format: bad';
+} qr{Unknown Date format: bad};
 
 
 { # setting value via Unix method

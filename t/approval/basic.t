@@ -168,7 +168,7 @@ mail_ok {
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
     body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s,
-}, { from => qr'CEO via RT',
+}, { from => qr/CEO via RT/,
      to => 'root@localhost',
      subject => qr/Ticket Approved/,
      body => qr/The ticket has been approved, you may now start to act on it/,
