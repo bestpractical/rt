@@ -16,5 +16,4 @@
 
 Set( $rtname, 'example.com');
 #Set(@Plugins,(qw(Extension::QuickDelete RT::FM)));
-Set($DevelMode => 1);
 1;
