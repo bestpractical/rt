@@ -226,6 +226,7 @@ sub bootstrap_config {
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
+Set( \$DevelMode, 0);
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
