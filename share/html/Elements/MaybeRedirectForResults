@@ -59,6 +59,7 @@ if ( grep {defined} @$Actions ) {
     my $key = Digest::MD5::md5_hex( rand(1024) );
     push @{ $session{"Actions"}->{$key} ||= [] }, @$Actions;
     $session{'i'}++;
+    $Path =~ s!^/+!!;
     my $url = RT->Config->Get('WebURL') . "$Path?id=" . $id . "&results=" . $key;
     $url .= '#' . $ARGSRef->{Anchor} if $ARGSRef->{Anchor};
     RT::Interface::Web::Redirect($url);
