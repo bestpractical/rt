@@ -81,7 +81,7 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
-my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
+my $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 
 my %desc_of;
 my @items;
@@ -133,7 +133,7 @@ for my $object (@objs) {
     }
 }
 
-# Get the list of queries already in use
+# Get the list of portlets already in use
 my @deleted;
 do {
     my $panes = $Dashboard->Panes;
@@ -173,7 +173,7 @@ $m->callback(
     selected     => \%selected,
 );
 
-# Create selectionbox widgets for those queries
+# Create selectionbox widgets for those portlets
 
 my %pane_name = (
     'body'    => loc('Body'),
