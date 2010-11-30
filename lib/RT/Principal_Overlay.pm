@@ -334,9 +334,18 @@ sub HasRight {
 Returns a hash reference with all rights this principal has on an
 object. Takes Object as a named argument.
 
-Results are cached and re-used until L</InvalidateACLCache> called.
-Caching makes L</HasRight> calls for this principal and the same
-object much faster as well.
+Main use case of this method is the following:
+
+    $ticket->CurrentUser->PrincipalObj->HasRights( Object => $ticket );
+    ...
+    $ticket->CurrentUserHasRight('A');
+    ...
+    $ticket->CurrentUserHasRight('Z');
+
+Results are cached and the cache is used in this and, as well, in L</HasRight>
+method speeding it up. Don't use hash reference returned by this method
+directly for rights checks as it's more complicated then it seems, especially
+considering config options like 'DisallowExecuteCode'.
 
 =cut
 
@@ -407,6 +416,9 @@ sub HasRights {
         }
         $res{$_} = 1 foreach @$rights;
     }
+
+    delete $res{'ExecuteCode'} if 
+        RT->Config->Get('DisallowExecuteCode');
 
     $_ACL_CACHE->store( $cache_key, \%res );
     return \%res;

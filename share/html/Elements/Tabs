@@ -326,7 +326,12 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
             $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
             my $can = sub {
-                $can{$_[0]} || $can{'SuperUser'}
+                unless ($_[0] eq 'ExecuteCode') {
+                    return $can{$_[0]} || $can{'SuperUser'};
+                } else {
+                    return !RT->Config->Get('DisallowExecuteCode')
+                        && ( $can{'ExecuteCode'} || $can{'SuperUser'} );
+                }
             };
 
             # comment out until we can do it for an individual custom field
