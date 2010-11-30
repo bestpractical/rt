@@ -181,31 +181,10 @@ sub SendDashboard {
     # failed to load dashboard. perhaps it was deleted or it changed privacy
     if (!$ok) {
         $RT::Logger->warning("Unable to load dashboard $DashboardId of subscription ".$subscription->Id." for user ".$currentuser->Name.": $msg");
-
-        my $ok = RT::Interface::Email::SendEmailUsingTemplate(
-            From      => $args{From},
-            To        => $args{Email},
-            Template  => 'Error: Missing dashboard',
-            Arguments => {
-                SubscriptionObj => $subscription,
-            },
+        return $self->ObsoleteSubscription(
+            %args,
+            Subscription => $subscription,
         );
-
-        # only delete the subscription if the email looks like it went through
-        if ($ok) {
-            my ($deleted, $msg) = $subscription->Delete();
-            if ($deleted) {
-                $RT::Logger->info("Deleted an obsolete subscription: $msg");
-            }
-            else {
-                $RT::Logger->warning("Unable to delete an obsolete subscription: $msg");
-            }
-        }
-        else {
-            $RT::Logger->warning("Unable to notify ".$currentuser->Name." of an obsolete subscription");
-        }
-
-        return;
     }
 
     $RT::Logger->info('Generating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
@@ -245,6 +224,42 @@ SUMMARY
         Dashboard => $dashboard,
         Content   => $content,
     );
+}
+
+sub ObsoleteSubscription {
+    my $self = shift;
+    my %args = (
+        From         => undef,
+        To           => undef,
+        Subscription => undef,
+        CurrentUser  => undef,
+        @_,
+    );
+
+    my $subscription = $args{Subscription};
+
+    my $ok = RT::Interface::Email::SendEmailUsingTemplate(
+        From      => $args{From},
+        To        => $args{Email},
+        Template  => 'Error: Missing dashboard',
+        Arguments => {
+            SubscriptionObj => $subscription,
+        },
+    );
+
+    # only delete the subscription if the email looks like it went through
+    if ($ok) {
+        my ($deleted, $msg) = $subscription->Delete();
+        if ($deleted) {
+            $RT::Logger->info("Deleted an obsolete subscription: $msg");
+        }
+        else {
+            $RT::Logger->warning("Unable to delete an obsolete subscription: $msg");
+        }
+    }
+    else {
+        $RT::Logger->warning("Unable to notify ".$args{CurrentUser}->Name." of an obsolete subscription");
+    }
 }
 
 sub EmailDashboard {
