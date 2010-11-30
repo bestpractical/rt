@@ -84,12 +84,20 @@ sub new {
     return $self;
 }
 
+# the @INC entry that plugins lib dirs should be pushed splice into.
+# it should be the one after local lib
+my $inc_anchor;
 sub Enable {
     my $self = shift;
     my $add = $self->Path("lib");
-    my $local_path = first_index { Cwd::realpath($_) eq $RT::LocalLibPath } @INC;
-    if ($local_path >= 0 ) {
-        splice(@INC, $local_path+1, 0, $add);
+    unless (defined $inc_anchor) {
+        my $anchor = first_index { Cwd::realpath($_) eq Cwd::realpath($RT::LocalLibPath) } @INC;
+        $inc_anchor = ($anchor == -1 || $anchor == $#INC) # not found or last
+            ? '' : Cwd::realpath($INC[$anchor+1]);
+    }
+    my $anchor_idx = first_index { Cwd::realpath($_) eq $inc_anchor } @INC;
+    if ($anchor_idx >= 0 ) {
+        splice(@INC, $anchor_idx, 0, $add);
     }
     else {
         push @INC, $add;
