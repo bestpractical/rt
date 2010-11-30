@@ -324,24 +324,26 @@ tried.  Maybe it's ok now.
 
 sub DecodeMIMEWordsToUTF8 {
     my $str = shift;
-    DecodeMIMEWordsToEncoding($str, 'utf-8');
+    return DecodeMIMEWordsToEncoding($str, 'utf-8', @_);
 }
 
 sub DecodeMIMEWordsToEncoding {
     my $str = shift;
-    my $enc = shift;
+    my $to_charset = shift;
+    my $field = shift || '';
 
-    @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
-    return ($str) unless (@_);
+    my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
+    return ($str) unless (@list);
 
     # add everything that hasn't matched to the end of the latest
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    $_[-1] .= substr($str, pos $str);
+    $list[-1] .= substr($str, pos $str);
 
     $str = "";
-    while (@_) {
+    while (@list) {
 	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-	    (shift, shift, lc shift, shift, shift);
+            splice @list, 0, 5;
+        $encoding = lc $encoding;
 
         $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
 
@@ -357,16 +359,16 @@ sub DecodeMIMEWordsToEncoding {
             ."only Q(uoted-printable) and B(ase64) are supported");
 	}
 
-	# now we have got a decoded subject, try to convert into the encoding
-    unless ( $charset eq $enc ) {
-        my $orig_str = $enc_str;
-        eval { Encode::from_to( $enc_str, $charset, $enc, Encode::FB_CROAK ) };
-        if ($@) {
-            $enc_str = $orig_str;
-            $charset = _GuessCharset($enc_str);
-            Encode::from_to( $enc_str, $charset, $enc );
+        # now we have got a decoded subject, try to convert into the encoding
+        unless ( $charset eq $to_charset ) {
+            my $orig_str = $enc_str;
+            eval { Encode::from_to( $enc_str, $charset, $to_charset, Encode::FB_CROAK ) };
+            if ($@) {
+                $enc_str = $orig_str;
+                $charset = _GuessCharset( $enc_str );
+                Encode::from_to( $enc_str, $charset, $to_charset );
+            }
         }
-    }
 
         # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
         # We _should_ be preserving them encoded until after parsing is completed and
@@ -384,7 +386,10 @@ sub DecodeMIMEWordsToEncoding {
         # Some _other_ MUAs encode quotes _already_, and double quotes
         # confuse us a lot, so only quote it if it isn't quoted
         # already.
-        $enc_str = qq{"$enc_str"} if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+        $enc_str = qq{"$enc_str"}
+            if $enc_str =~ /[,;]/
+            and $enc_str !~ /^".*"$/
+            and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
 
 	$str .= $prefix . $enc_str . $trailing;
     }
@@ -536,7 +541,8 @@ sub SetMIMEHeadToEncoding {
                     }
                 }
             }
-            $value = DecodeMIMEWordsToEncoding( $value, $enc ) unless $preserve_words;
+            $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
+                unless $preserve_words;
             $head->add( $tag, $value );
         }
     }
