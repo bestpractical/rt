@@ -60,9 +60,10 @@ GetOptions(
     \%args,                               'v|verbose',
     'install',                            'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
-    'with-ORACLE',                        'with-FASTCGI', 'with-FASTCGI-SERVER',
-    'with-SPEEDYCGI',                     'with-MODPERL1',
-    'with-MODPERL2',                      'with-DEV',
+    'with-ORACLE',                        'with-FASTCGI',
+    'with-MODPERL1',                      'with-MODPERL2',
+
+    'with-DEV',
 
     'with-GPG',
     'with-ICAL',
@@ -232,6 +233,7 @@ IPC::Run3
 .
 
 $deps{'PSGI'} = [ text_to_hash( << '.') ];
+CGI 3.38
 CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
 Plack 0.9942
@@ -280,35 +282,16 @@ Plack::Middleware::Test::StashWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-CGI 3.38
 FCGI
-CGI::Fast 
-.
-
-$deps{'FASTCGI-SERVER'} = [ text_to_hash( << '.') ];
-CGI 3.38
-CGI::Fast
 FCGI::ProcManager
-File::Basename
-File::Spec
-Getopt::Long
-Pod::Usage
 .
-
-$deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
-CGI 3.38
-CGI::SpeedyCGI
-.
-
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-CGI 3.38
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 3.38
 Apache::DBI
 HTML::Mason 1.36
 .
@@ -647,17 +630,9 @@ list the status of all dependencies, rather than just the missing ones.
 
     database interface and driver for sqlite (unsupported)
 
-=item with-fastcgi-server
-
-    libraries needed to support the external fastcgi server
- 
 =item with-fastcgi 
 
     libraries needed to support the fastcgi handler
-
-=item with-speedycgi
-
-    libraries needed to support the speedycgi handler
 
 =item with-modperl1
 
