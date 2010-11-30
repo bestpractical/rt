@@ -16,7 +16,7 @@ $m->click_button(value => 'Create');
 $m->title_is('Modify the dashboard Testing!');
 
 $m->follow_link_ok({text => 'Content'});
-$m->title_is('Modify the queries of dashboard Testing!');
+$m->title_is('Modify the content of dashboard Testing!');
 
 my $form = $m->form_name('Dashboard-Searches-body');
 my @input = $form->find_input('Searches-body-Available');
