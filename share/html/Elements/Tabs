@@ -447,7 +447,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             }
         }
     }
-    if ( $request_path =~ qr{(?:Ticket|Search)/} ) {
+    if ( $request_path =~ qr{^/(?:Ticket|Search)/} ) {
         my $search = Menu()->child('search');
         my $args      = '';
         my $has_query = '';
@@ -487,7 +487,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                                      path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
         $current_search_menu->child( loc('Advanced') => path => "/Search/Edit.html$args" );
         if ($has_query) {
-            if ($request_path =~ qr|^Search/Results.html|
+            if ($request_path =~ qr{^/Search/Results.html}
                 &&                        #XXX TODO better abstraction
                 $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
                 my $shred_args = URI->new->query_param(
