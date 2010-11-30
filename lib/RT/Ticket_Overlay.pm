@@ -3156,66 +3156,11 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Delete {
     my $self = shift;
+    unless ( $self->QueueObj->Lifecycle->IsValid('deleted') ) {
+        return (0, $self->loc('Delete operation is disabled by lifecycle configuration') ); #loc
+    }
     return ( $self->SetStatus('deleted') );
-
-    # TODO: garbage collection
 }
-
-
-
-=head2 Stall
-
-Sets this ticket's status to stalled
-
-=cut
-
-sub Stall {
-    my $self = shift;
-    return ( $self->SetStatus('stalled') );
-}
-
-
-
-=head2 Reject
-
-Sets this ticket's status to rejected
-
-=cut
-
-sub Reject {
-    my $self = shift;
-    return ( $self->SetStatus('rejected') );
-}
-
-
-
-=head2 Open
-
-Sets this ticket\'s status to Open
-
-=cut
-
-sub Open {
-    my $self = shift;
-    return ( $self->SetStatus('open') );
-}
-
-
-
-=head2 Resolve
-
-Sets this ticket\'s status to Resolved
-
-=cut
-
-sub Resolve {
-    my $self = shift;
-    return ( $self->SetStatus('resolved') );
-}
-
-
-
-    
 
 
 =head2 SetTold ISO  [TIMETAKEN]
