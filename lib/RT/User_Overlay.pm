@@ -1352,7 +1352,7 @@ admin right) 'ModifySelf', return 1. otherwise, return undef.
 
 sub CurrentUserCanModify {
     my $self  = shift;
-    my $right = shift;
+    my $field = shift;
 
     if ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (1);
@@ -1360,7 +1360,7 @@ sub CurrentUserCanModify {
 
     #If the field is marked as an "administrators only" field, 
     # don\'t let the user touch it.
-    elsif ( $self->_Accessible( $right, 'admin' ) ) {
+    elsif ( $self->_Accessible( $field, 'admin' ) ) {
         return (undef);
     }
 
