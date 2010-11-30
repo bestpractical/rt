@@ -76,9 +76,9 @@ sub safe_run_child (&) {
         unless ( defined $want ) {
             $code->();
         } elsif ( $want ) {
-            $code->();
+            @res = $code->();
         } else {
-            $code->();
+            @res = ( scalar $code->() );
         }
         1;
     } or do {
