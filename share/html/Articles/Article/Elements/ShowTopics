@@ -44,7 +44,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-% my $topics = new RT::ObjectTopicCollection($session{'CurrentUser'});
+% my $topics = RT::ObjectTopics->new($session{'CurrentUser'});
 % $topics->LimitToObject($article);
 % my @topics;
 % while (my $t = $topics->Next) {

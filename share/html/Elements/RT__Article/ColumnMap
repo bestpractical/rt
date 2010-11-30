@@ -92,7 +92,7 @@ $COLUMN_MAP = {
             my $Topics = $_[0]->Topics;
             while ( my $t = $Topics->Next ) {
                 $topics .=
-                  $m->scomp( '/RTFM/Elements/ShowTopic', topic => $t->TopicObj )
+                  $m->scomp( '/Articles/Elements/ShowTopic', topic => $t->TopicObj )
                   . '<br />';
             }
             return \$topics;
