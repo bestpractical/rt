@@ -66,6 +66,7 @@ An RT queue object.
 package RT::Queue;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Groups;
@@ -157,6 +158,7 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+require RT::Lifecycle;
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -242,27 +244,49 @@ sub RightCategories {
 }
 
 
-
-sub lifecycle {
+sub Lifecycle {
     my $self = shift;
     unless (ref $self && $self->id) { 
-        return RT::Lifecycle->load('')
+        return RT::Lifecycle->Load('')
     }
 
-    my $name = '';
+    my $name = $self->_Value( Lifecycle => @_ );
+    $name ||= 'default';
 
-    # If you don't have Lifecycles set, name is default
-    my $lifecycles = RT->Config->Get('LifecycleMap');
-    if ($lifecycles && $self->Name && defined $lifecycles->{$self->Name}) {
-        $name = $lifecycles->{$self->Name};
-    } else {
-        $name = 'default';
-    }
-
-    my $res = RT::Lifecycle->load( $name );
-    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist") unless $res;
+    my $res = RT::Lifecycle->Load( $name );
+    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist")
+        unless $res;
     return $res;
 }
+
+sub SetLifecycle {
+    my $self = shift;
+    my $value = shift;
+
+    if ( $value && $value ne 'default' ) {
+        return (0, $self->loc('[_1] is not valid lifecycle', $value ))
+            unless $self->ValidateLifecycle( $value );
+    } else {
+        $value = undef;
+    }
+
+    return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
+}
+
+=head2 ValidateLifecycle NAME
+
+Takes a lifecycle name. Returns true if it's an ok name and such
+lifecycle is configured. Returns undef otherwise.
+
+=cut
+
+sub ValidateLifecycle {
+    my $self = shift;
+    my $value = shift;
+    return undef unless RT::Lifecycle->Load( $value );
+    return 1;
+}
+
 
 =head2 ActiveStatusArray
 
@@ -272,10 +296,7 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-
-    my %seen;
-    my @active_statuses = grep !$seen{$_}++, $self->lifecycle->valid('initial', 'active');
-    return @active_statuses;
+    return $self->Lifecycle->Valid('initial', 'active');
 }
 
 =head2 InactiveStatusArray
@@ -286,7 +307,7 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return $self->lifecycle->inactive;
+    return $self->Lifecycle->Inactive;
 }
 
 =head2 StatusArray
@@ -297,7 +318,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return $self->lifecycle->valid( @_ );
+    return $self->Lifecycle->Valid( @_ );
 }
 
 =head2 IsValidStatus value
@@ -308,7 +329,7 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 sub IsValidStatus {
     my $self  = shift;
-    return $self->lifecycle->is_valid( shift );
+    return $self->Lifecycle->IsValid( shift );
 }
 
 =head2 IsActiveStatus value
@@ -319,7 +340,7 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 sub IsActiveStatus {
     my $self  = shift;
-    return $self->lifecycle->is_valid( shift, 'initial', 'active');
+    return $self->Lifecycle->IsValid( shift, 'initial', 'active');
 }
 
 
@@ -333,7 +354,7 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 sub IsInactiveStatus {
     my $self  = shift;
-    return $self->lifecycle->is_inactive( shift );
+    return $self->Lifecycle->IsInactive( shift );
 }
 
 
@@ -362,9 +383,10 @@ sub Create {
     my $self = shift;
     my %args = (
         Name              => undef,
-        CorrespondAddress => '',
         Description       => '',
+        CorrespondAddress => '',
         CommentAddress    => '',
+        Lifecycle         => 'default',
         SubjectTag        => undef,
         InitialPriority   => 0,
         FinalPriority     => 0,
@@ -382,6 +404,13 @@ sub Create {
 
     unless ( $self->ValidateName( $args{'Name'} ) ) {
         return ( 0, $self->loc('Queue already exists') );
+    }
+
+    if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
+        return ( 0, $self->loc('Invalid lifecycle name') )
+            unless $self->ValidateLifecycle( $args{'Lifecycle'} );
+    } else {
+        $args{'Lifecycle'} = undef;
     }
 
     my %attrs = map {$_ => 1} $self->ReadableAttributes;

@@ -57,7 +57,7 @@
 
 <div class="entry"><span class="label"><&|/l&>Status</&>:</span>
 <div class="value">
-<& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($t->Status)), Default => $ARGS{'Status'} || ($t->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+<& /Elements/SelectStatus, Name=>"Status", TicketObj => $t, DefaultLabel => loc("[_1] (Unchanged)", loc($t->Status)), Default => $ARGS{'Status'} || ($t->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 </div></div>
 
 <div class="entry"><span class="label"><&|/l&>Owner</&>:</span>

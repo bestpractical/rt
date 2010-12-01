@@ -51,11 +51,9 @@ use warnings;
 
 package RT::Lifecycle;
 
-sub loc { return RT->SystemUser->loc( @_ ) }
-
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
-__PACKAGE__->register_rights;
+__PACKAGE__->RegisterRights;
 
 # cache structure:
 #    {
@@ -115,26 +113,26 @@ sub new {
     my $proto = shift;
     my $self = bless {}, ref($proto) || $proto;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return $self;
 }
 
-=head2 load
+=head2 Load
 
 Takes a name of the lifecycle and loads it. If name is empty or undefined then
 loads the global lifecycle with statuses from all named lifecycles.
 
 Can be called as class method, returns a new object, for example:
 
-    my $lifecycle = RT::Lifecycle->load('default');
+    my $lifecycle = RT::Lifecycle->Load('default');
 
 =cut
 
-sub load {
+sub Load {
     my $self = shift;
     my $name = shift || '';
-    return $self->new->load( $name, @_ )
+    return $self->new->Load( $name, @_ )
         unless ref $self;
 
     return unless exists $LIFECYCLES_CACHE{ $name };
@@ -145,33 +143,47 @@ sub load {
     return $self;
 }
 
-=head2 list
+=head2 List
 
 Returns sorted list of the lifecycles' names.
 
 =cut
 
-sub list {
+sub List {
     my $self = shift;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return sort grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
-=head2 name
+=head2 Name
 
 Returns name of the laoded lifecycle.
 
 =cut
 
-sub name { return $_[0]->{'name'} }
+sub Name { return $_[0]->{'name'} }
+
+=head2 Queues
+
+Returns L<RT::Queues> collection with queues that use this lifecycle.
+
+=cut
+
+sub Queues {
+    my $self = shift;
+    require RT::Queues;
+    my $queues = RT::Queues->new( RT->SystemUser );
+    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
+    return $queues;
+}
 
 =head2 Getting statuses and validating.
 
 Methods to get statuses in different sets or validating them.
 
-=head3 valid
+=head3 Valid
 
 Returns an array of all valid statuses for the current lifecycle.
 Statuses are not sorted alphabetically, instead initial goes first,
@@ -180,11 +192,11 @@ then active and then inactive.
 Takes optional list of status types, from 'initial', 'active' or
 'inactive'. For example:
 
-    $lifecycle->valid('initial', 'active');
+    $lifecycle->Valid('initial', 'active');
 
 =cut
 
-sub valid {
+sub Valid {
     my $self = shift;
     my @types = @_;
     unless ( @types ) {
@@ -196,7 +208,7 @@ sub valid {
     return @res;
 }
 
-=head3 is_valid
+=head3 IsValid
 
 Takes a status and returns true if value is a valid status for the current
 lifecycle. Otherwise, returns false.
@@ -205,79 +217,83 @@ Takes optional list of status types after the status, so it's possible check
 validity in particular sets, for example:
 
     # returns true if status is valid and from initial or active set
-    $lifecycle->is_valid('some_status', 'initial', 'active');
+    $lifecycle->IsValid('some_status', 'initial', 'active');
 
 See also </valid>.
 
 =cut
 
-sub is_valid {
+sub IsValid {
     my $self  = shift;
     my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->valid( @_ );
+    return 1 if grep lc($_) eq $value, $self->Valid( @_ );
     return 0;
 }
 
-=head3 initial
+=head3 StatusType
+
+Takes a status and returns its type, one of 'initial', 'active' or
+'inactive'.
+
+=cut
+
+sub StatusType {
+    my $self = shift;
+    my $status = shift;
+    foreach my $type ( qw(initial active inactive) ) {
+        return $type if $self->IsValid( $status, $type );
+    }
+    return '';
+}
+
+=head3 Initial
 
 Returns an array of all initial statuses for the current lifecycle.
 
 =cut
 
-sub initial {
+sub Initial {
     my $self = shift;
-    return $self->valid('initial');
+    return $self->Valid('initial');
 }
 
-=head3 is_initial
+=head3 IsInitial
 
 Takes a status and returns true if value is a valid initial status.
 Otherwise, returns false.
 
 =cut
 
-sub is_initial {
+sub IsInitial {
     my $self  = shift;
     my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->valid('initial');
+    return 1 if grep lc($_) eq $value, $self->Valid('initial');
     return 0;
 }
 
 
-=head3 default_initial
-
-Returns the "default" initial status for this lifecycle
-
-=cut
-
-sub default_initial {
-    my $self = shift;
-    return $self->{data}->{default_initial};
-}
-
-
-=head3 active
+=head3 Active
 
 Returns an array of all active statuses for this lifecycle.
 
 =cut
 
-sub active {
+sub Active {
     my $self = shift;
-    return $self->valid('active');
+    return $self->Valid('active');
 }
 
-=head3 is_active
+=head3 IsActive
 
 Takes a value and returns true if value is a valid active status.
 Otherwise, returns false.
 
 =cut
 
-sub is_active {
+sub IsActive {
     my $self  = shift;
     my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->valid('active');
+    return 1 if grep lc($_) eq $value, $self->Valid('active');
     return 0;
 }
 
@@ -287,9 +303,9 @@ Returns an array of all inactive statuses for this lifecycle.
 
 =cut
 
-sub inactive {
+sub Inactive {
     my $self = shift;
-    return $self->valid('inactive');
+    return $self->Valid('inactive');
 }
 
 =head3 is_inactive
@@ -299,71 +315,106 @@ Otherwise, returns false.
 
 =cut
 
-sub is_inactive {
+sub IsInactive {
     my $self  = shift;
     my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->valid('inactive');
+    return 1 if grep lc($_) eq $value, $self->Valid('inactive');
     return 0;
 }
 
-=head3 default_inactive
 
-Returns the "default" inactive status for this lifecycle
+=head2 Default statuses
+
+In some cases when status is not provided a default values should
+be used.
+
+=head3 DefaultStatus
+
+Takes a situation name and returns value. Name should be
+spelled following spelling in the RT config file.
 
 =cut
 
-sub default_inactive {
+sub DefaultStatus {
     my $self = shift;
-    return $self->{data}->{default_inactive};
+    my $situation = shift;
+    return $self->{data}{defaults}{ $situation };
+}
+
+=head3 DefaultOnCreate
+
+Returns the status that should be used by default
+when ticket is created.
+
+=cut
+
+sub DefaultOnCreate {
+    my $self = shift;
+    return $self->DefaultStatus('on_create');
+}
+
+
+=head3 DefaultOnMerge
+
+Returns the status that should be used when tickets
+are merged.
+
+=cut
+
+sub DefaultOnMerge {
+    my $self = shift;
+    return $self->DefaultStatus('on_merge');
 }
 
 =head2 Transitions, rights, labels and actions.
 
-=head3 transitions
+=head3 Transitions
 
 Takes status and returns list of statuses it can be changed to.
 
-If status is ommitted then returns a hash with all possible transitions
-in the following format:
+Is status is empty or undefined then returns list of statuses for
+a new ticket.
+
+If argument is ommitted then returns a hash with all possible
+transitions in the following format:
 
     status_x => [ next_status, next_status, ... ],
     status_y => [ next_status, next_status, ... ],
 
 =cut
 
-sub transitions {
+sub Transitions {
     my $self = shift;
+    return %{ $self->{'data'}{'transitions'} || {} }
+        unless @_;
+
     my $status = shift;
-    if ( $status ) {
-        return @{ $self->{'data'}{'transitions'}{ $status } || [] };
-    } else {
-        return %{ $self->{'data'}{'transitions'} || {} };
-    }
+    return @{ $self->{'data'}{'transitions'}{ $status || '' } || [] };
 }
 
-=head1 is_transition
+=head1 IsTransition
 
 Takes two statuses (from -> to) and returns true if it's valid
 transition and false otherwise.
 
 =cut
 
-sub is_transition {
+sub IsTransition {
     my $self = shift;
-    my $from = shift or return 0;
+    my $from = shift;
     my $to   = shift or return 0;
-    return 1 if grep lc($_) eq lc($to), $self->transitions($from);
+    return 1 if grep lc($_) eq lc($to), $self->Transitions($from);
     return 0;
 }
 
-=head3 check_right
+=head3 CheckRight
 
 Takes two statuses (from -> to) and returns the right that should
 be checked on the ticket.
 
 =cut
 
-sub check_right {
+sub CheckRight {
     my $self = shift;
     my $from = shift;
     my $to = shift;
@@ -378,10 +429,43 @@ sub check_right {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
-sub register_rights {
+=head3 RegisterRights
+
+Registers all defined rights in the system, so they can be addigned
+to users. No need to call it, as it's called when module is loaded.
+
+=cut
+
+sub RegisterRights {
     my $self = shift;
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    my %rights = $self->RightsDescription;
+
+    require RT::ACE;
+
+    require RT::Queue;
+    my $RIGHTS = $RT::Queue::RIGHTS;
+
+    while ( my ($right, $description) = each %rights ) {
+        next if exists $RIGHTS->{ $right };
+
+        $RIGHTS->{ $right } = $description;
+        RT::Queue->AddRightCategories( $right => 'Status' );
+        $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    }
+}
+
+=head3 RightsDescription
+
+Returns hash with description of rights that are defined for
+particular transitions.
+
+=cut
+
+sub RightsDescription {
+    my $self = shift;
+
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my %tmp;
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
@@ -391,12 +475,8 @@ sub register_rights {
         }
     }
 
-    require RT::ACE;
-    require RT::Queue;
-    my $RIGHTS = $RT::Queue::RIGHTS;
+    my %res;
     while ( my ($right, $transitions) = each %tmp ) {
-        next if exists $RIGHTS->{ $right };
-
         my (@from, @to);
         foreach ( @$transitions ) {
             ($from[@from], $to[@to]) = split / -> /, $_;
@@ -405,13 +485,12 @@ sub register_rights {
             . ( (grep $_ eq '*', @from)? '' : ' from '. join ', ', @from )
             . ( (grep $_ eq '*', @to  )? '' : ' to '. join ', ', @from );
 
-        $RIGHTS->{ $right } = $description;
-        RT::Queue->AddRightCategories( $right => 'Status' );
-        $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+        $res{ $right } = $description;
     }
+    return %res;
 }
 
-=head3 actions
+=head3 Actions
 
 Takes a status and returns list of defined actions for the status. Each
 element in the list is a hash reference with the following key/value
@@ -431,11 +510,11 @@ pairs:
 
 =cut
 
-sub actions {
+sub Actions {
     my $self = shift;
     my $from = shift || return ();
 
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my @res = grep $_->{'from'} eq $from || ( $_->{'from'} eq '*' && $_->{'to'} ne $from ),
         @{ $self->{'data'}{'actions'} };
@@ -447,114 +526,94 @@ sub actions {
     return grep defined, @res;
 }
 
-=head2 Creation and manipulation
+=head2 Moving tickets between lifecycles
 
-=head3 create
+=head3 MoveMap
 
-Creates a new lifecycle in the DB. Takes a param hash with
-'name', 'initial', 'active', 'inactive' and 'transitions' keys.
-
-All arguments except 'name' are optional and can be filled later
-with other methods.
-
-Returns (status, message) pair, status is false on error.
+Takes lifecycle as a name string or an object and returns a hash reference with
+move map from this cycle to provided.
 
 =cut
 
-sub create {
+sub MoveMap {
+    my $from = shift; # self
+    my $to = shift;
+    $to = RT::Lifecycle->Load( $to ) unless ref $to;
+    return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
+}
+
+=head3 HasMoveMap
+
+Takes a lifecycle as a name string or an object and returns true if move map
+defined for move from this cycle to provided.
+
+=cut
+
+sub HasMoveMap {
     my $self = shift;
-    my %args = (
-        name => undef,
-        initial => undef,
-        active => undef,
-        inactive => undef,
-        transitions => undef,
-        actions => undef,
-        @_
-    );
-    @{ $self }{qw(name data)} = (undef, undef);
+    my $map = $self->MoveMap( @_ );
+    return 0 unless $map && keys %$map;
+    return 0 unless grep defined && length, values %$map;
+    return 1;
+}
 
-    my $name = delete $args{'name'};
-    return (0, loc('Invalid lifecycle name'))
-        unless defined $name && length $name;
-    return (0, loc('Already exist'))
-        if $LIFECYCLES_CACHE{ $name };
+=head3 NoMoveMaps
 
-    foreach my $method (qw(_set_defaults _set_statuses _set_transitions _set_actions)) {
-        my ($status, $msg) = $self->$method( %args, name => $name );
-        return ($status, $msg) unless $status;
+Takes no arguments and returns hash with pairs that has no
+move maps.
+
+=cut
+
+sub NoMoveMaps {
+    my $self = shift;
+    my @list = $self->List;
+    my @res;
+    foreach my $from ( @list ) {
+        foreach my $to ( @list ) {
+            next if $from eq $to;
+            push @res, $from, $to
+                unless RT::Lifecycle->Load( $from )->HasMoveMap( $to );
+        }
+    }
+    return @res;
+}
+
+=head2 Localization
+
+=head3 ForLocalization
+
+A class method that takes no arguments and returns list of strings
+that require translation.
+
+=cut
+
+sub ForLocalization {
+    my $self = shift;
+    $self->FillCache unless keys %LIFECYCLES_CACHE;
+
+    my @res = ();
+
+    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
+    foreach my $lifecycle ( values %LIFECYCLES ) {
+        push @res,
+            grep defined && length,
+            map $_->{'label'},
+            grep ref($_),
+            @{ $lifecycle->{'actions'} || [] };
     }
 
-    my ($status, $msg) = $self->_store_lifecycles( $name );
-    return ($status, $msg) unless $status;
+    push @res, $self->RightsDescription;
 
-    return (1, loc('Created a new lifecycle'));
+    my %seen;
+    return grep !$seen{lc $_}++, @res;
 }
 
-sub set_statuses {
-    my $self = shift;
-    my %args = (
-        initial  => [],
-        active   => [],
-        inactive => [],
-        @_
-    );
+sub loc { return RT->SystemUser->loc( @_ ) }
 
-    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
-
-    my ($status, $msg) = $self->_set_statuses( %args, name => $name );
-    return ($status, $msg) unless $status;
-
-    ($status, $msg) = $self->_store_lifecycles( $name );
-    return ($status, $msg) unless $status;
-
-    return (1, loc('Updated lifecycle'));
-}
-
-
-
-
-sub set_transitions {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
-
-    my ($status, $msg) = $self->_set_transitions(
-        transitions => \%args, name => $name
-    );
-    return ($status, $msg) unless $status;
-
-    ($status, $msg) = $self->_store_lifecycles( $name );
-    return ($status, $msg) unless $status;
-
-    return (1, loc('Updated lifecycle with transitions data'));
-}
-
-sub set_actions {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = $self->name or return (0, loc("Lifecycle is not loaded"));
-
-    my ($status, $msg) = $self->_set_actions(
-        actions => \%args, name => $name
-    );
-    return ($status, $msg) unless $status;
-
-    ($status, $msg) = $self->_store_lifecycles( $name );
-    return ($status, $msg) unless $status;
-
-    return (1, loc('Updated lifecycle with actions data'));
-}
-
-sub fill_cache {
+sub FillCache {
     my $self = shift;
 
     my $map = RT->Config->Get('Lifecycles') or return;
-#    my $map = $RT::System->first_attribute('Lifecycles')
-#        or return;
-#    $map = $map->content or return;
 
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
@@ -575,6 +634,10 @@ sub fill_cache {
         my %seen;
         @res = grep !$seen{ lc $_ }++, @res;
         $lifecycle->{''} = \@res;
+
+        unless ( $lifecycle->{'transitions'}{''} ) {
+            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @res ];
+        }
     }
     foreach my $type ( qw(initial active inactive), '' ) {
         my %seen;
@@ -601,167 +664,6 @@ sub fill_cache {
         $lifecycle->{'actions'} = \@res;
     }
     return;
-}
-
-sub for_localization {
-    my $self = shift;
-    $self->fill_cache unless keys %LIFECYCLES_CACHE;
-
-    my @res = ();
-
-    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
-    foreach my $lifecycle ( values %LIFECYCLES ) {
-        push @res,
-            grep defined && length,
-            map $_->[0],
-            grep ref($_),
-            values %{ $lifecycle->{'actions'} || {} };
-    }
-
-    my %seen;
-    return grep !$seen{lc $_}++, @res;
-}
-
-sub _store_lifecycles {
-    my $self = shift;
-    my $name = shift;
-    my ($status, $msg) = $RT::System->set_attribute(
-        name => 'Lifecycles',
-        description => 'all system lifecycles',
-        content => \%LIFECYCLES,
-    );
-    $self->fill_cache;
-    $self->load( $name );
-    return ($status, loc("Couldn't store lifecycle")) unless $status;
-    return 1;
-}
-
-sub _set_statuses {
-    my $self = shift;
-    my %args = @_;
-
-    my @all;
-    my %tmp = (
-        initial  => [],
-        active   => [],
-        inactive => [],
-    );
-    foreach my $type ( qw(initial active inactive) ) {
-        foreach my $status ( grep defined && length, @{ $args{ $type } || [] } ) {
-            return (0, loc('Status should contain ASCII characters only. Translate via po files.'))
-                unless $status =~ /^[a-zA-Z0-9.,! ]+$/;
-            return (0, loc('Statuses must be unique within a lifecycle'))
-                if grep lc($_) eq lc($status), @all;
-            push @all, $status;
-            push @{ $tmp{ $type } }, $status;
-        }
-    }
-
-    $LIFECYCLES{ $args{'name'} }{ $_ } = $tmp{ $_ }
-        foreach qw(initial active inactive);
-
-    return 1;
-}
-
-
-sub _set_defaults {
-    my $self = shift;
-    my %args = @_;
-
-    $LIFECYCLES{ $args{'name'} }{$_ } = $args{ $_ }
-        foreach qw(default_initial default_inactive);
-
-    return 1;
-}
-
-
-
-
-
-sub _set_transitions {
-    my $self = shift;
-    my %args = @_;
-
-    # XXX, TODO: more tests on data
-    $LIFECYCLES{ $args{'name'} }{'transitions'} = $args{'transitions'};
-    return 1;
-}
-
-sub _set_actions {
-    my $self = shift;
-    my %args = @_;
-
-    # XXX, TODO: more tests on data
-    $LIFECYCLES{ $args{'name'} }{'actions'} = $args{'actions'};
-    return 1;
-}
-
-sub from_set {
-    my $self = shift;
-    my $status = shift;
-    foreach my $set ( qw(initial active inactive) ) {
-        return $set if $self->is_valid( $status, $set );
-    }
-    return '';
-}
-
-sub map {
-    my $from = shift;
-    my $to = shift;
-    $to = RT::Lifecycle->load( $to ) unless ref $to;
-    return $LIFECYCLES{'__maps__'}{ $from->name .' -> '. $to->name } || {};
-}
-
-sub set_map {
-    my $self = shift;
-    my $to = shift;
-    $to = RT::Lifecycle->load( $to ) unless ref $to;
-    my %map = @_;
-    $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
-
-    return (0, loc("Lifecycle is not loaded"))
-        unless $self->name;
-
-    return (0, loc("Lifecycle is not loaded"))
-        unless $to->name;
-
-
-    $LIFECYCLES{'__maps__'}{ $self->name .' -> '. $to->name } = \%map;
-
-    my ($status, $msg) = $self->_store_lifecycles( $self->name );
-    return ($status, $msg) unless $status;
-
-    return (1, loc('Updated lifecycle with actions data'));
-}
-
-sub has_map {
-    my $self = shift;
-    my $map = $self->map( @_ );
-    return 0 unless $map && keys %$map;
-    return 0 unless grep defined && length, values %$map;
-    return 1;
-}
-
-sub no_maps {
-    my $self = shift;
-    my @list = $self->list;
-    my @res;
-    foreach my $from ( @list ) {
-        foreach my $to ( @list ) {
-            next if $from eq $to;
-            push @res, $from, $to
-                unless RT::Lifecycle->load( $from )->has_map( $to );
-        }
-    }
-    return @res;
-}
-
-sub queues {
-    my $self = shift;
-    require RT::Queues;
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->limit( column => 'lifecycle', value => $self->name );
-    return $queues;
 }
 
 1;

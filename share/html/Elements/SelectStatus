@@ -46,12 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-%if ($DefaultValue) {
-<option value=""<% !$Default && qq[ selected="selected"] |n %>><%$DefaultLabel%></option>
-%}
-%foreach my $status (@status) {
-%next if ($SkipDeleted && $status eq 'deleted');
-<option value="<%$status%>"<% (defined $Default && $status eq $Default) && qq[ selected="selected"] |n %>><%loc($status)%></option>
+% if ( $DefaultValue ) {
+<option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
+% }
+% foreach my $status (@status) {
+% next if ($SkipDeleted && $status eq 'deleted');
+% my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+<option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 % }
 </select>
 <%INIT>
@@ -59,29 +60,35 @@
 
 
 my @status;
-if ( $TicketObj ) {
+if ( @Statuses ) {
+    @status = @Statuses;
+}
+elsif ( $TicketObj ) {
     my $current = $TicketObj->Status;
-    my $lifecycle = $TicketObj->QueueObj->lifecycle;
+    my $lifecycle = $TicketObj->QueueObj->Lifecycle;
 
     my %has = ();
-    foreach my $next ( $lifecycle->transitions( $current ) ) {
-        my $check = $lifecycle->check_right( $current => $next );
+    foreach my $next ( $lifecycle->Transitions( $current ) ) {
+        my $check = $lifecycle->CheckRight( $current => $next );
         $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
             unless exists $has{ $check };
         push @status, $next if $has{ $check };
     }
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->lifecycle->valid;
+    @status = $QueueObj->Lifecycle->Transitions('');
 }
 else {
-    @status = RT::Queue->lifecycle->valid;
+    @status = RT::Queue->Lifecycle->Valid;
 }
 </%INIT>
 <%ARGS>
 $Name => undef
+
+@Statuses => ()
 $TicketObj => undef
 $QueueObj => undef
+
 $Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1

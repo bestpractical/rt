@@ -401,37 +401,34 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                 $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id, );
             }
 
-            if ( $can{'ModifyTicket'} ) {
-                my $current   = $obj->Status;
-                my $lifecycle = $obj->QueueObj->lifecycle;
-                my $i         = 1;
+            my $current   = $obj->Status;
+            my $lifecycle = $obj->QueueObj->Lifecycle;
+            my $i         = 1;
+            foreach my $info ( $lifecycle->Actions($current) ) {
+                my $next = $info->{'to'};
+                next unless $lifecycle->IsTransition( $current => $next );
 
-                foreach my $info ( $lifecycle->actions($current) ) {
-                    my $next = $info->{'to'};
-                    next unless $lifecycle->is_transition( $current => $next );
-
-                    my $check = $lifecycle->check_right( $current => $next );
-                    $can{$check} = $obj->CurrentUserHasRight($check) unless exists $can{$check};
-                    next unless $can{$check};
+                my $check = $lifecycle->CheckRight( $current => $next );
+                $can{$check} = $obj->CurrentUserHasRight($check) unless exists $can{$check};
+                next unless $can{$check};
 
 
-                   my $action = $info->{'update'} || '';
+                my $action = $info->{'update'} || '';
 
 
-                    my $url = '/Ticket/';
-                    if ($action) {
+                my $url = '/Ticket/';
+                if ($action) {
 
-                        $url .= "Update.html?" . $query_string->(Action => $action,
-                                               DefaultStatus => $next,
-                                               id            => $id
-                                             );
-                    } else {
-                        $url .= "Display.html?" . $query_string->( Status => $next, id => $id );
-                    }
-                    $actions->child( loc( $info->{'label'} || ucfirst($next) ) => path => $url);
+                    $url .= "Update.html?" . $query_string->(Action => $action,
+                                           DefaultStatus => $next,
+                                           id            => $id
+                                         );
+                } else {
+                    $url .= "Display.html?" . $query_string->( Status => $next, id => $id );
                 }
-
+                $actions->child( loc( $info->{'label'} || ucfirst($next) ) => path => $url);
             }
+
             if ( $can{OwnTicket} ) {
                 if ( $obj->OwnerObj->Id == RT->Nobody->id
                      && ( $can{'ModifyTicket'} or $can{'TakeTicket'} ) ) {

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
     foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-    my @cur_statuses = grep $lifecycle->is_valid($_), @statuses;
+    my @cur_statuses = grep $lifecycle->IsValid($_), @statuses;
     next unless @cur_statuses;
 </%perl>
 
@@ -63,7 +63,7 @@
 <%PERL>
 my $i = 0;
 for my $queue (@queues) {
-    next if lc($queue->{Lifecycle} || '') ne lc $lifecycle->name;
+    next if lc($queue->{Lifecycle} || '') ne lc $lifecycle->Name;
 
     $i++;
     my $name = $queue->{Name};
@@ -115,22 +115,22 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
     {  id          => $_->Id,
        Name        => $_->Name,
        Description => $_->Description,
-       Lifecycle   => $_->lifecycle->name,
+       Lifecycle   => $_->Lifecycle->Name,
     }
 } grep $_, @queues;
 
 my %lifecycle;
 
 for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->load( $queue->{'Lifecycle'} );
-    $lifecycle{ lc $cycle->name } = $cycle;
+    my $cycle = RT::Lifecycle->Load( $queue->{'Lifecycle'} );
+    $lifecycle{ lc $cycle->Name } = $cycle;
 }
 
 unless (@statuses) {
     my %seen;
     foreach my $set ( 'initial', 'active' ) {
         foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-            push @statuses, grep !$seen{ lc $_ }++, $lifecycle->$set();
+            push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
         }
     }
 }

@@ -13,6 +13,7 @@ ok $general && $general->id, 'loaded or created a queue';
 
 my $delivery = RT::Test->load_or_create_queue(
     Name => 'delivery',
+    Lifecycle => 'delivery',
 );
 ok $delivery && $delivery->id, 'loaded or created a queue';
 
@@ -46,7 +47,7 @@ diag "add partial map";
             new => 'ordered',
         },
     };
-    RT::Lifecycle->fill_cache;
+    RT::Lifecycle->FillCache;
 }
 
 diag "check moving with a partial map";

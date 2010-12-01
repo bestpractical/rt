@@ -20,12 +20,50 @@ my $tstatus = sub {
 
 diag "check basic API";
 {
-    my $schema = $general->lifecycle;
+    my $schema = $general->Lifecycle;
     isa_ok($schema, 'RT::Lifecycle');
-    is $schema->name, 'default', "it's a default schema";
-    is join(', ', sort $schema->valid),
-        join(', ', sort qw(new open stalled resolved rejected deleted)),
+    is $schema->Name, 'default', "it's a default schema";
+    is_deeply [$schema->Valid],
+        [qw(new open stalled resolved rejected deleted)],
         'this is the default set from our config file';
+
+    foreach my $s ( qw(new open stalled resolved rejected deleted) ) {
+        ok $schema->IsValid($s), "valid";
+    }
+    ok !$schema->IsValid(), 'invalid';
+    ok !$schema->IsValid(''), 'invalid';
+    ok !$schema->IsValid(undef), 'invalid';
+    ok !$schema->IsValid('foo'), 'invalid';
+
+    is_deeply [$schema->Initial], ['new'], 'initial set';
+    ok $schema->IsInitial('new'), "initial";
+    ok !$schema->IsInitial('open'), "not initial";
+    ok !$schema->IsInitial, "not initial";
+    ok !$schema->IsInitial(''), "not initial";
+    ok !$schema->IsInitial(undef), "not initial";
+    ok !$schema->IsInitial('foo'), "not initial";
+
+    is_deeply [$schema->Active], [qw(open stalled)], 'active set';
+    ok( $schema->IsActive($_), "active" )
+        foreach qw(open stalled);
+    ok !$schema->IsActive('new'), "not active";
+    ok !$schema->IsActive, "not active";
+    ok !$schema->IsActive(''), "not active";
+    ok !$schema->IsActive(undef), "not active";
+    ok !$schema->IsActive('foo'), "not active";
+
+    is_deeply [$schema->Inactive], [qw(resolved rejected deleted)], 'inactive set';
+    ok( $schema->IsInactive($_), "inactive" )
+        foreach qw(resolved rejected deleted);
+    ok !$schema->IsInactive('new'), "not inactive";
+    ok !$schema->IsInactive, "not inactive";
+    ok !$schema->IsInactive(''), "not inactive";
+    ok !$schema->IsInactive(undef), "not inactive";
+    ok !$schema->IsInactive('foo'), "not inactive";
+
+    is_deeply [$schema->Transitions('')], [qw(new open resolved)], 'on create transitions';
+    ok $schema->IsTransition('' => $_), 'good transition'
+        foreach qw(new open resolved);
 }
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -43,7 +81,7 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        next if $general->lifecycle->is_valid($_);
+        next if $general->Lifecycle->IsValid($_);
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }

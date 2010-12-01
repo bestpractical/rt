@@ -24,6 +24,7 @@ CREATE TABLE Queues (
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) CHARACTER SET ascii NULL,
   CommentAddress varchar(120) CHARACTER SET ascii NULL,
+  Lifecycle varchar(32) CHARACTER SET ascii NULL,
   SubjectTag varchar(120) NULL,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,

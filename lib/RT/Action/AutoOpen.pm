@@ -82,10 +82,10 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $lifecycle = $ticket->QueueObj->lifecycle;
+    my $lifecycle = $ticket->QueueObj->Lifecycle;
     my $status = $ticket->Status;
 
-    my @active = $lifecycle->active;
+    my @active = $lifecycle->Active;
     # no change if no active statuses in the lifecycle
     return 1 unless @active;
 
@@ -94,13 +94,13 @@ sub Prepare {
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $lifecycle->is_initial($status) && $self->TransactionObj->IsInbound;
+    return 1 if $lifecycle->IsInitial($status) && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
         return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
-    my ($next) = grep $lifecycle->is_active($_), $lifecycle->transitions($status);
+    my ($next) = grep $lifecycle->IsActive($_), $lifecycle->Transitions($status);
 
     $self->{'set_status_to'} = $next;
 

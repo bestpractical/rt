@@ -64,7 +64,7 @@ href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$
 <td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
-<td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
+<td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket, 
 				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></td>
                   </tr>
 

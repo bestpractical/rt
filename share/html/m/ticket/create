@@ -289,9 +289,9 @@ $showrows->(
         $m->scomp(
         "/Elements/SelectStatus",
         Name         => "Status",
-        Default      => $ARGS{Status} || 'new',
+        QueueObj     => $QueueObj,
+        Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
         DefaultValue => 0,
-        SkipDeleted  => 1
         ),
 
     loc("Owner") =>

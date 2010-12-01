@@ -299,17 +299,24 @@ sub Create {
             $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
     }
 
-    if ( ! defined $args{'Status'}) {
-        $args{'Status'} = $QueueObj->lifecycle->default_initial();
+    my $cycle = $QueueObj->Lifecycle;
+    unless ( defined $args{'Status'} && length $args{'Status'} ) {
+        $args{'Status'} = $cycle->DefaultOnCreate;
     }
 
-    unless ( $QueueObj->IsValidStatus( $args{'Status'} )
-            && $QueueObj->lifecycle->is_initial( $args{'Status'} )) {
+    unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
-                $self->loc($args{'Status'})));
+                $self->loc($args{'Status'}))
+        );
     }
 
+    unless ( $cycle->IsTransition( '' => $args{'Status'} ) ) {
+        return ( 0, 0,
+            $self->loc("New tickets can not have status '[_1]' in this queue.",
+                $self->loc($args{'Status'}))
+        );
+    }
 
 
 
@@ -353,17 +360,9 @@ sub Create {
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
-    # We sort of want to ask "is this not an initial state
-    # But some schemes require active statuses to be duplicated
-    # in the initial state list so that tickets can be created
-    # in those states already open
-    #
-    # Instead, we check to make sure that it's either an "active" or "inactive" status
-    elsif (
-        $QueueObj->lifecycle->is_active($args{'Status'}) ||
-        $QueueObj->lifecycle->is_inactive($args{'Status'})
 
-    ){
+    # If the status is not an initial status, set the started date
+    elsif ( !$cycle->IsInitial($args{'Status'}) ) {
         $Started->SetToNow;
     }
 
@@ -373,7 +372,7 @@ sub Create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->lifecycle->is_inactive( $args{'Status'} ) )
+    elsif ( $cycle->IsInactive( $args{'Status'} ) )
     {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -1710,13 +1709,13 @@ sub SetQueue {
     }
 
     my $new_status;
-    my $old_lifecycle = $self->QueueObj->lifecycle;
-    my $new_lifecycle = $NewQueueObj->lifecycle;
-    if ( $old_lifecycle->name ne $new_lifecycle->name ) {
-        unless ( $old_lifecycle->has_map( $new_lifecycle ) ) {
+    my $old_lifecycle = $self->QueueObj->Lifecycle;
+    my $new_lifecycle = $NewQueueObj->Lifecycle;
+    if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
+        unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }
-        $new_status = $old_lifecycle->map( $new_lifecycle )->{ $self->Status };
+        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ $self->Status };
         return ( 0, $self->loc("Mapping between queues' lifecycles is incomplete. Contact your system administrator.") )
             unless $new_status;
     }
@@ -1745,7 +1744,7 @@ sub SetQueue {
 
         #If we're changing the status from initial in old to not intial in new,
         # record that we've started
-        if ( $old_lifecycle->is_initial($old_status) && !$new_lifecycle->is_initial($new_status)  && $clone->StartedObj->Unix == 0 ) {
+        if ( $old_lifecycle->IsInitial($old_status) && !$new_lifecycle->IsInitial($new_status)  && $clone->StartedObj->Unix == 0 ) {
             #Set the Started time to "now"
             $clone->_Set(
                 Field             => 'Started',
@@ -1756,7 +1755,7 @@ sub SetQueue {
 
         #When we close a ticket, set the 'Resolved' attribute to now.
         # It's misnamed, but that's just historical.
-        if ( $new_lifecycle->is_inactive($new_status) ) {
+        if ( $new_lifecycle->IsInactive($new_status) ) {
             $clone->_Set(
                 Field             => 'Resolved',
                 Value             => $now->ISO,
@@ -2654,18 +2653,15 @@ sub _MergeInto {
     }
 
 
-    my $default_inactive = $self->QueueObj->lifecycle->default_inactive;
-    if ( $default_inactive ne $self->__Value('Status') ) {
+    my $force_status = $self->QueueObj->Lifecycle->DefaultOnMerge;
+    if ( $force_status && $force_status ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
-            = $self->__Set( Field => 'Status', Value => $default_inactive );
+            = $self->__Set( Field => 'Status', Value => $force_status );
 
         unless ($status_val) {
             $RT::Handle->Rollback();
             $RT::Logger->error(
-                $self->loc(
-                    "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
-                    $self
-                )
+                "Couldn't set status to $force_status. RT's Database may be inconsistent."
             );
             return ( 0, $self->loc("Merge failed. Couldn't set Status") );
         }
@@ -3089,24 +3085,24 @@ sub SetStatus {
     $args{SetStarted} = 1 unless exists $args{SetStarted};
 
 
-    my $lifecycle = $self->QueueObj->lifecycle;
+    my $lifecycle = $self->QueueObj->Lifecycle;
 
     my $new = $args{'Status'};
-    unless ( $lifecycle->is_valid( $new ) ) {
+    unless ( $lifecycle->IsValid( $new ) ) {
         return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
 
     my $old = $self->__Value('Status');
-    unless ( $lifecycle->is_transition( $old => $new ) ) {
+    unless ( $lifecycle->IsTransition( $old => $new ) ) {
         return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
     }
 
-    my $check_right = $lifecycle->check_right( $old => $new );
+    my $check_right = $lifecycle->CheckRight( $old => $new );
     unless ( $self->CurrentUserHasRight( $check_right ) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( !$args{Force} && $lifecycle->is_inactive( $new ) && $self->HasUnresolvedDependencies) {
+    if ( !$args{Force} && $lifecycle->IsInactive( $new ) && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
@@ -3117,7 +3113,7 @@ sub SetStatus {
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
     #If we're changing the status from new, record that we've started
-    if ( $args{SetStarted} && $lifecycle->is_initial($old) && !$lifecycle->is_initial($new) && !$raw_started->Unix) {
+    if ( $args{SetStarted} && $lifecycle->IsInitial($old) && !$lifecycle->IsInitial($new) && !$raw_started->Unix) {
         #Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
@@ -3128,7 +3124,7 @@ sub SetStatus {
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $lifecycle->is_inactive($new) ) {
+    if ( $lifecycle->IsInactive($new) ) {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,
@@ -3157,66 +3153,11 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Delete {
     my $self = shift;
+    unless ( $self->QueueObj->Lifecycle->IsValid('deleted') ) {
+        return (0, $self->loc('Delete operation is disabled by lifecycle configuration') ); #loc
+    }
     return ( $self->SetStatus('deleted') );
-
-    # TODO: garbage collection
 }
-
-
-
-=head2 Stall
-
-Sets this ticket's status to stalled
-
-=cut
-
-sub Stall {
-    my $self = shift;
-    return ( $self->SetStatus('stalled') );
-}
-
-
-
-=head2 Reject
-
-Sets this ticket's status to rejected
-
-=cut
-
-sub Reject {
-    my $self = shift;
-    return ( $self->SetStatus('rejected') );
-}
-
-
-
-=head2 Open
-
-Sets this ticket\'s status to Open
-
-=cut
-
-sub Open {
-    my $self = shift;
-    return ( $self->SetStatus('open') );
-}
-
-
-
-=head2 Resolve
-
-Sets this ticket\'s status to Resolved
-
-=cut
-
-sub Resolve {
-    my $self = shift;
-    return ( $self->SetStatus('resolved') );
-}
-
-
-
-    
 
 
 =head2 SetTold ISO  [TIMETAKEN]

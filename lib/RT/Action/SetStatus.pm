@@ -101,7 +101,7 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $lifecycle = $ticket->QueueObj->lifecycle;
+    my $lifecycle = $ticket->QueueObj->Lifecycle;
     my $status = $ticket->Status;
 
     my $argument = $self->Argument;
@@ -112,15 +112,15 @@ sub Prepare {
 
     my $next = '';
     if ( $argument =~ /^(initial|active|inactive)$/i ) {
-        my $method = 'is_'. lc $argument;
-        ($next) = grep $lifecycle->$method($_), $lifecycle->transitions($status);
+        my $method = 'Is'. ucfirst lc $argument;
+        ($next) = grep $lifecycle->$method($_), $lifecycle->Transitions($status);
         unless ( $next ) {
             $RT::Logger->info("No transition from '$status' to $argument set");
             return 1;
         }
     }
-    elsif ( $lifecycle->is_valid( $argument ) ) {
-        unless ( $lifecycle->is_transition( $status => $argument ) ) {
+    elsif ( $lifecycle->IsValid( $argument ) ) {
+        unless ( $lifecycle->IsTransition( $status => $argument ) ) {
             $RT::Logger->warning("Transition '$status -> $argument' is not valid");
             return 1;
         }

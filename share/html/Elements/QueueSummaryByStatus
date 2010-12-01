@@ -62,7 +62,7 @@ for my $queue (@queues) {
     $name =~ s/'/\\'/g;
     my $queue_cond = "Queue = '$name' AND ";
     my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->is_valid($_), @statuses ) . ')';
+    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->IsValid($_), @statuses ) . ')';
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
@@ -72,7 +72,7 @@ for my $queue (@queues) {
 
 <%perl>
    for my $status (@statuses) {
-   if ( $lifecycle->is_valid( $status ) ) {
+   if ( $lifecycle->IsValid( $status ) ) {
 </%perl>
 <td align="right">
     <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond ."Status = '$status'" |u,n %>"><% $data->{$queue->{id}}->{$status} || '-'%></a>
@@ -113,7 +113,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
     {  id          => $_->Id,
        Name        => $_->Name,
        Description => $_->Description,
-       Lifecycle   => $_->lifecycle->name,
+       Lifecycle   => $_->Lifecycle->Name,
     }
 } grep $_, @queues;
 
@@ -121,8 +121,8 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
 my %lifecycle;
 
 for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->load( $queue->{'Lifecycle'} );
-    $lifecycle{ lc $cycle->name } = $cycle;
+    my $cycle = RT::Lifecycle->Load( $queue->{'Lifecycle'} );
+    $lifecycle{ lc $cycle->Name } = $cycle;
 }
 
 unless (@statuses) {
