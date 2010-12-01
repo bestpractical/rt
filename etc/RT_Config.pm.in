@@ -1791,29 +1791,18 @@ any number of statuses.
 For example:
 
     default => {
-        default_initial => 'new',
         initial  => ['new'],
         active   => ['open', 'stalled'],
         inactive => ['resolved', 'rejected', 'deleted'],
-        default_inactive => 'resolved',
         ...
     },
 
-Because of database constraints, status names can be from 1
-to 10 characters.  Statuses are localized using RT's standard
-internationalization and localization system.
+Status names can be from 1 to 64 ASCII characters.  Statuses are localized
+using RT's standard internationalization and localization system.
 
 =head3 Status sets
 
 =over 4
-
-=item default_initial
-
-As you'll read below, you can specify a set of statuses which
-RT will treat as valid "initial" statuses for tickets.
-
-If you (or your code) doesn't specify a status when creating a
-ticket, RT will use the L<"default_initial"> status.
 
 =item initial
 
@@ -1837,21 +1826,13 @@ While you're free to implement a workflow that ignores that description,
 typically once a ticket enters an inactive state, it will never again
 enter an active state.
 
-RT will automatically set the B<Resolved> state when a ticket's status is
+RT will automatically set the B<Resolved> date when a ticket's status is
 changed from an B<Initial> or B<Active> status to an B<Inactive> status.
 
 B<deleted> is still a special status and protected by the B<DeleteTicket>
 right, unless you re-defined rights (read below). If you don't want to
 allow ticket deletion at any time simply don't include it in your
 lifecycle.
-
-=item default_inactive
-
-You can specify a set of statuses which RT will treat as valid "inactive"
-statuses for tickets.
-
-If you (or your code) doesn't specify a status when resolving a
-ticket, RT will use the L<"default_inactive"> status.
 
 =back
 
@@ -1860,6 +1841,39 @@ order.
 
 Changes between statuses are constrained by transition rules,
 as described below.
+
+=head2 Default values
+
+In some cases a default value is used to display in UI or in API when
+value is not provided. You can configure defaults using the following
+syntax:
+
+    default => {
+        ...
+        defaults => {
+            on_create => 'new',
+            on_resolve => 'resolved',
+            ...
+        },
+    },
+
+The following defaults are used.
+
+=over 4
+
+=item on_create
+
+If you (or your code) doesn't specify a status when creating a
+ticket, RT will use the this status. See also L</Statuses available
+during ticket creation>.
+
+=item on_merge
+
+When tickets are merged status of the ticket that merged
+is changed by force to this. It should be one of inactive
+statuses. 'resolved' or its equivalent is the best candidate.
+
+=back
 
 =head2 Transitions between statuses and UI actions
 
@@ -1879,6 +1893,8 @@ all possible transitions in each lifecycle using the following format:
         },
         ...
     },
+
+=head3 Statuses available during ticket creation
 
 By default users can create tickets with any status, except deleted. If
 you want to restrict statuses available during creation then describe
@@ -1986,11 +2002,14 @@ you can not move tickets between queues with these lifecycles.
 
 Set(%Lifecycles,
     default => {
-        default_initial => 'new',
         initial         => [ 'new' ],
         active          => [ 'open', 'stalled' ],
         inactive        => [ 'resolved', 'rejected', 'deleted' ],
-        default_inactive => 'resolved',
+
+        defaults => {
+            on_create => 'new',
+            on_merge => 'resolved',
+        },
 
         transitions => {
             ''       => [qw(new open resolved)],
