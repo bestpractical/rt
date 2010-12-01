@@ -52,15 +52,15 @@ ok ($t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." ha
 ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
 ;
 
-my ($rid, $rmsg)= $t1->Resolve();
+my ($rid, $rmsg)= $t1->SetStatus('resolved');
 ok(!$rid, $rmsg);
-my ($rid2, $rmsg2) = $t2->Resolve();
+my ($rid2, $rmsg2) = $t2->SetStatus('resolved');
 ok ($rid2, $rmsg2);
-($rid, $rmsg)= $t1->Resolve();
+($rid, $rmsg)= $t1->SetStatus('resolved');
 ok(!$rid, $rmsg);
-my ($rid3,$rmsg3) = $t3->Resolve;
+my ($rid3,$rmsg3) = $t3->SetStatus('resolved');
 ok ($rid3,$rmsg3);
-($rid, $rmsg)= $t1->Resolve();
+($rid, $rmsg)= $t1->SetStatus('resolved');
 ok($rid, $rmsg);
 
 
