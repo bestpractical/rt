@@ -81,7 +81,7 @@
                 comp => '/Elements/SelectStatus',
                 args => {
                     Name            => "Status",
-                    Default         => $ARGS{Status} || $QueueObj->Lifecycle->DefaultInitial,
+                    Default         => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
                     DefaultValue    => 0,
                     SkipDeleted     => 1,
                     QueueObj        => $QueueObj,

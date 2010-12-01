@@ -290,7 +290,7 @@ $showrows->(
         "/Elements/SelectStatus",
         Name         => "Status",
         QueueObj     => $QueueObj,
-        Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultInitial,
+        Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
         DefaultValue => 0,
         ),
 
