@@ -2661,10 +2661,7 @@ sub _MergeInto {
         unless ($status_val) {
             $RT::Handle->Rollback();
             $RT::Logger->error(
-                $self->loc(
-                    "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
-                    $self
-                )
+                "Couldn't set status to $force_status. RT's Database may be inconsistent."
             );
             return ( 0, $self->loc("Merge failed. Couldn't set Status") );
         }
