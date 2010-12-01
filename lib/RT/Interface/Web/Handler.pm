@@ -127,6 +127,7 @@ sub NewHandler {
 
 sub _mason_dir_index {
     my ($self, $interp, $path) = @_;
+    $path =~ s!/$!!;
     if (   !$interp->comp_exists( $path )
          && $interp->comp_exists( $path . "/index.html" ) )
     {
