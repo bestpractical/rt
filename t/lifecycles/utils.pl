@@ -9,10 +9,13 @@ BEGIN {
 $config = <<END;
 Set(\%Lifecycles,
     default => {
-        default_initial => 'new',
         initial  => [qw(new)],
         active   => [qw(open stalled)],
         inactive => [qw(resolved rejected deleted)],
+        defaults => {
+            on_create => 'new',
+            on_merge => 'resolved',
+        },
         transitions => {
             ''       => [qw(new open resolved)],
             new      => [qw(open resolved rejected deleted)],
@@ -39,11 +42,15 @@ Set(\%Lifecycles,
         },
     },
     delivery => {
-        default_initial => 'ordered',
         initial  => ['ordered'],
         active   => ['on way', 'delayed'],
         inactive => ['delivered'],
+        defaults => {
+            on_create => 'ordered',
+            on_merge => 'delivered',
+        },
         transitions => {
+            ''        => ['ordered'],
             ordered   => ['on way', 'delayed'],
             'on way'  => ['delivered'],
             delayed   => ['on way'],
