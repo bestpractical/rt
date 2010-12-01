@@ -625,12 +625,30 @@ sub DefaultFormat
     }
 }
 
+=head2 LocaleObj
+
+Returns the L<DateTime::Locale> object representing the current user's locale.
+
+=cut
+
+sub LocaleObj {
+    my $self = shift;
+
+    my $lang = $self->CurrentUser->UserObj->Lang;
+    unless ($lang) {
+        require I18N::LangTags::Detect;
+        $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
+    }
+
+    return DateTime::Locale->load($lang);
+}
+
 =head3 LocalizedDateTime
 
 Returns date and time as string, with user localization.
 
 Supports arguments: C<DateFormat> and C<TimeFormat> which may contains date and
-time format as specified in DateTime::Locale (default to full_date_format and
+time format as specified in L<DateTime::Locale> (default to full_date_format and
 medium_time_format), C<AbbrDay> and C<AbbrMonth> which may be set to 0 if
 you want full Day/Month names instead of abbreviated ones.
 
@@ -652,14 +670,7 @@ sub LocalizedDateTime
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
-    my $lang = $self->CurrentUser->UserObj->Lang;
-    unless ($lang) {
-        require I18N::LangTags::Detect;
-        $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
-    }
-    
-
-    my $formatter = DateTime::Locale->load($lang);
+    my $formatter = $self->LocaleObj;
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
     $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );
@@ -672,7 +683,7 @@ sub LocalizedDateTime
 
     # FIXME : another way to call this module without conflict with local
     # DateTime method?
-    my $dt = DateTime::->new( locale => $lang,
+    my $dt = DateTime::->new( locale => $formatter,
                             time_zone => $tz,
                             year => $year,
                             month => $mon,
