@@ -5,6 +5,8 @@ use warnings;
 
 use RT::Test tests => 120;
 
+RT->Config->Set( GnuPG => { Enable => 0 } );
+
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $url = $agent->rt_base_url;
