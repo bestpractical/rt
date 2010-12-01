@@ -138,8 +138,14 @@
 <&|/l&>Hour</&>:
 </td><td class="value">
 <select name="Hour">
+% my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
+% my $dt = DateTime->now;
+% $dt->set_minute(0);
+% $dt->set_second(0);
+
 % for my $hour (0..23) {
-%     my $formatted = sprintf '%02d:00', $hour;
+%     $dt->set_hour($hour);
+%     my $formatted = $dt->format_cldr($formatter->time_format_short);
 %     my $selected = $formatted eq $fields{'Hour'}
 %                  ? 'selected="selected"'
 %                  : '';
