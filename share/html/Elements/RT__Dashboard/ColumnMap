@@ -79,6 +79,17 @@ my $COLUMN_MAP = {
                 my $freq = $Subscription->SubValue('Frequency');
                 my $hour = $Subscription->SubValue('Hour');
 
+                if (my ($integer_hour) = $hour =~ /^(\d\d):00$/) {
+                    my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
+                    my $dt = DateTime->now;
+                    $dt->set_minute(0);
+                    $dt->set_second(0);
+                    $dt->set_hour($integer_hour);
+
+                    # use the formatted hour instead
+                    $hour = $dt->format_cldr($formatter->time_format_short);
+                }
+
                 if ($freq eq 'weekly') {
                     my $day = $Subscription->SubValue('Dow');
                     $frequency = loc("weekly (on [_1]) at [_2]", loc($day), $hour);
