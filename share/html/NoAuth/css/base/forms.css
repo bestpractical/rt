@@ -173,6 +173,7 @@ div.submit .extra-buttons {
 
 div.widget {
     padding-bottom: 0.5em;
+    clear: both;
 }
 
 div.widget .label {
