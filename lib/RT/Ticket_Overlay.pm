@@ -301,7 +301,7 @@ sub Create {
 
     my $cycle = $QueueObj->Lifecycle;
     unless ( defined $args{'Status'} && length $args{'Status'} ) {
-        $args{'Status'} = $cycle->DefaultInitial;
+        $args{'Status'} = $cycle->DefaultOnCreate;
     }
 
     unless ( $cycle->IsValid( $args{'Status'} ) ) {
@@ -2653,10 +2653,10 @@ sub _MergeInto {
     }
 
 
-    my $default_inactive = $self->QueueObj->Lifecycle->DefaultInactive;
-    if ( $default_inactive ne $self->__Value('Status') ) {
+    my $force_status = $self->QueueObj->Lifecycle->DefaultOnMerge;
+    if ( $force_status && $force_status ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
-            = $self->__Set( Field => 'Status', Value => $default_inactive );
+            = $self->__Set( Field => 'Status', Value => $force_status );
 
         unless ($status_val) {
             $RT::Handle->Rollback();
