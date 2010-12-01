@@ -358,14 +358,14 @@ sub build_email {
     );
 
     my $text = RT::Interface::Email::ConvertHTMLToText($content);
-    $body->add_part(
+    $body->attach(
         Data        => Encode::encode_utf8($text),
         Type        => 'text/plain',
         Charset     => 'UTF-8',
         Disposition => 'inline',
     );
 
-    $body->add_part(
+    $body->attach(
         Data        => Encode::encode_utf8($content),
         Type        => 'text/html',
         Charset     => 'UTF-8',
