@@ -349,14 +349,30 @@ sub build_email {
         Type    => "multipart/mixed",
     );
 
-    $entity->attach(
+    # In general, user agents that compose "multipart/alternative" entities
+    # must place the body parts in increasing order of preference, that is,
+    # with the preferred format last. - RFC2046
+
+    my $body = MIME::Entity->build(
+        Type => "multipart/alternative",
+    );
+
+    my $text = RT::Interface::Email::ConvertHTMLToText($content);
+    $body->add_part(
+        Data        => Encode::encode_utf8($text),
+        Type        => 'text/plain',
+        Charset     => 'UTF-8',
+        Disposition => 'inline',
+    );
+
+    $body->add_part(
         Data        => Encode::encode_utf8($content),
         Type        => 'text/html',
         Charset     => 'UTF-8',
         Disposition => 'inline',
     );
 
-    for my $part (@parts) {
+    for my $part ($body, @parts) {
         $entity->add_part($part);
     }
 
