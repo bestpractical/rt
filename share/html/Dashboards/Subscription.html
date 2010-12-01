@@ -146,11 +146,13 @@
 % for my $hour (0..23) {
 %     $dt->set_hour($hour);
 %     my $formatted = $dt->format_cldr($formatter->time_format_short);
-%     my $selected = $formatted eq $fields{'Hour'}
+
+%     my $value = my $formatted = sprintf '%02d:00', $hour;
+%     my $selected = $value eq $fields{'Hour'}
 %                  ? 'selected="selected"'
 %                  : '';
 
-    <option value="<% $formatted %>" <%$selected|n %>><% $formatted %></option>
+    <option value="<% $value %>" <%$selected|n %>><% $formatted %></option>
 % }
 </select>
 (<%$timezone%>)
