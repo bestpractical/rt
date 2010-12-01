@@ -218,29 +218,27 @@ sub RevokeRight {
 
 
 
-=head2 sub HasRight (Right => 'right' Object => undef)
-
+=head2 HasRight (Right => 'right' Object => undef)
 
 Checks to see whether this principal has the right "Right" for the Object
-specified. If the Object parameter is omitted, checks to see whether the 
-user has the right globally.
+specified. This takes the params:
 
-This still hard codes to check to see if a user has queue-level rights
-if we ask about a specific ticket.
+=over 4
 
+=item Right
 
-This takes the params:
+name of a right
 
-    Right => name of a right
+=item Object
 
-    And either:
+an RT style object (->id will get its id)
 
-    Object => an RT style object (->id will get its id)
+=back
 
+Returns 1 if a matching ACE was found. Returns undef if no ACE was found.
 
-Returns 1 if a matching ACE was found.
-
-Returns undef if no ACE was found.
+Use L</HasRights> to fill a fast cache, especially if you're going to
+check many different rights with the same principal and object.
 
 =cut
 
@@ -286,6 +284,14 @@ sub HasRight {
         return (undef);
     }
 
+    {
+        my $cached = $_ACL_CACHE->fetch(
+            $self->id .';:;'. ref($args{'Object'}) .'-'. $args{'Object'}->id
+        );
+        return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
+            if $cached;
+    }
+
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
 
@@ -323,6 +329,101 @@ sub HasRight {
     return ($hitcount);
 }
 
+=head2 HasRights
+
+Returns a hash reference with all rights this principal has on an
+object. Takes Object as a named argument.
+
+Main use case of this method is the following:
+
+    $ticket->CurrentUser->PrincipalObj->HasRights( Object => $ticket );
+    ...
+    $ticket->CurrentUserHasRight('A');
+    ...
+    $ticket->CurrentUserHasRight('Z');
+
+Results are cached and the cache is used in this and, as well, in L</HasRight>
+method speeding it up. Don't use hash reference returned by this method
+directly for rights checks as it's more complicated then it seems, especially
+considering config options like 'DisallowExecuteCode'.
+
+=cut
+
+sub HasRights {
+    my $self = shift;
+    my %args = (
+        Object       => undef,
+        EquivObjects => undef,
+        @_
+    );
+    return {} if $self->__Value('Disabled');
+
+    my $object = $args{'Object'};
+    unless ( eval { $object->id } ) {
+        $RT::Logger->crit("HasRights called with no valid object");
+    }
+
+    my $cache_key = $self->id .';:;'. ref($object) .'-'. $object->id;
+    my $cached = $_ACL_CACHE->fetch($cache_key);
+    return $cached if $cached;
+
+    push @{ $args{'EquivObjects'} }, $object;
+    unshift @{ $args{'EquivObjects'} },
+        $args{'Object'}->ACLEquivalenceObjects;
+    unshift @{ $args{'EquivObjects'} }, $RT::System
+        unless $self->can('_IsOverrideGlobalACL')
+            && $self->_IsOverrideGlobalACL( $object );
+
+    my %res = ();
+    {
+        my $query
+            = "SELECT DISTINCT ACL.RightName "
+            . $self->_HasGroupRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            );
+        my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($rights) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+        $res{$_} = 1 foreach @$rights;
+    }
+    my $roles;
+    {
+        my $query
+            = "SELECT DISTINCT Groups.Type "
+            . $self->_HasRoleRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            );
+        $roles = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($roles) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+    }
+    if ( @$roles ) {
+        my $query
+            = "SELECT DISTINCT ACL.RightName "
+            . $self->_RolesWithRightQuery(
+                EquivObjects => $args{'EquivObjects'}
+            )
+            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @$roles ) .')'
+        ;
+        my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
+        unless ($rights) {
+            $RT::Logger->warning( $RT::Handle->dbh->errstr );
+            return ();
+        }
+        $res{$_} = 1 foreach @$rights;
+    }
+
+    delete $res{'ExecuteCode'} if 
+        RT->Config->Get('DisallowExecuteCode');
+
+    $_ACL_CACHE->store( $cache_key, \%res );
+    return \%res;
+}
+
 =head2 _HasRight
 
 Low level HasRight implementation, use HasRight method instead.
@@ -352,20 +453,32 @@ sub _HasGroupRight {
                  EquivObjects => [],
                  @_
                );
-    my $right = $args{'Right'};
 
     my $query
         = "SELECT ACL.id, ACL.ObjectType, ACL.ObjectId "
-        . "FROM ACL, Principals, CachedGroupMembers WHERE "
-        .
+        . $self->_HasGroupRightQuery( %args );
 
-        # Only find superuser or rights with the name $right
-        "(ACL.RightName = 'SuperUser' "
-        . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '' )
-        . ") "
+    $self->_Handle->ApplyLimits( \$query, 1 );
+    my ( $hit, $obj, $id ) = $self->_Handle->FetchResult($query);
+    return (0) unless $hit;
+
+    $obj .= "-$id" if $id;
+    return ( 1, $obj );
+}
+
+sub _HasGroupRightQuery {
+    my $self = shift;
+    my %args = (
+        Right        => undef,
+        EquivObjects => [],
+        @_
+    );
+
+    my $query
+        = "FROM ACL, Principals, CachedGroupMembers WHERE "
 
         # Never find disabled groups.
-        . "AND Principals.id = ACL.PrincipalId "
+        . "Principals.id = ACL.PrincipalId "
         . "AND Principals.PrincipalType = 'Group' "
         . "AND Principals.Disabled = 0 "
 
@@ -375,8 +488,7 @@ sub _HasGroupRight {
 #  as is the case when we want to look up group rights
         . "AND CachedGroupMembers.GroupId  = ACL.PrincipalId "
         . "AND CachedGroupMembers.GroupId  = Principals.id "
-        . "AND CachedGroupMembers.MemberId = "
-        . $self->Id . " "
+        . "AND CachedGroupMembers.MemberId = ". $self->Id . " "
         . "AND CachedGroupMembers.Disabled = 0 ";
 
     my @clauses;
@@ -393,13 +505,13 @@ sub _HasGroupRight {
     if (@clauses) {
         $query .= " AND (" . join( ' OR ', @clauses ) . ")";
     }
-
-    $self->_Handle->ApplyLimits( \$query, 1 );
-    my ( $hit, $obj, $id ) = $self->_Handle->FetchResult($query);
-    return (0) unless $hit;
-
-    $obj .= "-$id" if $id;
-    return ( 1, $obj );
+    if ( my $right = $args{'Right'} ) {
+        # Only find superuser or rights with the name $right
+        $query .= " AND (ACL.RightName = 'SuperUser' "
+            . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '' )
+        . ") ";
+    }
+    return $query;
 }
 
 sub _HasRoleRight {
@@ -413,7 +525,25 @@ sub _HasRoleRight {
     return 0 unless @roles;
 
     my $query = "SELECT Groups.id "
-        . "FROM Groups, Principals, CachedGroupMembers WHERE "
+        . $self->_HasRoleRightQuery( %args, Roles => \@roles );
+
+    $self->_Handle->ApplyLimits( \$query, 1 );
+    my ($hit) = $self->_Handle->FetchResult($query);
+    return (1) if $hit;
+
+    return 0;
+}
+
+sub _HasRoleRightQuery {
+    my $self = shift;
+    my %args = ( Right        => undef,
+                 EquivObjects => [],
+                 Roles        => undef,
+                 @_
+               );
+
+    my $query =
+        " FROM Groups, Principals, CachedGroupMembers WHERE "
 
         # Never find disabled things
         . "Principals.Disabled = 0 " . "AND CachedGroupMembers.Disabled = 0 "
@@ -428,8 +558,11 @@ sub _HasRoleRight {
 #  as is the case when we want to look up group rights
         . "AND Principals.id = CachedGroupMembers.GroupId "
         . "AND CachedGroupMembers.MemberId = " . $self->Id . " "
+    ;
 
-        . "AND (" . join( ' OR ', map "Groups.Type = '$_'", @roles ) . ")";
+    if ( $args{'Roles'} ) {
+        $query .= "AND (" . join( ' OR ', map "Groups.Type = '$_'", @{ $args{'Roles'} } ) . ")";
+    }
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
@@ -446,12 +579,7 @@ sub _HasRoleRight {
         push @object_clauses, "($clause)";
     }
     $query .= " AND (" . join( ' OR ', @object_clauses ) . ")";
-
-    $self->_Handle->ApplyLimits( \$query, 1 );
-    my ($hit) = $self->_Handle->FetchResult($query);
-    return (1) if $hit;
-
-    return 0;
+    return $query;
 }
 
 =head2 RolesWithRight
@@ -481,17 +609,40 @@ sub RolesWithRight {
     return () if $args{'Right'} eq 'ExecuteCode'
         and RT->Config->Get('DisallowExecuteCode');
 
-    my $query = "SELECT DISTINCT PrincipalType FROM ACL"
+    my $query = "SELECT DISTINCT PrincipalType "
+        . $self->_RolesWithRightQuery( %args );
 
-        # Only find superuser or rights with the requested right
-        . " WHERE ( RightName = '" . $args{'Right'} . "' "
+    my $roles = $RT::Handle->dbh->selectcol_arrayref($query);
+    unless ($roles) {
+        $RT::Logger->warning( $RT::Handle->dbh->errstr );
+        return ();
+    }
+    return @$roles;
+}
 
-        # Check SuperUser if we were asked to
-        . ( $args{'IncludeSuperusers'} ? "OR RightName = 'SuperUser' " : '' )
-        . ")"
+sub _RolesWithRightQuery {
+    my $self = shift;
+    my %args = ( Right               => undef,
+                 IncludeSystemRights => 1,
+                 IncludeSuperusers   => 1,
+                 EquivObjects        => [],
+                 @_
+               );
+
+    my $query = " FROM ACL WHERE"
 
         # we need only roles
-        . " AND PrincipalType != 'Group'";
+        . " PrincipalType != 'Group'";
+
+    if ( my $right = $args{'Right'} ) {
+        $query .=
+            # Only find superuser or rights with the requested right
+            " AND ( RightName = '$right' "
+
+            # Check SuperUser if we were asked to
+            . ( $args{'IncludeSuperusers'} ? "OR RightName = 'SuperUser' " : '' )
+            . ")";
+    }
 
     # skip rights granted on system level if we were asked to
     unless ( $args{'IncludeSystemRights'} ) {
@@ -513,17 +664,8 @@ sub RolesWithRight {
     $query .= " AND (" . join( ' OR ', @object_clauses ) . ")"
         if @object_clauses;
 
-    my $roles = $RT::Handle->dbh->selectcol_arrayref($query);
-    unless ($roles) {
-        $RT::Logger->warning( $RT::Handle->dbh->errstr );
-        return ();
-    }
-    return @$roles;
+    return $query;
 }
-
-
-
-
 
 
 =head2 InvalidateACLCache
