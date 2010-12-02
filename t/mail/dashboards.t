@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 47;
+use RT::Test tests => 50;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -133,9 +133,12 @@ produces_no_dashboard_mail_ok(
 is(@mails, 0, "no mail leftover");
 
 
+$m->no_warnings_ok;
+RT::Test->stop_server;
 RT->Config->Set('DashboardSubject' => 'a %s b %s c');
 RT->Config->Set('DashboardAddress' => 'dashboard@example.com');
 RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
+($baseurl, $m) = RT::Test->started_ok;
 
 RT::Dashboard::Mailer->MailDashboards(All => 1);
 @mails = RT::Test->fetch_caught_mails;
