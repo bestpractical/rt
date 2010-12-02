@@ -48,11 +48,11 @@
 <table>
 <tr>
 <td class="label"><&|/l&>Name</&>:</td>
-<td class="value"><input name="Name" value="<%$Name%>" size="20" /></td>
+<td class="value"><input name="Name" value="<%$Name||''%>" size="20" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Description</&>:</td>
-<td class="value"><input name="Description" value="<%$Description%>" size="80" /></td>
+<td class="value"><input name="Description" value="<%$Description||''%>" size="80" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Type</&>:</td>
@@ -63,7 +63,7 @@
 </tr>
 <tr>
 <td class="label" valign="top"><&|/l&>Content</&>:</td>
-<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft"><%$Content%></textarea></td>
+<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft"><%$Content||''%></textarea></td>
 </tr>
 </table>
 
