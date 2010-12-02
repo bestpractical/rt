@@ -217,7 +217,7 @@ Regexp::IPv6
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-HTML::Mason 1.36
+HTML::Mason 1.43
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20

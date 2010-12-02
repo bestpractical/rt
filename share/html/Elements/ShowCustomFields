@@ -83,6 +83,10 @@ $m->callback(
     CustomFields => $CustomFields,
 );
 
+# don't print anything if there is no custom fields
+return unless $CustomFields->First;
+$CustomFields->GotoFirstItem;
+
 my $print_value = sub {
     my ($cf, $value) = @_;
     my $linked = $value->LinkValueTo;

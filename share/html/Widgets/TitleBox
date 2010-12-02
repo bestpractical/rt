@@ -46,9 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="<% $class %>">
-  <& TitleBoxStart, %ARGS &><% $m->content | n %><& TitleBoxEnd &>
+  <& TitleBoxStart, %ARGS &><% $content | n %><& TitleBoxEnd &>
 </div>
 <%ARGS>
 $class => ''
+$hide_empty => 0
 </%ARGS>
-
+<%INIT>
+my $content = $m->content;
+return if $hide_empty && $content =~ /^\s*$/s;
+</%INIT>
