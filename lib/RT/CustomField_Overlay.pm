@@ -1671,7 +1671,9 @@ sub BasedOnObj {
     my $self = shift;
 
     my $obj = RT::CustomField->new( $self->CurrentUser );
-    $obj->Load( $self->BasedOn );
+    if ( $self->BasedOn ) {
+        $obj->Load( $self->BasedOn );
+    }
     return $obj;
 }
 
