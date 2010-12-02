@@ -1544,4 +1544,12 @@ END {
     }
 }
 
+{ 
+    # ease the used only once warning
+    no warnings;
+    no strict 'refs';
+    %{'RT::I18N::en_us::Lexicon'};
+    %{'Win32::Locale::Lexicon'};
+}
+
 1;
