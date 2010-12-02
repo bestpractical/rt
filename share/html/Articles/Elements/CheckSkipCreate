@@ -50,7 +50,7 @@ return if $checks_failure; # we're already skipping Create
 return unless RT->Config->Get('ArticleOnTicketCreate');
 
 
-my $article = RT::FM::Article->new($session{'CurrentUser'});
+my $article = RT::Article->new($session{'CurrentUser'});
 foreach my $arg ( keys %$ARGSRef) {
 
     if ( $ARGSRef->{RTFM_Content} ||              # search for an article
@@ -72,3 +72,4 @@ $skip_create => undef
 $checks_failure => undef
 $results => undef
 </%ARGS>
+

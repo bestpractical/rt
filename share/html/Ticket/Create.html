@@ -436,6 +436,8 @@ my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
               checks_failure => $checks_failure, results => \@results );
 
+$m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
+
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
     if ( $ValidCFs && !$checks_failure && !$skip_create ) {
         $m->comp('Display.html', %ARGS);
