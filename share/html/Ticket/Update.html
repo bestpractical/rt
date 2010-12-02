@@ -287,7 +287,7 @@ if ( $ARGS{'SubmitTicket'} ) {
         (ref $ARGS{'TxnSendMailTo'} eq "ARRAY" ? @{$ARGS{'TxnSendMailTo'}}
              : defined $ARGS{'TxnSendMailTo'} ? ($ARGS{'TxnSendMailTo'}) : ());
 
-    my @squelchlist = grep {not $checked{$_}} split /,/, $ARGS{'TxnRecipients'};
+    my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 
     my $CFs = $TicketObj->TransactionCustomFields;
