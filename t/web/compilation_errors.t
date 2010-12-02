@@ -7,7 +7,7 @@ BEGIN {
     sub wanted {
         -f && /\.html$/ && $_ !~ /Logout.html$/;
     }
-    my $tests = 6;
+    my $tests = 8;
     find( sub { wanted() and $tests += 4 }, 'share/html/' );
     plan tests => $tests;
 }
@@ -38,7 +38,7 @@ is($agent->status, 200, "Fetched the page ok");
 $agent->content_contains('Logout', "Found a logout link");
 
 
-find ( sub { wanted() and test_get($File::Find::name) } , 'share/html/');
+find ( sub { wanted() and test_get($agent, $File::Find::name) } , 'share/html/');
 
 TODO: {
     local $TODO = "we spew *lots* of undef warnings";
@@ -46,6 +46,7 @@ TODO: {
 };
 
 sub test_get {
+    my $agent = shift;
         my $file = shift;
 
         $file =~ s#^share/html/##;
