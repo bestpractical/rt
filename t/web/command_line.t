@@ -51,6 +51,7 @@ expect_run(
     quit => 'quit',
 );
 expect_send(q{create -t ticket set subject='new ticket' add cc=foo@example.com}, "Creating a ticket...");
+
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
 expect_handle->before() =~ /Ticket (\d+) created/;
 my $ticket_id = $1;
@@ -380,8 +381,6 @@ ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
 expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
 expect_like(qr/Merge completed/, 'Merged the tickets');
 
-$m->no_warnings_ok;
-
 expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
 expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');
 expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
@@ -519,5 +518,10 @@ sub check_attachment {
         expect_is($attachment_content,"Attachment contains original text");
     }
 }
+
+# you may encounter warning like Use of uninitialized value $ampm
+# ... in Time::ParseDate
+my @warnings = grep { $_ !~ /\$ampm/ } $m->get_warnings;
+is( scalar @warnings, 0, 'no extra warnings' );
 
 1; # needed to avoid a weird exit value from expect_quit
