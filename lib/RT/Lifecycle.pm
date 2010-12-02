@@ -225,8 +225,8 @@ See also </valid>.
 
 sub IsValid {
     my $self  = shift;
-    my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->Valid( @_ );
+    my $value = shift or return 0;
+    return 1 if grep lc($_) eq lc($value), $self->Valid( @_ );
     return 0;
 }
 
@@ -266,8 +266,8 @@ Otherwise, returns false.
 
 sub IsInitial {
     my $self  = shift;
-    my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->Valid('initial');
+    my $value = shift or return 0;
+    return 1 if grep lc($_) eq lc($value), $self->Valid('initial');
     return 0;
 }
 
@@ -292,8 +292,8 @@ Otherwise, returns false.
 
 sub IsActive {
     my $self  = shift;
-    my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->Valid('active');
+    my $value = shift or return 0;
+    return 1 if grep lc($_) eq lc($value), $self->Valid('active');
     return 0;
 }
 
@@ -317,8 +317,8 @@ Otherwise, returns false.
 
 sub IsInactive {
     my $self  = shift;
-    my $value = lc shift;
-    return 1 if grep lc($_) eq $value, $self->Valid('inactive');
+    my $value = shift or return 0;
+    return 1 if grep lc($_) eq lc($value), $self->Valid('inactive');
     return 0;
 }
 
