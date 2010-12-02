@@ -517,11 +517,17 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             if ($request_path =~ qr{^/Search/Results.html}
                 &&                        #XXX TODO better abstraction
                 $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
-                my $shred_args = URI->new->query_form(
-                                      search          => 1,
-                                      plugin          => 'Tickets',
-                                      'Tickets:query' => $query_args{'Query'},
-                                      'Tickets:limit' => $query_args{'Rows'});
+
+                my $uri = URI->new;
+                $uri->query_form(
+                    search          => 1,
+                    plugin          => 'Tickets',
+                    'Tickets:query' => $query_args{'Query'},
+                    'Tickets:limit' => $query_args{'Rows'},
+                );
+
+                my $shred_args = $uri->query_form;
+
                 $current_search_menu->child( 'shredder' => title => loc('Shredder'),
                                 path => 'Admin/Tools/Shredder/?' . $shred_args);
             }
