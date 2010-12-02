@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 42;
+use RT::Test tests => 44;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my ($baseurl, $m) = RT::Test->started_ok;

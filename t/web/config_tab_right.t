@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 8;
+use RT::Test nodata => 1, tests => 10;
 
 my ($uname, $upass, $user) = ('tester', 'tester');
 {

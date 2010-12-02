@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 120;
+use RT::Test tests => 122;
 
 RT->Config->Set( GnuPG => { Enable => 0 } );
 

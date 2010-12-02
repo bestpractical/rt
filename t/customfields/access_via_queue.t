@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 35;
+use RT::Test nodata => 1, tests => 37;
 use RT::Ticket;
 use RT::CustomField;
 

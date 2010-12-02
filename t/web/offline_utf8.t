@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 7;
+use RT::Test tests => 9;
 use utf8;
 
 use File::Temp qw/tempfile/;

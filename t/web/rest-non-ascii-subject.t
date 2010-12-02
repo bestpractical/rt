@@ -2,7 +2,7 @@
 # Test ticket creation with REST using non ascii subject
 use strict;
 use warnings;
-use RT::Test tests => 7;
+use RT::Test tests => 9;
 
 use Encode;
 # \x{XX} where XX is less than 255 is not treated as unicode code point

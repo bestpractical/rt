@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => 11;
 
 my $ticket = RT::Test->create_ticket(
     Subject => 'test bulk update',

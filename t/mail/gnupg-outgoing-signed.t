@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 101,
+  tests         => 103,
   gnupg_options => {
     passphrase    => 'rt-test',
     'trust-model' => 'always',

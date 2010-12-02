@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 16;
+use RT::Test tests => 18;
 
 my $root = RT::User->new( $RT::SystemUser );
 $root->Load('root');

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 77, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 79, gnupg_options => { passphrase => 'rt-test' };
 use RT::Action::SendEmail;
 
 my $queue = RT::Test->load_or_create_queue(

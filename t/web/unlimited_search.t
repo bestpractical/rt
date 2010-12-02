@@ -2,7 +2,7 @@
 
 use strict;
 
-use RT::Test tests => 83;
+use RT::Test tests => 85;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new(RT->SystemUser);

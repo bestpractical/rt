@@ -338,4 +338,11 @@ sub custom_field_input {
     return $res;
 }
 
+sub DESTROY {
+    my $self = shift;
+    if ( @RT::Test::SERVERS && !$RT::Test::Web::DESTROY++ ) {
+        $self->no_warnings_ok;
+    }
+}
+
 1;

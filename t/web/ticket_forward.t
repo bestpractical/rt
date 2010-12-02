@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 23;
+use RT::Test tests => 25;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $att_fh, $att_file ) =

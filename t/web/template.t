@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 17;
+use RT::Test tests => 19;
 
 my $user_a = RT::Test->load_or_create_user(
     Name => 'user_a', Password => 'password',

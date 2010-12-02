@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => 11;
 
 diag "set groups limit to 1";
 RT->Config->Set( ShowMoreAboutPrivilegedUsers    => 1 );

@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use RT::Test::GnuPG
-  tests         => 39,
+  tests         => 41,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',

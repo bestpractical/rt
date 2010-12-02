@@ -9,7 +9,7 @@ BEGIN {
 
 
 use RT;
-use RT::Test tests => 60;
+use RT::Test tests => 62;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );

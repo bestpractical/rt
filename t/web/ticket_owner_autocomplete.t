@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 41;
+use RT::Test nodata => 1, tests => 43;
 use JSON qw(from_json);
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );

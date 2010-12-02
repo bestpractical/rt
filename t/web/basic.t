@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Encode;
 
-use RT::Test tests => 21;
+use RT::Test tests => 23;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 

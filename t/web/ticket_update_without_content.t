@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 10;
+use RT::Test tests => 12;
 my ( $url, $m ) = RT::Test->started_ok;
 
 # merged tickets still show up in search

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use utf8;
 
-use RT::Test tests => 14;
+use RT::Test tests => 16;
 
 
 my ($baseurl, $m) = RT::Test->started_ok;

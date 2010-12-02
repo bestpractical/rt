@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 11, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 13, gnupg_options => { passphrase => 'rt-test' };
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');

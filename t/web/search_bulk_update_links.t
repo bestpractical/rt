@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 45;
+use RT::Test tests => 47;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 

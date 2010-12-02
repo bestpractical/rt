@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 34;
+use RT::Test tests => 36;
 
 # make an initial queue, so we have more than 1
 my $original_test_queue = new_queue("Test$$");

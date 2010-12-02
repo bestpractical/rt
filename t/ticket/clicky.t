@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test tests => 18;
+use RT::Test tests => 20;
 
 my $plain = MIME::Entity->build(
     Subject => 'plain mime',

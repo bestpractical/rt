@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 7;
+use RT::Test tests => 9;
 
 RT->Config->Set(StatementLog => 1);
 

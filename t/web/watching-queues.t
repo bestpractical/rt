@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 75;
+use RT::Test tests => 77;
 use Web::Scraper;
 my ($baseurl, $m) = RT::Test->started_ok;
 

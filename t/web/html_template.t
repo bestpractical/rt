@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 17;
+use RT::Test tests => 19;
 use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';

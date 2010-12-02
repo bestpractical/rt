@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 131;
+use RT::Test tests => 133;
 
 my ($baseurl, $agent) =RT::Test->started_ok;
 ok( $agent->login, 'log in' );

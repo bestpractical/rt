@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
+use RT::Test tests => 21;
 my ( $url, $m ) = RT::Test->started_ok;
 use RT::Attribute;
 my $search = RT::Attribute->new(RT->SystemUser);

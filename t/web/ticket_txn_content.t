@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 37;
+use RT::Test tests => 39;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $plain_fh, $plain_file ) =

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 5,
+  tests         => 7,
   gnupg_options => {
     passphrase => 'rt-test',
     homedir => RT::Test::get_abs_relocatable_dir(

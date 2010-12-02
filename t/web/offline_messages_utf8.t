@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 6;
+use RT::Test tests => 8;
 use File::Temp qw/tempfile/;
 use Encode;
 use RT::Ticket;

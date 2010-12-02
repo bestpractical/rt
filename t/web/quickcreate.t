@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 8;
+use RT::Test tests => 10;
 
 RT->Config->Set('DisplayTicketAfterQuickCreate' => 0);
 
