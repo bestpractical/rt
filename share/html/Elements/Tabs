@@ -240,7 +240,11 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     if ( $request_path =~ qr{^/Admin/Queues} ) {
-        if ( my $id = $m->request_args->{'id'} || $m->request_args->{'Queue'} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ 
+                ||
+              $m->request_args->{'Queue'} && $m->request_args->{'Queue'} =~ /^\d+$/ 
+                ) {
+            my $id = $m->request_args->{'id'} || $m->request_args->{'Queue'};
             my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
             $queue_obj->Load($id);
 
@@ -274,7 +278,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         }
     }
     if ( $request_path =~ qr{^/Admin/Users} ) {
-        if ( my $id = $m->request_args->{'id'} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
+            my $id = $m->request_args->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
             $obj->Load($id);
             my $tabs = PageMenu();
@@ -290,7 +295,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     if ( $request_path =~ qr{^/Admin/Groups} ) {
-        if ( my $id = $m->request_args->{'id'} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
+            my $id = $m->request_args->{'id'};
             my $obj = RT::Group->new( $session{'CurrentUser'} );
             $obj->Load($id);
             my $tabs = PageMenu();
@@ -303,7 +309,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     if ( $request_path =~ qr{^/Admin/CustomFields/} ) {
-        if ( my $id = $m->request_args->{'id'} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
+            my $id = $m->request_args->{'id'};
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
             my $tabs = PageMenu();
