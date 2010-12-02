@@ -44,8 +44,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<form action="<%$RT::WebPath%>/SelfService/Article/Search.html" id="ArticleSearch">
-<input type="submit" class="button" value="<&|/l&>Search Articles</&>" />&nbsp;
-<input size="15" name="RTFM_Content" />
+<form action="<% RT->Config->Get('WebPath') %>/SelfService/Article/Search.html" id="ArticleSearch">
+<input size="4" name="RTFM_Content" value="<&|/l&>Search Articles</&>..." onfocus="if (this.value=='<&|/l&>Search Articles</&>...') this.value=''" />
 </form>
 

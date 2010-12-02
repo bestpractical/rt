@@ -290,3 +290,8 @@
  text-align: right;
 
 }
+#topactions #ArticleSearch {
+    float: right;
+    margin-left: 1em;
+}
+

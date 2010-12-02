@@ -161,7 +161,13 @@
  color: #000;
  }
 
-#topactions #GotoTicket {
+#topactions #GotoTicket, #topactions #ArticleSearch {
  text-align: right;
 
 }
+
+#topactions #ArticleSearch {
+    float: right;
+    margin-left: 1em;
+}
+
