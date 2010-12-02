@@ -340,7 +340,7 @@ sub custom_field_input {
 
 sub DESTROY {
     my $self = shift;
-    if ( @RT::Test::SERVERS && !$RT::Test::Web::DESTROY++ ) {
+    if ( !$RT::Test::Web::DESTROY++ ) {
         $self->no_warnings_ok;
     }
 }
