@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 45;
+use RT::Test tests => 47;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -55,10 +55,6 @@ $m->field('Frequency' => 'daily');
 $m->field('Hour' => '06:00');
 $m->click_button(name => 'Save');
 $m->content_contains("Subscribed to dashboard Testing!");
-
-# we're done with the web side; this silences some warnings about changing
-# the config as well
-RT::Test->stop_server;
 
 sub produces_dashboard_mail_ok { # {{{
     my %args = @_;
