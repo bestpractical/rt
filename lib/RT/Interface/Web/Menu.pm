@@ -97,8 +97,6 @@ sub new {
 
 Sets or returns the string that the menu item will be displayed as.
 
-=cut
-
 =head2 parent [MENU]
 
 Gets or sets the parent L<RT::Interface::Web::Menu> of this item; this defaults
@@ -131,8 +129,6 @@ the parent.  This defaults to adding onto the end.
 =head2 target [STRING]
 
 Get or set the frame or pseudo-target for this link. something like L<_blank>
-
-=cut
 
 =head2 class [STRING]
 
