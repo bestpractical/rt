@@ -90,7 +90,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
-    if ( $dashboard->_PrivacyObjects( create => 1 ) ) {
+    if ( $dashboard->ObjectsForCreating ) {
         $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
