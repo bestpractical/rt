@@ -66,7 +66,7 @@ sub ParseURI {
     my $uri = shift;
 
     # "a:<articlenum>"
-    # Pass this off to fsck_com_rtfm, which is equipped to deal with
+    # Pass this off to fsck_com_article, which is equipped to deal with
     # articles after stripping off the a: prefix.
 
     if ($uri =~ /^$scheme:(\d+)/) {

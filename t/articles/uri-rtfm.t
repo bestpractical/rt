@@ -5,11 +5,11 @@ use warnings;
 
 use RT::Test tests => 12;
 
-use_ok "RT::URI::fsck_com_rtfm";
-my $uri = RT::URI::fsck_com_rtfm->new( $RT::SystemUser );
+use_ok "RT::URI::fsck_com_article";
+my $uri = RT::URI::fsck_com_article->new( $RT::SystemUser );
 
 ok $uri;
-isa_ok $uri, 'RT::URI::fsck_com_rtfm';
+isa_ok $uri, 'RT::URI::fsck_com_article';
 isa_ok $uri, 'RT::URI::base';
 isa_ok $uri, 'RT::Base';
 
@@ -26,6 +26,6 @@ my ($id, $msg) = $article->Create(
 );
 ok($id,$msg);
 
-$uri = RT::URI::fsck_com_rtfm->new( $article->CurrentUser );
+$uri = RT::URI::fsck_com_article->new( $article->CurrentUser );
 is $uri->LocalURIPrefix . $article->id, $uri->URIForObject( $article );
 
