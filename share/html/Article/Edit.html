@@ -207,7 +207,19 @@ elsif ( $id eq 'new' ) {
 
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
         delete $ARGS{id};
-        $m->redirect($ARGS{next}) if $ARGS{next};
+
+        if ( $ARGS{next} ) {
+            $m->redirect($ARGS{next});
+        }        
+        else {
+            $m->comp(
+                '/Elements/MaybeRedirectForResults',
+                Actions     => \@results,
+                Path        => 'Article/Edit.html',
+                id          => $ArticleObj->id,
+                ARGSRef     => \%ARGS
+            );
+        }
     }
    if (!$id) {
         $ClassObj->Load($Class);
