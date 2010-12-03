@@ -1,0 +1,126 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+% if ($include{Name}) {
+#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
+<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
+% }
+% if ($Article->Summary =~ /\S/ and $include{Summary}) {
+<% $Article->Summary %>
+% }
+% while (my $cf = $cfs->Next) {
+%   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
+%   my $values = $Article->CustomFieldValues($cf->Id);
+%   if ($values->Count == 1) {
+%     my $value = $values->First; 
+%     if ($include{"CF-Title-".$cf->Id}) {
+<%      $cf->Name%>:
+<%      '-' x length($cf->Name) %>
+%     }
+%     if ($value && $include{"CF-Value-".$cf->Id}) {
+<%      $get_content->( $value ) %>
+%     }
+%   } else {
+%     my $val = $values->Next;
+%     if ($include{"CF-Title-".$cf->Id}) {
+<%      $cf->Name%>: \
+%     }
+%     if ($val && $include{"CF-Value-".$cf->Id}) {
+<%      $get_content->( $val ) %>
+%     }
+%     while ($val = $values->Next) { 
+%       if ($include{"CF-Title-".$cf->Id}) {
+<%        ' ' x length($cf->Name)%>  \
+%       }
+%       if ($include{"CF-Value-".$cf->Id}) {
+<%        $get_content->( $val ) %>
+%       }
+%     } 
+%   }
+% }
+<%init>
+my $class = $Article->ClassObj;
+my %include = (Name => 1, Summary => 1);
+my $cfs = $class->ArticleCustomFields;
+$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
+$include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
+
+my $de_htmlify = sub {
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse($content);
+    $tree->eof();
+
+    require HTML::FormatText;
+    my $formatter = HTML::FormatText->new(leftmargin => 0, rightmargin => 50);
+    $content = $formatter->format($tree);
+    return $content;
+};
+
+my $get_content = sub {
+    my $value = shift;
+    return '' unless $value;
+
+    my $content = $value->Content;
+    return '' unless defined $content && length $content;
+
+    $m->comp('/Elements/Callback',
+        %ARGS,
+        _CallbackName => 'ProcessContent', 
+        content => \$content,
+    );
+
+    if ( $content =~ /<.{1,5}>/ ) {
+        $content = $de_htmlify->( $content );
+    }
+    return $content;
+};
+
+</%init>
+<%args>
+$Article
+</%args>

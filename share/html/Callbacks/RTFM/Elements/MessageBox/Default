@@ -1,0 +1,100 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+<%INIT>
+
+my $parent_args = $m->caller_args(-1);
+
+my $name_prefix = '';
+$name_prefix = $ARGS{'Name'} .'-'
+    if $ARGS{'Name'}
+    && grep rindex($_, "$ARGS{'Name'}-RTFM-", 0) == 0,
+        keys %$parent_args;
+
+foreach my $arg ( keys %$parent_args ) {
+    next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
+
+    my $Ticket = $ARGS{Ticket};
+    if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
+        $Ticket = RT::Ticket->new($session{'CurrentUser'});
+        $Ticket->Load($parent_args->{id});
+        unless ( $Ticket->id ) {
+            $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
+        }
+    }
+
+    my $Queue = RT::Queue->new($session{CurrentUser});
+    if ($Ticket && $Ticket->Id) {
+        $Queue = $Ticket->QueueObj;
+    }
+
+    my $article = RT::FM::Article->new($session{'CurrentUser'});
+    $article->LoadByInclude(
+        Field => substr($arg, length($name_prefix)),
+        Value => $parent_args->{$arg},
+        Queue => $Queue->Id,
+    );
+    next unless $article && $article->id;
+
+    my $formatted_article = $m->scomp('/RTFM/Article/Elements/Preformatted',
+        Article => $article, Ticket => $Ticket
+    );
+
+    # if we're on 3.8 or higher and using the javascript MessageBox apply the
+    # escapse that the JS usually applies in the HeaderJavascript template.
+    if ( RT->can('Config') && RT->Config->can('Get') ) {
+        if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+            $formatted_article =~ s/>/&gt;/g;
+            $formatted_article =~ s/</&lt;/g;
+            $formatted_article =~ s/&/&amp;/g;
+            $formatted_article =~ s/\n/\n<br \/>/g;
+        }
+    }
+    $m->print($formatted_article);
+
+}
+return;
+</%INIT>

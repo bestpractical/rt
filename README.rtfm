@@ -1,0 +1,82 @@
+RTFM (The RT FAQ Manager) is a tool for maintaining an organizational
+knowledgebase. Out of the box, it integrates with RT 3.4.2 or later
+(Also available from bestpractical.com)
+
+Best Practical sells support and customization for RT and RTFM.  Feel
+free to contact us at sales@bestpractical.com if you have any
+questions about our service offerings.
+
+RTFM requires a few modules in addition to RT's standard dependencies.
+The 'perl Makefile.PL' command will check that you have all of the
+required modules installed; if not, they will either be auto-installed
+during the 'make' step, or you can opt to install them by hand using
+the CPAN shell or with any system-specific package management software
+you may have.
+
+Installation instructions:
+--------------------------
+
+NOTE that upgrade steps are described in UPGRADING
+
+1) Install RT 3.4.2 or newer (Do not use this with 3.8.0 as
+   there are incompatibilities)
+
+2) Once RT appears to be happily installed, cd into the directory
+   where you unpacked RTFM.
+
+3) perl Makefile.PL
+
+4) make install
+
+5) make initdb
+
+6) If you are running 3.8, you need to enable RTFM in your 
+   RT_SiteConfig.pm file.  You can do this by adding the following
+   line:
+
+   Set(@Plugins,qw(RT::FM));
+
+   If you already have a @Plugins line, you must add RT::FM to your
+   existing plugin list.
+
+7) Clear your mason cache.  This is most often accomplished with
+   rm -rf /opt/rt3/var/mason_data/*
+
+8) Stop and start your web server
+
+9) Before you can add content to RTFM articles, you will need to configure
+   classes and custom fields. For details, see lib/RT/FM/Introduction.pod
+
+Further reading:
+-----------------------------------------------------
+
+lib/RT/FM/Introduction.pod - quick overview and configuration
+
+You can read this using the perldoc utility, viewing the
+source or using the RT-OnlineDocs extension
+
+Development
+------------------------------------------------------
+
+If you would like to run RTFM's tests, you need to
+set a few environment variables
+RT_DBA_USER - a user who can create a database on your 
+              RDBMS (such as root on mysql)
+RT_DBA_PASSWORD - the password for RT_DBA_USER
+PERL5LIB - the path to your RT libraries (/opt/rt3/lib)
+
+RT_DBA_USER=user RT_DBA_PASSWORD=password PERL5LIB=/opt/rt3/lib make test
+
+These are intended to be run before installing RTFM.
+Like RT, RTFM expects to be able to create a new database called rt3test
+on your system.
+
+Bug reporting and discussion lists:
+-----------------------------------------------------
+
+You probably want to discuss RTFM on rt-users@lists.bestpractical.com.
+(Send mail to rt-users-request@lists.fsck.com to subscribe)
+
+Bug reports can be sent to rtfm-bugs@bestpractical.com. You can look
+at open bug reports at http://rt3.fsck.com/. Log in as guest/guest
+to see the content of bug reports.

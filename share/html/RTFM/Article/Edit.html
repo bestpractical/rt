@@ -1,0 +1,333 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+% if ($id && $id ne 'new') {
+<& /RTFM/Article/Elements/Tabs, 
+    Article => $ArticleObj, 
+    current_subtab => "RTFM/Article/Edit.html?id=".$ArticleObj->Id , 
+    id => $id, 
+    Title => $title &>
+% } else {
+<& /RTFM/Article/Elements/Tabs, 
+    current_tab => "RTFM/Article/PreCreate.html",
+       Title => loc('Create a new article') &>
+% }
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
+<input type="hidden" name="next" value="<%$ARGS{next}||''%>" />
+<input type="hidden" name="id" value="<%$id%>" />
+<table width="100%">
+<tr>
+<td><h2><&|/l&>Basics</&></h2></td>
+<td></td>
+</tr>
+<& Elements/EditBasics, ArticleObj => $ArticleObj,
+                        EditClass =>$EditClass,
+                        ClassObj => $ClassObj,  
+                        %ARGS ,
+                        id => $id
+                        &>
+
+<tr>
+<td><h2><&|/l&>Content</&></h2></td>
+<td></td>
+</tr>
+<& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
+                              CFContent => \%CFContent, 
+                              ClassObj => $ClassObj, 
+                              %ARGS,
+                              id =>$id,
+                              &>
+
+<tr>
+<td><h2><&|/l&>Links</&></h2></td>
+<td></td>
+</tr>
+<& Elements/EditLinks, ArticleObj => $ArticleObj, 
+                       %ARGS,
+                        id => $id
+                       &>
+<tr>
+<td><h2><&|/l&>Topics</&></h2></td>
+<td></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Topics</&></td>
+<td>
+<& Elements/EditTopics, ArticleObj => $ArticleObj,
+                        Classes => [$ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj],
+                        OnlyThisClass => 1,
+                        %ARGS,
+                        id => $id
+                        &>
+</td>
+</tr>
+</table>
+<& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333" &>
+</form>
+
+<%INIT>
+
+if ( exists $ARGS{'Topics'} ) {
+    $ARGS{'Topics'} =
+      ref( $ARGS{'Topics'} ) ? $ARGS{'Topics'} : [ $ARGS{'Topics'} ];
+}
+
+my @results;
+my $title;
+
+my $Entries    = {};
+my $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
+my $ClassObj   = RT::FM::Class->new( $session{'CurrentUser'} );
+my %create_args;
+my %CFContent;
+my $EditClass = 1;
+if ( !$id ) {
+    $title = loc('Create a new article');
+    foreach my $arg ( sort keys %ARGS ) {
+        if ( $arg =~ /^Transaction-(\d+)$/ ) {
+            my $trans = RT::Transaction->new( $session{'CurrentUser'} );
+            $trans->Load($1);
+            $CFContent{ $ARGS{$arg} } .= "\n\n" if $CFContent{ $ARGS{$arg} };
+            $CFContent{ $ARGS{$arg} } .= $trans->Content;
+        }
+    }
+
+    $ClassObj->Load($Class);
+    unless ( $ClassObj->Id ) {
+        $m->comp( "/RTFM/Elements/Error",
+            Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
+    }
+    $EditClass = 0;
+    $id        = 'new';
+}
+elsif ( $id eq 'new' ) {
+
+    if ( $ARGS{'RefersTo-new'} ) {
+        @{ $create_args{'RefersTo-new'} } =
+          split( /\s+/, $ARGS{'RefersTo-new'} );
+    }
+
+    if ( $ARGS{'new-RefersTo'} ) {
+        @{ $create_args{'new-RefersTo'} } =
+          split( /\s+/, $ARGS{'new-RefersTo'} );
+    }
+
+
+    foreach my $arg (keys %ARGS) {
+        next if $arg =~ /-(?:Magic|Category)$/;
+        $RT::Logger->debug("Conteplating CF arg $arg"); 
+        # Object-RT::FM::Article--CustomField-3-Values
+        if ( $arg =~ /^Object-RT::FM::Article--CustomField-(\d+)(.*?)$/ ) {
+            my $cfid = $1; 
+        
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->Load( $cfid );
+            unless ( $cf->id ) {
+                $RT::Logger->error( "Couldn't load custom field #". $cfid );
+                next;
+            }
+
+            if ( $arg =~ /-Upload$/ ) {
+                $create_args{"CustomField-$cfid"} = _UploadedFile( $arg );
+                next;
+            }
+            
+            my $type = $cf->Type;
+        
+            my @values = ();
+            if ( ref $ARGS{ $arg } eq 'ARRAY' ) {
+                @values = @{ $ARGS{ $arg } };
+            } elsif ( $type =~ /text/i ) {
+                @values = ($ARGS{ $arg });
+            } else {
+                @values = split /\r*\n/, $ARGS{ $arg } || '';
+            }
+            @values = grep $_ ne '',
+                map {
+                    s/\r+\n/\n/g;
+                    s/^\s+//;
+                    s/\s+$//;
+                    $_;
+                }
+                grep defined, @values;
+
+            $create_args{"CustomField-$cfid"} = \@values;
+        }
+    }
+
+    my $msg;
+    ( $id, $msg ) = $ArticleObj->Create(
+        Summary => $ARGS{'Summary'},
+        Name    => $ARGS{'Name'},
+        Class   => $ARGS{'Class'},
+        Topics  => $ARGS{'Topics'},
+        %create_args
+    );
+    push( @results, $msg );
+    if ($id) {
+
+
+        $ArticleObj->Load($id);
+
+        $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
+        delete $ARGS{id};
+        $m->redirect($ARGS{next}) if $ARGS{next};
+    }
+   if (!$id) {
+        $ClassObj->Load($Class);
+        unless ( $ClassObj->Id ) {
+            $m->comp( "/RTFM/Elements/Error",
+                Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
+        }
+        $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
+        $id        = 'new';
+        $EditClass = 0;
+        $title     = loc('Create a new article');
+    }
+}
+else {
+
+    $ArticleObj->Load($id);
+    unless ( $ArticleObj->id ) {
+        $m->comp( "/RTFM/Elements/Error",
+            Why => loc("Unable to load article") );
+    }
+
+    my @attribs = qw(Name Summary Class);
+
+    @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $ArticleObj,
+        ARGSRef       => \%ARGS
+    );
+
+    my @cf_results = ProcessObjectCustomFieldUpdates(
+        Object  => $ArticleObj,
+        ARGSRef => \%ARGS
+    );
+    @results = ( @results, @cf_results );
+
+    # Delete links that are gone gone gone.
+    foreach my $arg ( keys %ARGS ) {
+        if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
+            my $base   = $1;
+            my $type   = $2;
+            my $target = $3;
+
+            my ( $val, $msg ) = $ArticleObj->DeleteLink(
+                Base   => $base,
+                Type   => $type,
+                Target => $target
+            );
+
+            push @results, $msg;
+
+        }
+
+    }
+
+    my @linktypes = qw(DependsOn MemberOf RefersTo );
+
+    foreach my $linktype (@linktypes) {
+
+    for my $luri ( split( / /, ( $ARGS{ $ArticleObj->Id . "-$linktype" } || '' )) ) {
+            $luri =~ s/\s*$//;    # Strip trailing whitespace
+            my ( $val, $msg ) =
+              $ArticleObj->AddLink( Target => $luri, Type => $linktype );
+            push @results, $msg;
+            delete $ARGS{ $ArticleObj->Id . "-$linktype" } if $val;
+        }
+
+        for my $luri ( split( / /, ( $ARGS{ "$linktype-" . $ArticleObj->Id } || '' )) ) {
+            my ( $val, $msg ) =
+              $ArticleObj->AddLink( Base => $luri, Type => $linktype );
+            push @results, $msg;
+            delete $ARGS{ "$linktype-" . $ArticleObj->Id } if $val;
+        }
+
+    }
+
+    my %topics;
+    if ( $ARGS{'EditTopics'} ) {
+        $topics{$_}++ for @{ $ARGS{'Topics'} };
+        my $objTopics =
+          new RT::FM::ObjectTopicCollection( $session{'CurrentUser'} );
+        $objTopics->LimitToObject($ArticleObj);
+        while ( my $t = $objTopics->Next ) {
+            $topics{ $t->Topic }--;
+        }
+        for my $id ( keys %topics ) {
+            if ( $topics{$id} > 0 ) {
+                my ( $val, $msg ) = $ArticleObj->AddTopic( Topic => $id );
+                push @results, $msg;
+            }
+            elsif ( $topics{$id} < 0 ) {
+                my ( $val, $msg ) = $ArticleObj->DeleteTopic( Topic => $id );
+                push @results, $msg;
+            }
+        }
+    }
+
+    $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
+}
+
+# if they're working on an existing article
+if ( $ArticleObj->id ) {
+    unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
+        $m->comp( "/RTFM/Elements/Error",
+            Why => "No permission to view Article" );
+    }
+}
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$Class => undef
+</%ARGS>

@@ -1,0 +1,146 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+<input type="hidden" name="EditTopics" value="1" />
+<select multiple size="10" name="Topics">
+<%perl>
+if (@Classes) {
+  $m->print("<optgroup label=\"Current classes (".join (' ',map {$_->Name} @Classes).")\">")
+    unless $OnlyThisClass;
+  $inTree->traverse(sub {
+    my $tree = shift;
+    my $topic = $tree->getNodeValue;
+    $m->print("<option value=\"".$topic->Id."\""
+      .(exists $topics{$topic->Id} ? " selected" : "").">"
+      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
+  });
+}
+unless ($OnlyThisClass) {
+  my $class = $Classes[-1]->Id;
+  $otherTree->traverse(sub {
+    my $tree = shift;
+    my $topic = $tree->getNodeValue;
+    unless ($topic->ObjectId == $class) {
+      $class = $topic->ObjectId;
+      $m->print("</optgroup>\n");
+      my $c = new RT::FM::Class($session{'CurrentUser'});
+      $c->Load($topic->ObjectId);
+      $m->print("<optgroup label=\"".$c->Name."\">\n");
+    }
+    $m->print("<option value=\"".$topic->Id."\""
+      .(exists $topics{$topic->Id} ? " selected" : "").">"
+      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
+  });
+</%perl>
+</optgroup>
+% }
+</select>
+
+<%INIT>
+use Tree::Simple;
+
+my $inClass = new RT::FM::TopicCollection($session{'CurrentUser'});
+# global topics should always be available
+push @Classes,$RT::FM::System unless grep { $_ == $RT::FM::System } @Classes;
+$inClass->LimitToObject($_) for @Classes;
+$inClass->OrderByCols({FIELD => 'Name'});
+my $inTree = buildTree($inClass);
+
+my $otherClass = new RT::FM::TopicCollection($session{'CurrentUser'});
+if (@Classes) {
+  $otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+  for (@Classes) {
+    $otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $_->Id);
+  }
+} else {
+    $otherClass->UnLimit;
+}
+my $otherTree = buildTree($otherClass);
+
+my $articleTopics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+$articleTopics->LimitToObject($ArticleObj);
+my %topics;
+while (my $topicObj = $articleTopics->Next) {
+    $topics{$topicObj->Topic} = 1;
+}
+$topics{$_} = 1 for @Topics;
+
+sub buildTree {
+    my $query = shift;
+    
+    use Tree::Simple;
+    my $tree = Tree::Simple->new(Tree::Simple->ROOT);
+    my %lookup = (0 => $tree);
+
+    my @todo;
+    while (my $topic = $query->Next) {
+        push @todo, $topic;
+    }
+
+    {
+        my $changed = 0;
+        my @work = @todo;
+        @todo = ();
+        for my $topic (@work) {
+            if (defined $lookup{$topic->Parent}) {
+                $lookup{$topic->Id} = Tree::Simple->new($topic, $lookup{$topic->Parent});
+                $changed = 1;
+            } else {
+                push @todo, $topic;
+            }
+        }
+        redo unless $changed == 0;
+    }
+    return $tree;
+}
+
+</%INIT>
+<%ARGS>
+$ArticleObj => new RT::FM::Article($session{'CurrentUser'})
+@Classes => ()
+@Topics => ()
+$OnlyThisClass => undef
+</%ARGS>

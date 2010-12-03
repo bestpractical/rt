@@ -1,0 +1,162 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+% if ($ARGS{'HideOptions'}) {
+<& /Elements/TitleBoxStart, title => loc('Advanced search'), class => "rolled-up", bodyclass => "hidden" &>
+% } else {
+<& /Elements/TitleBoxStart, title => loc('Advanced search') &>
+% }
+<table>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Basics</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Class</&></td><td class="value">is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<&|/l&>and not</&>
+<& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Name</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Summary</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Content</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
+</tr>
+% while (my $field = $customfields->Next ) {
+<tr>
+<td class="label"><% $field->Name %></td>
+<td class="value"><&|/l&>matches</&> 
+% my $matches = $field->Name."~";
+% my $nomatches = $field->Name."!~";
+<& /RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $matches,
+    Values => $ARGS{$matches} &>
+    <&|/l&>and not</&>
+<& /RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $nomatches,
+    Values => $ARGS{$nomatches}
+    &>
+</td>
+</tr>
+% }
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Dates</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Created</&></td>
+<td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Last updated</&></td>
+<td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
+($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
+</td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Links</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td><& LinkEntryInstructions &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Refer to</&></td>
+<td class="value"><input type=text size=50 name="RefersTo" value="<%$RefersTo%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Referred to by</&></td>
+<td class="value"><input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Topics</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td>
+<& /RTFM/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
+<br />
+<input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+<&|/l&>Include subtopics</&> 
+</td>
+</tr>
+</table>
+<& /Elements/Submit, Label => loc('Search') &>
+<&/Elements/TitleBoxEnd&>
+<%init>
+my @Classes =
+ ( ref $ARGS{'Class'} eq 'ARRAY' )
+      ? @{ $ARGS{'Class'} }
+      : ( $ARGS{'Class'} );
+for (@Classes) {
+  my $class = RT::FM::Class->new( $session{'CurrentUser'} );
+  $class->LoadById($_);
+  $_ = $class;
+}
+</%init>
+
+<%ARGS>
+$dates =>undef
+$RefersTo => undef
+$ReferredToBy => undef
+$customfields => undef
+</%ARGS>

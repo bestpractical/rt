@@ -1,0 +1,66 @@
+
+CREATE SEQUENCE FM_Classes_seq;
+CREATE TABLE FM_Classes (
+id NUMBER(11,0)
+  CONSTRAINT FM_Classes_key PRIMARY KEY,
+Name varchar2(255) DEFAULT '',
+Description varchar2(255) DEFAULT '',
+SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
+Disabled NUMBER(11,0) DEFAULT 0 NOT NULL,
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE,
+HotList NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE SEQUENCE FM_Articles_seq;
+CREATE TABLE FM_Articles (
+id NUMBER(11,0)
+  CONSTRAINT FM_Articles_key PRIMARY KEY,
+Name varchar2(255) DEFAULT '',
+Summary varchar2(255) DEFAULT '',
+SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
+Class NUMBER(11,0) DEFAULT 0 NOT NULL,
+Parent NUMBER(11,0) DEFAULT 0 NOT NULL,
+URI varchar2(255),
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE
+);
+
+
+CREATE SEQUENCE FM_Topics_seq;
+CREATE TABLE FM_Topics (
+id NUMBER(11,0)
+  CONSTRAINT FM_Topics_key PRIMARY KEY,
+Parent NUMBER(11,0) DEFAULT 0 NOT NULL,
+Name varchar2(255) DEFAULT '',
+Description varchar2(255) DEFAULT '',
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
+);
+
+
+CREATE SEQUENCE FM_ObjectTopics_seq;
+CREATE TABLE FM_ObjectTopics (
+id NUMBER(11,0)
+  CONSTRAINT FM_ObjectTopics_key PRIMARY KEY,
+Topic NUMBER(11,0) NOT NULL,
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
+);
+
+CREATE SEQUENCE FM_ObjectClasses_seq;
+CREATE TABLE FM_ObjectClasses (
+id NUMBER(11,0)
+  CONSTRAINT FM_ObjectClasses_key PRIMARY KEY,
+Class NUMBER(11,0) NOT NULL,
+ObjectType varchar2(255) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL,
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE
+);
