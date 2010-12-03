@@ -47,7 +47,7 @@
 % for (@path) {
 %# this isn't always a class, it can be the system object
 % my $class_id = ($_->ObjectType eq 'RT::FM::Class' ? $_->ObjectId : 0 );
-<% $_->ParentObj->Id ? " > " : "" %><a href="<% $RT::WebPath %>/RTFM/Topics.html?class=<% $class_id %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
+<% $_->ParentObj->Id ? " > " : "" %><a href="<% $RT::WebPath %>/Articles/Topics.html?class=<% $class_id %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
 % }
 
 <%args>

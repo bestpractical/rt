@@ -44,7 +44,8 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Browse by topic'), class => $class, topic => $id &>
+<& /Elements/Header, Title => loc('Browse by topic') &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@Actions &>
 <a href="Topics.html"><&|/l&>All topics</&></a>
@@ -53,25 +54,25 @@
 % }
 
 % if ($id != 0) {
-&gt; <& /RTFM/Elements/ShowTopic, topic => $currtopic &>
+&gt; <& /Articles/Elements/ShowTopic, topic => $currtopic &>
 % }
 <br />
 <h1><&|/l&>Browse by topic</&></h1>
 <%perl>
 if (defined $class) {
    $m->print('<h2>'.'<a href="'.
-   $RT::WebPath."/RTFM/Topics.html?class=" . $currclass_id
+   $RT::WebPath."/Articles/Topics.html?class=" . $currclass_id
    .'">'.$currclass_name."</a></h2>\n");
    ProduceTree(\@Actions, $currclass, $currclass_id, $currclass_name, 0, $id);
 } else {
     $m->print("<ul>\n");
     while (my $c = $Classes->Next) {
         $m->print('<li><h2>'.'<a href="'.
-        $RT::WebPath."/RTFM/Topics.html?class=" . $c->Id
+        $RT::WebPath."/Articles/Topics.html?class=" . $c->Id
         .'">'.$c->Name."</a></h2>\n");
         $m->print("\n</li>\n");
     }
-    $m->print(qq|<li><h2><a href="$RT::WebPath/RTFM/Topics.html?class=0">Global Topics</a></h2></li>\n|);
+    $m->print(qq|<li><h2><a href="$RT::WebPath/Articles/Topics.html?class=0">Global Topics</a></h2></li>\n|);
     $m->print("</ul>\n");
 }
 </%perl>
@@ -80,8 +81,8 @@ if (defined $class) {
 <%perl>
 my @articles;
 if ($id or $showall) {
-    my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
-    $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+    my $Articles = RT::ObjectTopics->new($session{'CurrentUser'});
+    $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::Article');
     if ($id) {
         $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
         if ($showall) {
@@ -92,9 +93,9 @@ if ($id or $showall) {
             }
         }
     }
-    @articles = map {$a = RT::FM::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
+    @articles = map {$a = RT::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
 } elsif ($class) {
-    my $Articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+    my $Articles = RT::Articles->new($session{'CurrentUser'});
     my $TopicsAlias = $Articles->Join(
         TYPE   => 'left',
         ALIAS1 => 'main',
@@ -105,7 +106,7 @@ if ($id or $showall) {
     $Articles->Limit(
         LEFTJOIN => $TopicsAlias,
         FIELD    => 'ObjectType',
-        VALUE    => 'RT::FM::Article',
+        VALUE    => 'RT::Article',
     );
     $Articles->Limit(
         ALIAS      => $TopicsAlias,
@@ -146,22 +147,22 @@ my $currtopic;
 
 if ( defined $class ) {
     if ($class) {
-        $currclass = RT::FM::Class->new( $session{'CurrentUser'} );
+        $currclass = RT::Class->new( $session{'CurrentUser'} );
         $currclass->Load($class);
         $currclass_id   = $currclass->Id;
         $currclass_name = $currclass->Name;
     } else {
-        $currclass      = $RT::FM::System;
+        $currclass      = $RT::System;
         $currclass_id   = 0;
         $currclass_name = 'Global Topics';
     }
 } else {
-    $Classes = RT::FM::ClassCollection->new( $session{'CurrentUser'} );
+    $Classes = RT::Classes->new( $session{'CurrentUser'} );
     $Classes->LimitToEnabled();
 }
 
 if ($id) {
-    $currtopic = RT::FM::Topic->new( $session{'CurrentUser'} );
+    $currtopic = RT::Topic->new( $session{'CurrentUser'} );
     $currtopic->Load($id);
 }
 
@@ -176,7 +177,7 @@ sub ProduceTree {
 
     # Deal with tree restriction, if any.
     if ($restrictid) {
-        my $rtopic = RT::FM::Topic->new( $session{'CurrentUser'} );
+        my $rtopic = RT::Topic->new( $session{'CurrentUser'} );
         $rtopic->Load($restrictid);
         unless ( $rtopic->Id()
             && $rtopic->ObjectId() == $currclass_id )
@@ -209,7 +210,7 @@ sub ProduceTree {
     } else {
 
         # No restriction in place.  Build the entire tree.
-        my $topics = RT::FM::TopicCollection->new( $session{'CurrentUser'} );
+        my $topics = RT::Topics->new( $session{'CurrentUser'} );
         $topics->LimitToObject($currclass);
         $topics->LimitToKids($parentid);
         $topics->OrderBy( FIELD => 'Name' );
@@ -231,7 +232,7 @@ sub MakeLinks {
     my $query;
     my $output;
 
-    if ( ref($topic) eq 'RT::FM::Topic' ) {
+    if ( ref($topic) eq 'RT::Topic' ) {
 
         my $topic_info = $topic->Name() || loc("(no name)");
         $topic_info .= ": " . $topic->Description() if $topic->Description;
@@ -243,8 +244,8 @@ sub MakeLinks {
             $output = qq(<li>$topic_info);
         }
 
-        my $Articles = RT::FM::ObjectTopicCollection->new( $session{'CurrentUser'} );
-        $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+        my $Articles = RT::ObjectTopics->new( $session{'CurrentUser'} );
+        $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::Article' );
         $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
         if ( $Articles->Count ) {
             my $article_text = " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")";
