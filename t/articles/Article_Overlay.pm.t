@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 71;
+use RT::Test tests => 70;
 
 use_ok 'RT::FM::ArticleCollection';
 use_ok 'RT::FM::ClassCollection';
@@ -152,7 +152,6 @@ use RT::FM::ArticleCollection;
 
 my $articles = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok($articles->isa('RT::FM::ArticleCollection'), "Created an article collection");
-ok($articles->isa('RT::FM::SearchBuilder'), "Created an article collection");
 ok($articles->isa('RT::SearchBuilder'), "Created an article collection");
 ok($articles->isa('DBIx::SearchBuilder'), "Created an article collection");
 ok($tick->URI, "The ticket does still have a URI");

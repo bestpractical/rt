@@ -5,8 +5,8 @@ use DBI;
 my $database  = shift;
 my $namespace = shift;
 
-my $CollectionBaseclass = 'RT::FM::SearchBuilder';
-my $RecordBaseclass     = 'RT::FM::Record';
+my $CollectionBaseclass = 'RT::SearchBuilder';
+my $RecordBaseclass     = 'RT::Record';
 
 my $driver   = 'mysql';
 my $hostname = 'localhost';

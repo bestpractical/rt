@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 33;
+use RT::Test tests => 32;
 
 use_ok 'RT::FM::ArticleCollection';
 use_ok 'RT::FM::ClassCollection';
@@ -127,7 +127,6 @@ is( $arts->Count , 2, "Found 2 articles not matching 'BOGUS' for CF  ".$cf->id);
 
 my $ac = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok( $ac->isa('RT::FM::ArticleCollection') );
-ok( $ac->isa('RT::FM::SearchBuilder') );
 ok( $ac->isa('DBIx::SearchBuilder') );
 ok( $ac->LimitRefersTo('http://dead.link') );
 ok( $ac->Count == 0 );
