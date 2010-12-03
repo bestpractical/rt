@@ -54,7 +54,7 @@
 <option value="<% $topic %>">in this topic</option>
 % }
 % if ($class) {
-% my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+% my $Topics = RT::FM::Topics->new($session{'CurrentUser'});
 % $Topics->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
 % $Topics->Limit(FIELD => 'ObjectId',   VALUE => $class);
 % my @topics;
