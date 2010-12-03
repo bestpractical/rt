@@ -244,7 +244,7 @@ my %dates;
 $articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
         OrderBy => \@OrderBy );
 
-$m->comp('/Elements/Callback', %ARGS, _Search => $articles);
+$m->callback( %ARGS, _Search => $articles );
 
 my %filtered = %ARGS;
 delete $filtered{$_} for (@metakeys, "EditTopics", "ExpandTopics");
