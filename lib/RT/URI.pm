@@ -95,7 +95,7 @@ sub new {
 
 =head2 FromObject <Object>
 
-Given a local object, such as an RT::Ticket or an RT::FM::Article, this routine will return a URI for
+Given a local object, such as an RT::Ticket or an RT::Article, this routine will return a URI for
 the local object
 
 =cut
