@@ -61,18 +61,18 @@
 <%perl>
 if (defined $class) {
    $m->print('<h2>'.'<a href="'.
-   $RT::WebPath."/Articles/Topics.html?class=" . $currclass_id
+   RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $currclass_id
    .'">'.$currclass_name."</a></h2>\n");
    ProduceTree(\@Actions, $currclass, $currclass_id, $currclass_name, 0, $id);
 } else {
     $m->print("<ul>\n");
     while (my $c = $Classes->Next) {
         $m->print('<li><h2>'.'<a href="'.
-        $RT::WebPath."/Articles/Topics.html?class=" . $c->Id
+        RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $c->Id
         .'">'.$c->Name."</a></h2>\n");
         $m->print("\n</li>\n");
     }
-    $m->print(qq|<li><h2><a href="$RT::WebPath/Articles/Topics.html?class=0">Global Topics</a></h2></li>\n|);
+    $m->print(qq|<li><h2><a href="RT->Config->Get('WebPath')/Articles/Topics.html?class=0">Global Topics</a></h2></li>\n|);
     $m->print("</ul>\n");
 }
 </%perl>

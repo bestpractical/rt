@@ -47,7 +47,7 @@
 <& /SelfService/Elements/Header, Title => loc('Search Articles') &>
 
 <table>
-<form action="<%$RT::WebPath%>/SelfService/Article/Search.html">
+<form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
 <tr>
 <td><&|/l&>Search for RTFM articles matching</&></td>
 <td><input size=20 name="RTFM_Content" /></td>

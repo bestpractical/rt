@@ -46,7 +46,7 @@
 %#%# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%><% $m->request_comp->path |n %>" method="post">
+<form action="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>" method="post">
 <input type="hidden" name="id" value="<%$RootObj->Id%>" />
 
 % if (!$Modify) {
@@ -94,7 +94,7 @@ $topic
 %     $Action = "";
 <& .edit, topic => $topic &>
 %   } else {
-<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$RootObj->Id%>&Modify=<%$topic->Id%>"
+<a href="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>?id=<%$RootObj->Id%>&Modify=<%$topic->Id%>"
    title="<%$topic->Description%>"><%$topic->Name || loc("(no name)") %></a>
 %   }
 % }

@@ -55,7 +55,7 @@
 <td valign="top" width="50%">
 <ul>
 % while (my $class = $Classes->Next) {
-<li><a href="<%$RT::WebPath%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
+<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
 % }  
 </ul>
 </td>
@@ -101,7 +101,7 @@
 </form>
 
 <div align=right>
-<a href="<%$RT::WebPath%>/Articles/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link for this search</&></a><br />
+<a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link for this search</&></a><br />
 </div>
 <%init>
 use RT::SavedSearch;

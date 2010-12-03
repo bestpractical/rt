@@ -57,9 +57,9 @@
 % $i++;
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>">                                
 <td align="right"><%$Article->Id%></td>
-<td><a href="<% $RT::WebPath %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></td>
+<td><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></td>
 <td><%$Article->CreatorObj->Name%></td>
-<td align="right">[<a href="<% $RT::WebPath %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</td>
+<td align="right">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</td>
 </tr>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>">                                
 <td>&nbsp;</td>
