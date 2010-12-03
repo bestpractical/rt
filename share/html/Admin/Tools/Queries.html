@@ -95,7 +95,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
                        <tr>
                            <td><% ++$s %></td>
-                           <td><&|/l, sprintf('%.4f', $duration) &><i>[_1]s</i></&></td>
+                           <td><i><&|/l, sprintf('%.4f', $duration) &>[_1]s</&></i></td>
                            <td>
                                <tt><% $sql %></tt>
                                <a class="query-stacktrace-toggle" href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
