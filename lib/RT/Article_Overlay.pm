@@ -56,7 +56,7 @@ use RT::ObjectTopics;
 use RT::Classes;
 use RT::Links;
 use RT::CustomFields;
-use RT::URI::fsck_com_rtfm;
+use RT::URI::fsck_com_article;
 use RT::Transactions;
 
 # This object takes custom fields
@@ -410,7 +410,7 @@ sub URI {
         return $self->loc("Permission Denied");
     }
 
-    my $uri = RT::URI::fsck_com_rtfm->new( $self->CurrentUser );
+    my $uri = RT::URI::fsck_com_article->new( $self->CurrentUser );
     return ( $uri->URIForObject($self) );
 }
 
