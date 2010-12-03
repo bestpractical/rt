@@ -379,6 +379,13 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
     }
 
+    if ( $request_path =~ qr{^/Admin/Articles/Global/} ) {
+        my $tabs = PageMenu();
+        $tabs->child('group-rights' => title => loc('Group Rights'), path => "/Admin/Articles/Global/GroupRights.html" );
+        $tabs->child('user-rights'  => title => loc('User Rights'), path => "/Admin/Articles/Global/UserRights.html" );
+        $tabs->child('topics'       => title => loc('Topics'), path => "/Admin/Articles/Global/Topics.html" );
+    }
+
     if ( $request_path =~ qr{^/Ticket/} ) {
         if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
