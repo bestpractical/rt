@@ -49,8 +49,8 @@
     Collection => $articles, 
     Class => 'RT::Articles',
     Format => q{
-    '<a href="/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
-    '<a href="/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
     '__ClassName__',
     '__CreatedRelative__',
     '__LastUpdatedRelative__',

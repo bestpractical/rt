@@ -95,7 +95,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     }
 
     my $articles = $tools->child( articles => title => loc('Articles') => path => "/Articles/index.html", sort_order => 10 );
-    $articles->child( search   => title => loc('Search') => path => "/Article/Search.html" );
+    $articles->child( search   => title => loc('Search') => path => "/Articles/Article/Search.html" );
     $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
     $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
 
@@ -600,30 +600,30 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             my $id = $m->request_args->{'id'};
             my $tabs = PageMenu();
 
-            $tabs->child( display => title => loc('Display') => path => "/Article/Display.html?id=".$id, );
-            $tabs->child( history => title => loc('History') => path => "/Article/History.html?id=".$id, );
-            $tabs->child( modify => title => loc('Modify') => path => "/Article/Edit.html?id=".$id, );
-            $tabs->child( delete => title => loc('Delete') => path => "/Article/Delete.html?id=".$id, );
+            $tabs->child( display => title => loc('Display') => path => "/Articles/Article/Display.html?id=".$id, );
+            $tabs->child( history => title => loc('History') => path => "/Articles/Article/History.html?id=".$id, );
+            $tabs->child( modify => title => loc('Modify') => path => "/Articles/Article/Edit.html?id=".$id, );
+            $tabs->child( delete => title => loc('Delete') => path => "/Articles/Article/Delete.html?id=".$id, );
         }
     }
 
     if ( $request_path =~ qr{^/Articles/} ) {
         my $tabs = PageMenu();
-        $tabs->child( search => path => "/Article/Search.html", title     => loc("Search") );
-        $tabs->child( create => path => "/Article/PreCreate.html", title     => loc("New Article" ) );
+        $tabs->child( search => path => "/Articles/Article/Search.html", title     => loc("Search") );
+        $tabs->child( create => path => "Articles/Article/PreCreate.html", title     => loc("New Article" ) );
         if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            $tabs->child( display => title => "Display", path => "/Article/Display.html?id=" . $id );
-            $tabs->child( history => title => loc('History'), path => '/Article/History.html?id=' . $id );
+            $tabs->child( display => title => "Display", path => "/Articles/Article/Display.html?id=" . $id );
+            $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
 
             if ( $obj->CurrentUserHasRight('ModifyArticle') ) {
-                $tabs->child(modify => title => loc('Modify'), path => '/Article/Edit.html?id=' . $id );
+                $tabs->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
             }
             if ( $obj->CurrentUserHasRight('DeleteArticle') ) {
-                $tabs->child(delete => title => loc('Delete'), path => '/Article/Delete.html?id=' . $id );
+                $tabs->child(delete => title => loc('Delete'), path => '/Articles/Article/Delete.html?id=' . $id );
             }
         }
 

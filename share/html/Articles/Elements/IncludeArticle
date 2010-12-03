@@ -79,7 +79,7 @@ foreach my $arg ( keys %$parent_args ) {
     );
     next unless $article && $article->id;
 
-    my $formatted_article = $m->scomp('/Article/Elements/Preformatted',
+    my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );
 

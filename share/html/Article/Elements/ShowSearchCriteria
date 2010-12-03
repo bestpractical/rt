@@ -78,12 +78,12 @@
 <td class="value"><&|/l&>matches</&> 
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
-<& /Article/Elements/SearchByCustomField, 
+<& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $matches,
     Values => $ARGS{$matches} &>
     <&|/l&>and not</&>
-<& /Article/Elements/SearchByCustomField, 
+<& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $nomatches,
     Values => $ARGS{$nomatches}
@@ -133,7 +133,7 @@
 <tr>
 <td class="label"></td>
 <td>
-<& /Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
+<& /Articles/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
 <br />
 <input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
 <&|/l&>Include subtopics</&> 
