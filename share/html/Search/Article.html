@@ -48,6 +48,6 @@
 
 <%init>
 RT::Interface::Web::Redirect(RT->Config->Get('WebURL').
-        'RTFM/Article/Search.html?' . $m->comp( '/Elements/QueryString',
+        'Articles/Article/Search.html?' . $m->comp( '/Elements/QueryString',
             %ARGS, Load => 'Load', CurrentSearch => $ARGS{LoadSavedSearch} ) );
 </%init>
