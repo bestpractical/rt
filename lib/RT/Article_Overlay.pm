@@ -62,7 +62,7 @@ use RT::Transactions;
 # This object takes custom fields
 
 use RT::CustomField;
-RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'RTFM Articles' )
+RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'Articles' )
   ;    #loc
 
 # {{{ Create
@@ -604,7 +604,7 @@ sub _LookupId {
 
 =head2 LoadByInclude Field Value
 
-Takes the name of a form field from RTFM's "Include Article" callbacks
+Takes the name of a form field from "Include Article"
 and the value submitted by the browser and attempts to load an Article.
 
 This handles Articles included by searching, by the Name and via
@@ -625,11 +625,11 @@ sub LoadByInclude {
     return unless $Field;
 
     my ($ok, $msg);
-    if ( $Field eq 'RTFM-Include-Article' && $Value ) {
+    if ( $Field eq 'Articles-Include-Article' && $Value ) {
         ($ok, $msg) = $self->Load( $Value );
-    } elsif ( $Field =~ /^RTFM-Include-Article-(\d+)$/ ) {
+    } elsif ( $Field =~ /^Articles-Include-Article-(\d+)$/ ) {
         ($ok, $msg) = $self->Load( $1 );
-    } elsif ( $Field =~ /^RTFM-Include-Article-Named/ && $Value ) {
+    } elsif ( $Field =~ /^Articles-Include-Article-Named/ && $Value ) {
         if ( $Value =~ /\D/ ) {
             ($ok, $msg) = $self->LoadByCols( Name => $Value );
         } else {

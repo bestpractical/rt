@@ -53,8 +53,8 @@ return unless RT->Config->Get('ArticleOnTicketCreate');
 my $article = RT::Article->new($session{'CurrentUser'});
 foreach my $arg ( keys %$ARGSRef) {
 
-    if ( $ARGSRef->{RTFM_Content} ||              # search for an article
-         $ARGSRef->{'RTFM-Include-Topic'} ||      # using Queue Topics
+    if ( $ARGSRef->{Articles_Content} ||              # search for an article
+         $ARGSRef->{'Articles-Include-Topic'} ||      # using Queue Topics
          ( $article->LoadByInclude( Field => $arg, Value => $ARGSRef->{$arg} ) &&
            $article->id ) ) {                     # including an article
 

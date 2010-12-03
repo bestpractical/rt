@@ -57,7 +57,7 @@ my $scheme = "a";
 
 =head2 ParseURI URI
 
-When handed an a: URI, figures out if it is an RTFM article.
+When handed an a: URI, figures out if it is an article.
 
 =cut
 

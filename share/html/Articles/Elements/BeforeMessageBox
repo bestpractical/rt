@@ -48,22 +48,22 @@
 <input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
 % }
 
-<table class="rtfm-select-article">
+<table class="articles-select-article">
 % unless (RT->Config->Get('ArticleOnTicketCreate')) {
 <tr>
 <td><&|/l&>Search for Articles matching</&></td>
-<td><input size=20 name="<% $name_prefix %>RTFM_Content" /></td>
+<td><input size=20 name="<% $name_prefix %>Articles_Content" /></td>
 </tr>
 <tr>
 <td><&|/l&>Include Article:</&></td>
-<td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
+<td><input size=20 name="<% $name_prefix %>Articles-Include-Article-Named" /></td>
 <td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 % }
 % if ($hotlist->Count) {
 <tr>
 <td><&|/l&>Select an Article to include</&></td>
-<td><select name="<% $name_prefix %>RTFM-Include-Article-Named-Hotlist" onchange="this.form.submit()">
+<td><select name="<% $name_prefix %>Articles-Include-Article-Named-Hotlist" onchange="this.form.submit()">
 <option value="" selected><&|/l&>-</&></option>
 % while (my $article = $hotlist->Next) {
 <option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
@@ -79,7 +79,7 @@
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="<% $name_prefix %>RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
 % while (my $article = $articles_basics->Next) {
@@ -87,7 +87,7 @@
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name || loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="<% $name_prefix %>RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
 % if ( @$topics ) {
@@ -96,7 +96,7 @@
 <&|/l, $QueueObj->Name &>Choose from Topics for [_1] </&>
 </td>
 <td>
-<select name="<% $name_prefix %>RTFM-Include-Topic" onchange="this.form.submit()">
+<select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()">
 <option value="" selected>-</option>
 % for ( @$topics ) { 
 <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
@@ -107,13 +107,13 @@
 <td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 
-% if ( $ARGS{$name_prefix .'RTFM-Include-Topic'} ) {
+% if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
 <tr>
 <td>
 <&|/l, $included_topic->Name &>Select an Article from [_1]</&>
 </td>
 <td>
-<select name="<% $name_prefix %>RTFM-Include-Article" onchange="this.form.submit()">
+<select name="<% $name_prefix %>Articles-Include-Article" onchange="this.form.submit()">
 <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
 <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
@@ -146,9 +146,9 @@ if ( $ARGS{'MessageBoxName'} ) {
     $name_prefix = $ARGS{'MessageBoxName'} .'-';
 }
 
-# convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
-if ( my $tmp = $ARGS{$name_prefix ."RTFM-Include-Article"} ) {
-    $ARGS{$name_prefix ."RTFM-Include-Article-$tmp"}++;
+# convert Articles-Include-Article => $id to Articles-Include-Article-$id
+if ( my $tmp = $ARGS{$name_prefix ."Articles-Include-Article"} ) {
+    $ARGS{$name_prefix ."Articles-Include-Article-$tmp"}++;
 }
 
 my %uri;
@@ -174,7 +174,7 @@ use RT::Articles;
 my $articles_content =
   RT::Articles->new( $session{'CurrentUser'} );
 my $articles_basics = RT::Articles->new( $session{'CurrentUser'} );
-if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
+if ( my $tmp = $ARGS{ $name_prefix ."Articles_Content" } ) {
     $articles_content->LimitCustomField(
         VALUE => $tmp, OPERATOR => 'LIKE'
     );
@@ -225,7 +225,7 @@ if ( $top_topic->id ) {
         # store all topics below $queue_topic to $topics
         topics( $queue_topic, $topics, 0 );
         
-        if ( my $tmp = $ARGS{ $name_prefix .'RTFM-Include-Topic'}  ) {
+        if ( my $tmp = $ARGS{ $name_prefix .'Articles-Include-Topic'}  ) {
             $included_topic = RT::Topic->new( $session{CurrentUser} );
             $included_topic->Load( $tmp );
             $topic_articles->LimitTopics( $tmp );

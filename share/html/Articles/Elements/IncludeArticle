@@ -51,7 +51,7 @@ my $parent_args = $m->caller_args(-1);
 my $name_prefix = '';
 $name_prefix = $ARGS{'Name'} .'-'
     if $ARGS{'Name'}
-    && grep rindex($_, "$ARGS{'Name'}-RTFM-", 0) == 0,
+    && grep rindex($_, "$ARGS{'Name'}-Articles-", 0) == 0,
         keys %$parent_args;
 
 foreach my $arg ( keys %$parent_args ) {

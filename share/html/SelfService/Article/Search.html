@@ -49,8 +49,8 @@
 <table>
 <form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
 <tr>
-<td><&|/l&>Search for RTFM articles matching</&></td>
-<td><input size=20 name="RTFM_Content" /></td>
+<td><&|/l&>Search for Articles articles matching</&></td>
+<td><input size=20 name="Articles_Content" /></td>
 <td><input type="submit" value="Search"></td>
 </tr>
 </form>
@@ -58,11 +58,11 @@
 <tr>
 <td>&nbsp;</td>
 <td>
-% if ($RTFM_Content) {
+% if ($Articles_Content) {
 %   if ($articles_basics->Count || $articles_content->Count) {
-<&|/l,$RTFM_Content&>Articles matching [_1]</&>
+<&|/l,$Articles_Content&>Articles matching [_1]</&>
 %   } else {
-<&|/l,$RTFM_Content&>No Articles match [_1]</&>
+<&|/l,$Articles_Content&>No Articles match [_1]</&>
 %   }
 % }
 </td>
@@ -90,24 +90,24 @@ use RT::FM::ArticleCollection;
 
 my $articles_content = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
-if ( $ARGS{'RTFM_Content'} ) {
-    $articles_content->LimitCustomField( VALUE => $ARGS{'RTFM_Content'},
+if ( $ARGS{'Articles_Content'} ) {
+    $articles_content->LimitCustomField( VALUE => $ARGS{'Articles_Content'},
                                                 OPERATOR => 'LIKE' );
 
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Name',
                              OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'RTFM_Content'},
+                             VALUE           => $ARGS{'Articles_Content'},
                              ENTRYAGGREGATOR => "OR" );
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Summary',
                              OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'RTFM_Content'},
+                             VALUE           => $ARGS{'Articles_Content'},
                              ENTRYAGGREGATOR => "OR" );
 }
 
 
 </%init>
 <%args>
-$RTFM_Content => ''
+$Articles_Content => ''
 </%args>
