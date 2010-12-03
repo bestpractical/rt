@@ -110,7 +110,7 @@ sub generate_port {
 
 BEGIN {
     $port   = generate_port();
-    $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
+    $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
 };
 
 sub import {
