@@ -49,7 +49,7 @@
 % }
 
 <table class="articles-select-article">
-% unless (RT->Config->Get('ArticleOnTicketCreate')) {
+% unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
 <tr>
 <td><&|/l&>Search for Articles matching</&></td>
 <td><input size=20 name="<% $name_prefix %>Articles_Content" /></td>

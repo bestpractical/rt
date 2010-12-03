@@ -2326,6 +2326,14 @@ This will only work with 3.8.1 or greater
 
 Set($ArticleOnTicketCreate, 0);
 
+=item C<$HideArticleSearchOnReplyCreate>
+
+=back
+
+=cut
+
+Set($HideArticleSearchOnReplyCreate, 0);
+
 =head1 DON'T MESS WITH THE STUFF BELOW
 
 =cut
