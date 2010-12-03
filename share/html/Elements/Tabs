@@ -181,10 +181,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/' );
         $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1' );
 
-        my $article_global = $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
-        $article_global->child('group-rights' => title => loc('Group Rights'), path => "/Admin/Articles/Global/GroupRights.html" );
-        $article_global->child('user-rights'  => title => loc('User Rights'), path => "/Admin/Articles/Global/UserRights.html" );
-        $article_global->child('topics'       => title => loc('Topics'), path => "/Admin/Articles/Global/Topics.html" );
 
         my $cfs = $article_admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
         $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
@@ -192,6 +188,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
         $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html', );
         $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );
+        $admin_global->child('topics'       => title => loc('Topics'), path => "/Admin/Global/Topics.html" );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html', );
         $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html', );
 
@@ -377,13 +374,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             $tabs->child( 'applies-to'  => title => loc('Applies to') =>  path => "/Admin/Articles/Classes/Objects.html?id=$id", );
         }
 
-    }
-
-    if ( $request_path =~ qr{^/Admin/Articles/Global/} ) {
-        my $tabs = PageMenu();
-        $tabs->child('group-rights' => title => loc('Group Rights'), path => "/Admin/Articles/Global/GroupRights.html" );
-        $tabs->child('user-rights'  => title => loc('User Rights'), path => "/Admin/Articles/Global/UserRights.html" );
-        $tabs->child('topics'       => title => loc('Topics'), path => "/Admin/Articles/Global/Topics.html" );
     }
 
     if ( $request_path =~ qr{^/Ticket/} ) {
