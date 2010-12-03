@@ -50,14 +50,25 @@
 use RT::Dashboard;
 
 my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
-my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
+
+my %dashboard_map;
+
+for my $object (@objs) {
+    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object);
+
+    push @{ $dashboard_map{$_} }, @{ $new_dashboards->{$_} || [] }
+        for qw/personal system/;
+
+    push @{ $dashboard_map{group}{$_} }, @{ $new_dashboards->{group}{$_} }
+        for keys %{ $new_dashboards->{group} || {} };
+}
 
 my @dashboards = (
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{personal} || [] }),
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{system}   || [] }),
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{personal} || [] }),
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{system}   || [] }),
 
-    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map->{group}{$_} } }
-        keys %{ $dashboard_map->{group} || {} },
+    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map{group}{$_} } }
+        keys %{ $dashboard_map{group} || {} },
 );
 
 $m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboards');

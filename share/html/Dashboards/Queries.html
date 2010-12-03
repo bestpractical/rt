@@ -99,8 +99,8 @@ for my $desc (@components) {
 }
 
 # add dashboards
-my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", flatten => 1);
-for my $dashboard (@{ $dashboards || [] }) {
+my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+for my $dashboard (@dashboards) {
     # Users *can* set up mutually recursive dashboards, but don't make it THIS
     # easy for them to shoot themselves in the foot.
     next if $dashboard->Id == $Dashboard->Id;
