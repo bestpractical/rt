@@ -6,7 +6,7 @@ use warnings;
 use RT::Test tests => 70;
 
 use_ok 'RT::FM::Articles';
-use_ok 'RT::FM::ClassCollection';
+use_ok 'RT::FM::Classes';
 use_ok 'RT::FM::Class';
 
 my $CLASS = 'ArticleTest-'.$$;

@@ -6,7 +6,7 @@ use warnings;
 use RT::Test tests => 16;
 
 use_ok 'RT::FM::Articles';
-use_ok 'RT::FM::ClassCollection';
+use_ok 'RT::FM::Classes';
 use_ok 'RT::FM::Class';
 
 $RT::SystemUser || die ;# just shut up the warning
