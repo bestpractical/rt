@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 52;
+use RT::Test tests => 53;
 
 use RT::CustomField;
 use RT::EmailParser;
@@ -162,7 +162,9 @@ ok($ret, "Test ticket for articles created: $msg");
 
 isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
-$m->follow_link_ok({text => 'Articles'}, 'UI -> Articles');
+$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
+    'UI -> Articles' );
+
 $m->content_contains($article3->Name);
 $m->follow_link_ok( {text => $article3->Name}, 'Articles -> '. $article3->Name );
 $m->title_is("Article #" . $article3->Id . ": " . $article3->Name);
@@ -190,10 +192,10 @@ $m->follow_link_ok( { text => 'Extract Article' }, '-> Extract Article' );
 $m->content_contains($class->Name);
 $m->follow_link_ok( { text => $class->Name }, 'Extract Article -> '. $class->Name );
 $m->content_like(qr/Select topics for this article/i, 'selecting topic');
-$m->form_number(2);
+$m->form_number(3);
 $m->set_visible([option => $topic1->Name]);
 $m->submit;
-$m->form_number(2);
+$m->form_number(3);
 $m->set_visible([option => $answerCF->Name]);
 $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
@@ -206,8 +208,8 @@ $m->content_contains($ticket->Subject,
 
 diag("Test creating a ticket in Class2 and make sure we don't see Class1 Topics") if $ENV{TEST_VERBOSE};
 {
-$m->follow_link_ok( {text => 'Articles'}, 'UI -> Articles');
-$m->follow_link_ok( {text => 'Articles' }, 'Articles -> Articles' );
+$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
+    'UI -> Articles' );
 $m->follow_link_ok( {text => 'New Article' }, 'Articles -> New Article' );
 $m->follow_link_ok( {text => 'in class '.$class2->Name }, 'New Article -> in class '.$class2->Name );
 $m->content_lacks( $topic1->Name, "Topic1 from Class1 isn't shown" );

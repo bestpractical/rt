@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 54;
+use RT::Test tests => 56;
 
 my ( $url, $m ) = RT::Test->started_ok;
 $m->login;
@@ -35,7 +35,7 @@ for my $name ( keys %class ) {
         'article create page' );
 
     $m->submit_form(
-        form_number => 2,
+        form_number => 3,
         fields      => { Name => "article $name" }
     );
 

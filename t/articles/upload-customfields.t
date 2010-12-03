@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 20;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
@@ -38,7 +38,7 @@ $m->follow_link_ok( { text => 'Configuration' } );
 $m->title_is(q/RT Administration/, 'admin screen');
 $m->follow_link_ok( { text => 'Custom Fields' } );
 $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-$m->follow_link_ok( { text => 'Create' } );
+$m->follow_link_ok( { text => 'Create', url_regex => qr{^/Admin/CustomFields/} } );
 $m->submit_form(
     form_name => "ModifyCustomField",
     fields => {
@@ -48,7 +48,7 @@ $m->submit_form(
         Description => 'img',
     },
 );
-$m->title_is(qq/Created CustomField img$$/, 'admin-cf created');
+$m->title_is(qq/Editing CustomField img$$/, 'admin-cf created');
 $m->follow_link( text => 'Applies to' );
 $m->title_is(qq/Modify associated objects for img$$/, 'pick cf screenadmin screen');
 $m->form_number(3);
@@ -57,11 +57,10 @@ my $tcf = (grep { /AddCustomField-/ } map { $_->name } $m->current_form->inputs 
 $m->tick( $tcf, 0 );         # Associate the new CF with this queue
 $m->click('UpdateObjs');
 $m->content_like( qr/Object created/, 'TCF added to the queue' );
-$m->follow_link( text => 'Articles');
-$m->follow_link( text => 'Articles');
-$m->follow_link( text => 'New Article');
 
-$m->title_is(qq/Create an article in class.../);
+$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
+    'UI -> Articles' );
+$m->follow_link( text => 'New Article');
 
 $m->follow_link( url_regex => qr/Edit.html\?Class=1/ );
 $m->title_is(qq/Create a new article/);

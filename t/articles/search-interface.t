@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 21;
+use RT::Test tests => 23;
 
 use RT::CustomField;
 use RT::Queue;
@@ -106,7 +106,8 @@ ok($ret, "article 4 created");
 
 isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
-$m->follow_link_ok({text => 'Articles'}, 'UI -> Articles');
-$m->follow_link_ok( {text => 'Articles'}, 'Articles -> Articles');
+$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
+    'UI -> Articles' );
+$m->follow_link_ok( {text => 'Search'}, 'Articles -> Search');
 $m->follow_link_ok( {text => 'in class '.$class->Name}, 'Articles in class '.$class->Name);
 $m->content_contains($article1->Name);
