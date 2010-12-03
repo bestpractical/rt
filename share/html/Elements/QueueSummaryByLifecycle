@@ -130,6 +130,7 @@ my $query =
     .") AND (".
     join(' OR ', map "Queue = ".$_->{id}, @queues)
     .")";
+$query = 'id < 0' unless @queues;
 $report->SetupGroupings( Query => $query, GroupBy => [qw(Status Queue)] );
 
 while ( my $entry = $report->Next ) {
