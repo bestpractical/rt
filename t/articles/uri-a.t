@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 10;
+use RT::Test tests => 7;
 
 use_ok("RT::URI::a");
 my $uri = RT::URI::a->new($RT::SystemUser);

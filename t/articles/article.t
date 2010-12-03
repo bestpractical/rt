@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 70;
+use RT::Test tests => 67;
 
 use_ok 'RT::Articles';
 use_ok 'RT::Classes';

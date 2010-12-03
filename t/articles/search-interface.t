@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 24;
+use RT::Test tests => 21;
 
 use RT::CustomField;
 use RT::Queue;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 12;
+use RT::Test tests => 9;
 
 use_ok "RT::URI::fsck_com_article";
 my $uri = RT::URI::fsck_com_article->new( $RT::SystemUser );

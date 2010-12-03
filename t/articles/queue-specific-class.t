@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 57;
+use RT::Test tests => 54;
 
 my ( $url, $m ) = RT::Test->started_ok;
 $m->login;

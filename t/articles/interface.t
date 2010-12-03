@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 55;
+use RT::Test tests => 52;
 
 use RT::CustomField;
 use RT::EmailParser;

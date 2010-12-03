@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 21;
+use RT::Test tests => 18;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
