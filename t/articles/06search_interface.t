@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
-use RT::FM::Test tests => 24;
+use RT::Test tests => 24;
 
 use RT::CustomField;
 use RT::Queue;

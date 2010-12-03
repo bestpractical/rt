@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
-use RT::FM::Test tests => 71;
+use RT::Test tests => 71;
 
 use_ok 'RT::FM::ArticleCollection';
 use_ok 'RT::FM::ClassCollection';

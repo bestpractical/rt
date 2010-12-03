@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
-use RT::FM::Test tests => 14;
+use RT::Test tests => 14;
 
 my $suffix = '-'. $$;
 

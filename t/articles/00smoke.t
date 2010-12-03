@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
-use RT::FM::Test;
+use RT::Test;
 
 use RT;
 ok(RT::LoadConfig);

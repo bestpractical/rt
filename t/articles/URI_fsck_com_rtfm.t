@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
-use RT::FM::Test tests => 12;
+use RT::Test tests => 12;
 
 use_ok "RT::URI::fsck_com_rtfm";
 my $uri = RT::URI::fsck_com_rtfm->new( $RT::SystemUser );
