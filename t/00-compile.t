@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1, tests => 31;
+use RT::Test nodb => 1, tests => 34;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -33,6 +33,9 @@ require_ok("RT::Condition");
 require_ok("RT::Interface::Web");
 require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");
+require_ok("RT::Dashboard");
+require_ok("RT::Dashboard::Mailer");
+require_ok("RT::Dashboards");
 require_ok("RT::Installer");
 require_ok("RT::Util");
 
