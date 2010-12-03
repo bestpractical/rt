@@ -129,9 +129,9 @@ my $ac = RT::Articles->new($RT::SystemUser);
 ok( $ac->isa('RT::Articles') );
 ok( $ac->isa('DBIx::SearchBuilder') );
 ok( $ac->LimitRefersTo('http://dead.link') );
-ok( $ac->Count == 0 );
+is( $ac->Count, 0 );
 
 $ac = RT::Articles->new($RT::SystemUser);
 ok( $ac->LimitReferredToBy('http://dead.link') );
-ok( $ac->Count == 0 );
+is( $ac->Count, 0 );
 

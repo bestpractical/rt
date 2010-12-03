@@ -100,21 +100,21 @@ ok($id,$msg);
 
 # Make sure that Article Bs "ReferredToBy" links object refers to to this article
 my $refers_to_b = $article_b->ReferredToBy;
-ok($refers_to_b->Count == 1, "Found one thing referring to b");
+is($refers_to_b->Count, 1, "Found one thing referring to b");
 my $first = $refers_to_b->First;
 ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
-ok ($first->TargetObj->Id == $article_b->Id, "Its target is B");
+is($first->TargetObj->Id, $article_b->Id, "Its target is B");
 
 ok($refers_to_b->First->BaseObj->isa('RT::Article'), "Yep. its an article");
 
 
 # Make sure that Article A's "RefersTo" links object refers to this article"
 my $referred_To_by_a = $article_a->RefersTo;
-ok($referred_To_by_a->Count == 1, "Found one thing referring to b ".$referred_To_by_a->Count. "-".$referred_To_by_a->First->id . " - ".$referred_To_by_a->Last->id);
+is($referred_To_by_a->Count, 1, "Found one thing referring to b ".$referred_To_by_a->Count. "-".$referred_To_by_a->First->id . " - ".$referred_To_by_a->Last->id);
  $first = $referred_To_by_a->First;
 ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
-ok ($first->TargetObj->Id == $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
-ok ($first->BaseObj->Id == $article_a->Id, "Its base is A");
+is ($first->TargetObj->Id, $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
+is ($first->BaseObj->Id, $article_a->Id, "Its base is A");
 
 ok($referred_To_by_a->First->BaseObj->isa('RT::Article'), "Yep. its an article");
 
@@ -142,8 +142,8 @@ use RT::Links;
 my $tix = RT::Tickets->new($RT::SystemUser);
 ok ($tix, "Got an RT::Tickets object");
 ok ($tix->LimitReferredToBy($article_a->URI)); 
-ok ($tix->Count == 1, "Found one ticket linked to that article");
-ok ($tix->First->Id == $tick->id, "It's even the right one");
+is ($tix->Count, 1, "Found one ticket linked to that article");
+is ($tix->First->Id, $tick->id, "It's even the right one");
 
 
 
@@ -168,7 +168,7 @@ is ($articles->First->URI, $article_a->URI);
 my $tix2 = RT::Links->new($RT::SystemUser);
 ok ($tix2->isa('RT::Links'));
 ok($tix2->LimitRefersTo($tick->URI));
-ok ($tix2->Count == 1);
+is ($tix2->Count, 1);
 is ($tix2->First->BaseObj->URI ,$article_a->URI);
 
 
@@ -182,7 +182,7 @@ ok ($id, $msg . " - $id - $msg");
 # it is actually deleted
 my $tix3 = RT::Links->new($RT::SystemUser);
 $tix3->LimitReferredToBy($tick->URI);
-ok ($tix3->Count == 0);
+is ($tix3->Count, 0);
 
 # Recreate the link from teh RT site
 ($id, $msg) = $t2->AddLink( Base => $article_a->URI, Type => 'RefersTo');
@@ -216,7 +216,7 @@ ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctl
 my $art_id = $art->id;
 $art = RT::Article->new($RT::SystemUser);
 $art->Load($art_id);
-ok ($art->Id == $art_id, "Loaded article 1");
+is ($art->Id, $art_id, "Loaded article 1");
 my $s =$art->Summary;
 ($val, $msg) = $art->SetSummary("testFoo");
 ok ($val, $msg);
