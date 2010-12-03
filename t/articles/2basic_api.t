@@ -3,12 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test tests => 43;
-
-use_ok 'RT::FM::System';
-my $sys = new RT::FM::System;
-isa_ok $sys, 'RT::FM::System';
-is $sys->Id, 1;
+use RT::Test tests => 40;
 
 use_ok('RT::FM::Class');
 

@@ -10,7 +10,7 @@ use_ok 'RT::FM::ClassCollection';
 use_ok 'RT::FM::Class';
 
 $RT::SystemUser || die ;# just shut up the warning
-$RT::FM::System || die; # just shut up the warning;
+$RT::System     || die; # just shut up the warning;
 
 
 my $root = RT::CurrentUser->new('root');
@@ -54,7 +54,7 @@ ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
 
 
 ok (!$id, $msg. "- Can not create classes as a random new user - " .$u->Id);
-$u->PrincipalObj->GrantRight(Right =>'AdminClass', Object => $RT::FM::System);
+$u->PrincipalObj->GrantRight(Right =>'AdminClass', Object => $RT::System);
 ($id, $msg) = $cl->Create(Name => 'Test-nobody-'.$$, Description => 'A test class');
 
 ok ($id, $msg. "- Can create classes as a random new user after ACL grant");

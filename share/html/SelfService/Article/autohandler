@@ -47,7 +47,7 @@
 <%INIT>
 
 if ( $session{'CurrentUser'}->HasRight( Right => 'ShowArticle',
-                   Object => $RT::FM::System )) {
+                   Object => $RT::System )) {
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);    
 }
 else {

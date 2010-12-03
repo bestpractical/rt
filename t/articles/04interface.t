@@ -63,8 +63,8 @@ ok($ret, "Topic 2 created");
 ok($ret, "Topic Class2 created");
 ($ret, $msg) = $gtopic->Create('Parent' => 0,
 			      'Name' => 'tlaTestTopicGlobal-'.$$,
-			      'ObjectType' => 'RT::FM::System',
-			      'ObjectId' => $RT::FM::System->Id );
+			      'ObjectType' => 'RT::System',
+			      'ObjectId' => $RT::System->Id );
 ok($ret, "Global Topic created");
 
 # Create some article custom fields
