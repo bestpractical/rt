@@ -5,15 +5,15 @@ use warnings;
 
 use RT::Test tests => 70;
 
-use_ok 'RT::FM::Articles';
-use_ok 'RT::FM::Classes';
-use_ok 'RT::FM::Class';
+use_ok 'RT::Articles';
+use_ok 'RT::Classes';
+use_ok 'RT::Class';
 
 my $CLASS = 'ArticleTest-'.$$;
 
 my $user = RT::CurrentUser->new('root');
 
-my $class = RT::FM::Class->new($user);
+my $class = RT::Class->new($user);
 
 
 my ($id, $msg) = $class->Create(Name =>$CLASS);
@@ -21,9 +21,9 @@ ok ($id, $msg);
 
 
 
-my $article = RT::FM::Article->new($user);
-ok (UNIVERSAL::isa($article, 'RT::FM::Article'));
-ok (UNIVERSAL::isa($article, 'RT::FM::Record'));
+my $article = RT::Article->new($user);
+ok (UNIVERSAL::isa($article, 'RT::Article'));
+ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
@@ -32,7 +32,7 @@ ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuil
 ok ($id, $msg);
 $article->Load($id);
 is ($article->Summary, $CLASS, "The summary is set correct");
-my $at = RT::FM::Article->new($RT::SystemUser);
+my $at = RT::Article->new($RT::SystemUser);
 $at->Load($id);
 is ($at->id , $id);
 is ($at->Summary, $article->Summary);
@@ -40,17 +40,17 @@ is ($at->Summary, $article->Summary);
 
 
 
-my  $a1 = RT::FM::Article->new($RT::SystemUser);
+my  $a1 = RT::Article->new($RT::SystemUser);
  ($id, $msg)  = $a1->Create(Class => $class->id, Name => 'ValidateNameTest'.$$);
 ok ($id, $msg);
 
 
 
-my  $a2 = RT::FM::Article->new($RT::SystemUser);
+my  $a2 = RT::Article->new($RT::SystemUser);
 ($id, $msg)  = $a2->Create(Class => $class->id, Name => 'ValidateNameTest'.$$);
 ok (!$id, $msg);
 
-my  $a3 = RT::FM::Article->new($RT::SystemUser);
+my  $a3 = RT::Article->new($RT::SystemUser);
 ($id, $msg)  = $a3->Create(Class => $class->id, Name => 'ValidateNameTest2'.$$);
 ok ($id, $msg);
 ($id, $msg) =$a3->SetName('ValidateNameTest'.$$);
@@ -65,32 +65,32 @@ ok ($id, $msg);
 
 
 
-my $newart = RT::FM::Article->new($RT::SystemUser);
+my $newart = RT::Article->new($RT::SystemUser);
 $newart->Create(Name => 'DeleteTest'.$$, Class => '1');
 $id = $newart->Id;
 
 ok($id, "New article has an id");
 
 
- $article = RT::FM::Article->new($RT::SystemUser);
+ $article = RT::Article->new($RT::SystemUser);
 $article->Load($id);
 ok ($article->Id, "Found the article");
 my $val;
  ($val, $msg) = $article->Delete();
 ok ($val, "Article Deleted: $msg");
 
- $a2 = RT::FM::Article->new($RT::SystemUser);
+ $a2 = RT::Article->new($RT::SystemUser);
 $a2->Load($id);
 ok (!$a2->Id, "Did not find the article");
 
 # NOT OK
 #$RT::Handle->SimpleQuery("DELETE FROM Links");
 
-my $article_a = RT::FM::Article->new($RT::SystemUser);
+my $article_a = RT::Article->new($RT::SystemUser);
 ($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$);
 ok($id,$msg);
 
-my $article_b = RT::FM::Article->new($RT::SystemUser);
+my $article_b = RT::Article->new($RT::SystemUser);
 ($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$);
 ok($id,$msg);
 
@@ -105,7 +105,7 @@ my $first = $refers_to_b->First;
 ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
 ok ($first->TargetObj->Id == $article_b->Id, "Its target is B");
 
-ok($refers_to_b->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
+ok($refers_to_b->First->BaseObj->isa('RT::Article'), "Yep. its an article");
 
 
 # Make sure that Article A's "RefersTo" links object refers to this article"
@@ -116,7 +116,7 @@ ok ($first->isa('RT::Link'), "IT's an RT link - ref ".ref($first) );
 ok ($first->TargetObj->Id == $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
 ok ($first->BaseObj->Id == $article_a->Id, "Its base is A");
 
-ok($referred_To_by_a->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
+ok($referred_To_by_a->First->BaseObj->isa('RT::Article'), "Yep. its an article");
 
 # Delete the link
 ($id, $msg) = $article_a->DeleteLink(Type => 'RefersTo', Target => $article_b->URI);
@@ -148,10 +148,10 @@ ok ($tix->First->Id == $tick->id, "It's even the right one");
 
 
 # Find all articles which refer to Ticket 1
-use RT::FM::Articles;
+use RT::Articles;
 
-my $articles = RT::FM::Articles->new($RT::SystemUser);
-ok($articles->isa('RT::FM::Articles'), "Created an article collection");
+my $articles = RT::Articles->new($RT::SystemUser);
+ok($articles->isa('RT::Articles'), "Created an article collection");
 ok($articles->isa('RT::SearchBuilder'), "Created an article collection");
 ok($articles->isa('DBIx::SearchBuilder'), "Created an article collection");
 ok($tick->URI, "The ticket does still have a URI");
@@ -195,7 +195,7 @@ ok ($id, $msg);
 
 
 
-my $art = RT::FM::Article->new($RT::SystemUser);
+my $art = RT::Article->new($RT::SystemUser);
 ($id, $msg) = $art->Create (Class => $CLASS);
 ok ($id,$msg);
 
@@ -205,7 +205,7 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 
 
 
- $art = RT::FM::Article->new($RT::SystemUser);
+ $art = RT::Article->new($RT::SystemUser);
 ($id, $msg) = $art->Create (Class => $CLASS);
 ok ($id,$msg);
 
@@ -214,7 +214,7 @@ ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctl
 
 
 my $art_id = $art->id;
-$art = RT::FM::Article->new($RT::SystemUser);
+$art = RT::Article->new($RT::SystemUser);
 $art->Load($art_id);
 ok ($art->Id == $art_id, "Loaded article 1");
 my $s =$art->Summary;

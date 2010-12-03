@@ -8,9 +8,9 @@ use RT::Test tests => 24;
 use RT::CustomField;
 use RT::Queue;
 use RT::Ticket;
-use_ok 'RT::FM::Class';
-use_ok 'RT::FM::Topic';
-use_ok 'RT::FM::Article';
+use_ok 'RT::Class';
+use_ok 'RT::Topic';
+use_ok 'RT::Article';
 
 my ($url, $m) = RT::Test->started_ok;
 
@@ -18,7 +18,7 @@ my ($url, $m) = RT::Test->started_ok;
 my ($ret, $msg);
 
 # Create a test class
-my $class = RT::FM::Class->new($RT::SystemUser);
+my $class = RT::Class->new($RT::SystemUser);
 ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
 			      'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
@@ -30,14 +30,14 @@ my $ticketCF = RT::CustomField->new($RT::SystemUser);
 ($ret, $msg) = $questionCF->Create('Name' => 'Question-'.$$,
 			   'Type' => 'Text',
 			   'MaxValues' => 1,
-			   'LookupType' => 'RT::FM::Class-RT::FM::Article',
+			   'LookupType' => 'RT::Class-RT::Article',
 			   'Description' => 'The question to be answered',
 			   'Disabled' => 0);
 ok($ret, "Question CF created: $msg");
 ($ret, $msg) = $answerCF->Create('Name' => 'Answer-'.$$,
 			 'Type' => 'Text',
 			 'MaxValues' => 1,
-			 'LookupType' => 'RT::FM::Class-RT::FM::Article',
+			 'LookupType' => 'RT::Class-RT::Article',
 			 'Description' => 'The answer to the question',
 			 'Disabled' => 0);
 ok($ret, "Answer CF created: $msg");
@@ -71,10 +71,10 @@ my %cvals = ('article1q' => 'Some question about swallows',
 
 # Create an article or two with our custom field values.
 
-my $article1 = RT::FM::Article->new($RT::SystemUser);
-my $article2 = RT::FM::Article->new($RT::SystemUser);
-my $article3 = RT::FM::Article->new($RT::SystemUser);
-my $article4 = RT::FM::Article->new($RT::SystemUser);
+my $article1 = RT::Article->new($RT::SystemUser);
+my $article2 = RT::Article->new($RT::SystemUser);
+my $article3 = RT::Article->new($RT::SystemUser);
+my $article4 = RT::Article->new($RT::SystemUser);
 ($ret, $msg) = $article1->Create(Name => 'First article '.$$,
 				 Summary => 'blah blah 1',
 				 Class => $class->Id,

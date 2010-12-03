@@ -9,9 +9,9 @@ use RT::CustomField;
 use RT::EmailParser;
 use RT::Queue;
 use RT::Ticket;
-use_ok 'RT::FM::Class';
-use_ok 'RT::FM::Topic';
-use_ok 'RT::FM::Article';
+use_ok 'RT::Class';
+use_ok 'RT::Topic';
+use_ok 'RT::Article';
 
 my ($url, $m) = RT::Test->started_ok;
 
@@ -19,46 +19,46 @@ my ($url, $m) = RT::Test->started_ok;
 my ($ret, $msg);
 
 # Create a test class
-my $class = RT::FM::Class->new($RT::SystemUser);
+my $class = RT::Class->new($RT::SystemUser);
 ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
 			      'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
-my $class2 = RT::FM::Class->new($RT::SystemUser);
+my $class2 = RT::Class->new($RT::SystemUser);
 ($ret, $msg) = $class2->Create('Name' => 'tlaTestClass2-'.$$,
 			      'Description' => 'Another general-purpose test class');
 ok($ret, "Test class 2 created");
 
 
 # Create a hierarchy of test topics
-my $topic1 = RT::FM::Topic->new($RT::SystemUser);
-my $topic11 = RT::FM::Topic->new($RT::SystemUser);
-my $topic12 = RT::FM::Topic->new($RT::SystemUser);
-my $topic2 = RT::FM::Topic->new($RT::SystemUser);
-my $topic_class2= RT::FM::Topic->new($RT::SystemUser);
-my $gtopic = RT::FM::Topic->new($RT::SystemUser);
+my $topic1 = RT::Topic->new($RT::SystemUser);
+my $topic11 = RT::Topic->new($RT::SystemUser);
+my $topic12 = RT::Topic->new($RT::SystemUser);
+my $topic2 = RT::Topic->new($RT::SystemUser);
+my $topic_class2= RT::Topic->new($RT::SystemUser);
+my $gtopic = RT::Topic->new($RT::SystemUser);
 ($ret, $msg) = $topic1->Create('Parent' => 0,
 			      'Name' => 'tlaTestTopic1-'.$$,
-			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectType' => 'RT::Class',
 			      'ObjectId' => $class->Id);
 ok($ret, "Topic 1 created");
 ($ret, $msg) = $topic11->Create('Parent' => $topic1->Id,
 			       'Name' => 'tlaTestTopic1.1-'.$$,
-			       'ObjectType' => 'RT::FM::Class',
+			       'ObjectType' => 'RT::Class',
 			       'ObjectId' => $class->Id);
 ok($ret, "Topic 1.1 created");
 ($ret, $msg) = $topic12->Create('Parent' => $topic1->Id,
 			       'Name' => 'tlaTestTopic1.2-'.$$,
-			       'ObjectType' => 'RT::FM::Class',
+			       'ObjectType' => 'RT::Class',
 			       'ObjectId' => $class->Id);
 ok($ret, "Topic 1.2 created");
 ($ret, $msg) = $topic2->Create('Parent' => 0,
 			      'Name' => 'tlaTestTopic2-'.$$,
-			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectType' => 'RT::Class',
 			      'ObjectId' => $class->Id);
 ok($ret, "Topic 2 created");
 ($ret, $msg) = $topic_class2->Create('Parent' => 0,
 			      'Name' => 'tlaTestTopicClass2-'.$$,
-			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectType' => 'RT::Class',
 			      'ObjectId' => $class2->Id);
 ok($ret, "Topic Class2 created");
 ($ret, $msg) = $gtopic->Create('Parent' => 0,
@@ -74,14 +74,14 @@ my $answerCF = RT::CustomField->new($RT::SystemUser);
 ($ret, $msg) = $questionCF->Create('Name' => 'Question-'.$$,
 			   'Type' => 'Text',
 			   'MaxValues' => 1,
-			   'LookupType' => 'RT::FM::Class-RT::FM::Article',
+			   'LookupType' => 'RT::Class-RT::Article',
 			   'Description' => 'The question to be answered',
 			   'Disabled' => 0);
 ok($ret, "Question CF created: $msg");
 ($ret, $msg) = $answerCF->Create('Name' => 'Answer-'.$$,
 			 'Type' => 'Text',
 			 'MaxValues' => 1,
-			 'LookupType' => 'RT::FM::Class-RT::FM::Article',
+			 'LookupType' => 'RT::Class-RT::Article',
 			 'Description' => 'The answer to the question',
 			 'Disabled' => 0);
 ok($ret, "Answer CF created: $msg");
@@ -104,10 +104,10 @@ my %cvals = ('article1q' => 'Some question about swallows',
 
 # Create an article or two with our custom field values.
 
-my $article1 = RT::FM::Article->new($RT::SystemUser);
-my $article2 = RT::FM::Article->new($RT::SystemUser);
-my $article3 = RT::FM::Article->new($RT::SystemUser);
-my $article4 = RT::FM::Article->new($RT::SystemUser);
+my $article1 = RT::Article->new($RT::SystemUser);
+my $article2 = RT::Article->new($RT::SystemUser);
+my $article3 = RT::Article->new($RT::SystemUser);
+my $article4 = RT::Article->new($RT::SystemUser);
 ($ret, $msg) = $article1->Create(Name => 'First article '.$$,
 				 Summary => 'blah blah 1',
 				 Class => $class->Id,

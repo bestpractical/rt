@@ -5,11 +5,11 @@ use strict;
 
 use RT::Test tests => 40;
 
-use_ok('RT::FM::Class');
+use_ok('RT::Class');
 
-my $class = RT::FM::Class->new($RT::SystemUser);
-isa_ok($class, 'RT::FM::Class');
-isa_ok($class, 'RT::FM::Record');
+my $class = RT::Class->new($RT::SystemUser);
+isa_ok($class, 'RT::Class');
+isa_ok($class, 'RT::Record');
 isa_ok($class, 'RT::Record');
 
 
@@ -37,7 +37,7 @@ isa_ok($cf, 'RT::CustomField');
 
 ($id,$msg) = $cf->Create( Name => 'FM::Sample-'.$$,
              Description => 'Test text cf',
-             LookupType => RT::FM::Article->CustomFieldLookupType,
+             LookupType => RT::Article->CustomFieldLookupType,
              Type => 'Text'
              );
 
@@ -70,9 +70,9 @@ ok ($id,$msg);
 
 
 
-use_ok('RT::FM::Article');
+use_ok('RT::Article');
 
-my $art = RT::FM::Article->new($RT::SystemUser);
+my $art = RT::Article->new($RT::SystemUser);
 ($id,$msg) =$art->Create(Class => $class->id,
              Name => 'Sample'.$$,
              Description => 'A sample article');
@@ -85,7 +85,7 @@ my $txns = $art->Transactions;
 
 is($txns->Count, 1, "One txn");
 my $txn = $txns->First;
-is ($txn->ObjectType, 'RT::FM::Article');
+is ($txn->ObjectType, 'RT::Article');
 is ($txn->ObjectId , $id ,  "It's the right article");
 is ($txn->Type, 'Create', "It's a create!");
 

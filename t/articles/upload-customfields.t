@@ -24,8 +24,8 @@ use constant ImageFileContent => do {
     scalar <$fh>;
 };
 
-use RT::FM::Class;
-my $class = RT::FM::Class->new($RT::SystemUser);
+use RT::Class;
+my $class = RT::Class->new($RT::SystemUser);
 my ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
 			      'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
@@ -43,7 +43,7 @@ $m->submit_form(
     form_name => "ModifyCustomField",
     fields => {
         TypeComposite => 'Image-0',
-        LookupType => 'RT::FM::Class-RT::FM::Article',
+        LookupType => 'RT::Class-RT::Article',
         Name => 'img'.$$,
         Description => 'img',
     },
@@ -69,7 +69,7 @@ $m->title_is(qq/Create a new article/);
 $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 
 $tcf =~ /(\d+)$/ or die "Hey this is impossible dude";
-my $upload_field = "Object-RT::FM::Article--CustomField-$1-Upload";
+my $upload_field = "Object-RT::Article--CustomField-$1-Upload";
 
 diag("Uploading an image to $upload_field") if $ENV{TEST_VERBOSE};
 

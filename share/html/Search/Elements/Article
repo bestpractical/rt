@@ -59,6 +59,6 @@
     &>
 <%INIT>
 my $QueryString = "?".$m->comp('/Elements/QueryString', %{$ARGS{args}});
-my $articles = RT::FM::Articles->new( $session{CurrentUser} );
+my $articles = RT::Articles->new( $session{CurrentUser} );
 $articles->Search( %{$ARGS{args}} );
 </%INIT>

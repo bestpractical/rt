@@ -7,12 +7,12 @@ use RT::Test tests => 14;
 
 my $suffix = '-'. $$;
 
-use_ok 'RT::FM::Class';
-use_ok 'RT::FM::Article';
+use_ok 'RT::Class';
+use_ok 'RT::Article';
 use_ok 'RT::CustomField';
 
 my $classname = 'TestClass';
-my $class = RT::FM::Class->new( $RT::SystemUser );
+my $class = RT::Class->new( $RT::SystemUser );
 {
     $class->Load( $classname );
     unless ( $class->Id ) {
@@ -33,7 +33,7 @@ my $cf = RT::CustomField->new( $RT::SystemUser );
 {
     my ($id, $msg) = $cf->Create(
         Name => $cfname,
-        LookupType => 'RT::FM::Class-RT::FM::Article',
+        LookupType => 'RT::Class-RT::Article',
         Type => 'Select', MaxValues => 1,
         Description => 'singleselect cf for tests',
     );
@@ -58,18 +58,18 @@ my $cf = RT::CustomField->new( $RT::SystemUser );
 }
 
 my $article1name = 'TestArticle1'.$suffix;
-my $article1 = new RT::FM::Article($RT::SystemUser);
+my $article1 = new RT::Article($RT::SystemUser);
 $article1->Create( Name => $article1name, Summary => 'Test', Class => $class->Id);
 $article1->AddCustomFieldValue(Field => $cf->Id, Value => 'Value1');
 
 my $article2name = 'TestArticle2'.$suffix;
-my $article2 = new RT::FM::Article($RT::SystemUser);
+my $article2 = new RT::Article($RT::SystemUser);
 $article2->Create( Name => $article2name, Summary => 'Test', Class => $class->Id);
 $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 
 # search for articles containing 1st value
 {
-    my $articles = RT::FM::Articles->new( $RT::SystemUser );
+    my $articles = RT::Articles->new( $RT::SystemUser );
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Id, VALUE => 'Value1' );
@@ -77,7 +77,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::Articles($RT::SystemUser);
+    my $articles = new RT::Articles($RT::SystemUser);
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf, VALUE => 'Value1' );    
@@ -85,7 +85,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::Articles($RT::SystemUser);
+    my $articles = new RT::Articles($RT::SystemUser);
     $articles->UnLimit( );
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Name, VALUE => 'Value1' );

@@ -5,9 +5,9 @@ use warnings;
 
 use RT::Test tests => 16;
 
-use_ok 'RT::FM::Articles';
-use_ok 'RT::FM::Classes';
-use_ok 'RT::FM::Class';
+use_ok 'RT::Articles';
+use_ok 'RT::Classes';
+use_ok 'RT::Class';
 
 $RT::SystemUser || die ;# just shut up the warning
 $RT::System     || die; # just shut up the warning;
@@ -15,8 +15,8 @@ $RT::System     || die; # just shut up the warning;
 
 my $root = RT::CurrentUser->new('root');
 ok ($root->Id, "Loaded root");
-my $cl = RT::FM::Class->new($root);
-ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
+my $cl = RT::Class->new($root);
+ok (UNIVERSAL::isa($cl, 'RT::Class'), "the new class is a class");
 
 my ($id, $msg) = $cl->Create(Name => 'Test-'.$$, Description => 'A test class');
 
@@ -47,8 +47,8 @@ $u->Create(Name => "RTFMTest".time, Privileged => 1);
 ok ($u->Id, "Created a new user");
 
 # Make sure you can't create a group with no acls
-$cl = RT::FM::Class->new($u);
-ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
+$cl = RT::Class->new($u);
+ok (UNIVERSAL::isa($cl, 'RT::Class'), "the new class is a class");
 
 ($id, $msg) = $cl->Create(Name => 'Test-nobody'.$$, Description => 'A test class');
 

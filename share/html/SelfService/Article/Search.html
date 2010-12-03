@@ -86,10 +86,10 @@
 % }
 </table>
 <%init>
-use RT::FM::Articles;
+use RT::Articles;
 
-my $articles_content = RT::FM::Articles->new( $session{'CurrentUser'} );
-my $articles_basics = RT::FM::Articles->new( $session{'CurrentUser'} );
+my $articles_content = RT::Articles->new( $session{'CurrentUser'} );
+my $articles_basics = RT::Articles->new( $session{'CurrentUser'} );
 if ( $ARGS{'Articles_Content'} ) {
     $articles_content->LimitCustomField( VALUE => $ARGS{'Articles_Content'},
                                                 OPERATOR => 'LIKE' );
