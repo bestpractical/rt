@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/CollectionList, %ARGS, 
     Collection => $articles, 
-    Class => 'RT::FM::ArticleCollection',
+    Class => 'RT::ArticleCollection',
     Format => q{
-    '<a href="/RTFM/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
-    '<a href="/RTFM/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
     '__ClassName__',
     '__CreatedRelative__',
     '__LastUpdatedRelative__',
