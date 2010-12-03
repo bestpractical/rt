@@ -2172,7 +2172,7 @@ Set C<@Plugins> to a list of external RT plugins that should be enabled (those
 plugins have to be previously downloaded and installed).
 Example:
 
-C<Set(@Plugins, (qw(Extension::QuickDelete RT::FM)));>
+C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 =cut
 
