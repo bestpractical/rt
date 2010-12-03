@@ -5,7 +5,7 @@ use warnings;
 
 use RT::Test tests => 70;
 
-use_ok 'RT::FM::ArticleCollection';
+use_ok 'RT::FM::Articles';
 use_ok 'RT::FM::ClassCollection';
 use_ok 'RT::FM::Class';
 
@@ -148,10 +148,10 @@ ok ($tix->First->Id == $tick->id, "It's even the right one");
 
 
 # Find all articles which refer to Ticket 1
-use RT::FM::ArticleCollection;
+use RT::FM::Articles;
 
-my $articles = RT::FM::ArticleCollection->new($RT::SystemUser);
-ok($articles->isa('RT::FM::ArticleCollection'), "Created an article collection");
+my $articles = RT::FM::Articles->new($RT::SystemUser);
+ok($articles->isa('RT::FM::Articles'), "Created an article collection");
 ok($articles->isa('RT::SearchBuilder'), "Created an article collection");
 ok($articles->isa('DBIx::SearchBuilder'), "Created an article collection");
 ok($tick->URI, "The ticket does still have a URI");

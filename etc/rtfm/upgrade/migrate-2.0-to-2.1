@@ -202,8 +202,8 @@ while ( my $cf = $cfs->Next ) {
 }
 
 # Find all articles
-    use RT::FM::ArticleCollection;
-my $articles = RT::FM::ArticleCollection->new($RT::SystemUser);
+    use RT::FM::Articles;
+my $articles = RT::FM::Articles->new($RT::SystemUser);
 $articles->UnLimit();
 
 #

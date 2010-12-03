@@ -5,7 +5,7 @@ use warnings;
 
 use RT::Test tests => 16;
 
-use_ok 'RT::FM::ArticleCollection';
+use_ok 'RT::FM::Articles';
 use_ok 'RT::FM::ClassCollection';
 use_ok 'RT::FM::Class';
 

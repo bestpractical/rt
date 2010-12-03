@@ -69,7 +69,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 
 # search for articles containing 1st value
 {
-    my $articles = RT::FM::ArticleCollection->new( $RT::SystemUser );
+    my $articles = RT::FM::Articles->new( $RT::SystemUser );
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Id, VALUE => 'Value1' );
@@ -77,7 +77,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::ArticleCollection($RT::SystemUser);
+    my $articles = new RT::FM::Articles($RT::SystemUser);
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf, VALUE => 'Value1' );    
@@ -85,7 +85,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::ArticleCollection($RT::SystemUser);
+    my $articles = new RT::FM::Articles($RT::SystemUser);
     $articles->UnLimit( );
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Name, VALUE => 'Value1' );

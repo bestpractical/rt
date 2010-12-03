@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/CollectionList, %ARGS, 
     Collection => $articles, 
-    Class => 'RT::ArticleCollection',
+    Class => 'RT::Articles',
     Format => q{
     '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
@@ -59,6 +59,6 @@
     &>
 <%INIT>
 my $QueryString = "?".$m->comp('/Elements/QueryString', %{$ARGS{args}});
-my $articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
+my $articles = RT::FM::Articles->new( $session{CurrentUser} );
 $articles->Search( %{$ARGS{args}} );
 </%INIT>
