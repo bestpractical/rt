@@ -13,7 +13,7 @@ isa_ok $uri, 'RT::URI::fsck_com_article';
 isa_ok $uri, 'RT::URI::base';
 isa_ok $uri, 'RT::Base';
 
-is $uri->LocalURIPrefix, 'fsck.com-rtfm://example.com/article/';
+is $uri->LocalURIPrefix, 'fsck.com-article://example.com/article/';
 
 my $class = RT::Class->new( $RT::SystemUser );
 $class->Create( Name => 'URItest - '. $$ );
