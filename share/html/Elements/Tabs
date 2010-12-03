@@ -180,7 +180,12 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/');
         $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/' );
         $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1' );
-        $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
+
+        my $article_global = $article_admin->child(global  => title => loc('Global'), path => '/Admin/Articles/Global/index.html' );
+        $article_global->child('group-rights' => title => loc('Group Rights'), path => "/Admin/Articles/Global/GroupRights.html" );
+        $article_global->child('user-rights'  => title => loc('User Rights'), path => "/Admin/Articles/Global/UserRights.html" );
+        $article_global->child('topics'       => title => loc('Topics'), path => "/Admin/Articles/Global/Topics.html" );
+
         my $cfs = $article_admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
         $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
         $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
