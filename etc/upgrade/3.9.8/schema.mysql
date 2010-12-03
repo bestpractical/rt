@@ -1,0 +1,58 @@
+CREATE TABLE Classes (
+  id int(11) NOT NULL auto_increment,
+  Name varchar(255) NOT NULL default '',
+  Description varchar(255) NOT NULL default '',
+  SortOrder int(11) NOT NULL default '0',
+  Disabled int(2) NOT NULL default '0',
+  Creator int(11) NOT NULL default '0',
+  Created datetime default NULL,
+  LastUpdatedBy int(11) NOT NULL default '0',
+  LastUpdated datetime default NULL,
+  HotList int(2) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Articles (
+  id int(11) NOT NULL auto_increment,
+  Name varchar(255) NOT NULL default '',
+  Summary varchar(255) NOT NULL default '',
+  SortOrder int(11) NOT NULL default '0',
+  Class int(11) NOT NULL default '0',
+  Parent int(11) NOT NULL default '0',
+  URI varchar(255) character set ascii default NULL,
+  Creator int(11) NOT NULL default '0',
+  Created datetime default NULL,
+  LastUpdatedBy int(11) NOT NULL default '0',
+  LastUpdated datetime default NULL,
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Topics (
+  id int(11) NOT NULL auto_increment,
+  Parent int(11) NOT NULL default '0',
+  Name varchar(255) NOT NULL default '',
+  Description varchar(255) NOT NULL default '',
+  ObjectType varchar(64) character set ascii NOT NULL default '',
+  ObjectId int(11) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE ObjectTopics (
+  id int(11) NOT NULL auto_increment,
+  Topic int(11) NOT NULL default '0',
+  ObjectType varchar(64) character set ascii NOT NULL default '',
+  ObjectId int(11) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE ObjectClasses (
+  id int(11) NOT NULL auto_increment,
+  Class int(11) NOT NULL default '0',
+  ObjectType varchar(255) character set ascii NOT NULL default '',
+  ObjectId int(11) NOT NULL default '0',
+  Creator int(11) NOT NULL default '0',
+  Created datetime default NULL,
+  LastUpdatedBy int(11) NOT NULL default '0',
+  LastUpdated datetime default NULL,
+  PRIMARY KEY  (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

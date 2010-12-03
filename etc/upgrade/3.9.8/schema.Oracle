@@ -1,0 +1,65 @@
+CREATE SEQUENCE Classes_seq;
+CREATE TABLE Classes (
+id NUMBER(11,0)
+  CONSTRAINT Classes_key PRIMARY KEY,
+Name varchar2(255) DEFAULT '',
+Description varchar2(255) DEFAULT '',
+SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
+Disabled NUMBER(11,0) DEFAULT 0 NOT NULL,
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE,
+HotList NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE SEQUENCE Articles_seq;
+CREATE TABLE Articles (
+id NUMBER(11,0)
+  CONSTRAINT Articles_key PRIMARY KEY,
+Name varchar2(255) DEFAULT '',
+Summary varchar2(255) DEFAULT '',
+SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
+Class NUMBER(11,0) DEFAULT 0 NOT NULL,
+Parent NUMBER(11,0) DEFAULT 0 NOT NULL,
+URI varchar2(255),
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE
+);
+
+
+CREATE SEQUENCE Topics_seq;
+CREATE TABLE Topics (
+id NUMBER(11,0)
+  CONSTRAINT Topics_key PRIMARY KEY,
+Parent NUMBER(11,0) DEFAULT 0 NOT NULL,
+Name varchar2(255) DEFAULT '',
+Description varchar2(255) DEFAULT '',
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
+);
+
+
+CREATE SEQUENCE ObjectTopics_seq;
+CREATE TABLE ObjectTopics (
+id NUMBER(11,0)
+  CONSTRAINT ObjectTopics_key PRIMARY KEY,
+Topic NUMBER(11,0) NOT NULL,
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
+);
+
+CREATE SEQUENCE ObjectClasses_seq;
+CREATE TABLE ObjectClasses (
+id NUMBER(11,0)
+  CONSTRAINT ObjectClasses_key PRIMARY KEY,
+Class NUMBER(11,0) NOT NULL,
+ObjectType varchar2(255) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL,
+Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+Created DATE,
+LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+LastUpdated DATE
+);
