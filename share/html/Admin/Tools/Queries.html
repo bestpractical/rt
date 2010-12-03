@@ -89,15 +89,31 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                   </thead>
                   <tbody>
 %                 my $s = 0;
+%                 my @undup;
 %                 for my $statement (@{ $request->{Queries} }) {
-%                      my ( $time, $sql, $bind, $duration, $trace ) = @$statement;
-%                      $sql = $RT::Handle->FillIn($sql, $bind);
-
+%                      my ($dup) = grep {$_->[1] eq $statement->[1]} @undup[-(@undup > 3?3:@undup)..-1];
+%                      if ($dup) {
+%                          $dup->[2] = [$dup->[2]] unless $dup->[5];
+%                          push @{$dup->[2]}, $statement->[2];
+%                          $dup->[3] += $statement->[3];
+%                          $dup->[5] ||= 1; $dup->[5]++;
+%                      } else {
+%                          push @undup, $statement;
+%                      }
+%                 }
+%                 for my $statement (@undup) {
+%                      my ( $time, $sql, $bind, $duration, $trace, $dup ) = @$statement;
+%                      $sql = $RT::Handle->FillIn($sql, $bind) unless $dup;
                        <tr>
-                           <td><% ++$s %></td>
+                           <td><% ++$s %><% $dup ? " (x $dup)" : "" %></td>
                            <td><i><&|/l, sprintf('%.4f', $duration) &>[_1]s</&></i></td>
                            <td>
                                <tt><% $sql %></tt>
+%                              if ($dup and @{$bind->[0]}) {
+%                                  for my $b (@{$bind}) {
+                                       <br><tt>[<% join(", ", @$b) %>]</tt>
+%                                  }
+%                              }
                                <a class="query-stacktrace-toggle" href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
                                <pre id="trace-<%$r%>-<%$s%>" class="hidden"><% $trace %></pre>
                            </td>
