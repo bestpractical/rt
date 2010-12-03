@@ -121,19 +121,22 @@ those rights globally.
 use RT::CustomField;
 use RT::Queue;
 use RT::Group; 
+use RT::Class;
 sub AvailableRights {
     my $self = shift;
 
     my $queue = RT::Queue->new(RT->SystemUser);
     my $group = RT::Group->new(RT->SystemUser);
     my $cf    = RT::CustomField->new(RT->SystemUser);
+    my $class = RT::Class->new(RT->SystemUser);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
     my $cr = $cf->AvailableRights();
+    my $clr = $class->AvailableRights();
 
     # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});
+    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
     delete $rights{ExecuteCode} if RT->Config->Get('DisallowExecuteCode');
 
     return(\%rights);
@@ -152,13 +155,15 @@ sub RightCategories {
     my $queue = RT::Queue->new(RT->SystemUser);
     my $group = RT::Group->new(RT->SystemUser);
     my $cf    = RT::CustomField->new(RT->SystemUser);
+    my $class = RT::Class->new(RT->SystemUser);
 
     my $qr = $queue->RightCategories();
     my $gr = $group->RightCategories();
     my $cr = $cf->RightCategories();
+    my $clr = $class->RightCategories();
 
     # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr});
+    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
 
     return(\%rights);
 }
