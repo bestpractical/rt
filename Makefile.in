@@ -352,10 +352,6 @@ parallel-test: test-parallel
 test-parallel: 
 	RT_TEST_PARALLEL=1 $(PERL) "-MApp::Prove" -e 'my $$p = App::Prove->new(); $$p->process_args("-lrj5","--state=slow,save", "t"); $$p->run()'
 
-regression-install: config-install
-	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)$(CONFIG_FILE)
-
-
 regression-reset-db: force-dropdb
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
