@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::URI::fsck_com_rtfm;
+package RT::URI::fsck_com_article;
 
 use strict;
 use warnings;
