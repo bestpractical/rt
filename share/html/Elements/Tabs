@@ -482,7 +482,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
             # TODO needs a "Can extract article into a class applied to this queue" check
             $actions->child( 'extract-article' => title => loc('Extract Article') => 
-                             path => "/Article/ExtractIntoClass.html?Ticket=".$obj->id );
+                             path => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id );
 
             if ( defined $session{"tickets"} ) {
                 # we have to update session data if we get new ItemMap
@@ -610,7 +610,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     if ( $request_path =~ qr{^/Articles/} ) {
         my $tabs = PageMenu();
         $tabs->child( search => path => "/Articles/Article/Search.html", title     => loc("Search") );
-        $tabs->child( create => path => "Articles/Article/PreCreate.html", title     => loc("New Article" ) );
+        $tabs->child( create => path => "/Articles/Article/PreCreate.html", title     => loc("New Article" ) );
         if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $session{'CurrentUser'} );
