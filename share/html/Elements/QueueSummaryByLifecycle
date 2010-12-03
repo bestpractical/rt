@@ -131,7 +131,6 @@ my $query =
     join(' OR ', map "Queue = ".$_->{id}, @queues)
     .")";
 $report->SetupGroupings( Query => $query, GroupBy => [qw(Status Queue)] );
-warn $report->BuildSelectQuery;
 
 while ( my $entry = $report->Next ) {
     $data->{ $entry->__Value("Queue") }->{ $entry->__Value("Status") }
