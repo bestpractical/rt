@@ -169,7 +169,7 @@ sub RightCategories {
 
 # {{{ Create
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 

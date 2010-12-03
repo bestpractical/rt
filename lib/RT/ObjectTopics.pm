@@ -86,7 +86,7 @@ sub _Init {
 }
 
 
-=item NewItem
+=head2 NewItem
 
 Returns an empty new RT::ObjectTopic item
 

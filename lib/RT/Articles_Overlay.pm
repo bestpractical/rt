@@ -203,7 +203,7 @@ sub LimitUpdatedBy {
 
 # {{{ LimitToParent ID
 
-=item LimitToParent ID
+=head2 LimitToParent ID
 
 Limit the returned set of articles to articles which are children
 of article ID.
@@ -225,7 +225,7 @@ sub LimitToParent {
 # }}}
 # {{{ LimitCustomField
 
-=item LimitCustomField HASH
+=head2 LimitCustomField HASH
 
 Limit the result set to articles which have or do not have the custom field 
 value listed, using a left join to catch things where no rows match.

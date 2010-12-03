@@ -67,7 +67,7 @@ RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'Articles' )
 
 # {{{ Create
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -323,7 +323,7 @@ sub Delete {
 
 # {{{ Children
 
-=item Children
+=head2 Children
 
 Returns an RT::Articles object which contains
 all articles which have this article as their parent.  This 

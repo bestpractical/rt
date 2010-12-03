@@ -84,7 +84,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -115,7 +115,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -124,14 +124,14 @@ Returns the current value of id.
 =cut
 
 
-=item Topic
+=head2 Topic
 
 Returns the current value of Topic. 
 (In the database, Topic is stored as int(11).)
 
 
 
-=item SetTopic VALUE
+=head2 SetTopic VALUE
 
 
 Set Topic to VALUE. 
@@ -142,7 +142,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item TopicObj
+=head2 TopicObj
 
 Returns the Topic Object which has the id returned by Topic
 
@@ -156,14 +156,14 @@ sub TopicObj {
 	return($Topic);
 }
 
-=item ObjectType
+=head2 ObjectType
 
 Returns the current value of ObjectType. 
 (In the database, ObjectType is stored as varchar(64).)
 
 
 
-=item SetObjectType VALUE
+=head2 SetObjectType VALUE
 
 
 Set ObjectType to VALUE. 
@@ -174,14 +174,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectId
+=head2 ObjectId
 
 Returns the current value of ObjectId. 
 (In the database, ObjectId is stored as int(11).)
 
 
 
-=item SetObjectId VALUE
+=head2 SetObjectId VALUE
 
 
 Set ObjectId to VALUE. 

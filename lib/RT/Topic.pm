@@ -83,7 +83,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -120,7 +120,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -129,14 +129,14 @@ Returns the current value of id.
 =cut
 
 
-=item Parent
+=head2 Parent
 
 Returns the current value of Parent. 
 (In the database, Parent is stored as int(11).)
 
 
 
-=item SetParent VALUE
+=head2 SetParent VALUE
 
 
 Set Parent to VALUE. 
@@ -147,14 +147,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Name
+=head2 Name
 
 Returns the current value of Name. 
 (In the database, Name is stored as varchar(255).)
 
 
 
-=item SetName VALUE
+=head2 SetName VALUE
 
 
 Set Name to VALUE. 
@@ -165,14 +165,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Description
+=head2 Description
 
 Returns the current value of Description. 
 (In the database, Description is stored as varchar(255).)
 
 
 
-=item SetDescription VALUE
+=head2 SetDescription VALUE
 
 
 Set Description to VALUE. 
@@ -183,14 +183,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectType
+=head2 ObjectType
 
 Returns the current value of ObjectType. 
 (In the database, ObjectType is stored as varchar(64).)
 
 
 
-=item SetObjectType VALUE
+=head2 SetObjectType VALUE
 
 
 Set ObjectType to VALUE. 
@@ -201,14 +201,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectId
+=head2 ObjectId
 
 Returns the current value of ObjectId. 
 (In the database, ObjectId is stored as int(11).)
 
 
 
-=item SetObjectId VALUE
+=head2 SetObjectId VALUE
 
 
 Set ObjectId to VALUE. 

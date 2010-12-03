@@ -83,7 +83,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -114,7 +114,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -123,14 +123,14 @@ Returns the current value of id.
 =cut
 
 
-=item Class
+=head2 Class
 
 Returns the current value of Class. 
 (In the database, Class is stored as int(11).)
 
 
 
-=item SetClass VALUE
+=head2 SetClass VALUE
 
 
 Set Class to VALUE. 
@@ -141,7 +141,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ClassObj
+=head2 ClassObj
 
 Returns the Class Object which has the id returned by Class
 
@@ -155,14 +155,14 @@ sub ClassObj {
 	return($Class);
 }
 
-=item ObjectType
+=head2 ObjectType
 
 Returns the current value of ObjectType. 
 (In the database, ObjectType is stored as varchar(255).)
 
 
 
-=item SetObjectType VALUE
+=head2 SetObjectType VALUE
 
 
 Set ObjectType to VALUE. 
@@ -173,14 +173,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ObjectId
+=head2 ObjectId
 
 Returns the current value of ObjectId. 
 (In the database, ObjectId is stored as int(11).)
 
 
 
-=item SetObjectId VALUE
+=head2 SetObjectId VALUE
 
 
 Set ObjectId to VALUE. 
@@ -191,7 +191,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -200,7 +200,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -209,7 +209,7 @@ Returns the current value of Created.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -218,7 +218,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
