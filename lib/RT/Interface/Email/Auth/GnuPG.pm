@@ -58,7 +58,7 @@ To use the gnupg-secured mail gateway, you need to do the following:
 Set up a GnuPG key directory with a pubring containing only the keys
 you care about and specify the following in your SiteConfig.pm
 
-    Set(%GnuPGOptions, homedir => '/opt/rt3/var/data/GnuPG');
+    Set(%GnuPGOptions, homedir => '/opt/rt4/var/data/GnuPG');
     Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
 
 =cut

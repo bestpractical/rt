@@ -2168,7 +2168,7 @@ Text:
     ("ls", "list", and "search" are synonyms.)
 
     Conditions are expressed in the SQL-like syntax used internally by
-    RT3. (For more information, see "rt help query".) The query string
+    RT. (For more information, see "rt help query".) The query string
     must be supplied as one argument.
 
     (Right now, the server doesn't support listing anything but tickets.
@@ -2401,7 +2401,7 @@ Text:
 Title: query
 Text:
 
-    RT3 uses an SQL-like syntax to specify object selection constraints.
+    RT uses an SQL-like syntax to specify object selection constraints.
     See the <RT:...> documentation for details.
     
     (XXX: I'm going to have to write it, aren't I?)

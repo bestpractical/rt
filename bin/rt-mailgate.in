@@ -48,7 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-rt-mailgate - Mail interface to RT3.
+rt-mailgate - Mail interface to RT.
 
 =cut
 
@@ -396,10 +396,10 @@ Next, you need to route mail to C<rt-mailgate> for the queues you're
 monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
-    bugs:         "|/opt/rt3/bin/rt-mailgate --queue bugs --action correspond
+    bugs:         "|/opt/rt4/bin/rt-mailgate --queue bugs --action correspond
               --url http://rt.mycorp.com/"
 
-    bugs-comment: "|/opt/rt3/bin/rt-mailgate --queue bugs --action comment
+    bugs-comment: "|/opt/rt4/bin/rt-mailgate --queue bugs --action comment
               --url http://rt.mycorp.com/"
 
 Note that you don't have to run your RT server on your mail server, as

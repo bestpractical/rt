@@ -168,7 +168,7 @@ quoted, otherwise you can see quite cryptic error 'gpg: Invalid option "--0"'.
 
 =item --homedir
 
-The GnuPG home directory, by default it is set to F</opt/rt3/var/data/gpg>.
+The GnuPG home directory, by default it is set to F</opt/rt4/var/data/gpg>.
 
 You can manage this data with the 'gpg' commandline utility 
 using the GNUPGHOME environment variable or --homedir option. 
