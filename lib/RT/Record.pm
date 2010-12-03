@@ -1519,7 +1519,8 @@ sub CustomFields {
     return $cfs;
 }
 
-# TODO: This _only_ works for RT::Class classes. it doesn't work, for example, for RT::FM classes.
+# TODO: This _only_ works for RT::Class classes. it doesn't work, for example,
+# for RT::IR classes.
 
 sub _LookupId {
     my $self = shift;

@@ -89,7 +89,7 @@ When handed an L<RT::Article> object, figure out its URI
 
 =head2 ParseURI URI
 
-When handed an fsck.com-rtfm: URI, figures out things like whether its a local article
+When handed an fsck.com-article URI, figures out things like whether its a local article
 and what its ID is
 
 =cut
@@ -173,7 +173,7 @@ Return the URI scheme for RT articles
 
 sub Scheme {
     my $self = shift;
-	return "fsck.com-rtfm";
+	return "fsck.com-article";
 }
 
 =head2 HREF

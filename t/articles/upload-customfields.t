@@ -57,7 +57,7 @@ my $tcf = (grep { /AddCustomField-/ } map { $_->name } $m->current_form->inputs 
 $m->tick( $tcf, 0 );         # Associate the new CF with this queue
 $m->click('UpdateObjs');
 $m->content_like( qr/Object created/, 'TCF added to the queue' );
-$m->follow_link( text => 'RTFM');
+$m->follow_link( text => 'Articles');
 $m->follow_link( text => 'Articles');
 $m->follow_link( text => 'New Article');
 

@@ -13,7 +13,7 @@ my %class = map { $_ => '' } qw/foo bar/;
 diag "create classes foo and bar" if $ENV{TEST_VERBOSE};
 
 for my $name ( keys %class ) {
-    $m->get_ok( '/Admin/RTFM/Classes/Modify.html?Create=1',
+    $m->get_ok( '/Admin/Articles/Classes/Modify.html?Create=1',
         'class create page' );
 
     $m->submit_form(
@@ -31,7 +31,7 @@ for my $name ( keys %class ) {
 diag "create articles in foo and bar" if $ENV{TEST_VERBOSE};
 
 for my $name ( keys %class ) {
-    $m->get_ok( '/RTFM/Article/Edit.html?Class=' . $class{$name},
+    $m->get_ok( '/Article/Edit.html?Class=' . $class{$name},
         'article create page' );
 
     $m->submit_form(
@@ -44,7 +44,7 @@ for my $name ( keys %class ) {
 
 diag "apply foo to queue General" if $ENV{TEST_VERBOSE};
 {
-    $m->get_ok( '/Admin/RTFM/Classes/Objects.html?id=' . $class{foo},
+    $m->get_ok( '/Admin/Articles/Classes/Objects.html?id=' . $class{foo},
         'apply page' );
     $m->submit_form(
         form_number => 3,
@@ -79,7 +79,7 @@ diag "update ticket to see if there is article foo"
 
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM_Content' => 'article' },
+        fields      => { 'Articles_Content' => 'article' },
         button      => 'Go',
     );
     $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
@@ -89,7 +89,7 @@ diag "update ticket to see if there is article foo"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
+        fields      => { 'Articles-Include-Article-Named' => 'article foo' },
         button      => 'Go',
     );
     $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
@@ -99,7 +99,7 @@ diag "update ticket to see if there is article foo"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'articlei bar' },
+        fields      => { 'Articles-Include-Article-Named' => 'articlei bar' },
         button      => 'Go',
     );
     $m->content_unlike( qr/article foo.*article foo/s, 'no article foo' );
@@ -108,7 +108,7 @@ diag "update ticket to see if there is article foo"
 
 diag "apply bar to globally" if $ENV{TEST_VERBOSE};
 {
-    $m->get_ok( '/Admin/RTFM/Classes/Objects.html?id=' . $class{bar},
+    $m->get_ok( '/Admin/Articles/Classes/Objects.html?id=' . $class{bar},
         'apply page' );
     $m->submit_form(
         form_number => 3,
@@ -129,7 +129,7 @@ diag "update ticket to see if there are both article foo and bar"
 
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM_Content' => 'article' },
+        fields      => { 'Articles_Content' => 'article' },
         button      => 'Go',
     );
     $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
@@ -139,7 +139,7 @@ diag "update ticket to see if there are both article foo and bar"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
+        fields      => { 'Articles-Include-Article-Named' => 'article foo' },
         button      => 'Go',
     );
     $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
@@ -149,7 +149,7 @@ diag "update ticket to see if there are both article foo and bar"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'article bar' },
+        fields      => { 'Articles-Include-Article-Named' => 'article bar' },
         button      => 'Go',
     );
     $m->content_like( qr/article bar.*article bar/s, 'selected article bar' );
@@ -159,7 +159,7 @@ diag "update ticket to see if there are both article foo and bar"
 
 diag "remove both foo and bar" if $ENV{TEST_VERBOSE};
 {
-    $m->get_ok( '/Admin/RTFM/Classes/Objects.html?id=' . $class{foo},
+    $m->get_ok( '/Admin/Articles/Classes/Objects.html?id=' . $class{foo},
         'apply page' );
     $m->submit_form(
         form_number => 3,
@@ -168,7 +168,7 @@ diag "remove both foo and bar" if $ENV{TEST_VERBOSE};
     );
     $m->content_contains( 'Object deleted', 'removed foo' );
 
-    $m->get_ok( '/Admin/RTFM/Classes/Objects.html?id=' . $class{bar},
+    $m->get_ok( '/Admin/Articles/Classes/Objects.html?id=' . $class{bar},
         'apply page' );
     $m->submit_form(
         form_number => 3,
@@ -189,7 +189,7 @@ diag "update ticket to see if there are both article foo and bar"
 
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM_Content' => 'article' },
+        fields      => { 'Articles_Content' => 'article' },
         button      => 'Go',
     );
     $m->content_lacks( 'article foo', 'no article foo' );
@@ -199,7 +199,7 @@ diag "update ticket to see if there are both article foo and bar"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'article foo' },
+        fields      => { 'Articles-Include-Article-Named' => 'article foo' },
         button      => 'Go',
     );
     $m->content_lacks( 'article foo', 'no article foo' );
@@ -209,7 +209,7 @@ diag "update ticket to see if there are both article foo and bar"
         'ticket update page' );
     $m->submit_form(
         form_number => 3,
-        fields      => { 'RTFM-Include-Article-Named' => 'article bar' },
+        fields      => { 'Articles-Include-Article-Named' => 'article bar' },
         button      => 'Go',
     );
     $m->content_lacks( 'article foo', 'no article foo' );

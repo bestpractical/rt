@@ -123,7 +123,7 @@ ok($referred_To_by_a->First->BaseObj->isa('RT::Article'), "Yep. its an article")
 ok($id,$msg);
 
 
-# Create an Article A RefersTo Ticket 1 from the RTFM side
+# Create an Article A RefersTo Ticket 1 from the Articles side
 use RT::Ticket;
 
 

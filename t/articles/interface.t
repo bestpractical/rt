@@ -162,9 +162,9 @@ ok($ret, "Test ticket for articles created: $msg");
 
 isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
-$m->follow_link_ok({text => 'RTFM'}, 'UI -> RTFM');
+$m->follow_link_ok({text => 'Articles'}, 'UI -> Articles');
 $m->content_contains($article3->Name);
-$m->follow_link_ok( {text => $article3->Name}, 'RTFM -> '. $article3->Name );
+$m->follow_link_ok( {text => $article3->Name}, 'Articles -> '. $article3->Name );
 $m->title_is("Article #" . $article3->Id . ": " . $article3->Name);
 $m->follow_link_ok( { text => 'Modify'}, 'Article -> Modify' );
 
@@ -206,8 +206,8 @@ $m->content_contains($ticket->Subject,
 
 diag("Test creating a ticket in Class2 and make sure we don't see Class1 Topics") if $ENV{TEST_VERBOSE};
 {
-$m->follow_link_ok( {text => 'RTFM'}, 'UI -> RTFM');
-$m->follow_link_ok( {text => 'Articles' }, 'RTFM -> Articles' );
+$m->follow_link_ok( {text => 'Articles'}, 'UI -> Articles');
+$m->follow_link_ok( {text => 'Articles' }, 'Articles -> Articles' );
 $m->follow_link_ok( {text => 'New Article' }, 'Articles -> New Article' );
 $m->follow_link_ok( {text => 'in class '.$class2->Name }, 'New Article -> in class '.$class2->Name );
 $m->content_lacks( $topic1->Name, "Topic1 from Class1 isn't shown" );

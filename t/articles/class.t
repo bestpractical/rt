@@ -43,7 +43,7 @@ ok($cl->id, "Loaded the class we want");
 # Create a new user. make sure they can't create a class
 
 my $u= RT::User->new($RT::SystemUser);
-$u->Create(Name => "RTFMTest".time, Privileged => 1);
+$u->Create(Name => "ArticlesTest".time, Privileged => 1);
 ok ($u->Id, "Created a new user");
 
 # Make sure you can't create a group with no acls
