@@ -63,6 +63,7 @@
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name",
         // Auto-submit once a user is chosen
         select: function( event, ui ) {
+            jQuery(event.target).val(ui.item.value);
             jQuery(event.target).closest("form").submit();
         }
     });
