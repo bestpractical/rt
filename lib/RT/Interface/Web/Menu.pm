@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    title sort_order target escape_title class raw_html key
+    title sort_order target escape_title class raw_html key description
 ));
 
 =head1 NAME
