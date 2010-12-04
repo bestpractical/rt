@@ -62,10 +62,9 @@
 
 % if ( $Show ne 'Users' ) {
 <label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label>
-<input type="text" value="" name="<% $Name %>Groups-Name" id="<% $Name %>Groups-Name" /><br />
-<input type="hidden" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" />
+<input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" /><br />
 <script type="text/javascript">
-    jQuery("#<% $Name %>Groups-Name").autocomplete({
+    jQuery("#<% $Name %>Groups").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups?exclude=<% $group_ids |u %>",
         // Auto-submit once a user is chosen
         select: function( event, ui ) {
