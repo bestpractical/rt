@@ -53,6 +53,7 @@
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name;privileged=1;exclude=<% $user_ids |u %>",
         // Auto-submit once a user is chosen
         select: function( event, ui ) {
+            jQuery(event.target).val(ui.item.value);
             jQuery(event.target).closest("form").submit();
         }
     });
@@ -68,6 +69,7 @@
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups?exclude=<% $group_ids |u %>",
         // Auto-submit once a user is chosen
         select: function( event, ui ) {
+            jQuery(event.target).val(ui.item.value);
             jQuery(event.target).closest("form").submit();
         }
     });
