@@ -31,7 +31,7 @@ for my $name ( keys %class ) {
 diag "create articles in foo and bar" if $ENV{TEST_VERBOSE};
 
 for my $name ( keys %class ) {
-    $m->get_ok( '/Article/Edit.html?Class=' . $class{$name},
+    $m->get_ok( '/Articles/Article/Edit.html?Class=' . $class{$name},
         'article create page' );
 
     $m->submit_form(
