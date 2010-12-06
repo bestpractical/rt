@@ -98,13 +98,6 @@
     PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField IdLike EmailLike FindDisabledUsers)],
 &>
 
-% my $ids = join ',', map $_->id, @{ $users->ItemsArrayRef };
-% if ( $ids ) {
-<div align="right"><em>
-(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
-<&|/l&>Download as a tab-delimited file</&>
-</a>)</em></div>
-% }
 % }
 
 <%INIT>
