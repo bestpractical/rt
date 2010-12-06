@@ -369,7 +369,7 @@ sub ObjectsForLoading {
 
     my $CurrentUser = $self->CurrentUser;
     push @objects, $CurrentUser->UserObj
-        if $CurrentUser->HasRight(Object => $RT::System, 'SeeOwnDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeOwnDashboard');
 
 
     my $groups = RT::Groups->new($CurrentUser);
@@ -381,7 +381,7 @@ sub ObjectsForLoading {
 
 
     push @objects, RT::System->new($CurrentUser)
-        if $CurrentUser->HasRight(Object => $RT::System, 'SeeDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeDashboard');
 
     return @objects;
 }
