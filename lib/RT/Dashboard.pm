@@ -373,6 +373,7 @@ sub ObjectsForLoading {
 
 
     my $groups = RT::Groups->new($CurrentUser);
+    $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
         Right             => 'SeeGroupDashboard',
         IncludeSuperusers => 1,
