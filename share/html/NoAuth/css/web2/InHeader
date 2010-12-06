@@ -63,14 +63,15 @@ jQuery(document).ready(function(){
 
     jQuery("#li-page-bookmark").detach().appendTo("#li-page-actions>ul");
     jQuery("#li-page-actions>ul").attr("id","page-action-menu").detach().insertAfter("#topactions");
+
     jQuery.fn.supersubs.defaults = {
         maxWidth: 30,
         extraWidth: 2
     };
 
-    jQuery("#page-menu.toplevel").addClass("sf-menu sf-js-enabled").supersubs().superfish();
-    jQuery("#app-nav.toplevel").addClass("sf-menu sf-vertical sf-js-enabled").supersubs().superfish();
-    jQuery("#prefs-menu").addClass("sf-menu sf-js-enabled").supersubs().superfish();
+    jQuery("#page-menu.toplevel").addClass("sf-menu sf-js-enabled").supersubs().superfish().supposition();
+    jQuery("#app-nav.toplevel").addClass("sf-menu sf-vertical sf-js-enabled").supersubs().superfish().supposition();
+    jQuery("#prefs-menu").addClass("sf-menu sf-js-enabled").supersubs().superfish().supposition();
 });
 </script>
 <!--[if lt IE 9]>

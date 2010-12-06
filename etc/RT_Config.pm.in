@@ -2196,6 +2196,7 @@ Set(@JSFilesInHead, qw/
     jquery.event.hover-1.0.js
     superfish.js
     supersubs.js
+    jquery.supposition.js
     history-folding.js
     late.js
 /);
