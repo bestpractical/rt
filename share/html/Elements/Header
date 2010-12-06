@@ -80,7 +80,7 @@
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
-  <body<% $id && qq[ id="comp-$id"] |n %>>
+  <body class="<% lc RT->Config->Get('WebDefaultStylesheet', $session{'CurrentUser'}) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>

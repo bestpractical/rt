@@ -99,7 +99,7 @@
   <h2>Custom CSS (Advanced)</h2>
   
   <form method="POST">
-    <textarea rows=20 id="user_css" name="user_css"><% $user_css %></textarea><br />
+    <textarea rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
     <input id="try" type="button" class="button" value="Try" />
     <input id="reset" type="reset" value="Reset" type="submit" />
     <input name="reset_css" value="Reset to default RT Theme" type="submit" />
@@ -110,7 +110,7 @@
 <script type="text/javascript">
 var section_css_mapping = {
     'Page': ['body'],
-    'Header': ['div#quickbar', '#main-navigation #app-nav > li', '#main-navigation #app-nav > li > a'],
+    'Header': ['div#quickbar', 'body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname'],
     'Page title': ['div#header h1'],
     'Page content': ['div#body'],
     'Buttons': ['input[type="reset"], input[type="submit"], input[class="button"]'],
@@ -143,7 +143,6 @@ jQuery(function($) {
           var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
           for (var name in applying) {
               var selector = (applying[name]).replace(specials, "\\$1");
-              //var rule = new RegExp('\\b'+selector+'\\s*\{.*?\}');
               var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
               var newcss = "background: " + bg;
 
@@ -159,11 +158,10 @@ jQuery(function($) {
               if (applying[name].match(/#header/))
                   newcss = "color: " + bg;
 
-              /* Navigation wants border color too */
-              if (applying[name].match(/#app-nav > li > a/))
-                  newcss += "; border-color: " + fg;
+              /* Nav doesn't need a background, but it wants text color */
+              if (applying[name].match(/#main-navigation/))
+                  newcss = "color: " + fg;
 
-              //css = css.replace(rule, applying[name]+" { "+newcss+" }");
               css = css.replace(rule, applying[name]+" { "+newcss+" }");
           }
       }
@@ -242,8 +240,7 @@ body {}
 
 /* Header */
 div#quickbar {}
-#main-navigation #app-nav > li {}
-#main-navigation #app-nav > li > a {}
+body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname {}
 
 /* Page title */
 div#header h1 {}

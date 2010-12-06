@@ -93,6 +93,10 @@
     border-left: none;
 }
 
+#main-navigation #app-nav > li, #main-navigation #app-nav > li > a {
+    background-color: transparent;
+}
+
 #page-navigation {
     position: absolute;
     top: 7.2em;

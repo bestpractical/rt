@@ -74,6 +74,10 @@
     top: -1px;
 }
 
+#prefs-menu > li, #prefs-menu > li > a {
+    background-color: transparent;
+}
+
 #prefs-menu.sf-menu a,
 #prefs-menu .sf-menu a
 {
