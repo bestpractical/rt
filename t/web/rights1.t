@@ -52,7 +52,7 @@ ok ($grantid,$grantmsg);
 $agent->reload();
 $agent->content_contains('Logout', "Reloaded page successfully");
 ok($agent->find_link( 
-		       id => 'preferences-options' ), "Found prefs pane" );
+		       id => 'preferences-settings' ), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
 ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
