@@ -1102,12 +1102,7 @@ sub ParseAddressFromHeader {
         return ( undef, undef );
     }
 
-    my $Name = ( $AddrObj->name || $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
-
-    #Lets take the from and load a user object.
-    my $Address = $AddrObj->address;
-
-    return ( $Address, $Name );
+    return ( $AddrObj->address, $AddrObj->phrase );
 }
 
 =head2 DeleteRecipientsFromHead HEAD RECIPIENTS
