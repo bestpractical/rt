@@ -363,6 +363,28 @@ sub Subscription {
     return;
 }
 
+sub ObjectsForLoading {
+    my $self = shift;
+    my @objects;
+
+    my $CurrentUser = $self->CurrentUser;
+    push @objects, $CurrentUser->UserObj
+        if $CurrentUser->HasRight(Object => $RT::System, 'SeeOwnDashboard');
+
+
+    my $groups = RT::Groups->new($CurrentUser);
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => 'SeeGroupDashboard',
+        IncludeSuperusers => 1,
+    );
+    push @objects, @{ $groups->ItemsArrayRef };
+
+
+    push @objects, RT::System->new($CurrentUser)
+        if $CurrentUser->HasRight(Object => $RT::System, 'SeeDashboard');
+
+    return @objects;
+}
 
 RT::Base->_ImportOverlays();
 
