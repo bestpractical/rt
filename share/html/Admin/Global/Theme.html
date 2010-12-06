@@ -107,21 +107,26 @@
   </form>
 </div>
 
+<%ONCE>
+my @sections = (
+    ['Page'         => ['body']],
+    ['Header'       => ['div#quickbar', 'body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
+    ['Page title'   => ['div#header h1']],
+    ['Page content' => ['div#body']],
+    ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
+    ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
+);
+</%ONCE>
 <script type="text/javascript">
-var section_css_mapping = {
-    'Page': ['body'],
-    'Header': ['div#quickbar', 'body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname'],
-    'Page title': ['div#header h1'],
-    'Page content': ['div#body'],
-    'Buttons': ['input[type="reset"], input[type="submit"], input[class="button"]'],
-    'Button hover': ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']
-};
+var section_css_mapping = <% JSON::to_json(\@sections) |n%>;
 
 jQuery(function($) {
 
-    for (var section in section_css_mapping) {
-        $('select#section').append($("<option/>").attr('value', section).text(section));
-    }
+    jQuery.each(section_css_mapping, function(i,v){
+        $('select#section').append($("<option/>")
+                           .attr('value', v[0])
+                           .text(v[0]));
+    });
 
     $("style#test").text($('#user_css').val());
     $('#try').click(function() {
@@ -137,7 +142,7 @@ jQuery(function($) {
     function change_color(bg, fg) {
       var section = $('select#section').val();
 
-      var applying = section_css_mapping[section];
+      var applying = jQuery.grep(section_css_mapping, function(a){ return a[0] == section })[0][1];
       var css = $('#user_css').val();
       if (applying) {
           var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
@@ -178,8 +183,9 @@ jQuery(function($) {
 
 });
 </script>
-
 <%INIT>
+require JSON;
+
 my $text_threshold = 0.6;
 my @results;
 
@@ -235,24 +241,12 @@ if ($user_css) {
 
 if (!$user_css) {
     my $attr = $RT::System->FirstAttribute('UserCSS');
-    $user_css = $attr ? $attr->Content : '/* Page */
-body {}
-
-/* Header */
-div#quickbar {}
-body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname {}
-
-/* Page title */
-div#header h1 {}
-
-/* Page content */
-div#body {}
-
-/* Buttons */
-input[type="reset"], input[type="submit"], input[class="button"] {}
-input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover {}
-';
-
+    $user_css = $attr ? $attr->Content : join(
+        "\n\n" => map {
+            join "\n" => "/* ". $_->[0] ." */",
+                         map { "$_ {}" } @{$_->[1]}
+        } @sections
+    );
 }
 
 # XXX: move this to some other modules
