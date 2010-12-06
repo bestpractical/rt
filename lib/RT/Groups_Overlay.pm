@@ -208,7 +208,7 @@ sub LimitToRolesForSystem {
 =head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
 
 Limits the set of groups returned to groups which have
-Principal PRINCIPAL_ID as a member
+Principal PRINCIPAL_ID as a member. Returns the alias used for the join.
 
 =cut
 
@@ -228,6 +228,8 @@ sub WithMember {
                 ALIAS2 => $members, FIELD2 => 'GroupId');
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
+
+    return $members;
 }
 
 sub WithoutMember {
