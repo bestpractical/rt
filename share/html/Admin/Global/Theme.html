@@ -145,7 +145,6 @@ jQuery(function($) {
               var selector = (applying[name]).replace(specials, "\\$1");
               //var rule = new RegExp('\\b'+selector+'\\s*\{.*?\}');
               var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
-              console.log(rule);
               var newcss = "background: " + bg;
 
               /* Don't set the text color on <body> as it affects too much */
