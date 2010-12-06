@@ -1189,7 +1189,7 @@ admin right) 'ModifySelf', return 1. otherwise, return undef.
 
 sub CurrentUserCanModify {
     my $self  = shift;
-    my $right = shift;
+    my $field = shift;
 
     if ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (1);
@@ -1197,7 +1197,7 @@ sub CurrentUserCanModify {
 
     #If the field is marked as an "administrators only" field,
     # don't let the user touch it.
-    elsif ( $self->_Accessible( $right, 'admin' ) ) {
+    elsif ( $self->_Accessible( $field, 'admin' ) ) {
         return (undef);
     }
 
@@ -1465,6 +1465,14 @@ sub PreferredKey
 {
     my $self = shift;
     return undef unless RT->Config->Get('GnuPG')->{'Enable'};
+
+    if ( ($self->CurrentUser->Id != $self->Id )  &&
+          !$self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
+          return undef;
+    }
+
+
+
     my $prefkey = $self->FirstAttribute('PreferredKey');
     return $prefkey->Content if $prefkey;
 
@@ -1490,6 +1498,16 @@ sub PreferredKey
 sub PrivateKey {
     my $self = shift;
 
+
+    #If the user wants to see their own values, let them.
+    #If the user is an admin, let them.
+    #Otherwwise, don't let them.
+    #
+    if ( ($self->CurrentUser->Id != $self->Id )  &&
+          !$self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
+          return undef;
+    }
+
     my $key = $self->FirstAttribute('PrivateKey') or return undef;
     return $key->Content;
 }
@@ -1497,7 +1515,11 @@ sub PrivateKey {
 sub SetPrivateKey {
     my $self = shift;
     my $key = shift;
-    # XXX: ACL
+
+    unless ($self->CurrentUserCanModify('PrivateKey')) {
+        return (0, $self->loc("Permission Denied"));
+    }
+
     unless ( $key ) {
         my ($status, $msg) = $self->DeleteAttribute('PrivateKey');
         unless ( $status ) {

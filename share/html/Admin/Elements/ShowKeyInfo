@@ -52,17 +52,19 @@
 <table>
 
 % unless ( $Type eq 'private' ) {
-<tr><th><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
+<tr><th class="label"><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
 % }
 
-<tr><th><% loc('Created') %>:</th>
+<tr><th class="label"><% loc('Fingerprint') %>:</th>
+<td><% $res{'info'}{'Fingerprint'} %></td></tr>
+<tr><th class="label"><% loc('Created') %>:</th>
 <td><% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %></td></tr>
 
-<tr><th><% loc('Expire') %>:</th>
+<tr><th class="label"><% loc('Expire') %>:</th>
 <td><% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %></td></tr>
 
 % foreach my $uinfo( @{ $res{'info'}{'User'} } ) {
-<tr><th><% loc('User (created - expire)') %>:</th>
+<tr><th class="label"><% loc('User (created - expire)') %>:</th>
 <td><% $uinfo->{'String'} %>\
 (<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - \
 <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)

@@ -127,12 +127,26 @@
 </td></tr>
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+<tr><td colspan="4">
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &></td></tr>
+<& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
+% } else {
+<&|/Widgets/TitleBox, title => loc( 'GnuPG private keys') &>
+<i><&|/l&>You have enabled GnuPG support but have not set a correspondence address for this queue.</&>
+<&|/l&>You must set a correspondence address for this queue in order to configure a GnuPG private key.</&></i>
+</&>
 % }
+</td></tr>
+<tr><td colspan="4">
 % if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &></td></tr>
-% }
+<& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
+% } else {
+<&|/Widgets/TitleBox, title => loc( 'GnuPG private keys') &>
+<i><&|/l&>You have enabled GnuPG support but have not set a comment address for this queue.</&>
+<&|/l&>You must set a comment address for this queue in order to configure a GnuPG private key.</&></i>
+</&>
+%}
+</td></tr>
 % }
 
 </table>
