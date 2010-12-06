@@ -332,6 +332,23 @@ sub _GetEquivObjects          { return (shift)->RT::Users::_GetEquivObjects( @_ 
 sub WithGroupRight            { return (shift)->RT::Users::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Users::WhoHaveRoleRight( @_ ) }
 
+sub ForWhichCurrentUserHasRight {
+    my $self = shift;
+    my %args = (
+        Right => undef,
+        IncludeSuperusers => undef,
+        @_,
+    );
+
+    $self->WithMember(
+        PrincipalId => $self->CurrentUser->Id,
+        Recursively => 1,
+    );
+
+    $self->_JoinACL( %args );
+
+    return;
+}
 
 =head2 LimitToEnabled
 
