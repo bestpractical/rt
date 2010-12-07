@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodata => 1, tests => 42;
+use RT::Test nodata => 1, tests => 44;
 
 RT::Group->AddRights(
     'RTxGroupRight' => 'Just a right for testing rights',
@@ -161,6 +161,27 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 
     ok($hacks->HasMemberRecursively($herbert->PrincipalId), 'hacks has member herbert');
     ok(!$hacks->HasMemberRecursively($eric->PrincipalId), 'hacks does not have member eric');
+
+    {
+        my $groups = RT::Groups->new(RT::CurrentUser->new($eric));
+        $groups->LimitToUserDefinedGroups;
+        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
+
+        TODO: {
+            local $TODO = "ForWhichCurrentUserHasRight still returns too many groups";
+            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
+        }
+    }
+
+    {
+        my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
+        $groups->LimitToUserDefinedGroups;
+        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
+        TODO: {
+            local $TODO = "ForWhichCurrentUserHasRight still returns too many groups";
+            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
+        }
+    }
 
     ($ok, $msg) = $employees->PrincipalObj->GrantRight(Right => 'RTxGroupRight', Object => $employees);
     ok($ok, $msg);
