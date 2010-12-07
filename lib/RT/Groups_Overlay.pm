@@ -342,12 +342,19 @@ sub ForWhichCurrentUserHasRight {
         @_,
     );
 
-    $self->WithMember(
+    my $member = $self->WithMember(
         PrincipalId => $self->CurrentUser->Id,
         Recursively => 1,
     );
 
-    $self->_JoinACL( %args );
+    my $acl = $self->_JoinACL( %args );
+
+    $self->Join(
+        ALIAS1 => $member,
+        FIELD1 => 'GroupId',
+        ALIAS2 => $acl,
+        FIELD2 => 'PrincipalId',
+    );
 
     return;
 }

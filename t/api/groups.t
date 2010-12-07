@@ -167,20 +167,14 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
         $groups->LimitToUserDefinedGroups;
         $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
 
-        TODO: {
-            local $TODO = "ForWhichCurrentUserHasRight still returns too many groups";
-            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
-        }
+        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
     }
 
     {
         my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
         $groups->LimitToUserDefinedGroups;
         $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-        TODO: {
-            local $TODO = "ForWhichCurrentUserHasRight still returns too many groups";
-            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
-        }
+        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
     }
 
     ($ok, $msg) = $employees->PrincipalObj->GrantRight(Right => 'RTxGroupRight', Object => $employees);
@@ -197,7 +191,11 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
         my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
         $groups->LimitToUserDefinedGroups;
         $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], ['Employees', 'Hackers']);
+
+        TODO: {
+            local $TODO = "not recursing across groups within groups yet";
+            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], ['Employees', 'Hackers']);
+        }
     }
 }
 
