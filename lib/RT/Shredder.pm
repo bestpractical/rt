@@ -61,8 +61,7 @@ RT::Shredder - Permanently wipeout data from RT
 
 =head2 CLI
 
-  rt-shredder --force --plugin 'Tickets=queue,general;status,deleted'
-
+  rt-shredder --force --plugin 'Tickets=query,Queue="General" and Status="deleted"'
 
 =head1 DESCRIPTION
 
