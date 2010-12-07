@@ -378,6 +378,23 @@ sub ObjectsForLoading {
         Right             => 'SeeGroupDashboard',
         IncludeSuperusers => 1,
     );
+    my $attrs = $groups->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Attributes',
+        FIELD2 => 'ObjectId',
+    );
+    $groups->Limit(
+        ALIAS => $attrs,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Group',
+    );
+    $groups->Limit(
+        ALIAS => $attrs,
+        FIELD => 'Name',
+        VALUE => 'Dashboard',
+    );
+
     push @objects, @{ $groups->ItemsArrayRef };
 
 
