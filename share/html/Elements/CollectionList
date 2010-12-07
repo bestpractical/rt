@@ -51,7 +51,7 @@ if (!$Collection && $Class eq 'RT::Tickets') {
     $Collection->FromSQL($Query);
 }
 
-my $TotalFound = $Collection->CountAll();
+$TotalFound = $Collection->CountAll() unless defined $TotalFound;
 return '' if !$TotalFound && !$ShowEmpty;
 
 if ( $Rows ) {
@@ -183,6 +183,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 <%ARGS>
 $Class         => ''
 $Collection    => undef
+$TotalFound    => undef
 $Format        => undef
 $DisplayFormat => undef
 @Order         => ()
