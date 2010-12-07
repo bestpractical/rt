@@ -404,6 +404,28 @@ sub ObjectsForLoading {
     return @objects;
 }
 
+sub CurrentUserCanCreateAny {
+    my $self = shift;
+    my @objects;
+
+    my $CurrentUser = $self->CurrentUser;
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateOwnDashboard');
+
+    my $groups = RT::Groups->new($CurrentUser);
+    $groups->LimitToUserDefinedGroups;
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => 'CreateGroupDashboard',
+        IncludeSuperusers => 1,
+    );
+    return 1 if $groups->Count;
+
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateDashboard');
+
+    return 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
