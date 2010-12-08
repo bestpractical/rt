@@ -183,8 +183,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
 
         my $cfs = $article_admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
-        $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
-        $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
+        $cfs->child( select => title => loc('Select'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
+        $cfs->child( create => title => loc('Create'), path => '/Admin/CustomFields/Modify.html?'.$m->comp("/Elements/QueryString", Create=>1, LookupType=> "RT::Class-RT::Article" ));
 
         $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html', );
         $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );

@@ -89,7 +89,7 @@
 <tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         Name => "LookupType", 
-        Default => $CustomFieldObj->LookupType, &>
+        Default => $CustomFieldObj->LookupType || $LookupType, &>
 </td></tr>
 
 <tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
