@@ -1,0 +1,55 @@
+CREATE TABLE Classes (
+id INTEGER PRIMARY KEY,
+Name varchar(255) NOT NULL DEFAULT '',
+Description varchar(255) NOT NULL DEFAULT '',
+SortOrder integer NOT NULL DEFAULT 0,
+Disabled smallint NOT NULL DEFAULT 0,
+Creator integer NOT NULL DEFAULT 0,
+Created TIMESTAMP NULL,
+LastUpdatedBy integer NOT NULL DEFAULT 0,
+LastUpdated TIMESTAMP NULL,
+HotList smallint NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Articles (
+id INTEGER PRIMARY KEY,
+Name varchar(255) NOT NULL DEFAULT '',
+Summary varchar(255) NOT NULL DEFAULT '',
+SortOrder integer NOT NULL DEFAULT 0,
+Class integer NOT NULL DEFAULT 0,
+Parent integer NOT NULL DEFAULT 0,
+URI varchar(255),
+Creator integer NOT NULL DEFAULT 0,
+Created TIMESTAMP NULL,
+LastUpdatedBy integer NOT NULL DEFAULT 0,
+LastUpdated TIMESTAMP NULL
+);
+
+
+CREATE TABLE Topics (
+id INTEGER PRIMARY KEY,
+Parent integer NOT NULL DEFAULT 0,
+Name varchar(255) NOT NULL DEFAULT '',
+Description varchar(255) NOT NULL DEFAULT '',
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL
+);
+
+
+CREATE TABLE ObjectTopics (
+id INTEGER PRIMARY KEY,
+Topic integer NOT NULL,
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL
+);
+
+CREATE TABLE ObjectClasses (
+id INTEGER PRIMARY KEY,
+Class integer NOT NULL,
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL,
+Creator integer NOT NULL DEFAULT 0,
+Created TIMESTAMP NULL,
+LastUpdatedBy integer NOT NULL DEFAULT 0,
+LastUpdated TIMESTAMP NULL
+);

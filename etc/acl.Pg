@@ -46,6 +46,16 @@ sub acl {
         customfieldvalues_id_seq
         CustomFieldValues
         sessions
+        classes_id_seq
+        Classes
+        articles_id_seq
+        Articles
+        topics_id_seq
+        Topics
+        objecttopics_id_seq
+        ObjectTopics
+        objectclasses_id_seq
+        ObjectClasses
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

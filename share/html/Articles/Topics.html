@@ -1,0 +1,275 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('Browse by topic') &>
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@Actions &>
+<a href="Topics.html"><&|/l&>All topics</&></a>
+% if (defined $class) {
+&gt; <a href="Topics.html?class=<%$currclass_id%>"><% $currclass_name %></a>
+% }
+
+% if ($id != 0) {
+&gt; <& /Articles/Elements/ShowTopic, topic => $currtopic &>
+% }
+<br />
+<h1><&|/l&>Browse by topic</&></h1>
+<%perl>
+if (defined $class) {
+   $m->print('<h2>'.'<a href="'.
+   RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $currclass_id
+   .'">'.$currclass_name."</a></h2>\n");
+   ProduceTree(\@Actions, $currclass, $currclass_id, $currclass_name, 0, $id);
+} else {
+    $m->print("<ul>\n");
+    while (my $c = $Classes->Next) {
+        $m->print('<li><h2>'.'<a href="'.
+        RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $c->Id
+        .'">'.$c->Name."</a></h2>\n");
+        $m->print("\n</li>\n");
+    }
+    $m->print(qq|<li><h2><a href="|.RT->Config->Get('WebPath').qq|/Articles/Topics.html?class=0">Global Topics</a></h2></li>\n|);
+    $m->print("</ul>\n");
+}
+</%perl>
+
+<br />
+<%perl>
+my @articles;
+if ($id or $showall) {
+    my $Articles = RT::ObjectTopics->new($session{'CurrentUser'});
+    $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::Article');
+    if ($id) {
+        $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
+        if ($showall) {
+            my $kids = $currtopic->Children;
+            while (my $k = $kids->Next) {
+                $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
+                                 ENTRYAGGREGATOR => 'OR');
+            }
+        }
+    }
+    @articles = map {$a = RT::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
+} elsif ($class) {
+    my $Articles = RT::Articles->new($session{'CurrentUser'});
+    my $TopicsAlias = $Articles->Join(
+        TYPE   => 'left',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectTopics',
+        FIELD2 => 'ObjectId',
+    );
+    $Articles->Limit(
+        LEFTJOIN => $TopicsAlias,
+        FIELD    => 'ObjectType',
+        VALUE    => 'RT::Article',
+    );
+    $Articles->Limit(
+        ALIAS      => $TopicsAlias,
+        FIELD      => 'Topic',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+    $Articles->Limit(
+        FIELD      => 'Class',
+        OPERATOR   => '=',
+        VALUE      => $class,
+    );
+    @articles = @{$Articles->ItemsArrayRef};
+}
+</%perl>
+
+% if (@articles) {
+%   if ($id) {
+<h2><&|/l, $currtopic->Name&>Articles in [_1]</&></h2>
+%   } elsif ($class) {
+<h2><&|/l&>Articles with no topics</&></h2>
+%   }
+<ul>
+%   for my $a (@articles) {
+<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
+%   }
+</ul>
+% }
+
+<%init>
+my @Actions;
+my $Classes;
+my $currclass;
+my $currclass_id;
+my $currclass_name;
+my $currtopic;
+
+if ( defined $class ) {
+    if ($class) {
+        $currclass = RT::Class->new( $session{'CurrentUser'} );
+        $currclass->Load($class);
+        $currclass_id   = $currclass->Id;
+        $currclass_name = $currclass->Name;
+    } else {
+        $currclass      = $RT::System;
+        $currclass_id   = 0;
+        $currclass_name = 'Global Topics';
+    }
+} else {
+    $Classes = RT::Classes->new( $session{'CurrentUser'} );
+    $Classes->LimitToEnabled();
+}
+
+if ($id) {
+    $currtopic = RT::Topic->new( $session{'CurrentUser'} );
+    $currtopic->Load($id);
+}
+
+# A subroutine that iterates through topics and their children, producing
+# the necessary ul, li, and href links for the table of contents.  Thank
+# heaven for query caching.  The $restrict variable is used to display only
+# the branch of the hierarchy which contains that topic ID.
+
+sub ProduceTree {
+    my ( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, $restrictid ) = @_;
+    $parentid = 0 unless $parentid;
+
+    # Deal with tree restriction, if any.
+    if ($restrictid) {
+        my $rtopic = RT::Topic->new( $session{'CurrentUser'} );
+        $rtopic->Load($restrictid);
+        unless ( $rtopic->Id()
+            && $rtopic->ObjectId() == $currclass_id )
+        {
+            push( @{$Actions},"Could not restrict view to topic $restrictid");
+
+            # Start over, without the restriction.
+            &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, undef );
+        } else {
+            my @showtopics;
+            push( @showtopics, $rtopic );
+            my $parent = $rtopic->ParentObj;
+            while ( $parent->Id ) {
+                push( @showtopics, $parent );
+                my $newparent = $parent->ParentObj;
+                $parent = $newparent;
+            }
+
+            # List the topics.
+            my $indents = @showtopics;
+            while ( my $t = pop @showtopics ) {
+                print "<ul>";
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, $t->Children->Count );
+                if ( $t->Id == $restrictid ) {
+                    &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $restrictid, undef );
+                }
+            }
+            print "</ul>" x $indents;
+        }
+    } else {
+
+        # No restriction in place.  Build the entire tree.
+        my $topics = RT::Topics->new( $session{'CurrentUser'} );
+        $topics->LimitToObject($currclass);
+        $topics->LimitToKids($parentid);
+        $topics->OrderBy( FIELD => 'Name' );
+        print "<ul>" if $topics->Count;
+        while ( my $t = $topics->Next ) {
+            if ( $t->Children->Count ) {
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 1 );
+                &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $t->Id );
+            } else {
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 0 );
+            }
+        }
+        print "</ul>\n" if $topics->Count;
+    }
+}
+
+sub MakeLinks {
+    my ( $topic, $currclass, $currclass_id, $currclass_name, $haschild ) = @_;
+    my $query;
+    my $output;
+
+    if ( ref($topic) eq 'RT::Topic' ) {
+
+        my $topic_info = $topic->Name() || loc("(no name)");
+        $topic_info .= ": " . $topic->Description() if $topic->Description;
+
+        if ($haschild) { # has topics below it
+            $query  = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
+            $output = qq(<li><a href="$query">$topic_info</a>);
+        } else {
+            $output = qq(<li>$topic_info);
+        }
+
+        my $Articles = RT::ObjectTopics->new( $session{'CurrentUser'} );
+        $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::Article' );
+        $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
+        if ( $Articles->Count ) {
+            my $article_text = " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")";
+            my $query  = "Topics.html?id=" . $topic->Id . "&class=$currclass_id&showall=1";
+            $output .= qq(<a href="$query">$article_text</a>);
+        }
+
+        $output .= "</li>\n";
+
+    } else {
+
+        # This builds a link for the class specified, with no particular topic.
+        $query  = "Topics.html?class=" . $currclass_id;
+        $output = "<li><a href=\"$query\">" . $currclass_name . "</a>";
+        $output .= ": " . $currclass->Description if $currclass->Description;
+    }
+
+    return $output;
+}
+
+</%init>
+
+<%args>
+$id => 0
+$class => undef
+$showall => undef
+</%args>

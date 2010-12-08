@@ -1,0 +1,266 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc("Search for articles") &>
+<& /Elements/Tabs &>
+
+% unless ( keys %ARGS ) {
+%   my $Classes = RT::Classes->new($session{'CurrentUser'});
+%   $Classes->LimitToEnabled();
+<table width="100%" border="0">
+<tr>
+<td valign="top" width="50%">
+<ul>
+% while (my $class = $Classes->Next) {
+<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
+% }  
+</ul>
+</td>
+<td valign="top" width="50%">
+<form action="Search.html" method="get">
+<& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+<&|/l&>Load saved search:</&><br />
+<& Elements/SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
+<input value="<%loc('Load')%>" name="Load" type="submit" />
+<& /Elements/TitleBoxEnd &>
+</form>
+</td>
+</tr>
+</table>
+%  return;
+% }
+
+<& /Elements/ListActions, actions => \@results &>
+<div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
+
+% if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+<h2><&|/l&>Search results</&></h2>
+<& /Elements/CollectionList,
+    Collection => $articles, 
+    AllowSorting => 1,
+    Format => $format,
+    GenericQueryArgs => { %filtered, Format => $format, },
+    &>
+% }
+
+<br />
+<br />
+<br />
+<a name="criteria"></a>
+<form action="Search.html" method="get">
+<& Elements/ShowSearchCriteria, dates => \%dates, RefersTo => $RefersTo, customfields => $customfields,  ReferredToBy => $ReferredToBy, %ARGS &>
+<br />
+<br />
+<& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
+    Name => ($search ? $search->Name : undef),
+    Privacy => ($search ? $search->Privacy : undef) &>
+
+</form>
+
+<div align=right>
+<a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html<%$QueryString%>"><&|/l&>Bookmarkable link for this search</&></a><br />
+</div>
+<%init>
+use RT::SavedSearch;
+my @results;
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+my $format = q{
+    '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__ClassName__',
+    '__CreatedRelative__',
+    '__LastUpdatedRelative__',
+    '__Summary__',
+    '__Topics__', };
+
+# {{{ Quicksearch logic
+
+# If it is a number, load the article with that ID.  Otherwise, search
+# on name and summary.
+if ($ARGS{'q'} && $ARGS{'q'} =~ /^(\d+)$/) {
+    return $m->comp("/Articles/Article/Display.html", id => $1);
+}
+# }}}
+
+# {{{ Saved search logic
+
+my $search;
+
+# The keys in %ARGS that are not saved and loaded with named searches.
+# These need to be treated specially.
+my @metakeys = qw/NewSearchName CurrentSearch SearchPrivacy Save Load
+    Update Delete/;
+
+if ($CurrentSearch =~ /^(.*-\d+)-SavedSearch-(\d+)$/) {
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    $search->Load($1, $2);
+}
+
+# Have we been asked to load a search?
+
+if ($ARGS{'Load'}) {
+    if ($ARGS{'LoadSavedSearch'} =~ /^(.*-\d+)-SavedSearch-(\d+)$/ ) {
+	my $privacy = $1;
+	my $search_id = $2;
+	
+	$search = RT::SavedSearch->new($session{'CurrentUser'});
+	my ($ret, $msg) = $search->Load($privacy, $search_id);
+	if ($ret) {
+	    my $searchargs = $search->GetParameter('args');
+	    # Clean out ARGS and fill it in with the saved args from the 
+	    # loaded search.
+	    foreach my $key (@metakeys) {
+		$searchargs->{$key} = $ARGS{$key};
+	    }
+	    %ARGS = %{$searchargs};
+	    $CurrentSearch = "$privacy-SavedSearch-$search_id";
+	} else {
+	    push(@results, loc("Error: could not load saved search [_1]: [_2]",
+			       $ARGS{'LoadSavedSearch'}, $msg));
+	}
+    } else {
+	push(@results, loc("Invalid [_1] argument", 'LoadSavedSearch'));
+    }
+}
+
+# ...or have we been asked to save, update, or delete a search?
+
+if ($ARGS{'Save'}) {
+    my %searchargs = %ARGS;
+    foreach my $key (@metakeys) {
+	delete $searchargs{$key};
+    }
+
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    unless ($ARGS{'SearchPrivacy'} =~ /^(.*)-(\d+)$/) {
+	# This shouldn't really happen, but hey.
+	push(@results, loc("WARNING: Saving search to user-level privacy"));
+	$ARGS{'SearchPrivacy'} = 'RT::User-'.$session{'CurrentUser'}->Id;
+    }
+    my ($ret, $msg) = $search->Save(Privacy => $ARGS{'SearchPrivacy'}, 
+				    Type => 'Article',
+				    Name => $ARGS{'NewSearchName'}, 
+				    SearchParams => {'args' => \%searchargs});
+    if ($ret) {
+	$CurrentSearch = $ARGS{'SearchPrivacy'} . "-SavedSearch-" . 
+	    $search->Id;
+	push(@results, loc("Created search [_1]", $search->Name));
+    } else {
+        undef $search; # if we bomb out creating a search
+                        # we don't want to have the empty object hang around
+	push(@results, loc("Could not create search: [_1]", $msg));
+    }
+} elsif ($ARGS{'Update'}) {
+    if ($ARGS{'SearchPrivacy'} != $search->Privacy) {
+	push(@results, 
+	     loc("Error: cannot change privacy value of existing search"));
+    } else {
+	my %searchargs = %ARGS;
+	foreach my $key (@metakeys) {
+	    delete $searchargs{$key};
+	}
+	
+	# We already have a search loaded, because CurrentSearch is set,
+	# or else we would not have gotten here.
+	my ($ret, $msg) = $search->Update(Name => $ARGS{'NewSearchName'},
+					  SearchParams => \%searchargs);
+	if ($ret) {
+	    push(@results, loc("Search [_1] updated", $search->Name));
+	} else {
+	    push(@results, loc("Error: search [_1] not updated: [_2]",
+			       $search->Name, $msg));
+	}
+    }
+} elsif ($ARGS{'Delete'}) {
+    # Keep track of this, as we are about to delete the search.
+    my $searchname = $search->Name;
+    my ($ret, $msg) = $search->Delete;
+    if ($ret) {
+	$ARGS{'CurrentSearch'} = undef;
+	push(@results, loc("Deleted search [_1]", $searchname));
+	# Get rid of all the state.
+	foreach my $key (keys %ARGS) {
+	    delete $ARGS{$key};
+	}
+	$CurrentSearch = 'new';
+	$search = undef;
+	$RefersTo = undef;
+	$ReferredToBy = undef;
+    } else {
+	push(@results, loc("Could not delete search [_1]: [_2]", 
+	     $searchname, $msg));
+    }
+}
+
+# }}}
+
+    # Don't want to search for a null class when there is no class specced
+my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
+my %dates;
+
+$articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
+        OrderBy => \@OrderBy );
+
+$m->callback( %ARGS, _Search => $articles );
+
+my %filtered = %ARGS;
+delete $filtered{$_} for (@metakeys, "EditTopics", "ExpandTopics");
+delete $filtered{$_} for grep {$filtered{$_} !~ /\S/} keys %filtered;
+@filtered{qw(OrderBy Order)} = (\@OrderBy, \@Order);
+my $QueryString = "?".$m->comp('/Elements/QueryString', %filtered);
+</%init>
+
+<%ARGS>
+$CreatedBefore => ''
+$CreatedAfter => ''
+$LastUpdatedBefore => ''
+$LastUpdatedAfter => ''
+$RefersTo => undef
+$ReferredToBy => undef
+$CurrentSearch => 'new'
+@OrderBy => ()
+@Order   => ()
+</%ARGS>

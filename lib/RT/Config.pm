@@ -906,7 +906,7 @@ sub SetFromConfig {
             if ( $source{'Extension'} ne $args{'Extension'} ) {
                 # as a site config is loaded earlier then its base config
                 # then we warn only on different extensions, for example
-                # RTIR's options is set in main site config or RTFM's
+                # RTIR's options is set in main site config
                 warn
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." It may be ok, but we want you to be aware."

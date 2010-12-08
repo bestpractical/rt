@@ -165,6 +165,7 @@
 
 <tr><td class="label" valign="top"><&|/l&>Message</&>:</td>
 <td class="messagebox-container action-<% $type %>">
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to

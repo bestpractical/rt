@@ -171,6 +171,9 @@
 <tr>
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
+% if ( RT->Config->Get('ArticleOnTicketCreate')) {
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+% }
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
@@ -431,6 +434,9 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
 my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
+              checks_failure => $checks_failure, results => \@results );
+
+$m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?

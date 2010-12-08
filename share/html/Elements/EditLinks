@@ -118,6 +118,7 @@
 <h3><&|/l&>New Links</&></h3>
 % if (ref($Object) eq 'RT::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
+<br /><&|/l&>You may enter links to Articles as "a:###", where ### represents the number of the Article.</&>
 % $m->callback( CallbackName => 'ExtraLinkInstructions' );
 </i><br />
 % } elsif (ref($Object) eq 'RT::Queue') {

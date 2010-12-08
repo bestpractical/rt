@@ -413,6 +413,16 @@ sub InitClasses {
     require RT::Dashboard;
     require RT::Approval;
     require RT::Lifecycle;
+    require RT::Article;
+    require RT::Articles;
+    require RT::Class;
+    require RT::Classes;
+    require RT::ObjectClass;
+    require RT::ObjectClasses;
+    require RT::ObjectTopic;
+    require RT::ObjectTopics;
+    require RT::Topic;
+    require RT::Topics;
 
     # on a cold server (just after restart) people could have an object
     # in the session, as we deserialize it so we never call constructor

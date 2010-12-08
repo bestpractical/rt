@@ -1138,7 +1138,7 @@ Set($MessageBoxIncludeSignatureOnComment, 1);
 Support implicit links in WikiText custom fields?  A true value
 causes InterCapped or ALLCAPS words in WikiText fields to
 automatically become links to searches for those words.  If used on
-RTFM articles, it links to the RTFM article with that name.
+Articles, it links to the Article with that name.
 
 =cut
 
@@ -1537,6 +1537,10 @@ Set(%AdminSearchResultFormat,
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__Name__</a>/TITLE:Name'}
         .q{,'__Description__'},
+    Classes =>
+        q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
+        .q{,__Description__},
 );
 
 =item C<$SuppressInlineTextFiles>
@@ -2180,7 +2184,7 @@ Set C<@Plugins> to a list of external RT plugins that should be enabled (those
 plugins have to be previously downloaded and installed).
 Example:
 
-C<Set(@Plugins, (qw(Extension::QuickDelete RT::FM)));>
+C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 =cut
 
@@ -2320,6 +2324,28 @@ This option is exists for backwards compatibility.  Don't use it.
 =back
 
 =cut
+
+=head1 Articles
+
+=item C<$ArticleOnTicketCreate>
+
+Set this to 1 to display the Articles interface on the Ticket Create page
+in addition to the Reply/Comment page.
+This will only work with 3.8.1 or greater
+
+=back
+
+=cut
+
+Set($ArticleOnTicketCreate, 0);
+
+=item C<$HideArticleSearchOnReplyCreate>
+
+=back
+
+=cut
+
+Set($HideArticleSearchOnReplyCreate, 0);
 
 =head1 DON'T MESS WITH THE STUFF BELOW
 
