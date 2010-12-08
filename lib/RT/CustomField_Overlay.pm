@@ -57,6 +57,7 @@ use RT::ObjectCustomFieldValues;
 
 our %FieldTypes = (
     Select => {
+        sort_order => 10,
         selection_type => 1,
 
         labels => [ 'Select multiple values',      # loc
@@ -79,6 +80,7 @@ our %FieldTypes = (
 
     },
     Freeform => {
+        sort_order => 20,
         selection_type => 0,
 
         labels => [ 'Enter multiple values',       # loc
@@ -86,23 +88,8 @@ our %FieldTypes = (
                     'Enter up to [_1] values',     # loc
                   ]
                 },
-    IPAddress => {
-        selection_type => 0,
-
-        labels => [ 'Enter multiple IP addresses',       # loc
-                    'Enter one IP address',             # loc
-                    'Enter up to [_1] IP addresses',     # loc
-                  ]
-                },
-    IPAddressRange => {
-        selection_type => 0,
-
-        labels => [ 'Enter multiple IP address ranges',       # loc
-                    'Enter one IP address range',             # loc
-                    'Enter up to [_1] IP address ranges',     # loc
-                  ]
-                },
     Text => {
+        sort_order => 30,
         selection_type => 0,
         labels         => [
                     'Fill in multiple text areas',      # loc
@@ -111,6 +98,7 @@ our %FieldTypes = (
                   ]
             },
     Wikitext => {
+        sort_order => 40,
         selection_type => 0,
         labels         => [
                     'Fill in multiple wikitext areas',      # loc
@@ -118,7 +106,9 @@ our %FieldTypes = (
                     'Fill in up to [_1] wikitext areas',    # loc
                   ]
                 },
+
     Image => {
+        sort_order => 50,
         selection_type => 0,
         labels         => [
                     'Upload multiple images',               # loc
@@ -127,6 +117,7 @@ our %FieldTypes = (
                   ]
              },
     Binary => {
+        sort_order => 60,
         selection_type => 0,
         labels         => [
                     'Upload multiple files',                # loc
@@ -134,7 +125,9 @@ our %FieldTypes = (
                     'Upload up to [_1] files',              # loc
                   ]
               },
+
     Combobox => {
+        sort_order => 70,
         selection_type => 1,
         labels         => [
                     'Combobox: Select or enter multiple values',      # loc
@@ -143,6 +136,7 @@ our %FieldTypes = (
                   ]
                 },
     Autocomplete => {
+        sort_order => 80,
         selection_type => 1,
         labels         => [
                     'Enter multiple values with autocompletion',      # loc
@@ -150,7 +144,9 @@ our %FieldTypes = (
                     'Enter up to [_1] values with autocompletion',    # loc
                   ]
     },
+
     Date => {
+        sort_order => 90,
         selection_type => 0,
         labels         => [
                     'Select multiple dates',                          # loc
@@ -159,11 +155,31 @@ our %FieldTypes = (
                   ]
             },
     DateTime => {
+        sort_order => 100,
         selection_type => 0,
         labels         => [
                     'Select multiple datetimes',                      # loc
                     'Select datetime',                                # loc
                     'Select up to [_1] datetimes',                    # loc
+                  ]
+                },
+
+    IPAddress => {
+        sort_order => 110,
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP addresses',       # loc
+                    'Enter one IP address',             # loc
+                    'Enter up to [_1] IP addresses',     # loc
+                  ]
+                },
+    IPAddressRange => {
+        sort_order => 120,
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP address ranges',       # loc
+                    'Enter one IP address range',             # loc
+                    'Enter up to [_1] IP address ranges',     # loc
                   ]
                 },
 );
@@ -594,7 +610,7 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub Types {
-    return (keys %FieldTypes);
+    return (sort {(($FieldTypes{$a}{sort_order}||999) <=> ($FieldTypes{$b}{sort_order}||999)) or ($a cmp $b)} keys %FieldTypes);
 }
 
 

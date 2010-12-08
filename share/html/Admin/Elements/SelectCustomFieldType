@@ -52,7 +52,7 @@
 </select>
 <%INIT>
 my $cf = RT::CustomField->new($session{'CurrentUser'});
-
+$Default = "Freeform-1" if $Default eq "-0";
 </%INIT>
 <%ARGS>
 $Default=>undef
