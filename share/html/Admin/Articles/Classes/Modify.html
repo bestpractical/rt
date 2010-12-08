@@ -94,7 +94,7 @@
 
 <%INIT>
 
-my $ClassObj = new RT::Class($session{'CurrentUser'});
+my $ClassObj = RT::Class->new($session{'CurrentUser'});
 my  ($title, @results, $Disabled);
 
 if ($Create) {

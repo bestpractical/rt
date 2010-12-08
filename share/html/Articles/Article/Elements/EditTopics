@@ -66,7 +66,7 @@ unless ($OnlyThisClass) {
     unless ($topic->ObjectId == $class) {
       $class = $topic->ObjectId;
       $m->print("</optgroup>\n");
-      my $c = new RT::Class($session{'CurrentUser'});
+      my $c = RT::Class->new($session{'CurrentUser'});
       $c->Load($topic->ObjectId);
       $m->print("<optgroup label=\"".$c->Name."\">\n");
     }
@@ -139,7 +139,7 @@ sub buildTree {
 
 </%INIT>
 <%ARGS>
-$ArticleObj => new RT::Article($session{'CurrentUser'})
+$ArticleObj => RT::Article->new($session{'CurrentUser'})
 @Classes => ()
 @Topics => ()
 $OnlyThisClass => undef

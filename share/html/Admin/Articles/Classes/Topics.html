@@ -51,7 +51,7 @@
 
 <%INIT>
 
-my $ClassObj = new RT::Class($session{'CurrentUser'});
+my $ClassObj = RT::Class->new($session{'CurrentUser'});
 $ClassObj->Load($ARGS{'id'}) || $m->comp("/Elements/Error", Why => "Couldn't load class '$id'");
 
 my $title = $Modify 
