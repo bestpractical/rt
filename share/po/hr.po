@@ -6113,10 +6113,6 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "RTFM Error"
-msgstr "RTFM greška"
-
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:66 share/html/User/Prefs.html:69
 msgid "Real Name"
 msgstr "Pravo ime"
@@ -8385,10 +8381,6 @@ msgstr ""
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 msgid "Use system default (%1)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
-msgstr "Koristi padajuće izbornike za odabir transakcija koje zeliš ekstrahirati u novi RTFM članak"
 
 #: lib/RT/Config.pm:368
 msgid "Use this to protect the format of plain text"

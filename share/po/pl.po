@@ -6616,10 +6616,6 @@ msgstr "Email w RT wymaga autoryzacji podpisu PGP. Albo nie podpisałeś wiadomo
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "RTFM Error"
-msgstr "Błąd RTFM"
-
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:66 share/html/User/Prefs.html:69
 msgid "Real Name"
 msgstr "Imię i nazwisko"
@@ -8989,10 +8985,6 @@ msgstr ""
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 msgid "Use system default (%1)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
-msgstr "Użyj rozwijalnych list, aby wybrać transakcje, z których chcesz utworzyć nowy artykuł RTFM"
 
 #: lib/RT/Config.pm:368
 msgid "Use this to protect the format of plain text"
