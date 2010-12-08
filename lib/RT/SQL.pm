@@ -70,7 +70,7 @@ my $re_aggreg      = qr[(?i:AND|OR)];
 my $re_delim       = qr[$RE{delimited}{-delim=>qq{\'\"}}];
 my $re_value       = qr[[+-]?\d+|NULL|$re_delim];
 my $re_keyword     = qr[[{}\w\.]+|$re_delim];
-my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
+my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)|(?i:NOT STARTSWITH)|(?i:STARTSWITH)|(?i:NOT ENDSWITH)|(?i:ENDSWITH)]; # long to short
 my $re_open_paren  = qr[\(];
 my $re_close_paren = qr[\)];
 
