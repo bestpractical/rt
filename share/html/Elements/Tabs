@@ -231,11 +231,32 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         my $type = $1;
         my $tabs = PageMenu();
 
-        $tabs->child( select => title => loc('Select'), path => "/Admin/$type/" );
+        my %labels = (
+            Queues       => loc("Queues"),
+            Users        => loc("Users"),
+            Groups       => loc("Groups"),
+            CustomFields => loc("Custom Fields"),
 
-        if ( $request_path ne "/Admin/$type/Modify.html" || !$m->request_args->{Create} ) {
-            $tabs->child( create => title => loc('Create'), path => "/Admin/$type/Modify.html?Create=1" );
+                     );
+
+        my $section;
+        if ( $request_path =~ qr{^/Admin/$type/?(?:index.html)?$}
+             || (    $request_path =~ qr{^/Admin/$type/(?:Modify.html)$}
+                  && $m->request_args->{'Create'} )
+           )
+
+        {
+            $section = $tabs;
+
+        } else {
+            $section = $tabs->child( select => title => $labels{$type},
+                                     path => "/Admin/$type/" );
         }
+
+        $section->child( select => title => loc('Select'),
+                         path   => "/Admin/$type/" );
+        $section->child( create => title => loc('Create'),
+                         path => "/Admin/$type/Modify.html?Create=1" );
     }
 
     if ( $request_path =~ qr{^/Admin/Queues} ) {
