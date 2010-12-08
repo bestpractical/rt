@@ -152,13 +152,6 @@ $include{$_} = $include{$_} ? " CHECKED" : "" for keys %include;
 
 my $EnabledChecked = ($Create ? $Disabled : $ClassObj->Disabled()) ? "" : "CHECKED";
 my $HotListChecked = $ClassObj->HotList ? "CHECKED" : "";
-
-my $current_subtab;
-if ($Create && $Create == 1) {
-    $current_subtab = "Admin/Articles/Classes/Modify.html?Create=1";
-} else { 
-    $current_subtab = "Admin/Articles/Classes/Modify.html?id=$id";
-}
 </%INIT>
 
 
