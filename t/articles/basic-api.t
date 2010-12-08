@@ -35,7 +35,7 @@ can_ok($class, 'CurrentUserHasRight');
 my $cf = RT::CustomField->new($RT::SystemUser);
 isa_ok($cf, 'RT::CustomField');
 
-($id,$msg) = $cf->Create( Name => 'FM::Sample-'.$$,
+($id,$msg) = $cf->Create( Name => 'Articles::Sample-'.$$,
              Description => 'Test text cf',
              LookupType => RT::Article->CustomFieldLookupType,
              Type => 'Text'
