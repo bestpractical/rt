@@ -116,10 +116,19 @@ if ($Create) {
 if ($ClassObj->Id()) {
     $ARGS{HotList} ||= 0 if $Submitted;
     my @attribs= qw(Description Name HotList);
-    @results = UpdateRecordObject( AttributesRef => \@attribs, 
-                                   Object => $ClassObj, 
-                                   ARGSRef => \%ARGS);
+    push @results, UpdateRecordObject( AttributesRef => \@attribs,
+                                       Object => $ClassObj,
+                                       ARGSRef => \%ARGS);
 }
+
+# This code does automatic redirection if any updates happen.
+$m->comp(
+    '/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => '/Admin/Articles/Classes/Modify.html',
+    id          => $ClassObj->Id,
+    ARGSRef     => \%ARGS
+);
 
 #we're asking about enabled on the web page but really care about disabled.
 if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
