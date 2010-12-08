@@ -62,7 +62,8 @@ Returns the prefix for a local article URI
 
 sub LocalURIPrefix {
     my $self = shift;
-    my $prefix = $self->Scheme. "://$RT::Organization/article/";
+    my $prefix = $self->Scheme. "://". RT->Config->Get('Organization')
+        . "/article/";
     return ($prefix);
 }
 
@@ -186,7 +187,7 @@ Otherwise, return its URI
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-        return ( $RT::WebURL . "/Articles/Article/Display.html?id=".$self->Object->Id);
+        return ( RT->Config->Get('WebURL') . "/Articles/Article/Display.html?id=".$self->Object->Id);
     }   
     else {
         return ($self->URI);
