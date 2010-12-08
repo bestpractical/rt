@@ -347,19 +347,32 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
     if ( $request_path =~ qr{^/Admin/Global/(Scrip|Template)(s)?\.html} ) {
         my $type = $1;
-        my $plural = $2;
         my $tabs = PageMenu();
-        if ( $plural ) {
-            if ( $request_path eq "/Admin/Global/$type$plural.html" ) {
-                $tabs->child( create => title => loc('Create'), path => "/Admin/Global/$type.html?Create=1" );
-            }
-        }
-        else {
-            $tabs->child( select => title => loc('Select'), path => "/Admin/Global/${type}s.html" );
-            if ( ! $m->request_args->{Create} ) {
-                $tabs->child( create => title => loc('Create'), path => "/Admin/Global/$type.html?Create=1" );
-            }
-        }
+
+        my %labels = (
+            Scrip       => loc('Scrips'),
+            Template    => loc('Templates')
+                     );
+
+        my $section;
+        #if ( $request_path =~ qr{^/Admin/Global/(\w+)s.html$} || $m->request_args->{'Create'} )
+
+        #{
+        #    $section = $tabs;
+
+        #} else {
+            $section = $tabs->child( select => title => $labels{$type},
+                                     path => "/Admin/Global/${type}s.html" );
+        #}
+
+        # With only two elements, swapping between dropdown and menu is kinda dumb
+        # In the glorious future this should be cleaner.
+
+        $section->child( select => title => loc('Select'),
+                         path   => "/Admin/Global/${type}s.html" );
+        $section->child( create => title => loc('Create'),
+                         path => "/Admin/Global/${type}.html?Create=1" );
+
     }
 
     if ( $request_path =~ qr{^/Ticket/} ) {
