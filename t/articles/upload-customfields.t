@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use RT::Test tests => 20;
-$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
 my $logo;
