@@ -1138,7 +1138,7 @@ Set($MessageBoxIncludeSignatureOnComment, 1);
 Support implicit links in WikiText custom fields?  A true value
 causes InterCapped or ALLCAPS words in WikiText fields to
 automatically become links to searches for those words.  If used on
-RTFM articles, it links to the RTFM article with that name.
+Articles, it links to the Article with that name.
 
 =cut
 
