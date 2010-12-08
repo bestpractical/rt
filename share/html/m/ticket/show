@@ -59,7 +59,7 @@ unless ($id) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     $Queue->Load($ARGS{'Queue'});
     unless ( $Queue->id ) {
         Abort('Queue not found');
