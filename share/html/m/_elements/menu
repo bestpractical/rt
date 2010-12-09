@@ -89,7 +89,7 @@ my @menu = (
 if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $RT::System))
     {
 
-        my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
+        my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->ObjectsForLoading;
         push @Objects, RT::System->new( $session{'CurrentUser'} )
             if $session{'CurrentUser'}->HasRight(
             Object => $RT::System,

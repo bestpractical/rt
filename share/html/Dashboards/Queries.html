@@ -115,7 +115,7 @@ for my $dashboard (@dashboards) {
 # add saved searches
 my @objs = RT::System->new($session{'CurrentUser'});
 
-push @objs, RT::SavedSearch->new( $session{CurrentUser} )->_PrivacyObjects
+push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 

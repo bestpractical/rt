@@ -134,14 +134,38 @@ sub Type {
 
 sub _PrivacyObjects {
     my $self        = shift;
+    my ($has_attr) = @_;
     my $CurrentUser = $self->CurrentUser;
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->Id,
                          Recursively => 1 );
+    if ($has_attr) {
+        my $attrs = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Attributes',
+            FIELD2 => 'ObjectId',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Group',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'Name',
+            VALUE => $has_attr,
+        );
+    }
 
     return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+}
+
+sub ObjectsForLoading {
+    my $self = shift;
+    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects( "SavedSearch" );
 }
 
 RT::Base->_ImportOverlays();
