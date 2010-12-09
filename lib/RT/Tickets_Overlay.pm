@@ -2908,15 +2908,15 @@ sub _RolesCanSee {
     $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
 
     my %res = ();
-    while ( my $ACE = $ACL->Next ) {
-        my $role = $ACE->PrincipalType;
-        my $type = $ACE->ObjectType;
+    foreach my $ACE ( @{ $ACL->ItemsArrayRef } ) {
+        my $role = $ACE->__Value('PrincipalType');
+        my $type = $ACE->__Value('ObjectType');
         if ( $type eq 'RT::System' ) {
             $res{ $role } = 1;
         }
         elsif ( $type eq 'RT::Queue' ) {
             next if $res{ $role } && !ref $res{ $role };
-            push @{ $res{ $role } ||= [] }, $ACE->ObjectId;
+            push @{ $res{ $role } ||= [] }, $ACE->__Value('ObjectId');
         }
         else {
             $RT::Logger->error('ShowTicket right is granted on unsupported object');
@@ -2954,8 +2954,8 @@ sub _DirectlyCanSeeIn {
     $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
 
     my @res = ();
-    while ( my $ACE = $ACL->Next ) {
-        my $type = $ACE->ObjectType;
+    foreach my $ACE ( @{ $ACL->ItemsArrayRef } ) {
+        my $type = $ACE->__Value('ObjectType');
         if ( $type eq 'RT::System' ) {
             # If user is direct member of a group that has the right
             # on the system then he can see any ticket
@@ -2963,7 +2963,7 @@ sub _DirectlyCanSeeIn {
             return (-1);
         }
         elsif ( $type eq 'RT::Queue' ) {
-            push @res, $ACE->ObjectId;
+            push @res, $ACE->__Value('ObjectId');
         }
         else {
             $RT::Logger->error('ShowTicket right is granted on unsupported object');

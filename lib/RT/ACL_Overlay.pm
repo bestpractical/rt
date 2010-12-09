@@ -217,6 +217,9 @@ sub Next {
     my $self = shift;
 
     my $ACE = $self->SUPER::Next();
+    # Short-circuit having to load up the ->Object
+    return $ACE
+        if $self->CurrentUser->PrincipalObj->Id == RT->SystemUser->Id;
     if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
 
         if ( $self->CurrentUser->HasRight( Right  => 'ShowACL',
