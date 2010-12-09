@@ -534,7 +534,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             }
         }
     }
-    if ( $request_path =~ qr{^/(?:Ticket|Search)/} ) {
+    if ( $request_path =~ qr{^/(?:Ticket|Search)/} && $request_path !~ qr{^/Search/Simple\.html}) {
         my $search = Menu()->child('search');
         my $args      = '';
         my $has_query = '';
