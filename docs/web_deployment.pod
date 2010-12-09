@@ -200,5 +200,9 @@ Apache configuration file telling it about RT:
         </Location>
     </VirtualHost>
 
+To run RT using FastCGI with other web servers like nginx, please see
+L<Plack::Handler::FCGI> for configuration examples.  Your should use
+C</opt/rt4/sbin/rt-server.fcgi> as your PSGI-app.
+
 =cut
 
