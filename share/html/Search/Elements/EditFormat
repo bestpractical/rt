@@ -73,7 +73,6 @@
 <option value="Respond"><&|/l&>Respond</&></option>
 <option value="Comment"><&|/l&>Comment</&></option>
 <option value="Resolve"><&|/l&>Resolve</&></option>
-<option value="Delete"><&|/l&>Delete</&></option>
 </select>
 </span>
 </div>
