@@ -406,9 +406,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
             my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
             my $tabs = PageMenu();
-            $tabs->child( bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
-                      escape_title => 0,
-                      link_item    => 0,
+            $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
                 sort_order => 99
             );
 
@@ -566,7 +564,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
         my $current_search_menu;
         if ( $request_path =~ qr{^/Ticket} ) {
-            $current_search_menu = $search->child( current_search => title => loc('Current Search'), link_item => 1 );
+            $current_search_menu = $search->child( current_search => title => loc('Current Search') );
+            $current_search_menu->path("/Search/Results.html$args") if $has_query;
         } else {
             $current_search_menu = PageMenu();
         }
@@ -589,6 +588,7 @@ if ( $request_path !~ qr{^/SelfService/} ) {
             }
 
             $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
+
             $current_search_menu->child( bulk => title => loc('Bulk Update') => path => "/Search/Bulk.html$args" );
             $current_search_menu->child( chart => title => loc('Graph'),
                                          path => "/Search/Chart.html$args" );
@@ -655,8 +655,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
 
-    PageWidgets()->child( simple_search => title => $m->scomp('SimpleSearch'), escape_title => 0 );
-    PageWidgets()->child( create_ticket => title => $m->scomp('CreateTicket'), escape_title => 0 );
+    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
+    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     $m->callback( CallbackName => 'Privileged' );
 }
@@ -704,10 +704,10 @@ if ( $request_path =~ qr{^/SelfService} ) {
     }
 
     if ($session{'CurrentUser'}->HasRight( Right => 'ShowArticle', Object => $RT::System )) {
-        PageWidgets->child( 'goto-article' => title => $m->scomp('/SelfService/Elements/SearchArticle'), escape_title => 0 );
+        PageWidgets->child( 'goto-article' => raw_html => $m->scomp('/SelfService/Elements/SearchArticle') );
     }
 
-    PageWidgets->child( goto         => title => $m->scomp('/SelfService/Elements/GotoTicket'), escape_title => 0 );
+    PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
 
     $m->callback( CallbackName => 'SelfService' );
 }

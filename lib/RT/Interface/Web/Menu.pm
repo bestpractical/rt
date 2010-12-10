@@ -57,8 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    title sort_order target escape_title class render_children_inline
-    link_item raw_html key
+    title sort_order target escape_title class raw_html key
 ));
 
 =head1 NAME
@@ -70,9 +69,9 @@ RT::Interface::Web::Menu - Handle the API for menu navigation
 =head2 new PARAMHASH
 
 Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
-I<PARAMHASH> are L</title>, L</parent>, L</sort_order>, L</path>, and
-L</active>.  See the subroutines with the respective name below for
-each option's use.
+I<PARAMHASH> are L</title>, L</parent>, L</sort_order>, L</path>, L</class>,
+L</raw_html>, and L</active>, and L</escape_title>.  See the subroutines with
+the respective name below for each option's use.
 
 =cut
 
@@ -97,6 +96,10 @@ sub new {
 
 Sets or returns the string that the menu item will be displayed as.
 
+=head2 escape_title [BOOLEAN]
+
+Sets or returns whether or not to HTML escape the title before output.
+
 =head2 parent [MENU]
 
 Gets or sets the parent L<RT::Interface::Web::Menu> of this item; this defaults
@@ -104,9 +107,9 @@ to null. This ensures that the reference is weakened.
 
 =head2 raw_html [STRING]
 
-Sets the content of this menu item to a raw blob of HTML. When
-asked or output, rather than constructing a link, we will return
-this raw content. No escaping is done.
+Sets the content of this menu item to a raw blob of HTML. When building the
+menu, rather than constructing a link, we will return this raw content. No
+escaping is done.
 
 =cut
 
@@ -132,18 +135,8 @@ Get or set the frame or pseudo-target for this link. something like L<_blank>
 
 =head2 class [STRING]
 
-Gets or sets the CSS class the link should have in addition to the default
-classes.  This is only used if L</link> isn't specified.
-
-=head2 render_children_inline [BOOLEAN]
-
-Gets or sets whether children are rendered inline as a menu "group" instead
-of a true submenu.  Only used when rendering with YUI for now.
-Defaults to false.
-
-Note that YUI doesn't support rendering nested menu groups, so having direct
-parent/children render_children_inline is likely not going to do what you
-want or expect.
+Gets or sets the CSS class the menu item should have in addition to the default
+classes.  This is only used if L</raw_html> isn't specified.
 
 =head2 path
 
@@ -168,6 +161,8 @@ sub path {
 
 Gets or sets if the menu item is marked as active.  Setting this
 cascades to all of the parents of the menu item.
+
+This is currently B<unused>.
 
 =cut
 
@@ -215,7 +210,6 @@ sub child {
                     key         => $key,
                     title       => $key,
                     escape_title=> 1,
-                    link_item   => 1,
                     %args
                 }
             );

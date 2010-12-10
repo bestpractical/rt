@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 % return unless ($menu);
 % for my $child ($menu->children) {
-% if ($child->escape_title) {
-<%$child->title%>\
+% if (defined $child->raw_html) {
+<% $child->raw_html |n %>
 % } else {
-<%$child->title |n%>\
+<% $child->title %>\
 % }
 % }
 <%ARGS>

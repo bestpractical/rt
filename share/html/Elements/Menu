@@ -55,16 +55,13 @@
 class="has-children" \
 % }
 >\
-% if ($child->link_item) {
-% my $url = (not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path;
-<a id="<%$item_id%>" <% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$child->target.'"' : '' %>>\
-% }
-% if ($child->escape_title) {
-<%$child->title%>\
+
+% if ($child->raw_html) {
+<% $child->raw_html |n %>
 % } else {
-<%$child->title |n%>\
-% }
-% if ($child->link_item) {
+% my $url = (not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path;
+<a id="<%$item_id%>" class="menu-item <% $child->class || '' %>"<% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$child->target.'"' : '' |n %>>\
+<% $child->escape_title ? $m->interp->apply_escapes($child->title, 'h') : $child->title |n %>\
 </a>\
 % }
 % if ($child->has_children) {
