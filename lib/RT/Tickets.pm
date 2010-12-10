@@ -2998,92 +2998,6 @@ sub _DoCount {
     return $self->SUPER::_DoCount( @_ );
 }
 
-sub _RolesCanSee {
-    my $self = shift;
-
-    my $cache_key = 'RolesHasRight;:;ShowTicket';
- 
-    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
-        return %$cached;
-    }
-
-    my $ACL = RT::ACL->new( RT->SystemUser );
-    $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
-    $ACL->Limit( FIELD => 'PrincipalType', OPERATOR => '!=', VALUE => 'Group' );
-    my $principal_alias = $ACL->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'PrincipalId',
-        TABLE2 => 'Principals',
-        FIELD2 => 'id',
-    );
-    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
-
-    my %res = ();
-    foreach my $ACE ( @{ $ACL->ItemsArrayRef } ) {
-        my $role = $ACE->__Value('PrincipalType');
-        my $type = $ACE->__Value('ObjectType');
-        if ( $type eq 'RT::System' ) {
-            $res{ $role } = 1;
-        }
-        elsif ( $type eq 'RT::Queue' ) {
-            next if $res{ $role } && !ref $res{ $role };
-            push @{ $res{ $role } ||= [] }, $ACE->__Value('ObjectId');
-        }
-        else {
-            $RT::Logger->error('ShowTicket right is granted on unsupported object');
-        }
-    }
-    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
-    return %res;
-}
-
-sub _DirectlyCanSeeIn {
-    my $self = shift;
-    my $id = $self->CurrentUser->id;
-
-    my $cache_key = 'User-'. $id .';:;ShowTicket;:;DirectlyCanSeeIn';
-    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
-        return @$cached;
-    }
-
-    my $ACL = RT::ACL->new( RT->SystemUser );
-    $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
-    my $principal_alias = $ACL->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'PrincipalId',
-        TABLE2 => 'Principals',
-        FIELD2 => 'id',
-    );
-    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
-    my $cgm_alias = $ACL->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'PrincipalId',
-        TABLE2 => 'CachedGroupMembers',
-        FIELD2 => 'GroupId',
-    );
-    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'MemberId', VALUE => $id );
-    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
-
-    my @res = ();
-    foreach my $ACE ( @{ $ACL->ItemsArrayRef } ) {
-        my $type = $ACE->__Value('ObjectType');
-        if ( $type eq 'RT::System' ) {
-            # If user is direct member of a group that has the right
-            # on the system then he can see any ticket
-            $RT::Principal::_ACL_CACHE->set( $cache_key => [-1] );
-            return (-1);
-        }
-        elsif ( $type eq 'RT::Queue' ) {
-            push @res, $ACE->__Value('ObjectId');
-        }
-        else {
-            $RT::Logger->error('ShowTicket right is granted on unsupported object');
-        }
-    }
-    $RT::Principal::_ACL_CACHE->set( $cache_key => \@res );
-    return @res;
-}
-
 sub CurrentUserCanSee {
     my $self = shift;
     return if $self->{'_sql_current_user_can_see_applied'};
@@ -3096,21 +3010,30 @@ sub CurrentUserCanSee {
     my $id = $self->CurrentUser->id;
 
     # directly can see in all queues then we have nothing to do
-    my @direct_queues = $self->_DirectlyCanSeeIn;
+    my %direct = RT::ACL->_ObjectsDirectlyHasRightOn(
+        User => $id,
+        Right => 'ShowTicket',
+    );
     return $self->{'_sql_current_user_can_see_applied'} = 1
-        if @direct_queues && $direct_queues[0] == -1;
+        if $direct{'RT::System'};
 
-    my %roles = $self->_RolesCanSee;
+    # from this point we only interested in queues
+    %direct = ('RT::Queue' => $direct{'RT::Queue'} || []);
+
+    my %roles = RT::ACL->_RolesWithRight( Right => 'ShowTicket' );
+
     {
-        my %skip = map { $_ => 1 } @direct_queues;
+        my %skip = map { $_ => 1 } @{ $direct{'RT::Queue'} };
         foreach my $role ( keys %roles ) {
-            next unless ref $roles{ $role };
-
-            my @queues = grep !$skip{$_}, @{ $roles{ $role } };
-            if ( @queues ) {
-                $roles{ $role } = \@queues;
+            if ( $roles{ $role }{'RT::System'} ) {
+                $roles{ $role } = 1;
             } else {
-                delete $roles{ $role };
+                my @queues = grep !$skip{$_}, @{ $roles{ $role }{'RT::Queue'} || [] };
+                if ( @queues ) {
+                    $roles{ $role } = \@queues;
+                } else {
+                    delete $roles{ $role };
+                }
             }
         }
     }
@@ -3143,11 +3066,11 @@ sub CurrentUserCanSee {
         $groups->Limit( ALIAS => $cgm_alias, FIELD => 'MemberId', VALUE => $id );
         $groups->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
         while ( my $group = $groups->Next ) {
-            push @direct_queues, $group->Instance;
+            push @{ $direct{'RT::Queue'} }, $group->Instance;
         }
     }
 
-    unless ( @direct_queues || keys %roles ) {
+    unless ( @{ $direct{'RT::Queue'} } || keys %roles ) {
         $self->SUPER::Limit(
             SUBCLAUSE => 'ACL',
             ALIAS => 'main',
@@ -3191,7 +3114,7 @@ sub CurrentUserCanSee {
 
         $self->SUPER::_OpenParen('ACL');
         my $ea = 'AND';
-        $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
+        $ea = 'OR' if $limit_queues->( $ea, @{ $direct{'RT::Queue'} } );
         while ( my ($role, $queues) = each %roles ) {
             $self->SUPER::_OpenParen('ACL');
             if ( $role eq 'Owner' ) {
