@@ -134,6 +134,10 @@ it knows where to find RT:
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
         </Directory>
+    <Perl>
+        use Plack::Handler::Apache2;
+        Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
+    </Perl>
     </VirtualHost>
 
 =head2 FastCGI

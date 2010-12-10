@@ -40,3 +40,8 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
     PerlSetEnv RT_TESTING 1
 </Directory>
 
+<Perl>
+    use Plack::Handler::Apache2;
+    Plack::Handler::Apache2->preload("%%RT_SBIN_PATH%%/rt-server");
+</Perl>
+
