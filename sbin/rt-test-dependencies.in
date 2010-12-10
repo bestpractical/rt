@@ -273,7 +273,7 @@ Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
 Log::Dispatch::Perl
 Test::Warn
-Test::Builder 0.77 # needed to fix TODO test
+Test::Builder 0.90 # needed for is_passing
 Test::MockTime
 Log::Dispatch::Perl
 Web::Scraper
