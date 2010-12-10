@@ -334,4 +334,100 @@ sub NewItem {
 }
 RT::Base->_ImportOverlays();
 
+sub _RolesWithRight {
+    my $self = shift;
+    my %args = (
+        Right => undef,
+        @_
+    );
+
+    my $right = $args{'Right'} or return ();
+
+    my $cache_key = 'RolesWithRight;:;'. $right;
+ 
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+        return %$cached;
+    }
+
+    my $ACL = RT::ACL->new( RT->SystemUser );
+    $ACL->Limit( FIELD => 'RightName', VALUE => $right );
+    $ACL->Limit( FIELD => 'PrincipalType', OPERATOR => '!=', VALUE => 'Group' );
+    my $principal_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'Principals',
+        FIELD2 => 'id',
+    );
+    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
+
+    my $query = 'SELECT main.PrincipalType, main.ObjectType, main.ObjectId'
+        .' FROM '. $ACL->_BuildJoins .' '. $ACL->_WhereClause;
+
+    my %res = ();
+    foreach my $row ( @{ $RT::Handle->SimpleQuery($query)->fetchall_arrayref } ) {
+        my ($role, $type, $id) = @$row;
+        if ( $type eq 'RT::System' ) {
+            $res{ $role } = { 'RT::System' => 1 };
+        }
+        else {
+            next if $res{ $role }{'RT::System'};
+            push @{ $res{ $role }{ $type } ||= [] }, $id;
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
+    return %res;
+}
+
+sub _ObjectsDirectlyHasRightOn {
+    my $self = shift;
+    my %args = (
+        Right => undef,
+        User => undef,
+        @_
+    );
+    my $right = $args{'Right'} or return ();
+    my $id = $args{'User'} || $self->CurrentUser->id;
+
+    my $cache_key = 'User-'. $id .';:;'. $right .';:;ObjectsDirectlyHasRightOn';
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+        return %$cached;
+    }
+
+    my $ACL = RT::ACL->new( RT->SystemUser );
+    $ACL->Limit( FIELD => 'RightName', VALUE => $right );
+    my $principal_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'Principals',
+        FIELD2 => 'id',
+    );
+    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
+    my $cgm_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'GroupId',
+    );
+    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'MemberId', VALUE => $id );
+    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
+
+    my $query = 'SELECT main.ObjectType, main.ObjectId'
+        .' FROM '. $ACL->_BuildJoins .' '. $ACL->_WhereClause;
+
+    my %res = ();
+    foreach my $row ( @{ $RT::Handle->SimpleQuery($query)->fetchall_arrayref } ) {
+        my ($type, $id) = @$row;
+        if ( $type eq 'RT::System' ) {
+            # If user is direct member of a group that has the right
+            # on the system then he has this right on any object
+            %res = ('RT::System' => 1);
+        }
+        else {
+            push @{ $res{$type} ||= [] }, $id;
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
+    return %res;
+}
+
 1;
