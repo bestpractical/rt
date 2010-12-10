@@ -259,7 +259,6 @@ sub CleanSlate {
         _sql_cf_alias
         _sql_group_members_aliases
         _sql_object_cfv_alias
-        _sql_role_group_aliases
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
@@ -1049,36 +1048,16 @@ sub _WatcherLimit {
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-           && !$args{'New'};
-
-    # we always have watcher groups for ticket, so we use INNER join
-    my $groups = $self->Join(
-        ALIAS1          => 'main',
-        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
-        TABLE2          => 'Groups',
-        FIELD2          => 'Instance',
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::'. $args{'Class'} .'-Role',
-    );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Type',
-        VALUE           => $args{'Type'},
-    ) if $args{'Type'};
-
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
-        unless $args{'New'};
-
-    return $groups;
+    my %args = (Class => 'RT::Ticket', @_);
+    if ( $args{'Class'} eq 'Queue' ) {
+        $args{'Class'} = 'RT::Queue';
+        $args{'Field'} = 'Queue';
+    }
+    elsif ( $args{'Class'} eq 'Ticket' ) {
+        $args{'Class'} = 'RT::Ticket';
+        $args{'Field'} = 'id';
+    }
+    return $self->JoinRoleGroups( %args );
 }
 
 sub _GroupMembersJoin {
