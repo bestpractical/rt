@@ -201,6 +201,10 @@ elsif ( $AddCol ) {
                 $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
                 $column{Suffix} .= "</a>";
             }
+            elsif ( $Link eq "Delete" ) {
+                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Delete&id=__id__">};
+                $column{Suffix} .= "</a>";
+            }
 
             if ($Title) {
                 $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
