@@ -3176,29 +3176,16 @@ sub CurrentUserCanSee {
             my $ea = shift;
             my @queues = @_;
 
-            return unless @queues;
-            if ( @queues == 1 ) {
-                $self->SUPER::Limit(
-                    SUBCLAUSE => 'ACL',
-                    ALIAS => 'main',
-                    FIELD => 'Queue',
-                    VALUE => $_[0],
-                    ENTRYAGGREGATOR => $ea,
-                );
-            } else {
-                $self->SUPER::_OpenParen('ACL');
-                foreach my $q ( @queues ) {
-                    $self->SUPER::Limit(
-                        SUBCLAUSE => 'ACL',
-                        ALIAS => 'main',
-                        FIELD => 'Queue',
-                        VALUE => $q,
-                        ENTRYAGGREGATOR => $ea,
-                    );
-                    $ea = 'OR';
-                }
-                $self->SUPER::_CloseParen('ACL');
-            }
+            return 0 unless @queues;
+            $self->SUPER::Limit(
+                SUBCLAUSE => 'ACL',
+                ALIAS => 'main',
+                FIELD => 'Queue',
+                OPERATOR => 'IN',
+                VALUE => '('. join(', ', @queues) .')',
+                QUOTEVALUE => 0,
+                ENTRYAGGREGATOR => $ea,
+            );
             return 1;
         };
 
