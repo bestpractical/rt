@@ -87,11 +87,11 @@ sub _SQLLimit {
          (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_type'} = 1;
     }
+    $args{'SUBCLAUSE'} = 'ticketsql' if !defined $args{'SUBCLAUSE'} && !$args{'LEFTJOIN'};
 
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  $self->SUPER::Limit(%args,
-                      SUBCLAUSE => 'ticketsql');
+  $self->SUPER::Limit( %args );
 }
 
 sub _SQLJoin {
@@ -148,7 +148,6 @@ sub _close_bundle {
             $bundle[0]->{'key'},
             $bundle[0]->{'op'},
             $bundle[0]->{'val'},
-            SUBCLAUSE       => '',
             ENTRYAGGREGATOR => $bundle[0]->{ea},
             SUBKEY          => $bundle[0]->{subkey},
         );
@@ -160,7 +159,6 @@ sub _close_bundle {
                 $chunk->{key},
                 $chunk->{op},
                 $chunk->{val},
-                SUBCLAUSE       => '',
                 ENTRYAGGREGATOR => $chunk->{ea},
                 SUBKEY          => $chunk->{subkey},
             ];
@@ -229,7 +227,6 @@ sub _parser {
         else {
             $self->_close_bundle(@bundle); @bundle = ();
             $sub->( $self, $key, $op, $value,
-                    SUBCLAUSE       => '',  # don't need anymore
                     ENTRYAGGREGATOR => $ea,
                     SUBKEY          => $subkey,
                   );
