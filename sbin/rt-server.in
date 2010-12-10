@@ -157,6 +157,7 @@ my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
                             env => 'deployment' );
 my @args = @ARGV;
 push @args, '--port', $port unless grep { m/port/ } @args;
+push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/server/ } @args;
 
 $r->parse_options(@args);
