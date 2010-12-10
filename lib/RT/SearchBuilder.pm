@@ -370,6 +370,58 @@ sub ColumnMapClassName {
     return $Class;
 }
 
+sub JoinRoleGroups {
+    my $self = shift;
+    my %args = (
+        New   => 0,
+        Left  => 0,
+        Alias => 'main',
+        Field => 'id',
+        Class => undef,
+        Type  => '',
+        @_
+    );
+    unless ( $args{'Class'} ) {
+        $args{'Class'} = ref $self;
+        $args{'Class'} =~ s/s$//;
+    }
+    unless ( $args{'New'} ) {
+        return $self->{'_sql_aliases'}{'role_groups'}{ join '-', @args{qw(Alias Field Class Type)} }
+            if $self->{'_sql_aliases'}{'role_groups'}{ join '-', @args{qw(Alias Field Class Type)} }
+    }
+
+    # we always have watcher groups, so we're safe to use INNER join,
+    # but we would love to see groups on demand, so make it possible
+    my $groups = $self->Join(
+        $args{'Left'}? (TYPE => 'LEFT') : (),
+        ALIAS1          => $args{'Alias'},
+        FIELD1          => $args{'Field'},
+        TABLE2          => 'Groups',
+        FIELD2          => 'Instance',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    my $limit = 'Limit';
+    # special case for tickets :(
+    $limit = '_SQLLimit' if $self->isa('RT::Tickets');
+    $self->$limit(
+        LEFTJOIN => $groups,
+        ALIAS    => $groups,
+        FIELD    => 'Domain',
+        VALUE    => $args{'Class'} .'-Role',
+    );
+    $self->$limit(
+        LEFTJOIN => $groups,
+        ALIAS    => $groups,
+        FIELD    => 'Type',
+        VALUE    => $args{'Type'},
+    ) if $args{'Type'};
+
+    $self->{'_sql_aliases'}{'role_groups'}{ join '-', @args{qw(Alias Field Class Type)} } = $groups
+        unless $args{'New'};
+
+    return $groups;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
