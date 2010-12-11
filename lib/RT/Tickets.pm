@@ -257,7 +257,6 @@ sub CleanSlate {
     $self->SUPER::CleanSlate( @_ );
     delete $self->{$_} foreach qw(
         _sql_cf_alias
-        _sql_group_members_aliases
         _sql_object_cfv_alias
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
@@ -1061,32 +1060,7 @@ sub _RoleGroupsJoin {
 }
 
 sub _GroupMembersJoin {
-    my $self = shift;
-    my %args = (New => 1, GroupsAlias => undef, Left => 1, @_);
-
-    return $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-        if $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-            && !$args{'New'};
-
-    my $alias = $self->Join(
-        $args{'Left'} ? (TYPE            => 'LEFT') : (),
-        ALIAS1          => $args{'GroupsAlias'},
-        FIELD1          => 'id',
-        TABLE2          => 'CachedGroupMembers',
-        FIELD2          => 'GroupId',
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $self->SUPER::Limit(
-        $args{'Left'} ? (LEFTJOIN => $alias) : (),
-        ALIAS => $alias,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
-
-    $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
-        unless $args{'New'};
-
-    return $alias;
+    return (shift)->JoinGroupMembers( @_ );
 }
 
 =head2 _WatcherJoin

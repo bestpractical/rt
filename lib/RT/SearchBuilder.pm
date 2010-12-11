@@ -422,6 +422,42 @@ sub JoinRoleGroups {
     return $groups;
 }
 
+sub JoinGroupMembers {
+    my $self = shift;
+    my %args = (New => 1, GroupsAlias => undef, ActiveOnly => 1, Left => 1, @_);
+
+    my $key = join '_', $args{'ActiveOnly'}? ('active'): (),
+        'group_members', $args{'GroupsAlias'};
+
+    return $self->{'_sql_aliases'}{ $key }
+        if $self->{'_sql_aliases'}{ $key } && !$args{'New'};
+
+    my $alias = $self->Join(
+        $args{'Left'} ? (TYPE            => 'LEFT') : (),
+        ALIAS1          => $args{'GroupsAlias'},
+        FIELD1          => 'id',
+        TABLE2          => 'CachedGroupMembers',
+        FIELD2          => 'GroupId',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    if ( $args{'ActiveOnly'} ) {
+        my $limit = 'Limit';
+        # special case for tickets :(
+        $limit = '_SQLLimit' if $self->isa('RT::Tickets');
+        $self->$limit(
+            $args{'Left'} ? (LEFTJOIN => $alias) : (),
+            SUBCLAUSE => '',
+            ALIAS => $alias,
+            FIELD => 'Disabled',
+            VALUE => 0,
+        );
+    }
+
+    $self->{'_sql_aliases'}{ $key } = $alias unless $args{'New'};
+
+    return $alias;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
