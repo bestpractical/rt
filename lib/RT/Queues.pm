@@ -107,10 +107,133 @@ This is used for filtering objects for both Next and ItemsArrayRef.
 sub AddRecord {
     my $self = shift;
     my $Queue = shift;
-    return unless $Queue->CurrentUserHasRight('SeeQueue');
+    return if !$self->{'_sql_current_user_can_see_applied'}
+        && !$Queue->CurrentUserHasRight('SeeQueue');
 
     push @{$self->{'items'}}, $Queue;
     $self->{'rows'}++;
+}
+
+sub _DoSearch {
+    my $self = shift;
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoSearch( @_ );
+}
+
+sub _DoCount {
+    my $self = shift;
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoCount( @_ );
+}
+
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return if $self->{'_sql_current_user_can_see_applied'};
+
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+        if $self->CurrentUser->UserObj->HasRight(
+            Right => 'SuperUser', Object => $RT::System
+        );
+
+    my $id = $self->CurrentUser->id;
+
+    # directly can see in all queues then we have nothing to do
+    my %direct = RT::ACL->_ObjectsDirectlyHasRightOn(
+        User => $id,
+        Right => 'SeeQueue',
+    );
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+        if $direct{'RT::System'};
+
+    # from this point we only interested in queues
+    %direct = ('RT::Queue' => $direct{'RT::Queue'} || []);
+
+    my %roles = RT::ACL->_RolesWithRight( Right => 'SeeQueue' );
+    {
+        my %skip = map { $_ => 1 } @{ $direct{'RT::Queue'} };
+        foreach my $role ( keys %roles ) {
+            if ( $roles{ $role }{'RT::System'} ) {
+                $roles{ $role } = 1;
+            } else {
+                my @queues = grep !$skip{$_}, @{ $roles{ $role }{'RT::Queue'} || [] };
+                if ( @queues ) {
+                    $roles{ $role } = \@queues;
+                } else {
+                    delete $roles{ $role };
+                }
+            }
+        }
+    }
+
+    unless ( @{$direct{'RT::Queue'}} || keys %roles ) {
+        $self->SUPER::Limit(
+            SUBCLAUSE => 'ACL',
+            ALIAS => 'main',
+            FIELD => 'id',
+            VALUE => 0,
+            ENTRYAGGREGATOR => 'AND',
+        );
+        return $self->{'_sql_current_user_can_see_applied'} = 1;
+    }
+
+    {
+        my ($role_group_alias, $cgm_alias);
+        if ( keys %roles ) {
+            $role_group_alias = $self->JoinRoleGroups( New => 1 );
+            $cgm_alias = $self->JoinGroupMembers( GroupsAlias => $role_group_alias );
+            $self->Limit(
+                LEFTJOIN   => $cgm_alias,
+                FIELD      => 'MemberId',
+                OPERATOR   => '=',
+                VALUE      => $id,
+            );
+        }
+        my $limit_queues = sub {
+            my $ea = shift;
+            my @queues = @_;
+
+            return 0 unless @queues;
+            $self->Limit(
+                SUBCLAUSE => 'ACL',
+                ALIAS => 'main',
+                FIELD => 'id',
+                OPERATOR => 'IN',
+                VALUE => '('. join(', ', @queues) .')',
+                QUOTEVALUE => 0,
+                ENTRYAGGREGATOR => $ea,
+            );
+            return 1;
+        };
+
+        $self->SUPER::_OpenParen('ACL');
+        my $ea = 'AND';
+        $ea = 'OR' if $limit_queues->( $ea, @{ $direct{'RT::Queue'} } );
+        while ( my ($role, $queues) = each %roles ) {
+            $self->SUPER::_OpenParen('ACL');
+            $self->Limit(
+                SUBCLAUSE       => 'ACL',
+                ALIAS           => $cgm_alias,
+                FIELD           => 'MemberId',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => $ea,
+            );
+            $self->Limit(
+                SUBCLAUSE       => 'ACL',
+                ALIAS           => $role_group_alias,
+                FIELD           => 'Type',
+                VALUE           => $role,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $limit_queues->( 'AND', @$queues ) if ref $queues;
+            $ea = 'OR' if $ea eq 'AND';
+            $self->SUPER::_CloseParen('ACL');
+        }
+        $self->SUPER::_CloseParen('ACL');
+    }
+    return $self->{'_sql_current_user_can_see_applied'} = 1;
 }
 
 
