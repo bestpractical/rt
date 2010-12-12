@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 216, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 219, gnupg_options => { passphrase => 'rt-test' };
 
 diag "load Everyone group";
 my $everyone;

@@ -2,7 +2,7 @@
 use strict;
 
 use RT::Test::GnuPG
-  tests         => 102,
+  tests         => 103,
   gnupg_options => {
     passphrase    => 'recipient',
     'trust-model' => 'always',
