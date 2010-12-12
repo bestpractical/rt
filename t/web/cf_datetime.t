@@ -6,6 +6,12 @@ use warnings;
 use RT::Test tests => 44;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
+SKIP: {
+    skip 'test with apache+mod_perl has a bug of timezone', 44
+      if $ENV{RT_TEST_WEB_HANDLER}
+          && $ENV{RT_TEST_WEB_HANDLER} =~ /apache/
+          && $ENV{RT_TEST_WEB_HANDLER} !~ /fastcgi/;
+
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 my $root = RT::User->new( RT->SystemUser );
@@ -78,7 +84,7 @@ diag 'check valid inputs with various timezones in ticket create page';
         'date in db is in UTC'
     );
 
-    $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
+    $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
     $m->content_contains('Tue May 04 13:00:01 2010', 'has cf datetime value on the page');
 
     $root->SetTimezone( 'Asia/Shanghai' );
@@ -230,4 +236,5 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
     $m->content_lacks('foodate', 'invalid dates not set');
+}
 }
