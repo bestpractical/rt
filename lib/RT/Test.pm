@@ -1270,6 +1270,7 @@ sub start_apache_server {
 
 sub stop_server {
     my $self = shift;
+    my $in_end = shift;
 
     my $sig = 'TERM';
     $sig = 'INT' if !$ENV{'RT_TEST_WEB_HANDLER'}
@@ -1278,6 +1279,9 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
+
+    sleep 2
+      if !$in_end && $ENV{'RT_TEST_WEB_HANDLER'} && $ENV{'RT_TEST_WEB_HANDLER'} =~ /apache/;
 
     @SERVERS = ();
 }
@@ -1349,7 +1353,7 @@ END {
     # so calls below may call system or kill that clobbers $?
     local $?;
 
-    RT::Test->stop_server;
+    RT::Test->stop_server(1);
 
     # not success
     if ( !$Test->is_passing ) {
