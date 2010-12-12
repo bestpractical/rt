@@ -1262,7 +1262,9 @@ sub start_apache_server {
     my $pid = RT::Test::Apache->start_server($variant || 'mod_perl', $port, \%tmp);
     push @SERVERS, $pid;
 
-    return (RT->Config->Get('WebURL'), RT::Test::Web->new);
+    my $url = RT->Config->Get('WebURL');
+    $url =~ s!/$!!;
+    return ($url, RT::Test::Web->new);
 }
 
 sub stop_server {
