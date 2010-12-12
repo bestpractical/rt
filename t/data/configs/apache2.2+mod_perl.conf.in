@@ -27,8 +27,6 @@ LogLevel debug
 AddDefaultCharset UTF-8
 PerlSetEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
 
-RedirectMatch permanent (.*)/$ $1/index.html
-
 DocumentRoot "%%DOCUMENT_ROOT%%"
 <Directory "%%DOCUMENT_ROOT%%">
     Order allow,deny
