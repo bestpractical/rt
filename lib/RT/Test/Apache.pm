@@ -9,7 +9,7 @@ sub start_server {
     my %tmp = %$tmp;
     my %info = $self->apache_server_info( variant => $variant );
 
-    Test::More::diag(do {
+    RT::Test::diag(do {
         open my $fh, '<', $tmp{'config'}{'RT'};
         local $/;
         <$fh>
@@ -76,8 +76,7 @@ sub apache_server_info {
         || $self->find_apache_server
         || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
 
-    Test::More::diag("Using '$bin' apache executable for testing")
-        if $ENV{'TEST_VERBOSE'};
+    RT::Test::diag("Using '$bin' apache executable for testing");
 
     my $info = `$bin -V`;
     ($res{'version'}) = ($info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
