@@ -250,9 +250,9 @@ EOF
     ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
 
     $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email/);
+    $m->next_warning_like(qr/RT could not load a valid user/);
     TODO: {
         local $TODO = "we're a bit noisy for this warning case";
-        $m->next_warning_like(qr/Could not load a valid user/);
         $m->no_leftover_warnings_ok;
     }
 }
