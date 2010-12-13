@@ -86,8 +86,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $tickets->child( new => title => loc('New Search') => path => "/Search/Build.html?NewQuery=1" );
 
     my $tools = Menu->child(  tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 5 );
-
+    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 2,
+                                description => loc('Named, shared collection of portlets') );
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
@@ -99,18 +99,26 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
     $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
 
-    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 15 );
-    $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html', );
-    $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html', );
-    $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html', );
+    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 4,
+                                 description => loc('Various RT reports') );
+    $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html',
+        description => loc('Examine tickets resolved in a queue, grouped by owner'), );
+    $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html',
+        description => loc('Examine tickets resolved in a queue between two dates'), );
+    $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html',
+        description => loc('Examine tickets created in a queue between two dates'), );
 
-    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 25 );
+    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5,
+                   description => loc('Easy updating of your open tickets') );
 
-    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 30 );
+    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
+                   description => loc('Create tickets offline') );
+    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 15 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
-        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 20 );
+        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 3,
+                       description => loc('My Approvals') );
     }
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
