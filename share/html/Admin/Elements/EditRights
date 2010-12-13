@@ -60,10 +60,10 @@ $m->callback( Principals => $Principals, Context => $Context );
 unless ( $AddPrincipal ) {
     my $last = $Principals->[-1];
     if ( $last->[0] =~ /Groups/i ) {
-        $AddPrincipal = 'group';
+        $AddPrincipal = 'group'; # loc
     }
     elsif ( $last->[0] =~ /Users/i ) {
-        $AddPrincipal = 'user';
+        $AddPrincipal = 'user'; # loc
     }
 }
 </%init>
@@ -89,7 +89,7 @@ unless ( $AddPrincipal ) {
 for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
 </%perl>
-<li class="category"><% $name %></li>
+<li class="category"><% loc($name) %></li>
 <%perl>
     while ( my $obj = $collection->Next ) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
@@ -102,7 +102,7 @@ for my $category (@$Principals) {
 }
 </%perl>
 % if ( $AddPrincipal ) {
-    <li class="category"><&|/l&>Add</&> <% loc($AddPrincipal) %></li>
+    <li class="category"><&|/l, loc($AddPrincipal) &>Add [_1]</&></li>
     <li>
       <a href="#acl-AddPrincipal">
         <input type="text" value=""
@@ -158,7 +158,7 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 if ( $AddPrincipal ) {
 </%perl>
   <div id="acl-AddPrincipal">
-    <h3><&|/l&>Add rights for this</&> <% loc($AddPrincipal) %></h3>
+    <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
     <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
   </div>
 % }

@@ -2398,7 +2398,10 @@ sub GetPrincipalsMap {
             my $system = RT::Groups->new($session{'CurrentUser'});
             $system->LimitToSystemInternalGroups();
             $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
-            push @map, ['System' => $system => 'Type' => 1];
+            push @map, [
+                'System' => $system,    # loc_left_pair
+                'Type'   => 1,
+            ];
         }
         elsif (/Groups/) {
             my $groups = RT::Groups->new($session{'CurrentUser'});
@@ -2413,7 +2416,10 @@ sub GetPrincipalsMap {
                 IncludeSubgroupMembers => 0,
             );
 
-            push @map, ['User Groups' => $groups => 'Name' => 0];
+            push @map, [
+                'User Groups' => $groups,   # loc_left_pair
+                'Name'        => 0
+            ];
         }
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
@@ -2429,7 +2435,10 @@ sub GetPrincipalsMap {
                 next;
             }
             $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
-            push @map, ['Roles' => $roles => 'Type' => 1];
+            push @map, [
+                'Roles' => $roles,  # loc_left_pair
+                'Type'  => 1
+            ];
         }
         elsif (/Users/) {
             my $Privileged = RT::Group->new($session{'CurrentUser'});
@@ -2460,7 +2469,10 @@ sub GetPrincipalsMap {
             my $display = sub {
                 $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
             };
-            push @map, ['Users' => $Users => $display => 0];
+            push @map, [
+                'Users' => $Users,  # loc_left_pair
+                $display => 0
+            ];
         }
     }
     return @map;

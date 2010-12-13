@@ -41,10 +41,10 @@ if ($Principal) {
 }
 
 my %category_desc = (
-    'General' => 'General rights',
-    'Staff'   => 'Rights for Staff',
-    'Admin'   => 'Rights for Administrators',
-    'Status'  => 'Status changes',
+    'General' => loc('General rights'),
+    'Staff'   => loc('Rights for Staff'),
+    'Admin'   => loc('Rights for Administrators'),
+    'Status'  => loc('Status changes'),
 );
 
 my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
@@ -55,7 +55,7 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
     <div class="category-tabs">
       <ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#<% "$id-$category" %>"><% loc($category_desc{$category} || 'Miscellaneous') %></a></li>
+        <li><a href="#<% "$id-$category" %>"><% $category_desc{$category} || loc('Miscellaneous') %></a></li>
 % }
       </ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
@@ -68,10 +68,10 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                id="SetRights-<% $acldesc %>-<% $right %>"
                value="<% $right %>"
                <% $current_rights{$right} ? 'checked' : '' %> />
-        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% loc($right) %>">
           <% loc($available_rights{$right}) %>
           <span class="separator">&mdash;</span>
-          <span class="rightname"><% $right %></span>
+          <span class="rightname"><% loc($right) %></span>
         </label>
       </li>
 %     }
