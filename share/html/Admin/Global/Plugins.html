@@ -1,0 +1,141 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/CheckRestart &>
+
+<style type="text/css">
+li.plugin-enabled {
+  background: lightgreen;
+}
+</style>
+
+
+<& /Elements/ListActions, actions => \@results &>
+<h1>RT Features</h1>
+<ul>
+% for my $plugin_name (sort keys %$plugins) {
+% my $plugin = $plugins->{$plugin_name};
+% my $enabled = $plugin->Enabled;
+<li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
+<span><% $plugin->Name %></span>
+<span><% $plugin->Description || loc('(No Description)') %></span>
+  <form method="POST">
+    <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
+% if ($enabled) {
+    <input name="Disable" value="Disable" type="submit" />
+% }
+% else {
+    <input name="Enable" value="Enable" type="submit" />
+% }
+  </form>
+
+</li>
+% }
+
+</ul>
+
+<%init>
+my $title = loc("RT Features");
+my (@results);
+
+my $plugins = RT->ProbePlugins;
+
+if ($PluginName) {
+    my $plugin = $plugins->{$PluginName};
+    unless ($plugin) {
+        push @results, loc("Plugin [_1] not found", $PluginName);
+        return;
+    }
+
+    my $plugin_enable = $plugin->Path(".enabled");
+    if ($Enable) {
+        if ( eval { die loc("You need to make the directory [_1] writable first.\n", $plugin->Path)
+                        unless -w $plugin->Path;
+                    $plugin->Enable;
+                    open my $fh, '>', $plugin_enable
+                        or die $!;
+                    close $fh;
+                    RT->RestartRequired(1);
+                    1 } ) {
+            push @results, loc("Plugin [_1] enabled.", $PluginName);
+            push @results, loc("Server restart required");
+        }
+        else {
+            push @results, loc("Failed to enable plugin [_1]: [_2].", $PluginName, $@);
+        }
+    }
+    elsif ($Disable) {
+        if (-e $plugin_enable) {
+            if ( eval { unlink($plugin_enable)
+                            or die loc("You need to make the directory [_1] writable first.", $plugin->Path);
+                        RT->RestartRequired(1);
+                        RT->UnloadPlugins;
+                        $plugins = RT->ProbePlugins(1);
+                        RT->InitPlugins;
+                        1 } ) {
+                push @results, loc("Plugin [_1] disabled.", $PluginName);
+                push @results, loc("Server restart required");
+            }
+            else {
+                push @results, loc("Failed to disable plugin [_1]: [_2].", $PluginName, $@);
+            }
+        }
+        else {
+            push @results, loc("Plugin [_1] is enabled through RT_SiteConfig.pm, please disable it there.",
+                               $PluginName);
+        }
+    }
+}
+
+</%init>
+<%args>
+$Enable => ''
+$Disable => ''
+$PluginName => ''
+</%args>
