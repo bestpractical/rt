@@ -50,9 +50,12 @@
 % for my $child ($menu->children) {
 %   my $item_id = lc(($parent_id? $parent_id."-" : "") .$child->key);
 %   $item_id =~ s/\s/-/g;
+%   my @classes;
+%   push @classes, 'has-children' if $child->has_children;
+%   push @classes, 'active'       if $child->active;
 <%" " x ($depth+1)%><li id="li-<%$item_id%>"\
-% if ($child->has_children) {
- class="has-children"\
+% if (@classes) {
+ class="<% join ' ', @classes %>"\
 % }
 >\
 % if ($child->raw_html) {
