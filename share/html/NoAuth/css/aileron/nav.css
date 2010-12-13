@@ -67,9 +67,8 @@
 
 #main-navigation {
     position: absolute;
-    top: 0;
+    top: 1px;
     left: 0;
-    left: auto;
     z-index: 9999;
     text-color: #000;
 }
