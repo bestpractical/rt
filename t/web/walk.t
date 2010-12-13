@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 96;
+use RT::Test tests => 94;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
@@ -124,7 +124,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Tools' },         '-> Tools' );
 
-        for my $tab ( 'Configuration.html', 'Queries.html', 'Shredder' ) {
+        for my $tab ( 'Configuration.html', 'Shredder' ) {
             $m->follow_link_ok( { url_regex => qr!/Admin/Tools/$tab! },
                 "-> /Admin/Tools/$tab" );
         }
