@@ -48,6 +48,8 @@
 <& /Elements/Header, Title => loc("Watching Queues") &>
 <& /Elements/Tabs &>
 
+<p><&|/l&>This page shows you the queues on which you have a role (e.g. Cc, AdminCc) membership.</p>
+
 <%perl>
 my $count = 0;
 my $Queues = RT::Queues->new($session{CurrentUser});
