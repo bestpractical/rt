@@ -1,3 +1,21 @@
+<IfModule mpm_prefork_module>
+    StartServers          1
+    MinSpareServers       1
+    MaxSpareServers       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
+<IfModule mpm_worker_module>
+    StartServers          1
+    MinSpareThreads       1
+    MaxSpareThreads       1
+    ThreadLimit           1
+    ThreadsPerChild       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
 ServerRoot %%SERVER_ROOT%%
 PidFile %%PID_FILE%%
 LockFile %%LOCK_FILE%%
