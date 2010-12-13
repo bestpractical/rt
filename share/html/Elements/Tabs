@@ -192,14 +192,15 @@ if ( $request_path !~ qr{^/SelfService/} ) {
                               description => loc('Enable and Disable Plugins') );
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
-        $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html', );
-
+        $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
+                             description => loc('Detailed information about your RT setup') );
         if (RT->Config->Get('StatementLog')
-        && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
-            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html', );
+            && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+           $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html',
+                                description => loc('Browse the SQL queries made in this process') );
         }
-
-        $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder', );
+        $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
+                             description => loc('Permanently wipeout data from RT'));
     }
 
     my $about_me = Menu->child( 'preferences' => title =>
