@@ -3,9 +3,6 @@ use strict;
 use warnings;
 
 use RT::Test tests => 9;
-SKIP: {
-    skip 'can not test this with apache(multi-process?)', 9
-      if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} =~ /apache/;
 
 RT->Config->Set(StatementLog => 1);
 
@@ -21,4 +18,3 @@ $m->text_contains("Executed SQL query at", "stack traces");
 $m->text_like(qr/HTML::Mason::Interp::exec\(.*\) called at/, "stack traces");
 $m->text_contains("SELECT * FROM Principals WHERE id = '".$root->id."'", "we interpolate bind params");
 
-}
