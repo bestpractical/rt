@@ -493,7 +493,7 @@ build-snapshot:
 	rm -fr "$(SNAPSHOT)/"
 
 clearsign-snapshot:
-	gpg --clearsign "$(SNAPSHOT).tar.gz"
+	gpg --detach-sign "$(SNAPSHOT).tar.gz"
 	sha1sum $(SNAPSHOT).tar.gz*
 
 vessel-import: build-snapshot
