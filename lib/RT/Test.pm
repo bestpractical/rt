@@ -222,7 +222,6 @@ sub bootstrap_config {
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
-Set( \$DevelMode, 0);
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
@@ -236,8 +235,16 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
         print $config "Set( \$DatabaseName , '$dbname');\n";
         print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
-    print $config "Set( \$DevelMode, 0 );\n"
-        if $INC{'Devel/Cover.pm'};
+
+    if ( $INC{'Devel/Cover.pm'} ) {
+        print $config "Set( \$DevelMode, 0 );\n";
+    }
+    elsif ( $ENV{RT_TEST_DEVEL} ) {
+        print $config "Set( \$DevelMode, 1 );\n";
+    }
+    else {
+        print $config "Set( \$DevelMode, 0 );\n";
+    }
 
     $self->bootstrap_logging( $config );
 
