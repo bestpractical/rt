@@ -53,9 +53,9 @@
 <%INIT>
 my $user = $session{'CurrentUser'}->UserObj;
 my $groups = $session{'CurrentUser'}->UserObj->OwnGroups;
-
+$Default = '' unless defined $Default;
 </%INIT>
 <%ARGS>
 $Name => 'GroupField'
-$Default => undef
+$Default => ''
 </%ARGS>

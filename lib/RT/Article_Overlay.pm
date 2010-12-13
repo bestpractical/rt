@@ -386,7 +386,9 @@ sub AddLink {
     # Disallow parsing of plain numbers in article links.  If they are
     # allowed, they default to being tickets instead of articles, which
     # is counterintuitive.
-    if ($args{'Target'} =~ /^\d+$/ || $args{'Base'} =~ /^\d+$/) {
+    if (   $args{'Target'} && $args{'Target'} =~ /^\d+$/
+        || $args{'Base'} && $args{'Base'} =~ /^\d+$/ )
+    {
         return ( 0, $self->loc("Cannot add link to plain number") );
     }
 

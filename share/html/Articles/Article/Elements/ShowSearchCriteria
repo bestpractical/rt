@@ -152,11 +152,19 @@ for (@Classes) {
   $class->LoadById($_);
   $_ = $class;
 }
+
+for my $field ( qw/Class Name Summary Article/ ) {
+    $ARGS{"$field~"} = '' unless defined $ARGS{"$field~"};
+    $ARGS{"$field!~"} = '' unless defined $ARGS{"$field!~"};
+}
+$RefersTo = '' unless defined $RefersTo;
+$ReferredToBy = '' unless defined $ReferredToBy;
+
 </%init>
 
 <%ARGS>
 $dates =>undef
-$RefersTo => undef
-$ReferredToBy => undef
+$RefersTo => ''
+$ReferredToBy => ''
 $customfields => undef
 </%ARGS>
