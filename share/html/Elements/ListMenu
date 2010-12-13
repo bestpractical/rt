@@ -71,7 +71,7 @@ my $interp = $m->interp;
 my $show_link = sub {
     my $e = shift;
     my $res = '';
-    if ( $e->link_item ) {
+    if ( $e->path) {
         $res .= '<a';
         my $url = (not $e->path or $e->path =~ m{^\w+:/})
             ? $e->path
@@ -89,7 +89,7 @@ my $show_link = sub {
     $title = $interp->apply_escapes( $title, 'h' );
     $res .= $title;
 
-    if ( $e->link_item ) {
+    if ( $e->path) {
         $res .= '</a>';
     }
     return $res;
