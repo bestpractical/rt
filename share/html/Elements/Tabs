@@ -194,7 +194,12 @@ if ( $request_path !~ qr{^/SelfService/} ) {
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', );
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html', );
-        $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html', );
+
+        if (RT->Config->Get('StatementLog')
+        && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html', );
+        }
+
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder', );
     }
 
