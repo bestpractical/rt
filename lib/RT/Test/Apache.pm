@@ -2,7 +2,18 @@ package RT::Test::Apache;
 use strict;
 use warnings;
 
-my $apache_module_prefix = 'modules';
+my $apache_module_prefix;
+my $apxs =
+     $ENV{RT_TEST_APXS}
+  || RT::Test->find_executable('apxs')
+  || RT::Test->find_executable('apxs2');
+
+if ($apxs) {
+    $apache_module_prefix = `$apxs -q LIBEXECDIR`;
+    chomp $apache_module_prefix;
+}
+
+$apache_module_prefix ||= 'modules';
 
 sub start_server {
     my ($self, $variant, $port, $tmp) = @_;
