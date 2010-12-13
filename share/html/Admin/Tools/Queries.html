@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$Undup => 1
+$ShowElem => 0
+</%args>
 <%init>
 my $title = loc('SQL Queries');
 unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
@@ -93,7 +97,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %                 my @undup;
 %                 for my $statement (@{ $request->{Queries} }) {
 %                      my ($dup) = grep {$_->[1] eq $statement->[1]} @undup[-(@undup > 3?3:@undup)..-1];
-%                      if ($dup) {
+%                      if ($Undup and $dup) {
 %                          $dup->[2] = [$dup->[2]] unless $dup->[5];
 %                          push @{$dup->[2]}, $statement->[2];
 %                          $dup->[3] += $statement->[3];
@@ -102,8 +106,16 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %                          push @undup, $statement;
 %                      }
 %                 }
+%                 my $element = '';
 %                 for my $statement (@undup) {
 %                      my ( $time, $sql, $bind, $duration, $trace, $dup ) = @$statement;
+%                      if ($ShowElem) {
+%                          my($cur_element) = $trace =~ m{called at (.*?) line \d+\n\s+HTML::Mason::Commands::__ANON__};
+%                          if ($element ne $cur_element) {
+                               <tr><td colspan="3"><b><tt><% $cur_element %></tt></b></td></tr>
+%                              $element = $cur_element;
+%                          }
+%                      }
 %                      $sql = $RT::Handle->FillIn($sql, $bind) unless $dup;
                        <tr>
                            <td><% ++$s %><% $dup ? " (x $dup)" : "" %></td>
