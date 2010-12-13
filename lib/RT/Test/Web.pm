@@ -226,9 +226,6 @@ sub next_warning_like {
         }
         $self->{stashed_server_warnings} = \@warnings;
     }
-    else {
-        Test::More::pass( "fake pass to make test number happy " );
-    }
 
     my $warning = shift @{ $self->{stashed_server_warnings} };
     return Test::More::like($warning, $re, $name);

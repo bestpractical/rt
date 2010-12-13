@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 87, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 86, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
 
