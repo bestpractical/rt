@@ -52,10 +52,9 @@
 %   $item_id =~ s/\s/-/g;
 <%" " x ($depth+1)%><li id="li-<%$item_id%>"\
 % if ($child->has_children) {
-class="has-children" \
+ class="has-children"\
 % }
 >\
-
 % if ($child->raw_html) {
 <% $child->raw_html |n %>
 % } else {
@@ -65,6 +64,7 @@ class="has-children" \
 </a>\
 % }
 % if ($child->has_children) {
+
 <& Menu, menu => $child, toplevel => 0, parent_id => ($parent_id? $parent_id."-": '').$child->key, depth=> ($depth+1) &>
 <%" " x ($depth+1)%></li>
 % } else {
