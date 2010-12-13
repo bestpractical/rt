@@ -172,6 +172,7 @@ sub text_to_hash {
 }
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
+Class::Accessor 0.34
 DateTime 0.44
 DateTime::Locale 0.40
 Digest::base
