@@ -136,6 +136,18 @@ require RT::Interface::Web::Handler;
 my $app = RT::Interface::Web::Handler->PSGIApp;
 
 if ($ENV{RT_TESTING}) {
+    my $screen_logger = $RT::Logger->remove('screen');
+    require Log::Dispatch::Perl;
+    $RT::Logger->add(
+        Log::Dispatch::Perl->new(
+            name      => 'rttest',
+            min_level => $screen_logger->min_level,
+            action    => {
+                error    => 'warn',
+                critical => 'warn'
+            }
+        )
+    );
     require Plack::Middleware::Test::StashWarnings;
     $app = Plack::Middleware::Test::StashWarnings->wrap($app);
 }
