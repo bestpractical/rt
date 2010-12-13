@@ -145,13 +145,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $templates->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
         $templates->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
 
-#        my $workflows = $admin_global->child( loc('Workflows'), path => '/Admin/Global/Workflows/index.html', );
-#        {
-#            $workflows->child( loc('Overview')     => path => "/Admin/Global/Workflows/index.html" );
-#            $workflows->child( loc('Localization') => path => "/Admin/Global/Workflows/Localization.html" );
-#            $workflows->child( loc('Mappings')     => path => "/Admin/Global/Workflows/Mappings.html" );
-#        }
-
         my $cfadmin = $admin_global->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/Global/CustomFields/index.html', );
         {
             $cfadmin->child( users => title => loc('Users') => text => loc('Select custom fields for all users'),
