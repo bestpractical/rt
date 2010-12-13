@@ -33,8 +33,7 @@ diag 'walk into /Tools' if $ENV{TEST_VERBOSE};
     $m->get_ok( $baseurl, 'homepage' );
     $m->follow_link_ok( { text => 'Tools' }, '-> Tools' );
 
-    for my $tab ( 'Dashboards', 'Offline', 'Reports', 'My Day',
-        'Watching Queues' )
+    for my $tab ( 'Dashboards', 'Offline', 'Reports', 'My Day' )
     {
 
         $m->follow_link_ok( { text => $tab }, "-> $tab" );
