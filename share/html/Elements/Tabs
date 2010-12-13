@@ -107,7 +107,6 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 25 );
 
     $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 30 );
-    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 35 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {

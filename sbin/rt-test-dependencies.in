@@ -278,7 +278,6 @@ Test::Warn
 Test::Builder 0.90 # needed for is_passing
 Test::MockTime
 Log::Dispatch::Perl
-Web::Scraper
 Test::WWW::Mechanize::PSGI
 Plack::Middleware::Test::StashWarnings
 .
