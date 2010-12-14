@@ -110,7 +110,7 @@ elsif ( $Run ) {
     for my $field  (
             qw/DatabaseType DatabaseName DatabaseHost DatabasePort
             DatabaseUser DatabaseRequireSSL rtname
-            Organization Timezone CommentAddress CorrespondAddress 
+            Organization CommentAddress CorrespondAddress
             SendmailPath WebDomain WebPort/
     ) {
         $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
