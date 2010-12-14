@@ -38,7 +38,7 @@ EOF
         button    => 'UpdateTickets',
     );
     my $content = encode 'utf8', $m->content;
-    ok( $content =~ qr/申請單 #(\d+) 成功新增於 &#39;General&#39; 表單/, 'message is shown right' );
+    ok( $content =~ m/申請單 #(\d+) 成功新增於 &#39;General&#39; 表單/, 'message is shown right' );
     $ticket_id = $1;
 }
 
