@@ -93,7 +93,7 @@ my $form = $m->form_name('Dashboard-Searches-body');
 my @input = $form->find_input('Searches-body-Available');
 my ($unowned) =
   map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ 'Saved Search: Unowned Tickets' } @input;
+  grep { ( $_->value_names )[1] =~ /Saved Search: Unowned Tickets/ } @input;
 $form->value('Searches-body-Available' => $unowned );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
@@ -115,7 +115,7 @@ $form = $m->form_name('Dashboard-Searches-body');
 @input = $form->find_input('Searches-body-Available');
 my ($my_tickets) =
   map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ 'Saved Search: My Tickets' } @input;
+  grep { ( $_->value_names )[1] =~ /Saved Search: My Tickets/ } @input;
 $form->value('Searches-body-Available' => $my_tickets );
 $m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
@@ -237,7 +237,7 @@ $form = $m->form_name('Dashboard-Searches-body');
 @input = $form->find_input('Searches-body-Available');
 my ($personal) =
   map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ 'Saved Search: personal search' } @input;
+  grep { ( $_->value_names )[1] =~ /Saved Search: personal search/ } @input;
 $form->value('Searches-body-Available' => $personal );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
