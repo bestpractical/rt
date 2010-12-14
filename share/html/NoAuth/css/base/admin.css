@@ -51,19 +51,19 @@ ul.list-menu .menu-item {
 ul.list-menu {
  list-style: none;
     width: 45%;
-
+}
+ul.list-menu > li {
+    margin-bottom: 1em;
 }
 ul.list-menu .description {
  font-style: italic;
  display: block;
- padding: 0.5em;
- padding-left: 1em;
+ padding: 0.5em 0 0 1em;
 }
 
 ul.list-menu ul {
  list-style: none;
- padding: 0.5em;
- padding-left: 1em;
+ padding: 0.25em 0 0 1em;
 }
 ul.list-menu ul li {
  display: inline;
