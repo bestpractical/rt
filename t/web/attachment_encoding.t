@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 30;
+use RT::Test tests => 32;
 use Encode;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -45,7 +45,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 {
 
     my $file =
-      File::Spec->catfile( File::Spec->tmpdir, 'rt_attachemnt_abcde.txt' );
+      File::Spec->catfile( File::Spec->tmpdir, encode_utf8 '附件.txt' );
     open my $fh, '>', $file or die $!;
     binmode $fh, ':utf8';
     print $fh '附件';
@@ -59,6 +59,8 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
         fields => { Subject => '标题', Content => '测试', Attach => $file },
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
+    $m->content_contains( '附件.txt', 'attached filename' );
+    $m->content_lacks( encode_utf8 '附件.txt', 'no double encoded attached filename' );
     $m->follow_link_ok( { text => 'with headers' },
         '-> /Ticket/Attachment/WithHeaders/...' );
 
@@ -97,5 +99,4 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     unlink $file;
 }
-
 
