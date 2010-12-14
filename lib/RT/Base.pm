@@ -158,7 +158,7 @@ sub _ImportOverlays {
     for (qw(Overlay Vendor Local)) {
         my $filename = $package."_".$_.".pm";
         eval { require $filename };
-        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+        die $@ if ($@ && $@ !~ m{^Can't locate $filename});
     }
 }
 
