@@ -47,55 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Elements/Tabs &>
-<& /Admin/Elements/CheckRestart &>
-<& /Elements/ListMenu, items => $tabs &>
+<& /Elements/ListMenu, menu => Menu()->child('tools')->child('config')  &>
 % if (RT->Config->Get('ShowRTNews')) {
 <& /Admin/Elements/Newsbox &>
 % }
-<%init>
-
-my $tabs = {
-    A => {
-        title       => loc('Users'),
-        path        => '/Admin/Users/index.html',
-        description => loc('Manage users and passwords'),
-    },
-    B => {
-        title => loc('Groups'),
-        path  => '/Admin/Groups/index.html',
-        description => loc('Manage groups and group membership'),
-    },
-    C => {
-        title       => loc('Queues'),
-        path        => '/Admin/Queues/index.html',
-        description => loc('Manage queues and queue-specific properties'),
-    },
-    D => {
-        'title'     => loc('Custom Fields'),
-        description => loc('Manage custom fields and custom field values'),
-          path      => '/Admin/CustomFields/index.html',
-    },
-    E => {
-        'title'     => loc('Global'),
-        path        => '/Admin/Global/index.html',
-        description =>
-          loc('Manage properties and configuration which apply to all queues'),
-    },
-    F => {
-        title => loc('Articles'),
-        path  => "/Admin/Articles/index.html",
-        description => loc('Manage Classes and Article Permissions')
-    },
-    G => {
-        'title'     => loc('Tools'),
-        path        => '/Admin/Tools/index.html',
-        description => loc('Use other RT administrative tools')
-    },
-};
-
-  $m->callback( %ARGS, tabs => $tabs );
-
-
-
-
-</%init>

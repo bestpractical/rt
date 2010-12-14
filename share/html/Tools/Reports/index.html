@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Reports') &>
 <& /Elements/Tabs &>
-<& /Elements/ListMenu, items => $tabs &>
+<& /Elements/ListMenu, menu => Menu()->child('tools')->child('reports') &>
 
 % $m->callback;
 

@@ -86,8 +86,8 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $tickets->child( new => title => loc('New Search') => path => "/Search/Build.html?NewQuery=1" );
 
     my $tools = Menu->child(  tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 5 );
-
+    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 2,
+                                description => loc('Named, shared collection of portlets') );
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
@@ -99,53 +99,63 @@ if ( $request_path !~ qr{^/SelfService/} ) {
     $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
     $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
 
-    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 15 );
-    $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html', );
-    $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html', );
-    $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html', );
+    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 4,
+                                 description => loc('Various RT reports') );
+    $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html',
+        description => loc('Examine tickets resolved in a queue, grouped by owner'), );
+    $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html',
+        description => loc('Examine tickets resolved in a queue between two dates'), );
+    $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html',
+        description => loc('Examine tickets created in a queue between two dates'), );
 
-    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 25 );
+    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5,
+                   description => loc('Easy updating of your open tickets') );
 
-    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 30 );
+    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
+                   description => loc('Create tickets offline') );
+    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 15 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
-        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 20 );
+        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 3,
+                       description => loc('My Approvals') );
     }
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
     {
         my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 1 );
         if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers' ) ) {
-            my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', );
+            my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', description => loc('Manage users and passwords') );
             $users->child( select => title => loc('Select'), path   => "/Admin/Users/" );
             $users->child( create => title => loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
         }
-        my $groups = $admin->child( loc('Groups'), path => '/Admin/Groups/', );
+        my $groups = $admin->child( loc('Groups'), path => '/Admin/Groups/', description => loc('Manage groups and group membership') );
 
         $groups->child( select => title => loc('Select'), path => "/Admin/Groups/" );
         $groups->child( create => title => loc('Create'), path => "/Admin/Groups/Modify.html?Create=1" );
 
-        my $queues = $admin->child( queues => title => loc('Queues'), path => '/Admin/Queues/', );
+        my $queues = $admin->child( queues => title => loc('Queues'), path => '/Admin/Queues/', description => loc('Manage queues and queue-specific properties') );
         $queues->child( select => title => loc('Select'), path => "/Admin/Queues/" );
         $queues->child( create => title => loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );
 
         if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField' ) ) {
-            my $cfs = $admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/', );
+            my $cfs = $admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/', description => loc('Manage custom fields and custom field values') );
             $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
             $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
         }
 
-        my $admin_global = $admin->child( global => title => loc('Global'), path   => '/Admin/Global/', );
+        my $admin_global = $admin->child( global => title => loc('Global'), path   => '/Admin/Global/', description => loc('Manage properties and configuration which apply to all queues') );
 
-        my $scrips = $admin_global->child( scrips => title => loc('Scrips'), path => '/Admin/Global/Scrips.html', );
+        my $scrips = $admin_global->child( scrips => title => loc('Scrips'), path => '/Admin/Global/Scrips.html', description => loc('Modify scrips which apply to all queues') );
         $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
         $scrips->child( create => title => loc('Create'), path => "/Admin/Global/Scrip.html?Create=1" );
-        my $templates = $admin_global->child( loc('Templates'), path => '/Admin/Global/Templates.html', );
+        my $templates = $admin_global->child( loc('Templates'), path => '/Admin/Global/Templates.html', description => loc('Edit system templates') );
         $templates->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
         $templates->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
 
-        my $cfadmin = $admin_global->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/Global/CustomFields/index.html', );
+        my $cfadmin = $admin_global->child( 'custom-fields' => title => loc('Custom Fields'),
+                                            path => '/Admin/Global/CustomFields/index.html',
+                                            description => loc('Modify global custom fields') );
         {
             $cfadmin->child( users => title => loc('Users') => text => loc('Select custom fields for all users'),
                              path => '/Admin/Global/CustomFields/Users.html');
@@ -178,22 +188,27 @@ if ( $request_path !~ qr{^/SelfService/} ) {
         $cfs->child( select => title => loc('Select'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
         $cfs->child( create => title => loc('Create'), path => '/Admin/CustomFields/Modify.html?'.$m->comp("/Elements/QueryString", Create=>1, LookupType=> "RT::Class-RT::Article" ));
 
-        $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html', );
-        $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html', );
-        $admin_global->child('topics'       => title => loc('Topics'), path => "/Admin/Global/Topics.html" );
-        $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html', );
-        $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html', );
-        $admin_global->child( 'rt-features' => title => loc('RT Features'), path => '/Admin/Global/Plugins.html', );
+        $admin_global->child( 'group-rights' => title => loc('Group Rights'), path => '/Admin/Global/GroupRights.html',
+                              description => loc('Modify global group rights') );
+        $admin_global->child( 'user-rights' => title => loc('User Rights'), path => '/Admin/Global/UserRights.html',
+                              description => loc('Modify global user rights') );
+        $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html',
+                              description => loc('Modify the default "RT at a glance" view') );
+        $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
+                              description => loc('Customize the look of your RT') );
+        $admin_global->child( 'rt-features' => title => loc('RT Features'), path => '/Admin/Global/Plugins.html',
+                              description => loc('Enable and Disable Plugins') );
 
-        my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', );
-        $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html', );
-
+        my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
+        $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
+                             description => loc('Detailed information about your RT setup') );
         if (RT->Config->Get('StatementLog')
-        && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
-            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html', );
+            && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+           $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html',
+                                description => loc('Browse the SQL queries made in this process') );
         }
-
-        $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder', );
+        $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
+                             description => loc('Permanently wipeout data from RT'));
     }
 
     my $about_me = Menu->child( 'preferences' => title =>

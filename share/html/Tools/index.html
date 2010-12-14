@@ -47,41 +47,4 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Tools") &>
 <& /Elements/Tabs &>
-<& /Elements/ListMenu, items => $tabs &>
-
-<%init>
-
-my $tabs = {
-    B => {
-        title       => loc('Offline'),
-        path        => '/Tools/Offline.html',
-        description => loc('Create tickets offline'),
-    },
-    C => {
-        title       => loc('Reports'),
-        path        => '/Tools/Reports/index.html',
-        description => loc('Various RT reports'),
-    },
-    D => {
-        title       => loc('My Day'),
-        path        => '/Tools/MyDay.html',
-        description => loc('Easy updating of your open tickets'),
-    },
-};
-
-my $can_see_dashboards = $session{CurrentUser}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)
-                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading
-                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForCreating
-                       || RT::Dashboard->new($session{CurrentUser})->ObjectsForModifying;
-
-if ($can_see_dashboards) {
-    $tabs->{A} = {
-        title       => loc('Dashboards'),
-        path        => '/Dashboards/index.html',
-        description => loc('Named, shared collection of portlets'),
-    };
-}
-
-$m->callback( %ARGS, tabs => $tabs );
-
-</%init>
+<& /Elements/ListMenu, menu => Menu()->child('tools') &>

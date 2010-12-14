@@ -54,10 +54,20 @@ ul.list-menu {
 
 }
 ul.list-menu .description {
+ font-style: italic;
  display: block;
  padding: 0.5em;
- font-style: italic;
  padding-left: 1em;
+}
+
+ul.list-menu ul {
+ list-style: none;
+ padding: 0.5em;
+ padding-left: 1em;
+}
+ul.list-menu ul li {
+ display: inline;
+ margin-right: 0.5em;
 }
 
 #rt-news .titlebox iframe {
