@@ -70,13 +70,13 @@ ul.list-menu ul li {
  margin-right: 0.5em;
 }
 
-#rt-news .titlebox iframe {
+#rt-portal .titlebox iframe {
     height: 100%;
     width: 100%;
     border: 0;
 }
 
-#rt-news .titlebox {
+#rt-portal .titlebox {
     position: absolute;
     top: 1em;;
     right: 1em;
@@ -84,3 +84,9 @@ ul.list-menu ul li {
     width: 45%;
     padding-bottom: 1em;
 }
+
+#rt-portal .titlebox.rolled-up {
+    bottom: auto;
+    padding-bottom: 0;
+}
+
