@@ -113,7 +113,6 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
     $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
                    description => loc('Create tickets offline') );
-    $tools->child( watching => title => loc('Watching Queues'), path => '/Tools/Watching.html', sort_order => 15 );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
     {
