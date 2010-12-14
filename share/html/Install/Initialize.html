@@ -73,6 +73,11 @@ if ( $Run ) {
 
     my @actions = split /,/, $RT::Installer->{DatabaseAction};
 
+    # RT::Handle's ISA is dynamical, so we need to unshift the right one.
+    my $class = 'DBIx::SearchBuilder::Handle::' .  RT->Config->Get('DatabaseType');
+    $class->require or die $UNIVERSAL::require::ERROR;
+    unshift @RT::Handle::ISA, $class;
+
     my $sysdbh = DBI->connect(
         RT::Handle->SystemDSN,
         $RT::Installer->{InstallConfig}{DatabaseAdmin},
