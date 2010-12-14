@@ -628,10 +628,15 @@ sub __Value {
 
     my $value = $self->SUPER::__Value($field);
 
-    if ( $args{'decode_utf8'} && !utf8::is_utf8($value) ) {
-        utf8::decode($value);
-    } elsif ( utf8::is_utf8($value) ) {
-        utf8::encode($value);
+    if ( $args{'decode_utf8'} ) {
+        if ( !utf8::is_utf8($value) ) {
+            utf8::decode($value);
+        }
+    }
+    else {
+        if ( utf8::is_utf8($value) ) {
+            utf8::encode($value);
+        }
     }
 
     return $value;
