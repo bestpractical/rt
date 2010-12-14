@@ -2238,29 +2238,29 @@ C<Set($JSMinPath, '/path/to/jsmin');>
 
 =over 4
 
-=item C<$ShowRTNews>
+=item C<$ShowRTPortal>
 
-RT can show administrators a feed of recent RT releases
-and other related announcements from Best Practical
-on the top level Configuration page.
+RT can show administrators a feed of recent RT releases and other
+related announcements and information from Best Practical on the
+top level Configuration page.
 
 This feature helps you stay up to date on RT security
 announcements and version updates.
 
 RT provides this feature using an "iframe" on
 C</Admin/index.html> which asks the administrator's
-browser to show an inline news page from Best Practical's
+browser to show an inline page from Best Practical's
 website.
 
 If you'd rather not make this feature available to
-your administrators, set C<$ShowRTNews> to a false
+your administrators, set C<$ShowRTPortal> to a false
 value.
 
 =back
 
 =cut
 
-Set($ShowRTNews => 1);
+Set($ShowRTPortal => 1);
 
 
 =head1 Development Configuration

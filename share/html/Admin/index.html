@@ -48,6 +48,6 @@
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Elements/Tabs &>
 <& /Elements/ListMenu, menu => Menu()->child('tools')->child('config')  &>
-% if (RT->Config->Get('ShowRTNews')) {
+% if (RT->Config->Get('ShowRTPortal')) {
 <& /Admin/Elements/Newsbox &>
 % }
