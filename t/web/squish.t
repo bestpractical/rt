@@ -29,7 +29,10 @@ diag "test squished files with devel mode disabled";
 }
 
 diag "test squished files with customized files and devel mode disabled";
+SKIP:
 {
+    skip 'need actual server to reinitialize', 6
+      if $ENV{RT_TEST_WEB_HANDLER} eq 'inline';
     require RT::Squish::JS;
     RT::Squish::JS->UpdateFilesMap( head => ['/NoAuth/js/IE7/IE7.js'] );
     require RT::Squish::CSS;
