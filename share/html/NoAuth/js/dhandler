@@ -51,47 +51,14 @@ my $content = '';
 
 <%INIT>
 my $arg = $m->dhandler_arg;
-my $path;
-if ( $arg =~ m{squished\.js$} ) {
-    $path = $m->current_comp->dir_path;
-    unless ( $content ) {
-        require File::Spec;
+if ( $arg =~ m{squished-(.+)-([a-z0-9]{32})\.js$} ) {
+    my $name = $1;
+    my $squished = RT::Interface::Web::SquishedJS( Name => $name );
 
-        for my $js ( RT->Config->Get('JSFilesInHead') ) {
-            my $file = File::Spec->catfile( $path, $js );
-            my $input = $m->scomp($file);
-            $content .= $input;
-        }
+    $r->header_out( 'Last-Modified'  => 
+        HTTP::Date::time2str( $squished->ModifiedTime ) );
 
-        my $minified;
-        my $jsmin = RT->Config->Get( 'JSMinPath' );
-        if ( $jsmin && -x $jsmin ) {
-            my $input = $content;
-            my ( $output, $error );
-
-            local $SIG{'CHLD'} = 'DEFAULT';
-            require IPC::Run3;
-            IPC::Run3::run3( [$jsmin], \$input, \$output, \$error );
-            if ( $? >> 8 ) {
-                $RT::Logger->warning("failed to jsmin: $error ");
-            }
-            else {
-                $content = $output;
-                $minified = 1;
-            }
-        }
-
-        unless ($minified) {
-            eval { require JavaScript::Minifier };
-            if ($@) {
-                $RT::Logger->debug("can't load JavaScript::Minifier: $@");
-            }
-            else {
-                $content = JavaScript::Minifier::minify( input => $content );
-            }
-        }
-    }
-    $m->out( $content );
+    $m->out( $squished->Content );
 }
 else {
     return $m->decline;
