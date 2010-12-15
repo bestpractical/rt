@@ -723,7 +723,7 @@ Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) bas
 sub _EncodeLOB {
         my $self = shift;
         my $Body = shift;
-        my $MIMEType = shift;
+        my $MIMEType = shift || '';
 
         my $ContentEncoding = 'none';
 
