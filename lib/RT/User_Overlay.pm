@@ -69,6 +69,7 @@ package RT::User;
 use strict;
 no warnings qw(redefine);
 
+use Digest::SHA;
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
@@ -988,20 +989,28 @@ sub SetPassword {
 
 }
 
-=head3 _GeneratePassword PASSWORD
+=head3 _GeneratePassword PASSWORD [, SALT]
 
-returns an MD5 hash of the password passed in, in hexadecimal encoding.
+Returns a salted SHA-256 hash of the password passed in, in base64
+encoding.
 
 =cut
 
 sub _GeneratePassword {
     my $self = shift;
-    my $password = shift;
+    my ($password, $salt) = @_;
 
-    my $md5 = Digest::MD5->new();
-    $md5->add(encode_utf8($password));
-    return ($md5->hexdigest);
+    # Generate a random 4-byte salt
+    $salt ||= pack("C4",map{int rand(256)} 1..4);
 
+    # Encode the salt, and a truncated SHA256 of the MD5 of the
+    # password The additional, un-necessary level of MD5 allows for
+    # transparent upgrading to this scheme, from the previous unsalted
+    # MD5 one.
+    return MIME::Base64::encode_base64(
+        $salt
+      . substr(Digest::SHA::sha256($salt . Digest::MD5::md5($password)),0,26)
+    );
 }
 
 =head3 _GeneratePasswordBase64 PASSWORD
@@ -1064,23 +1073,32 @@ sub IsPassword {
         return(undef);
      }
 
-    # generate an md5 password 
-    if ($self->_GeneratePassword($value) eq $self->__Value('Password')) {
-        return(1);
+    my $stored = $self->__Value('Password');
+    if (length $stored == 40) {
+        # The truncated SHA256(salt,MD5(passwd)) form from 2010/12 is 40 characters long
+        my $hash = MIME::Base64::decode_base64($stored);
+        # The first 4 bytes are the salt, the rest is substr(SHA256,0,26)
+        my $salt = substr($hash, 0, 4, "");
+        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5($value)), 0, 26) eq $hash;
+    } elsif (length $stored == 32) {
+        # Hex nonsalted-md5
+        return 0 unless Digest::MD5::md5_hex(encode_utf8($value)) eq $stored;
+    } elsif (length $stored == 22) {
+        # Base64 nonsalted-md5
+        return 0 unless Digest::MD5::md5_base64(encode_utf8($value)) eq $stored;
+    } elsif (length $stored == 13) {
+        # crypt() output
+        return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
+    } else {
+        $RT::Logger->warn("Unknown password form");
+        return 0;
     }
 
-    #  if it's a historical password we say ok.
-    if ($self->__Value('Password') eq crypt(encode_utf8($value), $self->__Value('Password'))
-        or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
-    {
-        # ...but upgrade the legacy password inplace.
-        $self->SUPER::SetPassword( $self->_GeneratePassword($value) );
-        return(1);
-    }
-
-    # no password check has succeeded. get out
-
-    return (undef);
+    # We got here by validating successfully, but with a legacy
+    # password form.  Update to the most recent form.
+    my $obj = $self->isa("RT::CurrentUser") ? $self->UserObj : $self;
+    $obj->_Set(Field => 'Password', Value =>  $self->_GeneratePassword($value) );
+    return 1;
 }
 
 sub CurrentUserRequireToSetPassword {
