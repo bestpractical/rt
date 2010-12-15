@@ -220,6 +220,8 @@ sub PSGIApp {
     require HTML::Mason::PSGIHandler::Streamy;
     my $h = RT::Interface::Web::Handler::NewHandler('HTML::Mason::PSGIHandler::Streamy');
 
+    $self->InitSessionDir;
+
     return sub {
         my $env = shift;
         RT::ConnectToDatabase() unless RT->InstallMode;
