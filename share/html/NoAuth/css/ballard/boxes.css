@@ -160,22 +160,21 @@
 .titlebox .titlebox-title .widget a {
   display: block;
   margin: 0;
-  margin-top: 0.5em;
+  margin-top: 0.6em;
   width: 20px;
 
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
+  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center 0;
 
   position: absolute;
   top: -1em;
   left: 0.15em;
   float: left;
 
-  padding: 11px 0 0 0;
+  padding: 7px 0 0 0;
   overflow: hidden;
 }
 
 * html .titlebox .titlebox-title .widget a {
-    background-position: center 0.3em;
     top: 0em;
     left: -1.5em; 
 }
