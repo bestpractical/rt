@@ -49,33 +49,29 @@
 <& /Elements/Tabs &>
 <& /Admin/Elements/CheckRestart &>
 
-<style type="text/css">
-li.plugin-enabled {
-  background: lightgreen;
-}
-</style>
-
 <& /Elements/ListActions, actions => \@results &>
-<ul>
+
+% if (not keys %$plugins) {
+<p><&|/l&>No installed plugins were found.</&></p>
+% } else {
+<p><&|/l&>The following plugins were found.  You may enable or disable plugins not listed in your SiteConfig's <code>@Plugins</code> setting by using the buttons below.</&></p>
+% }
+
+<ul class="plugin-list">
 % for my $plugin_name (sort keys %$plugins) {
 % my $plugin = $plugins->{$plugin_name};
 % my $enabled = $plugin->Enabled;
 <li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
-<span><% $plugin->Name %></span>
-<span><% $plugin->Description || loc('(No Description)') %></span>
-  <form method="POST">
-    <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
-% if ($enabled) {
-    <input name="Disable" value="Disable" type="submit" />
-% }
-% else {
-    <input name="Enable" value="Enable" type="submit" />
-% }
-  </form>
-
+<span class="name"><% $plugin->Name %></span>
+<span class="description"><% $plugin->Description || loc("No description") %></span>
+<form method="POST">
+  <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
+  <input name="<% $enabled ? 'Disable' : 'Enable' %>"
+         value="<% $enabled ? loc('Disable') : loc('Enable') %>"
+         type="submit" class="submit" />
+</form>
 </li>
 % }
-
 </ul>
 
 <%init>
