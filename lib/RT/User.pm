@@ -1567,7 +1567,7 @@ sub BasicColumns {
 Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
-  varbinary(40) 'Password'.
+  varbinary(256) 'Password'.
   varchar(16) 'AuthToken'.
   text 'Comments'.
   text 'Signature'.
@@ -1632,7 +1632,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Password
 
 Returns the current value of Password. 
-(In the database, Password is stored as varbinary(40).)
+(In the database, Password is stored as varchar(256).)
 
 
 
@@ -1641,7 +1641,7 @@ Returns the current value of Password.
 
 Set Password to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Password will be stored as a varbinary(40).)
+(In the database, Password will be stored as a varchar(256).)
 
 
 =cut
@@ -2196,7 +2196,7 @@ sub _CoreAccessible {
         Name => 
         {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Password => 
-        {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(40)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 256,  is_blob => 0,  is_numeric => 0,  type => 'varchar(256)', default => ''},
         AuthToken => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Comments => 
