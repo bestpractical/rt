@@ -66,7 +66,6 @@ use warnings;
 
 package RT::Squish::CSS;
 use base 'RT::Squish', 'CSS::Squish';
-__PACKAGE__->mk_accessors('style');
 use List::MoreUtils 'uniq';
 
 =head2 SquishFiles
