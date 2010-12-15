@@ -176,11 +176,8 @@ $m->click_button(name => 'Save');
 $m->content_lacks("Permission denied");
 $m->content_contains("Subscribed to dashboard different dashboard");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
-TODO: {
-    local $TODO = "some kind of caching is still happening (it works if I remove the check above)";
-    is($user_obj->Attributes->Named('Subscription'), 1, "we have a subscription");
-};
+$user_obj->Attributes->RedoSearch;
+is($user_obj->Attributes->Named('Subscription'), 1, "we have a subscription");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
