@@ -16,7 +16,8 @@ diag "test squished files with devel mode disabled";
     $m->follow_link_ok( { url_regex => qr!main-squished-([a-f0-9]{32})\.css! },
         'follow squished css' );
     $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
-    $m->content_lacks( 'print.css', 'no print.css by default' );
+    $m->content_lacks( 'text-decoration: underline !important;',
+        'no print.css by default' );
 
     $m->back;
     my ($js_link) =
