@@ -82,6 +82,16 @@ with
 *******
 UPGRADING FROM 3.8.8 and earlier - Changes:
 
+Previous versions of RT used a password hashing scheme which was too
+easy to reverse, which could allow attackers with read access to the
+RT database to possibly compromise users' passwords.  Even if RT does
+no password authentication itself, it may still store these weak
+password hashes -- using ExternalAuth does not guarantee that you are
+not vulnerable!  To upgrade stored passwords to a stronger hash, run:
+
+    perl etc/upgrade/vulnerable-passwords
+
+
 We've proved that it's possible to delete set of records
 from Transactions table without losing functionality. To delete
 record run the following script:
