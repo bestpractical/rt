@@ -195,7 +195,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
                               description => loc('Modify the default "RT at a glance" view') );
         $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
                               description => loc('Customize the look of your RT') );
-        $admin_global->child( 'rt-features' => title => loc('RT Features'), path => '/Admin/Global/Plugins.html',
+        $admin_global->child( 'rt-features' => title => loc('Plugins'), path => '/Admin/Global/Plugins.html',
                               description => loc('Enable and Disable Plugins') );
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
