@@ -158,7 +158,7 @@ $m->click_button(name => 'Save');
 $m->content_contains("Permission denied");
 $m->warning_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
+$user_obj->Attributes->RedoSearch;
 is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $RT::System);
