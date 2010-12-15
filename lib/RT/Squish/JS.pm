@@ -120,6 +120,7 @@ sub UpdateFilesMap {
 update files by name, it'll try to find files in the following places:
 
 1. if the name is 'head', add files in config item C<JSFilesInHead>.
+
 2. if there is a files map for the name, add the corresponding files.
 
 =cut

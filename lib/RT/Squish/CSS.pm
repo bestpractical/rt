@@ -114,6 +114,7 @@ sub UpdateFilesMap {
 update files by name, it find files in the following places:
 
 1. if the name is a style name, add the style's corresponding main.css
+
 2. if there is a files map for the name, add the corresponding files.
 
 =cut
