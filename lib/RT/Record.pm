@@ -940,7 +940,7 @@ sub _UpdateAttributes {
 
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
-                                   "No value sent to _Set!\n",             # loc
+                                   "No value sent to _Set!",               # loc
                                    "Illegal value for [_1]",               # loc
                                    "The new value has been set.",          # loc
                                    "No column specified",                  # loc

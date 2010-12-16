@@ -120,7 +120,7 @@ my $CurrentUser = GetCurrentUser();
 help() if $help;
 
 unless ( $CurrentUser->Id ) {
-    print loc("No RT user found. Please consult your RT administrator.\n");
+    print loc("No RT user found. Please consult your RT administrator.");
     exit(1);
 }
 
