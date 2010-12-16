@@ -105,9 +105,18 @@ want to read a more comprehensive installation guide at:
 
        make install
 
-     Set up etc/RT_SiteConfig.pm in your RT installation directory.
-     You'll need to add any values you need to change from the defaults
-     in etc/RT_Config.pm
+     To configure RT with the web installer, run:
+
+       /opt/rt4/sbin/rt-server
+
+     and follow the instructions.  Once completed, you should now have
+     a working RT instance running with te standalone rt-server.
+     Press Ctrl-C to stop it, and proceed to Step 9 to configure
+     recommended deployment environment for production.
+
+     To configure RT manually, you must setup etc/RT_SiteConfig.pm in
+     your RT installation directory.  You'll need to add any values
+     you need to change from the defaults in etc/RT_Config.pm
 
      As a user with permission to read RT's configuration file, type:
 
