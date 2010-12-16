@@ -52,7 +52,6 @@ use base qw/RT::Base/;
 
 our $REMINDER_QUEUE = 'General';
 
-
 sub new {
     my $class = shift;
     my $self = {};
@@ -60,7 +59,6 @@ sub new {
     $self->CurrentUser(@_);
     return($self);
 }
-
 
 sub Ticket {
     my $self = shift;
@@ -74,9 +72,8 @@ sub TicketObj {
         $self->{'_ticketobj'} = RT::Ticket->new($self->CurrentUser);
         $self->{'_ticketobj'}->Load($self->Ticket);
     }
-        return $self->{'_ticketobj'};
+    return $self->{'_ticketobj'};
 }
-
 
 =head2 Collection
 
@@ -88,8 +85,8 @@ sub Collection {
     my $self = shift;
     my $col = RT::Tickets->new($self->CurrentUser);
 
-     my $query = 'Type = "reminder" AND RefersTo = "'.$self->Ticket.'"';
-   
+    my $query = 'Type = "reminder" AND RefersTo = "'.$self->Ticket.'"';
+
     $col->FromSQL($query);
 
     $col->OrderBy( FIELD => 'Due' );
@@ -107,55 +104,56 @@ Takes
     Owner
     Due
 
-
 =cut
-
 
 sub Add {
     my $self = shift;
-    my %args = ( Subject => undef,
-                 Owner => undef,
-                 Due => undef,
-                 @_);
+    my %args = (
+        Subject => undef,
+        Owner => undef,
+        Due => undef,
+        @_
+    );
 
     my $reminder = RT::Ticket->new($self->CurrentUser);
-    $reminder->Create( Subject => $args{'Subject'},
-                       Owner => $args{'Owner'},
-                       Due => $args{'Due'},
-                       RefersTo => $self->Ticket,
-                       Type => 'reminder',
-                       Queue => $self->TicketObj->Queue,
-                   
-                   );
-    $self->TicketObj->_NewTransaction(Type => 'AddReminder',
-                                    Field => 'RT::Ticket',
-                                   NewValue => $reminder->id);
-
-
+    $reminder->Create(
+        Subject => $args{'Subject'},
+        Owner => $args{'Owner'},
+        Due => $args{'Due'},
+        RefersTo => $self->Ticket,
+        Type => 'reminder',
+        Queue => $self->TicketObj->Queue,
+    );
+    $self->TicketObj->_NewTransaction(
+        Type => 'AddReminder',
+        Field => 'RT::Ticket',
+        NewValue => $reminder->id
+    );
 }
-
 
 sub Open {
     my $self = shift;
-    my $reminder = shift; 
+    my $reminder = shift;
 
     $reminder->SetStatus('open');
-    $self->TicketObj->_NewTransaction(Type => 'OpenReminder',
-                                    Field => 'RT::Ticket',
-                                   NewValue => $reminder->id);
+    $self->TicketObj->_NewTransaction(
+        Type => 'OpenReminder',
+        Field => 'RT::Ticket',
+        NewValue => $reminder->id
+    );
 }
-
 
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
     $reminder->SetStatus('resolved');
-    $self->TicketObj->_NewTransaction(Type => 'ResolveReminder',
-                                    Field => 'RT::Ticket',
-                                   NewValue => $reminder->id);
+    $self->TicketObj->_NewTransaction(
+        Type => 'ResolveReminder',
+        Field => 'RT::Ticket',
+        NewValue => $reminder->id
+    );
 }
 
-    RT::Base->_ImportOverlays();
-
+RT::Base->_ImportOverlays();
 
 1;
