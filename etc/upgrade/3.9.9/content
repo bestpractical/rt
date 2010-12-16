@@ -12,6 +12,14 @@
             $user->SetPreferences('HomepageSettings', $settings);
         }
     },
+    sub {
+        my ($default_portlets) = RT->System->Attributes->Named('HomepageSettings');
+        my $settings = $default_portlets->Content;
+        return if exists $settings->{sidebar};
+
+        $settings->{sidebar} = delete $settings->{summary};
+        $default_portlets->SetContent($settings);
+    },
 );
 
 
