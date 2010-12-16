@@ -1,31 +1,45 @@
 
 =head1 INTRODUCTION
 
+=head2 UI
+
+The User interface to Articles is available from the Tools -> Articles
+menu.  Admin functionality can be found under Tools -> Configuration ->
+Articles.  Once configured, articles will become available for searching
+on the Reply/Comment page on tickets.  There are configuration variables
+to make Articles available on ticket creation.
+
 =head2 Basics
 
-Users should be now have a new "RTFM" menu item RT's top level menu.
 You will need to make some decisions about how to organize your
 articles.  Articles will be organized into one Class and multiple
 Topics.  They will use Custom Fields to store their article data.
 These Custom Fields can be configured on a Class by Class basis.
+Classes can be made available globally or on a per-Queue basis.
 
 =head2 Organization
 
 =head3 Classes
 
 Classes are equivalent to RT's queues.  They can be created by going
-to RTFM -> Configuration -> Classes -> New Class.  Articles are
-assigned to one Class.  When you create Custom Fields for use in RTFM,
-they will be activated per Class, like Custom Fields are activated per
-Queue in RT.  Each class also controls what information is included
-into a reply (such as the RTFM header and footer) and the Article
+to Tools -> Configuration -> Articles -> Classes -> New Class.  Articles
+are assigned to one Class.  When you create Custom Fields for use with
+Articles, they will be applied Globally or to a Class, like Custom
+Fields are applied to a Queue in RT.  Each class also controls what
+information is included into a reply (such as the Class header and
+footer) and the Article.
+
+Classes need to be Applied, just like a Custom Field by using the
+Applied To link.  You can apply them globally or on a queue-by-queue
+basis.
+
 hotlist.
 
 =head3 Topics
 
 You can also use Topics to organize your Articles.  While editing a
 Class, there is a Topic tab for Class specific Topics.  You can create
-global Topics from the Global tab under RTFM -> Configuration.
+global Topics from the Global tab under Tools -> Configuration.
 
 When editing Topics, type the name (and optionally description) of the
 Topic, and then click the button at the appropriate location in the
@@ -42,7 +56,7 @@ of the screen.
 
 =head2 Custom Fields
 
-RTFM doesn't have a single "body" section for each
+Articles don't have a single "body" section for each
 article. Everything is a custom field (except for name, summary and
 some other basic metadata). So, you need to create some custom
 fields to hold the Article body and other data.  These Custom Fields
@@ -54,7 +68,7 @@ Alternatively, use the Applies To link from each Custom Field.
 
 =head2 Creating Articles
 
-You can create an article from scratch by going to RTFM -> Articles ->
+You can create an article from scratch by going to Tools -> Articles ->
 New Article and then picking which Class to create the Article under.
 The Summary, Description and Custom Fields will all be searchable when
 including an Article and you can control what Custom Fields end up in
@@ -65,7 +79,7 @@ your Ticket from the Class configuration page.
 You can extract the body of a ticket into an article. Within RT, you
 should now see an "Extract to article" button in the upper right hand
 corner of RT's UI when working with tickets. When you click that
-button, RTFM will ask you which Class to create your new article in.
+button, RT will ask you which Class to create your new article in.
 Once you click on a class name, the Ticket's transactions will be
 displayed, along with a set of select boxes. For each transaction, you
 can pick which Custom Field that transaction should be extracted to.
@@ -74,7 +88,7 @@ From there on in, it's just regular article creation.
 =head2 Including an Article
 
 When replying to or commenting on tickets or creating tickets, there
-is a UI widget that lets you search for and include RTFM articles in
+is a UI widget that lets you search for and include Articles in
 your reply.  (They're editable, of course).  
 
 Articles can be included by searching for them, knowing the Id of the
@@ -99,6 +113,9 @@ offered a choice of Topic 1 and Topic 2 along with the searching.
 After choosing Topic 1 or Topic 2, you will be given a list of
 relevant articles to choose.
 
+Alternately, you can now implement this by applying a single class to
+your queue and using the L<Article Hotlist> feature described below.
+
 =head2 Article Hotlist
 
 If you enable "All articles in this class are on dropdown on ticket
@@ -113,15 +130,13 @@ to look for answer to questions before creating a Ticket.
 
 =head1 Configuration options
 
-=head2 RTFM_TicketCreate
+=head2 ArticleOnTicketCreate
 
-Set this to a true value to display the RTFM include interface on the
+Set this to a true value to display the Article include interface on the
 Ticket Create page in addition to the Reply/Comment page (Create.html
 in addition to Update.html)
 
-Please note, this only works with RTFM 3.8.1 or greater
-
-=head2 RTFM_HideArticleSearchOnReplyCreate
+=head2 HideArticleSearchOnReplyCreate
 
 On Ticket Reply (and Create if you set the above config var)
 RTFM normally displays a search box and an include box (for
