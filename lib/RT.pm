@@ -638,7 +638,7 @@ sub _try_enable_plugin {
     return if $plugin->Enabled;
 
     if ( $explicit || -e $plugin->Path(".enabled")) {
-        eval { $plugin->Enable; 1 }
+        eval { $plugin->Enable($explicit); 1 }
             or do {
                 # XXX: the rt bootstrapping sequence loads RT_Config
                 # first, which requires scanning plugin directories,

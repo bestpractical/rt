@@ -64,12 +64,16 @@
 <li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
 <span class="name"><% $plugin->Name %></span>
 <span class="description"><% $plugin->Description || loc("No description") %></span>
+% if ($plugin->ConfigEnabled && 1) {
+<span class="plugin-config">Enabled through RT_Config.pm</span>
+% } else {
 <form method="POST">
   <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
   <input name="<% $enabled ? 'Disable' : 'Enable' %>"
          value="<% $enabled ? loc('Disable') : loc('Enable') %>"
          type="submit" class="submit" />
 </form>
+% }
 </li>
 % }
 </ul>
@@ -105,7 +109,11 @@ if ($PluginName) {
         }
     }
     elsif ($Disable) {
-        if (-e $plugin_enable) {
+        if ($plugin->ConfigEnabled) {
+            push @results, loc("Plugin [_1] is enabled through RT_SiteConfig.pm, please disable it there.",
+                               $PluginName);
+        }
+        elsif (-e $plugin_enable) {
             if ( eval { unlink($plugin_enable)
                             or die loc("You need to make the directory [_1] writable first.", $plugin->Path);
                         RT->RestartRequired(1);
@@ -119,10 +127,6 @@ if ($PluginName) {
             else {
                 push @results, loc("Failed to disable plugin [_1]: [_2].", $PluginName, $@);
             }
-        }
-        else {
-            push @results, loc("Plugin [_1] is enabled through RT_SiteConfig.pm, please disable it there.",
-                               $PluginName);
         }
     }
 }

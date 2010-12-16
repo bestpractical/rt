@@ -73,6 +73,7 @@ use List::MoreUtils qw(first_index);
 has _added_inc_path => (is => "rw", isa => "Str");
 has Name => (is => "rw", isa => "Str");
 has Enabled => (is => "rw", isa => "Bool");
+has ConfigEnabled => (is => "rw", isa => "Bool");
 has Description => (is => "rw", isa => "Str");
 has BasePath => (is => "rw", isa => "Str");
 
@@ -88,8 +89,10 @@ sub new {
 # it should be the one after local lib
 my $inc_anchor;
 sub Enable {
-    my $self = shift;
+    my ($self, $global) = @_;
     my $add = $self->Path("lib");
+    $self->ConfigEnabled(1)
+        if $global;
     unless (defined $inc_anchor) {
         my $anchor = first_index { Cwd::realpath($_) eq Cwd::realpath($RT::LocalLibPath) } @INC;
         $inc_anchor = ($anchor == -1 || $anchor == $#INC) # not found or last
