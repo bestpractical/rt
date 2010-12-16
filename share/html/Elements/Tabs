@@ -111,6 +111,12 @@ if ( $request_path !~ m{^/SelfService/} ) {
     $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5,
                    description => loc('Easy updating of your open tickets') );
 
+    if ( RT->Config->Get('EnableReminders') )
+    {
+        $tools->child( my_reminders => title => loc('My Reminders'), path => '/Tools/MyReminders.html', sort_order => 6,
+                       description => loc('Easy viewing of your reminders') );
+    }
+
     $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
                    description => loc('Create tickets offline') );
 
