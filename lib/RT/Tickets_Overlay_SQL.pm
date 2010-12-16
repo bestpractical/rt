@@ -51,6 +51,7 @@ package RT::Tickets;
 use strict;
 use warnings;
 
+
 use RT::SQL;
 
 # Import configuration data from the lexcial scope of __PACKAGE__ (or

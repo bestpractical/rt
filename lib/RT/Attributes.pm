@@ -66,7 +66,8 @@ RT::Attributes - collection of RT::Attribute objects
 package RT::Attributes;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Attribute;
 

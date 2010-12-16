@@ -70,6 +70,7 @@ use DBIx::SearchBuilder "1.40";
 use strict;
 use warnings;
 
+
 use base qw(DBIx::SearchBuilder RT::Base);
 
 sub _Init  {

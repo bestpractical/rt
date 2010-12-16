@@ -51,6 +51,7 @@ package RT::ObjectCustomField;
 use strict;
 use warnings;
 
+
 use RT::CustomField;
 use base 'RT::Record';
 

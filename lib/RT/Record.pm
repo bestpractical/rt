@@ -66,6 +66,7 @@ package RT::Record;
 use strict;
 use warnings;
 
+
 use RT::Date;
 use RT::User;
 use RT::Attributes;

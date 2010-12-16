@@ -73,8 +73,9 @@ An RT group object.
 
 package RT::Group;
 
-use warnings;
+
 use strict;
+use warnings;
 
 use base 'RT::Record';
 

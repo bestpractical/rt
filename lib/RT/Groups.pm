@@ -72,7 +72,8 @@
 package RT::Groups;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 
 use RT::Group;

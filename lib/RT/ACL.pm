@@ -72,7 +72,8 @@ use base 'RT::SearchBuilder';
 sub Table { 'ACL'}
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 
 =head2 Next

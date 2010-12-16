@@ -51,6 +51,7 @@ package RT::SQL;
 use strict;
 use warnings;
 
+
 use constant HAS_BOOLEAN_PARSER => do {
     local $@;
     eval { require Parse::BooleanLogic; 1 }

@@ -49,7 +49,8 @@
 package RT::ObjectCustomFieldValues;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::ObjectCustomFieldValue;
 

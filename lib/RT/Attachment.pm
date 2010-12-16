@@ -72,7 +72,8 @@ sub Table {'Attachments'}
 
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Transaction;
 use MIME::Base64;

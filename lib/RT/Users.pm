@@ -67,7 +67,8 @@
 package RT::Users;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::User;
 
 use base 'RT::SearchBuilder';

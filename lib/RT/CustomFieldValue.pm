@@ -46,8 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
+
 use strict;
+use warnings;
 
 package RT::CustomFieldValue;
 

@@ -53,6 +53,7 @@ package RT::Principal;
 use strict;
 use warnings;
 
+
 use base 'RT::Record';
 
 sub Table {'Principals'}

@@ -50,6 +50,7 @@ package RT::ObjectCustomFieldValue;
 
 use strict;
 use warnings;
+
 use RT::Interface::Web;
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
@@ -57,7 +58,7 @@ use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
 
-no warnings qw(redefine);
+
 
 use RT::CustomField;
 use base 'RT::Record';

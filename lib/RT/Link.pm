@@ -69,7 +69,8 @@ should only be accessed through exported APIs in Ticket other similar objects.
 package RT::Link;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 
 use base 'RT::Record';

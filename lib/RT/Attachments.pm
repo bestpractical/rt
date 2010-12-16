@@ -69,6 +69,7 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 
 package RT::Attachments;
 use strict;
+use warnings;
 
 
 use RT::Attachment;
@@ -76,7 +77,7 @@ use RT::Attachment;
 use base 'RT::SearchBuilder';
 
 sub Table { 'Attachments'}
-no warnings qw(redefine);
+
 
 use RT::Attachment;
 
@@ -248,6 +249,7 @@ sub NewItem {
     my $self = shift;
     return(RT::Attachment->new($self->CurrentUser));
 }
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -67,7 +67,6 @@ package RT::Queue;
 
 use strict;
 use warnings;
-no warnings qw(redefine);
 use base 'RT::Record';
 
 sub Table {'Queues'}

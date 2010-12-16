@@ -67,7 +67,8 @@
 package RT::Queues;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Queue;
 

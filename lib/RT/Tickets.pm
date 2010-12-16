@@ -79,7 +79,8 @@
 package RT::Tickets;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Ticket;
 

@@ -57,6 +57,7 @@ package RT::I18N;
 use strict;
 use warnings;
 
+
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
 use base 'Locale::Maketext::Fuzzy';

@@ -67,7 +67,8 @@
 package RT::CachedGroupMembers;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::CachedGroupMember;
 

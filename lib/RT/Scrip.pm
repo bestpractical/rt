@@ -66,7 +66,8 @@
 package RT::Scrip;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Queue;
 use RT::Template;
@@ -209,7 +210,7 @@ sub Delete {
 
 =head2 QueueObj
 
-Retuns an RT::Queue object with this Scrip\'s queue
+Retuns an RT::Queue object with this Scrip's queue
 
 =cut
 

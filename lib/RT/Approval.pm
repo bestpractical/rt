@@ -50,6 +50,7 @@ package RT::Approval;
 use strict;
 use warnings;
 
+
 use RT::Ruleset;
 
 RT::Ruleset->Add(

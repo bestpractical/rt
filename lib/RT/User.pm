@@ -64,7 +64,8 @@
 package RT::User;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use base 'RT::Record';
 

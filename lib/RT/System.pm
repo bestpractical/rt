@@ -69,6 +69,7 @@ package RT::System;
 
 use strict;
 use warnings;
+
 use base qw/RT::Record/;
 
 use RT::ACL;

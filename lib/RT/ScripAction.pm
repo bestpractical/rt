@@ -70,7 +70,8 @@ should only be accessed through exported APIs in other modules.
 package RT::ScripAction;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use base 'RT::Record';
 
 sub Table {'ScripActions'}

@@ -67,7 +67,8 @@
 package RT::ScripActions;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use base 'RT::SearchBuilder';
 
 sub Table { 'ScripActions'}

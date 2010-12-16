@@ -74,7 +74,8 @@ doing something wrong.
 package RT::GroupMember;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use base 'RT::Record';
 

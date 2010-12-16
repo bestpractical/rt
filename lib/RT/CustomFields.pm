@@ -67,6 +67,7 @@ package RT::CustomFields;
 
 use strict;
 use warnings;
+
 use DBIx::SearchBuilder::Unique;
 
 use RT::CustomField;

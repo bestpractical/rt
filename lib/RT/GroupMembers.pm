@@ -67,7 +67,8 @@
 package RT::GroupMembers;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::GroupMember;
 
 use base 'RT::SearchBuilder';

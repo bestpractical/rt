@@ -49,7 +49,8 @@
 package RT::CustomField;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 
 use base 'RT::Record';

@@ -67,7 +67,8 @@
 package RT::Principals;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 
 use RT::Principal;
 

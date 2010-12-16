@@ -69,7 +69,8 @@ sub Table {'ACL'}
 
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::Principals;
 use RT::Queues;
 use RT::Groups;

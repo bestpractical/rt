@@ -75,6 +75,7 @@ use base 'RT::Record';
 use strict;
 use warnings;
 
+
 use vars qw( %_BriefDescriptions $PreferredContentType );
 
 use RT::Attachments;

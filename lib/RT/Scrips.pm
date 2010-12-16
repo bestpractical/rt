@@ -67,7 +67,8 @@
 package RT::Scrips;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::Scrip;
 
 use base 'RT::SearchBuilder';

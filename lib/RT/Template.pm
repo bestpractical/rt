@@ -69,7 +69,8 @@ package RT::Template;
 
 use strict;
 use warnings;
-no warnings qw(redefine);
+
+
 
 use Text::Template;
 use MIME::Entity;
