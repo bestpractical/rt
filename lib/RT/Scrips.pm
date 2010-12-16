@@ -113,12 +113,7 @@ sub LimitToGlobal  {
   
 }
 
-sub NewItem  {
-  my $self = shift;
-  
-  return(RT::Scrip->new($self->CurrentUser));
-}
-
+# {{{ sub Next 
 
 =head2 Next
 

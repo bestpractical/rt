@@ -219,11 +219,7 @@ sub LimitByTicket {
     return;
 }
 
-sub NewItem  {
-  my $self = shift;
-  return RT::Attachment->new( $self->CurrentUser );
-}
-
+# {{{ sub Next
 sub Next {
     my $self = shift;
 

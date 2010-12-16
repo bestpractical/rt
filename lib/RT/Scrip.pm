@@ -899,20 +899,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 QueueObj
-
-Returns the Queue Object which has the id returned by Queue
-
-
-=cut
-
-sub QueueObj {
-	my $self = shift;
-	my $Queue =  RT::Queue->new($self->CurrentUser);
-	$Queue->Load($self->__Value('Queue'));
-	return($Queue);
-}
-
 =head2 Template
 
 Returns the current value of Template.
@@ -930,20 +916,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-
-=head2 TemplateObj
-
-Returns the Template Object which has the id returned by Template
-
-
-=cut
-
-sub TemplateObj {
-	my $self = shift;
-	my $Template =  RT::Template->new($self->CurrentUser);
-	$Template->Load($self->__Value('Template'));
-	return($Template);
-}
 
 =head2 Creator
 

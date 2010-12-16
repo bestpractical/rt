@@ -66,23 +66,13 @@
 package RT::Templates;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
 
+use RT::Template;
 
+use base 'RT::SearchBuilder';
 
-=head2 _Init
-
-  Returns RT::Templates specific init info like table and primary key names
-
-=cut
-
-sub _Init {
-    
-    my $self = shift;
-    $self->{'table'} = "Templates";
-    $self->{'primary_key'} = "id";
-    return ($self->SUPER::_Init(@_));
-}
+sub Table { 'Templates'}
 
 
 =head2 LimitToNotInQueue
@@ -136,21 +126,6 @@ sub LimitToQueue {
 }
 
 
-=head2 NewItem
-
-Returns a new empty Template object
-
-=cut
-
-sub NewItem  {
-  my $self = shift;
-
-  use RT::Template;
-  my $item = RT::Template->new($self->CurrentUser);
-  return($item);
-}
-
-
 =head2 Next
 
 Returns the next template that this user can see.
@@ -183,15 +158,6 @@ sub Next {
     }	
     
 }
-
-1;
-
-
-use RT::Template;
-
-use base 'RT::SearchBuilder';
-
-sub Table { 'Templates'}
 
 =head2 NewItem
 

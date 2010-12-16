@@ -3732,20 +3732,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 QueueObj
-
-Returns the Queue Object which has the id returned by Queue
-
-
-=cut
-
-sub QueueObj {
-	my $self = shift;
-	my $Queue =  RT::Queue->new($self->CurrentUser);
-	$Queue->Load($self->__Value('Queue'));
-	return($Queue);
-}
-
 =head2 Type
 
 Returns the current value of Type.
