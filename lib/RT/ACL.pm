@@ -65,6 +65,11 @@ my $ACL = RT::ACL->new($CurrentUser);
 
 
 package RT::ACL;
+use RT::ACE;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'ACL'}
 
 use strict;
 no warnings qw(redefine);
@@ -309,5 +314,20 @@ sub HasEntry {
 	return(undef);
     }
 }
+
+# }}}
+
+
+=head2 NewItem
+
+Returns an empty new RT::ACE item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::ACE->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;

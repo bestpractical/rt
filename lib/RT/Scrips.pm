@@ -68,6 +68,11 @@ package RT::Scrips;
 
 use strict;
 no warnings qw(redefine);
+use RT::Scrip;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Scrips'}
 
 
 =head2 LimitToQueue
@@ -372,5 +377,18 @@ sub _FindScrips {
 }
 
 
-1;
 
+
+=head2 NewItem
+
+Returns an empty new RT::Scrip item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Scrip->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

@@ -69,6 +69,14 @@ package RT::Links;
 
 use strict;
 no warnings qw(redefine);
+
+use RT::Link;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Links'}
+
+
 use RT::URI;
 
 sub Limit  {
@@ -162,5 +170,18 @@ sub Next {
     }
 }
 
-1;
+# }}}
 
+=head2 NewItem
+
+Returns an empty new RT::Link item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Link->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

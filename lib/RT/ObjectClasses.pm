@@ -45,11 +45,15 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::ObjectClasses;
 
 use strict;
 use warnings;
-no warnings qw/redefine/;
+
+package RT::ObjectClasses;
+use base 'RT::SearchBuilder';
+
+sub Table {'ObjectClasses'}
+
 
 =head2 LimitToClass
 
@@ -66,4 +70,18 @@ sub LimitToClass {
 
 }
 
-1
+=head2 NewItem
+
+Returns an empty new RT::ObjectClass item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::ObjectClass->new($self->CurrentUser));
+}
+
+
+RT::Base->_ImportOverlays();
+
+1;

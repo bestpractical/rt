@@ -45,10 +45,14 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::Topic;
 
+use warnings;
 use strict;
-no warnings qw(redefine);
+
+package RT::Topic;
+use base 'RT::Record';
+
+sub Table {'Topics'}
 
 # {{{ Create
 
@@ -248,4 +252,125 @@ sub CurrentUserHasRight {
 
 # }}}
 
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Parent
+
+Returns the current value of Parent. 
+(In the database, Parent is stored as int(11).)
+
+
+
+=head2 SetParent VALUE
+
+
+Set Parent to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Parent will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(255).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 ObjectType
+
+Returns the current value of ObjectType. 
+(In the database, ObjectType is stored as varchar(64).)
+
+
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(64).)
+
+
+=cut
+
+
+=head2 ObjectId
+
+Returns the current value of ObjectId. 
+(In the database, ObjectId is stored as int(11).)
+
+
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+		{read => 1, type => 'int(11)', default => ''},
+        Parent => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Name => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Description => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        ObjectType => 
+		{read => 1, write => 1, type => 'varchar(64)', default => ''},
+        ObjectId => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 1;

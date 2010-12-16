@@ -69,6 +69,13 @@ package RT::Transactions;
 use strict;
 no warnings qw(redefine);
 
+use RT::Transaction;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Transactions'}
+
+# {{{ sub _Init  
 sub _Init   {
   my $self = shift;
   
@@ -149,5 +156,18 @@ sub Next {
 
 
 
-1;
 
+
+=head2 NewItem
+
+Returns an empty new RT::Transaction item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Transaction->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

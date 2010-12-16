@@ -51,6 +51,12 @@ package RT::CustomField;
 use strict;
 no warnings qw(redefine);
 
+
+use base 'RT::Record';
+
+sub Table {'CustomFields'}
+
+
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
@@ -1692,5 +1698,296 @@ sub BasedOnObj {
     }
     return $obj;
 }
+
+
+
+
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(200).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Type
+
+Returns the current value of Type. 
+(In the database, Type is stored as varchar(200).)
+
+
+
+=head2 SetType VALUE
+
+
+Set Type to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 RenderType
+
+Returns the current value of RenderType. 
+(In the database, RenderType is stored as varchar(64).)
+
+
+
+=head2 SetRenderType VALUE
+
+
+Set RenderType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, RenderType will be stored as a varchar(64).)
+
+
+=cut
+
+
+=head2 MaxValues
+
+Returns the current value of MaxValues. 
+(In the database, MaxValues is stored as int(11).)
+
+
+
+=head2 SetMaxValues VALUE
+
+
+Set MaxValues to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, MaxValues will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Pattern
+
+Returns the current value of Pattern. 
+(In the database, Pattern is stored as text.)
+
+
+
+=head2 SetPattern VALUE
+
+
+Set Pattern to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Pattern will be stored as a text.)
+
+
+=cut
+
+
+=head2 Repeated
+
+Returns the current value of Repeated. 
+(In the database, Repeated is stored as smallint(6).)
+
+
+
+=head2 SetRepeated VALUE
+
+
+Set Repeated to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Repeated will be stored as a smallint(6).)
+
+
+=cut
+
+
+=head2 BasedOn
+
+Returns the current value of BasedOn. 
+(In the database, BasedOn is stored as int(11).)
+
+
+
+=head2 SetBasedOn VALUE
+
+
+Set BasedOn to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, BasedOn will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
+
+
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 LookupType
+
+Returns the current value of LookupType. 
+(In the database, LookupType is stored as varchar(255).)
+
+
+
+=head2 SetLookupType VALUE
+
+
+Set LookupType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LookupType will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+=head2 Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+        {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Type => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        RenderType => 
+        {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        MaxValues => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Pattern => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Repeated => 
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+        BasedOn => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Description => 
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        SortOrder => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LookupType => 
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Creator => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        Disabled => 
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+
+ }
+};
+
+
+RT::Base->_ImportOverlays();
 
 1;

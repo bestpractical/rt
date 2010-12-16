@@ -71,8 +71,9 @@ It can have arbitrary MIME attachments.
 
 package RT::Transaction;
 
+use base 'RT::Record';
 use strict;
-no warnings qw(redefine);
+use warnings;
 
 use vars qw( %_BriefDescriptions $PreferredContentType );
 
@@ -83,6 +84,10 @@ use RT::Ruleset;
 use HTML::FormatText;
 use HTML::TreeBuilder;
 
+
+sub Table {'Transactions'}
+
+# {{{ sub Create 
 
 =head2 Create
 
@@ -1355,5 +1360,272 @@ sub ACLEquivalenceObjects {
     return $object,$object->QueueObj;
 
 }
+
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 ObjectType
+
+Returns the current value of ObjectType.
+(In the database, ObjectType is stored as varchar(64).)
+
+
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(64).)
+
+
+=cut
+
+
+=head2 ObjectId
+
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
+
+
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 TimeTaken
+
+Returns the current value of TimeTaken.
+(In the database, TimeTaken is stored as int(11).)
+
+
+
+=head2 SetTimeTaken VALUE
+
+
+Set TimeTaken to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, TimeTaken will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Type
+
+Returns the current value of Type.
+(In the database, Type is stored as varchar(20).)
+
+
+
+=head2 SetType VALUE
+
+
+Set Type to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(20).)
+
+
+=cut
+
+
+=head2 Field
+
+Returns the current value of Field.
+(In the database, Field is stored as varchar(40).)
+
+
+
+=head2 SetField VALUE
+
+
+Set Field to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Field will be stored as a varchar(40).)
+
+
+=cut
+
+
+=head2 OldValue
+
+Returns the current value of OldValue.
+(In the database, OldValue is stored as varchar(255).)
+
+
+
+=head2 SetOldValue VALUE
+
+
+Set OldValue to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, OldValue will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 NewValue
+
+Returns the current value of NewValue.
+(In the database, NewValue is stored as varchar(255).)
+
+
+
+=head2 SetNewValue VALUE
+
+
+Set NewValue to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, NewValue will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 ReferenceType
+
+Returns the current value of ReferenceType.
+(In the database, ReferenceType is stored as varchar(255).)
+
+
+
+=head2 SetReferenceType VALUE
+
+
+Set ReferenceType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ReferenceType will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 OldReference
+
+Returns the current value of OldReference.
+(In the database, OldReference is stored as int(11).)
+
+
+
+=head2 SetOldReference VALUE
+
+
+Set OldReference to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, OldReference will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 NewReference
+
+Returns the current value of NewReference.
+(In the database, NewReference is stored as int(11).)
+
+
+
+=head2 SetNewReference VALUE
+
+
+Set NewReference to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, NewReference will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Data
+
+Returns the current value of Data.
+(In the database, Data is stored as varchar(255).)
+
+
+
+=head2 SetData VALUE
+
+
+Set Data to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Data will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        ObjectType =>
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        ObjectId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        TimeTaken =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Type =>
+		{read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
+        Field =>
+		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+        OldValue =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        NewValue =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        ReferenceType =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        OldReference =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        NewReference =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Data =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;

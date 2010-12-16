@@ -50,8 +50,33 @@ package RT::CustomFieldValues;
 
 use strict;
 use warnings;
-no warnings qw(redefine);
 
+
+use RT::CustomFieldValue;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'CustomFieldValues'}
+
+sub _Init {
+    my $self = shift;
+
+  # By default, order by SortOrder
+  $self->OrderByCols(
+	 { ALIAS => 'main',
+	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'Name',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'id',
+	   ORDER => 'ASC' },
+     );
+
+    return ( $self->SUPER::_Init(@_) );
+}
+# {{{ sub LimitToCustomField
 
 =head2 LimitToCustomField FIELD
 
@@ -69,5 +94,19 @@ sub LimitToCustomField {
     );
 }
 
+
+
+
+=head2 NewItem
+
+Returns an empty new RT::CustomFieldValue item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::CustomFieldValue->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;

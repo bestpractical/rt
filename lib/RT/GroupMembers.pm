@@ -68,6 +68,12 @@ package RT::GroupMembers;
 
 use strict;
 no warnings qw(redefine);
+use RT::GroupMember;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'GroupMembers'}
+
 
 
 =head2 LimitToUsers
@@ -139,5 +145,19 @@ sub LimitToMembersOfGroup {
                          ));
 
 }
+
+
+
+=head2 NewItem
+
+Returns an empty new RT::GroupMember item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::GroupMember->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;

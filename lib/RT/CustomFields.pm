@@ -67,16 +67,32 @@ package RT::CustomFields;
 
 use strict;
 use warnings;
-no warnings qw(redefine);
 use DBIx::SearchBuilder::Unique;
+
+use RT::CustomField;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'CustomFields'}
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'CustomFields';
-    $self->{'primary_key'} = 'id';
+
+  # By default, order by SortOrder
+  $self->OrderByCols(
+	 { ALIAS => 'main',
+	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'Name',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'id',
+	   ORDER => 'ASC' },
+     );
     $self->{'with_disabled_column'} = 1;
 
-    return $self->SUPER::_Init(@_);
+    return ( $self->SUPER::_Init(@_) );
 }
 
 
@@ -363,6 +379,7 @@ sub Next {
 
 =head2 NewItem
 
+Returns an empty new RT::CustomField item
 Overrides <RT::SearchBuilder/NewItem> to make sure </ContextObject>
 is inherited.
 
@@ -374,5 +391,7 @@ sub NewItem {
     $res->SetContextObject($self->ContextObject);
     return $res;
 }
+
+RT::Base->_ImportOverlays();
 
 1;

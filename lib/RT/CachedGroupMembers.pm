@@ -69,6 +69,13 @@ package RT::CachedGroupMembers;
 use strict;
 no warnings qw(redefine);
 
+use RT::CachedGroupMember;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'CachedGroupMembers'}
+
+# {{{ LimitToUsers
 
 =head2 LimitToUsers
 
@@ -162,4 +169,19 @@ sub LimitToGroupsWithMember {
                          ));
 
 }
+# }}}
+
+
+=head2 NewItem
+
+Returns an empty new RT::CachedGroupMember item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::CachedGroupMember->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
 1;

@@ -186,3 +186,25 @@ sub Next {
 
 1;
 
+
+use RT::Template;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Templates'}
+
+=head2 NewItem
+
+Returns an empty new RT::Template item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Template->new($self->CurrentUser));
+}
+
+
+RT::Base->_ImportOverlays();
+
+1;

@@ -64,6 +64,12 @@ similar objects.
 
 
 package RT::Attachment;
+use base 'RT::Record';
+
+sub Table {'Attachments'}
+
+
+
 
 use strict;
 no warnings qw(redefine);
@@ -761,5 +767,231 @@ sub _CacheConfig {
         'cache_for_sec' => 180,
     }
 }
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 TransactionId
+
+Returns the current value of TransactionId.
+(In the database, TransactionId is stored as int(11).)
+
+
+
+=head2 SetTransactionId VALUE
+
+
+Set TransactionId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, TransactionId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Parent
+
+Returns the current value of Parent.
+(In the database, Parent is stored as int(11).)
+
+
+
+=head2 SetParent VALUE
+
+
+Set Parent to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Parent will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 MessageId
+
+Returns the current value of MessageId.
+(In the database, MessageId is stored as varchar(160).)
+
+
+
+=head2 SetMessageId VALUE
+
+
+Set MessageId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, MessageId will be stored as a varchar(160).)
+
+
+=cut
+
+
+=head2 Subject
+
+Returns the current value of Subject.
+(In the database, Subject is stored as varchar(255).)
+
+
+
+=head2 SetSubject VALUE
+
+
+Set Subject to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Subject will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Filename
+
+Returns the current value of Filename.
+(In the database, Filename is stored as varchar(255).)
+
+
+
+=head2 SetFilename VALUE
+
+
+Set Filename to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Filename will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 ContentType
+
+Returns the current value of ContentType.
+(In the database, ContentType is stored as varchar(80).)
+
+
+
+=head2 SetContentType VALUE
+
+
+Set ContentType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ContentType will be stored as a varchar(80).)
+
+
+=cut
+
+
+=head2 ContentEncoding
+
+Returns the current value of ContentEncoding.
+(In the database, ContentEncoding is stored as varchar(80).)
+
+
+
+=head2 SetContentEncoding VALUE
+
+
+Set ContentEncoding to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ContentEncoding will be stored as a varchar(80).)
+
+
+=cut
+
+
+=head2 Content
+
+Returns the current value of Content.
+(In the database, Content is stored as longblob.)
+
+
+
+=head2 SetContent VALUE
+
+
+Set Content to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Content will be stored as a longblob.)
+
+
+=cut
+
+
+=head2 Headers
+
+Returns the current value of Headers.
+(In the database, Headers is stored as longtext.)
+
+
+
+=head2 SetHeaders VALUE
+
+
+Set Headers to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Headers will be stored as a longtext.)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        TransactionId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Parent =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        MessageId =>
+		{read => 1, write => 1, sql_type => 12, length => 160,  is_blob => 0,  is_numeric => 0,  type => 'varchar(160)', default => ''},
+        Subject =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Filename =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        ContentType =>
+		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
+        ContentEncoding =>
+		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
+        Content =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longblob', default => ''},
+        Headers =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;

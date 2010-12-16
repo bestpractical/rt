@@ -45,11 +45,13 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::Article;
 
 use strict;
+use warnings;
 
-no warnings qw/redefine/;
+package RT::Article;
+
+use base 'RT::Record';
 
 use RT::Articles;
 use RT::ObjectTopics;
@@ -58,6 +60,9 @@ use RT::Links;
 use RT::CustomFields;
 use RT::URI::fsck_com_article;
 use RT::Transactions;
+
+
+sub Table {'Articles'}
 
 # This object takes custom fields
 
@@ -658,5 +663,208 @@ sub LoadByInclude {
     return ($ok, $msg);
 
 }
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(255).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Summary
+
+Returns the current value of Summary. 
+(In the database, Summary is stored as varchar(255).)
+
+
+
+=head2 SetSummary VALUE
+
+
+Set Summary to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Summary will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
+
+
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Class
+
+Returns the current value of Class. 
+(In the database, Class is stored as int(11).)
+
+
+
+=head2 SetClass VALUE
+
+
+Set Class to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Class will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 ClassObj
+
+Returns the Class Object which has the id returned by Class
+
+
+=cut
+
+sub ClassObj {
+	my $self = shift;
+	my $Class =  RT::Class->new($self->CurrentUser);
+	$Class->Load($self->Class());
+	return($Class);
+}
+
+=head2 Parent
+
+Returns the current value of Parent. 
+(In the database, Parent is stored as int(11).)
+
+
+
+=head2 SetParent VALUE
+
+
+Set Parent to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Parent will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 URI
+
+Returns the current value of URI. 
+(In the database, URI is stored as varchar(255).)
+
+
+
+=head2 SetURI VALUE
+
+
+Set URI to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, URI will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+		{read => 1, type => 'int(11)', default => ''},
+        Name => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Summary => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        SortOrder => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Class => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Parent => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        URI => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Creator => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        Created => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
+        LastUpdatedBy => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        LastUpdated => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
+
+1;
+
 
 1;

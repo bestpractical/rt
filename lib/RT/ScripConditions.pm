@@ -70,12 +70,11 @@ package RT::ScripConditions;
 use strict;
 no warnings qw(redefine);
 
-sub _Init { 
-  my $self = shift;
-  $self->{'table'} = "ScripConditions";
-  $self->{'primary_key'} = "id";
-  return ( $self->SUPER::_Init(@_));
-}
+use RT::ScripCondition;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'ScripConditions'}
 
 sub LimitToType  {
   my $self = shift;
@@ -94,11 +93,17 @@ sub LimitToType  {
   
 }
 
-sub NewItem  {
-  my $self = shift;
-  return(RT::ScripCondition->new($self->CurrentUser));
-}
 
+=head2 NewItem
+
+Returns an empty new RT::ScripCondition item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::ScripCondition->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;
-

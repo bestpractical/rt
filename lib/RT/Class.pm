@@ -49,7 +49,8 @@ package RT::Class;
 
 use strict;
 use warnings;
-no warnings qw/redefine/;
+use base 'RT::Record';
+
 
 use RT::System;
 use RT::CustomFields;
@@ -58,6 +59,7 @@ use RT::Articles;
 use RT::ObjectClass;
 use RT::ObjectClasses;
 
+sub Table {'Classes'}
 
 =head2 Load IDENTIFIER
 
@@ -446,6 +448,173 @@ sub RemoveFromObject {
     my ( $oid, $msg ) = $ocf->Delete;
     return ( $oid, $msg );
 }
+
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(255).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
+
+
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as int(2).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a int(2).)
+
+
+=cut
+
+
+=head2 HotList
+
+Returns the current value of HotList. 
+(In the database, HotList is stored as int(2).)
+
+
+
+=head2 SetHotList VALUE
+
+
+Set HotList to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, HotList will be stored as a int(2).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+		{read => 1, type => 'int(11)', default => ''},
+        Name => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Description => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        SortOrder => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Disabled => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        HotList => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
+        Creator => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        Created => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
+        LastUpdatedBy => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        LastUpdated => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;
 

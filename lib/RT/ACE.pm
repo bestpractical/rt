@@ -63,6 +63,10 @@
 
 
 package RT::ACE;
+use base 'RT::Record';
+
+sub Table {'ACL'}
+
 
 use strict;
 no warnings qw(redefine);
@@ -577,5 +581,170 @@ sub _ParseObjectArg {
     }
 }
 
+
+# }}}
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 PrincipalType
+
+Returns the current value of PrincipalType.
+(In the database, PrincipalType is stored as varchar(25).)
+
+
+
+=head2 SetPrincipalType VALUE
+
+
+Set PrincipalType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PrincipalType will be stored as a varchar(25).)
+
+
+=cut
+
+
+=head2 PrincipalId
+
+Returns the current value of PrincipalId.
+(In the database, PrincipalId is stored as int(11).)
+
+
+
+=head2 SetPrincipalId VALUE
+
+
+Set PrincipalId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PrincipalId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 RightName
+
+Returns the current value of RightName.
+(In the database, RightName is stored as varchar(25).)
+
+
+
+=head2 SetRightName VALUE
+
+
+Set RightName to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, RightName will be stored as a varchar(25).)
+
+
+=cut
+
+
+=head2 ObjectType
+
+Returns the current value of ObjectType.
+(In the database, ObjectType is stored as varchar(25).)
+
+
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(25).)
+
+
+=cut
+
+
+=head2 ObjectId
+
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
+
+
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 DelegatedBy
+
+Returns the current value of DelegatedBy.
+(In the database, DelegatedBy is stored as int(11).)
+
+
+
+=head2 SetDelegatedBy VALUE
+
+
+Set DelegatedBy to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, DelegatedBy will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 DelegatedFrom
+
+Returns the current value of DelegatedFrom.
+(In the database, DelegatedFrom is stored as int(11).)
+
+
+
+=head2 SetDelegatedFrom VALUE
+
+
+Set DelegatedFrom to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, DelegatedFrom will be stored as a int(11).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        PrincipalType =>
+		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+        PrincipalId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        RightName =>
+		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+        ObjectType =>
+		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+        ObjectId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        DelegatedBy =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        DelegatedFrom =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;

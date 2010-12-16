@@ -73,8 +73,14 @@ An RT group object.
 
 package RT::Group;
 
+use warnings;
 use strict;
-no warnings qw(redefine);
+
+use base 'RT::Record';
+
+sub Table {'Groups'}
+
+
 
 use RT::Users;
 use RT::GroupMembers;
@@ -1214,7 +1220,6 @@ sub BasicColumns {
     );
 }
 
-1;
 
 =head1 AUTHOR
 
@@ -1224,3 +1229,131 @@ Jesse Vincent, jesse@bestpractical.com
 
 RT
 
+=cut
+
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name.
+(In the database, Name is stored as varchar(200).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description.
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Domain
+
+Returns the current value of Domain.
+(In the database, Domain is stored as varchar(64).)
+
+
+
+=head2 SetDomain VALUE
+
+
+Set Domain to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Domain will be stored as a varchar(64).)
+
+
+=cut
+
+
+=head2 Type
+
+Returns the current value of Type.
+(In the database, Type is stored as varchar(64).)
+
+
+
+=head2 SetType VALUE
+
+
+Set Type to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(64).)
+
+
+=cut
+
+
+=head2 Instance
+
+Returns the current value of Instance.
+(In the database, Instance is stored as int(11).)
+
+
+
+=head2 SetInstance VALUE
+
+
+Set Instance to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Instance will be stored as a int(11).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name =>
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Description =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Domain =>
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        Type =>
+		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        Instance =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
+
+1;

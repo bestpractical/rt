@@ -68,6 +68,15 @@ package RT::Scrip;
 use strict;
 no warnings qw(redefine);
 
+use RT::Queue;
+use RT::Template;
+use RT::ScripCondition;
+use RT::ScripAction;
+use base 'RT::Record';
+
+sub Table {'Scrips'}
+
+# {{{ sub Create
 
 =head2 Create
 
@@ -668,3 +677,350 @@ sub SetTemplate {
 
 1;
 
+
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description.
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 ScripCondition
+
+Returns the current value of ScripCondition.
+(In the database, ScripCondition is stored as int(11).)
+
+
+
+=head2 SetScripCondition VALUE
+
+
+Set ScripCondition to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ScripCondition will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 ScripConditionObj
+
+Returns the ScripCondition Object which has the id returned by ScripCondition
+
+
+=cut
+
+sub ScripConditionObj {
+	my $self = shift;
+	my $ScripCondition =  RT::ScripCondition->new($self->CurrentUser);
+	$ScripCondition->Load($self->__Value('ScripCondition'));
+	return($ScripCondition);
+}
+
+=head2 ScripAction
+
+Returns the current value of ScripAction.
+(In the database, ScripAction is stored as int(11).)
+
+
+
+=head2 SetScripAction VALUE
+
+
+Set ScripAction to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ScripAction will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 ScripActionObj
+
+Returns the ScripAction Object which has the id returned by ScripAction
+
+
+=cut
+
+sub ScripActionObj {
+	my $self = shift;
+	my $ScripAction =  RT::ScripAction->new($self->CurrentUser);
+	$ScripAction->Load($self->__Value('ScripAction'));
+	return($ScripAction);
+}
+
+=head2 ConditionRules
+
+Returns the current value of ConditionRules.
+(In the database, ConditionRules is stored as text.)
+
+
+
+=head2 SetConditionRules VALUE
+
+
+Set ConditionRules to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ConditionRules will be stored as a text.)
+
+
+=cut
+
+
+=head2 ActionRules
+
+Returns the current value of ActionRules.
+(In the database, ActionRules is stored as text.)
+
+
+
+=head2 SetActionRules VALUE
+
+
+Set ActionRules to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ActionRules will be stored as a text.)
+
+
+=cut
+
+
+=head2 CustomIsApplicableCode
+
+Returns the current value of CustomIsApplicableCode.
+(In the database, CustomIsApplicableCode is stored as text.)
+
+
+
+=head2 SetCustomIsApplicableCode VALUE
+
+
+Set CustomIsApplicableCode to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomIsApplicableCode will be stored as a text.)
+
+
+=cut
+
+
+=head2 CustomPrepareCode
+
+Returns the current value of CustomPrepareCode.
+(In the database, CustomPrepareCode is stored as text.)
+
+
+
+=head2 SetCustomPrepareCode VALUE
+
+
+Set CustomPrepareCode to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomPrepareCode will be stored as a text.)
+
+
+=cut
+
+
+=head2 CustomCommitCode
+
+Returns the current value of CustomCommitCode.
+(In the database, CustomCommitCode is stored as text.)
+
+
+
+=head2 SetCustomCommitCode VALUE
+
+
+Set CustomCommitCode to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomCommitCode will be stored as a text.)
+
+
+=cut
+
+
+=head2 Stage
+
+Returns the current value of Stage.
+(In the database, Stage is stored as varchar(32).)
+
+
+
+=head2 SetStage VALUE
+
+
+Set Stage to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Stage will be stored as a varchar(32).)
+
+
+=cut
+
+
+=head2 Queue
+
+Returns the current value of Queue.
+(In the database, Queue is stored as int(11).)
+
+
+
+=head2 SetQueue VALUE
+
+
+Set Queue to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Queue will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 QueueObj
+
+Returns the Queue Object which has the id returned by Queue
+
+
+=cut
+
+sub QueueObj {
+	my $self = shift;
+	my $Queue =  RT::Queue->new($self->CurrentUser);
+	$Queue->Load($self->__Value('Queue'));
+	return($Queue);
+}
+
+=head2 Template
+
+Returns the current value of Template.
+(In the database, Template is stored as int(11).)
+
+
+
+=head2 SetTemplate VALUE
+
+
+Set Template to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Template will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 TemplateObj
+
+Returns the Template Object which has the id returned by Template
+
+
+=cut
+
+sub TemplateObj {
+	my $self = shift;
+	my $Template =  RT::Template->new($self->CurrentUser);
+	$Template->Load($self->__Value('Template'));
+	return($Template);
+}
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Description =>
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        ScripCondition =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        ScripAction =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        ConditionRules =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        ActionRules =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        CustomIsApplicableCode =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        CustomPrepareCode =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        CustomCommitCode =>
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Stage =>
+		{read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => ''},
+        Queue =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Template =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
+
+1;

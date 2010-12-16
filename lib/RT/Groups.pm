@@ -74,6 +74,13 @@ package RT::Groups;
 use strict;
 no warnings qw(redefine);
 
+
+use RT::Group;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Groups'}
+
 use RT::Users;
 
 # XXX: below some code is marked as subject to generalize in Groups, Users classes.
@@ -85,8 +92,6 @@ use RT::Users;
 
 sub _Init { 
   my $self = shift;
-  $self->{'table'} = "Groups";
-  $self->{'primary_key'} = "id";
   $self->{'with_disabled_column'} = 1;
 
   my @result = $self->SUPER::_Init(@_);
@@ -428,5 +433,18 @@ sub _DoSearch {
     
 }
 
-1;
 
+
+=head2 NewItem
+
+Returns an empty new RT::Group item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Group->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

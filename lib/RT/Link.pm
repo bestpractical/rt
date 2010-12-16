@@ -72,6 +72,9 @@ use strict;
 no warnings qw(redefine);
 
 
+use base 'RT::Record';
+
+sub Table {'Links'}
 use Carp;
 use RT::URI;
 
@@ -278,5 +281,170 @@ sub BaseObj {
   return $self->BaseURI->Object;
 }
 
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Base
+
+Returns the current value of Base.
+(In the database, Base is stored as varchar(240).)
+
+
+
+=head2 SetBase VALUE
+
+
+Set Base to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Base will be stored as a varchar(240).)
+
+
+=cut
+
+
+=head2 Target
+
+Returns the current value of Target.
+(In the database, Target is stored as varchar(240).)
+
+
+
+=head2 SetTarget VALUE
+
+
+Set Target to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Target will be stored as a varchar(240).)
+
+
+=cut
+
+
+=head2 Type
+
+Returns the current value of Type.
+(In the database, Type is stored as varchar(20).)
+
+
+
+=head2 SetType VALUE
+
+
+Set Type to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Type will be stored as a varchar(20).)
+
+
+=cut
+
+
+=head2 LocalTarget
+
+Returns the current value of LocalTarget.
+(In the database, LocalTarget is stored as int(11).)
+
+
+
+=head2 SetLocalTarget VALUE
+
+
+Set LocalTarget to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LocalTarget will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 LocalBase
+
+Returns the current value of LocalBase.
+(In the database, LocalBase is stored as int(11).)
+
+
+
+=head2 SetLocalBase VALUE
+
+
+Set LocalBase to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LocalBase will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Base =>
+		{read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
+        Target =>
+		{read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
+        Type =>
+		{read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
+        LocalTarget =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LocalBase =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdatedBy =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
+
 1;
- 

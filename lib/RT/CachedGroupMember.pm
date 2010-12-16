@@ -51,6 +51,10 @@ package RT::CachedGroupMember;
 use strict;
 no warnings qw(redefine);
 
+use base 'RT::Record';
+
+sub Table {'CachedGroupMembers'}
+
 =head1 NAME
 
   RT::CachedGroupMember
@@ -301,5 +305,133 @@ sub MemberObj {
     $principal->Load( $self->MemberId );
     return ($principal);
 }
+
+# }}}
+
+
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 GroupId
+
+Returns the current value of GroupId.
+(In the database, GroupId is stored as int(11).)
+
+
+
+=head2 SetGroupId VALUE
+
+
+Set GroupId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, GroupId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 MemberId
+
+Returns the current value of MemberId.
+(In the database, MemberId is stored as int(11).)
+
+
+
+=head2 SetMemberId VALUE
+
+
+Set MemberId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, MemberId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Via
+
+Returns the current value of Via.
+(In the database, Via is stored as int(11).)
+
+
+
+=head2 SetVia VALUE
+
+
+Set Via to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Via will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 ImmediateParentId
+
+Returns the current value of ImmediateParentId.
+(In the database, ImmediateParentId is stored as int(11).)
+
+
+
+=head2 SetImmediateParentId VALUE
+
+
+Set ImmediateParentId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ImmediateParentId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Disabled
+
+Returns the current value of Disabled.
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        GroupId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        MemberId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Via =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        ImmediateParentId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Disabled =>
+		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;

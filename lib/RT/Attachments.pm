@@ -68,8 +68,14 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 
 
 package RT::Attachments;
-
 use strict;
+
+
+use RT::Attachment;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Attachments'}
 no warnings qw(redefine);
 
 use RT::Attachment;
@@ -234,5 +240,18 @@ sub Next {
     # If the user doesn't have the right to show this ticket
     return $self->Next;
 }
+
+
+=head2 NewItem
+
+Returns an empty new RT::Attachment item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Attachment->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;

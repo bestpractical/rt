@@ -68,11 +68,15 @@ package RT::Users;
 
 use strict;
 no warnings qw(redefine);
+use RT::User;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Users'}
+
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'Users';
-    $self->{'primary_key'} = 'id';
     $self->{'with_disabled_column'} = 1;
 
     my @result = $self->SUPER::_Init(@_);
@@ -543,5 +547,17 @@ sub WhoBelongToGroups {
     }
 }
 
+
+=head2 NewItem
+
+Returns an empty new RT::User item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::User->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;

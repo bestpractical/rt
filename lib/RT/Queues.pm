@@ -69,10 +69,15 @@ package RT::Queues;
 use strict;
 no warnings qw(redefine);
 
+use RT::Queue;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Queues'}
+
+# {{{ sub _Init
 sub _Init { 
   my $self = shift;
-  $self->{'table'} = "Queues";
-  $self->{'primary_key'} = "id";
   $self->{'with_disabled_column'} = 1;
 
   # By default, order by name
@@ -107,5 +112,19 @@ sub AddRecord {
     $self->{'rows'}++;
 }
 
-1;
 
+
+
+=head2 NewItem
+
+Returns an empty new RT::Queue item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Queue->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

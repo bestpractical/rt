@@ -81,6 +81,12 @@ package RT::Tickets;
 use strict;
 no warnings qw(redefine);
 
+use RT::Ticket;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Tickets'}
+
 use RT::CustomFields;
 use DBIx::SearchBuilder::Unique;
 
@@ -3461,7 +3467,18 @@ BUG: There should be an API for this
 
 =cut
 
+
+
+=head2 NewItem
+
+Returns an empty new RT::Ticket item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Ticket->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
 1;
-
-
-

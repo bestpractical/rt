@@ -54,6 +54,12 @@ package RT::CustomFieldValue;
 no warnings qw/redefine/;
 
 
+use RT::CustomField;
+use base 'RT::Record';
+
+sub Table {'CustomFieldValues'}
+
+
 =head2 ValidateName
 
 Override the default ValidateName method that stops custom field values
@@ -143,5 +149,188 @@ sub _Set {
 
     return $self->SUPER::_Set( @_ ); 
 } 
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 CustomField
+
+Returns the current value of CustomField. 
+(In the database, CustomField is stored as int(11).)
+
+
+
+=head2 SetCustomField VALUE
+
+
+Set CustomField to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CustomField will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 CustomFieldObj
+
+Returns the CustomField Object which has the id returned by CustomField
+
+
+=cut
+
+sub CustomFieldObj {
+    my $self = shift;
+    my $CustomField =  RT::CustomField->new($self->CurrentUser);
+    $CustomField->Load($self->__Value('CustomField'));
+    return($CustomField);
+}
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(200).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
+
+
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Category
+
+Returns the current value of Category.
+(In the database, Category is stored as varchar(255).)
+
+
+
+=head2 SetCategory VALUE
+
+
+Set Category to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Category will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+        {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        CustomField => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Description => 
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        SortOrder => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Category =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Creator => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+
+
+
+RT::Base->_ImportOverlays();
 
 1;

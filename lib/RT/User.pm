@@ -66,6 +66,15 @@ package RT::User;
 use strict;
 no warnings qw(redefine);
 
+use base 'RT::Record';
+
+sub Table {'Users'}
+
+
+
+
+
+
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
@@ -1551,5 +1560,711 @@ sub BasicColumns {
     [ Organization => 'Organization' ],
     );
 }
+
+=head2 Create PARAMHASH
+
+Create takes a hash of values and creates a row in the database:
+
+  varchar(200) 'Name'.
+  varbinary(40) 'Password'.
+  varchar(16) 'AuthToken'.
+  text 'Comments'.
+  text 'Signature'.
+  varchar(120) 'EmailAddress'.
+  text 'FreeformContactInfo'.
+  varchar(200) 'Organization'.
+  varchar(120) 'RealName'.
+  varchar(16) 'NickName'.
+  varchar(16) 'Lang'.
+  varchar(16) 'EmailEncoding'.
+  varchar(16) 'WebEncoding'.
+  varchar(100) 'ExternalContactInfoId'.
+  varchar(30) 'ContactInfoSystem'.
+  varchar(100) 'ExternalAuthId'.
+  varchar(30) 'AuthSystem'.
+  varchar(16) 'Gecos'.
+  varchar(30) 'HomePhone'.
+  varchar(30) 'WorkPhone'.
+  varchar(30) 'MobilePhone'.
+  varchar(30) 'PagerPhone'.
+  varchar(200) 'Address1'.
+  varchar(200) 'Address2'.
+  varchar(100) 'City'.
+  varchar(100) 'State'.
+  varchar(16) 'Zip'.
+  varchar(50) 'Country'.
+  varchar(50) 'Timezone'.
+  text 'PGPKey'.
+
+=cut
+
+
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(200).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Password
+
+Returns the current value of Password. 
+(In the database, Password is stored as varbinary(40).)
+
+
+
+=head2 SetPassword VALUE
+
+
+Set Password to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Password will be stored as a varbinary(40).)
+
+
+=cut
+
+
+=head2 AuthToken
+
+Returns the current value of AuthToken. 
+(In the database, AuthToken is stored as varchar(16).)
+
+
+
+=head2 SetAuthToken VALUE
+
+
+Set AuthToken to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, AuthToken will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 Comments
+
+Returns the current value of Comments. 
+(In the database, Comments is stored as text.)
+
+
+
+=head2 SetComments VALUE
+
+
+Set Comments to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Comments will be stored as a text.)
+
+
+=cut
+
+
+=head2 Signature
+
+Returns the current value of Signature. 
+(In the database, Signature is stored as text.)
+
+
+
+=head2 SetSignature VALUE
+
+
+Set Signature to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Signature will be stored as a text.)
+
+
+=cut
+
+
+=head2 EmailAddress
+
+Returns the current value of EmailAddress. 
+(In the database, EmailAddress is stored as varchar(120).)
+
+
+
+=head2 SetEmailAddress VALUE
+
+
+Set EmailAddress to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, EmailAddress will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 FreeformContactInfo
+
+Returns the current value of FreeformContactInfo. 
+(In the database, FreeformContactInfo is stored as text.)
+
+
+
+=head2 SetFreeformContactInfo VALUE
+
+
+Set FreeformContactInfo to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, FreeformContactInfo will be stored as a text.)
+
+
+=cut
+
+
+=head2 Organization
+
+Returns the current value of Organization. 
+(In the database, Organization is stored as varchar(200).)
+
+
+
+=head2 SetOrganization VALUE
+
+
+Set Organization to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Organization will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 RealName
+
+Returns the current value of RealName. 
+(In the database, RealName is stored as varchar(120).)
+
+
+
+=head2 SetRealName VALUE
+
+
+Set RealName to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, RealName will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 NickName
+
+Returns the current value of NickName. 
+(In the database, NickName is stored as varchar(16).)
+
+
+
+=head2 SetNickName VALUE
+
+
+Set NickName to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, NickName will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 Lang
+
+Returns the current value of Lang. 
+(In the database, Lang is stored as varchar(16).)
+
+
+
+=head2 SetLang VALUE
+
+
+Set Lang to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Lang will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 EmailEncoding
+
+Returns the current value of EmailEncoding. 
+(In the database, EmailEncoding is stored as varchar(16).)
+
+
+
+=head2 SetEmailEncoding VALUE
+
+
+Set EmailEncoding to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, EmailEncoding will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 WebEncoding
+
+Returns the current value of WebEncoding. 
+(In the database, WebEncoding is stored as varchar(16).)
+
+
+
+=head2 SetWebEncoding VALUE
+
+
+Set WebEncoding to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, WebEncoding will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 ExternalContactInfoId
+
+Returns the current value of ExternalContactInfoId. 
+(In the database, ExternalContactInfoId is stored as varchar(100).)
+
+
+
+=head2 SetExternalContactInfoId VALUE
+
+
+Set ExternalContactInfoId to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ExternalContactInfoId will be stored as a varchar(100).)
+
+
+=cut
+
+
+=head2 ContactInfoSystem
+
+Returns the current value of ContactInfoSystem. 
+(In the database, ContactInfoSystem is stored as varchar(30).)
+
+
+
+=head2 SetContactInfoSystem VALUE
+
+
+Set ContactInfoSystem to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ContactInfoSystem will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 ExternalAuthId
+
+Returns the current value of ExternalAuthId. 
+(In the database, ExternalAuthId is stored as varchar(100).)
+
+
+
+=head2 SetExternalAuthId VALUE
+
+
+Set ExternalAuthId to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ExternalAuthId will be stored as a varchar(100).)
+
+
+=cut
+
+
+=head2 AuthSystem
+
+Returns the current value of AuthSystem. 
+(In the database, AuthSystem is stored as varchar(30).)
+
+
+
+=head2 SetAuthSystem VALUE
+
+
+Set AuthSystem to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, AuthSystem will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 Gecos
+
+Returns the current value of Gecos. 
+(In the database, Gecos is stored as varchar(16).)
+
+
+
+=head2 SetGecos VALUE
+
+
+Set Gecos to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Gecos will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 HomePhone
+
+Returns the current value of HomePhone. 
+(In the database, HomePhone is stored as varchar(30).)
+
+
+
+=head2 SetHomePhone VALUE
+
+
+Set HomePhone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, HomePhone will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 WorkPhone
+
+Returns the current value of WorkPhone. 
+(In the database, WorkPhone is stored as varchar(30).)
+
+
+
+=head2 SetWorkPhone VALUE
+
+
+Set WorkPhone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, WorkPhone will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 MobilePhone
+
+Returns the current value of MobilePhone. 
+(In the database, MobilePhone is stored as varchar(30).)
+
+
+
+=head2 SetMobilePhone VALUE
+
+
+Set MobilePhone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, MobilePhone will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 PagerPhone
+
+Returns the current value of PagerPhone. 
+(In the database, PagerPhone is stored as varchar(30).)
+
+
+
+=head2 SetPagerPhone VALUE
+
+
+Set PagerPhone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PagerPhone will be stored as a varchar(30).)
+
+
+=cut
+
+
+=head2 Address1
+
+Returns the current value of Address1. 
+(In the database, Address1 is stored as varchar(200).)
+
+
+
+=head2 SetAddress1 VALUE
+
+
+Set Address1 to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Address1 will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Address2
+
+Returns the current value of Address2. 
+(In the database, Address2 is stored as varchar(200).)
+
+
+
+=head2 SetAddress2 VALUE
+
+
+Set Address2 to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Address2 will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 City
+
+Returns the current value of City. 
+(In the database, City is stored as varchar(100).)
+
+
+
+=head2 SetCity VALUE
+
+
+Set City to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, City will be stored as a varchar(100).)
+
+
+=cut
+
+
+=head2 State
+
+Returns the current value of State. 
+(In the database, State is stored as varchar(100).)
+
+
+
+=head2 SetState VALUE
+
+
+Set State to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, State will be stored as a varchar(100).)
+
+
+=cut
+
+
+=head2 Zip
+
+Returns the current value of Zip. 
+(In the database, Zip is stored as varchar(16).)
+
+
+
+=head2 SetZip VALUE
+
+
+Set Zip to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Zip will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 Country
+
+Returns the current value of Country. 
+(In the database, Country is stored as varchar(50).)
+
+
+
+=head2 SetCountry VALUE
+
+
+Set Country to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Country will be stored as a varchar(50).)
+
+
+=cut
+
+
+=head2 Timezone
+
+Returns the current value of Timezone. 
+(In the database, Timezone is stored as varchar(50).)
+
+
+
+=head2 SetTimezone VALUE
+
+
+Set Timezone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Timezone will be stored as a varchar(50).)
+
+
+=cut
+
+
+=head2 PGPKey
+
+Returns the current value of PGPKey. 
+(In the database, PGPKey is stored as text.)
+
+
+
+=head2 SetPGPKey VALUE
+
+
+Set PGPKey to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PGPKey will be stored as a text.)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+        {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Password => 
+        {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(40)', default => ''},
+        AuthToken => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        Comments => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Signature => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        EmailAddress => 
+        {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        FreeformContactInfo => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Organization => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        RealName => 
+        {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        NickName => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        Lang => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        EmailEncoding => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        WebEncoding => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        ExternalContactInfoId => 
+        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
+        ContactInfoSystem => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        ExternalAuthId => 
+        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
+        AuthSystem => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        Gecos => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        HomePhone => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        WorkPhone => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        MobilePhone => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        PagerPhone => 
+        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
+        Address1 => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Address2 => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        City => 
+        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
+        State => 
+        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
+        Zip => 
+        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        Country => 
+        {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
+        Timezone => 
+        {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
+        PGPKey => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Creator => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
+
 
 1;

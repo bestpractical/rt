@@ -45,10 +45,16 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::Topics;
+
 
 use strict;
 no warnings qw(redefine);
+
+package RT::Topics;
+use base 'RT::SearchBuilder';
+
+sub Table {'Topics'}
+
 
 # {{{ LimitToObject
 
@@ -96,5 +102,19 @@ sub LimitToKids {
 }
 
 # }}}
+
+=head2 NewItem
+
+Returns an empty new RT::Topic item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Topic->new($self->CurrentUser));
+}
+
+
+RT::Base->_ImportOverlays();
 
 1;

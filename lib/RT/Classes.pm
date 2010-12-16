@@ -46,10 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
 
 package RT::Classes;
+use base 'RT::SearchBuilder';
 
-no warnings qw/redefine/;
+sub Table {'Classes'}
 
 
 =head2 Next
@@ -83,5 +85,19 @@ sub Next {
 sub ColumnMapClassName {
     return 'RT__Class';
 }
+
+=head2 NewItem
+
+Returns an empty new RT::Class item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Class->new($self->CurrentUser));
+}
+
+
+RT::Base->_ImportOverlays();
 
 1;

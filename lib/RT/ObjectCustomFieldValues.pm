@@ -51,6 +51,30 @@ package RT::ObjectCustomFieldValues;
 use strict;
 no warnings qw(redefine);
 
+use RT::ObjectCustomFieldValue;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'ObjectCustomFieldValues'}
+
+sub _Init {
+    my $self = shift;
+
+  # By default, order by SortOrder
+  $self->OrderByCols(
+	 { ALIAS => 'main',
+	   FIELD => 'SortOrder',
+	   ORDER => 'ASC' },
+	 { ALIAS => 'main',
+	   FIELD => 'id',
+	   ORDER => 'ASC' },
+     );
+
+    return ( $self->SUPER::_Init(@_) );
+}
+
+
+# {{{ sub LimitToCustomField
 
 =head2 LimitToCustomField FIELD
 
@@ -134,5 +158,17 @@ sub _DoCount {
     return $self->SUPER::_DoCount(@_);
 }
 
-1;
 
+=head2 NewItem
+
+Returns an empty new RT::ObjectCustomFieldValue item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::ObjectCustomFieldValue->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
+
+1;

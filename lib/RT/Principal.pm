@@ -53,6 +53,12 @@ package RT::Principal;
 use strict;
 use warnings;
 
+use base 'RT::Record';
+
+sub Table {'Principals'}
+
+
+
 use Cache::Simple::TimedExpiry;
 
 
@@ -726,5 +732,90 @@ sub _ReferenceId {
     }
 }
 
+
+
+
+
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 PrincipalType
+
+Returns the current value of PrincipalType.
+(In the database, PrincipalType is stored as varchar(16).)
+
+
+
+=head2 SetPrincipalType VALUE
+
+
+Set PrincipalType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PrincipalType will be stored as a varchar(16).)
+
+
+=cut
+
+
+=head2 ObjectId
+
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
+
+
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Disabled
+
+Returns the current value of Disabled.
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+
+        id =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        PrincipalType =>
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+        ObjectId =>
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Disabled =>
+		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+
+ }
+};
+
+RT::Base->_ImportOverlays();
 
 1;

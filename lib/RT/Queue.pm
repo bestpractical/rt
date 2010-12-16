@@ -68,6 +68,11 @@ package RT::Queue;
 use strict;
 use warnings;
 no warnings qw(redefine);
+use base 'RT::Record';
+
+sub Table {'Queues'}
+
+
 
 use RT::Groups;
 use RT::ACL;
@@ -1266,5 +1271,272 @@ sub HasRight {
 }
 
 
+
+
+=head2 id
+
+Returns the current value of id. 
+(In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=head2 Name
+
+Returns the current value of Name. 
+(In the database, Name is stored as varchar(200).)
+
+
+
+=head2 SetName VALUE
+
+
+Set Name to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(200).)
+
+
+=cut
+
+
+=head2 Description
+
+Returns the current value of Description. 
+(In the database, Description is stored as varchar(255).)
+
+
+
+=head2 SetDescription VALUE
+
+
+Set Description to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Description will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 CorrespondAddress
+
+Returns the current value of CorrespondAddress. 
+(In the database, CorrespondAddress is stored as varchar(120).)
+
+
+
+=head2 SetCorrespondAddress VALUE
+
+
+Set CorrespondAddress to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CorrespondAddress will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 CommentAddress
+
+Returns the current value of CommentAddress. 
+(In the database, CommentAddress is stored as varchar(120).)
+
+
+
+=head2 SetCommentAddress VALUE
+
+
+Set CommentAddress to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, CommentAddress will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 Lifecycle
+
+Returns the current value of Lifecycle. 
+(In the database, Lifecycle is stored as varchar(32).)
+
+
+
+=head2 SetLifecycle VALUE
+
+
+Set Lifecycle to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Lifecycle will be stored as a varchar(32).)
+
+
+=cut
+
+=head2 SubjectTag
+
+Returns the current value of SubjectTag. 
+(In the database, SubjectTag is stored as varchar(120).)
+
+
+
+=head2 SetSubjectTag VALUE
+
+
+Set SubjectTag to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SubjectTag will be stored as a varchar(120).)
+
+
+=cut
+
+
+=head2 InitialPriority
+
+Returns the current value of InitialPriority. 
+(In the database, InitialPriority is stored as int(11).)
+
+
+
+=head2 SetInitialPriority VALUE
+
+
+Set InitialPriority to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, InitialPriority will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 FinalPriority
+
+Returns the current value of FinalPriority. 
+(In the database, FinalPriority is stored as int(11).)
+
+
+
+=head2 SetFinalPriority VALUE
+
+
+Set FinalPriority to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, FinalPriority will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 DefaultDueIn
+
+Returns the current value of DefaultDueIn. 
+(In the database, DefaultDueIn is stored as int(11).)
+
+
+
+=head2 SetDefaultDueIn VALUE
+
+
+Set DefaultDueIn to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, DefaultDueIn will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy. 
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated. 
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
+=head2 Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
+
+sub _CoreAccessible {
+    {
+     
+        id =>
+        {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => 
+        {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+        Description => 
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        CorrespondAddress => 
+        {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        CommentAddress => 
+        {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        SubjectTag => 
+        {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
+        Lifecycle => 
+        {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => ''},
+        InitialPriority => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        FinalPriority => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        DefaultDueIn => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Creator => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => 
+        {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => 
+        {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        Disabled => 
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+
+ }
+};
+
+
+
+RT::Base->_ImportOverlays();
 
 1;

@@ -69,7 +69,28 @@ package RT::Principals;
 use strict;
 no warnings qw(redefine);
 
+use RT::Principal;
+
+use base 'RT::SearchBuilder';
+
+sub Table { 'Principals'}
+
+sub _Init {
+    my $self = shift;
+    return ( $self->SUPER::_Init(@_) );
+}
 
 
+=head2 NewItem
+
+Returns an empty new RT::Principal item
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return(RT::Principal->new($self->CurrentUser));
+}
+RT::Base->_ImportOverlays();
 
 1;
