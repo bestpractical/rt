@@ -70,6 +70,36 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 
+=head2 SquishedCSS Name => $name, Files => [...]
+
+=cut
+
+my %SQUISHED_CSS;
+sub SquishedCSS {
+    my %args = @_;
+    my $name = $args{Name} or die "need Name";
+    return $SQUISHED_CSS{$name} if $SQUISHED_CSS{$name};
+    require RT::Squish::CSS;
+    my $css = RT::Squish::CSS->new(%args);
+    $SQUISHED_CSS{ $css->Name } = $css;
+    return $css;
+}
+
+=head2 SquishedJS Name => $name, Files => [...]
+
+=cut
+
+my %SQUISHED_JS;
+sub SquishedJS {
+    my %args = @_;
+    my $name = $args{Name} or die "need Name";
+    return $SQUISHED_JS{$name} if $SQUISHED_JS{$name};
+
+    require RT::Squish::JS;
+    my $js = RT::Squish::JS->new(%args);
+    $SQUISHED_JS{ $js->Name } = $js;
+    return $js;
+}
 
 =head2 EscapeUTF8 SCALARREF
 

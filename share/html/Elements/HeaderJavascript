@@ -55,7 +55,7 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
 % } }
 % else {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/squished.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $js_path %>"></script>
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
@@ -74,3 +74,14 @@ $onload => undef
     jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
 % }
 --></script>
+
+<%INIT>
+
+my $js_path;
+if ( !RT->Config->Get('DevelMode') ) {
+    my $name = 'head';
+    my $key = RT::Interface::Web::SquishedJS( Name => $name )->Key;
+    $js_path = "squished-$name-$key.js";
+}
+
+</%INIT>

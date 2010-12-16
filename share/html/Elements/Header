@@ -56,7 +56,7 @@
 % }
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) %>/main<% RT->Config->Get('DevelMode')? '' : '-squished' %>.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $style_path %>" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/site.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
@@ -101,6 +101,19 @@ $id =~ s|\.html$||g;
 $id =~ s|index$||g
     if $id ne 'index';
 $id =~ s|-$||g;
+
+my $style_path;
+my $style = RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} );
+
+if ( RT->Config->Get('DevelMode') ) {
+    $style_path = "$style/main.css";
+}
+else {
+    my $key =
+      RT::Interface::Web::SquishedCSS( Name => $style )->Key;
+    $style_path = "$style/main-squished-$key.css";
+}
+
 </%INIT>
 
 <%ARGS>
