@@ -96,6 +96,7 @@ sub MailDashboards {
             next unless $self->IsSubscriptionReady(
                 %args,
                 Subscription => $subscription,
+                User         => $user,
                 LocalTime    => [$hour, $dow, $dom],
             );
 
@@ -128,6 +129,7 @@ sub IsSubscriptionReady {
     my %args = (
         All          => 0,
         Subscription => undef,
+        User         => undef,
         LocalTime    => [0, 0, 0],
         @_,
     );
@@ -146,7 +148,7 @@ sub IsSubscriptionReady {
 
     my ($hour, $dow, $dom) = @{ $args{LocalTime} };
 
-    $RT::Logger->debug("Checking against subscription with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow");
+    $RT::Logger->debug("Checking against subscription " . $subscription->Id . " for " . $args{User}->Name . " with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow, counter $counter");
 
     return 0 if $sub_frequency eq 'never';
 
@@ -180,6 +182,8 @@ sub IsSubscriptionReady {
         return 0 if $dow eq 'Sunday' || $dow eq 'Saturday';
         return 1;
     }
+
+    $RT::Logger->debug("Invalid subscription frequency $sub_frequency for " . $args{User}->Name);
 
     # unknown frequency type, bail out
     return 0;
