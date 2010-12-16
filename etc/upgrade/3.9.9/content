@@ -6,6 +6,8 @@
         while (my $user = $users->Next) {
             my $settings = $user->Preferences('HomepageSettings')
                 or next;
+            next if exists $settings->{sidebar};
+
             $settings->{sidebar} = delete $settings->{summary};
             $user->SetPreferences('HomepageSettings', $settings);
         }
