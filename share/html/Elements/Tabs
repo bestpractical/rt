@@ -179,8 +179,10 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
         my $article_admin = $admin->child( articles => title => loc('Articles') => path => "/Admin/Articles/index.html" );
         my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/');
-        $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/' );
-        $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1' );
+        $class_admin->child(select => title => loc('Select') => path => '/Admin/Articles/Classes/',
+                            description => 'Modify and Create Classes' );
+        $class_admin->child(create => title => loc('Create') => path => '/Admin/Articles/Classes/Modify.html?Create=1',
+                            description => 'Modify and Create Custom Fields for Articles' );
 
 
         my $cfs = $article_admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article') );
