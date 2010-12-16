@@ -93,42 +93,11 @@ sub MailDashboards {
         # look through this user's subscriptions, are any supposed to be generated
         # right now?
         for my $subscription ($user->Attributes->Named('Subscription')) {
-            my $counter = $subscription->SubValue('Counter') || 0;
-
-            if (!$args{All}) {
-                my $sub_frequency = $subscription->SubValue('Frequency');
-                my $sub_hour = $subscription->SubValue('Hour');
-                my $sub_dow = $subscription->SubValue('Dow');
-                my $sub_dom = $subscription->SubValue('Dom');
-                my $sub_fow = $subscription->SubValue('Fow');
-
-                $RT::Logger->debug("Checking against subscription with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow");
-
-                next if $sub_frequency eq 'never';
-
-                # correct hour?
-                next if $sub_hour ne $hour;
-
-                # if weekly, correct day of week?
-                if ( $sub_frequency eq 'weekly' ) {
-                    next if $sub_frequency ne $dow;
-                    my $fow = $sub_fow || 1;
-                    if ( $counter % $fow ) {
-                        $subscription->SetSubValues( Counter => $counter + 1 )
-                        unless $args{DryRun};
-                        next;
-                    }
-                }
-
-                # if monthly, correct day of month?
-                elsif ($sub_frequency eq 'monthly') {
-                    next if $sub_dom != $dom;
-                }
-
-                elsif ($sub_frequency eq 'm-f') {
-                    next if $dow eq 'Sunday' || $dow eq 'Saturday';
-                }
-            }
+            next unless $self->IsSubscriptionReady(
+                %args,
+                Subscription => $subscription,
+                LocalTime    => [$hour, $dow, $dom],
+            );
 
             my $email = $subscription->SubValue('Recipient')
                      || $user->EmailAddress;
@@ -146,12 +115,74 @@ sub MailDashboards {
                 $RT::Logger->error("Caught exception: $@");
             }
             else {
-                $subscription->SetSubValues(
-                    Counter => $counter + 1 )
-                unless $args{DryRun};
+                my $counter = $subscription->SubValue('Counter') || 0;
+                $subscription->SetSubValues(Counter => $counter + 1)
+                    unless $args{DryRun};
             }
         }
     }
+}
+
+sub IsSubscriptionReady {
+    my $self = shift;
+    my %args = (
+        All          => 0,
+        Subscription => undef,
+        LocalTime    => [0, 0, 0],
+        @_,
+    );
+
+    return 1 if $args{All};
+
+    my $subscription  = $args{Subscription};
+
+    my $counter       = $subscription->SubValue('Counter') || 0;
+
+    my $sub_frequency = $subscription->SubValue('Frequency');
+    my $sub_hour      = $subscription->SubValue('Hour');
+    my $sub_dow       = $subscription->SubValue('Dow');
+    my $sub_dom       = $subscription->SubValue('Dom');
+    my $sub_fow       = $subscription->SubValue('Fow');
+
+    my ($hour, $dow, $dom) = @{ $args{LocalTime} };
+
+    $RT::Logger->debug("Checking against subscription with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow");
+
+    return 0 if $sub_frequency eq 'never';
+
+    # correct hour?
+    return 0 if $sub_hour ne $hour;
+
+    # all we need is the correct hour for daily dashboards
+    return 1 if $sub_frequency eq 'daily';
+
+    if ($sub_frequency eq 'weekly') {
+        # correct day of week?
+        return 0 if $sub_frequency ne $dow;
+
+        # does it match the "every N weeks" clause?
+        $sub_fow = 1 if !$sub_fow;
+
+        return 1 if $counter % $sub_fow == 0;
+
+        $subscription->SetSubValues(Counter => $counter + 1)
+            unless $args{DryRun};
+        return 0;
+    }
+
+    # if monthly, correct day of month?
+    if ($sub_frequency eq 'monthly') {
+        return $sub_dom == $dom;
+    }
+
+    # monday through friday
+    if ($sub_frequency eq 'm-f') {
+        return 0 if $dow eq 'Sunday' || $dow eq 'Saturday';
+        return 1;
+    }
+
+    # unknown frequency type, bail out
+    return 0;
 }
 
 sub GetFrom {
