@@ -228,7 +228,7 @@ sub process {
 
     #commit our action.
     return unless $action_obj->Commit;
-    print loc("Action committed.\n") if $verbose;
+    print loc("Action committed.") if $verbose;
 }
 
 # =head2 get_transactions
