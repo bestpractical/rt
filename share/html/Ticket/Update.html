@@ -174,8 +174,10 @@ unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
-if ($DefaultStatus eq 'new'){
-    $DefaultStatus='open';
+unless (RT->Config->Get('SuppressAutoOpenOnUpdate', $session{'CurrentUser'})) {
+    if ($DefaultStatus eq 'new') {
+        $DefaultStatus = 'open';
+    }
 }
 
 if ($DefaultStatus eq 'resolved') {

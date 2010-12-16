@@ -245,6 +245,15 @@ our %META = (
             },
         },
     },
+    SuppressAutoOpenOnUpdate => {
+        Section => 'General',
+        Overridable => 1,
+        SortOrder => 10,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Suppress automatic new to open status change on ticket update' # loc
+        }
+    },
 
     # User overridable options for RT at a glance
     DefaultSummaryRows => {

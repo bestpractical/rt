@@ -1299,6 +1299,16 @@ links tab.
 
 Set($ResolveDefaultUpdateType, 'Comment');
 
+=item C<$SuppressAutoOpenOnUpdate>
+
+When users click Comment or Reply on a new ticket in the web UI, the default
+status for the ticket gets set to 'open' if the status is currently 'new'.
+Setting this option to 1 will suppress that behavior and leave the default
+status as 'new'. This option can be overridden by users in their preferences.
+
+=cut
+
+Set($SuppressAutoOpenOnUpdate, 0);
 
 =item C<$OldestTransactionsFirst>
 
