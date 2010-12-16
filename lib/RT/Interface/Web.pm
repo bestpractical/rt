@@ -191,6 +191,8 @@ sub WebExternalAutoInfo {
 sub HandleRequest {
     my $ARGS = shift;
 
+    Module::Refresh->refresh if RT->Config->Get('DevelMode');
+
     $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
 
     $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
