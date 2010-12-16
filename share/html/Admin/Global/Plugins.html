@@ -64,8 +64,8 @@
 <li class="plugin-<% $enabled ? 'enabled' : 'disabled'%>">
 <span class="name"><% $plugin->Name %></span>
 <span class="description"><% $plugin->Description || loc("No description") %></span>
-% if ($plugin->ConfigEnabled && 1) {
-<span class="plugin-config">Enabled through RT_Config.pm</span>
+% if ($plugin->ConfigEnabled) {
+<span class="config-enabled"><&|/l&>Enabled in your SiteConfig.</&></span>
 % } else {
 <form method="POST">
   <input name="PluginName" value="<% $plugin->Name %>" type="hidden" />
@@ -127,6 +127,10 @@ if ($PluginName) {
             else {
                 push @results, loc("Failed to disable plugin [_1]: [_2].", $PluginName, $@);
             }
+        }
+        else {
+            push @results, loc("Failed to disable plugin [_1]. Perhaps it's already disabled?",
+                               $PluginName);
         }
     }
 }

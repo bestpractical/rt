@@ -94,7 +94,7 @@ ul.list-menu ul li {
     margin-left: 0;
     padding-left: 0;
     list-style: none;
-    width: 50%;
+    width: 55%;
 }
 
 .plugin-list li {
@@ -118,9 +118,9 @@ ul.list-menu ul li {
     color: #a0a0a0;
 }
 
-.plugin-list li form .submit {
+.plugin-list li form .submit,
+.plugin-list li .config-enabled {
     position: absolute;
     top: 0.5em;
     right: 1em;
 }
-
