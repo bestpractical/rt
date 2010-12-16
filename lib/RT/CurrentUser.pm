@@ -160,9 +160,7 @@ sub UserObj {
 
     my $user = RT::User->new( $self );
     unless ( $user->LoadById( $self->Id ) ) {
-        $RT::Logger->error(
-            $self->loc("Couldn't load [_1] from the users database.\n", $self->Id)
-        );
+        $RT::Logger->error("Couldn't load " . $self->Id . " from the users database.");
     }
     return $user;
 }
