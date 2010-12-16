@@ -48,7 +48,10 @@
 
 package RT::Reminders;
 
-use base qw/RT::Base/;
+use strict;
+use warnings;
+
+use base 'RT::Base';
 
 our $REMINDER_QUEUE = 'General';
 
