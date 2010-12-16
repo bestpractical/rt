@@ -116,7 +116,7 @@ sub Add {
     );
 
     my $reminder = RT::Ticket->new($self->CurrentUser);
-    $reminder->Create(
+    my ( $status, $msg ) = $reminder->Create(
         Subject => $args{'Subject'},
         Owner => $args{'Owner'},
         Due => $args{'Due'},
@@ -128,30 +128,33 @@ sub Add {
         Type => 'AddReminder',
         Field => 'RT::Ticket',
         NewValue => $reminder->id
-    );
+    ) if $status;
+    return ( $status, $msg );
 }
 
 sub Open {
     my $self = shift;
     my $reminder = shift;
 
-    $reminder->SetStatus('open');
+    my ( $status, $msg ) = $reminder->SetStatus('open');
     $self->TicketObj->_NewTransaction(
         Type => 'OpenReminder',
         Field => 'RT::Ticket',
         NewValue => $reminder->id
-    );
+    ) if $status;
+    return ( $status, $msg );
 }
 
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
-    $reminder->SetStatus('resolved');
+    my ( $status, $msg ) = $reminder->SetStatus('resolved');
     $self->TicketObj->_NewTransaction(
         Type => 'ResolveReminder',
         Field => 'RT::Ticket',
         NewValue => $reminder->id
-    );
+    ) if $status;
+    return ( $status, $msg );
 }
 
 RT::Base->_ImportOverlays();
