@@ -1,0 +1,15 @@
+@Initial = (
+    sub {
+        my $users = RT::Users->new(RT->SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            my $settings = $user->Preferences('HomepageSettings')
+                or next;
+            $settings->{sidebar} = delete $settings->{summary};
+            $user->SetPreferences('HomepageSettings', $settings);
+        }
+    },
+);
+
+
