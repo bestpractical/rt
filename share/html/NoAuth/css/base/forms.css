@@ -245,3 +245,21 @@ div.widget .hints {
     font-style: italic;
     color: red;
 }
+
+form div.submit div.buttons {
+    min-height: 2.8em;
+}
+
+form div.submit div.buttons div.back {
+    position: relative;
+    float: left;
+    width: 50%;
+    text-align: left;
+}
+
+form div.submit div.buttons div.next {
+    position: relative;
+    float: right;
+    width: 50%;
+}
+
