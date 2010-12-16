@@ -636,7 +636,7 @@ sub Create {
             my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => !$args{'_RecordTransaction'},
+                Silent                        => !$args{'_RecordTransaction'} || $self->Type eq 'reminder',
                 'Silent'. ( $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
                                               => 1,
             );
