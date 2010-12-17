@@ -88,11 +88,11 @@ for my $queue (@queues) {
 % }
 <%INIT>
 
-my @queues;
 my $Queues = RT::Queues->new( $session{'CurrentUser'} );
 $Queues->UnLimit();
-@queues = grep $queue_filter->($_), @{ $Queues->ItemsArrayRef };
+$m->callback( CallbackName => 'SQLFilter', Queues => $Queues );
 
+my @queues = grep $queue_filter->($_), @{ $Queues->ItemsArrayRef };
 $m->callback( CallbackName => 'Filter', Queues => \@queues );
 
 @queues = map {
