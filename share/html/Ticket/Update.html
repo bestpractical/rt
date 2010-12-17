@@ -215,10 +215,6 @@ unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
-if ($DefaultStatus eq 'new'){
-    $DefaultStatus='open';
-}
-
 if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 } else {
