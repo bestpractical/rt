@@ -90,37 +90,3 @@ ul.list-menu ul li {
     padding-bottom: 0;
 }
 
-.plugin-list {
-    margin-left: 0;
-    padding-left: 0;
-    list-style: none;
-    width: 55%;
-}
-
-.plugin-list li {
-    border-bottom: 1px solid #ccc;
-    padding: 0.5em 1em;
-    clear: both;
-    position: relative;
-}
-
-.plugin-list .name {
-    font-weight: bold;
-}
-
-.plugin-list .description {
-    display: block;
-    font-style: italic;
-    margin-right: 6em;
-}
-
-.plugin-list .plugin-disabled {
-    color: #a0a0a0;
-}
-
-.plugin-list li form .submit,
-.plugin-list li .config-enabled {
-    position: absolute;
-    top: 0.5em;
-    right: 1em;
-}

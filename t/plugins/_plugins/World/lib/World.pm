@@ -1,3 +1,0 @@
-package World;
-
-1;

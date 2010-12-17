@@ -84,7 +84,6 @@ if (grep { m/help/ } @ARGV) {
 }
 
 require RT;
-require RT::Interface::Web::Handler;
 RT->LoadConfig();
 
 require RT::Handle;
@@ -135,6 +134,7 @@ if ($RT::Handle) {
     undef $RT::Handle;
 }
 
+require RT::Interface::Web::Handler;
 my $app = RT::Interface::Web::Handler->PSGIApp;
 
 if ($ENV{RT_TESTING}) {

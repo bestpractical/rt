@@ -139,12 +139,14 @@ sub Init {
 
     CheckPerlRequirements();
 
+    InitPluginPaths();
+
     #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses();
     InitLogging();
-    RT->InitPlugins();
+    InitPlugins();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
 
@@ -548,40 +550,6 @@ also L</InitSystemObjects>.
 
 sub Nobody { return $Nobody }
 
-my $PLUGINS;
-my $ENABLED_PLUGINS;
-my $LOADED_PLUGINS;
-
-=head2 ProbePlugins($reprobe)
-
-Probe for available plugins.  By default RT caches the plugins found, use C<$reprobe> to override the behaviour.
-
-=cut
-
-sub ProbePlugins {
-    my $self = shift;
-    my $reprobe = shift;
-    undef $PLUGINS if $reprobe;
-    $PLUGINS ||= RT::Plugin->AvailablePlugins;
-
-    @$ENABLED_PLUGINS = ();
-    for (grep $_, RT->Config->Get('Plugins')) {
-        s/::/-/g;
-        my $plugin = $PLUGINS->{$_};
-        $plugin->ConfigEnabled(1);
-        $plugin->Enabled(1);
-        push @$ENABLED_PLUGINS, $plugin;
-    }
-
-    for (keys %$PLUGINS) {
-        my $plugin = $PLUGINS->{$_};
-        next unless -e $plugin->Path(".enabled");
-
-        $plugin->Enabled(1);
-        push @$ENABLED_PLUGINS, $plugin;
-    }
-}
-
 =head2 Plugins
 
 Returns a listref of all Plugins currently configured for this RT instance.
@@ -589,11 +557,14 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 
 =cut
 
+our @PLUGINS = ();
 sub Plugins {
     my $self = shift;
-    $self->ProbePlugins;
-
-    return $ENABLED_PLUGINS;
+    unless (@PLUGINS) {
+        $self->InitPluginPaths;
+        @PLUGINS = $self->InitPlugins;
+    }
+    return \@PLUGINS;
 }
 
 =head2 PluginDirs
@@ -605,7 +576,6 @@ is loaded to load plugins' configs.
 
 =cut
 
-
 sub PluginDirs {
     my $self = shift;
     my $subdir = shift;
@@ -613,8 +583,8 @@ sub PluginDirs {
     require RT::Plugin;
 
     my @res;
-    foreach my $plugin (@{ RT->Plugins }) {
-        my $path = $plugin->Path($subdir);
+    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+        my $path = RT::Plugin->new( name => $plugin )->Path( $subdir );
         next unless -d $path;
         push @res, $path;
     }
@@ -629,11 +599,26 @@ In case F<local/lib> isn't in @INC, append them to @INC
 =cut
 
 sub InitPluginPaths {
-    Carp::carp "DEPRECATED";
     my $self = shift || __PACKAGE__;
 
-    $self->ProbePlugins(1);
-    $self->UnloadPlugins();
+    my @lib_dirs = $self->PluginDirs('lib');
+
+    my @tmp_inc;
+    my $added;
+    for (@INC) {
+        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
+            push @tmp_inc, $_, @lib_dirs;
+            $added = 1;
+        } else {
+            push @tmp_inc, $_;
+        }
+    }
+
+    # append @lib_dirs in case $RT::LocalLibPath isn't in @INC
+    push @tmp_inc, @lib_dirs unless $added;
+
+    my %seen;
+    @INC = grep !$seen{$_}++, @tmp_inc;
 }
 
 =head2 InitPlugins
@@ -642,61 +627,18 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 
 =cut
 
-sub _try_load_plugin {
-    my ($self, $plugin) = @_;
-
-    eval { $plugin->Load; 1 }
-        or do {
-            # XXX: the rt bootstrapping sequence loads RT_Config
-            # first, which requires scanning plugin directories,
-            # so the very first initplugins calls is actually
-            # before initlogging.
-            warn "Unable to load plugin: @{[ $plugin->Name ]}: $@";
-            return;
-        };
-    push @$LOADED_PLUGINS, $plugin;
-}
-
 sub InitPlugins {
     my $self    = shift;
+    my @plugins;
     require RT::Plugin;
-
-    for (@$ENABLED_PLUGINS) {
-        $self->_try_load_plugin($_)
-            unless $_->Loaded;
+    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+        $plugin->require;
+        die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        push @plugins, RT::Plugin->new(name =>$plugin);
     }
-
-    return @$LOADED_PLUGINS;
+    return @plugins;
 }
 
-sub UnloadPlugins {
-    my $self = shift;
-    $LOADED_PLUGINS = undef;
-}
-
-
-=head2 RestartRequired
-
-=cut
-
-sub RestartRequired {
-    my ($class, $arg) = @_;
-    my $restart_file = File::Spec->catdir( $VarPath, 'restart' );
-
-    if ($arg) {
-        my $atime = my $mtime = time;
-        if (-e $restart_file) {
-            utime $atime, $mtime, $restart_file;
-        }
-        else {
-            open my $fh, '>', $restart_file or die $!;
-            close $fh;
-        }
-        return 1;
-    }
-
-    return -e $restart_file && -M $restart_file < 0;
-}
 
 sub InstallMode {
     my $self = shift;

@@ -51,9 +51,6 @@ use strict;
 
 package RT::Plugin;
 use File::ShareDir;
-use Class::Accessor "antlers";
-use Parse::CPAN::Meta;
-use UNIVERSAL::require;
 
 =head1 NAME
 
@@ -68,57 +65,23 @@ it cares about is 'name', the name of this plugin.
 
 =cut
 
-use List::MoreUtils qw(first_index);
-
-has _added_inc_path => (is => "rw", isa => "Str");
-has Name => (is => "rw", isa => "Str");
-has Loaded => (is => "rw", isa => "Bool");
-has Enabled => (is => "rw", isa => "Bool");
-has ConfigEnabled => (is => "rw", isa => "Bool");
-has Description => (is => "rw", isa => "Str");
-has BasePath => (is => "rw", isa => "Str");
-
 sub new {
     my $class = shift;
     my $args ={@_};
     my $self = bless $args, $class;
-
     return $self;
 }
 
-# the @INC entry that plugins lib dirs should be pushed splice into.
-# it should be the one after local lib
-my $inc_anchor;
-sub Load {
-    my ($self) = @_;
-    my $add = $self->Path("lib");
-    unless (defined $inc_anchor) {
-        my $anchor = first_index { Cwd::realpath($_) eq Cwd::realpath($RT::LocalLibPath) } @INC;
-        $inc_anchor = ($anchor == -1 || $anchor == $#INC) # not found or last
-            ? '' : Cwd::realpath($INC[$anchor+1]);
-    }
-    my $anchor_idx = first_index { Cwd::realpath($_) eq $inc_anchor } @INC;
-    if ($anchor_idx >= 0 ) {
-        splice(@INC, $anchor_idx, 0, $add);
-    }
-    else {
-        push @INC, $add;
-    }
-    my $module = $self->Name;
-    $module =~ s/-/::/g;
-    $module->require;
-    die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
-    $self->Loaded(1);
-    $self->_added_inc_path( $add );
-}
 
-sub DESTROY {
+=head2 Name
+
+Returns a human-readable name for this plugin.
+
+=cut
+
+sub Name { 
     my $self = shift;
-    my $added = $self->_added_inc_path or return;
-    my $inc_path = first_index { Cwd::realpath($_) eq $added } @INC;
-    if ($inc_path >= 0 ) {
-        splice(@INC, $inc_path, 1);
-    }
+    return $self->{name};
 }
 
 =head2 Path
@@ -134,61 +97,19 @@ See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
 sub Path {
     my $self   = shift;
     my $subdir = shift;
-    my $res = $self->BasePath || $self->BasePathFor($self->Name);
+    my $res = $self->_BasePath;
     $res .= "/$subdir" if defined $subdir && length $subdir;
     return $res;
 }
 
-=head2 $class->BasePathFor($name)
-
-Takes a name of a given plugin and return its base path.
-
-=cut
-
-sub BasePathFor {
-    my ($class, $name) = @_;
-
-    $name =~ s/::/-/g;
-    my $local_base = $RT::LocalPluginPath."/".$name;
-    my $base_base = $RT::PluginPath."/".$name;
+sub _BasePath {
+    my $self = shift;
+    my $base = $self->{'name'};
+    $base =~ s/::/-/g;
+    my $local_base = $RT::LocalPluginPath."/".$base;
+    my $base_base = $RT::PluginPath."/".$base;
 
     return -d $local_base ? $local_base : $base_base;
-}
-
-=head2 AvailablePlugins($plugin_path)
-
-=cut
-
-sub AvailablePlugins {
-    my ($class, $plugin_path) = @_;
-    my @res;
-    my @paths = $plugin_path ? ($plugin_path) : ($RT::LocalPluginPath, $RT::PluginPath);
-    for my $abs_path (map { <$_/*> } @paths) {
-        my ($dir, $name) = $abs_path =~ m|(.*)/([^/]+)$|;
-        # ensure no cascading
-        next if $class->BasePathFor($name) ne $abs_path;
-        push @res, $class->ProbePlugin($name);
-    }
-
-    # XXX: look for collision and warn
-    my %seen;
-    return { map { $seen{$_->Name}++ ? () : ($_->Name => $_) } @res };
-}
-
-sub ProbePlugin {
-    my ($class, $name) = @_;
-    my $base_path = $class->BasePathFor($name);
-    my $meta;
-    if (-e "$base_path/META.yml") {
-        ($meta) = Parse::CPAN::Meta::LoadFile( "$base_path/META.yml" ) or return;
-    }
-    else {
-        $meta = { name => $name };
-    }
-
-    return $class->new(Name => $meta->{name},
-                       Description => $meta->{abstract},
-                       BasePath => $base_path);
 }
 
 =head2 ComponentRoot

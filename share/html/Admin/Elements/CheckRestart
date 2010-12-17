@@ -1,6 +1,0 @@
-% if (RT->RestartRequired) {
-<&| /Widgets/TitleBox, title => loc('Server restart required') &>
-<% loc('Some configuration that you changed requires the web server to be restarted to be fully functional.') %>
-</&>
-% }
-
