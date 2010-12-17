@@ -109,9 +109,11 @@ div#nav li.last {
 
 
 
-
+/* IE's box model is wrong */
 .titlebox .titlebox-title .widget a {
-  height:7px;
+    padding-top: 0;
+    height: 7px;
+    top: 0.75em;
 }
 
 
