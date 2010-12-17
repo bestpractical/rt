@@ -400,7 +400,7 @@ sub AddToObject {
 
     if ( $id ) {
         # applying locally
-        return (0, $self->loc("Class is already applied Globally ") )
+        return (0, $self->loc("Class is already applied Globally") )
             if $self->IsApplied( 0 );
     }
     else {
