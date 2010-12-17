@@ -86,23 +86,24 @@ sub SquishFiles {
     return $self->Filter($content);
 }
 
-=head2 UpdateFilesMap
+=head2 AddFiles
 
-name => files map
+add files to name
 
 this is mainly for plugins, e.g.
 
-to add extra css files for style 'aileron', you can add the following line
+to add extra js files in 'head', you can add the following line
 in the plugin's main file:
 
     require RT::Squish::JS;
-    RT::Squish::JS->UpdateFilesMap( aileron => ['/NoAuth/js/foo.js'] ); 
+
+    RT::Squish::JS->AddFiles( head => ['/NoAuth/js/foo.js'] ); 
 
 =cut
 
 my %FILES_MAP;
 
-sub UpdateFilesMap {
+sub AddFiles {
     my $self = shift;
     my %args = @_;
 

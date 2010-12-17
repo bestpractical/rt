@@ -79,9 +79,9 @@ sub SquishFiles {
     return $self->concatenate( @{ $self->Files } );
 }
 
-=head2 UpdateFilesMap
+=head2 AddFiles name => [...]
 
-name => files map
+add files to name
 
 this is mainly for plugins, e.g.
 
@@ -89,13 +89,13 @@ to add extra css files for style 'aileron', you can add the following line
 in the plugin's main file:
 
     require RT::Squish::CSS;
-    RT::Squish::CSS->UpdateFilesMap( aileron => ['/NoAuth/css/foo.css'] ); 
+    RT::Squish::CSS->AddFiles( aileron => ['/NoAuth/css/foo.css'] ); 
 
 =cut
 
 my %FILES_MAP;
 
-sub UpdateFilesMap {
+sub AddFiles {
     my $self = shift;
     my %args = @_;
 
