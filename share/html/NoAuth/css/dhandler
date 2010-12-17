@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
 my $squisher;
+require HTTP::Date;
 </%ONCE>
 <%INIT>
 my $arg = $m->dhandler_arg;
