@@ -591,30 +591,23 @@ if ( $request_path !~ m{^/SelfService/} ) {
         } else {
             $current_search_menu = PageMenu();
         }
+        if ($has_query) {
+            $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
+
+        }
+
         $current_search_menu->child( edit_search => title => loc('Edit Search') =>
                                      path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
         $current_search_menu->child( loc('Advanced') => path => "/Search/Edit.html$args" );
-        if ($has_query) {
-            if ($request_path =~ m{^/Search/Results.html}
-                &&                        #XXX TODO better abstraction
-                $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
-                my $shred_args = $query_string->(
-                    search          => 1,
-                    plugin          => 'Tickets',
-                    'Tickets:query' => $query_args{'Query'},
-                    'Tickets:limit' => $query_args{'Rows'},
-                );
 
-                $current_search_menu->child( 'shredder' => title => loc('Shredder'),
-                                path => 'Admin/Tools/Shredder/?' . $shred_args);
-            }
-
-            $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
-
+        if ( $has_query ) {
             $current_search_menu->child( bulk => title => loc('Bulk Update') => path => "/Search/Bulk.html$args" );
-            $current_search_menu->child( chart => title => loc('Graph'),
+
+            my $more = $current_search_menu->child( more => title => loc('More...') );
+            
+            $more->child( chart => title => loc('Graph'),
                                          path => "/Search/Chart.html$args" );
-            $current_search_menu->child(
+            $more->child(
                                    spreadsheet => title => loc('Spreadsheet'),
                                    path => "/Search/Results.tsv$args" );
 
@@ -630,13 +623,28 @@ if ( $request_path !~ m{^/SelfService/} ) {
                                                . $query_args{Order}
                                                . $query_args{OrderBy} );
 
-            $current_search_menu->child( rss => title => loc('RSS') => path => "/NoAuth/rss/$RSSPath/$RSSQueryString");
+            $more->child( rss => title => loc('RSS') => path => "/NoAuth/rss/$RSSPath/$RSSQueryString");
             my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
                 $session{'CurrentUser'}->UserObj->Name,
                 $session{'CurrentUser'}->UserObj->GenerateAuthString( $query_args{Query} ),
                 $query_args{Query};
-            $current_search_menu->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
-}
+            $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
+
+            if ($request_path =~ m{^/Search/Results.html}
+                &&                        #XXX TODO better abstraction
+                $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+                my $shred_args = $query_string->(
+                    search          => 1,
+                    plugin          => 'Tickets',
+                    'Tickets:query' => $query_args{'Query'},
+                    'Tickets:limit' => $query_args{'Rows'},
+                );
+
+                $more->child( 'shredder' => title => loc('Shredder'),
+                                path => 'Admin/Tools/Shredder/?' . $shred_args);
+            }
+
+        }
     }
 
     if ( $request_path =~ m{^/Article/} ) {
