@@ -51,7 +51,7 @@
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
 % my $escaped_name = lc $CustomField->Name;
-% $escaped_name =~ s/[^a-z0-9_-]/_/;
+% $escaped_name =~ s/[^a-z0-9_-]/_/g;
 % my $type = $CustomField->Type || 'Unknown';
 % $i++;
 % if ( $single_column || $i % 2 ) {
