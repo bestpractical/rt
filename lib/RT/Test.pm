@@ -487,7 +487,7 @@ sub bootstrap_plugins {
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
     $dba_dbh->disconnect if $dba_dbh;
-    return RT->Plugins;
+    return RT->InitPlugins;
 }
 
 sub _get_dbh {

@@ -19,7 +19,6 @@ BEGIN {
 
 use RT::Test nodb => 1, tests => 9;
 
-is_deeply([RT->PluginDirs('lib')], []);
 ok(!grep { $_ eq "$RT::LocalPluginPath/Hello/lib" } @INC);;
 RT->Config->Set('Plugins',qw(Hello));
 
@@ -27,6 +26,9 @@ RT->ProbePlugins(1);
 RT->UnloadPlugins;
 RT->Plugins;
 
+ok(!grep { $_ eq "$RT::LocalPluginPath/Hello/lib" } @INC);;
+
+RT->InitPlugins;
 ok(grep { $_ eq "$RT::LocalPluginPath/Hello/lib" } @INC);;
 
 is_deeply([RT->PluginDirs('lib')], ["$RT::LocalPluginPath/Hello/lib"], 'plugin lib dir found');
@@ -55,6 +57,7 @@ RT->Config->Set('Plugins',qw(Hello World));
 RT->ProbePlugins(1);
 RT->UnloadPlugins;
 RT->Plugins;
+RT->InitPlugins;
 
 is_deeply([@INC[0..2]],
           [map { abs_path($_) }

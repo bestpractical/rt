@@ -144,7 +144,7 @@ sub Init {
     InitSystemObjects();
     InitClasses();
     InitLogging();
-    RT->Plugins();
+    RT->InitPlugins();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
 
@@ -549,6 +549,7 @@ also L</InitSystemObjects>.
 sub Nobody { return $Nobody }
 
 my $PLUGINS;
+my $ENABLED_PLUGINS;
 my $LOADED_PLUGINS;
 
 =head2 ProbePlugins($reprobe)
@@ -562,6 +563,23 @@ sub ProbePlugins {
     my $reprobe = shift;
     undef $PLUGINS if $reprobe;
     $PLUGINS ||= RT::Plugin->AvailablePlugins;
+
+    @$ENABLED_PLUGINS = ();
+    for (grep $_, RT->Config->Get('Plugins')) {
+        s/::/-/g;
+        my $plugin = $PLUGINS->{$_};
+        $plugin->ConfigEnabled(1);
+        $plugin->Enabled(1);
+        push @$ENABLED_PLUGINS, $plugin;
+    }
+
+    for (keys %$PLUGINS) {
+        my $plugin = $PLUGINS->{$_};
+        next unless -e $plugin->Path(".enabled");
+
+        $plugin->Enabled(1);
+        push @$ENABLED_PLUGINS, $plugin;
+    }
 }
 
 =head2 Plugins
@@ -575,10 +593,7 @@ sub Plugins {
     my $self = shift;
     $self->ProbePlugins;
 
-    unless ($LOADED_PLUGINS) {
-        $self->InitPlugins;
-    }
-    return $LOADED_PLUGINS;
+    return $ENABLED_PLUGINS;
 }
 
 =head2 PluginDirs
@@ -627,42 +642,28 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 
 =cut
 
-sub _try_enable_plugin {
-    my ($self, $plugin_name, $explicit) = @_;
+sub _try_load_plugin {
+    my ($self, $plugin) = @_;
 
-    my $plugin = $PLUGINS->{$plugin_name};
-    unless ($plugin) {
-        # XXX: this is mostly for testing for rt plugin dists.
-        $PLUGINS->{$plugin_name} = $plugin = RT::Plugin->new(Name => $plugin_name);
-    }
-    return if $plugin->Enabled;
-
-    if ( $explicit || -e $plugin->Path(".enabled")) {
-        eval { $plugin->Enable($explicit); 1 }
-            or do {
-                # XXX: the rt bootstrapping sequence loads RT_Config
-                # first, which requires scanning plugin directories,
-                # so the very first initplugins calls is actually
-                # before initlogging.
-                warn "Unable to load plugin: $plugin_name: $@";
-                return;
-            };
-        push @$LOADED_PLUGINS, $plugin;
-    }
+    eval { $plugin->Load; 1 }
+        or do {
+            # XXX: the rt bootstrapping sequence loads RT_Config
+            # first, which requires scanning plugin directories,
+            # so the very first initplugins calls is actually
+            # before initlogging.
+            warn "Unable to load plugin: @{[ $plugin->Name ]}: $@";
+            return;
+        };
+    push @$LOADED_PLUGINS, $plugin;
 }
 
 sub InitPlugins {
     my $self    = shift;
-    $LOADED_PLUGINS ||= [];
     require RT::Plugin;
 
-    for (grep $_, RT->Config->Get('Plugins')) {
-        s/::/-/g;
-        $self->_try_enable_plugin($_, 1);
-    }
-
-    for (keys %$PLUGINS) {
-        $self->_try_enable_plugin($_);
+    for (@$ENABLED_PLUGINS) {
+        $self->_try_load_plugin($_)
+            unless $_->Loaded;
     }
 
     return @$LOADED_PLUGINS;

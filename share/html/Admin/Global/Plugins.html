@@ -95,7 +95,7 @@ if ($PluginName) {
     if ($Enable) {
         if ( eval { die loc("You need to make the directory [_1] writable first.\n", $plugin->Path)
                         unless -w $plugin->Path;
-                    $plugin->Enable;
+                    $plugin->Load;
                     open my $fh, '>', $plugin_enable
                         or die $!;
                     close $fh;
