@@ -261,10 +261,10 @@ $COLUMN_MAP = {
             {
                 my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
                 if (!defined $key{'info'}) {
-                    $email .= loc(" (no pubkey!)");
+                    $email .= ' ' . loc("(no pubkey!)");
                 }
                 elsif ($key{'info'}{'TrustLevel'} == 0) {
-                    $email .= loc(" (untrusted!)");
+                    $email .= ' ' . loc("(untrusted!)");
                 }
             }
             return join ', ', @requestors;
