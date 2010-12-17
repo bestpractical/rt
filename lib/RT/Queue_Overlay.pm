@@ -254,8 +254,10 @@ sub Lifecycle {
     $name ||= 'default';
 
     my $res = RT::Lifecycle->Load( $name );
-    $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist")
-        unless $res;
+    unless ( $res ) {
+        $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist");
+        return RT::Lifecycle->Load('default');
+    }
     return $res;
 }
 
