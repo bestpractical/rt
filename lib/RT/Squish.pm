@@ -72,9 +72,10 @@ use warnings;
 
 package RT::Squish;
 use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw/Files Content Key ModifiedTime Name/);
+__PACKAGE__->mk_accessors(qw/Name Files Content Key ModifiedTime ModifiedTimeString/);
 
 use Digest::MD5 'md5_hex';
+use HTTP::Date;
 
 =head2 new (ARGS)
 
@@ -98,7 +99,7 @@ sub new {
     $self->Content($content);
     $self->Key( md5_hex $content );
     $self->ModifiedTime( time() );
-
+    $self->ModifiedTimeString( HTTP::Date::time2str( $self->ModifiedTime ) );
     return $self;
 }
 
@@ -142,11 +143,13 @@ squished content
 
 md5 of the squished content
 
-=cut
-
 =head2 ModifiedTime
 
 created time of squished content, i.e. seconds since 00:00:00 UTC, January 1, 1970
+
+=head2 ModifiedTimeString
+
+created time of squished content, with HTTP::Date format
 
 =cut
 

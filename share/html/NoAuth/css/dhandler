@@ -53,8 +53,7 @@ my $arg = $m->dhandler_arg;
 if ( $arg =~ m{(.*)/main-squished-(?:[0-9a-f]{32})\.css$} ) {
     my $name = $1;
     my $squished = RT::Interface::Web::SquishedCSS( Name => $name );
-    $r->header_out( 'Last-Modified'  => 
-        HTTP::Date::time2str( $squished->ModifiedTime ) );
+    $r->header_out( 'Last-Modified'  => $squished->ModifiedTimeString );
     $m->out( $squished->Content );
 }
 else {

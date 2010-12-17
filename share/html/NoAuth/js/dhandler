@@ -55,8 +55,8 @@ if ( $arg =~ m{squished-(.+)-([a-z0-9]{32})\.js$} ) {
     my $name = $1;
     my $squished = RT::Interface::Web::SquishedJS( Name => $name );
 
-    $r->header_out( 'Last-Modified'  => 
-        HTTP::Date::time2str( $squished->ModifiedTime ) );
+    require HTTP::Date;
+    $r->header_out( 'Last-Modified'  => $squished->ModifiedTimeString );
 
     $m->out( $squished->Content );
 }
