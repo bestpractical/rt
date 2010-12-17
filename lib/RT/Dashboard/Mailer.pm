@@ -280,6 +280,10 @@ sub ObsoleteSubscription {
         Arguments => {
             SubscriptionObj => $subscription,
         },
+        ExtraHeaders => {
+            'X-RT-Dashboard-Subscription-Id' => $subscription->Id,
+            'X-RT-Dashboard-Id' => $subscription->SubValue('DashboardId'),
+        },
     );
 
     # only delete the subscription if the email looks like it went through
