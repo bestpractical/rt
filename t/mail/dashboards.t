@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 63;
+use RT::Test tests => 73;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -60,7 +60,8 @@ my $user = RT::User->new(RT->SystemUser);
 $user->Load('root');
 ok($user->Id, 'loaded user');
 my ($subscription) = $user->Attributes->Named('Subscription');
-ok($subscription->Id, 'loaded subscription');
+my $subscription_id = $subscription->Id;
+ok($subscription_id, 'loaded subscription');
 my $dashboard_id = $subscription->SubValue('DashboardId');
 ok($dashboard_id, 'got dashboard id');
 
@@ -77,8 +78,8 @@ sub produces_dashboard_mail_ok { # {{{
     my $mail = parse_mail( $mails[0] );
     is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
     is($mail->head->get('From'), "root\n");
-    is($mail->head->get('X-RT-Dashboard-Id'), $dashboard_id . "\n");
-    is($mail->head->get('X-RT-Dashboard-Subscription-Id'), $subscription->Id . "\n");
+    is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
+    is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
     SKIP: {
         skip 'Weird MIME failure', 2;
@@ -156,8 +157,8 @@ is(@mails, 1, "one mail");
 my $mail = parse_mail($mails[0]);
 is($mail->head->get('Subject'), "[example.com] a Daily b Testing! c\n");
 is($mail->head->get('From'), "dashboard\@example.com\n");
-is($mail->head->get('X-RT-Dashboard-Id'), $dashboard_id . "\n");
-is($mail->head->get('X-RT-Dashboard-Subscription-Id'), $subscription->Id . "\n");
+is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
+is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
 SKIP: {
     skip 'Weird MIME failure', 2;
@@ -166,3 +167,35 @@ SKIP: {
     unlike($body, qr{Testing!});
 };
 
+# delete the dashboard and make sure we get exactly one subscription failure
+# notice
+my $dashboard = RT::Dashboard->new(RT::CurrentUser->new('root'));
+my ($ok, $msg) = $dashboard->LoadById($dashboard_id);
+ok($ok, $msg);
+
+($ok, $msg) = $dashboard->Delete;
+ok($ok, $msg);
+
+do {
+    my @warnings;
+    local $SIG{__WARN__} = sub {
+        push @warnings, "@_";
+    };
+
+    RT::Dashboard::Mailer->MailDashboards(All => 1);
+
+    is(@warnings, 1, "one warning");
+    like($warnings[0], qr/Unable to load dashboard $dashboard_id of subscription $subscription_id for user root/);
+};
+
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 1, "one mail for subscription failure");
+$mail = parse_mail($mails[0]);
+is($mail->head->get('Subject'), "[example.com] Missing dashboard!\n");
+is($mail->head->get('From'), "dashboard\@example.com\n");
+is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
+is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
+
+RT::Dashboard::Mailer->MailDashboards(All => 1);
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 0, "no mail because the subscription notice happens only once");
