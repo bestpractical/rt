@@ -582,6 +582,7 @@ sub SendEmailUsingTemplate {
         Bcc => undef,
         From => RT->Config->Get('CorrespondAddress'),
         InReplyTo => undef,
+        ExtraHeaders => {},
         @_
     );
 
@@ -596,6 +597,9 @@ sub SendEmailUsingTemplate {
 
     $mail->head->set( $_ => Encode::encode_utf8( $args{ $_ } ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
+
+    $mail->head->set( $_ => $args{ExtraHeaders}{$_} )
+        foreach keys %{ $args{ExtraHeaders} };
 
     SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
 
