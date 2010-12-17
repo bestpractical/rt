@@ -404,7 +404,9 @@ sub _GetObject {
         return undef;
     }
 
-    if ($obj_type eq 'RT::Group' && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
+    if (   $obj_type eq 'RT::Group'
+        && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)
+        && !$self->CurrentUser->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
         $RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
                            " is not a member of group");
         return undef;
