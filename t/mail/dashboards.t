@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 50;
+use RT::Test tests => 63;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -56,6 +56,14 @@ $m->field('Hour' => '06:00');
 $m->click_button(name => 'Save');
 $m->content_contains("Subscribed to dashboard Testing!");
 
+my $user = RT::User->new(RT->SystemUser);
+$user->Load('root');
+ok($user->Id, 'loaded user');
+my ($subscription) = $user->Attributes->Named('Subscription');
+ok($subscription->Id, 'loaded subscription');
+my $dashboard_id = $subscription->SubValue('DashboardId');
+ok($dashboard_id, 'got dashboard id');
+
 sub produces_dashboard_mail_ok { # {{{
     my %args = @_;
 
@@ -69,6 +77,8 @@ sub produces_dashboard_mail_ok { # {{{
     my $mail = parse_mail( $mails[0] );
     is($mail->head->get('Subject'), "[example.com] Daily Dashboard: Testing!\n");
     is($mail->head->get('From'), "root\n");
+    is($mail->head->get('X-RT-Dashboard-Id'), $dashboard_id . "\n");
+    is($mail->head->get('X-RT-Dashboard-Subscription-Id'), $subscription->Id . "\n");
 
     SKIP: {
         skip 'Weird MIME failure', 2;
@@ -146,6 +156,8 @@ is(@mails, 1, "one mail");
 my $mail = parse_mail($mails[0]);
 is($mail->head->get('Subject'), "[example.com] a Daily b Testing! c\n");
 is($mail->head->get('From'), "dashboard\@example.com\n");
+is($mail->head->get('X-RT-Dashboard-Id'), $dashboard_id . "\n");
+is($mail->head->get('X-RT-Dashboard-Subscription-Id'), $subscription->Id . "\n");
 
 SKIP: {
     skip 'Weird MIME failure', 2;

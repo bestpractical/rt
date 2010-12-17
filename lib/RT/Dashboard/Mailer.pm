@@ -324,6 +324,9 @@ sub EmailDashboard {
         Subject => $subject,
     );
 
+    $entity->head->add('X-RT-Dashboard-Id', $dashboard->Id);
+    $entity->head->add('X-RT-Dashboard-Subscription-Id', $subscription->Id);
+
     $RT::Logger->info('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name." <$email>");
 
     my $ok = RT::Interface::Email::SendEmail(
