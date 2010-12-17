@@ -140,7 +140,6 @@ while ( my $entry = $report->Next ) {
 }
 </%INIT>
 <%ARGS>
-$cache => undef
 $queue_filter => undef
 @statuses => ()
 </%ARGS>

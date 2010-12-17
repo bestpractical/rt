@@ -53,7 +53,6 @@
     titleright_href => RT->Config->Get('WebPath').'/Prefs/Quicksearch.html',
 &>
 <& $comp,
-   cache => 'quick_search_queues',
    queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
 &>
 </&>

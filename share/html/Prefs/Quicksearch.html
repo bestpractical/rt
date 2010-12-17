@@ -67,7 +67,6 @@ checked="checked"
 <%INIT>
 my @actions;
 my $title = loc("Customize").' '.loc("Quick search");
-# The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = $session{'CurrentUser'}->UserObj;
 my $unwanted = $user->Preferences('QuickSearch', {});
 my $Queues = RT::Queues->new($session{'CurrentUser'});
@@ -86,9 +85,6 @@ if ($ARGS{'Save'}) {
 
     my ($ok, $msg) = $user->SetPreferences('QuickSearch', $unwanted);
     push @actions, $ok ? loc('Preferences saved.') : $msg;
-
-    # Let QueueSummary rebuild the cache
-    delete $session{'quick_search_queues'};
 }
 
 </%INIT>
