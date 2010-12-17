@@ -398,18 +398,26 @@ if ( $request_path !~ m{^/SelfService/} ) {
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
+        my $tabs = PageMenu();
         if ( my $id = $m->request_args->{'id'} ) {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
-            my $tabs = PageMenu();
+
+            my $section = $tabs->child( select => title => loc("Articles"), path => "/Admin/Articles/Classes/" );
+            $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
+            $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
+
             $tabs->child( basics => title => loc('Basics') => path => "/Admin/Articles/Classes/Modify.html?id=".$id, );
             $tabs->child( topics => title => loc('Topics') => path => "/Admin/Articles/Classes/Topics.html?id=".$id, );
             $tabs->child( 'custom-fields'  => title => loc('Custom Fields') => path => '/Admin/Articles/Classes/CustomFields.html?id='.$id, );
             $tabs->child( 'group-rights' => title => loc('Group Rights') => path => "/Admin/Articles/Classes/GroupRights.html?id=".$id, );
             $tabs->child( 'user-rights'  => title => loc('User Rights') => path => "/Admin/Articles/Classes/UserRights.html?id=".$id, );
             $tabs->child( 'applies-to'  => title => loc('Applies to') =>  path => "/Admin/Articles/Classes/Objects.html?id=$id", );
-        }
+        } else {
+            $tabs->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
+            $tabs->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
 
+        }
     }
 
     if ( $request_path =~ m{^/Ticket/} ) {
