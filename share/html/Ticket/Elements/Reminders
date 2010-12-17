@@ -119,7 +119,8 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <th class="collection-as-table"><&|/l&>Owner</&></th>
 % }
 </tr>
-% my ( $i, $visible ) = 0;
+% my $i = 0;
+% my $visible = 0;
 % while ( my $reminder = $reminder_collection->Next ) {
 % $i++;
 % if ( $reminder->Status eq 'resolved' && !$ShowCompleted ) {
