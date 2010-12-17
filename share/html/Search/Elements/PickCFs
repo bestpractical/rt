@@ -111,7 +111,7 @@ while ( my $CustomField = $CustomFields->Next ) {
         $line{'Value'} = {
             Type => 'component',
             Path => '/Elements/SelectDate',
-            Arguments => { $is_datetime ? ( ShowTime => 0 ) : (), },
+            Arguments => { $is_datetime ? (ShowTime => 1) : (ShowTime => 0), },
         };
     } else {
         $line{'Value'} = {
