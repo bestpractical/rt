@@ -58,11 +58,7 @@
 <input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Type %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
 % if ( $member->isa( 'RT::User' ) ) { 
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
-<& /Elements/ShowUser, User => $member &></a>
-% if ($TicketObj and grep { $_->Content eq $member->EmailAddress } $TicketObj->SquelchMailTo)  {
-<b><&|/l&>(Will not be sent email)</&></b>
-% }
-
+<& /Elements/ShowUser, User => $member &></a> <& /Elements/ShowUserEmailFrequency, User => $member, Ticket => $TicketObj &>
 % } else {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $watcher->MemberId %>">
 <% $member->Name %></a>
