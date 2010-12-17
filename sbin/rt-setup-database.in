@@ -529,6 +529,7 @@ e.g. --datadir /path/to/
 =item dba
 
     dba's username
+
 =item dba-password
 
     dba's password
