@@ -48,7 +48,6 @@
 
 div#body {
     top: 3em;
-    padding-top: 3em;
 }
 
 div#logo .rtname {
@@ -109,21 +108,18 @@ div#nav li.last {
 .ticket-transaction .type a { font-weight: normal; text-decoration: none; color: #fff; }
 
 
-.titlebox {
- border-top: none;
- border-left: none;
+
+
+.titlebox .titlebox-title .widget a {
+  height:7px;
 }
 
-.titlebox .titlebox-title .left {
-    padding: 0.5em;
-}
 
 
 .titlebox .titlebox-title .right {
-    border-right: 2px solid #aaa;
     display: block;
-    margin-top: 0.1em;
-    right: -0.2em;
+    margin-top: 0.4em;
+    padding-right: 0.3em;
 
 }
 
@@ -148,20 +144,8 @@ table.queue-summary td, td.collection-as-table {
     padding: 0.25em;
 }
 
- .titlebox-title {
+.titlebox-title {
     position: relative;
-}
-
-.titlebox-title .widget {
-    position: absolute;
-    top: -0.75em;
-    left: -0.25em;
-
-}
-.titlebox-title .left {
-    position: absolute;
-    top: -0.75em;
-    left: 1em;
 }
 
 /* nested things. like the ticket dates tab */
