@@ -154,12 +154,10 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
 }
 
 # This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
+MaybeRedirectForResults(
     Actions     => \@results,
     Path        => '/Admin/Groups/Modify.html',
-    id          => $Group->Id,
-    ARGSRef     => \%ARGS
+    Arguments   => { id => $Group->id },
 );
 
 push @results, @warnings;

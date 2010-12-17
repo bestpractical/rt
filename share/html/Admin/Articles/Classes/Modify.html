@@ -122,12 +122,10 @@ if ($ClassObj->Id()) {
 }
 
 # This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
+MaybeRedirectForResults(
     Actions     => \@results,
     Path        => '/Admin/Articles/Classes/Modify.html',
-    id          => $ClassObj->Id,
-    ARGSRef     => \%ARGS
+    Arguments   => { id => $ClassObj->Id },
 );
 
 #we're asking about enabled on the web page but really care about disabled.

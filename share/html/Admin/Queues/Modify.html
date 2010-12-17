@@ -226,12 +226,10 @@ if ( $QueueObj->Id ) {
 }
 
 # This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
-    Actions     => \@results,
-    Path        => '/Admin/Queues/Modify.html',
-    id          => $QueueObj->Id,
-    ARGSRef     => \%ARGS
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => '/Admin/Queues/Modify.html',
+    Arguments => { id => $QueueObj->Id },
 );
 
 push @results, @no_redirect_results;

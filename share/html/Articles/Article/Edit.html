@@ -212,12 +212,10 @@ elsif ( $id eq 'new' ) {
             $m->redirect($ARGS{next});
         }        
         else {
-            $m->comp(
-                '/Elements/MaybeRedirectForResults',
-                Actions     => \@results,
-                Path        => 'Articles/Article/Edit.html',
-                id          => $ArticleObj->id,
-                ARGSRef     => \%ARGS
+            MaybeRedirectForResults(
+                Actions   => \@results,
+                Path      => '/Articles/Article/Edit.html',
+                Arguments => { id => $ArticleObj->id },
             );
         }
     }

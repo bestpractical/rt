@@ -194,12 +194,11 @@ $m->callback(
 );
 
 # This code does automatic redirection if any updates happen. 
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
-    Actions     => \@Actions,
-    Path        => 'Ticket/Display.html',
-    id          => $TicketObj->id,
-    ARGSRef     => \%ARGS
+MaybeRedirectForResults(
+    Actions   => \@Actions,
+    Path      => 'Ticket/Display.html',
+    Anchor    => $ARGS{'Anchor'},
+    Arguments => { id => $TicketObj->id },
 );
 
 # Get the transactoins before the attachments, for great ACL justice

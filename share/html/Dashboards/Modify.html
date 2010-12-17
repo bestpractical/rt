@@ -159,12 +159,10 @@ if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
 }
 
 # This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
-    Actions     => \@results,
-    Path        => $redirect_to,
-    id              => $id,
-    ARGSRef     => \%ARGS
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => $redirect_to,
+    Arguments => { id => $id },
 );
 
 </%INIT>
