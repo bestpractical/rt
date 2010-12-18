@@ -304,7 +304,7 @@ sub update {
 
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
 
-    foreach my $str ( sort keys %{$FILECAT} ) {
+    foreach my $str ( keys %{$FILECAT} ) {
         $Lexicon{$str} ||= '';
     }
     foreach ( sort keys %Lexicon ) {
