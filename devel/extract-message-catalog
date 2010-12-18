@@ -99,6 +99,19 @@ foreach my $dict (@ARGV) {
     update($lang, $dict);
 }
 
+# warn about extra whitespace (at the very end so it'll be harder to miss)
+foreach my $str ( sort keys %{$FILECAT} ) {
+    my $entry = $FILECAT->{$str};
+    my $entry_count = @$entry;
+
+    if ($str =~ /^\s/m || $str =~ /\s$/m || $str =~ /\\n$/m) {
+        # doesn't exist in the current codebase, ignore for now
+        next if $entry_count == 0;
+
+        my ($filename, $line) = @{ $entry->[0] };
+        warn "Extraneous whitespace in '$str' at $filename line $line" . ($entry_count > 1 ? " (and ".($entry_count-1)." other places)" : "") . "\n";
+    }
+}
 
 
 sub extract_strings_from_code {
