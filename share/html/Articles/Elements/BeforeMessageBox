@@ -93,7 +93,7 @@
 % if ( @$topics ) {
 <tr>
 <td>
-<&|/l, $QueueObj->Name &>Choose from Topics for [_1] </&>
+<&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>
 </td>
 <td>
 <select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()">

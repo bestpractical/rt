@@ -44,7 +44,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#%# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('Display Article ' . $ARGS{id} ) &>
+<& /SelfService/Elements/Header, Title => loc('Display Article [_1]', $id) &>
 <span class="label"><%$article->Name || loc("(no name)")%></span><br />
 <em><span class="value"><%$article->Summary%></span></em>
 <& /Elements/ShowCustomFields, Object => $article &>
