@@ -120,16 +120,16 @@ if ( $request_path !~ m{^/SelfService/} ) {
     $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
                    description => loc('Create tickets offline') );
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => $RT::System ) )
+    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) )
     {
         $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 3,
                        description => loc('My Approvals') );
     }
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => $RT::System ) )
+    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
         my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 1 );
-        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers' ) ) {
+        if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
             my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', description => loc('Manage users and passwords') );
             $users->child( select => title => loc('Select'), path   => "/Admin/Users/" );
             $users->child( create => title => loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
@@ -143,7 +143,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
         $queues->child( select => title => loc('Select'), path => "/Admin/Queues/" );
         $queues->child( create => title => loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );
 
-        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField' ) ) {
+        if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomField' ) ) {
             my $cfs = $admin->child( 'custom-fields' => title => loc('Custom Fields'), path => '/Admin/CustomFields/', description => loc('Manage custom fields and custom field values') );
             $cfs->child( select => title => loc('Select'), path   => "/Admin/CustomFields/" );
             $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
@@ -208,7 +208,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
                              description => loc('Detailed information about your RT setup') );
         if (RT->Config->Get('StatementLog')
-            && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+            && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html',
                                 description => loc('Browse the SQL queries made in this process') );
         }
@@ -224,7 +224,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
 
     if ( $session{'CurrentUser'}->UserObj
-         && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => $RT::System )) {
+         && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => RT->System )) {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
         $settings->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
         $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
@@ -636,7 +636,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
             if ($request_path =~ m{^/Search/Results.html}
                 &&                        #XXX TODO better abstraction
-                $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System )) {
+                $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
                 my $shred_args = $query_string->(
                     search          => 1,
                     plugin          => 'Tickets',
@@ -727,7 +727,7 @@ if ( $request_path =~ m{^/SelfService} ) {
                     sort_order   => 99
     );
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System ) ) {
+    if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
         $about_me->child( prefs => title => loc('Preferences'), path  => '/SelfService/Prefs.html' );
     }
 
@@ -737,7 +737,7 @@ if ( $request_path =~ m{^/SelfService} ) {
         $about_me->child( logout => title => loc('Logout'), path   => '/NoAuth/Logout.html' );
     }
 
-    if ($session{'CurrentUser'}->HasRight( Right => 'ShowArticle', Object => $RT::System )) {
+    if ($session{'CurrentUser'}->HasRight( Right => 'ShowArticle', Object => RT->System )) {
         PageWidgets->child( 'goto-article' => raw_html => $m->scomp('/SelfService/Elements/SearchArticle') );
     }
 
