@@ -153,16 +153,16 @@ my $render_attachment = sub {
     # If it's text
     if ( $message->ContentType =~ m{^(text|message)}i ) {
         my $max_size = RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} );
-        if ( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', $session{'CurrentUser'} ) ) {
+        if ( $disposition ne 'inline' ) {
+            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
+            return;
+        }
+        elsif ( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', $session{'CurrentUser'} ) ) {
             $m->out('<p>'. loc( 'Text file is not shown because it is disabled in preferences.' ) .'</p>');
             return;
         }
         elsif ( $max_size && $message->ContentLength > $max_size ) {
-            $m->out('<p>'. loc( 'Message body not shown because it is too large.' ) .'</p>');
-            return;
-        }
-        elsif ( $disposition ne 'inline' ) {
-            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
+            $m->out('<p>'. loc( 'Message body is not shown because it is too large.' ) .'</p>');
             return;
         }
 
