@@ -1,6 +1,15 @@
 @Initial = (
     sub {
         use strict;
+        use RT::ACE;
+        {
+            package RT::ACE;
+            my $throwaway = RT::ACE->new(RT->SystemUser);
+            delete $TABLE_ATTR{'RT::ACE'}->{LastUpdated};
+            delete $TABLE_ATTR{'RT::ACE'}->{LastUpdatedBy};
+        }
+
+
         $RT::Logger->debug('Make sure templates all have known types');
 
         my $templates = RT::Templates->new(RT->SystemUser);
