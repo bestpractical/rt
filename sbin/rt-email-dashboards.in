@@ -78,7 +78,7 @@ BEGIN {
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "epoch=i", "all"
+    "help|h", "dryrun", "time=i", "epoch=i", "all"
 );
 
 if ($opts{'help'}) {
@@ -104,7 +104,7 @@ require RT::Dashboard::Mailer;
 RT::Dashboard::Mailer->MailDashboards(
     All    => $opts{all},
     DryRun => $opts{dryrun},
-    Time   => ($opts{epoch} || time),
+    Time   => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
     Opts   => \%opts,
 );
 
@@ -152,11 +152,15 @@ Display this documentation
 Figure out which dashboards would be sent, but don't actually generate or email
 any of them
 
-=item --epoch SECONDS
+=item --time SECONDS
 
 Instead of using the current time to figure out which dashboards should be
 sent, use SECONDS (usually since midnight Jan 1st, 1970, so C<1192216018> would
 be Oct 12 19:06:58 GMT 2007).
+
+=item --epoch SECONDS
+
+Back-compat for --time SECONDS.
 
 =item --all
 
