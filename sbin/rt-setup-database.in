@@ -373,6 +373,14 @@ sub action_upgrade {
     print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
+    RT->System->AddUpgradeHistory(RT => {
+        type      => 'full upgrade',
+        action    => 'upgrade',
+        from      => $upgrading_from,
+        to        => $upgrading_to,
+        versions  => [@versions],
+    });
+
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
