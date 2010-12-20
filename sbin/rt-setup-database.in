@@ -289,6 +289,12 @@ sub action_insert {
         $RT::Record::_TABLE_ATTR->{$class}{$_} = $removed{$class}{$_}
             for keys %{$removed{$class}};
     }
+
+    RT->System->AddUpgradeHistory(RT => {
+        action   => 'insert',
+        filename => $file,
+    });
+
     return @ret;
 }
 
