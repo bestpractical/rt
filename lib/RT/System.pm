@@ -258,6 +258,32 @@ sub QueueCacheNeedsUpdate {
     }
 }
 
+=head2 AddUpgradeHistory realm, data
+
+Adds an entry to the upgrade history database. The realm can be either C<RT>
+for core RT upgrades, or the fully qualified name of a plugin. The data must be
+a hash reference.
+
+=cut
+
+sub AddUpgradeHistory {
+    my $self  = shift;
+    my $realm = shift;
+    my $data  = shift;
+
+    $data->{timestamp} ||= time;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    push @{ $upgrade_history->{$realm} }, $data;
+
+    $self->SetAttribute(
+        Name    => 'UpgradeHistory',
+        Content => $upgrade_history,
+    );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
