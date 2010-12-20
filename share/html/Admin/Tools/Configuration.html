@@ -270,7 +270,11 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </%perl>
 <tr class="<% $i++ %2 ? 'oddline' : 'evenline'%>">
     <td class="collection-as-table">
-        <% $upgrade->{action} %>
+% if ($upgrade->{action} eq 'upgrade') { # type is more specific for upgrades
+    <% $upgrade->{type} %>
+% } else {
+    <% $upgrade->{action} %>
+% }
     </td>
     <td class="collection-as-table">
         <% $upgrade->{rt_version} %>
