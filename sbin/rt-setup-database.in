@@ -266,7 +266,30 @@ sub action_insert {
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
 
-    return $RT::Handle->InsertData( $file, $root_password );
+    # Slurp in backcompat
+    my %removed;
+    my @back = @{$args{backcompat} || []};
+    if (@back) {
+        my @lines = do {local @ARGV = @back; <>};
+        for (@lines) {
+            s/\#.*//;
+            next unless /\S/;
+            my ($class, @fields) = split;
+            $class->_BuildTableAttributes;
+            $RT::Logger->debug("Temporarily removing @fields from $class");
+            $removed{$class}{$_} = delete $RT::Record::_TABLE_ATTR->{$class}{$_}
+                for @fields;
+        }
+    }
+
+    my @ret = $RT::Handle->InsertData( $file, $root_password );
+
+    # Put back the fields we chopped off
+    for my $class (keys %removed) {
+        $RT::Record::_TABLE_ATTR->{$class}{$_} = $removed{$class}{$_}
+            for keys %{$removed{$class}};
+    }
+    return @ret;
 }
 
 sub action_upgrade {
@@ -350,9 +373,11 @@ sub action_upgrade {
     print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
-    foreach my $v ( @versions ) {
+    foreach my $n ( 0..$#versions ) {
+        my $v = $versions[$n];
+        my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
-        my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef);
+        my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
         if ( -e "$base_dir/$v/schema.$db_type" ) {
             action_schema( %tmp );
         }

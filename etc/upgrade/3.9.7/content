@@ -20,19 +20,6 @@ my $move_attributes = sub {
 
 @Initial = (
     sub {
-        use RT::ACE;
-        {
-            # if we're coming from 3.8, we've gone and disabled attributes
-            # on the ACL table in 3.9.1 or so. Regenerating them is important
-            package RT::ACE;
-            my $throwaway = RT::ACE->new(RT->SystemUser);
-            delete $TABLE_ATTR{'RT::ACE'};
-            $throwaway = RT::ACE->new(RT->SystemUser);
-        }
-
-
-    },
-    sub {
         return $move_attributes->( 'Users', 'RT::User', 'AuthToken');
     },
     sub {
