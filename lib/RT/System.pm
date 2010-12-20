@@ -271,7 +271,8 @@ sub AddUpgradeHistory {
     my $realm = shift;
     my $data  = shift;
 
-    $data->{timestamp} ||= time;
+    $data->{timestamp}  ||= time;
+    $data->{rt_version} ||= $RT::VERSION;
 
     my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
     my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
