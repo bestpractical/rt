@@ -381,6 +381,7 @@ sub action_upgrade {
         versions  => [@versions],
     });
 
+    my $previous = $upgrading_from;
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
@@ -399,6 +400,15 @@ sub action_upgrade {
             ( $ret, $msg ) = action_insert( %tmp );
             return ( $ret, $msg ) unless $ret;
         }
+
+        RT->System->AddUpgradeHistory(RT => {
+            action => 'upgrade',
+            type   => 'individual upgrade',
+            from   => $previous,
+            to     => $v,
+        });
+
+        $previous = $v;
     }
     return 1;
 }
