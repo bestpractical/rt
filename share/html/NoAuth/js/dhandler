@@ -51,7 +51,7 @@ my $content = '';
 
 <%INIT>
 my $arg = $m->dhandler_arg;
-if ( $arg =~ m{squished-(.+)-([a-z0-9]{32})\.js$} ) {
+if ( $arg =~ m{squished-(.+)-[a-f0-9]{32}\.js$} ) {
     my $name = $1;
     my $squished = RT::Interface::Web::SquishedJS( Name => $name );
 
