@@ -293,6 +293,7 @@ sub action_insert {
     RT->System->AddUpgradeHistory(RT => {
         action   => 'insert',
         filename => $file,
+        stage    => 'after',
     });
 
     return @ret;
@@ -382,6 +383,7 @@ sub action_upgrade {
     RT->System->AddUpgradeHistory(RT => {
         type      => 'full upgrade',
         action    => 'upgrade',
+        stage     => 'before',
         from      => $upgrading_from,
         to        => $upgrading_to,
         versions  => [@versions],
@@ -410,6 +412,7 @@ sub action_upgrade {
         RT->System->AddUpgradeHistory(RT => {
             action => 'upgrade',
             type   => 'individual upgrade',
+            stage  => 'after',
             from   => $previous,
             to     => $v,
         });
