@@ -395,7 +395,17 @@ sub action_upgrade {
         my $v = $versions[$n];
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
+
+        RT->System->AddUpgradeHistory(RT => {
+            action => 'upgrade',
+            type   => 'individual upgrade',
+            stage  => 'before',
+            from   => $previous,
+            to     => $v,
+        });
+
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
+
         if ( -e "$base_dir/$v/schema.$db_type" ) {
             ( $ret, $msg ) = action_schema( %tmp );
             return ( $ret, $msg ) unless $ret;
@@ -419,6 +429,16 @@ sub action_upgrade {
 
         $previous = $v;
     }
+
+    RT->System->AddUpgradeHistory(RT => {
+        type      => 'full upgrade',
+        action    => 'upgrade',
+        stage     => 'after',
+        from      => $upgrading_from,
+        to        => $upgrading_to,
+        versions  => [@versions],
+    });
+
     return 1;
 }
 
