@@ -380,6 +380,10 @@ sub action_upgrade {
     print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
+    RT->ConnectToDatabase();
+    RT->InitLogging();
+    RT->InitSystemObjects();
+
     RT->System->AddUpgradeHistory(RT => {
         type      => 'full upgrade',
         action    => 'upgrade',
