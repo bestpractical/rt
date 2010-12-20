@@ -152,6 +152,8 @@ $Ticket
 <tr>
 <td class="label"><&|/l&>Owner</&>:</td>
 <td class="entry"><& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &></td>
+</tr>
+<tr>
 <td class="label"><&|/l&>Due</&>:</td>
 <td class="entry"><& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &></td>
 </tr>
