@@ -53,7 +53,7 @@
     <input type="hidden" class="hidden" name="id" value="<% $CustomFieldObj->id %>" />
 
     <& /Admin/Elements/EditRights, Context => $CustomFieldObj, Principals => \@principals &>
-    <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+    <& /Elements/Submit, Label => loc('Save Changes') &>
   </form>
 
 <%INIT>

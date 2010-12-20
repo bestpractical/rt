@@ -51,8 +51,8 @@
 <form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
 <input type="hidden" name="id" value="<% $ClassObj->id %>" />
   <& /Admin/Elements/EditRights, Context => $ClassObj, Principals => \@principals &>
- 
-  <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
+
+  <& /Elements/Submit, Label => loc('Save Changes') &> 
 <%INIT>
 my @results =  ProcessACLs(\%ARGS);
 

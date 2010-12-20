@@ -52,7 +52,7 @@
   <form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
     <& /Admin/Elements/EditRights, Context => $GroupObj, Principals => \@principals &>
-    <& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
+    <& /Elements/Submit, Label => loc('Save Changes') &>
   </form>
 
 <%INIT>
