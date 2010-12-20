@@ -45,16 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-/* This selector is very heavy handed, but the jQuery UI theme is tenacious */
-.rights-editor, .rights-editor * {
-    font-family: arial, helvetica, sans-serif !important;
-}
-
 /* Styles for putting jQuery UI tabs on the left */
 .rights-editor {
     border: none;
     background: transparent;
     width: 100%;
+    font-size: 110%;
 }
 
 /* Position and style the left tabs */
@@ -111,10 +107,6 @@ li.category ~ li.category {
     font-size: 80%;
 }
 
-.rights-editor ul.rights-list {
-    list-style: none;
-}
-
 .category-tabs {
     width: 100%;
     border: none;
@@ -135,6 +127,7 @@ li.category ~ li.category {
     background: white !important;
     color: #222 !important;
     border-color: #aaa !important; 
+    font-weight: bold;
 }
 
 .rights-editor .ui-state-active a,
@@ -149,6 +142,22 @@ li.category ~ li.category {
 
 .rights-editor .separator {
     display: none;
+}
+
+.rights-editor ul.rights-list {
+    list-style: none;
+}
+
+.rights-editor ul.rights-list li {
+    padding: 0.2em 0;
+}
+
+.rights-editor ul.rights-list li:nth-child(even) {
+    background: #f4f4f4;
+}
+
+.rights-editor ul.rights-list li label {
+    cursor: pointer;
 }
 
 .rights-editor .rightname {
