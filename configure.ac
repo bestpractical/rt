@@ -161,7 +161,7 @@ AC_SUBST(DB_DBA)
 dnl DB_DATABASE
 AC_ARG_WITH(db-database,
 	    AC_HELP_STRING([--with-db-database=DBNAME],
-	    		   [name of the database to use (default: rt3)]),
+	    		   [name of the database to use (default: rt4)]),
             DB_DATABASE=$withval,
             DB_DATABASE=rt4)
 AC_SUBST(DB_DATABASE)
