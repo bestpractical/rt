@@ -260,6 +260,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 <th class="collection-as-table"><&|/l&>Action</&></th>
 <th class="collection-as-table"><&|/l&>Using RT Version</&></th>
 <th class="collection-as-table"><&|/l&>Time</&></th>
+<th class="collection-as-table"><&|/l&>Extra</&></th>
 
 <%perl>
     my $i = 0;
@@ -276,6 +277,11 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
     </td>
     <td class="collection-as-table">
         <% scalar gmtime($upgrade->{timestamp}) %>
+    </td>
+    <td class="collection-as-table">
+% if ($upgrade->{action} eq 'upgrade') {
+    <&|/l, $upgrade->{from}, $upgrade->{to} &>from [_1] to [_2]</&>
+% }
     </td>
 </tr>
 % }
