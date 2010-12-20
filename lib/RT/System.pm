@@ -284,6 +284,28 @@ sub AddUpgradeHistory {
     );
 }
 
+=head2 UpgradeHistory [realm]
+
+Returns the entries of RT's upgrade history. If a realm is specified, the list
+of upgrades for that realm will be returned. Otherwise a hash reference of
+C<< realm => [upgrades] >> will be returned.
+
+=cut
+
+sub UpgradeHistory {
+    my $self  = shift;
+    my $realm = shift;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    if ($realm) {
+        return @{ $upgrade_history->{$realm} || [] };
+    }
+
+    return $upgrade_history;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
