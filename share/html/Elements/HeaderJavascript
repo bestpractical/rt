@@ -81,7 +81,7 @@ my $js_path;
 if ( !RT->Config->Get('DevelMode') ) {
     my $name = 'head';
     my $key = RT::Interface::Web::SquishedJS( Name => $name )->Key;
-    $js_path = "squished-$name-$key.js";
+    $js_path = "$name-squished-$key.js";
 }
 
 </%INIT>

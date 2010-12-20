@@ -21,7 +21,7 @@ diag "test squished files with devel mode disabled";
 
     $m->back;
     my ($js_link) =
-      $m->content =~ m!src="([^"]+squished-([^"]+)-([a-f0-9]{32})\.js)"!;
+      $m->content =~ m!src="([^"]+?-squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_lacks( 'IE7=', 'no IE7.js by default' );
 
@@ -48,7 +48,7 @@ SKIP:
 
     $m->back;
     my ($js_link) =
-      $m->content =~ m!src="([^"]+squished-([^"]+)-([a-f0-9]{32})\.js)"!;
+      $m->content =~ m!src="([^"]+?-squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_contains( 'IE7=', 'has IE7.js' );
     RT::Test->stop_server;
