@@ -50,6 +50,7 @@ use strict;
 use warnings;
 
 package RT::I18N::cs;
+use base 'RT::I18N';
 
 # # CZECH TRANSLATORS COMMENTS see Locale::Maketext::TPJ13
 # Obecne parametry musi byt docela slozite (v pripade Slavistickych jazyku)
