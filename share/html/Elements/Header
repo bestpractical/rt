@@ -45,7 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+%# index.html gets two doctypes unless we can skip it here
+% unless ($SkipDoctype) {
 <!DOCTYPE html>
+% }
 
 <html lang="en">
   <head>
@@ -135,4 +138,5 @@ $RSSAutoDiscovery => undef
 $onload => undef
 $LinkRel => undef
 $JavaScript => 1
+$SkipDoctype => 0
 </%ARGS>
