@@ -72,14 +72,18 @@ my $build_main_nav = sub {
 
     my $position = 0;
 
+    my $dashes = Menu()->child('home');
     if (@dashboards) {
-        my $dashes = Menu()->child('home');
         for my $dash (@dashboards) {
             $home->child( 'dashboard-' . $dash->id, title => $dash->Name,
                        path => '/Dashboards/' . $dash->id . '/' . $dash->Name,);
         }
 
-        $dashes->child( more => title => loc('More...'), path  => 'Dashboards/index.html' ) if ($more);
+        $dashes->child( more => title => loc('All Dashboards...'), path  => 'Dashboards/index.html' );
+    }
+    my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
+    if ( $dashboard->CurrentUserCanCreateAny ) {
+        $dashes->child( loc('New Dashboard...') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
     my $tickets = Menu->child( search => title => loc('Tickets'), path => '/Search/Build.html' );
@@ -96,14 +100,6 @@ my $build_main_nav = sub {
 
 
 
-
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html',
-                                description => loc('Custom reports online and by email') );
-    $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
-    my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
-    if ( $dashboard->CurrentUserCanCreateAny ) {
-        $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
-    }
 
     $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html',
                    description => loc('Easy updating of your open tickets') );
