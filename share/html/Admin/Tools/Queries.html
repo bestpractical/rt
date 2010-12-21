@@ -48,7 +48,7 @@
 <%init>
 my $title = loc('SQL Queries');
 unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
- Abort(loc('This feature is only available to system administrators'));
+ Abort(loc('This feature is only available to system administrators.'));
 }
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
