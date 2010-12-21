@@ -194,7 +194,7 @@ eval { require Imager; require Convert::Color; 1 };
 
 my $img;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
-    my ($id, $msg) = $RT::System->SetAttribute( Name => "UserLogo",
+    my ($id, $msg) = RT->System->SetAttribute( Name => "UserLogo",
                                                 Description => "User-provided logo",
                                                 Content => {
                                                     type => $file_hash->{ContentType},
@@ -208,10 +208,10 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
     }
 }
 elsif ($ARGS{'reset_logo'}) {
-    $RT::System->DeleteAttribute('UserLogo');
+    RT->System->DeleteAttribute('UserLogo');
 }
 else {
-    if (my $attr = $RT::System->FirstAttribute('UserLogo')) {
+    if (my $attr = RT->System->FirstAttribute('UserLogo')) {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
             $img = Imager->new;
@@ -221,18 +221,18 @@ else {
             }
         }
         else {
-            $RT::System->DeleteAttribute('UserLogo');
+            RT->System->DeleteAttribute('UserLogo');
         }
     }
 }
 
 if ($user_css) {
     if ($ARGS{'reset_css'}) {
-        $RT::System->DeleteAttribute('UserCSS');
+        RT->System->DeleteAttribute('UserCSS');
         undef $user_css;
     }
     else {
-        my ($id, $msg) = $RT::System->SetAttribute( Name => "UserCSS",
+        my ($id, $msg) = RT->System->SetAttribute( Name => "UserCSS",
                                                     Description => "User-provided css",
                                                     Content => $user_css );
         push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
@@ -240,7 +240,7 @@ if ($user_css) {
 }
 
 if (!$user_css) {
-    my $attr = $RT::System->FirstAttribute('UserCSS');
+    my $attr = RT->System->FirstAttribute('UserCSS');
     $user_css = $attr ? $attr->Content : join(
         "\n\n" => map {
             join "\n" => "/* ". $_->[0] ." */",
