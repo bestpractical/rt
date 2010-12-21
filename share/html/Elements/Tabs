@@ -58,7 +58,8 @@ my $query_string = sub {
     return $u->query;
 };
 
-if ( $request_path !~ m{^/SelfService/} ) {
+my $build_main_nav = sub {
+
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
     my $limit      = 7;
@@ -699,10 +700,9 @@ my $build_admin_menu = sub {
     PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     $m->callback( CallbackName => 'Privileged' );
-}
+};
 
-if ( $request_path =~ m{^/SelfService} ) {
-
+my $build_selfservice_nav = sub {
     my $queues = RT::Queues->new( $session{'CurrentUser'} );
     $queues->FindAllRows;
 
@@ -750,7 +750,18 @@ if ( $request_path =~ m{^/SelfService} ) {
     PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
 
     $m->callback( CallbackName => 'SelfService' );
+};
+
+
+
+if ( $request_path !~ m{^/SelfService/} ) {
+    $build_main_nav->();
+} else {
+    $build_selfservice_nav->();
 }
+
+
+
 
 </%INIT>
 <%ARGS>
