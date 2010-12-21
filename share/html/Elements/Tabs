@@ -598,22 +598,21 @@ my $build_admin_menu = sub {
         } else {
             $current_search_menu = PageMenu();
         }
-        if ($has_query) {
-            $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
-
-        }
 
         $current_search_menu->child( edit_search => title => loc('Edit Search') =>
                                      path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
         $current_search_menu->child( loc('Advanced') => path => "/Search/Edit.html$args" );
+        if ($has_query) {
+            $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
+        }
 
         if ( $has_query ) {
             $current_search_menu->child( bulk => title => loc('Bulk Update') => path => "/Search/Bulk.html$args" );
-
-            my $more = $current_search_menu->child( more => title => loc('More...') );
-            
-            $more->child( chart => title => loc('Graph'),
+            $current_search_menu->child( chart => title => loc('Chart'),
                                          path => "/Search/Chart.html$args" );
+
+            my $more = $current_search_menu->child( more => title => loc('Feeds...') );
+            
             $more->child(
                                    spreadsheet => title => loc('Spreadsheet'),
                                    path => "/Search/Results.tsv$args" );
