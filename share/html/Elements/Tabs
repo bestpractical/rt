@@ -86,34 +86,39 @@ if ( $request_path !~ m{^/SelfService/} ) {
     $tickets->child( new => title => loc('New Search') => path => "/Search/Build.html?NewQuery=1" );
 
     my $tools = Menu->child(  tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html', sort_order => 2,
-                                description => loc('Named, shared collection of portlets') );
+
+
+    my $articles = $tools->child( articles => title => loc('Articles') => path => "/Articles/index.html");
+    $articles->child( articles => title => loc('Overview') => path => "/Articles/index.html" );
+    $articles->child( search   => title => loc('Search') => path => "/Articles/Article/Search.html" );
+    $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
+
+
+
+
+    my $dashes = $tools->child( dashboards => title => loc('Dashboards'), path => '/Dashboards/index.html',
+                                description => loc('Custom reports online and by email') );
     $dashes->child( select => title => loc('Select'), path => "/Dashboards/index.html" );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
         $dashes->child( loc('Create') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $articles = $tools->child( articles => title => loc('Articles') => path => "/Articles/index.html", sort_order => 10 );
-    $articles->child( search   => title => loc('Search') => path => "/Articles/Article/Search.html" );
-    $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
-    $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
-
-    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5,
+    $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html',
                    description => loc('Easy updating of your open tickets') );
 
     if ( RT->Config->Get('EnableReminders') )
     {
-        $tools->child( my_reminders => title => loc('My Reminders'), path => '/Tools/MyReminders.html', sort_order => 6,
+        $tools->child( my_reminders => title => loc('My Reminders'), path => '/Tools/MyReminders.html',
                        description => loc('Easy viewing of your reminders') );
     }
 
-    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html', sort_order => 10,
+    $tools->child( offline => title => loc('Offline'), path    => '/Tools/Offline.html',
                    description => loc('Create tickets offline') );
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) )
     {
-        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/', sort_order=> 3,
+        $tools->child( approval => title => loc('Approval'), path     => '/Approvals/',
                        description => loc('My Approvals') );
     }
 
