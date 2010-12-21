@@ -124,7 +124,7 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
 
 my $build_admin_menu = sub {
-        my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 1 );
+        my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 99 );
         if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
             my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', description => loc('Manage users and passwords') );
             $users->child( select => title => loc('Select'), path   => "/Admin/Users/" );
