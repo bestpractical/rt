@@ -1123,6 +1123,18 @@ sub FillIn {
     return $sql;
 }
 
+# log a mason stack trace instead of a Carp::longmess because it's less painful
+# and uses mason component paths properly
+sub _LogSQLStatement {
+    my $self = shift;
+    my $statement = shift;
+    my $duration = shift;
+    my @bind = @_;
+
+    require HTML::Mason::Exceptions;
+    push @{$self->{'StatementLog'}} , ([Time::HiRes::time(), $statement, [@bind], $duration, HTML::Mason::Exception->new->as_string]);
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
