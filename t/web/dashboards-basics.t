@@ -63,7 +63,7 @@ $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
-$m->follow_link_ok({ id => 'tools-dashboards-create'});
+$m->follow_link_ok({ id => 'home-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");

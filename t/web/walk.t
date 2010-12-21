@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 93;
+use RT::Test tests => 92;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
@@ -33,7 +33,7 @@ diag 'walk into /Tools' if $ENV{TEST_VERBOSE};
     $m->get_ok( $baseurl, 'homepage' );
     $m->follow_link_ok( { text => 'Tools' }, '-> Tools' );
 
-    for my $tab ( 'Dashboards', 'Offline', 'My Day' )
+    for my $tab ( 'Offline', 'My Day' )
     {
 
         $m->follow_link_ok( { text => $tab }, "-> $tab" );

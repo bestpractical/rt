@@ -83,7 +83,7 @@ my $build_main_nav = sub {
     }
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
-        $dashes->child( loc('New Dashboard...') => path => "/Dashboards/Modify.html?Create=1" );
+        $dashes->child('dashboard_create' => title => loc('New Dashboard...') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
     my $tickets = Menu->child( search => title => loc('Tickets'), path => '/Search/Build.html' );

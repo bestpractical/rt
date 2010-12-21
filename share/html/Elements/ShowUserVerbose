@@ -54,21 +54,12 @@ my  $comment = '';
 
 if ($User) {
     $address = $User->EmailAddress;
-    $phrase  = $User->RealName
-      if $User->RealName && lc $User->RealName ne lc $address;
+    $phrase  = $User->RealName if $User->RealName && lc $User->RealName ne lc $address;
     $comment = $User->Name if lc $User->Name ne lc $address;
-    $comment = "($comment)" if defined $comment and length $comment;
-    $Address = Email::Address->new( $phrase, $address, $comment );
 }
 
-$Address->comment('') if $comment and defined $Address->user and lc $Address->user eq lc $comment;
-if ( $phrase and my ( $l, $r ) = ( $phrase =~ /^(\w+) (\w+)$/ ) ) {
-    $Address->phrase('')
-      if $Address->user =~ /^\Q$l\E.\Q$r\E$/
-      || $Address->user =~ /^\Q$r\E.\Q$l\E$/;
-}
+my $display = ($phrase || $comment || '' ) . ($address ?  ' <'.$address.'>' : '');
 
-my $display = $Address->format;
    $display = $m->interp->apply_escapes( $display, 'h' )
         unless $ARGS{'NoEscape'};
 </%INIT>
