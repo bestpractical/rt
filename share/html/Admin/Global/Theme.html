@@ -183,6 +183,10 @@ jQuery(function($) {
 });
 </script>
 <%INIT>
+unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
+    Abort(loc('This feature is only available to system administrators.'));
+}
+
 require JSON;
 
 my $text_threshold = 0.6;
