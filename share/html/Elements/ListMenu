@@ -54,13 +54,6 @@ $menu
 % if ( my $description = $child->description ) {
 <span class="description"><% $description %></span>\
 % }
-% if ( $child->has_children ) {
-<ul>
-% for my $grand ($child->children) {
-<li><% $show_link->( $grand ) |n %></li>
-% }
-</ul>
-% }
 </li>
 % }
 </ul>
