@@ -53,7 +53,6 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/farbtastic.js"></script>
-<style type="text/css" id="test"></style>
 
 <div id="simple-customize">
 <div id="upload-logo">
@@ -128,14 +127,14 @@ jQuery(function($) {
                            .text(v[0]));
     });
 
-    $("style#test").text($('#user_css').val());
+    $("style#sitecss").text($('#user_css').val());
     $('#try').click(function() {
-        $("style#test").text($('#user_css').val());
+        $("style#sitecss").text($('#user_css').val());
     });
 
     $('#reset').click(function() {
         setTimeout(function() {
-          $("style#test").text($('#user_css').val());
+          $("style#sitecss").text($('#user_css').val());
         }, 1000);
     });
 
@@ -171,7 +170,7 @@ jQuery(function($) {
           }
       }
       $('#user_css').val(css);
-      $("style#test").text(css);
+      $("style#sitecss").text(css);
     }
 
     $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });

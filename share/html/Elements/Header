@@ -57,7 +57,6 @@
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $style_path %>" type="text/css" media="all" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/site.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % for (keys %{$LinkRel || {}}) {
@@ -76,6 +75,13 @@
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
+
+<!-- Site CSS from theme editor -->
+<style type="text/css" media="all" id="sitecss">
+% if (my $attr = RT->System->FirstAttribute('UserCSS')) {
+<% $attr->Content |n %>
+% }
+</style>
 
 % $m->callback( %ARGS, CallbackName => 'Head' );
 

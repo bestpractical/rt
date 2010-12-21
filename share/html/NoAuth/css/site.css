@@ -1,4 +1,0 @@
-% if (my $attr = $RT::System->FirstAttribute('UserCSS')) {
-<% $attr->Content |n%>
-% }
-% $m->abort();
