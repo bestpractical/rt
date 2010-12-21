@@ -99,15 +99,6 @@ if ( $request_path !~ m{^/SelfService/} ) {
     $articles->child( articles => title => loc('Articles') => path => "/Articles/index.html" );
     $articles->child( topics   => title => loc('Topics') => path => "/Articles/Topics.html" );
 
-    my $reports = $tools->child( reports => title => loc('Reports'), path => '/Tools/Reports/index.html', sort_order => 4,
-                                 description => loc('Various RT reports') );
-    $reports->child( loc('Resolved by owner'), path => '/Tools/Reports/ResolvedByOwner.html',
-        description => loc('Examine tickets resolved in a queue, grouped by owner'), );
-    $reports->child( loc('Resolved in date range'), path => '/Tools/Reports/ResolvedByDates.html',
-        description => loc('Examine tickets resolved in a queue between two dates'), );
-    $reports->child( loc('Created in a date range'), path => '/Tools/Reports/CreatedByDates.html',
-        description => loc('Examine tickets created in a queue between two dates'), );
-
     $tools->child( my_day => title => loc('My Day'), path   => '/Tools/MyDay.html', sort_order => 5,
                    description => loc('Easy updating of your open tickets') );
 
