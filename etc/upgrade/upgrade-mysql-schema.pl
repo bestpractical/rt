@@ -219,7 +219,7 @@ $db_name =~ s/:.*$//;
 my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
 ($version) = $version =~ /^(\d+\.\d+)/;
 
-push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
+push @sql_commands, qq{ALTER DATABASE `$db_name` DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
 
 print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
