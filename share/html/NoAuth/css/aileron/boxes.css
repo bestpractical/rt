@@ -115,8 +115,6 @@
 .titlebox .titlebox-title .left {
     font-weight: bold;
     background: #ccc;
-/*    position: absolute;
-    left: 0.75em;*/
     margin-left: 1em;
     padding: 0.25em 0.75em 0.25em 2em;
     line-height: 1.5em;
@@ -125,6 +123,7 @@
     -moz-border-radius-topleft: 0.3em;
     -moz-border-radius-topright: 0.3em;
     border-radius: 0.3em 0.3em 0 0;
+    border-right: 2px solid #aaa;
 }
 
 .titlebox .titlebox-title .right-empty {
