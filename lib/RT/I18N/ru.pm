@@ -75,4 +75,6 @@ sub numerate {
     return $forms[$form];
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -117,4 +117,6 @@ sub numf {
   return $num;
 }
 
+RT::Base->_ImportOverlays();
+
 1;
