@@ -122,8 +122,8 @@ if ( $request_path !~ m{^/SelfService/} ) {
                        description => loc('My Approvals') );
     }
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
-    {
+
+my $build_admin_menu = sub {
         my $admin = $tools->child( config => title => loc('Configuration'), path   => '/Admin/', sort_order => 1 );
         if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
             my $users = $admin->child( users => title => loc('Users'), path => '/Admin/Users/', description => loc('Manage users and passwords') );
@@ -210,56 +210,6 @@ if ( $request_path !~ m{^/SelfService/} ) {
         }
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
                              description => loc('Permanently wipeout data from RT'));
-    }
-
-    my $about_me = Menu->child( 'preferences' => title =>
-                        loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
-                    escape_title => 0,
-                    sort_order   => 99
-    );
-
-
-    if ( $session{'CurrentUser'}->UserObj
-         && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => RT->System )) {
-        my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
-        $settings->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
-        $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
-        $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
-        $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
-        $settings->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
-
-        my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches' );
-        my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",
-                          Object => RT::System->new( $session{'CurrentUser'} )) ];
-        my $i = 0;
-
-        for my $search (@$searches) {
-            $search_menu->child( "search-" . $i++, title => $search->[0], path  => "/Prefs/Search.html?"
-                          . $query_string->( name => ref( $search->[1] ) . '-' . $search->[1]->Id),);
-
-        }
-    }
-    if ( $session{'CurrentUser'}->Name
-         && (   !RT->Config->Get('WebExternalAuth')
-              || RT->Config->Get('WebFallbackToInternalAuth') )) {
-        $about_me->child( logout => title => loc('Logout'), path   => '/NoAuth/Logout.html' );
-    }
-    if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
-        if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
-            my $obj = RT::Dashboard->new( $session{'CurrentUser'} );
-            $obj->LoadById($id);
-            if ( $obj and $obj->id ) {
-                my $tabs = PageMenu;
-                $tabs->child( basics => title => loc('Basics'), path => "/Dashboards/Modify.html?id=" . $obj->id);
-                $tabs->child(content => title => loc('Content'), path => "/Dashboards/Queries.html?id=" . $obj->id);
-                $tabs->child( subscription => title => loc('Subscription'),
-                        path => "/Dashboards/Subscription.html?id=" . $obj->id
-                ) if $obj->CurrentUserCanSubscribe;
-                $tabs->child( show => title => loc('Show'), path => "/Dashboards/" . $obj->id . "/" . $obj->Name)
-            }
-        }
-    }
-
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
         my $type = $1;
         my $tabs = PageMenu();
@@ -419,6 +369,66 @@ if ( $request_path !~ m{^/SelfService/} ) {
 
         }
     }
+
+    };
+
+
+    if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
+    {
+        $build_admin_menu->();
+    }
+
+
+
+
+    my $about_me = Menu->child( 'preferences' => title =>
+                        loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
+                    escape_title => 0,
+                    sort_order   => 99
+    );
+
+
+    if ( $session{'CurrentUser'}->UserObj
+         && $session{'CurrentUser'}->HasRight( Right  => 'ModifySelf', Object => RT->System )) {
+        my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html', );
+        $settings->child( options => title => loc('Options'), path     => '/Prefs/Other.html', );
+        $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
+        $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
+        $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
+        $settings->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
+
+        my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches' );
+        my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",
+                          Object => RT::System->new( $session{'CurrentUser'} )) ];
+        my $i = 0;
+
+        for my $search (@$searches) {
+            $search_menu->child( "search-" . $i++, title => $search->[0], path  => "/Prefs/Search.html?"
+                          . $query_string->( name => ref( $search->[1] ) . '-' . $search->[1]->Id),);
+
+        }
+    }
+    if ( $session{'CurrentUser'}->Name
+         && (   !RT->Config->Get('WebExternalAuth')
+              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+        $about_me->child( logout => title => loc('Logout'), path   => '/NoAuth/Logout.html' );
+    }
+    if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
+        if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
+            my $obj = RT::Dashboard->new( $session{'CurrentUser'} );
+            $obj->LoadById($id);
+            if ( $obj and $obj->id ) {
+                my $tabs = PageMenu;
+                $tabs->child( basics => title => loc('Basics'), path => "/Dashboards/Modify.html?id=" . $obj->id);
+                $tabs->child(content => title => loc('Content'), path => "/Dashboards/Queries.html?id=" . $obj->id);
+                $tabs->child( subscription => title => loc('Subscription'),
+                        path => "/Dashboards/Subscription.html?id=" . $obj->id
+                ) if $obj->CurrentUserCanSubscribe;
+                $tabs->child( show => title => loc('Show'), path => "/Dashboards/" . $obj->id . "/" . $obj->Name)
+            }
+        }
+    }
+
 
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
