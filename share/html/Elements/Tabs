@@ -433,7 +433,7 @@ my $build_admin_menu = sub {
             my $obj = RT::Ticket->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
+            my $actions = PageMenu()->child( actions => title => loc('Actions...'), sort_order  => 95 );
             my $tabs = PageMenu();
             $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
                 sort_order => 99
