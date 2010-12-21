@@ -149,7 +149,7 @@ $Multiple => 0
 $Rows => undef
 $HideCategory => 0
 $RenderType => undef
-$MaxValues
+$MaxValues => 1
 </%ARGS>
 
 <%METHOD options>
