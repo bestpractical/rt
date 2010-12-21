@@ -46,22 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 .titlebox {
- border-left: 1px solid #ccc;
- border-top: 1px solid #ccc;
- background-color: #efefef;
- padding-top: 1em;
  margin-top: 1em;
  margin-left: 1em;
- -moz-border-radius: 0.5em;
- -webkit-border-radius: 0.5em;
- margin-bottom: 2em;
- border-bottom: 2px solid #aaa;
- border-right: 2px solid #aaa;
- padding-right: 1em;
+    margin-bottom: 2em;
+}
 
-
-  border-radius: 0.5em;
-
+.titlebox .titlebox-content {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    background-color: #efefef;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-bottom: 2px solid #aaa;
+    border-right: 2px solid #aaa;
+    border-radius: 0.5em;
+    padding: 1.5em 1em 1em 1em;
 }
 
 * html .titlebox {
@@ -71,10 +70,13 @@
 
 .titlebox .titlebox {
 
- background-color: #ffffff;
  margin-top: 1em;
  margin-right: 0.25em;
 
+}
+
+.titlebox .titlebox .titlebox-content {
+    background-color: white;
 }
 
 
@@ -89,11 +91,6 @@
 
 .titlebox .titlebox-title {
  position: relative;
- margin-top: -1.5em;
- padding-bottom: 0.25em;
- padding-left: 1em;
- margin-right: -1em;
-
 }
 
 .titlebox .titlebox-title a {
@@ -107,21 +104,26 @@
 
 }
 
+.titlebox.rolled-up .titlebox-title {
+    border-bottom: 1px solid #ccc;
+}
+
+.titlebox.rolled-up .titlebox-title .right {
+    display: none;
+}
+
 .titlebox .titlebox-title .left {
     font-weight: bold;
     background: #ccc;
-    margin-left: 0.75em;
-    padding:0.5em;
-    padding-left: 0.75em;
-    padding-right: 0.75em;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    border-bottom: 2px solid #aaa;
+    margin-left: 1em;
+    padding: 0.25em 0.75em 0.25em 2em;
+    line-height: 1.5em;
+    -webkit-border-top-left-radius: 0.3em;
+    -webkit-border-top-right-radius: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    border-radius: 0.3em 0.3em 0 0;
     border-right: 2px solid #aaa;
-
-    border-radius: 0.5em;
-
-
 }
 
 .titlebox .titlebox-title .right-empty {
@@ -130,8 +132,8 @@
 
 .titlebox .titlebox-title .right {
   position: absolute;
-   right: 0;
-   top: 0.5em;
+   right: 2px;
+   top: 1.75em;
   font-size: 0.9em;
   background: #dedede;
   border-left: 1px solid #ccc;
@@ -157,34 +159,20 @@
  color: #000;
 }
 
-.titlebox .titlebox-content {
- padding-top: 0.5em;
- padding-left: 1em;
- padding-bottom: 1em;
-
-}
-
 .titlebox .titlebox-title .widget a {
   display: block;
   margin: 0;
-  margin-top: 0.5em;
   width: 20px;
 
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
-
+  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat;
+  background-position: center 0;
+  
   position: absolute;
-  top: -1em;
-  left: 0.15em;
-  float: left;
-
-  padding: 11px 0 0 0;
+  top: 0.5em;
+  left: 1.2em;
+  
+  padding: 7px 0 0 0;
   overflow: hidden;
-}
-
-* html .titlebox .titlebox-title .widget a {
-    background-position: center 0.3em;
-    top: 0em;
-    left: -1.5em;
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {

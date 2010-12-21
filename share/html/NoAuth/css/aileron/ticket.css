@@ -190,8 +190,7 @@ div#ticket-history .messagebody .messagebody{
 .ticket-transaction.other .type { background: #abc; }
 
 
-
-
+/* Color the titlebox tabs */
 .ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
 .ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
 .ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
@@ -200,6 +199,16 @@ div#ticket-history .messagebody .messagebody{
 .ticket-info-reminders .titlebox-title .left { background-color: #369;  color: #fff;}
 .ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
 .ticket-info-attachments .titlebox-title .left { background-color: #993366;  color: #fff;}
+
+/* Use a lighter colored toggle arrow */
+.ticket-info-cfs .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-basics .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-people .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-requestor .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-links .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-reminders .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-dates .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-attachments .titlebox-title .widget a { background-position: center -7px; }
 
 
 .ticket-summary .titlebox-title .left a, .ticket-summary .titlebox-title .left a:visited { color: #fff;}
