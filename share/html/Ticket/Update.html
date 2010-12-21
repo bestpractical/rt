@@ -203,7 +203,6 @@
 my $CanRespond = 0;
 my $CanComment = 0;
 my $checks_failure = 0;
-my $title;
 
 my $TicketObj = LoadTicket($id);
 
@@ -215,11 +214,7 @@ unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
-if ($DefaultStatus eq 'resolved') {
-    $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
-} else {
-    $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
-}
+my $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
