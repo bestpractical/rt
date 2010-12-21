@@ -174,7 +174,17 @@ my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
                                                : (),
                             env => 'deployment' );
 my @args = @ARGV;
-push @args, '--port', $port unless grep { m/--port/ } @args;
+
+use List::MoreUtils 'last_index';
+my $last_index = last_index { $_ eq '--port' } @args; 
+
+if ( $last_index != -1 && $args[$last_index+1] =~ /^\d+$/ ) {
+    $port = $args[$last_index+1];
+}
+else {
+    push @args, '--port', $port;
+}
+
 push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @args;
 
@@ -214,8 +224,8 @@ sub handle_bind_error {
 
     print STDERR <<EOF;
 WARNING: RT couldn't start up a web server on port @{[$port]}.
-This is often the case if you're running @{[$0]} as 
-someone other than your system's "root" user.  You may also specify a
+This is often the case if the port is already in use or you're running @{[$0]} 
+as someone other than your system's "root" user.  You may also specify a
 temporary port with: $0 --port <port>
 EOF
 
