@@ -367,9 +367,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub Privileged {
     my $self = shift;
-    my $priv = RT::Group->new($self->CurrentUser);
-    $priv->LoadSystemInternalGroup('Privileged');
-    if ( $priv->HasMember( $self->PrincipalId ) ) {
+    if ( RT->PrivilegedUsers->HasMember( $self->id ) ) {
         return(1);
     } else {
         return(undef);

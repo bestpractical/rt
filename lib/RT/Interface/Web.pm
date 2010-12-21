@@ -2475,9 +2475,7 @@ sub GetPrincipalsMap {
             ];
         }
         elsif (/Users/) {
-            my $Privileged = RT::Group->new($session{'CurrentUser'});
-            $Privileged->LoadSystemInternalGroup('Privileged');
-            my $Users = $Privileged->UserMembersObj();
+            my $Users = RT->PrivilegedUsers->UserMembersObj();
             $Users->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
 
             # Only show users who have rights granted on this object

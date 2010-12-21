@@ -55,7 +55,7 @@ package RT;
 use File::Spec ();
 use Cwd ();
 
-use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_INSTALL_MODE);
+use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
 use vars qw($BasePath
  $EtcPath
@@ -549,6 +549,23 @@ also L</InitSystemObjects>.
 =cut
 
 sub Nobody { return $Nobody }
+
+sub PrivilegedUsers {
+    if (!$_Privileged) {
+    $_Privileged = RT::Group->new(RT->SystemUser);
+    $_Privileged->LoadSystemInternalGroup('Privileged');
+    }
+    return $_Privileged;
+}
+
+sub UnprivilegedUsers {
+    if (!$_Unprivileged) {
+    $_Unprivileged = RT::Group->new(RT->SystemUser);
+    $_Unprivileged->LoadSystemInternalGroup('Unprivileged');
+    }
+    return $_Unprivileged;
+}
+
 
 =head2 Plugins
 

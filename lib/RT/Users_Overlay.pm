@@ -200,13 +200,7 @@ Limits to users who can be made members of ACLs and groups
 
 sub LimitToPrivileged {
     my $self = shift;
-
-    my $priv = RT::Group->new( $self->CurrentUser );
-    $priv->LoadSystemInternalGroup('Privileged');
-    unless ( $priv->Id ) {
-        $RT::Logger->crit("Couldn't find a privileged users group");
-    }
-    $self->MemberOfGroup( $priv->PrincipalId );
+    $self->MemberOfGroup( RT->PrivilegedUsers->id );
 }
 
 =head2 LimitToUnprivileged
@@ -217,13 +211,7 @@ Limits to unprivileged users only
 
 sub LimitToUnprivileged {
     my $self = shift;
-
-    my $unpriv = RT::Group->new( $self->CurrentUser );
-    $unpriv->LoadSystemInternalGroup('Unprivileged');
-    unless ( $unpriv->Id ) {
-        $RT::Logger->crit("Couldn't find an 'Unprivileged' users group");
-    }
-    $self->MemberOfGroup( $unpriv->PrincipalId );
+    $self->MemberOfGroup( RT->UnprivilegedUsers->id);
 }
 
 
