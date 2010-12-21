@@ -612,8 +612,8 @@ sub EmailFrequency {
     );
     return '' unless $self->id && $self->id != RT->Nobody->id
         && $self->id != RT->SystemUser->id;
-    return 'no email' unless my $email = $self->EmailAddress;
-    return 'Will not be sent email' if $args{'Ticket'} &&
+    return 'no email address' unless my $email = $self->EmailAddress;
+    return 'email disabled for ticket' if $args{'Ticket'} &&
         grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
     my $frequency = RT->Config->Get( 'EmailFrequency', $self ) || '';
     return 'daily' if $frequency =~ /daily/i;
