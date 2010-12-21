@@ -46,6 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+use strict;
+use warnings;
+
 package RT::I18N::ru;
 
 sub quant {

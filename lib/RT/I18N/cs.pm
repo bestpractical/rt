@@ -46,6 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+use strict;
+use warnings;
+
 package RT::I18N::cs;
 
 # # CZECH TRANSLATORS COMMENTS see Locale::Maketext::TPJ13
