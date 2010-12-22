@@ -290,9 +290,17 @@ sub action_insert {
             for keys %{$removed{$class}};
     }
 
+    my $content;
+    open my $handle, '<', $file or warn "Unable to open $file: $!";
+    if ($handle) {
+        local $/; # slurp
+        $content = <$handle>;
+    }
+
     RT->System->AddUpgradeHistory(RT => {
         action   => 'insert',
         filename => $file,
+        content  => $content,
         stage    => 'after',
     });
 
