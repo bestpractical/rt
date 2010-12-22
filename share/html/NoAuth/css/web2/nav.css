@@ -64,7 +64,7 @@
     padding-left: 0.5em;
 }
 
-#app-nav .sf-sub-indicator {
+.sf-sub-indicator {
     background-image: url(../images/arrows-grey.png);
     margin-top: -3px;
 }
@@ -100,6 +100,7 @@
 
 #prefs-menu .sf-sub-indicator {
     background-image: url(../images/arrows-grey.png);
+    margin-top: 0;
 }
 
 #main-navigation ul li {
@@ -195,21 +196,32 @@
 
 
 #page-navigation .sf-menu ul {
-    background: #eee;
+    background: white;
+    border-bottom: 2px solid #ccc;
 }
 
 
 #page-navigation .sf-menu li:hover, #page-navigation .sf-menu li.sfHover, #page-navigation .sf-menu a:focus, #page-navigation .sf-menu a:hover, #page-navigation .sf-menu a:active {
     background: none;
-
 }
 
 #page-navigation .sf-menu a:visited, #page-navigation .sf-menu a {
     border: none;
-    padding: 0.25em;
     color: #000;
 }
 
+#page-navigation .sf-menu a {
+    padding: 0.25em;
+}
+
+#page-navigation .sf-menu a.sf-with-ul {
+    /* allow space for the submenu indicator */
+    padding-right: 2em;
+}
+
+#page-menu.sf-menu li .sf-sub-indicator {
+    top: 0.7em;
+}
 
 
 #page-actions {
