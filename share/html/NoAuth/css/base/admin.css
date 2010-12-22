@@ -78,9 +78,9 @@ ul.list-menu ul li {
 
 #rt-portal .titlebox {
     position: absolute;
-    top: 1em;;
+    top: 1em;
     right: 1em;
-    bottom: 0em;
+    bottom: 3em;
     width: 45%;
     padding-bottom: 1em;
 }
