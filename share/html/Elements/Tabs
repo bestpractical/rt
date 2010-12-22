@@ -79,11 +79,11 @@ my $build_main_nav = sub {
                        path => '/Dashboards/' . $dash->id . '/' . $dash->Name,);
         }
 
-        $dashes->child( more => title => loc('All Dashboards...'), path  => 'Dashboards/index.html' );
+        $dashes->child( more => title => loc('All Dashboards'), path  => 'Dashboards/index.html' );
     }
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
-        $dashes->child('dashboard_create' => title => loc('New Dashboard...') => path => "/Dashboards/Modify.html?Create=1" );
+        $dashes->child('dashboard_create' => title => loc('New Dashboard') => path => "/Dashboards/Modify.html?Create=1" );
     }
 
     my $tickets = Menu->child( search => title => loc('Tickets'), path => '/Search/Build.html' );
@@ -433,7 +433,7 @@ my $build_admin_menu = sub {
             my $obj = RT::Ticket->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            my $actions = PageMenu()->child( actions => title => loc('Actions...'), sort_order  => 95 );
+            my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
             my $tabs = PageMenu();
             $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
                 sort_order => 99
@@ -611,7 +611,7 @@ my $build_admin_menu = sub {
             $current_search_menu->child( chart => title => loc('Chart'),
                                          path => "/Search/Chart.html$args" );
 
-            my $more = $current_search_menu->child( more => title => loc('Feeds...') );
+            my $more = $current_search_menu->child( more => title => loc('Feeds') );
             
             $more->child(
                                    spreadsheet => title => loc('Spreadsheet'),
