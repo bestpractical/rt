@@ -546,17 +546,17 @@ my $build_admin_menu = sub {
                 my $search = Menu()->child('search');
                 # Don't display prev links if we're on the first ticket
                 if ( $item_map->{$id}->{prev} ) {
-                    $search->child( 'first', title => '<< ' . loc('First') => class => "nav",
-                              path => "/Ticket/Display.html?id=" . $item_map->{first});
+                    $search->child( 'first', title => ' ' . loc('First'), escape_title => 0, class => "nav",
+                                    path => "/Ticket/Display.html?id=" . $item_map->{first});
                     $search->child( prev => title => '< ' . loc('Prev') => class => "nav",
-                        path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                                    path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
                 }
-                    # Don't display next links if we're on the last ticket
-                    if ( $item_map->{$id}->{next} ) {
-                        $search->child( next       => title => loc('Next') . ' >' => class => "nav",
-                                        path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
-                        $search->child( last        => title => loc('Last') . ' >>' => class => "nav",
-                                        path => "/Ticket/Display.html?id=" . $item_map->{last});
+                # Don't display next links if we're on the last ticket
+                if ( $item_map->{$id}->{next} ) {
+                    $search->child( next       => title => loc('Next') . ' >' => class => "nav",
+                                    path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
+                    $search->child( last        => title => loc('Last') . ' >>' => class => "nav",
+                                    path => "/Ticket/Display.html?id=" . $item_map->{last});
                 }
             }
         }
