@@ -46,23 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($Lite) {
-<input name="<%$Name%>" size="25" value="<%$default_queue->Name%>" class="<%$Class%>" />
+%     my $d = RT::Queue->new($session{'CurrentUser'});
+%     $d->Load($Default);
+<input name="<%$Name%>" size="25" value="<%$d->Name%>" class="<%$Class%>" />
 % }
 % else {
-<select name="<%$Name%>" <% ($Multiple) ? qq{multiple="multiple" size="$Size"} : '' |n%>\
-     <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
-% if ($ShowNullOption) {
+<select name="<%$Name%>" <% ($Multiple) ? qq{multiple="multiple" size="$Size"} : '' |n%> <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
+%     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
-% }
-% if ($default_queue->id) {
- <option value="<% $NamedValues ? $default_queue->Name : $default_queue->id %>"><%$default_queue->Name%>\
-% if ($Verbose && $default_queue->Description) {
- (<%$default_queue->Description%>)\
-% }
-</option>
-%}
+%     }
 %     for my $queue (@{$session{$cache_key}{queues}}) {
-  <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>"><%$queue->{Name}%>\
+  <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>"\
+% if ($queue->{Id} eq ($Default||'') || $queue->{Name} eq ($Default||'')) {
+ selected="selected"\
+% }
+><%$queue->{Name}%>\
 %             if ($Verbose and $queue->{Description}) {
  (<%$queue->{Description}%>)\
 %             }
@@ -112,10 +110,5 @@ if ( not defined $session{$cache_key} and not $Lite ) {
         }
     }
     $session{$cache_key}{lastupdated} = time();
-}
-
-my $default_queue = RT::Queue->new($session{CurrentUser});
-if ($Default) {
-    $default_queue->Load($Default);
 }
 </%init>
