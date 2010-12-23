@@ -53,9 +53,9 @@
 % $show_cb->($_) foreach @$body;
 </td>
 
-% if ( $summary ) {
+% if ( $sidebar ) {
 <td class="boxcontainer">
-% $show_cb->($_) foreach @$summary;
+% $show_cb->($_) foreach @$sidebar;
 </td>
 % }
 
@@ -75,12 +75,12 @@ unless ( $Portlets ) {
     );
 }
 
-my ($body, $summary) = @{$Portlets}{qw(body summary)};
+my ($body, $sidebar) = @{$Portlets}{qw(body sidebar)};
 unless( $body && @$body ) {
-    $body = $summary || [];
-    $summary = undef;
+    $body = $sidebar || [];
+    $sidebar = undef;
 }
-$summary = undef unless $summary && @$summary;
+$sidebar = undef unless $sidebar && @$sidebar;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 

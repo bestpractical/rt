@@ -108,7 +108,7 @@ for my $object (@objs) {
 
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
+    panes  => ['body', 'sidebar'],
     Action => "MyRT.html?id=$id",
     items => \@items,
     current_portlets => $portlets,

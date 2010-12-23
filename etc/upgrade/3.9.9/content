@@ -1,0 +1,25 @@
+@Initial = (
+    sub {
+        my $users = RT::Users->new(RT->SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            my $settings = $user->Preferences('HomepageSettings')
+                or next;
+            next if exists $settings->{sidebar};
+
+            $settings->{sidebar} = delete $settings->{summary};
+            $user->SetPreferences('HomepageSettings', $settings);
+        }
+    },
+    sub {
+        my ($default_portlets) = RT->System->Attributes->Named('HomepageSettings');
+        my $settings = $default_portlets->Content;
+        return if exists $settings->{sidebar};
+
+        $settings->{sidebar} = delete $settings->{summary};
+        $default_portlets->SetContent($settings);
+    },
+);
+
+
