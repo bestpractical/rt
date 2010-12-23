@@ -123,13 +123,13 @@ sub copy_tables {
 { # create ObjectClasses
   # this logic will need updating when folks have an FM_ObjectClasses table
     use RT::Classes;
-    use RT::ObjectClasses;
+    use RT::ObjectClass;
 
     my $classes = RT::Classes->new(RT->SystemUser);
     $classes->UnLimit;
     while ( my $class = $classes->Next ) {
         my $objectclass = RT::ObjectClass->new(RT->SystemUser);
-        my ($ret, $msg ) = $objectclass->Create( Class => $class->Id, ObjectType => 'RT::System', ObjectId => 1 );
+        my ($ret, $msg ) = $objectclass->Create( Class => $class->Id, ObjectType => 'RT::System', ObjectId => 0 );
         if ($ret) {
             warn("Applied Class '".$class->Name."' globally");
         } else {
