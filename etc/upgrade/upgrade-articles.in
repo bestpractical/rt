@@ -224,3 +224,15 @@ sub copy_tables {
 
     }
 }
+
+{ # update Transactions
+  # we only keep article transactions at this point
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new(RT->SystemUser);
+    $transactions->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+    while ( my $t = $transactions->Next ) {
+        my ($ret, $msg) = $t->__Set( Field => 'ObjectType', Value => 'RT::Article' );
+        warn "Updated Transaction ".$t->Id." to point to RT::Article";
+    }
+
+}
