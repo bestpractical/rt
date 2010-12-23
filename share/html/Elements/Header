@@ -111,7 +111,7 @@ if ( RT->Config->Get('DevelMode') ) {
 else {
     my $key =
       RT::Interface::Web::SquishedCSS( Name => $style )->Key;
-    $style_path = "$style/main-squished-$key.css";
+    $style_path = "$style-squished-$key.css";
 }
 
 </%INIT>

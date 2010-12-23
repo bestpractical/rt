@@ -13,7 +13,7 @@ diag "test squished files with devel mode disabled";
     ( $url, $m ) = RT::Test->started_ok;
     $m->login;
 
-    $m->follow_link_ok( { url_regex => qr!main-squished-([a-f0-9]{32})\.css! },
+    $m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
         'follow squished css' );
     $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
     $m->content_lacks( 'text-decoration: underline !important;',
@@ -40,7 +40,7 @@ SKIP:
     ( $url, $m ) = RT::Test->started_ok;
 
     $m->login;
-    $m->follow_link_ok( { url_regex => qr!main-squished-([a-f0-9]{32})\.css! },
+    $m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
         'follow squished css' );
     $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
     $m->content_contains( 'text-decoration: underline !important;',
