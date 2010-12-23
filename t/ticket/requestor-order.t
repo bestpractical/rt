@@ -138,5 +138,3 @@ sub check_emails_order
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
 RT::Test->mailsent_ok(25);
-
-# vim:ft=perl:
