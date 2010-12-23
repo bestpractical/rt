@@ -116,11 +116,29 @@ unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) 
         my $objectclass = RT::ObjectClass->new(RT->SystemUser);
         my ($ret, $msg ) = $objectclass->Create( Class => $class->Id, ObjectType => 'RT::System', ObjectId => 1 );
         if ($ret) {
-            warn("Applied Class ".$class->Name." globally");
+            warn("Applied Class '".$class->Name."' globally");
         } else {
             warn("Couldn't create linkage for Class ".$class->Name.": $msg");
         }
     }
+}
+
+{ # update ACLs
+    use RT::ACL;
+    my $acl = RT::ACL->new(RT->SystemUser);
+    $acl->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Class' );
+    $acl->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::System' );
+    while ( my $ace = $acl->Next ) {
+        if ( $ace->__Value('ObjectType') eq 'RT::FM::Class' ) {
+            my ($ret, $msg ) = $ace->__Set( Field => 'ObjectType', Value => 'RT::Class');
+            warn "Fixing ACL ".$ace->Id." to refer to RT::Class: $msg";
+        } elsif ( $ace->__Value('ObjectType') eq 'RT::FM::System' ) {
+            my ($ret, $msg) = $ace->__Set(Field => 'ObjectType', Value => 'RT::System');
+            warn "Fixing ACL ".$ace->Id." to refer to RT::System: $msg";
+        }
+    }
+
+
 }
 
 
