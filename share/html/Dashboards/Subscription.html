@@ -196,7 +196,7 @@ my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Ti
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
 ($val, $msg) = $DashboardObj->LoadById($id);
-$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $id, $msg));
+$val || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 
 my $SubscriptionObj = $DashboardObj->Subscription;
 
