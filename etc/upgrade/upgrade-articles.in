@@ -161,7 +161,7 @@ sub copy_tables {
     my $cfs = RT::CustomFields->new(RT->SystemUser);
     $cfs->Limit( FIELD => 'LookupType', VALUE => 'RT::FM::Class-RT::FM::Article' );
     while ( my $cf = $cfs->Next ) {
-        my ($ret, $msg) = $cf->SetLookupType('RT::Class-RT::Article');
+        my ($ret, $msg) = $cf->__Set( Field => 'LookupType', Value => 'RT::Class-RT::Article' );
         warn "Update Custom Field LookupType for CF.".$cf->Id." $msg";
     }
 }
