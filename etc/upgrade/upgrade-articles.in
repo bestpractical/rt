@@ -105,6 +105,21 @@ unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) 
     copy_tables('FM_ObjectTopics','ObjectTopics',\@columns);
 }
 
+sub copy_tables {
+    my ($source, $dest, $columns) = @_;
+    my $column_list = join(', ',@$columns);
+    if ( $db_type eq 'mysql' ) {
+        my $sql = "insert into $dest ($column_list) select $column_list from $source";
+        $RT::Logger->debug($sql);
+        $dbh->do($sql);
+    } elsif ( $db_type eq 'Pg' ) {
+        my $sql = "insert into $dest ($column_list) (select $column_list from $source)";
+        $RT::Logger->debug($sql);
+        $dbh->do($sql);
+    }
+    # oracle/sqlite, sigh
+}
+
 { # create ObjectClasses
   # this logic will need updating when folks have an FM_ObjectClasses table
     use RT::Classes;
@@ -141,18 +156,13 @@ unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) 
 
 }
 
-
-sub copy_tables {
-    my ($source, $dest, $columns) = @_;
-    my $column_list = join(', ',@$columns);
-    if ( $db_type eq 'mysql' ) {
-        my $sql = "insert into $dest ($column_list) select $column_list from $source";
-        $RT::Logger->debug($sql);
-        $dbh->do($sql);
-    } elsif ( $db_type eq 'Pg' ) {
-        my $sql = "insert into $dest ($column_list) (select $column_list from $source)";
-        $RT::Logger->debug($sql);
-        $dbh->do($sql);
+{ # update CustomFields
+    use RT::CustomFields;
+    my $cfs = RT::CustomFields->new(RT->SystemUser);
+    $cfs->Limit( FIELD => 'LookupType', VALUE => 'RT::FM::Class-RT::FM::Article' );
+    while ( my $cf = $cfs->Next ) {
+        my ($ret, $msg) = $cf->SetLookupType('RT::Class-RT::Article');
+        warn "Update Custom Field LookupType for CF.".$cf->Id." $msg";
     }
-    # oracle/sqlite, sigh
 }
+
