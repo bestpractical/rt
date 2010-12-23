@@ -235,4 +235,14 @@ sub copy_tables {
         warn "Updated Transaction ".$t->Id." to point to RT::Article";
     }
 
+    # we also need to change links that point to articles
+    $transactions = RT::Transactions->new(RT->SystemUser);
+    $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
+    $transactions->Limit( FIELD => 'NewValue', VALUE => 'rtfm', OPERATOR => 'LIKE' );
+    while ( my $t = $transactions->Next ) {
+        my $value = $t->__Value('NewValue');
+        $value =~ s/rtfm/article/;
+        my ($ret, $msg) = $t->__Set( Field => 'NewValue', Value => $value );
+        warn "Updated Transaction ".$t->Id." to link to $value";
+    }
 }
