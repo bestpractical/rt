@@ -66,7 +66,7 @@ $FILECAT = {};
 
 # extract all strings and stuff them into $FILECAT
 # scan html dir for extensions
-File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share etc) );
+File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
 
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
