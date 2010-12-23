@@ -55,9 +55,7 @@ use File::Copy;
 use Regexp::Common;
 use Carp;
 
-use vars qw($DEBUG $FILECAT);
-
-$DEBUG = 1;
+use vars qw($FILECAT);
 
 # po dir is for extensions
 @ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
