@@ -218,7 +218,7 @@ sub extract_strings_from_code {
     # Comment-based left pair mark: "..." => ... # loc_left_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?(?:(\w+)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smgo) {
+    while (m/\G.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smgo) {
 	my $key = $1;
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
         unless ( defined $key ) {
