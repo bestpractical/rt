@@ -49,26 +49,25 @@
 # Portions Copyright 2002 Autrijus Tang <autrijus@autrijus.org>
 
 use strict;
+use warnings;
 
 use File::Find;
 use File::Copy;
 use Regexp::Common;
 use Carp;
 
-use vars qw($FILECAT);
-
 # po dir is for extensions
 @ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
 
-$FILECAT = {};
+our %FILECAT;
 
-# extract all strings and stuff them into $FILECAT
+# extract all strings and stuff them into %FILECAT
 # scan html dir for extensions
 File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
 
 # ensure proper escaping and [_1] => %1 transformation
-foreach my $str ( sort keys %{$FILECAT} ) {
-    my $entry = $FILECAT->{$str};
+foreach my $str ( sort keys %FILECAT ) {
+    my $entry = $FILECAT{$str};
     my $oldstr = $str;
 
     $str =~ s/\\/\\\\/g;
@@ -77,8 +76,8 @@ foreach my $str ( sort keys %{$FILECAT} ) {
     $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
 
-    delete $FILECAT->{$oldstr};
-    $FILECAT->{$str} = $entry;
+    delete $FILECAT{$oldstr};
+    $FILECAT{$str} = $entry;
 }
 
 # update all language dictionaries
@@ -95,8 +94,8 @@ foreach my $dict (@ARGV) {
 }
 
 # warn about various red flags in loc strings
-foreach my $str ( sort keys %{$FILECAT} ) {
-    my $entry = $FILECAT->{$str};
+foreach my $str ( sort keys %FILECAT ) {
+    my $entry = $FILECAT{$str};
     my $entry_count = @$entry;
 
     # doesn't exist in the current codebase, ignore for now
@@ -156,7 +155,7 @@ sub extract_strings_from_code {
         $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
         $str =~ s/\\'/\'/g;
         #print "STR IS $str\n";
-        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
 
     # Localization function: loc(...)
@@ -180,7 +179,7 @@ sub extract_strings_from_code {
         $vars =~ s/[\n\r]//g;
         $str  =~ s/\\'/\'/g;
 
-        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
 
     # Comment-based mark: "..." # loc
@@ -195,7 +194,7 @@ sub extract_strings_from_code {
         }
         $str = substr($str, 1, -1);
 	$str =~ s/\\'/\'/g;
-	push @{ $FILECAT->{$str} }, [ $filename, $line, '' ];
+	push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
     # Comment-based qw mark: "qw(...)" # loc_qw
@@ -209,7 +208,7 @@ sub extract_strings_from_code {
             next;
         }
         foreach my $value (eval($str)) {
-            push @{ $FILECAT->{$value} }, [ $filename, $line, '' ];
+            push @{ $FILECAT{$value} }, [ $filename, $line, '' ];
         }
     }
 
@@ -224,7 +223,7 @@ sub extract_strings_from_code {
             next;
         }
 	$key  =~ s/\\'/\'/g;
-	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+	push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
@@ -241,8 +240,8 @@ sub extract_strings_from_code {
 	$val = substr($val, 1, -1);
 	$key  =~ s/\\'/\'/g;
 	$val  =~ s/\\'/\'/g;
-	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
-	push @{ $FILECAT->{$val} }, [ $filename, $line, '' ];
+	push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+	push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
     }
 
     close (_);
@@ -319,11 +318,11 @@ sub update {
 
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
 
-    foreach my $str ( keys %{$FILECAT} ) {
+    foreach my $str ( keys %FILECAT ) {
         $Lexicon{$str} ||= '';
     }
     foreach ( sort keys %Lexicon ) {
-        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
+        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT{$_} } );
         my $nospace = $_;
         $nospace =~ s/ +$//;
 
@@ -347,7 +346,7 @@ sub update {
         elsif ($_) {
             $out .= "#: NOT FOUND IN SOURCE\n";
         }
-        foreach my $entry ( grep { $_->[2] } @{ $FILECAT->{$_} } ) {
+        foreach my $entry ( grep { $_->[2] } @{ $FILECAT{$_} } ) {
             my ( $file, $line, $var ) = @{$entry};
             $var =~ s/^\s*,\s*//;
             $var =~ s/\s*$//;
