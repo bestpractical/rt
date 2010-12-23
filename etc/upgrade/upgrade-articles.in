@@ -204,3 +204,23 @@ sub copy_tables {
         }
     }
 }
+
+{ # update Links
+    use RT::Links;
+    my $links = RT::Links->new(RT->SystemUser);
+    $links->Limit(FIELD => 'Base', VALUE => 'rtfm', OPERATOR => 'LIKE', SUBCLAUSE => 'stopanding', ENTRYAGGREGATOR => 'OR');
+    $links->Limit(FIELD => 'Target', VALUE => 'rtfm', OPERATOR => 'LIKE', SUBCLAUSE => 'stopanding', ENTRYAGGREGATOR => 'OR' );
+    while ( my $link = $links->Next ) {
+        my $base   = $link->__Value('Base');
+        my $target = $link->__Value('Target');
+        if ( $base =~ s/rtfm/article/i ) {
+            my ($ret, $msg) = $link->__Set( Field => 'Base', Value => $base );
+            warn "Updating base to $base: $msg for link ".$link->id;
+        }
+        if ( $target =~ s/rtfm/article/i ) {
+            my ($ret, $msg) = $link->__Set( Field => 'Target', Value => $target );
+            warn "Updating target to $target: $msg for link ".$link->id;
+        }
+
+    }
+}
