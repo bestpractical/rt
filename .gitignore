@@ -15,6 +15,7 @@ t/tmp/
 sbin/rt-attributes-viewer
 sbin/rt-clean-sessions
 sbin/rt-dump-database
+sbin/rt-dump-metadata
 sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin

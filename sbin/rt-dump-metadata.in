@@ -227,21 +227,21 @@ __END__
 
 =head1 NAME
 
-rt-dump-database - dump configuration metadata from an RT database
+rt-dump-metadata - dump configuration metadata from an RT database
 
 =head1 SYNOPSIS
 
-    rt-dump-database [ 0 ]
+    rt-dump-metdata [ 0 ]
 
 =head1 DESCRIPTION
 
-C<rt-dump-database> is a tool that dumps configuration metadata from the
+C<rt-dump-metadata> is a tool that dumps configuration metadata from the
 Request Tracker database into XML format, suitable for feeding into
 C<rt-setup-database>. To dump and load a full RT database, you should generally
 use the native database tools instead, as well as performing any necessary
 steps from UPGRADING.
 
-When run without arguments, the database dump will only include 'local'
+When run without arguments, the metadata dump will only include 'local'
 configuration changes, i.e. those done manually in the web interface.
 
 When run with the argument '0', the dump will include all configuration
