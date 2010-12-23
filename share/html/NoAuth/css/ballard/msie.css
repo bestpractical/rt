@@ -236,3 +236,7 @@ table.queue-summary td, td.collection-as-table {
   word-wrap  */
 }
 
+#rt-portal .titlebox-content {
+    height: 23em;
+}
+

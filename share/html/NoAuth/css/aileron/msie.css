@@ -182,3 +182,8 @@ table.queue-summary td, td.collection-as-table {
   white-space: pre;   /* IE only hack to re-specify in addition to
   word-wrap  */
 }
+
+#rt-portal .titlebox-content {
+    height: 23em;
+}
+
