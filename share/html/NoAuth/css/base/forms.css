@@ -263,3 +263,8 @@ form div.submit div.buttons div.next {
     width: 50%;
 }
 
+/* query builder */
+
+#formatbuttons {
+    clear: both;
+}
