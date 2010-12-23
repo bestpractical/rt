@@ -246,3 +246,14 @@ sub copy_tables {
         warn "Updated Transaction ".$t->Id." to link to $value";
     }
 }
+
+{ # update Attributes
+  # these are all things we should make real columns someday
+    use RT::Attributes;
+    my $attributes = RT::Attributes->new(RT->SystemUser);
+    $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Class' );
+    while ( my $a = $attributes->Next ) {
+        my ($ret,$msg) = $a->__Set( Field => 'ObjectType', Value => 'RT::Class' );
+        warn "Updating Attribute ".$a->Name." to point to RT::Class";
+    }
+}
