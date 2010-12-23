@@ -69,7 +69,7 @@ if ($SavedSearch) {
     }
     $search = $container_object->Attributes->WithId($search_id);
     unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
-        $m->out(loc("Saved Search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
+        $m->out(loc("Saved search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
         return;
     }
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
