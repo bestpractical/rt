@@ -68,9 +68,6 @@ $FILECAT = {};
 # scan html dir for extensions
 File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
 
-# remove msgid with $ in it.  XXX: perhaps give some warnings here
-$FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
-
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
     my $entry = $FILECAT->{$str};
