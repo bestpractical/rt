@@ -80,7 +80,7 @@ $onload => undef
 my $js_path;
 if ( !RT->Config->Get('DevelMode') ) {
     my $name = 'head';
-    my $key = RT::Interface::Web::SquishedJS( Name => $name )->Key;
+    my $key = RT::Interface::Web::SquishedJS( $name )->Key;
     $js_path = "$name-squished-$key.js";
 }
 

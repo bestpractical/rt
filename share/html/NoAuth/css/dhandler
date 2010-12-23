@@ -52,7 +52,7 @@ my $squisher;
 my $arg = $m->dhandler_arg;
 if ( $arg =~ m{(.*)-squished-[0-9a-f]{32}\.css$} ) {
     my $name = $1;
-    my $squished = RT::Interface::Web::SquishedCSS( Name => $name );
+    my $squished = RT::Interface::Web::SquishedCSS( $name );
     # Don't send Last-Modified since we don't handle If-Modified-Since
     #$r->header_out( 'Last-Modified'  => $squished->ModifiedTimeString );
     $m->out( $squished->Content );
