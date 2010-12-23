@@ -12,7 +12,7 @@ AC_CONFIG_SRCDIR([lib/RT.pm])
 
 dnl Save our incant early since $@ gets overwritten by some macros.
 dnl ${ac_configure_args} is available later, but it's quoted differently
-dnl and dnl undocumented.  See http://www.spinics.net/lists/ac/msg10022.html.
+dnl and undocumented.  See http://www.spinics.net/lists/ac/msg10022.html.
 AC_SUBST(CONFIGURE_INCANT, "$0 $@")
 
 dnl Extract RT version number components
