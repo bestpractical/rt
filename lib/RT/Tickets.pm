@@ -215,13 +215,13 @@ my %DefaultEA = (
 );
 
 # Helper functions for passing the above lexically scoped tables above
-# into Tickets_Overlay_SQL.
+# into Tickets_SQL.
 sub FIELDS     { return \%FIELD_METADATA }
 sub dispatch   { return \%dispatch }
 sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
-require RT::Tickets_Overlay_SQL;
+require RT::Tickets_SQL;
 
 
 our @SORTFIELDS = qw(id Status
@@ -2073,7 +2073,7 @@ sub IgnoreType {
 
     # Instead of faking a Limit that later gets ignored, fake up the
     # fact that we're already looking at type, so that the check in
-    # Tickets_Overlay_SQL/FromSQL goes down the right branch
+    # Tickets_SQL/FromSQL goes down the right branch
 
     #  $self->LimitType(VALUE => '__any');
     $self->{looking_at_type} = 1;
@@ -3338,7 +3338,7 @@ sub _RestrictionsToClauses {
 =head2 _ProcessRestrictions PARAMHASH
 
 # The new _ProcessRestrictions is somewhat dependent on the SQL stuff,
-# but isn't quite generic enough to move into Tickets_Overlay_SQL.
+# but isn't quite generic enough to move into Tickets_SQL.
 
 =cut
 
