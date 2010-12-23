@@ -227,7 +227,7 @@ __END__
 
 =head1 NAME
 
-rt-dump-database - dump the Request Tracker database
+rt-dump-database - dump configuration metadata from an RT database
 
 =head1 SYNOPSIS
 
@@ -246,3 +246,6 @@ configuration changes, i.e. those done manually in the web interface.
 
 When run with the argument '0', the dump will include all configuration
 metadata.
+
+This is NOT a tool for backing up an RT database.
+
