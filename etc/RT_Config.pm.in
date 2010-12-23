@@ -2332,7 +2332,6 @@ This option is exists for backwards compatibility.  Don't use it.
 
 Set this to 1 to display the Articles interface on the Ticket Create page
 in addition to the Reply/Comment page.
-This will only work with 3.8.1 or greater
 
 =back
 
@@ -2341,6 +2340,10 @@ This will only work with 3.8.1 or greater
 Set($ArticleOnTicketCreate, 0);
 
 =item C<$HideArticleSearchOnReplyCreate>
+
+Set this to 1 to hide the search and include boxes from the Article UI.
+This assumes you have enabled Article Hotlist feature, otherwise you
+will have no access to Articles.
 
 =back
 
