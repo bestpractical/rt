@@ -166,6 +166,17 @@ sub copy_tables {
     }
 }
 
+{ # update ObjectCustomFieldValues
+    use RT::ObjectCustomFieldValues;
+    my $ocfvs = RT::ObjectCustomFieldValues->new(RT->System);
+    $ocfvs->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+    while ( my $ocfv = $ocfvs->Next ) {
+        my ($ret, $msg) = $ocfv->__Set( Field => 'ObjectType', Value => 'RT::Article' );
+        warn "Updated CF ".$ocfv->__Value('CustomField')." Value for Article ".$ocfv->__Value('ObjectId');
+    }
+
+}
+
 { # update Topics
     use RT::Topics;
     my $topics = RT::Topics->new(RT->SystemUser);
