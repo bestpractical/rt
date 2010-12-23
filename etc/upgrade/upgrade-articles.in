@@ -166,3 +166,18 @@ sub copy_tables {
     }
 }
 
+{ # update Topics
+    use RT::Topics;
+    my $topics = RT::Topics->new(RT->SystemUser);
+    $topics->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Class' );
+    $topics->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::System' );
+    while ( my $topic = $topics->Next ) {
+        if ( $topic->__Value('ObjectType') eq 'RT::FM::Class' ) {
+            my ($ret, $msg ) = $topic->__Set( Field => 'ObjectType', Value => 'RT::Class');
+            warn "Fixing Topic ".$topic->Id." to refer to RT::Class: $msg";
+        } elsif ( $topic->__Value('ObjectType') eq 'RT::FM::System' ) {
+            my ($ret, $msg) = $topic->__Set(Field => 'ObjectType', Value => 'RT::System');
+            warn "Fixing Topic ".$topic->Id." to refer to RT::System: $msg";
+        }
+    }
+}
