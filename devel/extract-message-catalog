@@ -122,7 +122,7 @@ sub extract_strings_from_code {
     my $file = $_;
 
     local $/;
-    return if ( -d $_ );
+    return if ( -d $_ || !-e _ );
     return
       if ( $File::Find::dir =~
         qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
