@@ -85,6 +85,10 @@ ul.list-menu ul li {
     padding-bottom: 1em;
 }
 
+#rt-portal .titlebox-content {
+    height: 100%;
+}
+
 #rt-portal .titlebox.rolled-up {
     bottom: auto;
     padding-bottom: 0;
