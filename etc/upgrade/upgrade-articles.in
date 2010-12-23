@@ -181,3 +181,15 @@ sub copy_tables {
         }
     }
 }
+
+{ # update ObjectTopics
+    use RT::ObjectTopics;
+    my $otopics = RT::ObjectTopics->new(RT->SystemUser);
+    $otopics->UnLimit;
+    while ( my $otopic = $otopics->Next ) {
+        if ( $otopic->ObjectType eq 'RT::FM::Article' ) {
+            my ($ret, $msg) = $otopic->SetObjectType('RT::Article');
+            warn "Fixing Topic ".$otopic->Topic." to apply to article: $msg";
+        }
+    }
+}
