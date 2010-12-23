@@ -10,6 +10,11 @@ AC_PREREQ([2.53])
 AC_INIT(RT, m4_esyscmd([( git describe --tags || cat ./.tag 2> /dev/null || echo "rt-3.9.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm])
 
+dnl Save our incant early since $@ gets overwritten by some macros.
+dnl ${ac_configure_args} is available later, but it's quoted differently
+dnl and dnl undocumented.  See http://www.spinics.net/lists/ac/msg10022.html.
+AC_SUBST(CONFIGURE_INCANT, "$0 $@")
+
 dnl Extract RT version number components
 AC_SUBST([rt_version_major],
 	m4_bregexp(AC_PACKAGE_VERSION,[^rt-\(\w+\)\.\(\w+\)\.\(.+\)$],[\1]))

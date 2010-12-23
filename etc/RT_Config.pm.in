@@ -1,3 +1,8 @@
+#
+# RT was configured with:
+#
+#   $ @CONFIGURE_INCANT@
+#
 
 package RT;
 
