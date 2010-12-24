@@ -557,6 +557,8 @@ sub ContentAsMIME {
     my $self = shift;
 
     my $main_content = $self->ContentObj;
+    return unless $main_content;
+
     my $entity = $main_content->ContentAsMIME;
 
     if ( $main_content->Parent ) {
