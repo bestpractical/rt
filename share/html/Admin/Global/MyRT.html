@@ -95,7 +95,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         if (!$has_right) {
-            push @actions, loc( 'Permission denied' );
+            push @actions, loc( 'Permission Denied' );
         }
         else {
             $default_portlets->SetContent( $conf );

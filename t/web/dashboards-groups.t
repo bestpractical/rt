@@ -76,7 +76,7 @@ $user_obj->PrincipalObj->GrantRight(
     Object => $inner_group,
 );
 $m->reload;
-$m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
+$m->content_lacks("Permission Denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
@@ -92,6 +92,6 @@ is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
-$m->content_lacks("Permission denied");
+$m->content_lacks("Permission Denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 

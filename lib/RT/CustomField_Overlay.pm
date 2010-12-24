@@ -1672,7 +1672,7 @@ sub SetBasedOn {
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load( ref $value ? $value->id : $value );
 
-    return (0, "Permission denied")
+    return (0, "Permission Denied")
         unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
 
     # XXX: Remove this restriction once we support lists and cascaded selects

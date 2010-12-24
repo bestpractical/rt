@@ -92,7 +92,7 @@ my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
 my @privacies = $Dashboard->$method;
 
-Abort(loc("Permission denied")) if @privacies == 0;
+Abort(loc("Permission Denied")) if @privacies == 0;
 
 if ($Create) {
     $title = loc("Create a new dashboard");

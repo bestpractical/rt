@@ -150,7 +150,7 @@ sub GrantRight {
         @_
     );
 
-    return (0, "Permission denied") if $args{'Right'} eq 'ExecuteCode'
+    return (0, "Permission Denied") if $args{'Right'} eq 'ExecuteCode'
         and RT->Config->Get('DisallowExecuteCode');
 
     #ACL check handled in ACE.pm

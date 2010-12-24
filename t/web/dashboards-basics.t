@@ -41,24 +41,24 @@ $m->content_lacks('<a href="/Dashboards/Modify.html?Create=1">New</a>',
 $m->no_warnings_ok;
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->content_contains("Permission denied");
+$m->content_contains("Permission Denied");
 $m->content_lacks("Save Changes");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warning_like(qr/Permission Denied/, "got a permission denied warning");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->content_contains("Permission denied");
+$m->content_contains("Permission Denied");
 $m->content_lacks("Save Changes");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warning_like(qr/Permission Denied/, "got a permission denied warning");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->content_lacks("Permission denied");
+$m->content_lacks("Permission Denied");
 $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
@@ -72,12 +72,12 @@ $m->content_contains("Saved dashboard different dashboard");
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $m->get($url."Dashboards/index.html");
 $m->follow_link_ok({ text => 'different dashboard'});
-$m->content_lacks("Permission denied", "we now have SeeOwnDashboard");
+$m->content_lacks("Permission Denied", "we now have SeeOwnDashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
-$m->content_lacks("Permission denied");
+$m->content_lacks("Permission Denied");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
@@ -155,8 +155,8 @@ $m->content_contains("dashboard test", "ticket subject");
 $m->get_ok("/Dashboards/Subscription.html?id=$id");
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
-$m->content_contains("Permission denied");
-$m->warning_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
+$m->content_contains("Permission Denied");
+$m->warning_like(qr/Unable to subscribe to dashboard.*Permission Denied/, "got a permission denied warning when trying to subscribe to a dashboard");
 
 $user_obj->Attributes->RedoSearch;
 is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
@@ -173,7 +173,7 @@ $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
 
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
-$m->content_lacks("Permission denied");
+$m->content_lacks("Permission Denied");
 $m->content_contains("Subscribed to dashboard different dashboard");
 
 $user_obj->Attributes->RedoSearch;
@@ -184,9 +184,9 @@ $m->follow_link_ok({text => "Subscription"});
 $m->content_contains("Modify the subscription to dashboard different dashboard");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
-$m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
+$m->content_contains("Permission Denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$m->warning_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
+$m->warning_like(qr/Couldn't delete dashboard.*Permission Denied/, "got a permission denied warning when trying to delete the dashboard");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'DeleteOwnDashboard', Object => $RT::System);
 

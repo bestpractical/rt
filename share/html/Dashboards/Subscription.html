@@ -244,7 +244,7 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
+        Abort(loc("Unable to subscribe to dashboard [_1]: Permission Denied", $id))
             unless $DashboardObj->CurrentUserCanSubscribe;
 
         $SubscriptionObj = RT::Attribute->new($session{CurrentUser});

@@ -108,7 +108,7 @@ sub Load {
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
 
-            return (0, $self->loc("Permission denied"))
+            return (0, $self->loc("Permission Denied"))
                 unless $self->CurrentUserCanSee;
 
             return (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name));
@@ -185,7 +185,7 @@ sub Save {
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
         unless $object;
 
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanCreate($privacy);
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
@@ -226,7 +226,7 @@ sub Update {
     return(0, $self->loc("Could not load [_1] attribute", $self->ObjectName))
         unless $self->{'Attribute'}->Id;
 
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanModify;
 
     my ($status, $msg) = $self->UpdateAttribute(\%args);
@@ -258,7 +258,7 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
