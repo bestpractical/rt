@@ -1756,8 +1756,9 @@ Set(@LexiconLanguages, qw(*));
 =item C<@EmailInputEncodings>
 
 An array that contains default encodings used to guess which charset
-an attachment uses if not specified.  Must be recognized by
-L<Encode::Guess>.
+an attachment uses if not specified. Must be recognized by
+L<Encode::Guess>. First element can be '*' that enables encoding
+detection using L<Encode::Detect::Detector> if it's installed.
 
 =cut
 
