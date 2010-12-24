@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 25;
+use RT::Test tests => 29;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $att_fh, $att_file ) =
@@ -81,5 +81,20 @@ qr/Forwarded Transaction #\d+ to rt-test, rt-to\@example.com, rt-cc\@example.com
     like( $mail, qr!This is a forward of transaction!, 'content' );
     like( $mail, qr!$att_name!,                        'att file name' );
     like( $mail, qr!this is an attachment!,            'att content' );
+}
+
+diag "Foward Ticket without content" if $ENV{TEST_VERBOSE};
+{
+    my $ticket = RT::Test->create_ticket(
+        Subject => 'test forward without content',
+        Queue   => 'General',
+    );
+    $m->get_ok( $baseurl . '/Ticket/Forward.html?id=' . $ticket->id );
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => { To => 'rt-test@example.com', },
+        button    => 'ForwardAndReturn'
+    );
+    $m->content_contains( 'Send email successfully', 'sent mail msg' );
 }
 
