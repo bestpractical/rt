@@ -754,17 +754,17 @@ sub CanonicalizeGeneratedPaths {
 
 }
 
-=head2 AddJavaScripts
+=head2 AddJavaScript
 
 helper method to add js files to C<JSFiles> config.
 to add extra css files, you can add the following line
 in the plugin's main file:
 
-    RT->AddJavaScripts( 'foo.js', 'bar.js' ); 
+    RT->AddJavaScript( 'foo.js', 'bar.js' ); 
 
 =cut
 
-sub AddJavaScripts {
+sub AddJavaScript {
     my $self = shift;
 
     my @old = RT->Config->Get('JSFiles');
@@ -790,13 +790,13 @@ sub AddStyleSheets {
     return RT->Config->Get('CSSFiles');
 }
 
-=head2 JavaScripts
+=head2 JavaScript
 
 helper method of RT->Config->Get('JSFiles')
 
 =cut
 
-sub JavaScripts {
+sub JavaScript {
     return RT->Config->Get('JSFiles');
 }
 

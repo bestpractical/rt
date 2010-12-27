@@ -33,7 +33,7 @@ SKIP:
 {
     skip 'need plack server to reinitialize', 6
       if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
-    RT->AddJavaScripts( 'IE7/IE7.js' );
+    RT->AddJavaScript( 'IE7/IE7.js' );
     RT->AddStyleSheets( 'print.css' );
     ( $url, $m ) = RT::Test->started_ok;
 
