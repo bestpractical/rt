@@ -8,5 +8,5 @@ div#ticket-history div.downloadattachment,
 .titlebox .titlebox-title .left,
 div#footer,
 div#body {
-    behavior: url(/NoAuth/css/images/PIE.htc);
+    behavior: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/PIE.htc);
 }

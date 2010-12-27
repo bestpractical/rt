@@ -79,7 +79,7 @@ div#body {
 
 
 .sf-sub-indicator {
-	background:		url('../images/arrows-ffffff.gif') no-repeat -10px -100px;
+	background:		url(<%RT->Config->Get('WebPath')%>/images/arrows-ffffff.gif) no-repeat -10px -100px;
 }
 
 #page-navigation ul {
