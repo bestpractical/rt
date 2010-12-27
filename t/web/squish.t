@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 16;
+use RT::Test tests => 18;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
@@ -55,8 +55,13 @@ SKIP:
 diag "test squished files with devel mode enabled";
 {
     RT->Config->Set( 'DevelMode' => 1 );
+    RT->AddJavaScript( 'IE7/IE7.js' );
+    RT->AddStyleSheets( 'nottherebutwedontcare.css' );
+
     ( $url, $m ) = RT::Test->started_ok;
     $m->login;
     $m->content_unlike( qr!squished-.*?\.(js|css)!,
         'no squished link with develmode' );
+    $m->content_like(qr/IE7\/IE7\.js/, "found extra javascript resource");
+    $m->content_like(qr/nottherebutwedontcare\.css/, "found extra css resource");
 }
