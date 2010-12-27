@@ -760,7 +760,7 @@ helper method to add js files to C<JSFiles> config.
 to add extra css files, you can add the following line
 in the plugin's main file:
 
-    RT->AddJavaScript( 'foo.js', 'bar.js' ); 
+    RT->AddJavaScripts( 'foo.js', 'bar.js' ); 
 
 =cut
 
