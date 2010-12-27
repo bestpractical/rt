@@ -60,8 +60,24 @@ package RT::Mason;
 
 our ($Nobody, $SystemUser, $Handler, $r);
 
+my $protect_fd;
+
 sub handler {
     ($r) = @_;
+
+    if ( !$protect_fd && $ENV{'MOD_PERL'} && exists $ENV{'MOD_PERL_API_VERSION'}
+        && $ENV{'MOD_PERL_API_VERSION'} >= 2 && fileno(STDOUT) != 1
+    ) {
+        # under mod_perl2, STDOUT gets closed and re-opened, however new STDOUT
+        # is not on FD #1. In this case next IO operation will occupy this FD
+        # and make all system() and open "|-" dangerouse, for example DBI
+        # can get this FD for DB connection and system() call will close
+        # by putting grabage into the socket
+        open $protect_fd, '>/dev/null' or die "Couldn't open /dev/null: $!";
+        unless ( fileno($protect_fd) == 1 ) {
+            warn "We opened /dev/null to protect FD #1, but descriptor #1 is already occupied";
+        }
+    }
 
     local $SIG{__WARN__};
     local $SIG{__DIE__};
