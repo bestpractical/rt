@@ -67,7 +67,7 @@ my $dbh = $RT::Handle->dbh;
 my $sth = $dbh->table_info( '', undef, undef, "'TABLE'");
 my $found_fm_tables;
 while ( my $table = $sth->fetchrow_hashref ) {
-    my $name = $table->{TABLE_NAME};
+    my $name = $table->{TABLE_NAME} || $table->{'table_name'}; # Oracle's table_info affected by NAME_lc
     next unless $name =~ /^fm_/i;
     $found_fm_tables->{lc $name}++;
 }
