@@ -196,7 +196,7 @@ $m->callback(
 # This code does automatic redirection if any updates happen. 
 MaybeRedirectForResults(
     Actions   => \@Actions,
-    Path      => 'Ticket/Display.html',
+    Path      => "/Ticket/Display.html",
     Anchor    => $ARGS{'Anchor'},
     Arguments => { id => $TicketObj->id },
 );

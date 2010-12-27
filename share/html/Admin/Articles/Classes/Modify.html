@@ -124,7 +124,6 @@ if ($ClassObj->Id()) {
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,
-    Path        => '/Admin/Articles/Classes/Modify.html',
     Arguments   => { id => $ClassObj->Id },
 );
 

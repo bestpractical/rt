@@ -156,7 +156,6 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,
-    Path        => '/Admin/Groups/Modify.html',
     Arguments   => { id => $Group->id },
 );
 

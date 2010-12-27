@@ -370,7 +370,6 @@ if (!$Create && $UserObj->Privileged()) {
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions   => \@results,
-    Path      => '/Admin/Users/Modify.html',
     Arguments => { id => $UserObj->Id },
 );
 

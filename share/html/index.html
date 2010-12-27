@@ -119,7 +119,7 @@ if ( $ARGS{'QuickCreate'} ) {
         if ( $t && $t->Id && RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
             MaybeRedirectForResults(
                 Actions   => \@results,
-                Path      => 'Ticket/Display.html',
+                Path      => '/Ticket/Display.html',
                 Arguments => { id => $t->Id },
             );
         }

@@ -1092,7 +1092,7 @@ sub Abort {
 
 sub MaybeRedirectForResults {
     my %args = (
-        Path      => undef,
+        Path      => $HTML::Mason::Commands::m->request_comp->path,
         Arguments => {},
         Anchor    => undef,
         Actions   => undef,
