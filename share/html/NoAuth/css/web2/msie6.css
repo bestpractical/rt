@@ -87,10 +87,10 @@ div#page-navigation {
 }
 
 #prefs-menu .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/images/arrows-grey.gif);
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.gif);
 }
 
 #app-nav .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/images/arrows-grey.gif);
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.gif);
 }
 
