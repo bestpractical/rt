@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
 my $content = '';
-require HTTP::Date;
 </%ONCE>
 <%INIT>
 my $arg = $m->dhandler_arg;
