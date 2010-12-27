@@ -110,11 +110,11 @@
 
 #page-navigation {
     position: absolute;
-    top: 7.2em;
+    top: 6em;
     right: 0em;
     left: auto;
     z-index: 9995;
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 
 #page-navigation .sf-menu li, #page-navigation .sf-menu li li, #page-navigation .sf-menu li li li {
