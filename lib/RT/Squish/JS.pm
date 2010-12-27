@@ -49,10 +49,7 @@
 =head1 SYNOPSIS
 
   use RT::Squish::JS;
-  my $squish = RT::Squish::JS->new(
-    Name  => 'head',
-    Files => ['...'],
-  );
+  my $squish = RT::Squish::JS->new();
 
 =head1 DESCRIPTION
 
@@ -67,85 +64,22 @@ use warnings;
 
 package RT::Squish::JS;
 use base 'RT::Squish';
-use List::MoreUtils 'uniq';
 
-=head2 SquishFiles
+=head2 Squish
 
-not just concatenate files, but also minify them
+not only concatenate files, but also minify them
 
 =cut
 
-sub SquishFiles {
+sub Squish {
     my $self    = shift;
     my $content;
 
-    for my $file ( @{ $self->Files } ) {
-        $content .= $HTML::Mason::Commands::m->scomp($file);
+    for my $file ( RT->Config->Get('JSFiles') ) {
+        $content .= $HTML::Mason::Commands::m->scomp("/NoAuth/js/$file");
     }
 
     return $self->Filter($content);
-}
-
-=head2 AddFiles
-
-add files to name
-
-this is mainly for plugins, e.g.
-
-to add extra js files in 'head', you can add the following line
-in the plugin's main file:
-
-    require RT::Squish::JS;
-
-    RT::Squish::JS->AddFiles( head => ['/NoAuth/js/foo.js'] ); 
-
-=cut
-
-my %FILES_MAP;
-
-sub AddFiles {
-    my $self = shift;
-    my %args = @_;
-
-    for my $name ( keys %args ) {
-        next unless $name;
-        my $files = $args{$name};
-        $FILES_MAP{$name} ||= [];
-        push @{ $FILES_MAP{$name} }, ref $files eq 'ARRAY' ? @$files : $files;
-    }
-    return 1;
-}
-
-=head2 UpdateFilesByName
-
-update files by name, it'll try to find files in the following places:
-
-1. if the name is 'head', add files in config item C<JSFilesInHead>.
-
-2. if there is a files map for the name, add the corresponding files.
-
-=cut
-
-sub UpdateFilesByName {
-    my $self = shift;
-    my $name = $self->Name;
-
-    if ( $name eq 'head' ) {
-        $self->Files(
-            [
-                uniq @{ $self->Files },
-                map { "/NoAuth/js/$_" } RT->Config->Get('JSFilesInHead'),
-            ]
-        );
-    }
-
-    if ( $FILES_MAP{$name} ) {
-
-        $self->Files( [ uniq @{$self->Files}, @{$FILES_MAP{$name}} ] );
-    }
-
-
-    return 1;
 }
 
 sub Filter {

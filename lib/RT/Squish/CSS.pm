@@ -49,9 +49,7 @@
 =head1 SYNOPSIS
 
   use RT::Squish::CSS;
-  my $squish = RT::Squish::CSS->new(
-    Name  => 'aileron',
-  );
+  my $squish = RT::Squish::CSS->new( Style => 'aileron');
 
 =head1 DESCRIPTION
 
@@ -66,73 +64,18 @@ use warnings;
 
 package RT::Squish::CSS;
 use base 'RT::Squish', 'CSS::Squish';
-use List::MoreUtils 'uniq';
+__PACKAGE__->mk_accessors(qw/Style/);
 
-=head2 SquishFiles
+=head2 Squish
 
 use CSS::Squish to squish css
 
 =cut
 
-sub SquishFiles {
+sub Squish {
     my $self = shift;
-    return $self->concatenate( @{ $self->Files } );
-}
-
-=head2 AddFiles name => [...]
-
-add files to name
-
-this is mainly for plugins, e.g.
-
-to add extra css files for style 'aileron', you can add the following line
-in the plugin's main file:
-
-    require RT::Squish::CSS;
-    RT::Squish::CSS->AddFiles( aileron => ['/NoAuth/css/foo.css'] ); 
-
-=cut
-
-my %FILES_MAP;
-
-sub AddFiles {
-    my $self = shift;
-    my %args = @_;
-
-    for my $name ( keys %args ) {
-        next unless $name;
-        my $files = $args{$name};
-        $FILES_MAP{$name} ||= [];
-        push @{ $FILES_MAP{$name} }, ref $files eq 'ARRAY' ? @$files : $files;
-    }
-    return 1;
-}
-
-=head2 UpdateFilesByName
-
-update files by name, it find files in the following places:
-
-1. if the name is a style name, add the style's corresponding main.css
-
-2. if there is a files map for the name, add the corresponding files.
-
-=cut
-
-sub UpdateFilesByName {
-    my $self = shift;
-
-    my $name = $self->Name;
-    my $main = File::Spec->catfile( '/NoAuth', 'css', $name, 'main.css' );
-
-    if ( -e File::Spec->catfile( $RT::MasonComponentRoot, $main ) ) {
-        $self->Files( [ uniq @{$self->Files}, $main ] );
-    }
-
-    if ( $FILES_MAP{$name} ) {
-        $self->Files( [ uniq @{$self->Files}, @{$FILES_MAP{$name}} ] );
-    }
-
-    return 1;
+    my $style = $self->Style;
+    return $self->concatenate( "$style/main.css", RT->Config->Get('CSSFiles') );
 }
 
 =head2 file_handle
@@ -144,7 +87,7 @@ subclass CSS::Squish::file_handle for RT
 sub file_handle {
     my $self    = shift;
     my $file    = shift;
-    my $content = $HTML::Mason::Commands::m->scomp($file) || '';
+    my $content = $HTML::Mason::Commands::m->scomp("/NoAuth/css/$file") || '';
     open my $fh, '<', \$content or die "$!";
     return $fh;
 }

@@ -51,9 +51,8 @@ my $content = '';
 
 <%INIT>
 my $arg = $m->dhandler_arg;
-if ( $arg =~ m{(.+?)-squished-[a-f0-9]{32}\.js$} ) {
-    my $name = $1;
-    my $squished = RT::Interface::Web::SquishedJS( $name );
+if ( $arg =~ m{squished-[a-f0-9]{32}\.js$} ) {
+    my $squished = RT::Interface::Web::SquishedJS();
 
     # Don't send Last-Modified since we don't handle If-Modified-Since
     #$r->header_out( 'Last-Modified'  => $squished->ModifiedTimeString );

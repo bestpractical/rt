@@ -50,12 +50,8 @@ $focus => undef
 $onload => undef
 </%args>
 
-% if ( RT->Config->Get('DevelMode' ) ) {
-% for my $jsfile ( RT->Config->Get('JSFilesInHead') ) {
+% for my $jsfile ( @js_files ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
-% } }
-% else {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $js_path %>"></script>
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
@@ -77,11 +73,13 @@ $onload => undef
 
 <%INIT>
 
-my $js_path;
-if ( !RT->Config->Get('DevelMode') ) {
-    my $name = 'head';
-    my $key = RT::Interface::Web::SquishedJS( $name )->Key;
-    $js_path = "$name-squished-$key.js";
+my @js_files;
+if ( RT->Config->Get('DevelMode') ) {
+    @js_files = RT->Config->Get('JSFiles' );
+}
+else {
+    my $key = RT::Interface::Web::SquishedJS()->Key;
+    @js_files = "squished-$key.js";
 }
 
 </%INIT>

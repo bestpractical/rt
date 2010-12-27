@@ -21,7 +21,7 @@ diag "test squished files with devel mode disabled";
 
     $m->back;
     my ($js_link) =
-      $m->content =~ m!src="([^"]+?-squished-([a-f0-9]{32})\.js)"!;
+      $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_lacks( 'IE7=', 'no IE7.js by default' );
 
@@ -33,13 +33,13 @@ SKIP:
 {
     skip 'need plack server to reinitialize', 6
       if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
-    require RT::Squish::JS;
-    RT::Squish::JS->AddFiles( head => ['/NoAuth/js/IE7/IE7.js'] );
-    require RT::Squish::CSS;
-    RT::Squish::CSS->AddFiles( aileron => ['/NoAuth/css/print.css'] );
+    RT->AddJavaScripts( 'IE7/IE7.js' );
+    RT->AddStyleSheets( 'print.css' );
     ( $url, $m ) = RT::Test->started_ok;
 
     $m->login;
+    use File::Slurp;
+    write_file('/tmp/x.html', $m->content);
     $m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
         'follow squished css' );
     $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
@@ -48,7 +48,7 @@ SKIP:
 
     $m->back;
     my ($js_link) =
-      $m->content =~ m!src="([^"]+?-squished-([a-f0-9]{32})\.js)"!;
+      $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_contains( 'IE7=', 'has IE7.js' );
     RT::Test->stop_server;
