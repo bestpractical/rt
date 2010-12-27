@@ -58,7 +58,7 @@
 }
 
 .sf-sub-indicator {
-    background-image: url(../images/arrows-grey.png);
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.png);
 }
 
 .sf-menu li li .sf-sub-indicator {

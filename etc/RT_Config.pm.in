@@ -2196,17 +2196,17 @@ C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 Set(@Plugins, ());
 
-=item C<@JSFilesInHead>
+=item C<@JSFiles>
 
 a list of js files to be included in head
 
 Example:
 
-Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js history-folding.js/);
+Set(@JSFiles, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js history-folding.js/);
 
 =cut
 
-Set(@JSFilesInHead, qw/
+Set(@JSFiles, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
@@ -2229,7 +2229,7 @@ Set(@JSFilesInHead, qw/
 Path to jsmin binary.
 You can go to http://www.crockford.com/javascript/jsmin.html to get one.
 
-If specified, it'll be used to minify C<JSFilesInHead>.
+If specified, it'll be used to minify C<JSFiles>.
 If fails, RT will then try module L<JavaScript::Minifier>.
 If that still fails, RT will simply concatenate js files.
 
@@ -2238,6 +2238,18 @@ Example:
 C<Set($JSMinPath, '/path/to/jsmin');>
 
 =cut
+
+=item C<@CSSFiles>
+
+a list of css files to be included in head
+
+Example:
+
+Set(@CSSFiles, qw/foo.css/);
+
+=cut
+
+Set(@CSSFiles, qw//);
 
 =back
 
