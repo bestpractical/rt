@@ -168,7 +168,10 @@ sub goto_create_ticket {
     } elsif ( $queue =~ /^\d+$/ ) {
         $id = $queue;
     } else {
-        die "not yet implemented";
+        my $queue_obj = RT::Queue->new(RT->SystemUser);
+        my ($ok, $msg) = $queue_obj->Load($queue);
+        die "Unable to load queue '$queue': $msg" if !$ok;
+        $id = $queue_obj->id;
     }
 
     $self->get($self->rt_base_url . 'Ticket/Create.html?Queue='.$id);
