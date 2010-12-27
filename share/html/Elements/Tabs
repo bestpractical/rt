@@ -481,6 +481,10 @@ my $build_admin_menu = sub {
                 $actions->child( reply => title => loc('Reply'), path => "/Ticket/Update.html?Action=Respond;id=" . $id,);
             }
 
+            if ( $can->('ModifyTicket') or $can->('CommentOnTicket') ) {
+                $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id);
+            }
+
             if ( $can->('ForwardMessage') ) {
                 $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id, );
             }
@@ -523,10 +527,6 @@ my $build_admin_menu = sub {
                         && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
                     $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id,);
                 }
-            }
-
-            if ( $can->('ModifyTicket') || $can->('CommentOnTicket') ) {
-                $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id);
             }
 
             # TODO needs a "Can extract article into a class applied to this queue" check
