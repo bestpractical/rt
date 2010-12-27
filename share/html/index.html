@@ -115,11 +115,10 @@ if ( $ARGS{'QuickCreate'} ) {
         push @results, $msg;
 
         if ( $t && $t->Id && RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
-            $m->comp(
-                '/Elements/MaybeRedirectForResults',
-                'Actions' => \@results,
-                'Path'    => 'Ticket/Display.html',
-                'id'      => $t->Id,
+            MaybeRedirectForResults(
+                Actions   => \@results,
+                Path      => '/Ticket/Display.html',
+                Arguments => { id => $t->Id },
             );
         }
 
