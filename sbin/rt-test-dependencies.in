@@ -344,6 +344,9 @@ GD::Text
 
 $deps{'USERLOGO'} = [ text_to_hash( << '.') ];
 Imager
+Imager::File::GIF
+Imager::File::JPEG
+Imager::File::PNG
 Convert::Color
 .
 
