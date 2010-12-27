@@ -86,10 +86,8 @@ unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) 
 
 
 { # port over Classes
-    $sth = $dbh->column_info( undef, RT->Config->Get('DatabaseName'), 'FM_Classes','HotList');
-    my $result = $sth->fetchall_arrayref;
     my @columns = qw(id Name Description SortOrder Disabled Creator Created LastUpdatedBy LastUpdated);
-    if (@$result) {
+    if ( grep lc($_) eq 'hotlist', $RT::Handle->Fields('FM_Classes') ) {
         push @columns, 'HotList';
     }
     copy_tables('FM_Classes','Classes',\@columns);
