@@ -187,6 +187,7 @@ sub rosetta {
 
     my $dir;
     if ( $url =~ m/^[a-z]+:\/\// ) {
+        require File::Temp;
         $dir = File::Temp::tempdir();
         my ($fname) = $url =~ m{([^/]+)$};
 
