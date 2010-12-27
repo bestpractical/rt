@@ -38,8 +38,6 @@ SKIP:
     ( $url, $m ) = RT::Test->started_ok;
 
     $m->login;
-    use File::Slurp;
-    write_file('/tmp/x.html', $m->content);
     $m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
         'follow squished css' );
     $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
