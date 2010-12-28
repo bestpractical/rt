@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 34;
+use RT::Test tests => 35;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -61,7 +61,6 @@ is($reminder->Subject, 'changed the subject');
 is($reminder->Status, 'new');
 
 $m->goto_ticket($ticket->id);
-
 $m->form_name('UpdateReminders');
 $m->tick("Complete-Reminder-$reminder_id" => 1);
 $m->submit;
@@ -84,4 +83,15 @@ $m->title_is("Reminders for ticket #" . $ticket->id);
 $m->text_contains('New reminder:', 'can create a new reminder');
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
 $m->content_contains("changed the subject", "display the resolved reminder's subject");
+
+# make sure that when we submit the form, it doesn't accidentally reopen
+# resolved reminders
+$m->goto_ticket($ticket->id);
+$m->form_name('UpdateReminders');
+$m->submit;
+
+DBIx::SearchBuilder::Record::Cachable->FlushCache;
+$reminder = RT::Ticket->new($user);
+$reminder->Load($reminder_id);
+is($reminder->Status, 'resolved');
 
