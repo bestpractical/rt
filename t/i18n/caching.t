@@ -18,12 +18,12 @@ use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->login( root => "password" );
 $m->get_ok('/Prefs/Other.html');
-$m->content_lacks('Commentaires','Lacks translated french');
+$m->content_lacks('Ne pas','Lacks translated french');
 $m->get_ok( "/NoAuth/Logout.html" );
 
 $m->login( french => "password" );
 $m->get_ok('/Prefs/Other.html');
-$m->content_contains('Commentaires','Has translated french');
+$m->content_contains('Ne pas','Has translated french');
 $m->get_ok( "/NoAuth/Logout.html" ); # ->logout fails because it's translated
 
 $m->login( root => "password" );

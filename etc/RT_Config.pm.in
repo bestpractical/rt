@@ -1372,16 +1372,9 @@ Set($SearchResultsRefreshInterval, 0);
 
 =item C<$ResolveDefaultUpdateType>
 
-Set the default Update Type when clicking the Resolve link in the Ticket
-links tab.
-
-  Comment            Comments (Not sent to requestors)
-  Respond            Reply to requestors
+This option has been deprecated.  You can configure this site-wide with L<%Lifecycles>
 
 =cut
-
-Set($ResolveDefaultUpdateType, 'Comment');
-
 
 =item C<$OldestTransactionsFirst>
 
