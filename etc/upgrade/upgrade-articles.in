@@ -106,16 +106,17 @@ unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) 
 sub copy_tables {
     my ($source, $dest, $columns) = @_;
     my $column_list = join(', ',@$columns);
-    if ( $db_type eq 'mysql' ) {
-        my $sql = "insert into $dest ($column_list) select $column_list from $source";
-        $RT::Logger->debug($sql);
-        $dbh->do($sql);
-    } elsif ( $db_type eq 'Pg' ) {
-        my $sql = "insert into $dest ($column_list) (select $column_list from $source)";
-        $RT::Logger->debug($sql);
-        $dbh->do($sql);
+    my $sql;
+    # SQLite: http://www.sqlite.org/lang_insert.html
+    if ( $db_type eq 'mysql' || $db_type eq 'SQLite' ) {
+        $sql = "insert into $dest ($column_list) select $column_list from $source";
     }
-    # oracle/sqlite, sigh
+    # Oracle: http://www.adp-gmbh.ch/ora/sql/insert/select_and_subquery.html
+    elsif ( $db_type eq 'Pg' || $db_type eq 'Oracle' ) {
+        $sql = "insert into $dest ($column_list) (select $column_list from $source)";
+    }
+    $RT::Logger->debug($sql);
+    $dbh->do($sql);
 }
 
 { # create ObjectClasses
