@@ -277,7 +277,7 @@ sub SetContent {
     my $content = shift;
 
     # Call __Value to avoid ACL check.
-    if ( $self->__Value('ContentType') eq 'storable' ) {
+    if ( ($self->__Value('ContentType')||'') eq 'storable' ) {
         # We eval the serialization because it will lose on a coderef.
         $content = eval { $self->_SerializeContent($content) };
         if ($@) {
