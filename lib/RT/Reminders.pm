@@ -50,8 +50,6 @@ package RT::Reminders;
 
 use base qw/RT::Base/;
 
-our $REMINDER_QUEUE = 'General';
-
 sub new {
     my $class = shift;
     my $self = {};
