@@ -8,7 +8,7 @@ use Encode;
 use RT::Ticket;
 
 my ( $url, $m ) = RT::Test->started_ok;
-$m->default_header( 'Accept-Language' => "zh-cn" );
+$m->default_header( 'Accept-Language' => "zh-tw" );
 ok( $m->login, 'logged in' );
 
 my $ticket_id;
@@ -38,7 +38,7 @@ EOF
         button    => 'UpdateTickets',
     );
     my $content = encode 'utf8', $m->content;
-    ok( $content =~ qr/申请单 #(\d+) 成功新增于 &#39;General&#39; 表单/, 'message is shown right' );
+    ok( $content =~ m/申請單 #(\d+) 成功新增於 &#39;General&#39; 表單/, 'message is shown right' );
     $ticket_id = $1;
 }
 
@@ -60,7 +60,7 @@ EOF
     my $content = encode 'utf8', $m->content;
     ok(
         $content =~
-qr/主题\s*的值从\s*&#39;test message&#39;\s*改为\s*&#39;test message update&#39;/,
+qr/主題\s*的值從\s*&#39;test message&#39;\s*改為\s*&#39;test message update&#39;/,
         'subject is updated'
     );
 }
