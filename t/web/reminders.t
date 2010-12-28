@@ -15,19 +15,13 @@ ok($ticket->id, 'created a ticket');
 $m->goto_ticket($ticket->id);
 $m->text_contains('New reminder:', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
-TODO: {
-    local $TODO = "we display the reminder titlebar even though we have no reminders";
-    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
-}
+$m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
 
 $m->follow_link_ok({id => 'page-reminders'});
 $m->title_is("Reminders for ticket #" . $ticket->id);
 $m->text_contains('New reminder:', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
-TODO: {
-    local $TODO = "we display the reminder titlebar even though we have no reminders";
-    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
-}
+$m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
 
 $m->goto_ticket($ticket->id);
 $m->form_name('UpdateReminders');
@@ -72,10 +66,7 @@ is($reminder->Status, 'resolved');
 
 $m->text_contains('New reminder:', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are open reminders");
-TODO: {
-    local $TODO = "we display the reminder titlebar even though we have no open reminders";
-    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
-}
+$m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
 $m->content_unlike(qr{baby's first reminder}, "we don't display resolved reminders");
 
 $m->follow_link_ok({id => 'page-reminders'});

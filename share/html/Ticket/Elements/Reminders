@@ -102,12 +102,21 @@ if ( $request_args->{'NewReminder-Subject'} ) {
     );
 }
 
-# We've made changes, let's reload our search
+my $count_reminders = RT::Reminders->new($session{'CurrentUser'});
+$count_reminders->Ticket($Ticket->id);
+my $count_tickets = $count_reminders->Collection;
+if (!$ShowCompleted) {
+    # XXX: don't break encapsulation if we can avoid it
+    $count_tickets->FromSQL('Type = "reminder" AND RefersTo = "'.$Ticket->id.'" AND Status != "resolved"');
+}
+my $has_reminders = $count_tickets->Count;
 
+# We've made changes, let's reload our search
 $reminder_collection = $Ticket->Reminders->Collection;
 </%init>
 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
 <input type="hidden" class="hidden" name="update-reminders" value="1" />
+% if ($has_reminders) {
 <table border="0" cellpadding="1" cellspacing="0" class="collection-as-table"<% $Edit ? ' style="width: auto;"' : '' |n %>>
 <tr>
 % if ( $Edit ) {
@@ -138,6 +147,8 @@ $reminder_collection = $Ticket->Reminders->Collection;
 % if ( $visible > 0 ) {
 <i><&|/l&>(Check box to complete)</&></i><br /><br />
 % }
+% }
+
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 <%method NewReminder>
