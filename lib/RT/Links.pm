@@ -89,7 +89,7 @@ sub Limit  {
     #if someone's trying to search for tickets, try to resolve the uris for searching.
     
     if (  ( $args{'OPERATOR'} eq '=') and
-	  ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
+	      ( ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target') )
        ) {
 	  my $dummy = RT::URI->new($self->CurrentUser);
 	   $dummy->FromURI($args{'VALUE'});

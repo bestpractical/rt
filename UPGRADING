@@ -20,6 +20,33 @@ well.
 
 
 *******
+UPGRADING FROM RT 3.8.x and RTFM 2.1 or greater
+
+RT4 now includes an Articles functionality, merged from RTFM.
+You should not install and enable the RT::FM plugin separately on RT 4.
+If you have existing data in RTFM, you can use the etc/upgrade/upgrade-articles
+script to upgrade that data.
+
+When running normal upgrade scripts, RT will warn if it finds existing
+RTFM tables that contain data and point you to the upgrade-aricles script.
+
+This script should be run from your RT tarball.  It will immediately
+begin populating your new RT4 tables with data from RTFM.  If you have
+browsed in the RT4 UI and created new classes and articles, this script
+will fail spectacularly.  Do *not* run this except on a fresh upgrade of
+RT.
+
+You can run this as
+
+  etc/upgrade/upgrade-articles
+
+It will ouput a lot of data about what it is changing.  You should
+review this for errors.
+
+If you are running RTFM 2.0 with a release of RT, there isn't currently an upgrade
+script that can port RTFM's internal CustomField and Transaction data to RT4.
+
+*******
 UPGRADING FROM RT 3.8.x - Changes:
 
 The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
