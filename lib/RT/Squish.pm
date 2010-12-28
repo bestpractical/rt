@@ -96,7 +96,7 @@ you need to implement this method in subclasses.
 =cut
 
 sub Squish {
-    $RT::Logger->error( "you need to implement this method in subclasses" );
+    $RT::Logger->warn( "you need to implement this method in subclasses" );
     return 1;
 }
 

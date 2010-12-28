@@ -4,7 +4,6 @@ use RT;
 use RT::Test nodb => 1, tests => 7;
 
 use RT::Squish;
-use File::Temp 'tempfile';
 
 my $squish = RT::Squish->new();
 for my $method ( qw/Content ModifiedTime ModifiedTimeString Key/ ) {
