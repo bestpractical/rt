@@ -50,7 +50,7 @@
     
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
     
-<form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),
                        class=>'ticket-info-reminders'
                        &>
