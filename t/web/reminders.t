@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 24;
+use RT::Test tests => 29;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -68,4 +68,10 @@ TODO: {
     $m->content_unlike(qr{<th[^>]*>Reminder</th>}, "no reminder titlebar");
 }
 $m->content_unlike(qr{baby's first reminder}, "we don't display resolved reminders");
+
+$m->follow_link_ok({id => 'page-reminders'});
+$m->title_is("Reminders for ticket #" . $ticket->id);
+$m->text_contains('New reminder:', 'can create a new reminder');
+$m->text_contains('Check box to complete', "we DO display this text when there are reminders");
+$m->content_contains("changed the subject", "display the resolved reminder's subject");
 
