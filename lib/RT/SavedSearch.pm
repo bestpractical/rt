@@ -66,6 +66,7 @@ package RT::SavedSearch;
 
 use strict;
 use warnings;
+
 use base qw/RT::SharedSetting/;
 
 =head1 METHODS

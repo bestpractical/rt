@@ -50,6 +50,7 @@ package RT::Util;
 use strict;
 use warnings;
 
+
 use base 'Exporter';
 our @EXPORT = qw/safe_run_child/;
 

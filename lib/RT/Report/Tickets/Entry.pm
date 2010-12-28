@@ -47,6 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Report::Tickets::Entry;
+
+use warnings;
+use strict;
+
 use base qw/RT::Record/;
 
 # XXX TODO: how the heck do we acl a report?

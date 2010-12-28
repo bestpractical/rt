@@ -52,6 +52,9 @@ use warnings;
 package RT::I18N::cs;
 use base 'RT::I18N';
 
+use strict;
+use warnings;
+
 # # CZECH TRANSLATORS COMMENTS see Locale::Maketext::TPJ13
 # Obecne parametry musi byt docela slozite (v pripade Slavistickych jazyku)
 # typu pocet, slovo, pad a rod 

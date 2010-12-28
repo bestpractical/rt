@@ -51,6 +51,7 @@ package RT::Config;
 use strict;
 use warnings;
 
+
 use File::Spec ();
 
 =head1 NAME

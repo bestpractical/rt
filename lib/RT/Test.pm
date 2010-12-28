@@ -51,6 +51,7 @@ package RT::Test;
 use strict;
 use warnings;
 
+
 use base 'Test::More';
 
 use Socket;

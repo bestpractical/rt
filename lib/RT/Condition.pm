@@ -80,6 +80,7 @@ package RT::Condition;
 use strict;
 use warnings;
 
+
 use base qw/RT::Base/;
 
 sub new  {

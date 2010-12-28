@@ -50,6 +50,7 @@ package RT::Ruleset;
 use strict;
 use warnings;
 
+
 use base 'Class::Accessor::Fast';
 use UNIVERSAL::require;
 

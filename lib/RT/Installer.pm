@@ -49,6 +49,7 @@
 package RT::Installer;
 use strict;
 use warnings;
+
 use DateTime;
 
 require UNIVERSAL::require;

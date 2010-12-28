@@ -49,6 +49,7 @@
 package RT::URI;
 
 use strict;
+use warnings;
 use base 'RT::Base';
 
 use RT::URI::base;

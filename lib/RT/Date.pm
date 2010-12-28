@@ -71,6 +71,7 @@ package RT::Date;
 
 use strict;
 use warnings;
+
 use base qw/RT::Base/;
 
 use DateTime;
