@@ -53,8 +53,6 @@ use warnings;
 
 use base 'RT::Base';
 
-our $REMINDER_QUEUE = 'General';
-
 sub new {
     my $class = shift;
     my $self = {};
