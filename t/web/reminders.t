@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 29;
+use RT::Test tests => 34;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -17,9 +17,19 @@ $m->text_contains('New reminder:', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
 TODO: {
     local $TODO = "we display the reminder titlebar even though we have no reminders";
-    $m->content_unlike(qr{<th[^>]*>Reminder</th>}, "no reminder titlebar");
+    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
 }
 
+$m->follow_link_ok({id => 'page-reminders'});
+$m->title_is("Reminders for ticket #" . $ticket->id);
+$m->text_contains('New reminder:', 'can create a new reminder');
+$m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
+TODO: {
+    local $TODO = "we display the reminder titlebar even though we have no reminders";
+    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
+}
+
+$m->goto_ticket($ticket->id);
 $m->form_name('UpdateReminders');
 $m->field( 'NewReminder-Subject' => "baby's first reminder" );
 $m->submit;
@@ -35,7 +45,7 @@ is($reminder->Status, 'new');
 
 $m->text_contains('New reminder:', 'can create a new reminder');
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
-$m->content_like(qr{<th[^>]*>Reminder</th>}, "now we have a reminder titlebar");
+$m->content_like(qr{<th[^>]*>Reminders?</th>}, "now we have a reminder titlebar");
 $m->text_contains("baby's first reminder", "display the reminder's subject");
 
 $m->follow_link_ok({id => 'page-reminders'});
@@ -65,7 +75,7 @@ $m->text_contains('New reminder:', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are open reminders");
 TODO: {
     local $TODO = "we display the reminder titlebar even though we have no open reminders";
-    $m->content_unlike(qr{<th[^>]*>Reminder</th>}, "no reminder titlebar");
+    $m->content_unlike(qr{<th[^>]*>Reminders?</th>}, "no reminder titlebar");
 }
 $m->content_unlike(qr{baby's first reminder}, "we don't display resolved reminders");
 
