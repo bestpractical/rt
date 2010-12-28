@@ -63,13 +63,15 @@ sub Commit {
     my $self            = shift;
     my $Transaction     = $self->TransactionObj;
     my $FirstAttachment = $Transaction->Attachments->First;
-    return 1 unless ($FirstAttachment);
+    return 1 unless $FirstAttachment;
+
+    my $TransactionSubject = $FirstAttachment->Subject;
+    return 1 unless $TransactionSubject;
 
     my $Ticket = $self->TicketObj;
 
     my $TicketSubject      = $self->TicketObj->Subject;
     my $origTicketSubject  = $TicketSubject;
-    my $TransactionSubject = $FirstAttachment->Subject;
 
     my $match   = RT->Config->Get('ExtractSubjectTagMatch');
     my $nomatch = RT->Config->Get('ExtractSubjectTagNoMatch');
