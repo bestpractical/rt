@@ -13,7 +13,7 @@ use constant HAS_ENCODE_DETECT => do { local $@; eval { require Encode::Detect::
 my $string = "\x{442}\x{435}\x{441}\x{442} \x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
 
 sub guess {
-    is( RT::I18N::_GuessCharset( Encode::encode($_[0], $_[1]) ), $_[2] || $_[0], 'correct guess' );
+    is( RT::I18N::_GuessCharset( Encode::encode($_[0], $_[1]) ), $_[2] || $_[0], "$_[0] guesses as @{[$_[2]||$_[0]]}" );
 }
 
 RT->Config->Set(EmailInputEncodings => qw(*));
