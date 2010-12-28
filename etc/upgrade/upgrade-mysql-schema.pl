@@ -58,6 +58,10 @@ my @tables = qw(
     Tickets
     Transactions
     Users
+    FM_Articles
+    FM_Classes
+    FM_ObjectTopics
+    FM_Topics
 );
 
 my %charset = (
@@ -92,6 +96,23 @@ my %charset = (
     CustomFieldValues        => {
         Name  => 'utf8',
         Description  => 'utf8',
+    },
+    FM_Articles => {
+        Name => 'utf8',
+        Summary => 'utf8',
+        URI => 'ascii',
+    },
+    FM_Classes => {
+        Name => 'utf8',
+        Description => 'utf8',
+    },
+    FM_ObjectTopics => {
+        ObjectType => 'ascii',
+    },
+    FM_Topics => {
+        Name => 'utf8',
+        Description => 'utf8',
+        ObjectType => 'ascii',
     },
     Groups                   => {
         Name  => 'utf8',
