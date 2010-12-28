@@ -254,7 +254,7 @@ sub Content {
     my $self = shift;
     # Here we call _Value to get the ACL check.
     my $content = $self->_Value('Content');
-    if ($self->__Value('ContentType') eq 'storable') {
+    if ( ($self->__Value('ContentType') || '') eq 'storable') {
         eval {$content = $self->_DeserializeContent($content); };
         if ($@) {
             $RT::Logger->error("Deserialization of content for attribute ".$self->Id. " failed. Attribute was: ".$content);
