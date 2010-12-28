@@ -58,7 +58,7 @@
     <meta http-equiv="refresh" content="<% $Refresh %>" />
 % }
 
-<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
+<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
 % for my $cssfile ( @css_files ) {
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $cssfile %>" type="text/css" media="all" />
 % }
