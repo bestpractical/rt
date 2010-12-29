@@ -583,6 +583,21 @@ our %META = (
             }
         },
     },
+    WebPort => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebPort config option");
+                return;
+            }
+
+            if ($value !~ m{^\d+$}) {
+                $RT::Logger->error("The WebPort config option must be an integer");
+            }
+        },
+    },
 );
 my %OPTIONS = ();
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 24;
+use RT::Test nodb => 1, tests => 34;
 
 sub warnings_from {
     my $option = shift;
@@ -65,4 +65,24 @@ like($w[0], qr{The WebDomain config option must not contain a path \(/path\)});
 
 # reinstate a valid WebDomain for other tests
 is(warnings_from(WebDomain => 'rt.example.com'), 0);
+
+# WebPort
+is(warnings_from(WebDomain => 80), 0);
+is(warnings_from(WebDomain => 443), 0);
+is(warnings_from(WebDomain => 8888), 0);
+
+@w = warnings_from(WebPort => '');
+is(@w, 1);
+like($w[0], qr{You must set the WebPort config option});
+
+@w = warnings_from(WebPort => 3.14);
+is(@w, 1);
+like($w[0], qr{The WebPort config option must be an integer});
+
+@w = warnings_from(WebPort => 'wha?');
+is(@w, 1);
+like($w[0], qr{The WebPort config option must be an integer});
+
+# reinstate a valid WebDomain for other tests
+is(warnings_from(WebPort => 443), 0);
 
