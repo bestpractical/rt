@@ -169,13 +169,12 @@ Set($DatabaseRequireSSL , undef);
 
 =item C<$UseSQLForACLChecks>
 
-In RT for ages ACL are checked after search what in some situations
-result in empty search pages and wrong count of tickets.
+Historically, ACLs were checked on display, which could lead to empty
+search pages and wrong ticket counts.  Set C<$UseSQLForACLChecks> to 1
+to limit search results in SQL instead, which eliminates these problems.
 
-Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
-
-However, this option is beta. In some cases it result in performance
-improvements, but some setups can not handle it.
+This option is still relatively new; it may result in performance
+problems in some cases, or significant speedups in others.
 
 =cut
 
@@ -183,19 +182,15 @@ Set($UseSQLForACLChecks, undef);
 
 =item C<$TicketsItemMapSize>
 
-In RT at display page of a ticket and there is the current search,
-then links for first, next, previous and last ticket are shown in
-the menu.
+On the display page of a ticket from search results, RT provides links
+to the first, next, previous and last ticket from the results.  In
+order to build these links, TY needs to fetch the full result set from
+the database, which can be resource-intensive.
 
-To build full map RT has to fetch full result set out of DB what can
-eat lots of resources. Using this option it's possible to limit number
-of tickets fetched.
-
-Set C<$TicketsItemMapSize> to number of tickets you want RT to look
-at to build the map. If full result set is bigger than that number
-then there would be no 'last' link in the menu.
-
-Set this to zero to return back to old behavior.
+Set C<$TicketsItemMapSize> to number of tickets you want RT to examine
+to build these links. If the full result set is larger than this
+number, RT will omitthe "last" link in the menu.  Set this to zero to
+always examine all results.
 
 =cut
 
