@@ -621,6 +621,25 @@ our %META = (
             }
         },
     },
+    WebURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebURL config option");
+                return;
+            }
+
+            if ($value !~ m{^\w+://}) {
+                $RT::Logger->error("The WebURL config option must contain a scheme");
+            }
+
+            if ($value !~ m{/$}) {
+                $RT::Logger->error("The WebURL config option requires a trailing slash");
+            }
+        },
+    },
 );
 my %OPTIONS = ();
 
