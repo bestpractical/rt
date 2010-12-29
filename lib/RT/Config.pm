@@ -562,6 +562,27 @@ our %META = (
             }
         },
     },
+    WebDomain => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebDomain config option");
+                return;
+            }
+
+            if ($value =~ m{^(\w+://)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a scheme ($1)");
+                return;
+            }
+
+            if ($value =~ m{(/.*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a path ($1)");
+                return;
+            }
+        },
+    },
 );
 my %OPTIONS = ();
 
