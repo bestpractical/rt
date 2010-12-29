@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 46;
+use RT::Test nodb => 1, tests => 49;
 
 sub warnings_from {
     my $option = shift;
@@ -87,9 +87,9 @@ like($w[0], qr{The WebPort config option must be an integer});
 is(warnings_from(WebPort => 443), 0);
 
 # WebBaseURL
-is(warnings_from(WebBaseURL => 'http://rt.example.com/rt'), 0);
-is(warnings_from(WebBaseURL => 'xtp://rt.example.com/rt'), 0, 'nonstandard schema is okay');
-is(warnings_from(WebBaseURL => 'http://rt.example.com:8888/rt'), 0, 'nonstandard port is okay');
+is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
+is(warnings_from(WebBaseURL => 'xtp://rt.example.com'), 0, 'nonstandard schema is okay');
+is(warnings_from(WebBaseURL => 'http://rt.example.com:8888'), 0, 'nonstandard port is okay');
 
 @w = warnings_from(WebBaseURL => '');
 is(@w, 1);
@@ -97,16 +97,21 @@ like($w[0], qr{You must set the WebBaseURL config option});
 
 @w = warnings_from(WebBaseURL => 'rt.example.com');
 is(@w, 1);
-like($w[0], qr{The WebDomain config option must contain a scheme});
+like($w[0], qr{The WebBaseURL config option must contain a scheme});
 
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/');
 is(@w, 1);
-like($w[0], qr{The WebDomain config option requires no trailing slash});
+like($w[0], qr{The WebBaseURL config option requires no trailing slash});
 
-@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/');
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/ir');
 is(@w, 1);
-like($w[0], qr{The WebDomain config option requires no trailing slash});
+like($w[0], qr{The WebBaseURL config option must not contain a path \(/rt/ir\)});
 
-# reinstate a valid WebDomain for other tests
-is(warnings_from(WebBaseURL => 'http://rt.example.com/rt'), 0);
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/ir/');
+is(@w, 2);
+like($w[0], qr{The WebBaseURL config option requires no trailing slash});
+like($w[1], qr{The WebBaseURL config option must not contain a path \(/rt/ir/\)});
+
+# reinstate a valid WebBaseURL for other tests
+is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
 

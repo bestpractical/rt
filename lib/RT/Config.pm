@@ -609,11 +609,15 @@ our %META = (
             }
 
             if ($value !~ m{^\w+://}) {
-                $RT::Logger->error("The WebDomain config option must contain a scheme");
+                $RT::Logger->error("The WebBaseURL config option must contain a scheme");
             }
 
             if ($value =~ m{/$}) {
-                $RT::Logger->error("The WebDomain config option requires no trailing slash");
+                $RT::Logger->error("The WebBaseURL config option requires no trailing slash");
+            }
+
+            if ($value =~ m{^\w+://.+?(/[^/].*)}) {
+                $RT::Logger->error("The WebBaseURL config option must not contain a path ($1)");
             }
         },
     },
