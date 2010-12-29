@@ -98,7 +98,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
 @queues = map {
     {  id          => $_->Id,
        Name        => $_->Name,
-       Description => $_->Description,
+       Description => $_->Description || '',
        Lifecycle   => $_->Lifecycle->Name,
     }
 } grep $_, @queues;

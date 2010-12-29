@@ -61,7 +61,7 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td>
+<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Lifecycle</&>:</td>
