@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 49;
+use RT::Test nodb => 1, tests => 64;
 
 sub warnings_from {
     my $option = shift;
@@ -21,6 +21,7 @@ sub warnings_from {
 # WebPath
 is(warnings_from(WebPath => ''), 0);
 is(warnings_from(WebPath => '/foo'), 0);
+is(warnings_from(WebPath => '/foo/bar'), 0);
 
 my @w = warnings_from(WebPath => '/foo/');
 is(@w, 1);
@@ -31,6 +32,19 @@ is(@w, 1);
 like($w[0], qr/The WebPath config option requires a leading slash/);
 
 @w = warnings_from(WebPath => 'foo/');
+is(@w, 2);
+like($w[0], qr/The WebPath config option requires no trailing slash/);
+like($w[1], qr/The WebPath config option requires a leading slash/);
+
+@w = warnings_from(WebPath => '/foo/bar/');
+is(@w, 1);
+like($w[0], qr/The WebPath config option requires no trailing slash/);
+
+@w = warnings_from(WebPath => 'foo/bar');
+is(@w, 1);
+like($w[0], qr/The WebPath config option requires a leading slash/);
+
+@w = warnings_from(WebPath => 'foo/bar/');
 is(@w, 2);
 like($w[0], qr/The WebPath config option requires no trailing slash/);
 like($w[1], qr/The WebPath config option requires a leading slash/);
@@ -62,6 +76,10 @@ like($w[0], qr{The WebDomain config option must not contain a scheme \(https://\
 @w = warnings_from(WebDomain => 'rt.example.com/path');
 is(@w, 1);
 like($w[0], qr{The WebDomain config option must not contain a path \(/path\)});
+
+@w = warnings_from(WebDomain => 'rt.example.com/path/more');
+is(@w, 1);
+like($w[0], qr{The WebDomain config option must not contain a path \(/path/more\)});
 
 # reinstate a valid WebDomain for other tests
 is(warnings_from(WebDomain => 'rt.example.com'), 0);
@@ -102,6 +120,15 @@ like($w[0], qr{The WebBaseURL config option must contain a scheme});
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/');
 is(@w, 1);
 like($w[0], qr{The WebBaseURL config option requires no trailing slash});
+
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt');
+is(@w, 1);
+like($w[0], qr{The WebBaseURL config option must not contain a path \(/rt\)});
+
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/');
+is(@w, 2);
+like($w[0], qr{The WebBaseURL config option requires no trailing slash});
+like($w[1], qr{The WebBaseURL config option must not contain a path \(/rt/\)});
 
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/ir');
 is(@w, 1);
