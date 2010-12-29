@@ -85,8 +85,8 @@ GENERAL INSTALLATION
 
      make fixdeps
 
-    Some modules require user input or environment variables to install correctly,
-    so it may be necessary to install them manually.
+    Some modules require user input or environment variables to install
+    correctly, so it may be necessary to install them manually.
 
 5   Check to make sure everything was installed properly.
 
