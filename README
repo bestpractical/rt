@@ -67,7 +67,7 @@ GENERAL INSTALLATION
     default install directory in /opt/rt4 does not work under SELinux's
     default configuration.
 
-    If you're upgrading RT plrease review the UPGRADING document at
+    If you're upgrading RT please review the UPGRADING document at
     this point. Some extensions you are using may have been integrated into the
     core or there may be extra upgrade scripts to run. Use a new, clean
     directory when you're upgrading to a new major release (for example
