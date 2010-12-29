@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 64;
+use RT::Test nodb => 1, tests => 65;
 
 sub warnings_from {
     my $option = shift;
@@ -106,8 +106,9 @@ is(warnings_from(WebPort => 443), 0);
 
 # WebBaseURL
 is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
-is(warnings_from(WebBaseURL => 'xtp://rt.example.com'), 0, 'nonstandard schema is okay');
+is(warnings_from(WebBaseURL => 'xtp://rt.example.com'), 0, 'nonstandard schema is okay?');
 is(warnings_from(WebBaseURL => 'http://rt.example.com:8888'), 0, 'nonstandard port is okay');
+is(warnings_from(WebBaseURL => 'https://rt.example.com:8888'), 0, 'nonstandard port with https is okay');
 
 @w = warnings_from(WebBaseURL => '');
 is(@w, 1);
