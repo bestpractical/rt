@@ -45,7 +45,7 @@ CREATE TABLE ObjectCustomFields (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB;
+) ENGINE=InnoDB;
 
 
 INSERT into ObjectCustomFields (id, CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
