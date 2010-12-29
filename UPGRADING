@@ -26,6 +26,9 @@ records run the following script:
 
     perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
 
+If you chose not to run the shrink_cgm_table.pl script when you upgraded to 3.8,
+you should read more about it below and run it at this point.
+
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
 RT's ChartFont option has been changed from a string to a hash which
