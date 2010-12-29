@@ -113,10 +113,11 @@ Set($DatabaseType , '@DB_TYPE@');
 
 =item C<$DatabaseHost>, C<$DatabaseRTHost>
 
-The domain name of your database server.
+The domain name of your database server.  If you're running mysql and
+on localhost, leave it blank for enhanced performance.
 
-If you're running mysql and it's on localhost,
-leave it blank for enhanced performance
+C<DatabaseRTHost> is the fully-qualified hostname of your RT server,
+for use in granting ACL rights on mysql.
 
 =cut
 
