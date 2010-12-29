@@ -472,7 +472,7 @@ sub _ParseContentSimple {
         SOURCE => $args{Content},
     );
     my ($ok) = $template->compile;
-    return ( undef, $self->loc('Template parsing error') ) if !$ok;
+    return ( undef, $self->loc('Template parsing error: [_1]', $Text::Template::ERROR) ) if !$ok;
 
     # copied from Text::Template::fill_in and refactored to be simple variable
     # interpolation
@@ -673,7 +673,8 @@ sub CompileCheck {
         TYPE   => 'STRING',
         SOURCE => $content,
     );
-    $template->compile;
+    my ($ok) = $template->compile;
+    return ( undef, $self->loc('Template parsing error: [_1]', $Text::Template::ERROR) ) if !$ok;
 
     # copied from Text::Template::fill_in and refactored to be compile checks
     foreach my $fi_item (@{$template->{SOURCE}}) {
