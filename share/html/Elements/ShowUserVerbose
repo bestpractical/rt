@@ -50,18 +50,20 @@
 <%INIT>
 my $phrase = '';
 my $address = '';
-my  $comment = '';
+my $comment = '';
 
 if ($User) {
     $address = $User->EmailAddress;
     $phrase  = $User->RealName if $User->RealName && lc $User->RealName ne lc $address;
     $comment = $User->Name if lc $User->Name ne lc $address;
+} else {
+    $address = $Address;
 }
 
 my $display = ($phrase || $comment || '' ) . ($address ?  ' <'.$address.'>' : '');
 
-   $display = $m->interp->apply_escapes( $display, 'h' )
-        unless $ARGS{'NoEscape'};
+$display = $m->interp->apply_escapes( $display, 'h' )
+    unless $ARGS{'NoEscape'};
 </%INIT>
 <%ARGS>
 $User => undef
