@@ -544,6 +544,12 @@ our %META = (
             # "In most cases, you should leave $WebPath set to '' (an empty value)."
             return unless $value;
 
+            # try to catch someone who assumes that you shouldn't leave this empty
+            if ($value eq '/') {
+                $RT::Logger->error("For the WebPath config option, use the empty string instead of /");
+                return;
+            }
+
             # $WebPath requires a leading / but no trailing /, or it can be blank.
             return if $value =~ m{^/.+[^/]$};
 
