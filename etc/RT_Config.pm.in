@@ -312,7 +312,7 @@ passed to it.
 #Set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
 #Set($CanonicalizeEmailAddressReplace , '@example.com');
 
-=item C<$CanonicalizeEmailAddressMatch>
+=item C<$CanonicalizeOnCreate>
 
 Set this to true and the create new user page will use the values that you
 enter in the form but use the function CanonicalizeUserInfo in
