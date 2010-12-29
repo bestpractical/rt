@@ -24,7 +24,7 @@ If you have existing data in RTFM, you can use the etc/upgrade/upgrade-articles
 script to upgrade that data.
 
 When running normal upgrade scripts, RT will warn if it finds existing
-RTFM tables that contain data and point you to the upgrade-aricles script.
+RTFM tables that contain data and point you to the upgrade-articles script.
 
 This script should be run from your RT tarball.  It will immediately
 begin populating your new RT4 tables with data from RTFM.  If you have
