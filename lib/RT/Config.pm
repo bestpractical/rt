@@ -536,6 +536,26 @@ our %META = (
                               'You can change the site default in your %Lifecycles config.');
         }
     },
+    WebPath => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            # "In most cases, you should leave $WebPath set to '' (an empty value)."
+            return unless $value;
+
+            # $WebPath requires a leading / but no trailing /, or it can be blank.
+            return if $value =~ m{^/.+[^/]$};
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebPath config option requires no trailing slash");
+            }
+
+            if ($value !~ m{^/}) {
+                $RT::Logger->error("The WebPath config option requires a leading slash");
+            }
+        },
+    },
 );
 my %OPTIONS = ();
 
