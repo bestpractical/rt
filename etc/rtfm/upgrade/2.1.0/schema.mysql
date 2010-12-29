@@ -6,7 +6,7 @@ Description varchar(255) NOT NULL DEFAULT '',
 ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL,
 PRIMARY KEY (id)
-) TYPE=InnoDB;
+) ENGINE=InnoDB;
 
 
 CREATE TABLE FM_ObjectTopics (
@@ -15,6 +15,6 @@ Topic integer NOT NULL,
 ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL,
 PRIMARY KEY (id)
-) TYPE=InnoDB;
+) ENGINE=InnoDB;
 
 
