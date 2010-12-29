@@ -598,6 +598,25 @@ our %META = (
             }
         },
     },
+    WebBaseURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebBaseURL config option");
+                return;
+            }
+
+            if ($value !~ m{^\w+://}) {
+                $RT::Logger->error("The WebDomain config option must contain a scheme");
+            }
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebDomain config option requires no trailing slash");
+            }
+        },
+    },
 );
 my %OPTIONS = ();
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 34;
+use RT::Test nodb => 1, tests => 46;
 
 sub warnings_from {
     my $option = shift;
@@ -85,4 +85,28 @@ like($w[0], qr{The WebPort config option must be an integer});
 
 # reinstate a valid WebDomain for other tests
 is(warnings_from(WebPort => 443), 0);
+
+# WebBaseURL
+is(warnings_from(WebBaseURL => 'http://rt.example.com/rt'), 0);
+is(warnings_from(WebBaseURL => 'xtp://rt.example.com/rt'), 0, 'nonstandard schema is okay');
+is(warnings_from(WebBaseURL => 'http://rt.example.com:8888/rt'), 0, 'nonstandard port is okay');
+
+@w = warnings_from(WebBaseURL => '');
+is(@w, 1);
+like($w[0], qr{You must set the WebBaseURL config option});
+
+@w = warnings_from(WebBaseURL => 'rt.example.com');
+is(@w, 1);
+like($w[0], qr{The WebDomain config option must contain a scheme});
+
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/');
+is(@w, 1);
+like($w[0], qr{The WebDomain config option requires no trailing slash});
+
+@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/');
+is(@w, 1);
+like($w[0], qr{The WebDomain config option requires no trailing slash});
+
+# reinstate a valid WebDomain for other tests
+is(warnings_from(WebBaseURL => 'http://rt.example.com/rt'), 0);
 
