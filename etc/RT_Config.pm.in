@@ -89,7 +89,7 @@ Set($MinimumPasswordLength , "5");
 =item C<$Timezone>
 
 C<$Timezone> is used to convert times entered by users into GMT and back again
-It should be set to a timezone recognized by your local unix box.
+It should be set to a timezone recognized by your server.
 
 =cut
 
@@ -168,7 +168,7 @@ Set($DatabaseRequireSSL , undef);
 
 =item C<$UseSQLForACLChecks>
 
-In RT for ages ACL are checked after search what in some situtations
+In RT for ages ACL are checked after search what in some situations
 result in empty search pages and wrong count of tickets.
 
 Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
@@ -187,14 +187,14 @@ then links for first, next, previous and last ticket are shown in
 the menu.
 
 To build full map RT has to fetch full result set out of DB what can
-eat lots of resourses. Using this option it's possible to limit number
+eat lots of resources. Using this option it's possible to limit number
 of tickets fetched.
 
 Set C<$TicketsItemMapSize> to number of tickets you want RT to look
 at to build the map. If full result set is bigger than that number
 then there would be no 'last' link in the menu.
 
-Set this to zero to return back to old behaviour.
+Set this to zero to return back to old behavior.
 
 =cut
 
@@ -243,7 +243,7 @@ C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments stored
 in the database.
 
 For mysql and oracle, we set this size at 10 megabytes.
-If you're running a postgres version earlier than 7.1, you will need
+If you're running a Postgres version earlier than 7.1, you will need
 to drop this to 8192. (8k)
 
 =cut
@@ -302,9 +302,9 @@ Set($RTAddressRegexp , undef);
 
 RT provides functionality which allows the system to rewrite
 incoming email addresses.  In its simplest form,
-you can substitute the value in $<CanonicalizeEmailAddressReplace>
-for the value in $<CanonicalizeEmailAddressMatch>
-(These values are passed to the $<CanonicalizeEmailAddress> subroutine in
+you can substitute the value in C<CanonicalizeEmailAddressReplace>
+for the value in C<CanonicalizeEmailAddressMatch>
+(These values are passed to the C<CanonicalizeEmailAddress> subroutine in
  F<RT/User.pm>)
 
 By default, that routine performs a C<s/$Match/$Replace/gi> on any address
@@ -329,7 +329,7 @@ Set($CanonicalizeOnCreate, 0);
 
 If C<$ValidateUserEmailAddresses> is true, RT will refuse to create users with
 an invalid email address (as specified in RFC 2822) or with an email address
-made of multiple email adresses.
+made of multiple email addresses.
 
 =cut
 
@@ -337,7 +337,7 @@ Set($ValidateUserEmailAddresses, undef);
 
 =item C<@MailPlugins>
 
-C<@MailPlugins> is a list of auth plugins for L<RT::Interface::Email>
+C<@MailPlugins> is a list of authentication plugins for L<RT::Interface::Email>
 to use; see L<rt-mailgate>
 
 =cut
@@ -481,7 +481,7 @@ These options only take effect if C<$MailCommand> is 'sendmail' or
 
 C<$SendmailArguments> defines what flags to pass to C<$SendmailPath>
 If you picked 'sendmailpipe', you MUST add a -t flag to C<$SendmailArguments>
-These options are good for most sendmail wrappers and workalikes
+These options are good for most sendmail wrappers and work-a-likes.
 
 These arguments are good for sendmail brand sendmail 8 and newer
 C<Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
@@ -494,7 +494,7 @@ Set($SendmailArguments , "-oi -t");
 =item C<$SendmailBounceArguments>
 
 C<$SendmailBounceArguments> defines what flags to pass to C<$Sendmail>
-assuming RT needs to send an error (ie. bounce).
+assuming RT needs to send an error (i.e. bounce).
 
 =cut
 
@@ -626,7 +626,7 @@ Set($FriendlyToLineFormat, "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\"
 =item C<$NotifyActor>
 
 By default, RT doesn't notify the person who performs an update, as they
-already know what they've done. If you'd like to change this behaviour,
+already know what they've done. If you'd like to change this behavior,
 Set C<$NotifyActor> to 1
 
 =cut
@@ -646,11 +646,11 @@ Set($RecordOutgoingEmail, 1);
 
 VERP support (http://cr.yp.to/proto/verp.txt)
 
-uncomment the following two directives to generate envelope senders
+Uncomment the following two directives to generate envelope senders
 of the form C<${VERPPrefix}${originaladdress}@${VERPDomain}>
 (i.e. rt-jesse=fsck.com@rt.example.com ).
 
-This currently only works with sendmail and sendmailppie.
+This currently only works with sendmail and sendmailpipe.
 
 =cut
 
@@ -830,9 +830,9 @@ Set(@LogToSyslogConf, ());
 
 =item C<$StatementLog>,
 
-RT has rudimentary SQL statement logging support if you have
-DBIx-SearchBuilder 1.31_1 or higher; simply set C<$StatementLog> to be
-the level that you wish SQL statements to be logged at.
+RT has rudimentary SQL statement logging support; simply set
+C<$StatementLog> to be the level that you wish SQL statements to be
+logged at.
 
 =cut
 
@@ -930,7 +930,7 @@ Set( $AutocompleteOwners, 0 );
 
 =item C<$WebDomain>
 
-Domain name of the RT server, eg 'www.example.com'. It should not contain
+Domain name of the RT server, e.g. 'www.example.com'. It should not contain
 anything else, but server name.
 
 =cut
@@ -950,7 +950,7 @@ Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
 =item C<$WebPath>
 
-If you're putting the web ui somewhere other than at the root of
+If you're putting the web UI somewhere other than at the root of
 your server, you should set C<$WebPath> to the path you'll be 
 serving RT at.
 
@@ -964,13 +964,13 @@ Set($WebPath, "");
 
 =item C<$WebBaseURL>, C<$WebURL>
 
-Usually you don't want to set these options. The only obviouse reason is
-RT accessible via https protocol on non standard port, eg
+Usually you don't want to set these options. The only obvious reason is if
+RT is accessible via https protocol on a non standard port, e.g.
 'https://rt.example.com:9999'. In all other cases these options are computed
 using C<$WebDomain>, C<$WebPort> and C<$WebPath>.
 
-C<$WebBaseURL> is the scheme, server and port (eg 'http://rt.example.com')
-for constructing urls to the web UI. C<$WebBaseURL> doesn't need a trailing /.
+C<$WebBaseURL> is the scheme, server and port (e.g. 'http://rt.example.com')
+for constructing URLs to the web UI. C<$WebBaseURL> doesn't need a trailing /.
 
 C<$WebURL> is the C<$WebBaseURL>, C<$WebPath> and trailing /, for example:
 'http://www.example.com/rt/'.
@@ -1108,7 +1108,8 @@ Set($MessageBoxWrap, "SOFT");
 
 =item C<$MessageBoxRichText>
 
-Should "rich text" editing be enabled? This option lets your users send html email messages from the web interface.
+Should "rich text" editing be enabled? This option lets your users
+send HTML email messages from the web interface.
 
 =cut
 
@@ -1116,7 +1117,7 @@ Set($MessageBoxRichText, 1);
 
 =item C<$MessageBoxRichTextHeight>
 
-Height of RichText javascript enabled editing boxes (in pixels)
+Height of rich text JavaScript enabled editing boxes (in pixels)
 
 =cut
 
@@ -1152,7 +1153,7 @@ Set($WikiImplicitLinks, 0);
 =item C<$TrustHTMLAttachments>
 
 if C<TrustHTMLAttachments> is not defined, we will display them
-as text. This prevents malicious HTML and javascript from being
+as text. This prevents malicious HTML and JavaScript from being
 sent in a request (although there is probably more to it than that)
 
 =cut
@@ -1197,7 +1198,7 @@ machine generated? A true value will do so; setting this to '0'
 will cause no such messages to be redistributed.
 You can also use 'privileged' (the default), which will redistribute
 only to privileged users. This helps to protect against malformed
-bounces and loops caused by autocreated requestors with bogus addresses.
+bounces and loops caused by auto-created requestors with bogus addresses.
 
 =cut
 
@@ -1206,8 +1207,8 @@ Set($RedistributeAutoGeneratedMessages, 'privileged');
 =item C<$PreferRichText>
 
 If C<$PreferRichText> is set to a true value, RT will show HTML/Rich text
-messages in preference to their plaintext alternatives. RT "scrubs" the 
-html to show only a minimal subset of HTML to avoid possible contamination
+messages in preference to their plain-text alternatives. RT "scrubs" the 
+HTML to show only a minimal subset of HTML to avoid possible contamination
 by cross-site-scripting attacks.
 
 =cut
@@ -1228,7 +1229,7 @@ Set($WebExternalAuth, undef);
 If C<$WebExternalAuthContinuous> is defined, RT will check for the
 REMOTE_USER on each access.  If you would prefer this to only happen
 once (at initial login) set this to a false value.  The default setting
-will help ensure that if your external auth system deauthenticates a
+will help ensure that if your external authentication system deauthenticates a
 user, RT notices as soon as possible.
 
 =cut
@@ -1453,7 +1454,7 @@ Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueu
 
 C<@MasonParameters> is the list of parameters for the constructor of
 HTML::Mason's Apache or CGI Handler.  This is normally only useful
-for debugging, eg. profiling individual components with:
+for debugging, e.g. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
     Set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
@@ -1692,7 +1693,7 @@ Specifies which fields of L<RT::User> to match against and how to match each
 field when autocompleting users.  Valid match methods are LIKE, STARTSWITH,
 ENDSWITH, =, and !=.
 
-Not all User fields are publically accessible and hence won't work for
+Not all User fields are publicly accessible and hence won't work for
 autocomplete unless you override their accessibility using a local overlay or a
 plugin.  Out of the box the following fields are public: Name, EmailAddress,
 RealName, NickName, and Organization.
@@ -1820,7 +1821,7 @@ Set($AmbiguousDayInFuture, 0);
 
 =head1 Approval Configuration
 
-Configration for the approvl system
+Configuration for the approval system
 
 =over 4
 
@@ -1988,7 +1989,7 @@ finally 'any to any'.
 
 If you don't define any rights or there is no match for a
 transition RT will use B<DeleteTicket> or B<ModifyTicket> as
-apropriate.
+appropriate.
 
 =head3 Labeling and defining actions
 
@@ -2191,7 +2192,7 @@ Set(@Plugins, ());
 
 =item C<@JSFiles>
 
-a list of js files to be included in head
+a list of JavaScript files to be included in head
 
 Example:
 
