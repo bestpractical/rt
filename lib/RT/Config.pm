@@ -1141,6 +1141,20 @@ sub UpdateOption {
     return 1;
 }
 
+=head2 ExtraSecurity NAME
+
+Returns true if NAME is included in the C<@ExtraSecurity> list, false if not.
+
+This is currently a convenience method for C<< grep { lc $_ eq lc $name } RT->Config->Get('ExtraSecurity') >>.
+
+=cut
+
+sub ExtraSecurity {
+    my $self = shift;
+    my $name = lc shift;
+    return grep { lc $_ eq $name } $self->Get('ExtraSecurity');
+}
+
 RT::Base->_ImportOverlays();
 
 1;
