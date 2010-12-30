@@ -262,6 +262,8 @@ sub _psgi_response_cb {
     Plack::Util::response_cb
             ($ret,
              sub {
+                 my $res = shift;
+                 Plack::Util::header_set($res->[1], 'X-Frame-Options' => 'DENY');
                  return sub {
                      if (!defined $_[0]) {
                          $cleanup->();
