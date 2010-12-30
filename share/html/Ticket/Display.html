@@ -182,7 +182,7 @@ if ($ARGS{'id'} eq 'new') {
     }
 }
 
-$title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject);
+$title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject || '');
 
 $m->callback(
     CallbackName => 'BeforeDisplay',
