@@ -57,7 +57,6 @@
 </ul>
 </&>
 <%init>
-use RT::SavedSearches;
 my @menu = (
     {         html => '<form method="GET" id="search" action="'
             . RT->Config->Get('WebPath')
@@ -89,7 +88,7 @@ my @menu = (
 if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $RT::System))
     {
 
-        my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->ObjectsForLoading;
+        my @Objects = RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading;
         push @Objects, RT::System->new( $session{'CurrentUser'} )
             if $session{'CurrentUser'}->HasRight(
             Object => $RT::System,
