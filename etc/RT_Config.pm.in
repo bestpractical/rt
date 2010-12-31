@@ -775,7 +775,7 @@ log message.
 
 =over 4
 
-=item C<$LogToSyslog>, C<$LogToScreen>
+=item C<$LogToSyslog>, C<$LogToSTDERR>
 
 The minimum level error that will be logged to the specific device.
 From lowest to highest priority, the levels are:
@@ -784,7 +784,7 @@ From lowest to highest priority, the levels are:
 =cut
 
 Set($LogToSyslog    , 'info');
-Set($LogToScreen    , 'info');
+Set($LogToSTDERR    , 'info');
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
 

@@ -287,11 +287,11 @@ sub InitLogging {
                              callbacks => [ $simple_cb, $stack_cb ],
                            ));
         }
-        if ( $Config->Get('LogToScreen') ) {
+        if ( $Config->Get('LogToSTDERR') ) {
             require Log::Dispatch::Screen;
             $RT::Logger->add( Log::Dispatch::Screen->new
                          ( name => 'screen',
-                           min_level => $Config->Get('LogToScreen'),
+                           min_level => $Config->Get('LogToSTDERR'),
                            callbacks => [ $simple_cb, $stack_cb ],
                            stderr => 1,
                          ));

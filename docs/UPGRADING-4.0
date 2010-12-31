@@ -16,6 +16,14 @@ server configuration.  You need to review docs/web_deployment.pod for current
 instructions
 
 *******
+UPGRADING FROM RT 4.0.0 and greater
+
+* The $LogToScreen config setting is now named $LogToSTDERR which better
+  describes what the log level controls.  Setting $LogToScreen will still work,
+  but an informational notice will be issued on server start telling you about
+  the rename.  To avoid this you should set $LogToSTDERR instead.
+
+*******
 UPGRADING FROM RT 3.8.x and RTFM 2.1 or greater
 
 RT4 now includes an Articles functionality, merged from RTFM.

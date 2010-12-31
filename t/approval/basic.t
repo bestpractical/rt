@@ -9,7 +9,7 @@ BEGIN {
 
 use RT::Test::Email;
 
-RT->Config->Set( LogToScreen => 'debug' );
+RT->Config->Set( LogToSTDERR => 'debug' );
 RT->Config->Set( UseTransactionBatch => 1 );
 
 my $q = RT::Queue->new(RT->SystemUser);
