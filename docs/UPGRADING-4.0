@@ -6,7 +6,7 @@ If you are upgrading, you will likely want to specify that your database
 is still named rt3 (or import a backup of your database as rt4 so that
 can feel more confident making the upgrade).
 
-If you choose to force RT to install into /opt/rt4 you will encounter
+If you choose to force RT to install into /opt/rt3 you will encounter
 issues because we've removed the _Overlay files (such as
 Ticket_Overlay.pm).  You will need to manually remove these files after
 the upgrade or RT will fail.
