@@ -62,13 +62,6 @@ it knows where to find RT:
         # TransferLog /opt/rt4/var/log/apache.access
         # LogLevel debug
 
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
-
         AddDefaultCharset UTF-8
         PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
 
@@ -112,13 +105,6 @@ it knows where to find RT:
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
-
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
 
         AddDefaultCharset UTF-8
         PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
@@ -176,13 +162,6 @@ Apache configuration file telling it about RT:
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
-
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
 
         AddDefaultCharset UTF-8
 
