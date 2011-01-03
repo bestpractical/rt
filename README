@@ -88,16 +88,18 @@ GENERAL INSTALLATION
     Some modules require user input or environment variables to install
     correctly, so it may be necessary to install them manually.
 
-    If you are installing with CPAN module older than 1.84, you will need
-    to start CPAN (by running perl -MCPAN -e shell) and upgrade the CPAN shell with:
+    If you are installing with CPAN module older than 1.84, you will need to
+    start CPAN (by running perl -MCPAN -e shell) and upgrade the CPAN shell
+    with:
 
        install CPAN
 
-    If you are unsure of your CPAN version, it will be printed when you run the shell.
+    If you are unsure of your CPAN version, it will be printed when you run the
+    shell.
 
-    If you are having trouble installing Imager::File::GIF/PNG/JPEG
-    you will need the appropriate development libraries (giflib-devel, libpng-devel
-    and libjpeg-devel are the rpm names for these libraries).  You may also want to
+    If you are having trouble installing Imager::File::GIF/PNG/JPEG, you will
+    need the appropriate development libraries (giflib-devel, libpng-devel and
+    libjpeg-devel are the rpm names for these libraries).  You may also want to
     install gd-devel at this time, along with the graphviz rpms (available from
     graphviz.org) if you want to use graphs and charts.
 
