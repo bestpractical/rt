@@ -142,10 +142,6 @@ it knows where to find RT:
 
 =head2 FastCGI
 
-Installation with FastCGI is a little bit more complex than mod_perl and is
-documented in detail at
-L<http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration>
-
 In the most basic configuration, you can set up your webserver to run
 as a user who is a member of the "rt" unix group so that the FastCGI script
 can read RT's configuration file.  It's important to understand the security
