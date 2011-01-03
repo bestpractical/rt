@@ -164,7 +164,6 @@ Apache configuration file telling it about RT:
     </IfModule>
 
     <VirtualHost rt.example.com>
-        ServerRoot /usr
         ServerAdmin root@localhost
 
         LoadModule authz_host_module modules/mod_authz_host.so
