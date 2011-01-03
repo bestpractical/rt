@@ -42,7 +42,7 @@ it knows where to find RT:
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
@@ -95,7 +95,7 @@ it knows where to find RT:
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
@@ -159,7 +159,7 @@ Apache configuration file telling it about RT:
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
