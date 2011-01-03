@@ -57,6 +57,7 @@ package RT::I18N;
 use strict;
 use warnings;
 
+
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
 use base 'Locale::Maketext::Fuzzy';
@@ -460,50 +461,79 @@ use Encode::Guess to try to figure it out the string's encoding.
 
 =cut
 
+use constant HAS_ENCODE_GUESS => do { local $@; eval { require Encode::Guess; 1 } };
+use constant HAS_ENCODE_DETECT => do { local $@; eval { require Encode::Detect::Detector; 1 } };
+
 sub _GuessCharset {
-    my $fallback = 'iso-8859-1';
+    my $fallback = _CanonicalizeCharset('iso-8859-1');
 
     # if $_[0] is null/empty, we don't guess its encoding
-    return $fallback unless defined $_[0] && length $_[0];
+    return $fallback
+        unless defined $_[0] && length $_[0];
 
-    my $charset;
     my @encodings = RT->Config->Get('EmailInputEncodings');
-    if ( @encodings and eval { require Encode::Guess; 1 } ) {
-	Encode::Guess->set_suspects( @encodings );
-	my $decoder = Encode::Guess->guess( $_[0] );
-
-      if ( defined($decoder) ) {
-	if ( ref $decoder ) {
-	    $charset = $decoder->name;
-	    $RT::Logger->debug("Guessed encoding: $charset");
-	    return $charset;
-	}
-	elsif ($decoder =~ /(\S+ or .+)/) {
-	    my %matched = map { $_ => 1 } split(/ or /, $1);
-	    return 'utf-8' if $matched{'utf8'}; # one and only normalization
-
-	    foreach my $suspect (RT->Config->Get('EmailInputEncodings')) {
-		next unless $matched{$suspect};
-		$RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
-		$charset = $suspect;
-		last;
-	    }
-	}
-	else {
-	    $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
-	}
-      }
-      else {
-	  $RT::Logger->warning("Encode::Guess failed: decoder is undefined; fallback to $fallback");
-      }
-    }
-    elsif ( @encodings && $@ ) {
-        $RT::Logger->error("You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@");
-    } else {
+    unless ( @encodings ) {
         $RT::Logger->warning("No EmailInputEncodings set, fallback to $fallback");
+        return $fallback;
     }
 
-    return _CanonicalizeCharset($charset || $fallback);
+    if ( $encodings[0] eq '*' ) {
+        shift @encodings;
+        if ( HAS_ENCODE_DETECT ) {
+            my $charset = Encode::Detect::Detector::detect( $_[0] );
+            if ( $charset ) {
+                $RT::Logger->debug("Encode::Detect::Detector guessed encoding: $charset");
+                return _CanonicalizeCharset( Encode::resolve_alias( $charset ) );
+            }
+            else {
+                $RT::Logger->debug("Encode::Detect::Detector failed to guess encoding");
+            }
+        }
+        else {
+	    $RT::Logger->error(
+                "You requested to guess encoding, but we couldn't"
+                ." load Encode::Detect::Detector module"
+            );
+        }
+    }
+
+    unless ( @encodings ) {
+        $RT::Logger->warning("No EmailInputEncodings set except '*', fallback to $fallback");
+        return $fallback;
+    }
+
+    unless ( HAS_ENCODE_GUESS ) {
+        $RT::Logger->error("We couldn't load Encode::Guess module, fallback to $fallback");
+        return $fallback;
+    }
+
+    Encode::Guess->set_suspects( @encodings );
+    my $decoder = Encode::Guess->guess( $_[0] );
+    unless ( defined $decoder ) {
+        $RT::Logger->warning("Encode::Guess failed: decoder is undefined; fallback to $fallback");
+        return $fallback;
+    }
+
+    if ( ref $decoder ) {
+        my $charset = $decoder->name;
+        $RT::Logger->debug("Encode::Guess guessed encoding: $charset");
+        return _CanonicalizeCharset( $charset );
+    }
+    elsif ($decoder =~ /(\S+ or .+)/) {
+        my %matched = map { $_ => 1 } split(/ or /, $1);
+        return 'utf-8' if $matched{'utf8'}; # one and only normalization
+
+        foreach my $suspect (RT->Config->Get('EmailInputEncodings')) {
+            next unless $matched{$suspect};
+            $RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
+            return _CanonicalizeCharset( $suspect );
+        }
+    }
+    else {
+        $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
+    }
+
+    return $fallback;
 }
 
 =head2 _CanonicalizeCharset NAME
@@ -517,7 +547,7 @@ sub _CanonicalizeCharset {
     my $charset = lc shift;
     return $charset unless $charset;
 
-    if ( $charset eq 'utf8' ) {
+    if ( $charset eq 'utf8' || $charset eq 'utf-8-strict' ) {
         return 'utf-8';
     }
     elsif ( $charset eq 'gb2312' ) {

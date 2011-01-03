@@ -52,6 +52,7 @@ use strict;
 use warnings;
 
 
+
 =head1 NAME
 
 RT::Shredder - Permanently wipeout data from RT
@@ -201,7 +202,6 @@ BEGIN {
 # RT lib path
 
 ### after:     push @INC, qw(@RT_LIB_PATH@);
-    push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
     use RT::Shredder::Constants;
     use RT::Shredder::Exceptions;
 

@@ -70,6 +70,7 @@ package RT::Handle;
 
 use strict;
 use warnings;
+
 use File::Spec;
 
 =head1 METHODS

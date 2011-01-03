@@ -714,6 +714,62 @@ sub CanonicalizeGeneratedPaths {
 
 }
 
+=head2 AddJavaScript
+
+helper method to add js files to C<JSFiles> config.
+to add extra css files, you can add the following line
+in the plugin's main file:
+
+    RT->AddJavaScript( 'foo.js', 'bar.js' ); 
+
+=cut
+
+sub AddJavaScript {
+    my $self = shift;
+
+    my @old = RT->Config->Get('JSFiles');
+    RT->Config->Set( 'JSFiles', @old, @_ );
+    return RT->Config->Get('JSFiles');
+}
+
+=head2 AddStyleSheets
+
+helper method to add css files to C<CSSFiles> config
+
+to add extra css files, you can add the following line
+in the plugin's main file:
+
+    RT->AddStyleSheets( 'foo.css', 'bar.css' ); 
+
+=cut
+
+sub AddStyleSheets {
+    my $self = shift;
+    my @old = RT->Config->Get('CSSFiles');
+    RT->Config->Set( 'CSSFiles', @old, @_ );
+    return RT->Config->Get('CSSFiles');
+}
+
+=head2 JavaScript
+
+helper method of RT->Config->Get('JSFiles')
+
+=cut
+
+sub JavaScript {
+    return RT->Config->Get('JSFiles');
+}
+
+=head2 StyleSheets
+
+helper method of RT->Config->Get('CSSFiles')
+
+=cut
+
+sub StyleSheets {
+    return RT->Config->Get('CSSFiles');
+}
+
 =head1 BUGS
 
 Please report them to rt-bugs@bestpractical.com, if you know what's

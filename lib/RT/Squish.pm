@@ -48,20 +48,9 @@
 
 =head1 SYNOPSIS
 
-  use RT::Squish;
-  my $squish = RT::Squish->new(
-    Name  => 'foo',
-    Files => [ '/path/to/a', '/path/to/b' ],
-  );
-
 =head1 DESCRIPTION
 
-This module lets you create squished content of files.
-
-to add files automatically by the name, you can create method named
-UpdateFilesByName in your subclass to do this, see
-C<RT::Squish::CSS::UpdateFilesByName>
-and C<RT::Squish::JS::UpdateFilesByName> for example.
+base class of RT::Squish::JS and RT::Squish::CSS
 
 =head1 METHODS
 
@@ -72,16 +61,16 @@ use warnings;
 
 package RT::Squish;
 use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw/Files Content Key ModifiedTime Name/);
+__PACKAGE__->mk_accessors(qw/Content Key ModifiedTime ModifiedTimeString/);
 
 use Digest::MD5 'md5_hex';
+use HTTP::Date;
 
 =head2 new (ARGS)
 
 ARGS is a hash of named parameters.  Valid parameters are:
 
   Name - name for this object
-  Files - a reference to a list of files to be squished
 
 =cut
 
@@ -91,48 +80,25 @@ sub new {
     my $self  = \%args;
     bless $self, $class;
 
-    $self->Files( $args{Files} || [] );
-    $self->UpdateFilesByName() if $self->can('UpdateFilesByName');
-
-    my $content = $self->SquishFiles;
+    my $content = $self->Squish;
     $self->Content($content);
     $self->Key( md5_hex $content );
     $self->ModifiedTime( time() );
-
+    $self->ModifiedTimeString( HTTP::Date::time2str( $self->ModifiedTime ) );
     return $self;
 }
 
-=head2 SquishFiles
+=head2 Squish
 
-default squish action is just concatenating files.
-return the concatenated content.
-
-you can subclass this method to customize the squish way.
+virtual method which does nothing,
+you need to implement this method in subclasses.
 
 =cut
 
-sub SquishFiles {
-    my $self  = shift;
-    my $files = $self->Files;
-    my $c     = '';
-    local $/;
-    for my $file (@$files) {
-        open my $fh, '<', $file or die "can't open $file: $!";
-        $c .= <$fh>;
-    }
-
-    return $c;
+sub Squish {
+    $RT::Logger->warn( "you need to implement this method in subclasses" );
+    return 1;
 }
-
-=head2 Name
-
-this object's name, to distinguish with other objects
-
-=head2 Files
-
-arrayref of files to be squished.
-
-=head2 Key
 
 =head2 Content
 
@@ -142,11 +108,13 @@ squished content
 
 md5 of the squished content
 
-=cut
-
 =head2 ModifiedTime
 
 created time of squished content, i.e. seconds since 00:00:00 UTC, January 1, 1970
+
+=head2 ModifiedTimeString
+
+created time of squished content, with HTTP::Date format
 
 =cut
 

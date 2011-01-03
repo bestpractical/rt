@@ -49,6 +49,7 @@
 use strict;
 use warnings;
 
+
 package RT::Lifecycle;
 
 our %LIFECYCLES;

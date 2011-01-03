@@ -58,6 +58,10 @@ my @tables = qw(
     Tickets
     Transactions
     Users
+    FM_Articles
+    FM_Classes
+    FM_ObjectTopics
+    FM_Topics
 );
 
 my %charset = (
@@ -92,6 +96,23 @@ my %charset = (
     CustomFieldValues        => {
         Name  => 'utf8',
         Description  => 'utf8',
+    },
+    FM_Articles => {
+        Name => 'utf8',
+        Summary => 'utf8',
+        URI => 'ascii',
+    },
+    FM_Classes => {
+        Name => 'utf8',
+        Description => 'utf8',
+    },
+    FM_ObjectTopics => {
+        ObjectType => 'ascii',
+    },
+    FM_Topics => {
+        Name => 'utf8',
+        Description => 'utf8',
+        ObjectType => 'ascii',
     },
     Groups                   => {
         Name  => 'utf8',
@@ -239,7 +260,9 @@ sub convert_table {
 
     my $sth = $dbh->column_info( undef, $db_name, $table, undef );
     $sth->execute;
-    while ( my $info = $sth->fetchrow_hashref ) {
+    my $columns = $sth->fetchall_arrayref({});
+    return unless @$columns;
+    foreach my $info (@$columns) {
         convert_column(%$info);
     }
     for my $conversiontype (qw(char_to_binary binary_to_char)) {

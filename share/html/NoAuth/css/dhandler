@@ -47,15 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
 my $squisher;
-require HTTP::Date;
 </%ONCE>
 <%INIT>
 my $arg = $m->dhandler_arg;
-if ( $arg =~ m{(.*)/main-squished-(?:[0-9a-f]{32})\.css$} ) {
-    my $name = $1;
-    my $squished = RT::Interface::Web::SquishedCSS( Name => $name );
-    $r->header_out( 'Last-Modified'  => 
-        HTTP::Date::time2str( $squished->ModifiedTime ) );
+if ( $arg =~ m{(.*)-squished-[0-9a-f]{32}\.css$} ) {
+    my $style = $1;
+    my $squished = RT::Interface::Web::SquishedCSS( $style );
+    # Don't send Last-Modified since we don't handle If-Modified-Since
+    #$r->header_out( 'Last-Modified'  => $squished->ModifiedTimeString );
     $m->out( $squished->Content );
 }
 else {

@@ -58,8 +58,10 @@
     <meta http-equiv="refresh" content="<% $Refresh %>" />
 % }
 
-<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $style_path %>" type="text/css" media="all" />
+<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
+% for my $cssfile ( @css_files ) {
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $cssfile %>" type="text/css" media="all" />
+% }
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % for (keys %{$LinkRel || {}}) {
@@ -113,16 +115,16 @@ $id =~ s|index$||g
     if $id ne 'index';
 $id =~ s|-$||g;
 
-my $style_path;
 my $style = RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} );
 
+my @css_files;
 if ( RT->Config->Get('DevelMode') ) {
-    $style_path = "$style/main.css";
+    @css_files = ( "$style/main.css", RT->Config->Get('CSSFiles' ) );
 }
 else {
     my $key =
-      RT::Interface::Web::SquishedCSS( Name => $style )->Key;
-    $style_path = "$style/main-squished-$key.css";
+      RT::Interface::Web::SquishedCSS( $style )->Key;
+    @css_files = "$style-squished-$key.css";
 }
 
 </%INIT>

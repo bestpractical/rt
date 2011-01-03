@@ -113,6 +113,7 @@ sub NewHandler {
     $class->require or die $!;
     my $handler = $class->new(
         DefaultHandlerArgs(),
+        RT->Config->Get('MasonParameters'),
         @_
     );
   

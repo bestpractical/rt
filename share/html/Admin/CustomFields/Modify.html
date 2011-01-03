@@ -270,15 +270,10 @@ $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
 
 # This code does automatic redirection if any updates happen.
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
+MaybeRedirectForResults(
     Actions     => \@results,
-    Path        => '/Admin/CustomFields/Modify.html',
-    id              => $id,
-    ARGSRef     => \%ARGS
+    Arguments   => { id => $id },
 );
-
-
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;

@@ -2,6 +2,7 @@
     color: #500050;
     font-size: 0.9em;
     padding: 0.2em;
+    cursor: pointer;
 }
 
 .message-stanza-folder.open {

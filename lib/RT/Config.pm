@@ -51,6 +51,7 @@ package RT::Config;
 use strict;
 use warnings;
 
+
 use File::Spec ();
 
 =head1 NAME
@@ -272,20 +273,6 @@ our %META = (
                 7200 => "Refresh search results every 120 minutes.",       #loc
             },  
         },  
-    },
-    ResolveDefaultUpdateType => {
-        Section         => 'General',                                      #loc
-        Overridable     => 1,
-        SortOrder       => 10,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Default Update Type when Resolving',           #loc
-            Values      => [qw(Comment Respond)],
-            ValuesLabel => {
-                Comment => "Comments (Not sent to requestors)",            #loc
-                Respond => "Reply to requestors",                          #loc
-            },
-        },
     },
 
     # User overridable options for RT at a glance
@@ -538,6 +525,15 @@ our %META = (
                     " PGP support has been disabled");
                 $gpg->{'Enable'} = 0;
             }
+        }
+    },
+    ResolveDefaultUpdateType => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless $value;
+            $RT::Logger->info('The ResolveDefaultUpdateType config option has been deprecated.  '.
+                              'You can change the site default in your %Lifecycles config.');
         }
     },
 );

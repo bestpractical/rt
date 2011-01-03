@@ -1372,16 +1372,9 @@ Set($SearchResultsRefreshInterval, 0);
 
 =item C<$ResolveDefaultUpdateType>
 
-Set the default Update Type when clicking the Resolve link in the Ticket
-links tab.
-
-  Comment            Comments (Not sent to requestors)
-  Respond            Reply to requestors
+This option has been deprecated.  You can configure this site-wide with L<%Lifecycles>
 
 =cut
-
-Set($ResolveDefaultUpdateType, 'Comment');
-
 
 =item C<$OldestTransactionsFirst>
 
@@ -1756,8 +1749,9 @@ Set(@LexiconLanguages, qw(*));
 =item C<@EmailInputEncodings>
 
 An array that contains default encodings used to guess which charset
-an attachment uses if not specified.  Must be recognized by
-L<Encode::Guess>.
+an attachment uses if not specified. Must be recognized by
+L<Encode::Guess>. First element can be '*' that enables encoding
+detection using L<Encode::Detect::Detector> if it's installed.
 
 =cut
 
@@ -2195,17 +2189,17 @@ C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 Set(@Plugins, ());
 
-=item C<@JSFilesInHead>
+=item C<@JSFiles>
 
 a list of js files to be included in head
 
 Example:
 
-Set(@JSFilesInHead, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js history-folding.js/);
+Set(@JSFiles, qw/jquery-1.4.2.min.js jquery_noconflict.js jquery-ui-1.8.4.custom.min.js jquery.tablesorter.min.js ui.timepickr.js titlebox-state.js util.js userautocomplete.js history-folding.js/);
 
 =cut
 
-Set(@JSFilesInHead, qw/
+Set(@JSFiles, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
@@ -2228,7 +2222,7 @@ Set(@JSFilesInHead, qw/
 Path to jsmin binary.
 You can go to http://www.crockford.com/javascript/jsmin.html to get one.
 
-If specified, it'll be used to minify C<JSFilesInHead>.
+If specified, it'll be used to minify C<JSFiles>.
 If fails, RT will then try module L<JavaScript::Minifier>.
 If that still fails, RT will simply concatenate js files.
 
@@ -2237,6 +2231,18 @@ Example:
 C<Set($JSMinPath, '/path/to/jsmin');>
 
 =cut
+
+=item C<@CSSFiles>
+
+a list of css files to be included in head
+
+Example:
+
+Set(@CSSFiles, qw/foo.css/);
+
+=cut
+
+Set(@CSSFiles, qw//);
 
 =back
 

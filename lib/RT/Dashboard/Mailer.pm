@@ -222,7 +222,7 @@ sub SendDashboard {
         );
     }
 
-    $RT::Logger->info('Generating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
+    $RT::Logger->debug('Generating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
 
     if ($args{DryRun}) {
         print << "SUMMARY";
@@ -290,7 +290,7 @@ sub ObsoleteSubscription {
     if ($ok) {
         my ($deleted, $msg) = $subscription->Delete();
         if ($deleted) {
-            $RT::Logger->info("Deleted an obsolete subscription: $msg");
+            $RT::Logger->debug("Deleted an obsolete subscription: $msg");
         }
         else {
             $RT::Logger->warning("Unable to delete an obsolete subscription: $msg");
@@ -331,7 +331,7 @@ sub EmailDashboard {
     $entity->head->add('X-RT-Dashboard-Id', $dashboard->Id);
     $entity->head->add('X-RT-Dashboard-Subscription-Id', $subscription->Id);
 
-    $RT::Logger->info('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name." <$email>");
+    $RT::Logger->debug('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name." <$email>");
 
     my $ok = RT::Interface::Email::SendEmail(
         Entity => $entity,

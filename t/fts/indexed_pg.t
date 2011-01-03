@@ -5,6 +5,11 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not Pg' unless RT->Config->Get('DatabaseType') eq 'Pg';
+
+my ($major, $minor) = $RT::Handle->dbh->get_info(18) =~ /^0*(\d+)\.0*(\d+)/;
+plan skip_all => "Need Pg 8.2 or higher; we have $major.$minor"
+    if "$major.$minor" < 8.2;
+
 plan tests => 11;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1 );

@@ -51,6 +51,7 @@ use Carp ();
 use Scalar::Util ();
 
 use strict;
+use warnings;
 use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);

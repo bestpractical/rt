@@ -52,6 +52,9 @@ use warnings;
 package RT::I18N::ru;
 use base 'RT::I18N';
 
+use strict;
+use warnings;
+
 sub quant {
     my($handle, $num, @forms) = @_;
 

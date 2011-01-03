@@ -64,6 +64,7 @@
 package RT::Action;
 
 use strict;
+use warnings;
 use Scalar::Util;
 
 use base qw/RT::Base/;

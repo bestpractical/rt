@@ -75,7 +75,7 @@
         class => 'ticket-info-reminders',
     &>
         <table><tr><td>
-            <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+            <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
                 <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
                 <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
             </form>

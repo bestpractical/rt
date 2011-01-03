@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 44;
+use RT::Test tests => 51;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
+my ($baseurl, $m);
 
 SKIP: {
     skip 'test with apache+mod_perl has a bug of timezone', 44
@@ -12,7 +13,7 @@ SKIP: {
           && $ENV{RT_TEST_WEB_HANDLER} =~ /apache/
           && $ENV{RT_TEST_WEB_HANDLER} !~ /fastcgi/;
 
-my ($baseurl, $m) = RT::Test->started_ok;
+($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 my $root = RT::User->new( RT->SystemUser );
 ok( $root->Load('root'), 'load root user' );
@@ -137,15 +138,8 @@ diag 'check search build page';
 
     my ($cf_field) =
       $m->find_all_inputs( type => 'text', name_regex => qr/test cf datetime/ );
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '=',
-            $cf_field->name => '2010-05-04'
-        },
-        button => 'DoSearch',
-    );
 
-    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-04', }, 1 );
     $m->content_contains( '2010-05-04',     'got the right ticket' );
     $m->content_lacks( '2010-05-06', 'did not get the wrong ticket' );
 
@@ -160,60 +154,14 @@ diag 'check search build page';
     ));
     $m->login( 'shanghai', 'password', logout => 1 );
 
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_name('BuildQuery');
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '=',
-            $cf_field->name => '2010-05-05'
-        },
-        button => 'DoSearch',
-    );
-    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
-
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_name('BuildQuery');
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '<',
-            $cf_field->name => '2010-05-06'
-        },
-        button => 'DoSearch',
-    );
-    $m->content_contains( 'Found 2 ticket', 'Found 2 ticket' );
-
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_name('BuildQuery');
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '>',
-            $cf_field->name => '2010-05-03',
-        },
-        button => 'DoSearch',
-    );
-    $m->content_contains( 'Found 2 tickets', 'Found 2 tickets' );
-
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_name('BuildQuery');
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '=',
-            $cf_field->name => '2010-05-04 16:00:01',
-        },
-        button => 'DoSearch',
-    );
-    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
-
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
-    $m->form_name('BuildQuery');
-    $m->submit_form(
-        fields => {
-            $cf_op->name    => '=',
-            $cf_field->name => '2010-05-05 01:00:01',
-        },
-        button => 'DoSearch',
-    );
-    $m->content_contains( 'Found 1 ticket', 'Found 1 ticket' );
+    is_results_number( { $cf_op->name => '<', $cf_field->name => '2010-05-07', }, 2 );
+    is_results_number( { $cf_op->name => '>', $cf_field->name => '2010-05-04', }, 2 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05', }, 1 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 01:00:01', }, 1 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 02:00:01', }, 0 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06', }, 1 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06 07:00:01', }, 1 );
+    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06 08:00:01', }, 0 );
 }
 
 diag 'check invalid inputs';
@@ -238,3 +186,22 @@ diag 'check invalid inputs';
     $m->content_lacks('foodate', 'invalid dates not set');
 }
 }
+
+sub is_results_number { 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my $fields = shift;
+    my $number = shift;
+    my $operator = shift;
+    my $value = shift;
+    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    $m->form_name('BuildQuery');
+    $m->submit_form(
+        fields => $fields,
+        button => 'DoSearch',
+    );
+    $m->content_contains( "Found $number ticket", "Found $number ticket" );
+}
+
+# to make $m->DESTROY happy
+undef $m;
+

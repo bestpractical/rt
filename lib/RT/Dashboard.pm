@@ -71,6 +71,7 @@ use RT::SavedSearch;
 
 use strict;
 use warnings;
+
 use base qw/RT::SharedSetting/;
 
 use RT::System;

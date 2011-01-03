@@ -70,34 +70,31 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 
-=head2 SquishedCSS Name => $name, Files => [...]
+=head2 SquishedCSS $style
 
 =cut
 
 my %SQUISHED_CSS;
 sub SquishedCSS {
-    my %args = @_;
-    my $name = $args{Name} or die "need Name";
-    return $SQUISHED_CSS{$name} if $SQUISHED_CSS{$name};
+    my $style = shift or die "need name";
+    return $SQUISHED_CSS{$style} if $SQUISHED_CSS{$style};
     require RT::Squish::CSS;
-    my $css = RT::Squish::CSS->new(%args);
-    $SQUISHED_CSS{ $css->Name } = $css;
+    my $css = RT::Squish::CSS->new( Style => $style );
+    $SQUISHED_CSS{ $css->Style } = $css;
     return $css;
 }
 
-=head2 SquishedJS Name => $name, Files => [...]
+=head2 SquishedJS
 
 =cut
 
-my %SQUISHED_JS;
+my $SQUISHED_JS;
 sub SquishedJS {
-    my %args = @_;
-    my $name = $args{Name} or die "need Name";
-    return $SQUISHED_JS{$name} if $SQUISHED_JS{$name};
+    return $SQUISHED_JS if $SQUISHED_JS;
 
     require RT::Squish::JS;
-    my $js = RT::Squish::JS->new(%args);
-    $SQUISHED_JS{ $js->Name } = $js;
+    my $js = RT::Squish::JS->new();
+    $SQUISHED_JS = $js;
     return $js;
 }
 
@@ -1096,7 +1093,38 @@ sub Abort {
     }
 }
 
+sub MaybeRedirectForResults {
+    my %args = (
+        Path      => $HTML::Mason::Commands::m->request_comp->path,
+        Arguments => {},
+        Anchor    => undef,
+        Actions   => undef,
+        Force     => 0,
+        @_
+    );
+    my $has_actions = $args{'Actions'} && grep( defined, @{ $args{'Actions'} } );
+    return unless $has_actions || $args{'Force'};
 
+    my %arguments = %{ $args{'Arguments'} };
+
+    if ( $has_actions ) {
+        my $key = Digest::MD5::md5_hex( rand(1024) );
+        push @{ $session{"Actions"}{ $key } ||= [] }, @{ $args{'Actions'} };
+        $session{'i'}++;
+        $arguments{'results'} = $key;
+    }
+
+    $args{'Path'} =~ s!^/+!!;
+    my $url = RT->Config->Get('WebURL') . $args{Path};
+
+    if ( keys %arguments ) {
+        $url .= '?'. $m->comp( '/Elements/QueryString', %arguments );
+    }
+    if ( $args{'Anchor'} ) {
+        $url .= "#". $args{'Anchor'};
+    }
+    return RT::Interface::Web::Redirect($url);
+}
 
 =head2 CreateTicket ARGS
 

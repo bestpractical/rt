@@ -48,9 +48,10 @@
 
 package RT::Reminders;
 
-use base qw/RT::Base/;
+use strict;
+use warnings;
 
-our $REMINDER_QUEUE = 'General';
+use base 'RT::Base';
 
 sub new {
     my $class = shift;

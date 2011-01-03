@@ -44,10 +44,10 @@ is(
     $tickets->LimitCustomField(
         CUSTOMFIELD => $cf->id,
         OPERATOR    => '=',
-        VALUE       => '2010-05-04 11:00:00',    # this timezone is UTC
+        VALUE       => '2010-05-04 07:00:00',    # this timezone is server
     );
 
-    is( $tickets->Count, 1, 'found the ticket with exact date: 2010-05-04 11:00:00' );
+    is( $tickets->Count, 1, 'found the ticket with exact date: 2010-05-04 07:00:00' );
 }
 
 {

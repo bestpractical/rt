@@ -93,6 +93,7 @@ use RT::I18N;
 use strict;
 use warnings;
 
+
 use base qw/RT::User/;
 
 #The basic idea here is that $self->CurrentUser is always supposed

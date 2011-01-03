@@ -48,6 +48,9 @@
 
 package RT::Shredder::Constants;
 
+use strict;
+use warnings;
+
 use base qw(Exporter);
 
 =head1 NAME
