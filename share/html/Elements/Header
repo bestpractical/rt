@@ -81,7 +81,7 @@
 
 <!-- Site CSS from theme editor -->
 <style type="text/css" media="all" id="sitecss">
-% if ( !RT->InstallMode && (my $attr = RT->System->FirstAttribute('UserCSS')) ) {
+% if (my $attr = RT->System->FirstAttribute('UserCSS')) {
 <% $attr->Content |n %>
 % }
 </style>
