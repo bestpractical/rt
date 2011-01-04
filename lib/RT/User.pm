@@ -918,7 +918,7 @@ sub IsPassword {
     } elsif (length $stored == 40) {
         # The truncated SHA256(salt,MD5(passwd)) form from 2010/12 is 40 characters long
         my $hash = MIME::Base64::decode_base64($stored);
-        # The first 4 bytes are the salt, the rest is substr(SHA256,0,26)
+        # Decoding yields 30 byes; first 4 are the salt, the rest are substr(SHA256,0,26)
         my $salt = substr($hash, 0, 4, "");
         return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5($value)), 0, 26) eq $hash;
     } elsif (length $stored == 32) {
