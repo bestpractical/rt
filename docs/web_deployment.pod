@@ -140,7 +140,7 @@ Apache configuration file telling it about RT:
     # Tell FastCGI to put its temporary files somewhere sane.
     FastCgiIpcDir /tmp
 
-    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt4/etc/RT_SiteConfig.pm
+    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
