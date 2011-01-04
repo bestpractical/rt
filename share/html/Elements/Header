@@ -83,6 +83,8 @@
 
 <!-- Site CSS from theme editor -->
 <style type="text/css" media="all" id="sitecss">
+%# Header is used when there isn't a database (such as in the Installer) which means there is no
+%# RT::System object, nor are there attributes.
 % if (blessed(RT->System) and my $attr = RT->System->FirstAttribute('UserCSS')) {
 <% $attr->Content |n %>
 % }
