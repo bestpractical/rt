@@ -1,0 +1,18 @@
+UPGRADING FROM 3.0.x - Changes:
+
+= Installation =
+
+We recommend you move your existing /opt/rt3 tree completely out
+of the way before installing the new version of RT, to make sure
+that you don't inadvertently leave old files hanging around.
+
+= Rights changes =
+
+Now, if you want RT to automatically create new users upon ticket
+submission, you MUST grant 'Everyone' the right to create tickets.
+Granting this right only to "Unprivileged Users" is now insufficient.
+
+= Web server configuration
+
+The configuration for RT's web interface has changed.  Please refer to
+docs/web_deployment.pod for instructions.

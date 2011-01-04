@@ -13,7 +13,7 @@ CREATE TABLE Attachments (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB  CHARACTER SET utf8;
+) ENGINE=InnoDB  CHARACTER SET utf8;
 
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
@@ -35,7 +35,7 @@ CREATE TABLE Queues (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
 CREATE INDEX Queues2 ON Queues (Disabled) ;
@@ -54,7 +54,7 @@ CREATE TABLE Links (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET ascii;
+) ENGINE=InnoDB CHARACTER SET ascii;
 
 CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
@@ -68,7 +68,7 @@ CREATE TABLE Principals (
         ObjectId integer, # foreign key to Users or Groups, depending
         Disabled int2 NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET ascii;
+) ENGINE=InnoDB CHARACTER SET ascii;
 
 CREATE INDEX Principals2 ON Principals (ObjectId);
 
@@ -86,7 +86,7 @@ CREATE TABLE Groups (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
 CREATE INDEX Groups2 On Groups (Type, Instance);
@@ -106,7 +106,7 @@ CREATE TABLE ScripConditions (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 CREATE TABLE Transactions (
@@ -126,7 +126,7 @@ CREATE TABLE Transactions (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
@@ -150,7 +150,7 @@ CREATE TABLE Scrips (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 CREATE TABLE ACL (
@@ -166,7 +166,7 @@ CREATE TABLE ACL (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
@@ -181,7 +181,7 @@ CREATE TABLE GroupMembers (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
 
 
@@ -201,7 +201,7 @@ create table CachedGroupMembers (
                                            # group members recursively.
                                            # Also, this allows us to have the ACL system elide members of disabled groups
         PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
@@ -246,7 +246,7 @@ CREATE TABLE Users (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 CREATE UNIQUE INDEX Users1 ON Users (Name) ;
@@ -284,7 +284,7 @@ CREATE TABLE Tickets (
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
@@ -303,7 +303,7 @@ CREATE TABLE ScripActions (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 
@@ -321,7 +321,7 @@ CREATE TABLE Templates (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 
@@ -343,7 +343,7 @@ CREATE TABLE ObjectCustomFieldValues (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,        # New -- whether the value was current
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content);
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId);
@@ -370,7 +370,7 @@ CREATE TABLE CustomFields (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 
@@ -385,7 +385,7 @@ CREATE TABLE ObjectCustomFields (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 
 
@@ -402,7 +402,7 @@ CREATE TABLE CustomFieldValues (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
@@ -422,7 +422,7 @@ CREATE TABLE Attributes (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Attributes1 on Attributes(Name);
 CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
@@ -437,7 +437,7 @@ CREATE TABLE sessions (
     a_session LONGBLOB,
     LastUpdated TIMESTAMP,
     PRIMARY KEY (id)
-);
+) ENGINE=InnoDB CHARACTER SET ascii;
 
 CREATE TABLE Classes (
   id int(11) NOT NULL auto_increment,

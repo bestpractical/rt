@@ -42,7 +42,7 @@ it knows where to find RT:
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
@@ -61,13 +61,6 @@ it knows where to find RT:
         # ErrorLog /opt/rt4/var/log/apache.error
         # TransferLog /opt/rt4/var/log/apache.access
         # LogLevel debug
-
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
 
         AddDefaultCharset UTF-8
         PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
@@ -95,7 +88,7 @@ it knows where to find RT:
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
@@ -112,13 +105,6 @@ it knows where to find RT:
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
-
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
 
         AddDefaultCharset UTF-8
         PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
@@ -142,10 +128,6 @@ it knows where to find RT:
 
 =head2 FastCGI
 
-Installation with FastCGI is a little bit more complex than mod_perl and is
-documented in detail at
-L<http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration>
-
 In the most basic configuration, you can set up your webserver to run
 as a user who is a member of the "rt" unix group so that the FastCGI script
 can read RT's configuration file.  It's important to understand the security
@@ -158,36 +140,24 @@ Apache configuration file telling it about RT:
     # Tell FastCGI to put its temporary files somewhere sane.
     FastCgiIpcDir /tmp
 
-    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=/opt/rt4/etc/RT_SiteConfig.pm
+    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
     <IfModule !mpm_netware_module>
     <IfModule !mpm_winnt_module>
     User rt
-    Group staff
+    Group www
     </IfModule>
     </IfModule>
 
     <VirtualHost rt.example.com>
-        ServerRoot /usr
         ServerAdmin root@localhost
 
-        LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule env_module modules/mod_env.so
-        LoadModule alias_module modules/mod_alias.so
-        LoadModule mime_module modules/mod_mime.so
         LoadModule fastcgi_module modules/mod_fastcgi.so
 
         # optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
-
-        <Directory />
-            Options FollowSymLinks
-            AllowOverride None
-            Order deny,allow
-            Deny from all
-        </Directory>
 
         AddDefaultCharset UTF-8
 
@@ -205,7 +175,7 @@ Apache configuration file telling it about RT:
     </VirtualHost>
 
 To run RT using FastCGI with other web servers like nginx, please see
-L<Plack::Handler::FCGI> for configuration examples.  Your should use
+L<Plack::Handler::FCGI> for configuration examples.  You should use
 C</opt/rt4/sbin/rt-server.fcgi> as your PSGI-app.
 
 =cut
