@@ -48,7 +48,7 @@
 #<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
 <%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
 % }
-% if ($Article->Summary =~ /\S/ and $include{Summary}) {
+% if ( $include{Summary} && ($Article->Summary||'') =~ /\S/ ) {
 <% $Article->Summary %>
 % }
 % while (my $cf = $cfs->Next) {

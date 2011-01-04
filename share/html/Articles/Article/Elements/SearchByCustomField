@@ -49,7 +49,8 @@
 % my $CustomFieldValues = $Field->ValuesObj();
 <select name="<%$Name%>" size="5" multiple>
 % while (my $value = $CustomFieldValues->Next) {
-<option value="<%$value->Name%>" <% grep (/^@{[$value->Name]}$/, @Values) && 'SELECTED'%>><% $value->Name%></option>
+% my $name = $value->Name || '';
+<option value="<% $name %>" <% grep($_ eq $name, @Values)? 'SELECTED' : ''%>><% $name %></option>
 % }
 <option value="" <% $#Values < 0 && 'SELECTED'%>><&|/l&>(no value)</&></option>
 </select>

@@ -586,7 +586,7 @@ sub load_or_create_queue {
         my @fields = qw(CorrespondAddress CommentAddress);
         foreach my $field ( @fields ) {
             next unless exists $args{ $field };
-            next if $args{ $field } eq $obj->$field;
+            next if $args{ $field } eq ($obj->$field || '');
             
             no warnings 'uninitialized';
             my $method = 'Set'. $field;

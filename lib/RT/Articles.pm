@@ -323,6 +323,14 @@ sub LimitCustomField {
 
     # TODO this should deal with starts with and ends with
 
+    my $fix_op = sub {
+        my $op = shift;
+        return $op unless RT->Config->Get('DatabaseType') eq 'Oracle';
+        return 'MATCHES' if $op eq '=';
+        return 'NOT MATCHES' if $op eq '!=';
+        return $op;
+    };
+
     my $clause = $args{'SUBCLAUSE'} || $ObjectValuesAlias;
     
     if ( $args{'OPERATOR'} eq '!=' || $args{'OPERATOR'} =~ /^not like$/i ) {
@@ -356,8 +364,8 @@ sub LimitCustomField {
     else {
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
-            FIELD           => 'Largecontent',
-            OPERATOR        => $args{'OPERATOR'},
+            FIELD           => 'LargeContent',
+            OPERATOR        => $fix_op->($args{'OPERATOR'}),
             VALUE           => $value,
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
