@@ -152,10 +152,6 @@ Apache configuration file telling it about RT:
     <VirtualHost rt.example.com>
         ServerAdmin root@localhost
 
-        LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule env_module modules/mod_env.so
-        LoadModule alias_module modules/mod_alias.so
-        LoadModule mime_module modules/mod_mime.so
         LoadModule fastcgi_module modules/mod_fastcgi.so
 
         # optional apache logs for RT
