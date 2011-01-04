@@ -85,6 +85,11 @@ li.category ~ li.category {
     margin-top: 1em;
 }
 
+.rights-editor li.addprincipal .warning {
+    color: #a00;
+    display: none;
+}
+
 /* Position the outer-most panel */
 .rights-editor > .ui-tabs-panel {
     position: static;

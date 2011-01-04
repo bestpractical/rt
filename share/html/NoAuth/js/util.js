@@ -293,7 +293,50 @@ function ReplaceAllTextareas(encoded) {
     }
 };
 
-function update_addprincipal_title(ev, ui) {
-    var h3 = jQuery("#acl-AddPrincipal h3");
-    h3.html( h3.text().replace(/: .+$/,'') + ": " + ui.item.value );
+function toggle_addprincipal_validity(input, good) {
+    if (good) {
+        jQuery(input).nextAll(".warning").hide();
+        jQuery("#acl-AddPrincipal input[type=checkbox]").removeAttr("disabled");
+    } else {
+        jQuery(input).nextAll(".warning").show();
+        jQuery("#acl-AddPrincipal input[type=checkbox]").attr("disabled", "disabled");
+    }
+    update_addprincipal_title(input);
 }
+
+function update_addprincipal_title(input) {
+    var h3 = jQuery("#acl-AddPrincipal h3");
+    h3.html( h3.text().replace(/: .*$/,'') + ": " + jQuery(input).val() );
+}
+
+// when a value is selected from the autocompleter
+function addprincipal_onselect() {
+    toggle_addprincipal_validity(this, true);
+}
+
+// when the input is actually changed, through typing or autocomplete
+function addprincipal_onchange(ev, ui) {
+    // if we have a ui.item, then they selected from autocomplete and it's good
+    if (!ui.item) {
+        var input = jQuery(this);
+        // Check using the same autocomplete source if the value typed would
+        // have been autocompleted and is therefore valid
+        jQuery.ajax({
+            url: input.autocomplete("option", "source"),
+            data: {
+                op: "=",
+                term: input.val()
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data)
+                    toggle_addprincipal_validity(input, data.length ? true : false );
+                else
+                    toggle_addprincipal_validity(input, true);
+            }
+        });
+    } else {
+        toggle_addprincipal_validity(this, true);
+    }
+}
+

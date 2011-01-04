@@ -103,19 +103,26 @@ for my $category (@$Principals) {
 </%perl>
 % if ( $AddPrincipal ) {
     <li class="category"><&|/l, loc($AddPrincipal) &>Add [_1]</&></li>
-    <li>
+    <li class="addprincipal">
       <a href="#acl-AddPrincipal">
         <input type="text" value=""
                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
-% if (lc $AddPrincipal eq 'group') {
         <script type="text/javascript">
+            jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").keyup(function(){
+                toggle_addprincipal_validity(this, true);
+            });
+
+% if (lc $AddPrincipal eq 'group') {
             jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").autocomplete({
                 source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
-                select: update_addprincipal_title
+                select: addprincipal_onselect,
+                change: addprincipal_onchange
             });
-        </script>
 % }
+        </script>
+% my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
+        <div class="warning"><&|/l, $type &>Invalid [_1]</&></div>
       </a>
     </li>
 % }
