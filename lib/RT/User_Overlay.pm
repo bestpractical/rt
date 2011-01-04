@@ -1004,12 +1004,12 @@ sub _GeneratePassword {
     $salt ||= pack("C4",map{int rand(256)} 1..4);
 
     # Encode the salt, and a truncated SHA256 of the MD5 of the
-    # password The additional, un-necessary level of MD5 allows for
+    # password.  The additional, un-necessary level of MD5 allows for
     # transparent upgrading to this scheme, from the previous unsalted
     # MD5 one.
     return MIME::Base64::encode_base64(
-        $salt
-      . substr(Digest::SHA::sha256($salt . Digest::MD5::md5($password)),0,26)
+        $salt . substr(Digest::SHA::sha256($salt . Digest::MD5::md5($password)),0,26),
+        "" # No newline
     );
 }
 
