@@ -1,0 +1,10 @@
+
+DROP TABLE IF EXISTS sessions;
+
+CREATE TABLE sessions (
+    id char(32) NOT NULL,
+    a_session LONGBLOB,
+    LastUpdated TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET ascii;
+
