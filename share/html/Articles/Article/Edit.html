@@ -320,7 +320,7 @@ else {
 if ( $ArticleObj->id ) {
     unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
         $m->comp( "/Elements/Error",
-            Why => "No permission to view Article" );
+            Why => loc("No permission to view Article") );
     }
 }
 
