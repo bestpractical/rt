@@ -135,6 +135,18 @@ sub import {
     $class->bootstrap_config( %args );
 
     use RT;
+    my $old_load_config = \&RT::LoadConfig;
+    {
+        no warnings 'redefine';
+        *RT::LoadConfig = sub {
+            $old_load_config->(@_);
+
+   # in case we want to load RT_SiteConfig again
+   # this is an equivalent in tests to "delete $INC{'RT_SiteConfig.pm'}" in code
+            delete $INC{ $tmp{'config'}{'RT'} };
+        };
+    }
+
     RT::LoadConfig;
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
