@@ -94,7 +94,6 @@ if ( $Run ) {
         my ( $status, $msg ) = RT::Installer->SaveConfig;
 
         if ( $status ) {
-            delete $INC{'RT_SiteConfig.pm'};
             RT->LoadConfig;
 
             if ( $RT::Installer->{DatabaseAction} ne 'none' ) {

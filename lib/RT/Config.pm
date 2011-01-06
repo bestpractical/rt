@@ -615,9 +615,13 @@ sub LoadConfig {
         and my $site_config = $ENV{RT_SITE_CONFIG} )
     {
         $self->_LoadConfig( %args, File => $site_config );
+        # to allow load siteconfig again and again in case it's updated
+        delete $INC{ $site_config };
     } else {
         $self->_LoadConfig(%args);
+        delete $INC{$args{'File'}};
     }
+
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
     $self->_LoadConfig(%args);
     return 1;
