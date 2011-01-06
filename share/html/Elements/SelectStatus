@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$Name%>" <% $Multiple ? qq{multiple="multiple" size="$Size"} : '' |n %>>
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }
@@ -93,4 +93,7 @@ $Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1
 $DefaultLabel => "-"
+
+$Multiple => 0
+$Size => 6
 </%ARGS>
