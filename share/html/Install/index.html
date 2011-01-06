@@ -91,7 +91,8 @@
 my @errors;
 my $locked;
 
-my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+require RT::Installer;
+my $file = RT::Installer->ConfigFile();
 
 if ( ! -e $file ) {
     # write a blank RT_SiteConfig.pm
