@@ -231,7 +231,7 @@ sub bootstrap_config {
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
-Set( \@LexiconLanguages, qw(en zh_TW fr));
+Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
