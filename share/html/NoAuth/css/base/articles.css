@@ -1,3 +1,7 @@
 #comp-Articles-Article-Search .label h2 {
     text-align: left;
 }
+
+.articles-select-article select {
+	max-width: 20em;
+}
