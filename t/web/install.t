@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use File::Spec;
 use utf8;
-use RT::Test tests => 57, actual_server => 1, noinitialdata => 1;
+use RT::Test tests => 59, actual_server => 1, noinitialdata => 1;
 RT->InstallMode(1);
 
 my $dbname     = 'rt4test_install_xxx';
@@ -11,6 +11,8 @@ my $domain     = 'rttes.com';
 my $password   = 'newpass';
 my $correspond = 'reply@example.com';
 my $comment    = 'comment@example.com';
+# use bin/rt to fake sendmail to make sure the file exists
+my $sendmail   = File::Spec->catfile( $RT::BinPath, 'rt' );
 
 unlink File::Spec->catfile( $RT::VarPath, $dbname );
 
@@ -92,12 +94,21 @@ $m->field( 'Password'  => $password );
 $m->click;
 
 is( $m->uri, $url . '/Install/Sendmail.html', 'mail page' );
-$m->click;
-$m->content_contains( "doesn&#39;t look like an email address",
-    'got email error' );
 for my $field (qw/SendmailPath OwnerEmail/) {
     ok( $m->current_form->find_input($field), "has field $field" );
 }
+
+$m->field( 'OwnerEmail' => '' );
+$m->click;
+$m->content_contains( "doesn&#39;t look like an email address",
+    'got email error' );
+
+$m->field( 'SendmailPath' => '/fake/path/sendmail' );
+$m->click;
+$m->content_contains( "/fake/path/sendmail doesn&#39;t exist",
+    'got sendmail error' );
+
+$m->field( 'SendmailPath' => $sendmail );
 $m->field( 'OwnerEmail' => 'root@localhost' );
 $m->click;
 
@@ -142,6 +153,7 @@ is( $config->Get('DatabaseName'), $dbname,  'DatabaseName in config' );
 is( $config->Get('rtname'),       $rtname,  'rtname in config' );
 is( $config->Get('WebDomain'),    $domain,  'WebDomain email in config' );
 is( $config->Get('WebPort'),      $port,    'WebPort email in config' );
+is( $config->Get('SendmailPath'), $sendmail, 'SendmailPath in config' );
 is( $config->Get('CorrespondAddress'),
     $correspond, 'correspond address in config' );
 is( $config->Get('CommentAddress'), $comment, 'comment address in config' );
