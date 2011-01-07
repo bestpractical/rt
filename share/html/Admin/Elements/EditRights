@@ -122,7 +122,7 @@ for my $category (@$Principals) {
 % }
         </script>
 % my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
-        <div class="warning"><&|/l, $type &>Invalid [_1]</&></div>
+        <span class="warning"><&|/l, $type &>Invalid [_1]</&></span>
       </a>
     </li>
 % }

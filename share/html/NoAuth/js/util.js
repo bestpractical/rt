@@ -298,7 +298,7 @@ function toggle_addprincipal_validity(input, good) {
         jQuery(input).nextAll(".warning").hide();
         jQuery("#acl-AddPrincipal input[type=checkbox]").removeAttr("disabled");
     } else {
-        jQuery(input).nextAll(".warning").show();
+        jQuery(input).nextAll(".warning").css("display", "block");
         jQuery("#acl-AddPrincipal input[type=checkbox]").attr("disabled", "disabled");
     }
     update_addprincipal_title(input);
