@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 87;
+use RT::Test nodb => 1, tests => 89;
 
 sub no_warnings_ok {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
@@ -84,6 +84,8 @@ one_warning_like(WebDomain => 'https://rt.example.com', qr{The WebDomain config 
 one_warning_like(WebDomain => 'rt.example.com/path', qr{The WebDomain config option must not contain a path \(/path\)});
 
 one_warning_like(WebDomain => 'rt.example.com/path/more', qr{The WebDomain config option must not contain a path \(/path/more\)});
+
+one_warning_like(WebDomain => 'rt.example.com:80', qr{The WebDomain config option must not contain a port \(80\)});
 
 # reinstate a valid WebDomain for other tests
 no_warnings_ok(WebDomain => 'rt.example.com');

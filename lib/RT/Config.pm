@@ -581,6 +581,11 @@ our %META = (
                 $RT::Logger->error("The WebDomain config option must not contain a path ($1)");
                 return;
             }
+
+            if ($value =~ m{:(\d*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a port ($1)");
+                return;
+            }
         },
     },
     WebPort => {
