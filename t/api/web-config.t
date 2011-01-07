@@ -3,6 +3,30 @@ use warnings;
 use RT;
 use RT::Test nodb => 1, tests => 87;
 
+sub no_warnings_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $option = shift;
+    my $value  = shift;
+    my $name   = shift;
+
+    is(warnings_from($option => $value), 0, $name);
+}
+
+sub one_warning_like {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $option = shift;
+    my $value  = shift;
+    my $regex  = shift;
+    my $name   = shift;
+
+    my @w = warnings_from($option => $value);
+    is(@w, 1);
+    like($w[0], $regex, $name);
+}
+
+
 sub warnings_from {
     my $option = shift;
     my $value  = shift;
@@ -19,125 +43,87 @@ sub warnings_from {
 }
 
 # WebPath
-is(warnings_from(WebPath => ''), 0);
-is(warnings_from(WebPath => '/foo'), 0);
-is(warnings_from(WebPath => '/foo/bar'), 0);
+no_warnings_ok(WebPath => '');
+no_warnings_ok(WebPath => '/foo');
+no_warnings_ok(WebPath => '/foo/bar');
 
-my @w = warnings_from(WebPath => '/foo/');
-is(@w, 1);
-like($w[0], qr/The WebPath config option requires no trailing slash/);
+one_warning_like(WebPath => '/foo/', qr/The WebPath config option requires no trailing slash/);
 
-@w = warnings_from(WebPath => 'foo');
-is(@w, 1);
-like($w[0], qr/The WebPath config option requires a leading slash/);
+one_warning_like(WebPath => 'foo', qr/The WebPath config option requires a leading slash/);
 
-@w = warnings_from(WebPath => 'foo/');
+my @w = warnings_from(WebPath => 'foo/');
 is(@w, 2);
 like($w[0], qr/The WebPath config option requires no trailing slash/);
 like($w[1], qr/The WebPath config option requires a leading slash/);
 
-@w = warnings_from(WebPath => '/foo/bar/');
-is(@w, 1);
-like($w[0], qr/The WebPath config option requires no trailing slash/);
+one_warning_like(WebPath => '/foo/bar/', qr/The WebPath config option requires no trailing slash/);
 
-@w = warnings_from(WebPath => 'foo/bar');
-is(@w, 1);
-like($w[0], qr/The WebPath config option requires a leading slash/);
+one_warning_like(WebPath => 'foo/bar', qr/The WebPath config option requires a leading slash/);
 
 @w = warnings_from(WebPath => 'foo/bar/');
 is(@w, 2);
 like($w[0], qr/The WebPath config option requires no trailing slash/);
 like($w[1], qr/The WebPath config option requires a leading slash/);
 
-@w = warnings_from(WebPath => '/');
-is(@w, 1);
-like($w[0], qr{For the WebPath config option, use the empty string instead of /});
+one_warning_like(WebPath => '/', qr{For the WebPath config option, use the empty string instead of /});
 
 # reinstate a valid WebPath for other tests
-is(warnings_from(WebPath => '/rt'), 0);
+no_warnings_ok(WebPath => '/rt');
 
 # WebDomain
-is(warnings_from(WebDomain => 'example.com'), 0);
-is(warnings_from(WebDomain => 'rt.example.com'), 0);
-is(warnings_from(WebDomain => 'localhost'), 0);
+no_warnings_ok(WebDomain => 'example.com');
+no_warnings_ok(WebDomain => 'rt.example.com');
+no_warnings_ok(WebDomain => 'localhost');
 
-@w = warnings_from(WebDomain => '');
-is(@w, 1);
-like($w[0], qr{You must set the WebDomain config option});
+one_warning_like(WebDomain => '', qr{You must set the WebDomain config option});
 
-@w = warnings_from(WebDomain => 'http://rt.example.com');
-is(@w, 1);
-like($w[0], qr{The WebDomain config option must not contain a scheme \(http://\)});
+one_warning_like(WebDomain => 'http://rt.example.com', qr{The WebDomain config option must not contain a scheme \(http://\)});
 
-@w = warnings_from(WebDomain => 'https://rt.example.com');
-is(@w, 1);
-like($w[0], qr{The WebDomain config option must not contain a scheme \(https://\)});
+one_warning_like(WebDomain => 'https://rt.example.com', qr{The WebDomain config option must not contain a scheme \(https://\)});
 
-@w = warnings_from(WebDomain => 'rt.example.com/path');
-is(@w, 1);
-like($w[0], qr{The WebDomain config option must not contain a path \(/path\)});
+one_warning_like(WebDomain => 'rt.example.com/path', qr{The WebDomain config option must not contain a path \(/path\)});
 
-@w = warnings_from(WebDomain => 'rt.example.com/path/more');
-is(@w, 1);
-like($w[0], qr{The WebDomain config option must not contain a path \(/path/more\)});
+one_warning_like(WebDomain => 'rt.example.com/path/more', qr{The WebDomain config option must not contain a path \(/path/more\)});
 
 # reinstate a valid WebDomain for other tests
-is(warnings_from(WebDomain => 'rt.example.com'), 0);
+no_warnings_ok(WebDomain => 'rt.example.com');
 
 # WebPort
-is(warnings_from(WebDomain => 80), 0);
-is(warnings_from(WebDomain => 443), 0);
-is(warnings_from(WebDomain => 8888), 0);
+no_warnings_ok(WebDomain => 80);
+no_warnings_ok(WebDomain => 443);
+no_warnings_ok(WebDomain => 8888);
 
-@w = warnings_from(WebPort => '');
-is(@w, 1);
-like($w[0], qr{You must set the WebPort config option});
+one_warning_like(WebPort => '', qr{You must set the WebPort config option});
 
-@w = warnings_from(WebPort => 3.14);
-is(@w, 1);
-like($w[0], qr{The WebPort config option must be an integer});
+one_warning_like(WebPort => 3.14, qr{The WebPort config option must be an integer});
 
-@w = warnings_from(WebPort => 'wha?');
-is(@w, 1);
-like($w[0], qr{The WebPort config option must be an integer});
+one_warning_like(WebPort => 'wha?', qr{The WebPort config option must be an integer});
 
 # reinstate a valid WebDomain for other tests
-is(warnings_from(WebPort => 443), 0);
+no_warnings_ok(WebPort => 443);
 
 # WebBaseURL
-is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
-is(warnings_from(WebBaseURL => 'HTTP://rt.example.com'), 0, 'uppercase scheme is okay');
-is(warnings_from(WebBaseURL => 'http://rt.example.com:8888'), 0, 'nonstandard port is okay');
-is(warnings_from(WebBaseURL => 'https://rt.example.com:8888'), 0, 'nonstandard port with https is okay');
+no_warnings_ok(WebBaseURL => 'http://rt.example.com');
+no_warnings_ok(WebBaseURL => 'HTTP://rt.example.com', 'uppercase scheme is okay');
+no_warnings_ok(WebBaseURL => 'http://rt.example.com:8888', 'nonstandard port is okay');
+no_warnings_ok(WebBaseURL => 'https://rt.example.com:8888', 'nonstandard port with https is okay');
 
-@w = warnings_from(WebBaseURL => '');
-is(@w, 1);
-like($w[0], qr{You must set the WebBaseURL config option});
+one_warning_like(WebBaseURL => '', qr{You must set the WebBaseURL config option});
 
-@w = warnings_from(WebBaseURL => 'rt.example.com');
-is(@w, 1);
-like($w[0], qr{The WebBaseURL config option must contain a scheme});
+one_warning_like(WebBaseURL => 'rt.example.com', qr{The WebBaseURL config option must contain a scheme});
 
-@w = warnings_from(WebBaseURL => 'xtp://rt.example.com');
-is(@w, 1);
-like($w[0], qr{The WebBaseURL config option must contain a scheme \(http or https\)});
+one_warning_like(WebBaseURL => 'xtp://rt.example.com', qr{The WebBaseURL config option must contain a scheme \(http or https\)});
 
-@w = warnings_from(WebBaseURL => 'http://rt.example.com/');
-is(@w, 1);
-like($w[0], qr{The WebBaseURL config option requires no trailing slash});
+one_warning_like(WebBaseURL => 'http://rt.example.com/', qr{The WebBaseURL config option requires no trailing slash});
 
-@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt');
-is(@w, 1);
-like($w[0], qr{The WebBaseURL config option must not contain a path \(/rt\)});
+one_warning_like(WebBaseURL => 'http://rt.example.com/rt', qr{The WebBaseURL config option must not contain a path \(/rt\)});
 
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/');
 is(@w, 2);
 like($w[0], qr{The WebBaseURL config option requires no trailing slash});
 like($w[1], qr{The WebBaseURL config option must not contain a path \(/rt/\)});
 
-@w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/ir');
-is(@w, 1);
-like($w[0], qr{The WebBaseURL config option must not contain a path \(/rt/ir\)});
+one_warning_like(WebBaseURL => 'http://rt.example.com/rt/ir', qr{The WebBaseURL config option must not contain a path \(/rt/ir\)});
 
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/rt/ir/');
 is(@w, 2);
@@ -145,41 +131,31 @@ like($w[0], qr{The WebBaseURL config option requires no trailing slash});
 like($w[1], qr{The WebBaseURL config option must not contain a path \(/rt/ir/\)});
 
 # reinstate a valid WebBaseURL for other tests
-is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
+no_warnings_ok(WebBaseURL => 'http://rt.example.com');
 
 # WebURL
-is(warnings_from(WebURL => 'http://rt.example.com/'), 0);
-is(warnings_from(WebURL => 'HTTP://rt.example.com/'), 0, 'uppercase scheme is okay');
-is(warnings_from(WebURL => 'http://example.com/rt/'), 0);
-is(warnings_from(WebURL => 'http://example.com/rt/ir/'), 0);
-is(warnings_from(WebURL => 'http://rt.example.com:8888/'), 0, 'nonstandard port is okay');
-is(warnings_from(WebURL => 'https://rt.example.com:8888/'), 0, 'nonstandard port with https is okay');
+no_warnings_ok(WebURL => 'http://rt.example.com/');
+no_warnings_ok(WebURL => 'HTTP://rt.example.com/', 'uppercase scheme is okay');
+no_warnings_ok(WebURL => 'http://example.com/rt/');
+no_warnings_ok(WebURL => 'http://example.com/rt/ir/');
+no_warnings_ok(WebURL => 'http://rt.example.com:8888/', 'nonstandard port is okay');
+no_warnings_ok(WebURL => 'https://rt.example.com:8888/', 'nonstandard port with https is okay');
 
-@w = warnings_from(WebURL => '');
-is(@w, 1);
-like($w[0], qr{You must set the WebURL config option});
+one_warning_like(WebURL => '', qr{You must set the WebURL config option});
 
 @w = warnings_from(WebURL => 'rt.example.com');
 is(@w, 2);
 like($w[0], qr{The WebURL config option must contain a scheme});
 like($w[1], qr{The WebURL config option requires a trailing slash});
 
-@w = warnings_from(WebURL => 'http://rt.example.com');
-is(@w, 1);
-like($w[0], qr{The WebURL config option requires a trailing slash});
+one_warning_like(WebURL => 'http://rt.example.com', qr{The WebURL config option requires a trailing slash});
 
-@w = warnings_from(WebURL => 'xtp://example.com/rt/');
-is(@w, 1);
-like($w[0], qr{The WebURL config option must contain a scheme \(http or https\)});
+one_warning_like(WebURL => 'xtp://example.com/rt/', qr{The WebURL config option must contain a scheme \(http or https\)});
 
-@w = warnings_from(WebURL => 'http://rt.example.com/rt');
-is(@w, 1);
-like($w[0], qr{The WebURL config option requires a trailing slash});
+one_warning_like(WebURL => 'http://rt.example.com/rt', qr{The WebURL config option requires a trailing slash});
 
-@w = warnings_from(WebURL => 'http://rt.example.com/rt/ir');
-is(@w, 1);
-like($w[0], qr{The WebURL config option requires a trailing slash});
+one_warning_like(WebURL => 'http://rt.example.com/rt/ir', qr{The WebURL config option requires a trailing slash});
 
 # reinstate a valid WebURL for other tests
-is(warnings_from(WebURL => 'http://rt.example.com/rt/'), 0);
+no_warnings_ok(WebURL => 'http://rt.example.com/rt/');
 
