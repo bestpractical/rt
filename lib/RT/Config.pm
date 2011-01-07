@@ -608,15 +608,15 @@ our %META = (
                 return;
             }
 
-            if ($value !~ m{^\w+://}) {
-                $RT::Logger->error("The WebBaseURL config option must contain a scheme");
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebBaseURL config option must contain a scheme (http or https)");
             }
 
             if ($value =~ m{/$}) {
                 $RT::Logger->error("The WebBaseURL config option requires no trailing slash");
             }
 
-            if ($value =~ m{^\w+://.+?(/[^/].*)}) {
+            if ($value =~ m{^https?://.+?(/[^/].*)}i) {
                 $RT::Logger->error("The WebBaseURL config option must not contain a path ($1)");
             }
         },
@@ -631,8 +631,8 @@ our %META = (
                 return;
             }
 
-            if ($value !~ m{^\w+://}) {
-                $RT::Logger->error("The WebURL config option must contain a scheme");
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebURL config option must contain a scheme (http or https)");
             }
 
             if ($value !~ m{/$}) {

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 83;
+use RT::Test nodb => 1, tests => 87;
 
 sub warnings_from {
     my $option = shift;
@@ -106,7 +106,7 @@ is(warnings_from(WebPort => 443), 0);
 
 # WebBaseURL
 is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
-is(warnings_from(WebBaseURL => 'xtp://rt.example.com'), 0, 'nonstandard schema is okay?');
+is(warnings_from(WebBaseURL => 'HTTP://rt.example.com'), 0, 'uppercase scheme is okay');
 is(warnings_from(WebBaseURL => 'http://rt.example.com:8888'), 0, 'nonstandard port is okay');
 is(warnings_from(WebBaseURL => 'https://rt.example.com:8888'), 0, 'nonstandard port with https is okay');
 
@@ -117,6 +117,10 @@ like($w[0], qr{You must set the WebBaseURL config option});
 @w = warnings_from(WebBaseURL => 'rt.example.com');
 is(@w, 1);
 like($w[0], qr{The WebBaseURL config option must contain a scheme});
+
+@w = warnings_from(WebBaseURL => 'xtp://rt.example.com');
+is(@w, 1);
+like($w[0], qr{The WebBaseURL config option must contain a scheme \(http or https\)});
 
 @w = warnings_from(WebBaseURL => 'http://rt.example.com/');
 is(@w, 1);
@@ -145,9 +149,9 @@ is(warnings_from(WebBaseURL => 'http://rt.example.com'), 0);
 
 # WebURL
 is(warnings_from(WebURL => 'http://rt.example.com/'), 0);
+is(warnings_from(WebURL => 'HTTP://rt.example.com/'), 0, 'uppercase scheme is okay');
 is(warnings_from(WebURL => 'http://example.com/rt/'), 0);
 is(warnings_from(WebURL => 'http://example.com/rt/ir/'), 0);
-is(warnings_from(WebURL => 'xtp://rt.example.com/'), 0, 'nonstandard schema is okay?');
 is(warnings_from(WebURL => 'http://rt.example.com:8888/'), 0, 'nonstandard port is okay');
 is(warnings_from(WebURL => 'https://rt.example.com:8888/'), 0, 'nonstandard port with https is okay');
 
@@ -163,6 +167,10 @@ like($w[1], qr{The WebURL config option requires a trailing slash});
 @w = warnings_from(WebURL => 'http://rt.example.com');
 is(@w, 1);
 like($w[0], qr{The WebURL config option requires a trailing slash});
+
+@w = warnings_from(WebURL => 'xtp://example.com/rt/');
+is(@w, 1);
+like($w[0], qr{The WebURL config option must contain a scheme \(http or https\)});
 
 @w = warnings_from(WebURL => 'http://rt.example.com/rt');
 is(@w, 1);
