@@ -1423,11 +1423,24 @@ sub _CustomFieldLimit {
         = $self->ClassifySQLOperation( $op );
 
     my $fix_op = sub {
-        my $op = shift;
-        return $op unless RT->Config->Get('DatabaseType') eq 'Oracle';
-        return 'MATCHES' if $op eq '=';
-        return 'NOT MATCHES' if $op eq '!=';
-        return $op;
+        return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
+
+        my %args = @_;
+        return %args unless $args{'FIELD'} eq 'LargeContent';
+        
+        my $op = $args{'OPERATOR'};
+        if ( $op eq '=' ) {
+            $args{'OPERATOR'} = 'MATCHES';
+        }
+        elsif ( $op eq '!=' ) {
+            $args{'OPERATOR'} = 'NOT MATCHES';
+        }
+        elsif ( $op =~ /^[<>]=?$/ ) {
+            # XXX: VERY DIRTY HACK
+            $args{'ALIAS'} = 'TO_CHAR( '. $args{'ALIAS'};
+            $args{'FIELD'} .= ')'; #, 1, '. (length($args{'VALUE'}) + 1) .')';
+        }
+        return %args;
     };
 
     if ( $cf && $cf->Type eq 'IPAddress' ) {
@@ -1552,13 +1565,13 @@ sub _CustomFieldLimit {
         # if column is defined then deal only with it
         # otherwise search in Content and in LargeContent
         if ( $column ) {
-            $self->_SQLLimit(
+            $self->_SQLLimit( $fix_op->(
                 ALIAS      => $TicketCFs,
                 FIELD      => $column,
-                OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
+                OPERATOR   => $op,
                 VALUE      => $value,
                 %rest
-            );
+            ) );
             $self->_CloseParen;
             $self->_CloseParen;
             $self->_CloseParen;
@@ -1642,13 +1655,13 @@ sub _CustomFieldLimit {
                         ENTRYAGGREGATOR => 'OR'
                     );
                     $self->_CloseParen;
-                    $self->_SQLLimit(
+                    $self->_SQLLimit( $fix_op->(
                         ALIAS           => $TicketCFs,
                         FIELD           => 'LargeContent',
-                        OPERATOR        => $fix_op->($op),
+                        OPERATOR        => $op,
                         VALUE           => $value,
                         ENTRYAGGREGATOR => 'AND',
-                    );
+                    ) );
                 }
             }
             else {
@@ -1677,13 +1690,13 @@ sub _CustomFieldLimit {
                     ENTRYAGGREGATOR => 'OR'
                 );
                 $self->_CloseParen;
-                $self->_SQLLimit(
+                $self->_SQLLimit( $fix_op->(
                     ALIAS           => $TicketCFs,
                     FIELD           => 'LargeContent',
-                    OPERATOR        => $fix_op->($op),
+                    OPERATOR        => $op,
                     VALUE           => $value,
                     ENTRYAGGREGATOR => 'AND',
-                );
+                ) );
                 $self->_CloseParen;
             }
             $self->_CloseParen;
@@ -1733,13 +1746,13 @@ sub _CustomFieldLimit {
         # if column is defined then deal only with it
         # otherwise search in Content and in LargeContent
         if ( $column ) {
-            $self->SUPER::Limit(
+            $self->SUPER::Limit( $fix_op->(
                 LEFTJOIN   => $TicketCFs,
                 ALIAS      => $TicketCFs,
                 FIELD      => $column,
-                OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
+                OPERATOR   => $op,
                 VALUE      => $value,
-            );
+            ) );
         }
         else {
             $self->SUPER::Limit(

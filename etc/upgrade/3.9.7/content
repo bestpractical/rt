@@ -1,7 +1,16 @@
+my %number_column = (
+    BasedOn => 1,
+);
 my $move_attributes = sub {
     my ($table, $type, $column) = @_;
-    my $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
-        ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
+    my $query;
+    if ( $number_column{ $column } && RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        $query = "UPDATE $table SET $column = (SELECT TO_NUMBER(Content) FROM Attributes WHERE"
+            ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
+    } else {
+        $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
+            ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
+    }
 
     my $res = $RT::Handle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {

@@ -270,7 +270,7 @@ you may reply to this message.
        Name        => 'Admin Comment',                           # loc
        Description => 'Default admin comment template',          # loc
        Content     =>
-'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject||""); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
 RT-Attach-Message: yes
 
 

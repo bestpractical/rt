@@ -907,7 +907,7 @@ sub BriefDescription {
             $New->Load( $self->NewValue );
 
             if ( $Old->id == RT->Nobody->id ) {
-                if ( $New->id == $self->CurrentUser->id ) {
+                if ( $New->id == $self->Creator ) {
                     return $self->loc("Taken");
                 }
                 else {
@@ -915,10 +915,10 @@ sub BriefDescription {
                 }
             }
             else {
-                if ( $New->id == $self->CurrentUser->id ) {
+                if ( $New->id == $self->Creator ) {
                     return $self->loc("Stolen from [_1]",  $Old->Name);
                 }
-                elsif ( $Old->id == $self->CurrentUser->id ) {
+                elsif ( $Old->id == $self->Creator ) {
                     if ( $New->id == RT->Nobody->id ) {
                         return $self->loc("Untaken");
                     }

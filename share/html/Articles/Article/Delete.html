@@ -90,7 +90,7 @@ unless ( $ArticleObj->id ) {
 
 
 unless ( $ArticleObj->CurrentUserHasRight('ModifyArticle') ) {
-    $m->comp("/Elements/Error", Why => "No permission to modify article");
+    $m->comp("/Elements/Error", Why => loc("No permission to modify article"));
 }
 
 if ($ARGS{'Delete'} eq 'yes') {

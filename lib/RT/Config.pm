@@ -536,6 +536,34 @@ our %META = (
                               'You can change the site default in your %Lifecycles config.');
         }
     },
+    EmailInputEncodings => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = $self->Get('EmailInputEncodings');
+            return unless $value && @$value;
+
+            my %seen;
+            foreach my $encoding ( grep defined && length, splice @$value ) {
+                next if $seen{ $encoding }++;
+                if ( $encoding eq '*' ) {
+                    unshift @$value, '*';
+                    next;
+                }
+
+                my $canonic = Encode::resolve_alias( $encoding );
+                unless ( $canonic ) {
+                    warn "Unknown encoding '$encoding' in \@EmailInputEncodings option";
+                }
+                elsif ( $seen{ $canonic }++ ) {
+                    next;
+                }
+                else {
+                    push @$value, $canonic;
+                }
+            }
+        },
+    }
 );
 my %OPTIONS = ();
 
