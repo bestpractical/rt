@@ -308,7 +308,7 @@ sub action_upgrade {
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
         $upgrading_from =~ s/\s+//g;
-    } while $upgrading_from !~ /^\d+\.\d+\.\d+$/;
+    } while $upgrading_from !~ /^\d+\.\d+\.\w+$/;
 
     my $upgrading_to = $RT::VERSION;
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
@@ -343,7 +343,7 @@ sub action_upgrade {
             chomp $custom_upgrading_to;
             $custom_upgrading_to =~ s/\s+//g;
             last unless $custom_upgrading_to;
-        } while $custom_upgrading_to !~ /^\d+\.\d+\.\d+$/;
+        } while $custom_upgrading_to !~ /^\d+\.\d+\.\w+$/;
 
         if ( $custom_upgrading_to ) {
             return (

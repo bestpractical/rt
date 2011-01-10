@@ -66,7 +66,7 @@
 <td><select name="<% $name_prefix %>Articles-Include-Article-Named-Hotlist" onchange="this.form.submit()">
 <option value="" selected><&|/l&>-</&></option>
 % while (my $article = $hotlist->Next) {
-<option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
+<option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary || ''%></option>
 % }
 </select>
 </td>
@@ -86,7 +86,7 @@
 %   next if $dedupe_articles{$article->Id};
 <tr>
 <td>&nbsp;</td>
-<td><%$article->Name || loc('(no name)')%>: <%$article->Summary%></td>
+<td><%$article->Name || loc('(no name)')%>: <%$article->Summary || ''%></td>
 <td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }

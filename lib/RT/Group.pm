@@ -836,13 +836,9 @@ Returns an array of the email addresses of all of this group's members
 
 sub MemberEmailAddresses {
     my $self = shift;
-
-    my %addresses;
-    my $members = $self->UserMembersObj();
-    while (my $member = $members->Next) {
-        $addresses{$member->EmailAddress} = 1;
-    }
-    return(sort keys %addresses);
+    return sort grep defined && length,
+        map $_->EmailAddress,
+        @{ $self->UserMembersObj->ItemsArrayRef };
 }
 
 

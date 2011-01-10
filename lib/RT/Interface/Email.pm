@@ -1225,7 +1225,7 @@ sub AddSubjectTag {
     }
     return $subject if $subject =~ /\[$tag_re\s+#$id\]/;
 
-    $subject =~ s/(\r\n|\n|\s)/ /gi;
+    $subject =~ s/(\r\n|\n|\s)/ /g;
     chomp $subject;
     return "[". ($queue_tag || RT->Config->Get('rtname')) ." #$id] $subject";
 }

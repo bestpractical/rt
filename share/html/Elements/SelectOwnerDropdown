@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>" id="<%$Name%>">
 %if ($DefaultValue) {
-<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel%></option>
+<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 %}
 % $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 % my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', User => $_)]} grep { $_->id != RT->Nobody->id } @users;

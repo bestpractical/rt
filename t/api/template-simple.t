@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 199;
+use RT::Test tests => 231;
 
 my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Load("General");
@@ -148,6 +148,7 @@ TemplateTest(
 
 TemplateTest(
     Content      => "\ntest { *!( }",
+    SyntaxError  => 1,
     PerlOutput   => undef,
     PerlWarnings => qr/syntax error/,
     SimpleOutput => "test { *!( }",
@@ -155,6 +156,7 @@ TemplateTest(
 
 TemplateTest(
     Content      => "\ntest { \$rtname ",
+    SyntaxError  => 1,
     PerlOutput   => undef,
     SimpleOutput => undef,
 );
@@ -222,7 +224,19 @@ sub IndividualTemplateTest {
     is($t->Content, $args{Content}, "$args{Type} content");
     is($t->Type, $args{Type}, "template type");
 
-    my ($ok, $msg) = $t->Parse(
+    # this should never blow up!
+    my ($ok, $msg) = $t->CompileCheck;
+
+    # we don't need to syntax check simple templates since if you mess them up
+    # it's safe to just use the input directly as the template's output
+    if ($args{SyntaxError} && $args{Type} eq 'Perl') {
+        ok(!$ok, "got a syntax error");
+    }
+    else {
+        ok($ok, $msg);
+    }
+
+    ($ok, $msg) = $t->Parse(
         TicketObj      => $ticket,
         TransactionObj => $txn,
     );

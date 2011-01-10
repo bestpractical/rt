@@ -61,7 +61,7 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td>
+<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Lifecycle</&>:</td>
@@ -78,10 +78,10 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
+<td><input name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 <td align="right"><&|/l&>Comment Address</&>:</td>
-<td><input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>" />
+<td><input name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 

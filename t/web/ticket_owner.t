@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 103;
+use RT::Test nodata => 1, tests => 105;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -384,7 +384,10 @@ diag
         fields    => { Owner => $user_a->id },
         button => 'SubmitTicket',
     );
-    $agent_a->content_contains('Taken', 'got Taken msg');
+    $agent_a->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message' );
+
+    $agent_b->goto_ticket($id);
+    $agent_b->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message for user b ' );
 }
 
 diag
@@ -408,6 +411,9 @@ diag
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    $agent_a->content_contains( 'Taken', 'got Taken message' );
+    $agent_a->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message' );
+
+    $agent_b->goto_ticket($id);
+    $agent_b->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message for user b ' );
 }
 

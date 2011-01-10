@@ -549,18 +549,29 @@ sub GetVersionFile {
     return defined $version? $version{ $version } : undef;
 }
 
+{ my %word = (
+    a     => -4,
+    alpha => -4,
+    b     => -3,
+    beta  => -3,
+    pre   => -2,
+    rc    => -1,
+    head  => 9999,
+);
 sub cmp_version($$) {
     my ($a, $b) = (@_);
-    $b =~ s/HEAD$/9999/;
-    my @a = split /[^0-9]+/, $a;
-    my @b = split /[^0-9]+/, $b;
+    my @a = grep defined, map { /^[0-9]+$/? $_ : /^[a-zA-Z]+$/? $word{$_}|| -10 : undef }
+        split /([^0-9]+)/, $a;
+    my @b = grep defined, map { /^[0-9]+$/? $_ : /^[a-zA-Z]+$/? $word{$_}|| -10 : undef }
+        split /([^0-9]+)/, $b;
+    @a > @b
+        ? push @b, (0) x (@a-@b)
+        : push @a, (0) x (@b-@a);
     for ( my $i = 0; $i < @a; $i++ ) {
-        return 1 unless defined $b[$i];
         return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
     }
-    return 0 if @a == @b;
-    return -1;
-}
+    return 0;
+}}
 
 
 =head2 InsertInitialData
