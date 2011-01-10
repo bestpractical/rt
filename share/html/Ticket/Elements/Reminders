@@ -55,53 +55,6 @@ $Edit => 0
 
 $Ticket = LoadTicket($id) if ($id);
 
-my $request_args = $m->request_args();
-
-my $reminder_collection = $Ticket->Reminders->Collection;
-
-if ( $request_args->{'update-reminders'} ) {
-    while ( my $reminder = $reminder_collection->Next ) {
-        if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-            $Ticket->Reminders->Resolve($reminder);
-        }
-        elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-            $Ticket->Reminders->Open($reminder);
-        }
-
-        if ( exists( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } )) {
-            $reminder->SetSubject( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) ;
-        }
-
-        if ( exists( $request_args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } )) {
-            $reminder->SetOwner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
-        }
-
-        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && $request_args->{ 'Reminder-Due-' . $reminder->id } ne '' ) {
-            my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-            $DateObj->Set(
-                Format => 'unknown',
-                Value  => $request_args->{ 'Reminder-Due-' . $reminder->id }
-            );
-            if ( defined $DateObj->Unix && $DateObj->Unix != $reminder->DueObj->Unix ) {
-                $reminder->SetDue( $DateObj->ISO );
-            }
-        }
-    }
-}
-
-if ( $request_args->{'NewReminder-Subject'} ) {
-    my $due_obj = RT::Date->new( $session{'CurrentUser'} );
-    $due_obj->Set(
-      Format => 'unknown',
-      Value => $request_args->{'NewReminder-Due'}
-    );
-    my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
-        Subject => $request_args->{'NewReminder-Subject'},
-        Owner   => $request_args->{'NewReminder-Owner'},
-        Due     => $due_obj->ISO
-    );
-}
-
 my $count_reminders = RT::Reminders->new($session{'CurrentUser'});
 $count_reminders->Ticket($Ticket->id);
 my $count_tickets = $count_reminders->Collection;
@@ -112,7 +65,7 @@ if (!$ShowCompleted) {
 my $has_reminders = $count_tickets->Count;
 
 # We've made changes, let's reload our search
-$reminder_collection = $Ticket->Reminders->Collection;
+my $reminder_collection = $count_reminders->Collection;
 </%init>
 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
 <input type="hidden" class="hidden" name="update-reminders" value="1" />
