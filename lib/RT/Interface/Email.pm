@@ -765,7 +765,84 @@ sub SendForward {
         ? SendEmail( %args, Entity => $mail, Sign => 0 )
         : SendEmail( %args, Entity => $mail );
     return (0, $ticket->loc("Couldn't send email")) unless $status;
+    RecordOutgoingMailTransaction(
+        Entity => $mail,
+        Transaction => $txn,
+        Ticket => $ticket,
+        Type => 'ForwardedEmailRecord'
+    );
     return (1, $ticket->loc("Send email successfully"));
+}
+
+=head2 RecordOutgoingMailTransaction MIMEObj
+
+Record a transaction in RT with this outgoing message for future record-keeping purposes
+
+ Passed the following required arguments:
+ Entity => MIMEObj
+ Transaction => Transaction
+ Object => Usually a TicketObj (unless we start Forwarding other things)
+
+ Optional arguments
+ Type => Transaction Type
+
+=cut
+
+sub RecordOutgoingMailTransaction {
+    my %args    = @_;
+    my $MIMEObj = $args{Entity};
+    my $TransactionObj = $args{Transaction};
+    my $Object = $args{Object};
+
+    my @parts = $MIMEObj->parts;
+    my @attachments;
+    my @keep;
+    foreach my $part (@parts) {
+        my $attach = $part->head->get('RT-Attachment');
+        if ($attach) {
+            $RT::Logger->debug(
+                "We found an attachment. we want to not record it.");
+            push @attachments, $attach;
+        } else {
+            $RT::Logger->debug("We found a part. we want to record it.");
+            push @keep, $part;
+        }
+    }
+    $MIMEObj->parts( \@keep );
+    foreach my $attachment (@attachments) {
+        $MIMEObj->head->add( 'RT-Attachment', $attachment );
+    }
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
+
+    my $sending_transaction = RT::Transaction->new( $TransactionObj->CurrentUser );
+
+# XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
+
+    my $type = $args{Type};
+    unless ($type) {
+        if ( $TransactionObj->Type eq 'Comment' ) {
+            $type = 'CommentEmailRecord';
+        } else {
+            $type = 'EmailRecord';
+        }
+    }
+
+    my $msgid = $MIMEObj->head->get('Message-ID');
+    chomp $msgid;
+
+    my ( $id, $msg ) = $sending_transaction->Create(
+        Ticket         => $Object->Id,
+        Type           => $type,
+        Data           => $msgid,
+        MIMEObj        => $MIMEObj,
+        ActivateScrips => 0
+    );
+
+    unless ($id) {
+        $RT::Logger->warning("Could not record outgoing message transaction: $msg");
+    }
+    return $id;
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0

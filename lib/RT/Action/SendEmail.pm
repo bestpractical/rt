@@ -505,55 +505,13 @@ sub RecordOutgoingMailTransaction {
     my $self    = shift;
     my $MIMEObj = shift;
 
-    my @parts = $MIMEObj->parts;
-    my @attachments;
-    my @keep;
-    foreach my $part (@parts) {
-        my $attach = $part->head->get('RT-Attachment');
-        if ($attach) {
-            $RT::Logger->debug(
-                "We found an attachment. we want to not record it.");
-            push @attachments, $attach;
-        } else {
-            $RT::Logger->debug("We found a part. we want to record it.");
-            push @keep, $part;
-        }
-    }
-    $MIMEObj->parts( \@keep );
-    foreach my $attachment (@attachments) {
-        $MIMEObj->head->add( 'RT-Attachment', $attachment );
-    }
-
-    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
-
-    my $transaction
-        = RT::Transaction->new( $self->TransactionObj->CurrentUser );
-
-# XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
-
-    my $type;
-    if ( $self->TransactionObj->Type eq 'Comment' ) {
-        $type = 'CommentEmailRecord';
-    } else {
-        $type = 'EmailRecord';
-    }
-
-    my $msgid = $MIMEObj->head->get('Message-ID');
-    chomp $msgid;
-
-    my ( $id, $msg ) = $transaction->Create(
-        Ticket         => $self->TicketObj->Id,
-        Type           => $type,
-        Data           => $msgid,
-        MIMEObj        => $MIMEObj,
-        ActivateScrips => 0
-    );
-
+    my $id = RT::Interface::Email::RecordOutgoingMailTransaction(
+            Entity => $MIMEObj,
+            Transaction => $self->TransactionObject,
+            Object => $self->TicketObj,
+           );
     if ($id) {
         $self->{'OutgoingMailTransaction'} = $id;
-    } else {
-        $RT::Logger->warning(
-            "Could not record outgoing message transaction: $msg");
     }
     return $id;
 }
