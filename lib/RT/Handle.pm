@@ -120,15 +120,11 @@ sub Connect {
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
     }
-
-
-    if ( $db_type eq 'Pg' ) {
+    elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
     }
-
-
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
