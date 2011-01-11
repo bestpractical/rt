@@ -3062,11 +3062,11 @@ sub ValidateStatus {
 
 =head2 SetStatus STATUS
 
-Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
+Set this ticket's status.
 
 Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE, SetStarted => SETSTARTED ).
 If FORCE is true, ignore unresolved dependencies and force a status change.
-if SETSTARTED is true( it's the default value), set Started to current datetime if Started 
+if SETSTARTED is true (it's the default value), set Started to current datetime if Started 
 is not set and the status is changed from initial to not initial. 
 
 =cut
