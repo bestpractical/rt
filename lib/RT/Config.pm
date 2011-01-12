@@ -51,8 +51,8 @@ package RT::Config;
 use strict;
 use warnings;
 
-
 use File::Spec ();
+use Symbol::Global::Name;
 
 =head1 NAME
 
@@ -895,7 +895,7 @@ sub SetFromConfig {
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = $self->__GetNameByRef($opt);
+    my $name = Symbol::Global::Name->find($opt);
     if ($name) {
         $type = ref $opt;
         $name =~ s/.*:://;
@@ -953,67 +953,6 @@ sub SetFromConfig {
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
-}
-
-    our %REF_SYMBOLS = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
-
-{
-    my $last_pack = '';
-
-    sub __GetNameByRef {
-        my $self = shift;
-        my $ref  = shift;
-        my $pack = shift;
-        if ( !$pack && $last_pack ) {
-            my $tmp = $self->__GetNameByRef( $ref, $last_pack );
-            return $tmp if $tmp;
-        }
-        $pack ||= 'main::';
-        $pack .= '::' unless substr( $pack, -2 ) eq '::';
-
-        no strict 'refs';
-        my $name = undef;
-
-        # scan $pack's nametable(hash)
-        foreach my $k ( keys %{$pack} ) {
-
-            # The hash for main:: has a reference to itself
-            next if $k eq 'main::';
-
-            # if the entry has a trailing '::' then
-            # it is a link to another name space
-            if ( substr( $k, -2 ) eq '::') {
-                $name = $self->__GetNameByRef( $ref, $k );
-                return $name if $name;
-            }
-
-            # entry of the table with references to
-            # SCALAR, ARRAY... and other types with
-            # the same name
-            my $entry = ${$pack}{$k};
-            next unless $entry;
-
-            # get entry for type we are looking for
-            # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. may be we should skip any
-            # reference
-            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
-            next unless $entry_ref;
-
-            # if references are equal then we've found
-            if ( $entry_ref == $ref ) {
-                $last_pack = $pack;
-                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
-            }
-        }
-        return '';
-    }
 }
 
 =head2 Metadata

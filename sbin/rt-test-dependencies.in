@@ -215,6 +215,7 @@ List::MoreUtils
 Net::CIDR
 Regexp::Common::net::CIDR
 Regexp::IPv6
+Symbol::Global::Name
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
