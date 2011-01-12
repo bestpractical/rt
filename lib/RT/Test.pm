@@ -380,19 +380,21 @@ sub bootstrap_plugins {
     my $self = shift;
     my %args = @_;
 
-    return unless $args{'requires'};
-
-    my @plugins = @{ $args{'requires'} };
+    my @plugins;
+    push @plugins, @{ $args{'requires'} }
+        if $args{'requires'};
     push @plugins, $args{'testing'}
         if $args{'testing'};
 
-    require RT::Plugin;
+    return unless @plugins;
+
     my $cwd;
     if ( $args{'testing'} ) {
         require Cwd;
         $cwd = Cwd::getcwd();
     }
 
+    require RT::Plugin;
     my $old_func = \&RT::Plugin::_BasePath;
     no warnings 'redefine';
     *RT::Plugin::_BasePath = sub {
