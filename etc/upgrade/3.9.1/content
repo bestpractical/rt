@@ -25,9 +25,7 @@
         $templates->UnLimit();
         while (my $template = $templates->Next) {
             my ($status, $msg) = $template->SetType('Perl');
-            unless ( $status ) {
-                die "Couldn't change Type of Template #" . $template->Id . ": $msg";
-            }
+            $RT::Logger->warning( "Couldn't change Type of Template #" . $template->Id . ": $msg" ) unless $status;
         }
     },
     sub {
