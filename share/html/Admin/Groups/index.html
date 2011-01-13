@@ -99,7 +99,7 @@ if (length $GroupString) {
 	); 
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
-          if $Groups->Count == 1;
+          if $Groups->Count == 1 and $Groups->First;
 }
 else {
     $caption = loc("User-defined groups");
