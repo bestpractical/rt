@@ -8,6 +8,13 @@
             FIELD => 'Type',
             OPERATOR => '!=',
             VALUE => 'Action',
+            ENTRYAGGREGATOR => 'AND'
+        );
+        $templates->Limit(
+            FIELD => 'Type',
+            OPERATOR => '!=',
+            VALUE => 'Perl',
+            ENTRYAGGREGATOR => 'AND'
         );
 
         if ($templates->Count) {
