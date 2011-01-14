@@ -246,6 +246,10 @@ sub HandleRequest {
                 $m->out("\n$msg\n") if $msg;
                 $m->abort;
             }
+            elsif ( MobileClient() ) {
+                $m->comp('/m/login');
+                $m->abort;
+            }
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
                 my $next = SetNextPage(RT->Config->Get('WebURL'));
