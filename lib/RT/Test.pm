@@ -130,6 +130,11 @@ sub import {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
 
+    push @{ $args{'plugins'} ||= [] }, @{ $args{'requires'} }
+        if $args{'requires'};
+    push @{ $args{'plugins'} ||= [] }, $args{'testing'}
+        if $args{'testing'};
+
     $class->bootstrap_tempdir;
 
     $class->bootstrap_config( %args );
