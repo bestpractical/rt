@@ -143,7 +143,7 @@ sub import {
 
     RT::InitPluginPaths();
 
-    RT::ConnectToDatabase()
+    __reconnect_rt()
         unless $args{nodb};
 
     RT::InitClasses();
@@ -381,34 +381,23 @@ sub bootstrap_db {
         $dbh->disconnect;
         $created_new_db++;
 
-        $dbh = _get_dbh(RT::Handle->DSN,
-                        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( $dbh );
-        $RT::Handle->InsertSchema( $dbh );
+        __reconnect_rt('dba');
+        $RT::Handle->InsertSchema;
 
         my $db_type = RT->Config->Get('DatabaseType');
-        $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+        $RT::Handle->InsertACL unless $db_type eq 'Oracle';
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
         RT->InitLogging;
 
         unless ($args{noinitialdata}) {
+            __reconnect_rt();
             $RT::Handle->InsertInitialData;
 
             DBIx::SearchBuilder::Record::Cachable->FlushCache;
         }
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase();
-        $RT::Handle->PrintError;
-        $RT::Handle->dbh->{PrintError} = 1;
-
         unless ( $args{'nodata'} ) {
+            __reconnect_rt();
             $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
             DBIx::SearchBuilder::Record::Cachable->FlushCache;
         }
@@ -1252,12 +1241,10 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, @_);
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
         # the attribute cache holds on to a stale dbh
         delete $RT::System->{attributes};
 
+        __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
     }
 
@@ -1405,10 +1392,9 @@ END {
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
 
         # Pg doesn't like if you issue a DROP DATABASE while still connected
-        my $dbh = $RT::Handle->dbh;
-        $dbh->disconnect if $dbh;
+        __disconnect_rt();
 
-        $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
+        my $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
         RT::Handle->DropDatabase( $dbh, Force => 1 );
         $dbh->disconnect;
     }
