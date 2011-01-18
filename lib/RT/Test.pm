@@ -510,6 +510,33 @@ sub _get_dbh {
     return $dbh;
 }
 
+sub __reconnect_rt {
+    my $as_dba = shift;
+    __disconnect_rt();
+
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( undef );
+    $RT::Handle->Connect(
+        $as_dba
+        ? (User => $ENV{RT_DBA_USER}, Password => $ENV{RT_DBA_PASSWORD})
+        : ()
+    );
+    $RT::Handle->PrintError;
+    $RT::Handle->dbh->{PrintError} = 1;
+    return $RT::Handle->dbh;
+}
+
+sub __disconnect_rt {
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    return unless $RT::Handle;
+    my $dbh = $RT::Handle->dbh;
+    $RT::Handle->dbh(undef);
+    $dbh->disconnect if $dbh;
+    $RT::Handle = undef;
+}
+
+
 =head1 UTILITIES
 
 =head2 load_or_create_user
