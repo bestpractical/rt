@@ -419,13 +419,11 @@ sub bootstrap_plugins_db {
     my $self = shift;
     my %args = @_;
 
-    my $dba_dbh;
-    $dba_dbh = _get_dbh(
-        RT::Handle->DSN,
-        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD},
-    ) if @plugins;
+    return unless $args{'plugins'};
 
     require File::Spec;
+
+    my @plugins = @{ $args{'plugins'} };
     foreach my $name ( @plugins ) {
         my $plugin = RT::Plugin->new( name => $name );
         Test::More::diag( "Initializing DB for the $name plugin" )
@@ -435,31 +433,37 @@ sub bootstrap_plugins_db {
         Test::More::diag( "etc path of the plugin is '$etc_path'" )
             if $ENV{'TEST_VERBOSE'};
 
-        if ( -e $etc_path ) {
-            my ($ret, $msg) = $RT::Handle->InsertSchema( $dba_dbh, $etc_path );
-            Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
-
-            ($ret, $msg) = $RT::Handle->InsertACL( $dba_dbh, $etc_path );
-            Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
-
-            my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
-            if ( -e $data_file ) {
-                ($ret, $msg) = $RT::Handle->InsertData( $data_file );;
-                Test::More::ok($ret, "Inserted data".($msg||''));
-            } else {
-                Test::More::ok(1, "There is no data file" );
-            }
-        }
-        else {
+        unless ( -e $etc_path ) {
 # we can not say if plugin has no data or we screwed with etc path
             Test::More::ok(1, "There is no etc dir: no schema" );
             Test::More::ok(1, "There is no etc dir: no ACLs" );
             Test::More::ok(1, "There is no etc dir: no data" );
+            next;
         }
 
-        $RT::Handle->Connect; # XXX: strange but mysql can loose connection
+
+        { # schema
+            __reconnect_rt('dba');
+            my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
+        }
+
+        { # ACLs
+            __reconnect_rt('dba');
+            my ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
+        }
+
+        # data
+        my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
+        if ( -e $data_file ) {
+            __reconnect_rt();
+            my ($ret, $msg) = $RT::Handle->InsertData( $data_file );;
+            Test::More::ok($ret, "Inserted data".($msg||''));
+        } else {
+            Test::More::ok(1, "There is no data file" );
+        }
     }
-    $dba_dbh->disconnect if $dba_dbh;
 }
 
 sub _get_dbh {
