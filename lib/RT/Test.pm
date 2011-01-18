@@ -246,6 +246,10 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
         print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
 
+    if ( $args{'plugins'} ) {
+        print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
+    }
+
     if ( $INC{'Devel/Cover.pm'} ) {
         print $config "Set( \$DevelMode, 0 );\n";
     }
