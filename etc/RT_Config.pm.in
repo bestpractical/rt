@@ -1689,8 +1689,8 @@ Set($OnlySearchActiveTicketsInSimpleSearch, 1);
 =item C<$UserAutocompleteFields>
 
 Specifies which fields of L<RT::User> to match against and how to match each
-field when autocompleting users.  Valid match methods are LIKE, STARTSWITH, and
-ENDSWITH.
+field when autocompleting users.  Valid match methods are LIKE, STARTSWITH,
+ENDSWITH, =, and !=.
 
 Not all User fields are publically accessible and hence won't work for
 autocomplete unless you override their accessibility using a local overlay or a

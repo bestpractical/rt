@@ -45,12 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $r->content_type('application/json');
 <% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
 $term => undef
 $max => 10
 $exclude => ''
+$op => 'LIKE'
 </%ARGS>
 <%INIT>
 require JSON;
@@ -63,12 +65,15 @@ my $CurrentUser = $session{'CurrentUser'};
 # Require privileged users
 $m->abort unless $CurrentUser->Privileged;
 
+# Sanity check the operator
+$op = 'LIKE' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
 my $groups = RT::Groups->new( $CurrentUser );
 $groups->RowsPerPage( $max );
 $groups->LimitToUserDefinedGroups();
 $groups->Limit(
     FIELD           => 'Name',
-    OPERATOR        => 'LIKE',
+    OPERATOR        => $op,
     VALUE           => $term,
 );
 
