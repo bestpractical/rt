@@ -353,10 +353,6 @@ sub bootstrap_db {
     }
 
     require RT::Handle;
-    # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->SystemDSN,
-               $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
     if (my $forceopt = $ENV{RT_TEST_FORCE_OPT}) {
         Test::More::diag "forcing $forceopt";
         $args{$forceopt}=1;
@@ -371,6 +367,12 @@ sub bootstrap_db {
     }
 
     unless ($args{nodb}) {
+        # bootstrap with dba cred
+        my $dbh = _get_dbh(
+            RT::Handle->SystemDSN,
+            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+        );
+
         unless ( $ENV{RT_TEST_PARALLEL} ) {
             # already dropped db in parallel tests, need to do so for other cases.
             RT::Handle->DropDatabase( $dbh, Force => 1 )
