@@ -48,10 +48,10 @@
 %# DEPRECATED
 <&|/Widgets/TitleBox,
     class => 'reminders',
-    title => loc("Reminders"),
+    title => loc("My reminders"),
     title_href => RT->Config->Get('WebPath') . '/Tools/MyReminders.html' &>
 
-<& /Elements/ShowReminders, OnlyOverdue => 1 &>
+<& /Elements/ShowReminders &>
 
 </&>
 
