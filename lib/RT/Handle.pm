@@ -103,6 +103,7 @@ Takes nothing.
 
 sub Connect {
     my $self = shift;
+    my %args = (@_);
 
     my $db_type = RT->Config->Get('DatabaseType');
     if ( $db_type eq 'Oracle' ) {
@@ -113,6 +114,7 @@ sub Connect {
     $self->SUPER::Connect(
         User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
+        %args,
     );
 
     if ( $db_type eq 'mysql' ) {
