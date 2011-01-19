@@ -804,6 +804,7 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
+            my $member_of = delete $item->{'MemberOf'};
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
@@ -813,6 +814,37 @@ sub InsertData {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+            }
+            if ( $member_of ) {
+                $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
+                foreach( @$member_of ) {
+                    my $parent = RT::Group->new($RT::SystemUser);
+                    if ( ref $_ eq 'HASH' ) {
+                        $parent->LoadByCols( %$_ );
+                    }
+                    elsif ( !ref $_ ) {
+                        $parent->LoadUserDefinedGroup( $_ );
+                    }
+                    else {
+                        $RT::Logger->error(
+                            "(Error: wrong format of MemberOf field."
+                            ." Should be name of user defined group or"
+                            ." hash reference with 'column => value' pairs."
+                            ." Use array reference to add to multiple groups)"
+                        );
+                        next;
+                    }
+                    unless ( $parent->Id ) {
+                        $RT::Logger->error("(Error: couldn't load group to add member)");
+                        next;
+                    }
+                    my ( $return, $msg ) = $parent->AddMember( $new_entry->Id );
+                    unless ( $return ) {
+                        $RT::Logger->error( $msg );
+                    } else {
+                        $RT::Logger->debug( $return ."." );
+                    }
+                }
             }
         }
         $RT::Logger->debug("done.");
