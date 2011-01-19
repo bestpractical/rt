@@ -339,7 +339,7 @@ CREATE SEQUENCE users_id_seq;
 CREATE TABLE Users (
   id INTEGER DEFAULT nextval('users_id_seq'),
   Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
+  Password varchar(256) NULL  ,
   AuthToken varchar(16) NULL  ,
   Comments text NULL  ,
   Signature text NULL  ,

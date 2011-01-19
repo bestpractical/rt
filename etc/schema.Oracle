@@ -203,7 +203,7 @@ CREATE TABLE Users (
 		CONSTRAINT Users_Key PRIMARY KEY,
   	Name 			VARCHAR2(200) CONSTRAINT Users_Name_Unique 
 		unique  NOT NULL,
-  	Password 		VARCHAR2(40),
+  	Password 		VARCHAR2(256),
   	AuthToken 		VARCHAR2(16),
   	Comments 		CLOB,
   	Signature 		CLOB,

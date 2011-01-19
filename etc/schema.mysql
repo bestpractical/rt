@@ -211,7 +211,7 @@ CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParen
 CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NOT NULL  ,
-  Password VARBINARY(40) NULL  ,
+  Password VARCHAR(256) NULL  ,
   AuthToken VARCHAR(16) CHARACTER SET ascii NULL  ,
   Comments TEXT NULL  ,
   Signature TEXT NULL  ,
