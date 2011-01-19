@@ -76,6 +76,7 @@ sub Table {'Users'}
 
 
 
+use Digest::SHA;
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
@@ -829,37 +830,36 @@ sub SetPassword {
 
 }
 
-=head3 _GeneratePassword PASSWORD
+sub _GeneratePassword_sha512 {
+    my $self = shift;
+    my ($password, $salt) = @_;
 
-returns an MD5 hash of the password passed in, in hexadecimal encoding.
+    # Generate a 16-character base64 salt
+    unless ($salt) {
+        $salt = "";
+        $salt .= ("a".."z", "A".."Z","0".."9", "+", "/")[rand 64]
+            for 1..16;
+    }
+
+    my $sha = Digest::SHA->new(512);
+    $sha->add($salt);
+    $sha->add(encode_utf8($password));
+    return join("!", "", "sha512", $salt, $sha->b64digest);
+}
+
+=head3 _GeneratePassword PASSWORD [, SALT]
+
+Returns a string to store in the database.  This string takes the form:
+
+   !method!salt!hash
+
+By default, the method is currently C<sha512>.
 
 =cut
 
 sub _GeneratePassword {
     my $self = shift;
-    my $password = shift;
-
-    my $md5 = Digest::MD5->new();
-    $md5->add(encode_utf8($password));
-    return ($md5->hexdigest);
-
-}
-
-=head3 _GeneratePasswordBase64 PASSWORD
-
-returns an MD5 hash of the password passed in, in base64 encoding
-(obsoleted now).
-
-=cut
-
-sub _GeneratePasswordBase64 {
-    my $self = shift;
-    my $password = shift;
-
-    my $md5 = Digest::MD5->new();
-    $md5->add(encode_utf8($password));
-    return ($md5->b64digest);
-
+    return $self->_GeneratePassword_sha512(@_);
 }
 
 =head3 HasPassword
@@ -905,23 +905,41 @@ sub IsPassword {
         return(undef);
      }
 
-    # generate an md5 password
-    if ($self->_GeneratePassword($value) eq $self->__Value('Password')) {
-        return(1);
+    my $stored = $self->__Value('Password');
+    if ($stored =~ /^!/) {
+        # If it's a new-style (>= RT 4.0) password, it starts with a '!'
+        my (undef, $method, $salt, undef) = split /!/, $stored;
+        if ($method eq "sha512") {
+            return $self->_GeneratePassword_sha512($value, $salt) eq $stored;
+        } else {
+            $RT::Logger->warn("Unknown hash method $method");
+            return 0;
+        }
+    } elsif (length $stored == 40) {
+        # The truncated SHA256(salt,MD5(passwd)) form from 2010/12 is 40 characters long
+        my $hash = MIME::Base64::decode_base64($stored);
+        # Decoding yields 30 byes; first 4 are the salt, the rest are substr(SHA256,0,26)
+        my $salt = substr($hash, 0, 4, "");
+        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5($value)), 0, 26) eq $hash;
+    } elsif (length $stored == 32) {
+        # Hex nonsalted-md5
+        return 0 unless Digest::MD5::md5_hex(encode_utf8($value)) eq $stored;
+    } elsif (length $stored == 22) {
+        # Base64 nonsalted-md5
+        return 0 unless Digest::MD5::md5_base64(encode_utf8($value)) eq $stored;
+    } elsif (length $stored == 13) {
+        # crypt() output
+        return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
+    } else {
+        $RT::Logger->warn("Unknown password form");
+        return 0;
     }
 
-    #  if it's a historical password we say ok.
-    if ($self->__Value('Password') eq crypt(encode_utf8($value), $self->__Value('Password'))
-        or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
-    {
-        # ...but upgrade the legacy password inplace.
-        $self->_Set(Field => 'Password', Value =>  $self->_GeneratePassword($value) );
-        return(1);
-    }
-
-    # no password check has succeeded. get out
-
-    return (undef);
+    # We got here by validating successfully, but with a legacy
+    # password form.  Update to the most recent form.
+    my $obj = $self->isa("RT::CurrentUser") ? $self->UserObj : $self;
+    $obj->_Set(Field => 'Password', Value =>  $self->_GeneratePassword($value) );
+    return 1;
 }
 
 sub CurrentUserRequireToSetPassword {
@@ -1567,7 +1585,7 @@ sub BasicColumns {
 Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
-  varbinary(40) 'Password'.
+  varbinary(256) 'Password'.
   varchar(16) 'AuthToken'.
   text 'Comments'.
   text 'Signature'.
@@ -1632,7 +1650,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Password
 
 Returns the current value of Password. 
-(In the database, Password is stored as varbinary(40).)
+(In the database, Password is stored as varchar(256).)
 
 
 
@@ -1641,7 +1659,7 @@ Returns the current value of Password.
 
 Set Password to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Password will be stored as a varbinary(40).)
+(In the database, Password will be stored as a varchar(256).)
 
 
 =cut
@@ -2196,7 +2214,7 @@ sub _CoreAccessible {
         Name => 
         {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Password => 
-        {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(40)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 256,  is_blob => 0,  is_numeric => 0,  type => 'varchar(256)', default => ''},
         AuthToken => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Comments => 
