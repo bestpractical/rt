@@ -56,7 +56,7 @@
 
 <br />
 <br />
-<a href="<%$URL%>"><&|/l&>You're welcome to login again</&></a>.
+<a href="<% RT->Config->Get('WebPath') %>/"><&|/l&>You're welcome to login again</&></a>.
 </&>
 
 % $m->callback( %ARGS );
@@ -68,6 +68,11 @@
 
 <%INIT>
 my $URL = RT->Config->Get('WebPath')."/";
+
+# Allow a callback to modify the URL we redirect to, which is useful for
+# external webauth systems
+$m->callback( %ARGS, URL => \$URL );
+
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 if (keys %session) {

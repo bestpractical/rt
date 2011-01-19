@@ -208,6 +208,7 @@ sub text_to_hash {
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Digest::base
 Digest::MD5 2.27
+Digest::SHA
 DBI 1.37
 Class::ReturnValue 0.40
 DBIx::SearchBuilder 1.54

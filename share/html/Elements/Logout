@@ -45,10 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
- | <a href="<% RT->Config->Get('WebPath') %>/NoAuth/Logout.html<% $URL ? "?URL=". $URL : '' %>"><&|/l&>Logout</&></a>
-<%ARGS>
-$URL => undef
-</%ARGS>
+ | <a href="<% RT->Config->Get('WebPath') %>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 <%INIT>
 my $show = 0;
 if ( $session{'CurrentUser'}->Name
@@ -59,7 +56,7 @@ if ( $session{'CurrentUser'}->Name
     $show = 1;
 }
 
-$m->callback( %ARGS, URL => \$URL, show => \$show );
+$m->callback( %ARGS, show => \$show );
 
 return unless $show;
 </%INIT>
