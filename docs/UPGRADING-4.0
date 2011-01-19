@@ -20,6 +20,14 @@ server configuration.  You need to review docs/web_deployment.pod for current
 instructions
 
 *******
+Upgrading sessions on MySQL
+
+In 4.0.0rc2, RT began shipping an updated schema for the sesions table
+that specificies a character set as well as making the table InnoDB.  As
+part of the upgrade process, your sessions table will be dropped and
+recreated with the new schema.
+
+*******
 UPGRADING FROM RT 3.8.x and RTFM 2.1 or greater
 
 RT4 now includes an Articles functionality, merged from RTFM.

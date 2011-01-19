@@ -63,9 +63,9 @@
 
 
 <%INIT>
-  
 my $Ticket = LoadTicket($id);
-    
+
+ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 </%INIT>
 <%ARGS>
 $id => undef
