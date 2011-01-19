@@ -398,6 +398,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
+                 etc/upgrade/vulnerable-passwords
                  sbin/rt-attributes-viewer
                  sbin/rt-dump-database
                  sbin/rt-setup-database
