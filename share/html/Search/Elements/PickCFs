@@ -67,6 +67,8 @@ foreach my $id (keys %cfqueues) {
     $CustomFields->LimitToQueue($queue->Id);
 }
 $CustomFields->LimitToGlobal;
+$CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
 $m->callback(
     CallbackName => 'MassageCustomFields',
     CustomFields => $CustomFields,
