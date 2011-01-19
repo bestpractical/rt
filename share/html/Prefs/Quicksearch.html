@@ -60,7 +60,7 @@ checked="checked"
 /><%$queue->Name%>: <%$queue->Description%></li>
 % }
 </ul>
-<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
+<& /Elements/Submit, CheckAll => 1, ClearAll => 1, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
 
 </form>
 
