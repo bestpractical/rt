@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 151;
+use RT::Test tests => 156;
 
 my ( $url, $m ) = RT::Test->started_ok;
 my $root = RT::Test->load_or_create_user( Name => 'root' );
@@ -8,6 +8,18 @@ my $root = RT::Test->load_or_create_user( Name => 'root' );
 diag "create another queue";
 my $test_queue = RT::Queue->new( $RT::SystemUser );
 ok( $test_queue->Create( Name => 'foo' ) );
+
+diag "create cf cfbar";
+my $cfbar = RT::CustomField->new( $RT::SystemUser );
+ok(
+    $cfbar->Create(
+        Name       => 'cfbar',
+        Type       => 'Freeform',
+        LookupType => 'RT::Queue-RT::Ticket'
+    )
+);
+
+$cfbar->AddToObject( $test_queue );
 
 diag "create some tickets to link";
 # yep, create 3 tickets for DependsOn
@@ -128,14 +140,19 @@ $m->follow_link_ok( { text => 'New ticket' } );
 like( $m->uri, qr'/m/ticket/select_create_queue', 'queue select page' );
 $m->follow_link_ok( { text => 'foo' } );
 like( $m->uri, qr'/m/ticket/create', 'ticket create page' );
+$m->content_contains( 'cfbar', 'has cf name' );
+$m->content_contains( 'Object-RT::Ticket--CustomField-' . $cfbar->id .  '-Value', 'has cf input name' );
 $m->submit_form(
     fields => {
         Subject => 'ticket2',
         Content => 'content 2',
         Owner   => $root->id,
+        'Object-RT::Ticket--CustomField-' . $cfbar->id . '-Value' => 'cfvalue',
     }
 );
 like( $m->uri, qr'/m/ticket/show', 'ticket show page' );
+$m->content_contains( 'cfbar', 'has cf name' );
+$m->content_contains( 'cfvalue', 'has cf value' );
 
 $m->follow_link_ok( { text => 'Homepage' } );
 is( $m->uri, "$url/m/", 'main mobile page' );
