@@ -333,10 +333,10 @@ $showrows->(
 );
 
 
-$m->scomp("/Ticket/Elements/EditCustomFields", %ARGS, QueueObj => $QueueObj );
+$m->comp("/Ticket/Elements/EditCustomFields", %ARGS, QueueObj => $QueueObj );
 
 
-$m->scomp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $QueueObj );
+$m->comp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $QueueObj );
 
 </%perl>
 % if (exists $session{'Attachments'}) {
@@ -363,7 +363,7 @@ $showrows->(
 
 
 % if ( $gnupg_widget ) {
-%$m->scomp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
+%$m->comp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
 % }
 
 
