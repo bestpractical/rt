@@ -173,6 +173,7 @@ my $tree = $ParseQuery->( $query{'Query'}, \@parse_results );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( @parse_results ) {
+    push @actions, @parse_results;
     return $m->comp(
         "Edit.html",
         Query => $query{'Query'},
