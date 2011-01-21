@@ -176,6 +176,7 @@ if ( @parse_results ) {
     return $m->comp(
         "Edit.html",
         Query => $query{'Query'},
+        SavedSearchId => $saved_search{'Id'},
         actions => \@actions,
     );
 }
