@@ -1001,7 +1001,7 @@ sub LogRecordedSQLStatements {
             message => "SQL("
                 . sprintf( "%.6f", $duration )
                 . "s): $sql;"
-                . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
+                . ( @bind ? "  [ bound values: @{[map{defined($_)?qq|'$_'|:qq|undef|} @bind]} ]" : "" )
         );
     }
 
