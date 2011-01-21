@@ -566,7 +566,7 @@ my $build_admin_menu = sub {
         my $args      = '';
         my $has_query = '';
         my $current_search = $session{"CurrentSearchHash"} || {};
-        my $search_id = $m->request_args->{'SavedSearchId'} || $search->{'SearchId'} || '';
+        my $search_id = $m->request_args->{'SavedSearchLoad'} || $m->request_args->{'SavedSearchId'} || $search->{'SearchId'} || '';
 
         $has_query = 1 if ( $m->request_args->{'Query'} or $current_search->{'Query'} );
 
