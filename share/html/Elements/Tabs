@@ -585,6 +585,8 @@ my $build_admin_menu = sub {
         for my $field (qw(Order OrderBy)) {
             if ( ref( $query_args{$field} ) eq 'ARRAY' ) {
                 $query_args{$field} = join( "|", @{ $query_args{$field} } );
+            } elsif (not defined $query_args{$field}) {
+                delete $query_args{$field};
             }
         }
 
