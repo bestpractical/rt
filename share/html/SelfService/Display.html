@@ -96,9 +96,7 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-if ( defined ($id[0]) && $id[0] eq 'new' ) {
-
-    # {{{ Create a new ticket
+if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
@@ -119,15 +117,15 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', Why => join( "\n", @results ));
-              $m->abort();
-        }
+        $m->abort();
     }
-    else {
-        unless ( $Ticket->Load( $id[0] ) ) {
-            $m->comp( 'Error.html',
-                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
-            $m->abort();
-        }
+}
+else {
+    unless ( $Ticket->Load( $id[0] ) ) {
+        $m->comp( 'Error.html',
+            Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+        $m->abort();
+    }
 
     my ( $code, $msg );
 
@@ -162,31 +160,31 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     }
 
 
-    }
+}
 
-    # This code does automatic redirection if any updates happen.
+# This code does automatic redirection if any updates happen.
 
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        $m->comp( 'Error.html',
-            Why => loc("No permission to display that ticket") );
-        # XXX: Why abort? then we loose footer //ruz
-        $m->abort();
-    }
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    $m->comp( 'Error.html',
+        Why => loc("No permission to display that ticket") );
+    # XXX: Why abort? then we loose footer //ruz
+    $m->abort();
+}
 
-    if (@results) {
-        # We've done something, so we need to clear the decks to avoid
-        # resubmission on refresh.
-        # But we need to store Actions somewhere too, so we don't lose them.
-        my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
-        $session{'i'}++;
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
-    }
+if (@results) {
+    # We've done something, so we need to clear the decks to avoid
+    # resubmission on refresh.
+    # But we need to store Actions somewhere too, so we don't lose them.
+    my $key = Digest::MD5::md5_hex(rand(1024));
+    push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
+    $session{'i'}++;
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
+}
 
-    my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
-                          || $Ticket->CurrentUserHasRight('ReplyToTicket');
-    my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
+my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
+                      || $Ticket->CurrentUserHasRight('ReplyToTicket');
+my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
+$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
 </%INIT>
 
 
