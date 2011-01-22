@@ -100,15 +100,11 @@ if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
-        $m->comp( 'Error.html', Why => loc('Queue not found') );
-        $m->abort;
+        Abort( loc('Queue not found') );
     }
 
     unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        $m->comp( 'Error.html',
-            Why =>
-              loc('You have no permission to create tickets in that queue.') );
-        $m->abort;
+        Abort( loc('You have no permission to create tickets in that queue.') );
     }
 
 
@@ -116,15 +112,12 @@ if ( ($id[0]||'') eq 'new' ) {
     CreateTicket( Attachments => delete $session{'Attachments'}, %ARGS );
 
     unless ( $Ticket->id ) {
-        $m->comp( 'Error.html', Why => join( "\n", @results ));
-        $m->abort();
+        Abort( join "\n", @results );
     }
 }
 else {
     unless ( $Ticket->Load( $id[0] ) ) {
-        $m->comp( 'Error.html',
-            Why => loc( "Couldn't load ticket '[_1]'", $id ) );
-        $m->abort();
+        Abort( loc( "Couldn't load ticket '[_1]'", $id ) );
     }
 
     my ( $code, $msg );
@@ -165,10 +158,7 @@ else {
 # This code does automatic redirection if any updates happen.
 
 unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-    $m->comp( 'Error.html',
-        Why => loc("No permission to display that ticket") );
-    # XXX: Why abort? then we loose footer //ruz
-    $m->abort();
+    Abort( loc("No permission to display that ticket") );
 }
 
 MaybeRedirectForResults(
