@@ -244,7 +244,7 @@ my $build_admin_menu = sub {
                 ||
               $m->request_args->{'Queue'} && $m->request_args->{'Queue'} =~ /^\d+$/ 
                 ) {
-            my $id = $m->request_args->{'id'} || $m->request_args->{'Queue'};
+            my $id = $m->request_args->{'Queue'} || $m->request_args->{'id'};
             my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
             $queue_obj->Load($id);
 
