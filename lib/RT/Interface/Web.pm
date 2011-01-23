@@ -903,8 +903,6 @@ sub StripContent {
     $sig =~ s/</&lt;/g;
     $sig =~ s/>/&gt;/g;
     $sig =~ s/"/&quot;/g;
-    warn "Got:\n$content\n";
-    warn "Sig is:\n$sig\n";
     return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
 
     # Pass it through
