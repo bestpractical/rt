@@ -1721,16 +1721,6 @@ sub SetQueue {
             unless $new_status;
     }
 
-    unless ( $self->OwnerObj->HasRight( Right    => 'OwnTicket', Object => $NewQueueObj)) {
-        my $clone = RT::Ticket->new( RT->SystemUser );
-        $clone->Load( $self->Id );
-        unless ( $clone->Id ) {
-            return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
-        }
-        my ($status, $msg) = $clone->SetOwner( RT->Nobody->Id, 'Force' );
-        $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
-    }
-
     if ( $new_status ) {
         my $clone = RT::Ticket->new( RT->SystemUser );
         $clone->Load( $self->Id );
@@ -1776,10 +1766,20 @@ sub SetQueue {
 
     my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
 
-
     if ( $status ) {
         # Clear the queue object cache;
         $self->{_queue_obj} = undef;
+
+        # Untake the ticket if we have no permissions in the new queue
+        unless ( $self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $NewQueueObj ) ) {
+            my $clone = RT::Ticket->new( RT->SystemUser );
+            $clone->Load( $self->Id );
+            unless ( $clone->Id ) {
+                return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
+            }
+            my ($status, $msg) = $clone->SetOwner( RT->Nobody->Id, 'Force' );
+            $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
+        }
 
         # On queue change, change queue for reminders too
         my $reminder_collection = $self->Reminders->Collection;
