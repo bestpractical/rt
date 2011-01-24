@@ -93,6 +93,7 @@ sub ParseToArray {
 
 sub Parse {
     my ($string, $cb) = @_;
+    my $loc = sub {HTML::Mason::Commands::loc(@_)};
     $string = '' unless defined $string;
 
     my $want = KEYWORD | OPEN_PAREN;
@@ -129,7 +130,7 @@ sub Parse {
         unless ($current && $want & $current) {
             my $tmp = substr($string, 0, pos($string)- length($match));
             $tmp .= '>'. $match .'<--here'. substr($string, pos($string));
-            my $msg = "Wrong query, expecting a ". _BitmaskToString($want) ." in '$tmp'";
+            my $msg = $loc->("Wrong query, expecting a [_1] in '[_2]'", _BitmaskToString($want), $tmp);
             return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
             die $msg;
         }
@@ -179,7 +180,7 @@ sub Parse {
             $want = AGGREG;
             $want |= CLOSE_PAREN if $depth;
         } else {
-            my $msg = "Query parser is lost";
+            my $msg = $loc->("Query parser is lost");
             return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
             die $msg;
         }
@@ -188,15 +189,15 @@ sub Parse {
     } # while
 
     unless( !$last || $last & (CLOSE_PAREN | VALUE) ) {
-        my $msg = "Incomplete query, last element ("
-            . _BitmaskToString($last)
-            . ") is not CLOSE_PAREN or VALUE in '$string'";
+        my $msg = $loc->("Incomplete query, last element ([_1]) is not close paren or value in '[_2]'",
+                         _BitmaskToString($last),
+                         $string);
         return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
         die $msg;
     }
 
     if( $depth ) {
-        my $msg = "Incomplete query, $depth paren(s) isn't closed in '$string'";
+        my $msg = $loc->("Incomplete query, [quant,_1,unclosed paren] in '[_2]'", $depth, $string);
         return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
         die $msg;
     }

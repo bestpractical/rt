@@ -896,11 +896,14 @@ sub StripContent {
     # Check for plaintext sig
     return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
-    # Check for html-formatted sig
-    RT::Interface::Web::EscapeUTF8( \$sig );
-    return ''
-      if $html
-          and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+    # Check for html-formatted sig; we don't use EscapeUTF8 here
+    # because we want to precisely match the escapting that FCKEditor
+    # uses.
+    $sig =~ s/&/&amp;/g;
+    $sig =~ s/</&lt;/g;
+    $sig =~ s/>/&gt;/g;
+    $sig =~ s/"/&quot;/g;
+    return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
 
     # Pass it through
     return $return_content;
