@@ -273,7 +273,7 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
-function ReplaceAllTextareas(encoded) {
+function ReplaceAllTextareas() {
     var sAgent = navigator.userAgent.toLowerCase();
     if (!CKEDITOR.env.isCompatible ||
         sAgent.indexOf('iphone') != -1 ||
@@ -288,23 +288,12 @@ function ReplaceAllTextareas(encoded) {
         var textArea = allTextAreas[i];
         if (jQuery(textArea).hasClass("messagebox")) {
             // Turn the original plain text content into HTML
-            if (encoded == 0) {
+            var type = jQuery("#"+textArea.name+"Type");
+            if (type.val() != "text/html")
                 textArea.value = textToHTML(textArea.value);
-            }
-            // For this javascript
-            var CKeditorEncoded = document.createElement('input');
-            CKeditorEncoded.setAttribute('type', 'hidden');
-            CKeditorEncoded.setAttribute('name', 'CKeditorEncoded');
-            CKeditorEncoded.setAttribute('value', '1');
-            textArea.parentNode.appendChild(CKeditorEncoded);
 
-            // For fckeditor
-            var typeField = document.createElement('input');
-            typeField.setAttribute('type', 'hidden');
-            typeField.setAttribute('name', textArea.name + 'Type');
-            typeField.setAttribute('value', 'text/html');
-            textArea.parentNode.appendChild(typeField);
-
+            // Set the type
+            type.val("text/html");
 
             CKEDITOR.replace(textArea.name,{width:'100%',height:<% RT->Config->Get('MessageBoxRichTextHeight') |n,j%>});
             CKEDITOR.basePath = <%RT->Config->Get('WebPath')|n,j%>+"/NoAuth/RichText/";

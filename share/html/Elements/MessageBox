@@ -50,6 +50,9 @@
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
+% if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||'' %>" />
+% }
 <%INIT>
 
 my $message = '';
