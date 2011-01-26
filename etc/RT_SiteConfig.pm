@@ -13,6 +13,8 @@
 # this comamnd:
 #
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
+#
+# You must restart your webserver after making changes to this file.
 
 Set( $rtname, 'example.com');
 
