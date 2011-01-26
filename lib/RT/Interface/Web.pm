@@ -1080,39 +1080,24 @@ sub StripContent {
 
     my $return_content = $content;
 
-    my $html = $args{ContentType} && $args{ContentType} eq "text/html";
-    my $sigonly = $args{StripSignature};
+    # If we aren't supposed to strip the sig, just bail now.
+    return $return_content unless $args{StripSignature};
+
+    # Sig-stripping is done client-side with HTML
+    if ($args{ContentType} && $args{ContentType} eq "text/html") {
+        return "" unless $content =~ /\S/;
+        return $return_content;
+    }
 
     # massage content to easily detect if there's any real content
     $content =~ s/\s+//g; # yes! remove all the spaces
-    if ( $html ) {
-        # remove html version of spaces and newlines
-        $content =~ s!&nbsp;!!g;
-        $content =~ s!<br/?>!!g;
-    }
-
-    # Filter empty content when type is text/html
-    return '' if $html && $content !~ /\S/;
-
-    # If we aren't supposed to strip the sig, just bail now.
-    return $return_content unless $sigonly;
 
     # Find the signature
     my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
     $sig =~ s/\s+//g;
 
     # Check for plaintext sig
-    return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
-
-    # Check for html-formatted sig; we don't use EscapeUTF8 here
-    # because we want to precisely match the escapting that FCKEditor
-    # uses.
-    $sig =~ s/&/&amp;/g;
-    $sig =~ s/</&lt;/g;
-    $sig =~ s/>/&gt;/g;
-    $sig =~ s/"/&quot;/g;
-    $sig =~ s/'/&#39;/g;
-    return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+    return '' if $content =~ /^(--)?\Q$sig\E$/;
 
     # Pass it through
     return $return_content;
