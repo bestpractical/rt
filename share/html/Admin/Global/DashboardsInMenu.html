@@ -45,37 +45,71 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Dashboards in menu") &>
+<& /Elements/Tabs &>
+
+<& /Widgets/SelectionBox:header, nojs => 1 &>
+
+<& /Elements/ListActions, actions => \@actions &>
+<br />
+% for my $pane (@panes) {
+<&|/Widgets/TitleBox, title => loc('Dashboards in menu'), bodyclass => "" &>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
+<br />
+% }
 <%init>
-# put the list of dashboards into the navigation
-use RT::Dashboard;
-my @objs = RT::Dashboard->new($User)->ObjectsForLoading;
+my @actions;
+my $sys = RT::System->new( $session{'CurrentUser'} );
 
-my %dashboard_map;
+my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
 
-for my $object (@objs) {
-    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject",
-            Object => $object, User => $User );
+my ($dashboard_attr) = $sys->Attributes->Named('DashboardsInMenu');
+my $default_dashboards_in_menu =
+    $dashboard_attr && $dashboard_attr->Content->{dashboards}
+  ? $dashboard_attr->Content->{dashboards}
+  : [];
 
-    push @{ $dashboard_map{$_} }, @{ $new_dashboards->{$_} || [] }
-        for qw/personal system/;
+use RT::Dashboards;
+my $dashboards = RT::Dashboards->new( $RT::SystemUser );
+$dashboards->LimitToPrivacy('RT::System-' . $sys->id);
 
-    push @{ $dashboard_map{group}{$_} }, @{ $new_dashboards->{group}{$_} }
-        for keys %{ $new_dashboards->{group} || {} };
+my @dashboards;
+while ( my $dashboard = $dashboards->Next ) {
+    push @dashboards, [$dashboard->id, $dashboard->Name];
 }
 
-my @dashboards = (
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{personal} || [] }),
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{system}   || [] }),
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureDashboardsInMenu',
+    Action => 'DashboardsInMenu.html',
+    panes => ['dashboards_in_menu'],
+    ReadOnly => !$has_right,
+    items => \@dashboards,
+    current_portlets => $default_dashboards_in_menu,
+    OnSave => sub {
+        my ( $conf ) = @_;
+        my ( $status, $msg );
 
-    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map{group}{$_} } }
-        keys %{ $dashboard_map{group} || {} },
+        if (!$has_right) {
+            push @actions, loc( 'Permission Denied' );
+        }
+        elsif ( $dashboard_attr ) {
+            ($status, $msg) = $dashboard_attr->SetContent($conf);
+        }
+        else {
+            $dashboard_attr = RT::Attribute->new($RT::SystemUser);
+            ( $status, $msg ) = $dashboard_attr->Create(
+                Name    => 'DashboardsInMenu',
+                Object  => $sys,
+                Content => $conf,
+            );
+        }
+        push @actions, $status ? loc('Global dashboards in menu saved.') : $msg;
+    }
 );
 
-$m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboards');
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
 
-return @dashboards;
+
 </%init>
 
-<%args>
-$User => $session{CurrentUser}
-</%args>

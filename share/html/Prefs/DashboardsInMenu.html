@@ -45,37 +45,71 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-# put the list of dashboards into the navigation
-use RT::Dashboard;
-my @objs = RT::Dashboard->new($User)->ObjectsForLoading;
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs
+&>
+<& /Elements/ListActions, actions => \@results &>
 
-my %dashboard_map;
+<& /Widgets/SelectionBox:header, nojs => 1 &>
 
-for my $object (@objs) {
-    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject",
-            Object => $object, User => $User );
 
-    push @{ $dashboard_map{$_} }, @{ $new_dashboards->{$_} || [] }
-        for qw/personal system/;
+<br />
 
-    push @{ $dashboard_map{group}{$_} }, @{ $new_dashboards->{group}{$_} }
-        for keys %{ $new_dashboards->{group} || {} };
+% for my $pane ( @panes ) {
+<&|/Widgets/TitleBox,
+    title => loc('Dashboards in menu'),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
+</&>
+% }
+
+<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu") &>
+<form method="post" action="DashboardsInMenu.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
+</form>
+</&>
+
+
+<%INIT>
+my @results;
+my $title = loc("Customize").' '.loc("dashboards in menu");
+my $user = $session{'CurrentUser'}->UserObj;
+
+if ($ARGS{Reset}) {
+    my ($ok, $msg) = $user->SetPreferences('DashboardsInMenu', {});
+    push @results, $ok ? loc('Preferences saved.') : $msg;
+    delete $session{'dashboards_in_menu'};
 }
 
-my @dashboards = (
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{personal} || [] }),
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{system}   || [] }),
+my ($default_dashboards) =
+RT::System->new($session{'CurrentUser'})->Attributes->Named('DashboardsInMenu');
 
-    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map{group}{$_} } }
-        keys %{ $dashboard_map{group} || {} },
+my $dashboard_pref =
+  $session{CurrentUser}->UserObj->Preferences( 'DashboardsInMenu',
+    $default_dashboards ? $default_dashboards->Content : () );
+$session{'dashboards_in_menu'} ||= $dashboard_pref->{dashboards} || [];
+
+my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards");
+
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureDashboardsInMenu',
+    Action => 'DashboardsInMenu.html',
+    panes => ['dashboards in menu'],
+    items => \@dashboards,
+    current_portlets => $session{'dashboards_in_menu'},
+    OnSave => sub {
+        my ( $conf ) = @_;
+        my ( $ok, $msg ) =
+          $user->SetPreferences( 'DashboardsInMenu', $conf );
+        push @results, $ok ? loc('Preferences saved for dashboards_in_menu.') : $msg;
+        delete $session{'dashboards_in_menu'};
+    }
 );
 
-$m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboards');
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
 
-return @dashboards;
-</%init>
+</%INIT>
 
-<%args>
-$User => $session{CurrentUser}
-</%args>

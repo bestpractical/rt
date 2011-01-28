@@ -57,7 +57,7 @@ my $privacy = RT::Dashboard->_build_privacy($Object);
 
 while (my $attr = $Object->Attributes->Next) {
     if ($attr->Name =~ /^Dashboard\b/) {
-        my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
+        my $dashboard = RT::Dashboard->new($User);
         my ($ok, $msg) = $dashboard->Load($privacy, $attr->id);
 
         if (!$ok) {
@@ -78,4 +78,8 @@ while (my $attr = $Object->Attributes->Next) {
 }
 return \%dashboards;
 </%init>
+
+<%args>
+$User => $session{'CurrentUser'}
+</%args>
 
