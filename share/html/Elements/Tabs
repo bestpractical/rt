@@ -701,7 +701,7 @@ my $build_admin_menu = sub {
 
 my $build_selfservice_nav = sub {
     my $queues = RT::Queues->new( $session{'CurrentUser'} );
-    $queues->FindAllRows;
+    $queues->UnLimit;
 
     my $queue_count = 0;
     my $queue_id    = 1;
