@@ -720,7 +720,7 @@ my $build_selfservice_nav = sub {
     if ( $queue_count > 1 ) {
         $tickets->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } else {
-        $tickets->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?queue=' . $queue_id );
+        $tickets->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
 
 
