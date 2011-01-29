@@ -2902,7 +2902,7 @@ sub SetOwner {
     # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
-    my ( $val, $msg ) = $self->_Set(
+    ( $val, $msg ) = $self->_Set(
                       Field             => 'Owner',
                       RecordTransaction => 0,
                       Value             => $NewOwnerObj->Id,
