@@ -1218,7 +1218,7 @@ sub start_plack_server {
     die "failed to fork" unless defined $pid;
 
     if ($pid) {
-        sleep 15;
+        sleep 15 unless $handled;
         Test::More::diag "did not get expected USR1 for test server readiness"
             unless $handled;
         push @SERVERS, $pid;
