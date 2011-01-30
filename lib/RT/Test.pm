@@ -1208,14 +1208,16 @@ sub start_plack_server {
              kill 'USR1' => getppid();
          });
 
+    # We are expecting a USR1 from the child process after it's ready
+    # to listen.  We set this up _before_ we fork to avoid race
+    # conditions.
+    my $handled;
+    $SIG{USR1} = sub { $handled = 1};
+
     my $pid = fork();
     die "failed to fork" unless defined $pid;
 
     if ($pid) {
-        # We are expecting a USR1 from the child process after it's
-        # ready to listen.
-        my $handled;
-        $SIG{USR1} = sub { $handled = 1};
         sleep 15;
         Test::More::diag "did not get expected USR1 for test server readiness"
             unless $handled;
