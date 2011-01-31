@@ -2866,61 +2866,15 @@ sub SetOwner {
         return ( 0, $self->loc("That user does not exist") );
     }
 
-
-    # must have ModifyTicket rights
-    # or TakeTicket/StealTicket and $NewOwner is self
-    # see if it's a take
-    if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
-        unless (    $self->CurrentUserHasRight('ModifyTicket')
-                 || $self->CurrentUserHasRight('TakeTicket') ) {
-            $RT::Handle->Rollback();
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # see if it's a steal
-    elsif (    $OldOwnerObj->Id != RT->Nobody->Id
-            && $OldOwnerObj->Id != $self->CurrentUser->id ) {
-
-        unless (    $self->CurrentUserHasRight('ModifyTicket')
-                 || $self->CurrentUserHasRight('StealTicket') ) {
-            $RT::Handle->Rollback();
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            $RT::Handle->Rollback();
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # If we're not stealing and the ticket has an owner and it's not
-    # the current user
-    if ( $Type ne 'Steal' and $Type ne 'Force'
-         and $OldOwnerObj->Id != RT->Nobody->Id
-         and $OldOwnerObj->Id != $self->CurrentUser->Id )
-    {
+    if ( !$self->_CurrentUserHasRightToSetOwner ) {
         $RT::Handle->Rollback();
-        return ( 0, $self->loc("You can only take tickets that are unowned") )
-            if $NewOwnerObj->id == $self->CurrentUser->id;
-        return (
-            0,
-            $self->loc("You can only reassign tickets that you own or that are unowned" )
-        );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
-    #If we've specified a new owner and that user can't modify the ticket
-    elsif ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) ) {
+    my ( $val, $msg ) = $self->_IsProposedOwnerChangeValid( $NewOwnerObj, $Type );
+    if ( !$val ) {
         $RT::Handle->Rollback();
-        return ( 0, $self->loc("That user may not own tickets in that queue") );
-    }
-
-    # If the ticket has an owner and it's the new owner, we don't need
-    # To do anything
-    elsif ( $NewOwnerObj->Id == $OldOwnerObj->Id ) {
-        $RT::Handle->Rollback();
-        return ( 0, $self->loc("That user already owns that ticket") );
+        return ( $val, $msg );
     }
 
     # Delete the owner in the owner group, then add a new one
@@ -2948,7 +2902,7 @@ sub SetOwner {
     # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
-    my ( $val, $msg ) = $self->_Set(
+    ( $val, $msg ) = $self->_Set(
                       Field             => 'Owner',
                       RecordTransaction => 0,
                       Value             => $NewOwnerObj->Id,
@@ -2984,7 +2938,69 @@ sub SetOwner {
     return ( $val, $msg );
 }
 
+sub _CurrentUserHasRightToSetOwner {
+    my $self = shift;
+    # must have ModifyTicket rights
+    # or TakeTicket/StealTicket and $NewOwner is self
+    # see if it's a take
+    my $OldOwnerObj = $self->OwnerObj;
+    if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
+        unless (    $self->CurrentUserHasRight('ModifyTicket')
+                 || $self->CurrentUserHasRight('TakeTicket') ) {
+            return 0;
+        }
+    }
 
+    # see if it's a steal
+    elsif (    $OldOwnerObj->Id != RT->Nobody->Id
+            && $OldOwnerObj->Id != $self->CurrentUser->id ) {
+
+        unless (    $self->CurrentUserHasRight('ModifyTicket')
+                 || $self->CurrentUserHasRight('StealTicket') ) {
+            return 0;
+        }
+    }
+    else {
+        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+sub _IsProposedOwnerChangeValid {
+    my $self        = shift;
+    my $NewOwnerObj = shift;
+    my $Type        = shift;
+
+    my $OldOwnerObj = $self->OwnerObj;
+
+    # If we're not stealing and the ticket has an owner and it's not
+    # the current user
+    if (     $Type ne 'Steal' and $Type ne 'Force'
+         and $OldOwnerObj->Id != RT->Nobody->Id
+         and $OldOwnerObj->Id != $self->CurrentUser->Id ) {
+        if ( $NewOwnerObj->id == $self->CurrentUser->id) {
+            return ( 0, $self->loc("You can only take tickets that are unowned") )
+        }
+        else {
+            return ( 0, $self->loc( "You can only reassign tickets that you own or that are unowned"));
+        }
+    }
+
+    #If we've specified a new owner and that user can't modify the ticket
+    elsif ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) )
+    {
+        return ( 0, $self->loc("That user may not own tickets in that queue") );
+    }
+
+    # If the ticket has an owner and it's the new owner, we don't need
+    # To do anything
+    elsif ( $NewOwnerObj->Id == $OldOwnerObj->Id ) {
+        return ( 0, $self->loc("That user already owns that ticket") );
+    }
+    return (1, undef);
+}
 
 =head2 Take
 
