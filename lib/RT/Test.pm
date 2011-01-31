@@ -1212,7 +1212,7 @@ sub start_plack_server {
     # to listen.  We set this up _before_ we fork to avoid race
     # conditions.
     my $handled;
-    $SIG{USR1} = sub { $handled = 1};
+    local $SIG{USR1} = sub { $handled = 1};
 
     my $pid = fork();
     die "failed to fork" unless defined $pid;
