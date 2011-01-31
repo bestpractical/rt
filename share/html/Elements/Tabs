@@ -564,7 +564,7 @@ my $build_main_nav = sub {
             title => loc('Dashboards in menu'),
             path  => '/Prefs/DashboardsInMenu.html',
         );
-        $settings->child( quicksearch    => title => loc('Quick search'),   path => '/Prefs/Quicksearch.html' );
+        $settings->child( quicksearch    => title => loc('Quick search'),   path => '/Prefs/QueueSummary.html' );
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",

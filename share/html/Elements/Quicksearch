@@ -50,7 +50,7 @@
     title => loc("Quick search"),
     bodyclass => "",
     titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Prefs/Quicksearch.html',
+    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueSummary.html',
 &>
 <& $comp,
    queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
