@@ -933,6 +933,7 @@ sub _UpdateAttributes {
     "User" # loc
     "Group" # loc
     "Queue" # loc
+
 =cut
 
         push @results, $self->loc( $prefix ) . " $label: ". $msg;
