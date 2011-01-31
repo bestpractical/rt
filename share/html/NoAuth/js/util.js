@@ -186,8 +186,8 @@ function checkAllObjects()
 }
 
 function checkboxToInput(target,checkbox,val){    
-    var tar = jQuery('#' + target);
-    var box = jQuery('#' + checkbox);
+    var tar = jQuery('#' + escapeCssSelector(target));
+    var box = jQuery('#' + escapeCssSelector(checkbox));
     if(box.attr('checked')){
         if (tar.val()==''){
             tar.val(val);
@@ -341,3 +341,7 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
+
+function escapeCssSelector(str) {
+    return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
+}

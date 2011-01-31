@@ -55,16 +55,14 @@
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-% my $cleanid = $addr;
-% $cleanid =~ s/\W//g;
 <input
-    id="UpdateCc-<%$cleanid%>"
-    name="UpdateCc-<%$cleanid%>"
+    id="UpdateCc-<%$addr%>"
+    name="UpdateCc-<%$addr%>"
     class="onetime onetimecc"
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
 % $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$cleanid%>','<%$clean_addr%>' );"
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' );"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 </td></tr>
@@ -74,15 +72,13 @@
 %}
 %foreach my $addr ( @one_time_Ccs ) {
 <input
-% my $cleanid = $addr;
-% $cleanid =~ s/\W//g;
-    id="UpdateBcc-<%$cleanid%>"
-    name="UpdateBcc-<%$cleanid%>"
+    id="UpdateBcc-<%$addr%>"
+    name="UpdateBcc-<%$addr%>"
     class="onetime onetimebcc"
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
 % $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$cleanid%>','<%$clean_addr%>' );"
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' );"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
