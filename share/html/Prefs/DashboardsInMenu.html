@@ -96,14 +96,14 @@ my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListO
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureDashboardsInMenu',
     Action => 'DashboardsInMenu.html',
-    panes => ['dashboards in menu'],
+    panes => ['dashboards_in_menu'],
     items => \@dashboards,
     current_portlets => $session{'dashboards_in_menu'},
     OnSave => sub {
         my ( $conf ) = @_;
         my ( $ok, $msg ) =
           $user->SetPreferences( 'DashboardsInMenu', $conf );
-        push @results, $ok ? loc('Preferences saved for dashboards_in_menu.') : $msg;
+        push @results, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
         delete $session{'dashboards_in_menu'};
     }
 );
