@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $r->content_type('application/json');
 <% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>

@@ -393,6 +393,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
                  etc/upgrade/upgrade-articles
+                 etc/upgrade/vulnerable-passwords
                  sbin/rt-attributes-viewer
                  sbin/rt-session-viewer
                  sbin/rt-dump-metadata

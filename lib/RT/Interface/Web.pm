@@ -900,11 +900,15 @@ sub StripContent {
     # Check for plaintext sig
     return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
-    # Check for html-formatted sig
-    RT::Interface::Web::EscapeUTF8( \$sig );
-    return ''
-      if $html
-          and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+    # Check for html-formatted sig; we don't use EscapeUTF8 here
+    # because we want to precisely match the escapting that FCKEditor
+    # uses.
+    $sig =~ s/&/&amp;/g;
+    $sig =~ s/</&lt;/g;
+    $sig =~ s/>/&gt;/g;
+    $sig =~ s/"/&quot;/g;
+    $sig =~ s/'/&#39;/g;
+    return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
 
     # Pass it through
     return $return_content;
@@ -1937,6 +1941,64 @@ sub ProcessTicketBasics {
     return (@results);
 }
 
+sub ProcessTicketReminders {
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $Ticket = $args{'TicketObj'};
+    my $args   = $args{'ARGSRef'};
+    my @results;
+
+    my $reminder_collection = $Ticket->Reminders->Collection;
+
+    if ( $args->{'update-reminders'} ) {
+        while ( my $reminder = $reminder_collection->Next ) {
+            if (   $reminder->Status ne 'resolved' && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
+                $Ticket->Reminders->Resolve($reminder);
+            }
+            elsif ( $reminder->Status eq 'resolved' && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
+                $Ticket->Reminders->Open($reminder);
+            }
+
+            if ( exists( $args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $args->{ 'Reminder-Subject-' . $reminder->id } )) {
+                $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+            }
+
+            if ( exists( $args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $args->{ 'Reminder-Owner-' . $reminder->id } )) {
+                $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+            }
+
+            if ( exists( $args->{ 'Reminder-Due-' . $reminder->id } ) && $args->{ 'Reminder-Due-' . $reminder->id } ne '' ) {
+                my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+                $DateObj->Set(
+                    Format => 'unknown',
+                    Value  => $args->{ 'Reminder-Due-' . $reminder->id }
+                );
+                if ( defined $DateObj->Unix && $DateObj->Unix != $reminder->DueObj->Unix ) {
+                    $reminder->SetDue( $DateObj->ISO );
+                }
+            }
+        }
+    }
+
+    if ( $args->{'NewReminder-Subject'} ) {
+        my $due_obj = RT::Date->new( $session{'CurrentUser'} );
+        $due_obj->Set(
+          Format => 'unknown',
+          Value => $args->{'NewReminder-Due'}
+        );
+        my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
+            Subject => $args->{'NewReminder-Subject'},
+            Owner   => $args->{'NewReminder-Owner'},
+            Due     => $due_obj->ISO
+        );
+        push @results, loc("Reminder '[_1]' added", $args->{'NewReminder-Subject'});
+    }
+    return @results;
+}
 
 sub ProcessTicketCustomFieldUpdates {
     my %args = @_;

@@ -220,7 +220,7 @@ create table CachedGroupMembers (
 CREATE TABLE Users (
   id INTEGER ,
   Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
+  Password varchar(256) NULL  ,
   AuthToken varchar(16) NULL  ,
   Comments blob NULL  ,
   Signature blob NULL  ,

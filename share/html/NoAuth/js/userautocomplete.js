@@ -77,7 +77,8 @@ jQuery(function() {
 
         if (inputName.match("AddPrincipalForRights-user")) {
             queryargs.push("return=Name");
-            options.select = update_addprincipal_title;
+            options.select = addprincipal_onselect;
+            options.change = addprincipal_onchange;
         }
 
         if (inputName.match(onlyPrivileged)) {

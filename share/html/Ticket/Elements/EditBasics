@@ -49,7 +49,6 @@
 $TicketObj => undef
 @fields => ()
 $InTable => 0
-$NoDates => 0
 %defaults => ()
 </%ARGS>
 <%INIT>
@@ -58,17 +57,16 @@ unless ( @fields ) {
         {   name => 'Subject',
             html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
         },
-        ( $NoDates ? () :
-            {   name => 'Status',
-                comp => '/Elements/SelectStatus',
-                args => {
-                    Name => 'Status',
-                    DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
-                    Default => $defaults{'Status'} || undef,
-                    TicketObj => $TicketObj,
-                    QueueObj => $TicketObj->QueueObj,
-                },
-            }),
+        {   name => 'Status',
+            comp => '/Elements/SelectStatus',
+            args => {
+                Name => 'Status',
+                DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
+                Default => $defaults{'Status'} || undef,
+                TicketObj => $TicketObj,
+                QueueObj => $TicketObj->QueueObj,
+            },
+        },
         {   name => 'Queue',
             comp => '/Elements/SelectQueue',
             args => {

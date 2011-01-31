@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $r->content_type('application/json');
 <% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
@@ -54,6 +55,7 @@ $delim => undef
 $max => 10
 $privileged => undef
 $exclude => ''
+$op => undef
 </%ARGS>
 <%INIT>
 require JSON;
@@ -87,6 +89,10 @@ $m->abort unless $CurrentUser->Privileged
 my %fields = %{ RT->Config->Get('UserAutocompleteFields')
                 || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
 
+# If an operator is provided, check against only the returned field
+# using that operator
+%fields = ( $return => $op ) if $op;
+
 my $users = RT::Users->new( $CurrentUser );
 $users->RowsPerPage( $max );
 
@@ -94,7 +100,7 @@ $users->LimitToPrivileged() if $privileged;
 
 while (my ($name, $op) = each %fields) {
     $op = 'STARTSWITH'
-        unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
+        unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
 
     $users->Limit(
         FIELD           => $name,

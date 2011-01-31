@@ -67,21 +67,43 @@ if (my $re = RT->Config->Get('RTAddressRegexp')) {
 use RT::Queues;
 my $queues = RT::Queues->new( RT->SystemUser );
 $queues->UnLimit;
-$queues->RowsPerPage(100);
 
-my @addresses = (RT->Config->Get('CorrespondAddress'), RT->Config->Get('CommentAddress'));
+my %merged;
+merge(\%merged, RT->Config->Get('CorrespondAddress'), RT->Config->Get('CommentAddress'));
 while ( my $queue = $queues->Next ) {
-    push @addresses, $queue->CorrespondAddress, $queue->CommentAddress;
+    merge(\%merged, $queue->CorrespondAddress, $queue->CommentAddress);
 }
 
-my %seen;
-my $re = join '|', map "\Q$_\E",
-    grep defined && length && !$seen{ lc $_ }++,
-    @addresses;
+my @domains;
+for my $domain (sort keys %merged) {
+    my @addresses;
+    for my $base (sort keys %{$merged{$domain}}) {
+        my @subbits = keys(%{$merged{$domain}{$base}});
+        if (@subbits > 1) {
+            push @addresses, "\Q$base\E(?:".join("|",@subbits).")";
+        } else {
+            push @addresses, "\Q$base\E$subbits[0]";
+        }
+    }
+    if (@addresses > 1) {
+        push @domains, "(?:".join("|", @addresses).")\Q\@".$domain."\E";
+    } else {
+        push @domains, "$addresses[0]\Q\@$domain\E";
+    }
+}
+my $re = join "|", @domains;
 
 print <<ENDDESCRIPTION;
 You can add the following to RT_SiteConfig.pm, but may want to collapse it into a more efficient regexp.
 Keep in mind that this only contains the email addresses that RT knows about, you should also examine
 your mail system for aliases that reach RT but which RT doesn't know about.
 ENDDESCRIPTION
-print "Set(\$RTAddressRegexp,'^(?:${re})\$');\n";
+print "Set(\$RTAddressRegexp,qr{^(?:${re})\$});\n";
+
+sub merge {
+    my $merged = shift;
+    for my $address (grep {defined and length} @_) {
+        $address =~ /^\s*(.*?)(-comments?)?\@(.*?)\s*$/;
+        $merged->{lc $3}{$1}{$2||''}++;
+    }
+}

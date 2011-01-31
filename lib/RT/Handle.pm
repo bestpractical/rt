@@ -218,36 +218,31 @@ sub SystemDSN {
 
 sub CheckIntegrity {
     my $self = shift;
-    
-    my $dsn = $self->DSN;
-    my $user = RT->Config->Get('DatabaseUser');
-    my $pass = RT->Config->Get('DatabasePassword');
+    $self = new $self unless ref $self;
 
-    my $dbh = DBI->connect(
-        $dsn, $user, $pass,
-        { RaiseError => 0, PrintError => 0 },
-    );
-    unless ( $dbh ) {
-        return (0, 'no connection', "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
-    }
+    do {
+        local $@;
+        unless ( eval { RT::ConnectToDatabase(); 1 } ) {
+            return (0, 'no connection', "$@");
+        }
+    };
 
-    RT::ConnectToDatabase();
     RT::InitLogging();
 
     require RT::CurrentUser;
     my $test_user = RT::CurrentUser->new;
     $test_user->Load('RT_System');
     unless ( $test_user->id ) {
-        return (0, 'no system user', "Couldn't find RT_System user in the DB '$dsn'");
+        return (0, 'no system user', "Couldn't find RT_System user in the DB '". $self->DSN ."'");
     }
 
     $test_user = RT::CurrentUser->new;
     $test_user->Load('Nobody');
     unless ( $test_user->id ) {
-        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '$dsn'");
+        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $self->DSN ."'");
     }
 
-    return $dbh;
+    return $RT::Handle->dbh;
 }
 
 sub CheckCompatibility {

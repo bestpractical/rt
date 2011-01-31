@@ -127,7 +127,7 @@ for my $queue (@queues) {
 
 unless (@statuses) {
     my %seen;
-    foreach my $set ( 'initial', 'active' ) {
+    foreach my $set ( 'Initial', 'Active' ) {
         foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
             push @statuses, grep !$seen{ lc $_ }++, $lifecycle->$set();
         }
