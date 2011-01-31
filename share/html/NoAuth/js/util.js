@@ -186,7 +186,7 @@ function checkAllObjects()
 }
 
 function checkboxToInput(target,checkbox,val){    
-    var tar = jQuery('#'+target);
+    var tar = jQuery('#' + target);
     var box = jQuery('#' + checkbox);
     if(box.attr('checked')){
         if (tar.val()==''){
@@ -200,6 +200,7 @@ function checkboxToInput(target,checkbox,val){
         tar.val(tar.val().replace(val+', ',''));
         tar.val(tar.val().replace(val,''));
     }
+    jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
 }
 
 // ahah for back compatibility as plugins may still use it
