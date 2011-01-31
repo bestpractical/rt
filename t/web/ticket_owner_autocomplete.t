@@ -131,7 +131,7 @@ diag "on reply correct owner is selected";
     $agent_a->follow_link_ok( { id => 'page-actions-reply' }, 'Reply' );
 
     my $form = $agent_a->form_number(3);
-    is $form->value('Owner'), '', 'empty value selected';
+    is $form->value('Owner'), 'user_b', 'current user selected';
     $agent_a->submit;
 
     $ticket = RT::Ticket->new( RT->SystemUser );
