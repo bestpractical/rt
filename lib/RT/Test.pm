@@ -516,7 +516,7 @@ sub __drop_database {
         RT::Handle->SystemDSN,
         $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
     );
-    RT::Handle->DropDatabase( $dbh, Force => 1 );
+    RT::Handle->DropDatabase( $dbh );
     $dbh->disconnect if $my_dbh;
 }
 

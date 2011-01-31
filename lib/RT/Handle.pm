@@ -350,15 +350,15 @@ sub CreateDatabase {
     return ($status, $DBI::errstr);
 }
 
-=head3 DropDatabase $DBH [Force => 0]
+=head3 DropDatabase $DBH
 
 Drops RT's database. This method can be used as class method.
 
 Takes DBI handle as first argument. Many database systems require
-special handle to allow you to create a new database, so you have
-to use L<SystemDSN> method during connection.
+a special handle to allow you to drop a database, so you may have
+to use L<SystemDSN> when acquiring the DBI handle.
 
-Fetches type and name of the DB from the config.
+Fetches the type and name of the database from the config.
 
 =cut
 
