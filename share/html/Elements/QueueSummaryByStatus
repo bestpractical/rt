@@ -58,13 +58,14 @@
 my $i = 0;
 for my $queue (@queues) {
     $i++;
-    my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
+    my $lifecycle = $queue->LifecycleObj;
     my @queue_statuses = grep { $lifecycle->IsValid($_) } @statuses;
+
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td>
-    <a href="<% $link_all->($queue, \@queue_statuses) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+    <a href="<% $linker->{'all'}->($queue, \@queue_statuses) %>" title="<% $queue->Description %>"><% $queue->Name %></a>
 </td>
 
 <%perl>
@@ -72,7 +73,7 @@ for my $queue (@queues) {
    if ( $lifecycle->IsValid( $status ) ) {
 </%perl>
 <td align="right">
-    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{id}}->{$status } || '-' %></a>
+    <a href="<% $linker->{'status'}->($queue, $status) %>"><% $data->{$queue->id}->{$status } || '-' %></a>
 </td>
 %   } else {
 <td align="right">-</td>
@@ -82,84 +83,11 @@ for my $queue (@queues) {
 % }
 </table>
 <%INIT>
-my $build_search_link = sub {
-    my ($queue_name, $extra_query) = @_;
-    $queue_name =~ s/(['\\])/\\$1/g; #'
-
-    return RT->Config->Get('WebPath')
-         . "/Search/Results.html?Query="
-         . $m->interp->apply_escapes("Queue = '$queue_name' AND $extra_query", 'u');
-};
-
-my $link_all = sub {
-    my ($queue, $all_statuses) = @_;
-    return $build_search_link->($queue->{Name}, "(".join(" OR ", map "Status = '$_'", @$all_statuses).")");
-};
-
-my $link_status = sub {
-    my ($queue, $status) = @_;
-    return $build_search_link->($queue->{Name}, "Status = '$status'");
-};
-
-$m->callback(
-    CallbackName        => 'LinkBuilders',
-    build_search_link   => \$build_search_link,
-    link_all            => \$link_all,
-    link_status         => \$link_status,
-);
-
-my $Queues = RT::Queues->new( $session{'CurrentUser'} );
-$Queues->UnLimit();
-$m->callback( CallbackName => 'SQLFilter', Queues => $Queues );
-
-my @queues = grep $queue_filter->($_), @{ $Queues->ItemsArrayRef };
-$m->callback( CallbackName => 'Filter', Queues => \@queues );
-
-@queues = map {
-    {  id          => $_->Id,
-       Name        => $_->Name,
-       Description => $_->Description || '',
-       Lifecycle   => $_->Lifecycle,
-    }
-} grep $_, @queues;
-
-my %lifecycle;
-
-for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->Load( Name => $queue->{'Lifecycle'} );
-    $lifecycle{ lc $cycle->Name } = $cycle;
-}
-
-unless (@statuses) {
-    my %seen;
-    foreach my $set ( 'initial', 'active' ) {
-        foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-            push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
-        }
-    }
-}
-
-my $data     = {};
-my $statuses = {};
-
-use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( RT->SystemUser );
-my $query =
-    "(".
-    join(" OR ", map {s{(['\\])}{\\$1}g; "Status = '$_'"} @statuses) #'
-    .") AND (".
-    join(' OR ', map "Queue = ".$_->{id}, @queues)
-    .")";
-$query = 'id < 0' unless @queues;
-$report->SetupGroupings( Query => $query, GroupBy => [qw(Status Queue)] );
-
-while ( my $entry = $report->Next ) {
-    $data->{ $entry->__Value("Queue") }->{ $entry->__Value("Status") }
-        = $entry->__Value('id');
-    $statuses->{ $entry->__Value("Status") } = 1;
-}
+return unless @queues && @statuses;
 </%INIT>
 <%ARGS>
-$queue_filter => undef
-@statuses => ()
+@queues          => ()
+@statuses        => ()
+$data            => {}
+$linker          => {}
 </%ARGS>
