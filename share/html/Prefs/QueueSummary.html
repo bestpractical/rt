@@ -46,22 +46,48 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs
-&>
+<& /Elements/Tabs &>
+
 <& /Elements/ListActions, actions => \@actions &>
-<h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
+
 <form method="post" action="QueueSummary.html" name="Preferences">
+<input type="hidden" class="hidden" name="Pref" value="<% $Pref %>" \>
+<input type="hidden" class="hidden" name="EditUnwanted" value="<% $EditUnwanted %>" \>
+
+<h1><&|/l&>Select table preferences</&></h1>
+
+<label><input type="checkbox" class="checkbox" name="ShowEmptyRows" value="1" \
+% if ( $preference->{'ShowEmptyRows'} ) {
+checked="checked" \
+% }
+/><&|/l&>Show rows with all zeros</&></label><br />
+
+<label><input type="checkbox" class="checkbox" name="ShowEmptyColumns" value="1" \
+% if ( $preference->{'ShowEmptyColumns'} ) {
+checked="checked" \
+% }
+/><&|/l&>Show columns with all zeros</&></label><br />
+
+<label><input type="checkbox" class="checkbox" name="SplitByLifecycle" value="1" \
+% if ( $preference->{'SplitByLifecycle'} ) {
+checked="checked" \
+% }
+/><&|/l&>Split into groups with different status sets (lifecycles)</&></label><br />
+
+% if ( $EditUnwanted ) {
+<h1><&|/l&>Select queues to be displayed</&></h1>
 <ul>
 % for my $queue (@queues) {
-<li><input type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
-% unless ($unwanted->{$queue->Name}) {
-checked="checked"
+<li><input type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want" value="<%$queue->Name%>"
+% unless ($preference->{'Unwanted'}{ $queue->Name }) {
+checked="checked" \
 % }
 />
 <label for="Want-<%$queue->Name%>"><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></label>
 </li>
 % }
 </ul>
+% }
 <& /Elements/Submit,
     Caption             => loc("Save Changes"),
     Label               => loc('Save'),
@@ -69,41 +95,56 @@ checked="checked"
     Reset               => 1,
     CheckAll            => 1,
     ClearAll            => 1,
-    CheckboxNameRegex   => '/^Want-/',
+    CheckboxNameRegex   => '/^Want$/',
     &>
 
 </form>
 
 <%INIT>
 my @actions;
+
 my $title = loc("Customize").' '.loc("Quick search");
+
 my $user = $session{'CurrentUser'}->UserObj;
-my $unwanted = $user->Preferences('QuickSearch', {});
-my $Queues = RT::Queues->new($session{'CurrentUser'});
-$Queues->UnLimit;
 
-my $right = 'ShowTicket';
-$m->callback(
-    CallbackName    => 'ModifyQueues',
-    Queues          => \$Queues,
-    Right           => \$right,
-    Unwanted        => $unwanted,
-);
+my $preference = $user->Preferences($Pref, {});
 
-my @queues = grep { $right ? $_->CurrentUserHasRight($right) : 1 } @{$Queues->ItemsArrayRef};
+my @queues;
+if ( $EditUnwanted ) {
+    my $Queues = RT::Queues->new($session{'CurrentUser'});
+    $Queues->UnLimit;
 
-if ($ARGS{'Save'}) {
-    for my $queue (@queues) {
-        if ($ARGS{"Want-".$queue->Name}) {
-            delete $unwanted->{$queue->Name};
-        }
-        else {
-            ++$unwanted->{$queue->Name};
-        }
-    }
+    my $right = 'ShowTicket';
+    $m->callback(
+        CallbackName    => 'ModifyQueues',
+        Queues          => \$Queues,
+        Right           => \$right,
+        Want            => \@Want,
+    );
 
-    my ($ok, $msg) = $user->SetPreferences('QuickSearch', $unwanted);
+    @queues = grep { $right? $_->CurrentUserHasRight( $right ) : 1 } @{ $Queues->ItemsArrayRef };
+}
+
+if ( $Save ) {
+    my %Want = map { $_ => 1 } @Want;
+    $preference->{'Unwanted'} = { map { $_ => 1 } grep !$Want{ $_ }, map $_->Name, @queues };
+
+    $preference->{$_} = $ARGS{$_} foreach qw(
+        SplitByLifecycle
+        ShowEmptyRows
+        ShowEmptyColumns
+    );
+
+    my ($ok, $msg) = $user->SetPreferences( $Pref => $preference );
     push @actions, $ok ? loc('Preferences saved.') : $msg;
 }
 
 </%INIT>
+<%ARGS>
+$Pref         => 'QuickSearch'
+
+$EditUnwanted => 0
+@Want         => ()
+
+$Save         => 0
+</%ARGS>
