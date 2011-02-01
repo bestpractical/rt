@@ -45,8 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
-<& /Elements/QueueSummaryByStatus,
-   queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
+<&|/Widgets/TitleBox,
+    title => loc("Queues I administer"),
+    bodyclass => "",
+    titleright => loc("Edit"),
+    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueSummary.html?Pref=MyAdminQueues',
+&>
+<& /Elements/QueueSummary,
+    preference => 'MyAdminQueues',
+    queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
 &>
 </&>

@@ -50,17 +50,11 @@
     title => loc("Quick search"),
     bodyclass => "",
     titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueSummary.html',
+    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueSummary.html?EditUnwanted=1',
 &>
-<& $comp,
-   queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
+<& /Elements/QueueSummary,
+    preference => 'QuickSearch',
+    queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') },
 &>
 </&>
 </div>
-<%INIT>
-my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
-my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
-</%INIT>
-<%ARGS>
-$SplitByLifecycle => 1
-</%ARGS>
