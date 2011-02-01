@@ -212,6 +212,19 @@ sub _BitmaskToString {
     return join ' or ', @res;
 }
 
+=head2 Quote
+
+Quotes a string for TicketSQL queries. Changes argument in void context.
+
+=cut
+
+sub Quote {
+    my $v = defined(wantarray)? \"$_[1]" : \$_[1];
+    $$v =~ s{(['\\])}{\\$1}g;
+    $$v = "'$$v'";
+    return $$v;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
