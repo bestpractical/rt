@@ -45,8 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&|/Widgets/TitleBox, title => loc("Queues I'm an AdminCc for"), bodyclass => "" &>
-<& /Elements/QueueSummaryByStatus,
-   queue_filter => sub { $_->IsAdminCc($session{'CurrentUser'}->Id) },
+<&|/Widgets/TitleBox,
+    title => loc("Queues I'm an AdminCc for"),
+    bodyclass => "",
+    titleright => loc("Edit"),
+    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueSummary.html?Pref=MySupportQueues',
+&>
+<& /Elements/QueueSummary,
+    preference => 'MySupportQueues',
+    queue_filter => sub { $_->IsAdminCc($session{'CurrentUser'}->Id) },
 &>
 </&>
