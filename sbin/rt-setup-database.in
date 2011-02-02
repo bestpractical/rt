@@ -318,14 +318,14 @@ sub action_upgrade {
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
 
     my @versions = get_versions_from_to($base_dir, $upgrading_from, undef);
+    return (1, "No DB changes since $upgrading_from")
+        unless @versions;
+
     if (RT::Handle::cmp_version($versions[-1], $upgrading_to) > 0) {
         print "\n***** There are upgrades for $versions[-1], which is later than $upgrading_to,\n";
         print   "***** which you are nominally upgrading to.  Upgrading to $versions[-1] instead.\n";
         $upgrading_to = $versions[-1];
     }
-
-    return (1, "No DB changes between $upgrading_from and $upgrading_to")
-        unless @versions;
 
     print "\nGoing to apply following upgrades:\n";
     print map "* $_\n", @versions;
