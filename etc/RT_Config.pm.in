@@ -1730,6 +1730,45 @@ Default: C<< Set( $DisplayTicketAfterQuickCreate, 0 ) >>
 
 Set( $DisplayTicketAfterQuickCreate, 0 );
 
+=item C<$JSGanttOptions>
+
+options of JSGantt
+
+DefaultFormat: options are 'day', 'week', 'month' and 'quarter'.
+
+NullDatesColor: color to use for tickets without dates info.
+
+DefaultDays: used to set start/end if one exists but the other does not
+
+Default: C<< 
+Set(
+    %JSGanttOptions,
+    DefaultFormat => 'day',
+    ShowOwner     => 1,
+    ShowProgress  => 1,
+    ShowDuration  => 1,
+    ColorScheme => ['ff0000', 'ffff00', 'ff00ff', '00ff00', '00ffff', '0000ff'],
+    NullDatesColor => 333,
+    WorkingHoursPerDay => 8,
+    DefaultDays => 7,
+);
+>>
+
+=cut
+
+Set(
+    %JSGanttOptions,
+    DefaultFormat => 'day',
+    ShowOwner     => 1,
+    ShowProgress  => 1,
+    ShowDuration  => 1,
+    ColorScheme => ['ff0000', 'ffff00', 'ff00ff', '00ff00', '00ffff', '0000ff'],
+    NullDatesColor => 333,
+    WorkingHoursPerDay => 8,
+    DefaultDays => 7,
+);
+
+
 =back
 
 =head1 UTF-8 Configuration
@@ -2215,6 +2254,7 @@ Set(@JSFiles, qw/
     jquery.supposition.js
     history-folding.js
     late.js
+    jsgantt.js
 /);
 
 =item C<$JSMinPath>

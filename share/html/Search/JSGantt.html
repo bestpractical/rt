@@ -1,0 +1,163 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+%#
+%# Data flow here:
+%#   The page receives a Query from the previous page, and maybe arguments
+%#   corresponding to actions.  (If it doesn't get a Query argument, it pulls
+%#   one out of the session hash.  Also, it could be getting just a raw query from
+%#   Build/Edit.html (Advanced).)
+%#
+%#   After doing some stuff with default arguments and saved searches, the ParseQuery
+%#   function (which is similar to, but not the same as, _parser in lib/RT/Tickets_SQL.pm)
+%#   converts the Query into a RT::Interface::Web::QueryBuilder::Tree.  This mason file
+%#   then adds stuff to or modifies the tree based on the actions that had been requested
+%#   by clicking buttons.  It then calls GetQueryAndOptionList on the tree to generate
+%#   the SQL query (which is saved as a hidden input) and the option list for the Clauses
+%#   box in the top right corner.
+%#
+%#   Worthwhile refactoring: the tree manipulation code for the actions could use some cleaning
+%#   up.  The node-adding code is different in the "add" actions from in ParseQuery, which leads
+%#   to things like ParseQuery correctly not quoting numbers in numerical fields, while the "add"
+%#   action does quote it (this breaks SQLite).
+%#
+
+<& /Elements/Header, Title => $title,
+    Refresh => $session{'tickets_refresh_interval'} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} ),
+    &>
+<& /Elements/Tabs &>
+<div style="position:relative" class="gantt" id="GanttChartDIV"></div>
+<script>
+
+  // here's all the html code neccessary to display the chart object
+
+  // Future idea would be to allow XML file name to be passed in and chart tasks built from file.
+
+  var g = new JSGantt.GanttChart('g',document.getElementById('GanttChartDIV'),
+  '<% $options{'DefaultFormat'} || 'day' %>' );
+
+    g.setShowRes(<% $options{'ShowOwner'}? 1 : 0 %>);
+    g.setShowDur(<% $options{'ShowDuration'}? 1 : 0 %> );
+    g.setShowComp(<% $options{'ShowProgress'} ? 1 : 0 %> );
+
+    g.setCaptionType('Resource');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+
+  //var gr = new Graphics();
+
+  if( g ) {
+
+    // Parameters             (pID, pName,                  pStart,      pEnd,        pColor,   pLink,          pMile, pRes,  pComp, pGroup, pParent, pOpen, pDepend, pCaption)
+    
+    // You can also use the XML file parser JSGantt.parseXML('project.xml',g)
+%   use JSON;
+%   for my $id ( @$ids ) {
+%       my $json = to_json( [ $id, map { $info->{$id}{$_} } qw/name start end
+%           color link milestone owner progress has_members parent open
+%           depends/ ] );
+%       $json =~ s/^\[//; $json =~ s/\]$//;
+        g.AddTaskItem(new JSGantt.TaskItem( <% $json |n%> ));
+%   }
+
+
+    g.Draw();    
+    g.DrawDependencies();
+
+  }
+  else {
+
+    alert("not defined");
+
+  }
+
+</script>
+
+<%init>
+my $title = loc('JSGantt Results');
+my @Tickets;
+
+my %options = RT->Config->Get('JSGanttOptions');
+use RT::JSGantt;
+
+if ( $Ticket ) {
+    @Tickets = RT::JSGantt->AllRelatedTickets(
+        Ticket     => $Ticket,
+        CurrentUser => $session{CurrentUser},
+    );
+}
+elsif ($Query) {
+    my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $Tickets->FromSQL($Query);
+    if ( $OrderBy =~ /\|/ ) {
+
+        # Multiple Sorts
+        my @OrderBy = split /\|/, $OrderBy;
+        my @Order   = split /\|/, $Order;
+        $Tickets->OrderByCols(
+            map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+              ( 0 .. $#OrderBy ) );
+    }
+    else {
+        $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+    }
+    @Tickets = @{ $Tickets->ItemsArrayRef };
+}
+
+my ( $ids, $info ) = RT::JSGantt->TicketsInfo(
+    Tickets     => \@Tickets,
+    CurrentUser => $session{CurrentUser},
+);
+
+</%init>
+
+<%args>
+$Query => undef
+$OrderBy => 'id'
+$Order => 'ASC'
+$Ticket => undef
+</%args>
+

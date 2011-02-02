@@ -67,6 +67,7 @@
 @import "tools.css";
 @import "login.css";
 @import "history-folding.css";
+@import "jsgantt.css";
 
 % $m->callback(CallbackName => 'End');
 

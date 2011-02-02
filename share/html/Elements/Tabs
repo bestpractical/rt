@@ -612,6 +612,10 @@ my $build_admin_menu = sub {
             $current_search_menu->child( bulk => title => loc('Bulk Update') => path => "/Search/Bulk.html$args" );
             $current_search_menu->child( chart => title => loc('Chart'),
                                          path => "/Search/Chart.html$args" );
+            $current_search_menu->child(
+                'gantt' => title => loc('Gantt Chart'),
+                 path    => "/Search/JSGantt.html$args"
+            );
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
             
