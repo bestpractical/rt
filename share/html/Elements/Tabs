@@ -473,7 +473,7 @@ my $build_admin_menu = sub {
             $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id, );
             #}
 
-            if ( RT->Config->Get('EnableReminders') ) {
+            if ( RT->Config->Get('EnableReminders') && $can->('ModifyTicket') ) {
                 $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id, );
             }
 

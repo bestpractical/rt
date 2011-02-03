@@ -66,6 +66,8 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
+Abort( loc("Permission Denied") )
+  unless $Ticket->CurrentUserHasRight('ModifyTicket');
 
 my @actions = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 </%INIT>
