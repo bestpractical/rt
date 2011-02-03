@@ -49,6 +49,8 @@
 <& /Elements/Tabs &>
     
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
+
+<& /Elements/ListActions, actions => \@actions &>
     
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),
@@ -65,7 +67,7 @@
 <%INIT>
 my $Ticket = LoadTicket($id);
 
-ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
+my @actions = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 </%INIT>
 <%ARGS>
 $id => undef
