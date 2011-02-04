@@ -508,7 +508,7 @@ sub check_attachment {
     expect_handle->before() =~ $attachment_regex;
     my $attachment_id = $1;
     expect_send("show ticket/$ticket_id/attachments/$attachment_id/content","Fetching Attachment");
-    open (my $fh, $attachment_path) or die "Can't open $attachment_path: $!";
+    open my $fh, '<', $attachment_path or die "Can't open $attachment_path: $!";
     my $attachment_content = do { local($/); <$fh> };
     close $fh;
     chomp $attachment_content;

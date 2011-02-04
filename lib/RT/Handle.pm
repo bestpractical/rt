@@ -462,7 +462,7 @@ sub InsertSchema {
 
     my (@schema);
 
-    open my $fh_schema, "<$file";
+    open my $fh_schema, '<', $file or die $!;
 
     my $has_local = 0;
     open my $fh_schema_local, "<" . $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type )

@@ -133,7 +133,7 @@ sub extract_strings_from_code {
     $filename =~ s'^\./'';
     $filename =~ s'\.in$'';
 
-    unless (open _, $file) {
+    unless (open _, '<', $file) {
         print "Cannot open $file for reading ($!), skipping.\n";
         return;
     }
@@ -261,7 +261,7 @@ sub update {
     print "Updating $lang...\n";
 
     my @lines;
-    @lines = (<LEXICON>) if open (LEXICON, $file);
+    @lines = (<LEXICON>) if open LEXICON, '<', $file;
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
@@ -355,7 +355,7 @@ sub update {
         $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
     }
 
-    open PO, ">$file" or die "Couldn't open '$file' for writing: $!";
+    open PO, '>', $file or die "Couldn't open '$file' for writing: $!";
     print PO $out;
     close PO;
 
