@@ -117,7 +117,8 @@ sub Add {
     );
 
     my $reminder = RT::Ticket->new($self->CurrentUser);
-    my ( $status, $msg ) = $reminder->Create(
+    # the 2nd return value is txn id, which is useless here
+    my ( $status, undef, $msg ) = $reminder->Create(
         Subject => $args{'Subject'},
         Owner => $args{'Owner'},
         Due => $args{'Due'},
