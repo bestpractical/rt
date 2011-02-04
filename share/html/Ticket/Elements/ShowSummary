@@ -77,9 +77,7 @@
         <table><tr><td>
             <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
                 <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
-% if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
                 <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
-% }
             </form>
         </td></tr></table>
     </&>

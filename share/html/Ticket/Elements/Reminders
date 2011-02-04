@@ -75,9 +75,7 @@ my $reminder_collection = $count_reminders->Collection;
 % if ( $Edit ) {
 <th class="collection-as-table" colspan="5"><&|/l&>Reminders</&></th>
 % } else {
-% if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <th class="collection-as-table"></th>
-% }
 <th class="collection-as-table"><&|/l&>Reminder</&></th>
 <th class="collection-as-table"><&|/l&>Due</&></th>
 <th class="collection-as-table"><&|/l&>Owner</&></th>
@@ -99,7 +97,7 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % }
 </table>
-% if ( $visible > 0 && $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+% if ( $visible > 0 ) {
 <i><&|/l&>(Check box to complete)</&></i><br /><br />
 % }
 % } else {
@@ -113,11 +111,8 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % }
 
-% if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
-% }
-
 <%method NewReminder>
 <%args>
 $Ticket
@@ -165,9 +160,7 @@ $Index
 % my $dueobj = $Reminder->DueObj;
 % my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
-% if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <td class="collection-as-table"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> /></td>
-% }
 <td class="collection-as-table"><% $Reminder->Subject %></td>
 <td class="collection-as-table"><% $overdue ? '<span class="overdue">' : '' |n %><% $dueobj->AgeAsString || loc('Not set') %><% $overdue ? '</span>' : '' |n %></td>
 <td class="collection-as-table"><& /Elements/ShowUser, User => $Reminder->OwnerObj &></td>
