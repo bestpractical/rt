@@ -797,7 +797,7 @@ sub SendStaticFile {
         $type ||= "application/octet-stream";
     }
     $HTML::Mason::Commands::r->content_type($type);
-    open my $fh, "<$file" or die "couldn't open file: $!";
+    open my $fh, '<', $file or die "couldn't open file: $!";
     binmode($fh);
     {
         local $/ = \16384;

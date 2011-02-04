@@ -73,7 +73,7 @@ sub handler {
         # and make all system() and open "|-" dangerouse, for example DBI
         # can get this FD for DB connection and system() call will close
         # by putting grabage into the socket
-        open $protect_fd, '>/dev/null' or die "Couldn't open /dev/null: $!";
+        open $protect_fd, '>', '/dev/null' or die "Couldn't open /dev/null: $!";
         unless ( fileno($protect_fd) == 1 ) {
             warn "We opened /dev/null to protect FD #1, but descriptor #1 is already occupied";
         }
