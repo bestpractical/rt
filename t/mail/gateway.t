@@ -656,7 +656,7 @@ ok( $id, 'new ticket created' );
 is( $tick->Owner, RT->Nobody->Id, 'owner of the new ticket is nobody' );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
@@ -682,7 +682,7 @@ $m->no_warnings_ok;
 
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] correspondence
@@ -709,7 +709,7 @@ $m->no_warnings_ok;
 
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
@@ -745,7 +745,7 @@ my $rtname = RT->Config->Get('rtname');
 $m->no_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -767,7 +767,7 @@ $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -786,7 +786,7 @@ $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -831,7 +831,7 @@ ok( $status, "successfuly granted right: $msg" );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test

@@ -445,7 +445,7 @@ sub SendEmail {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
-            open my $mail, '|-', "$path $args" or die "couldn't execute program: $!";
+            open( my $mail, '|-', "$path $args" ) or die "couldn't execute program: $!";
 
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };

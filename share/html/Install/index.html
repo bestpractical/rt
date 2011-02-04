@@ -95,7 +95,7 @@ my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 
 if ( ! -e $file ) {
     # write a blank RT_SiteConfig.pm
-    open my $fh, '>', $file or die $!;
+    open( my $fh, '>', $file ) or die $!;
     close $fh;
 }
 elsif ( ! -w $file ) {

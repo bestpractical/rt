@@ -195,7 +195,7 @@ sub GetMessageContent {
     
     #Load the sourcefile, if it's been handed to us
     if ($source) {
-	open SOURCE, '<', $source or die $!;
+	open( SOURCE, '<', $source ) or die $!;
 	@lines = (<SOURCE>);
 	close (SOURCE);
     }
@@ -221,7 +221,7 @@ sub GetMessageContent {
 	system ($ENV{'EDITOR'}, $filename);
     }	
     
-    open READ, '<', $filename or die $!;
+    open( READ, '<', $filename ) or die $!;
     my @newlines = (<READ>);
     close (READ);
 

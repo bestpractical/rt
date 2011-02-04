@@ -105,7 +105,7 @@ RT->InitClasses();
 # get customized root password
 my $root_password;
 if ( $args{'root-password-file'} ) {
-    open my $fh, '<', $args{'root-password-file'}
+    open( my $fh, '<', $args{'root-password-file'} )
       or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
     $root_password = <$fh>;
     chomp $root_password;
@@ -394,7 +394,7 @@ sub action_upgrade {
 sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
-    opendir my $dh, $base_dir or die "couldn't open dir: $!";
+    opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
     my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
     closedir $dh;
 

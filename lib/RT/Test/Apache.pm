@@ -21,7 +21,7 @@ sub start_server {
     my %info = $self->apache_server_info( variant => $variant );
 
     RT::Test::diag(do {
-        open my $fh, '<', $tmp{'config'}{'RT'};
+        open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
         local $/;
         <$fh>
     });
@@ -68,7 +68,7 @@ sub start_server {
         }
         Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
             unless -e $opt{'pid_file'};
-        open my $pid_fh, '<', $opt{'pid_file'}
+        open( my $pid_fh, '<', $opt{'pid_file'} )
             or Test::More::BAIL_OUT("Couldn't open pid file: $!");
         my $pid = <$pid_fh>;
         chomp $pid;
@@ -186,7 +186,7 @@ sub process_in_file {
         ($out_fh, $out_conf) = tempfile();
     } else {
         $out_conf = $args{'out'};
-        open $out_fh, '>', $out_conf
+        open( $out_fh, '>', $out_conf )
             or die "couldn't open '$out_conf': $!";
     }
     print $out_fh $text;

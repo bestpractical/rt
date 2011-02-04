@@ -390,7 +390,7 @@ sub ora_create_stop_list {
         undef, $name, 'BASIC_STOPLIST'
     );
 
-    open my $fh, '<:utf8', $file
+    open( my $fh, '<:utf8', $file )
         or die "couldn't open file '$file': $!";
     while ( my $word = <$fh> ) {
         chomp $word;

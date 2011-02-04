@@ -88,7 +88,7 @@ sub file_handle {
     my $self    = shift;
     my $file    = shift;
     my $content = $HTML::Mason::Commands::m->scomp("/NoAuth/css/$file") || '';
-    open my $fh, '<', \$content or die "$!";
+    open( my $fh, '<', \$content ) or die $!;
     return $fh;
 }
 

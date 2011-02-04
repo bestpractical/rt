@@ -1171,8 +1171,7 @@ sub submit {
         my ($self, $file) = @_;
         $file ||= $self->{file};
 
-        open(my $handle, $file)
-            or return 0;
+        open( my $handle, '<', $file ) or return 0;
 
         $self->{file} = $file;
         my $sids = $self->{sids} = {};
@@ -1191,8 +1190,7 @@ sub submit {
         my ($self, $file) = shift;
         $file ||= $self->{file};
 
-        open(my $handle, ">$file")
-            or return 0;
+        open( my $handle, '>', "$file" ) or return 0;
 
         my $sids = $self->{sids};
         foreach my $server (keys %$sids) {
@@ -1433,8 +1431,7 @@ sub parse_config_file {
     my ($file) = @_;
     local $_; # $_ may be aliased to a constant, from line 1163
 
-    open(my $handle, $file)
-        or return;
+    open( my $handle, '<', $file ) or return;
 
     while (<$handle>) {
         chomp;
@@ -1483,13 +1480,13 @@ sub vi {
 
     local $/ = undef;
 
-    open(my $handle, ">$file") || die "$file: $!\n";
+    open( my $handle, '>', $file ) or die "$file: $!\n";
     print $handle $text;
     close($handle);
 
     system($editor, $file) && die "Couldn't run $editor.\n";
 
-    open($handle, $file) || die "$file: $!\n";
+    open( $handle, '<', $file ) or die "$file: $!\n";
     $text = <$handle>;
     close($handle);
 

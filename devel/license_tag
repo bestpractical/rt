@@ -112,7 +112,7 @@ sub tag_mason {
         my $pm = $_;
         return unless (-f $pm);
         return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
-        open FILE, '<', $pm or die "Failed to open $pm";
+        open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
         print "$pm - ";
@@ -136,7 +136,7 @@ sub tag_mason {
 
 
 
-        open FILE, '>', $pm or die "couldn't write new file";
+        open( FILE, '>', $pm ) or die "couldn't write new file";
         print FILE $file;
         close FILE;
 
@@ -145,7 +145,7 @@ sub tag_mason {
 
 sub tag_makefile {
         my $pm = shift;
-        open FILE, '<', $pm or die "Failed to open $pm";
+        open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
         print "$pm - ";
@@ -169,7 +169,7 @@ sub tag_makefile {
 
 
 
-        open FILE, '>', $pm or die "couldn't write new file";
+        open( FILE, '>', $pm ) or die "couldn't write new file";
         print FILE $file;
         close FILE;
 
@@ -179,7 +179,7 @@ sub tag_makefile {
 sub tag_pm {
         my $pm = $_;
         next unless $pm =~ /\.pm/s;
-        open FILE, '<', $pm or die "Failed to open $pm";
+        open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
         print "$pm - ";
@@ -203,7 +203,7 @@ sub tag_pm {
 
 
 
-        open FILE, '>', $pm or die "couldn't write new file $pm";
+        open( FILE, '>', $pm ) or die "couldn't write new file $pm";
         print FILE $file;
         close FILE;
 
@@ -213,7 +213,7 @@ sub tag_pm {
 sub tag_script {
         my $pm = $_;
         return unless (-f $pm);
-        open FILE, '<', $pm or die "Failed to open $pm";
+        open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
         print "$pm - ";
@@ -240,7 +240,7 @@ sub tag_script {
         print "\n";
 
 
-        open FILE, '>', $pm or die "couldn't write new file";
+        open( FILE, '>', $pm ) or die "couldn't write new file";
         print FILE $file;
         close FILE;
 
