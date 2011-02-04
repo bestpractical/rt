@@ -38,14 +38,14 @@ my $q2 = RT::Queue->new($RT::SystemUser);
 ok ($id,$msg);
 
 my $commit_code = <<END;
-open my \$file, '<', "$filename" or die "couldn't open $filename";
+open( my \$file, '<', "$filename" ) or die "couldn't open $filename";
 my \$data = <\$file>;
 chomp \$data;
 \$data += 0;
 close \$file;
 \$RT::Logger->debug("Data is \$data");
 
-open \$file, '>', "$filename" or die "couldn't open $filename";
+open( \$file, '>', "$filename" ) or die "couldn't open $filename";
 if (\$self->TransactionObj->Type eq 'AddLink') {
     \$RT::Logger->debug("AddLink");
     print \$file \$data+1, "\n";
@@ -375,7 +375,7 @@ ok($link->LocalBase   == 0, "LocalBase set correctly");
 
 sub link_count {
     my $file = shift;
-    open my $fh, '<', $file or die "couldn't open $file";
+    open ( my $fh, '<', $file ) or die "couldn't open $file";
     my $data = <$fh>;
     close $fh;
 

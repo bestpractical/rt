@@ -1166,7 +1166,7 @@ sub submit {
         $file ||= $self->{file};
         local *F;
 
-        open(F, $file) && do {
+        open(F, '<', $file) && do {
             $self->{file} = $file;
             my $sids = $self->{sids} = {};
             while (<F>) {
@@ -1187,7 +1187,7 @@ sub submit {
         $file ||= $self->{file};
         local *F;
 
-        open(F, ">$file") && do {
+        open(F, '>', $file) && do {
             my $sids = $self->{sids};
             foreach my $server (keys %$sids) {
                 foreach my $user (keys %{ $sids->{$server} }) {
@@ -1429,7 +1429,7 @@ sub parse_config_file {
     my ($file) = @_;
     local $_; # $_ may be aliased to a constant, from line 1163
 
-    open(CFG, $file) && do {
+    open(CFG, '<', $file) && do {
         while (<CFG>) {
             chomp;
             next if (/^#/ || /^\s*$/);
@@ -1479,9 +1479,9 @@ sub vi {
     local *F;
     local $/ = undef;
 
-    open(F, ">$file") || die "$file: $!\n"; print F $text; close(F);
+    open(F, '>', $file) or die "$file: $!\n"; print F $text; close(F);
     system($editor, $file) && die "Couldn't run $editor.\n";
-    open(F, $file) || die "$file: $!\n"; $text = <F>; close(F);
+    open(F, '<', $file) or die "$file: $!\n"; $text = <F>; close(F);
     unlink($file);
 
     return $text;

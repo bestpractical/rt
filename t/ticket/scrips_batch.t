@@ -45,7 +45,7 @@ my $sid;
     my ($tmp_fh, $tmp_fn) = tempfile();
 
     my $code = <<END;
-open my \$fh, '>', '$tmp_fn' or die "Couldn't open '$tmp_fn':\$!";
+open( my \$fh, '>', '$tmp_fn' ) or die "Couldn't open '$tmp_fn':\$!";
 
 my \$batch = \$self->TicketObj->TransactionBatch;
 unless ( \$batch && \@\$batch ) {

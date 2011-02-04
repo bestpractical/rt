@@ -452,11 +452,11 @@ $ClassAccessible
     print "About to make $RecordClassPath, $CollectionClassPath\n";
     `mkdir -p $path`;
 
-    open( RECORD, ">$RecordClassPath" );
+    open( RECORD, '>', $RecordClassPath ) or die $!;
     print RECORD $RecordClass;
     close(RECORD);
 
-    open( COL, ">$CollectionClassPath" );
+    open( COL, '>', $CollectionClassPath ) or die $!;
     print COL $CollectionClass;
     close(COL);
 

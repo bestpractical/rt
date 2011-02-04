@@ -48,7 +48,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     my $file =
       File::Spec->catfile( File::Spec->tmpdir, 'rt_attachemnt_abcde.txt' );
-    open my $fh, '>', $file or die $!;
+    open( my $fh, '>', $file ) or die $!;
     binmode $fh, ':utf8';
     print $fh '附件';
     close $fh;

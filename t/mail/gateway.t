@@ -621,7 +621,7 @@ ok( $id, 'new ticket created' );
 is( $tick->Owner, $RT::Nobody->Id, 'owner of the new ticket is nobody' );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
@@ -645,7 +645,7 @@ is( $tick->Owner, $RT::Nobody->Id, 'set owner back to nobody');
 
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] correspondence
@@ -669,7 +669,7 @@ is( $tick->Transactions->Count, 6, 'no superfluous transactions');
 is( $txns->First->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
@@ -703,7 +703,7 @@ ok( $id, 'create new ticket' );
 my $rtname = RT->Config->Get('rtname');
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -721,7 +721,7 @@ my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -736,7 +736,7 @@ cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "one transactions added" );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
@@ -777,7 +777,7 @@ ok( $status, "successfuly granted right: $msg" );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test

@@ -70,7 +70,7 @@ sub file_handle {
     my $self = shift;
     my $file = shift;
     my $content = $self->{'mason'}->scomp($file) || '';
-    open my $fh, '<', \$content or die "$!";
+    open( my $fh, '<', \$content ) or die "$!";
     return $fh;
 }
 

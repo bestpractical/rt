@@ -278,7 +278,7 @@ sub SaveConfig {
 
     {
         local $/;
-        open my $fh, '<', $file or die $!;
+        open( my $fh, '<', $file ) or die $!;
         $content = <$fh>;
         $content =~ s/^\s*1;\s*$//m;
     }

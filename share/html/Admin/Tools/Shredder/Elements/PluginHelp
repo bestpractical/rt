@@ -65,7 +65,7 @@ unless( $file ) {
 
 use RT::Shredder::POD qw();
 my $text = '';
-open my $io_handle, ">:scalar", \$text or die "Can't open scalar for write: $!";
+open( my $io_handle, ">:scalar", \$text ) or die "Can't open scalar for write: $!";
 RT::Shredder::POD::plugin_html( $file, $io_handle );
 if ( $Plugin eq 'Base' ) {
     $file =~ s/\.pm$/\/Search.pm/;

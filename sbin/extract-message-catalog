@@ -343,7 +343,7 @@ sub update {
         $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
     }
 
-    open PO, '>', $file or die "Couldn't open '$file' for writing: $!";
+    open( PO, '>', $file ) or die "Couldn't open '$file' for writing: $!";
     print PO $out;
     close PO;
 

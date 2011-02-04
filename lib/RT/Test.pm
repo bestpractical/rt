@@ -217,7 +217,7 @@ sub bootstrap_config {
     $tmp{'config'}{'RT'} = File::Spec->catfile(
         "$tmp{'directory'}", 'RT_SiteConfig.pm'
     );
-    open my $config, '>', $tmp{'config'}{'RT'}
+    open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
@@ -246,7 +246,7 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 Set( \$MailCommand, sub {
     my \$MIME = shift;
 
-    open my \$handle, '>>', '$mail_catcher'
+    open( my \$handle, '>>', '$mail_catcher' )
         or die "Unable to open '$mail_catcher' for appending: \$!";
 
     \$MIME->print(\$handle);
@@ -272,7 +272,7 @@ sub bootstrap_logging {
     $tmp{'log'}{'RT'} = File::Spec->catfile(
         "$tmp{'directory'}", 'rt.debug.log'
     );
-    open my $fh, '>', $tmp{'log'}{'RT'}
+    open( my $fh, '>', $tmp{'log'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
     # make world writable so apache under different user
     # can write into it
@@ -303,7 +303,7 @@ sub set_config_wrapper {
                 SCALAR => '$',
             );
             my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open my $fh, '>>', $tmp{'config'}{'RT'}
+            open( my $fh, '>>', $tmp{'config'}{'RT'} )
                 or die "Couldn't open config file: $!";
             require Data::Dumper;
             my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
@@ -774,7 +774,7 @@ sub open_mailgate_ok {
     my $baseurl = shift;
     my $queue   = shift || 'general';
     my $action  = shift || 'correspond';
-    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    Test::More::ok(open(my $mail, '|-', "$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
     return $mail;
 }
 
@@ -1069,7 +1069,7 @@ sub start_apache_server {
     my %info = $self->apache_server_info( variant => $variant );
 
     Test::More::diag(do {
-        open my $fh, '<', $tmp{'config'}{'RT'};
+        open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
         local $/;
         <$fh>
     });
@@ -1115,7 +1115,7 @@ sub start_apache_server {
         }
         Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
             unless -e $opt{'pid_file'};
-        open my $pid_fh, '<', $opt{'pid_file'}
+        open( my $pid_fh, '<', $opt{'pid_file'} )
             or Test::More::BAIL_OUT("Couldn't open pid file: $!");
         my $pid = <$pid_fh>;
         chomp $pid;
@@ -1227,7 +1227,7 @@ sub file_content {
 
     Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
-    open my $fh, "<:raw", $path
+    open( my $fh, "<:raw", $path )
         or do {
             warn "couldn't open file '$path': $!" unless $args{noexist};
             return ''
@@ -1286,7 +1286,7 @@ sub process_in_file {
         ($out_fh, $out_conf) = tempfile();
     } else {
         $out_conf = $args{'out'};
-        open $out_fh, '>', $out_conf
+        open( $out_fh, '>', $out_conf )
             or die "couldn't open '$out_conf': $!";
     }
     print $out_fh $text;
