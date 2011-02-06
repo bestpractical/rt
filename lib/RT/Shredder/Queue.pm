@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Queue ();
 package RT::Queue;
+use RT::Queue ();
 
 use strict;
 use warnings;

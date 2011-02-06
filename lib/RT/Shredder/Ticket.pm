@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Ticket ();
 package RT::Ticket;
+use RT::Ticket ();
 
 use strict;
 use warnings;

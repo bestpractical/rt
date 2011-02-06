@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ScripAction ();
 package RT::ScripAction;
+use RT::ScripAction ();
 
 use strict;
 use warnings;

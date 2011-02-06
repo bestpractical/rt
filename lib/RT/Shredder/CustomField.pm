@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::CustomField ();
 package RT::CustomField;
+use RT::CustomField ();
 
 use strict;
 use warnings;

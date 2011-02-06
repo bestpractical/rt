@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ObjectCustomFieldValue ();
 package RT::ObjectCustomFieldValue;
+use RT::ObjectCustomFieldValue ();
 
 use strict;
 use warnings;

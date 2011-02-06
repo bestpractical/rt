@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Record ();
 package RT::Record;
+use RT::Record ();
 
 use strict;
 use warnings;
