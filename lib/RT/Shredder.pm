@@ -288,6 +288,7 @@ sub Init
     %opt = @_;
     RT::LoadConfig();
     RT::Init();
+    return;
 }
 
 =head4 new
@@ -304,8 +305,7 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
-    return $self;
+    return $self->_Init( @_ );
 }
 
 sub _Init
@@ -315,6 +315,7 @@ sub _Init
     $self->{'cache'}        = {};
     $self->{'resolver'}     = {};
     $self->{'dump_plugins'} = [];
+    return $self;
 }
 
 =head4 CastObjectsToRecords( Objects => undef )
@@ -556,6 +557,7 @@ sub WipeoutAll
         next if $cache_val->{'State'} & (WIPED | IN_WIPING);
         $self->Wipeout( Object => $cache_val->{'Object'} );
     }
+    return;
 }
 
 sub Wipeout
@@ -576,6 +578,7 @@ sub Wipeout
         die $error if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $error";
     }
+    return;
 }
 
 sub _Wipeout
@@ -773,6 +776,7 @@ sub DumpObject {
         my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }
+    return;
 }
 
 { my $mark = 1; # XXX: integer overflows?
@@ -791,6 +795,7 @@ sub PopDumpMark {
         my ($state, $msg) = $_->PopMark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
+    return;
 }
 sub RollbackDumpTo {
     my $self = shift;
@@ -798,6 +803,7 @@ sub RollbackDumpTo {
         my ($state, $msg) = $_->RollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
+    return;
 }
 }
 

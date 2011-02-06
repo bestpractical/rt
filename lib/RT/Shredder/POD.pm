@@ -59,6 +59,7 @@ sub plugin_html
     my $parser = RT::Shredder::POD::HTML->new;
     $parser->select('ARGUMENTS', 'USAGE');
     $parser->parse_from_file( $file, $out_fh );
+    return;
 }
 
 sub plugin_cli
@@ -69,6 +70,7 @@ sub plugin_cli
     $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
     $parser->add_selection('NAME') unless $no_name;
     $parser->parse_from_file( $file, $out_fh );
+    return;
 }
 
 sub shredder_cli
@@ -78,6 +80,7 @@ sub shredder_cli
     my $parser = Pod::PlainText->new();
     $parser->select('NAME', 'SYNOPSIS', 'USAGE', 'OPTIONS');
     $parser->parse_from_file( $file, $out_fh );
+    return;
 }
 
 package RT::Shredder::POD::HTML;
@@ -97,6 +100,7 @@ sub command
     print $out_fh $expansion;
     print $out_fh "</$tag>" if $tag;
     print $out_fh "\n";
+    return;
 }
 
 sub verbatim
@@ -107,6 +111,7 @@ sub verbatim
     print $out_fh $paragraph;
     print $out_fh "</pre>";
     print $out_fh "\n";
+    return;
 }
 
 sub textblock {
@@ -118,6 +123,7 @@ sub textblock {
     print $out_fh $expansion;
     print $out_fh "</p>";
     print $out_fh "\n";
+    return;
 }
 
 sub interior_sequence {

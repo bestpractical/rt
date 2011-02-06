@@ -76,7 +76,6 @@ sub Run
     my $method = 'WriteDown'. $class;
     $method = 'WriteDownDefault' unless $self->can($method);
     return $self->$method( %args );
-    return 1;
 }
 
 my %skip_refs_to = ();
