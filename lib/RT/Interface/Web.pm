@@ -525,6 +525,7 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
+        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -572,6 +573,7 @@ sub AttemptExternalAuth {
 
         if ( _UserLoggedIn() ) {
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
+            Redirect($next) if $next;
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
             $user = $orig_user;
