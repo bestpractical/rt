@@ -116,7 +116,8 @@
 </div>
 % }
 
-% if ( $ShowGroups ) {
+% my $grouplimit = RT->Config->Get('MoreAboutRequestorGroupsLimit');
+% if ( $ShowGroups and defined $grouplimit ) {
 <div class="more-about-user-groups">
   <span class="label">
     <&|/l&>Groups this user belongs to</&>
@@ -126,7 +127,7 @@
   [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
 % }
   </span>
-  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => RT->Config->Get('MoreAboutRequestorGroupsLimit') &></span>
+  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span>
 </div>
 % }
 
