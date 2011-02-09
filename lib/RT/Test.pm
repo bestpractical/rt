@@ -367,19 +367,7 @@ sub bootstrap_db {
     }
 
     unless ($args{nodb}) {
-        # bootstrap with dba cred
-        my $dbh = _get_dbh(
-            RT::Handle->SystemDSN,
-            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
-        );
-
-        unless ( $ENV{RT_TEST_PARALLEL} ) {
-            # already dropped db in parallel tests, need to do so for other cases.
-            RT::Handle->DropDatabase( $dbh, Force => 1 )
-        }
-        RT::Handle->CreateDatabase( $dbh );
-        $dbh->disconnect;
-        $created_new_db++;
+        __create_database();
 
         __reconnect_rt('dba');
         $RT::Handle->InsertSchema;
@@ -497,6 +485,39 @@ sub _get_dbh {
         print STDERR $msg; exit -1;
     }
     return $dbh;
+}
+
+sub __create_database {
+    # bootstrap with dba cred
+    my $dbh = _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+
+    unless ( $ENV{RT_TEST_PARALLEL} ) {
+        # already dropped db in parallel tests, need to do so for other cases.
+        __drop_database( $dbh );
+
+    }
+    RT::Handle->CreateDatabase( $dbh );
+    $dbh->disconnect;
+    $created_new_db++;
+}
+
+sub __drop_database {
+    my $dbh = shift;
+
+    # Pg doesn't like if you issue a DROP DATABASE while still connected
+    # it's still may fail if web-server is out there and holding a connection
+    __disconnect_rt();
+
+    my $my_dbh = $dbh? 0 : 1;
+    $dbh ||= _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+    RT::Handle->DropDatabase( $dbh, Force => 1 );
+    $dbh->disconnect if $my_dbh;
 }
 
 sub __reconnect_rt {
@@ -1391,13 +1412,7 @@ END {
     }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-
-        # Pg doesn't like if you issue a DROP DATABASE while still connected
-        __disconnect_rt();
-
-        my $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
-        RT::Handle->DropDatabase( $dbh, Force => 1 );
-        $dbh->disconnect;
+        __drop_database();
     }
 }
 
