@@ -541,8 +541,11 @@ sub __disconnect_rt {
     # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
     return unless $RT::Handle;
     my $dbh = $RT::Handle->dbh;
-    $RT::Handle->dbh(undef);
     $dbh->disconnect if $dbh;
+
+    %DBIx::SearchBuilder::Handle::DBIHandle = ();
+    $DBIx::SearchBuilder::Handle::PrevHandle = undef;
+
     $RT::Handle = undef;
 }
 
