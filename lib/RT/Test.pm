@@ -444,15 +444,14 @@ sub bootstrap_plugins_db {
             next;
         }
 
+        __reconnect_rt('as dba');
 
         { # schema
-            __reconnect_rt('dba');
             my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
         }
 
         { # ACLs
-            __reconnect_rt('dba');
             my ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
         }
