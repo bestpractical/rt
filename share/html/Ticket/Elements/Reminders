@@ -150,11 +150,13 @@ $Ticket
 $Index
 </%args>
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
+<td class="entry">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
 value=<% $Reminder->Status eq 'resolved' ? 1 : 0 %> />
 % }
-<td class="entry"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> 
+
+<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> 
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
@@ -190,12 +192,13 @@ $Index
 % my $dueobj = $Reminder->DueObj;
 % my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
+
+<td class="collection-as-table">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
 value=<% $Reminder->Status eq 'resolved' ? 1 : 0 %> />
 % }
-
-<td class="collection-as-table"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> 
+<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> 
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
