@@ -147,12 +147,6 @@ sub Add {
 sub Open {
     my $self = shift;
     my $reminder = shift;
-    return ( 0, $self->loc('Permission Denied') )
-      unless $self->CurrentUser->HasRight(
-        Right  => 'ModifyTicket',
-        Object => $reminder,
-      );
-
     my ( $status, $msg ) = $reminder->SetStatus('open');
     $self->TicketObj->_NewTransaction(
         Type => 'OpenReminder',
@@ -165,11 +159,6 @@ sub Open {
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
-    return ( 0, $self->loc('Permission Denied') )
-      unless $self->CurrentUser->HasRight(
-        Right  => 'ModifyTicket',
-        Object => $reminder,
-      );
     my ( $status, $msg ) = $reminder->SetStatus('resolved');
     $self->TicketObj->_NewTransaction(
         Type => 'ResolveReminder',
