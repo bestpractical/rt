@@ -1956,31 +1956,41 @@ sub ProcessTicketReminders {
 
     if ( $args->{'update-reminders'} ) {
         while ( my $reminder = $reminder_collection->Next ) {
+            my ( $status, $msg, $old_subject );
             if (   $reminder->Status ne 'resolved' && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Resolve($reminder);
+                ( $status, $msg ) = $Ticket->Reminders->Resolve($reminder);
             }
             elsif ( $reminder->Status eq 'resolved' && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Open($reminder);
+                ( $status, $msg ) = $Ticket->Reminders->Open($reminder);
             }
 
             if ( exists( $args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $args->{ 'Reminder-Subject-' . $reminder->id } )) {
-                $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+                $old_subject = $reminder->Subject;
+                ( $status, $msg ) = $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
             }
 
             if ( exists( $args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $args->{ 'Reminder-Owner-' . $reminder->id } )) {
-                $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+                ( $status, $msg ) = $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
             }
 
             if ( exists( $args->{ 'Reminder-Due-' . $reminder->id } ) && $args->{ 'Reminder-Due-' . $reminder->id } ne '' ) {
                 my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+                my $due = $args->{ 'Reminder-Due-' . $reminder->id };
+
                 $DateObj->Set(
                     Format => 'unknown',
-                    Value  => $args->{ 'Reminder-Due-' . $reminder->id }
+                    Value  => $due,
                 );
                 if ( defined $DateObj->Unix && $DateObj->Unix != $reminder->DueObj->Unix ) {
-                    $reminder->SetDue( $DateObj->ISO );
+                    ( $status, $msg ) = $reminder->SetDue( $DateObj->ISO );
+                }
+                else {
+                    $msg = loc( "invalid due date: [_1]", $due );
                 }
             }
+            push @results,
+              loc( "Reminder '[_1]': ", $old_subject || $reminder->Subject ) . $msg
+              if $msg;
         }
     }
 
@@ -1996,7 +2006,9 @@ sub ProcessTicketReminders {
             Due     => $due_obj->ISO
         );
         if ( $status ) {
-            push @results, loc("Reminder '[_1]' added", $args->{'NewReminder-Subject'});
+            push @results,
+              loc( "Reminder '[_1]': ", $args->{'NewReminder-Subject'} )
+              . loc("Created");
         }
         else {
             push @results, $msg;
