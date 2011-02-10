@@ -57,7 +57,7 @@
                        class=>'ticket-info-reminders'
                        &>
 
-<& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1 &>
+<& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1, ShowSave => 0 &>
 </&>
 <& /Elements/Submit,
     Label => loc('Save Changes') &>
@@ -66,8 +66,6 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-Abort( loc("Permission Denied") )
-  unless $Ticket->CurrentUserHasRight('ModifyTicket');
 
 my @actions = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 </%INIT>
