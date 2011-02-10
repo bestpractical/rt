@@ -116,14 +116,6 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 
 % if ( $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') && $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-% $RT::Logger->error( $Ticket->CurrentUser->id );
-% $RT::Logger->error( $Ticket->id );
-% $RT::Logger->error( $Ticket->CurrentUserHasRight('ModifyTicket') );
-% my $user = RT::User->new( $RT::SystemUser );
-% $user->Load('sunnavy');
-% my $ticket = RT::User->new( $user );
-% $ticket->Load(16);
-% $RT::Logger->error( $ticket->CurrentUserHasRight('ModifyTicket') );
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 % $editable = 1;
@@ -168,14 +160,25 @@ disabled="disabled"
 % }
 /></td>
 <td class="label"><&|/l&>Subject</&>:</td>
-<td class="entry" colspan="3"><input type="text" size="50" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>" /></td>
+<td class="entry" colspan="3">
+<input type="text" size="50" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>" 
+% unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
+readonly="readonly" 
+% }
+/>
+</td>
 </tr>
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
 <td class="entry">&nbsp;</td>
 <td class="label"><&|/l&>Owner</&>:</td>
 <td class="entry"><& /Elements/SelectOwner, Name => 'Reminder-Owner-'.$Reminder->id, QueueObj => $Ticket->QueueObj, Default => $Reminder->Owner, DefaultValue => 0  &></td>
 <td class="label"><&|/l&>Due</&>:</td>
-<td class="entry"><& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id &> (<% $Reminder->DueObj->AsString %>)</td>
+<td class="entry">
+% if ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
+<& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id &>
+% }
+(<% $Reminder->DueObj->AsString %>)
+</td>
 </tr>
 </%method>
 <%method ShowEntry>
