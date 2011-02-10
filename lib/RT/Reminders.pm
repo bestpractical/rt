@@ -116,6 +116,16 @@ sub Add {
         @_
     );
 
+    return ( 0, $self->loc('Permission Denied') )
+      unless $self->CurrentUser->HasRight(
+        Right  => 'CreateTicket',
+        Object => $self->TicketObj->QueueObj,
+      )
+      && $self->CurrentUser->HasRight(
+        Right  => 'ModifyTicket',
+        Object => $self->TicketObj,
+      );
+
     my $reminder = RT::Ticket->new($self->CurrentUser);
     # the 2nd return value is txn id, which is useless here
     my ( $status, undef, $msg ) = $reminder->Create(
@@ -137,6 +147,11 @@ sub Add {
 sub Open {
     my $self = shift;
     my $reminder = shift;
+    return ( 0, $self->loc('Permission Denied') )
+      unless $self->CurrentUser->HasRight(
+        Right  => 'ModifyTicket',
+        Object => $reminder,
+      );
 
     my ( $status, $msg ) = $reminder->SetStatus('open');
     $self->TicketObj->_NewTransaction(
@@ -150,6 +165,11 @@ sub Open {
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
+    return ( 0, $self->loc('Permission Denied') )
+      unless $self->CurrentUser->HasRight(
+        Right  => 'ModifyTicket',
+        Object => $reminder,
+      );
     my ( $status, $msg ) = $reminder->SetStatus('resolved');
     $self->TicketObj->_NewTransaction(
         Type => 'ResolveReminder',
