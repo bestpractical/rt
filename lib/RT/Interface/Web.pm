@@ -573,7 +573,15 @@ sub AttemptExternalAuth {
 
         if ( _UserLoggedIn() ) {
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
+            # It is possible that we did a redirect to the login page,
+            # if the external auth allows lack of auth through with no
+            # REMOTE_USER set, instead of forcing a "permission
+            # denied" message.  Honor the $next.
             Redirect($next) if $next;
+            # Unlike AttemptPasswordAuthentication below, we do not
+            # force a redirect to / if $next is not set -- otherwise,
+            # straight-up external auth would always redirect to /
+            # when you first hit it.
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
             $user = $orig_user;
