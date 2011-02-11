@@ -906,9 +906,9 @@ Set($MoreAboutRequestorExtraInfo, '');
 
 =item C<$MoreAboutRequestorGroupsLimit>
 
-By default, the 'More about requestor' box on Ticket/Display.html shows all
-the groups of the Requestor.
-Use this to limit the number of groups.
+By default, the 'More about requestor' box on Ticket/Display.html
+shows all the groups of the Requestor.  Use this to limit the number
+of groups; a value of undef removes the group display entirely.
 
 e.g.
 
@@ -916,7 +916,7 @@ Set($MoreAboutRequestorGroupsLimit, 10);
 
 =cut
 
-Set($MoreAboutRequestorGroupsLimit, undef);
+Set($MoreAboutRequestorGroupsLimit, 0);
 
 =item C<$AutocompleteOwners>
 
