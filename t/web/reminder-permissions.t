@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 36;
+use RT::Test tests => 39;
 
 my $user_a = RT::Test->load_or_create_user(
     Name     => 'user_a',
@@ -82,6 +82,7 @@ my $m_a = RT::Test::Web->new;
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is disabled"
     );
+
     $m_a->form_name('UpdateReminders');
     $m_a->tick( "Complete-Reminder-$user_a_reminder_id" => 1 );
     $m_a->submit;
@@ -90,7 +91,6 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
         'complete user_a reminder' );
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );
-    $m_a->get_ok( $baseurl . '/Ticket/Reminders.html?id=' . $ticket->id );
     $m_a->title_is( "Reminders for ticket #" . $ticket->id );
     $m_a->content_contains( 'root reminder',   'can see root reminder' );
     $m_a->content_contains( 'user_a reminder', 'can see user_a reminder' );
@@ -107,6 +107,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
         "Reminder 'user_a reminder': Status changed from 'resolved' to 'open'",
         'reopen user_a reminder'
     );
+
 }
 
 diag "set ticket owner to user_a to let user_a grant modify ticket right";
@@ -119,6 +120,12 @@ diag "set ticket owner to user_a to let user_a grant modify ticket right";
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is still disabled"
     );
+    $m_a->form_name('UpdateReminders');
+    $m_a->field( 'NewReminder-Subject' => "user_a from display reminder" );
+    $m_a->submit;
+    $m_a->text_contains( "Reminder 'user_a from display reminder': Created",
+        'created user_a from display reminder' );
+
     $m_a->follow_link_ok( { id => 'page-reminders' } );
     $m_a->title_is( "Reminders for ticket #" . $ticket->id );
     $m_a->content_contains( 'New reminder:', 'can create a new reminder' );
@@ -126,6 +133,11 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is still disabled"
     );
+    $m_a->form_name('UpdateReminders');
+    $m_a->field( 'NewReminder-Subject' => "user_a from reminders reminder" );
+    $m_a->submit;
+    $m_a->text_contains( "Reminder 'user_a from reminders reminder': Created",
+        'created user_a from reminders reminder' );
 }
 
 diag "grant user_a with ModifyTicket globally";
@@ -145,10 +157,23 @@ diag "grant user_a with ModifyTicket globally";
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is enabled"
     );
+    $m_a->form_name('UpdateReminders');
+    $m_a->tick( "Complete-Reminder-$root_reminder_id" => 1 );
+    $m_a->submit;
+    $m_a->text_contains(
+        "Reminder 'root reminder': Status changed from 'new' to 'resolved'",
+        'complete root reminder' );
+
     $m_a->follow_link_ok( { id => 'page-reminders' } );
     $m_a->content_unlike(
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is enabled"
     );
+    $m_a->form_name('UpdateReminders');
+    $m_a->untick( "Complete-Reminder-$root_reminder_id" => 1 );
+    $m_a->submit;
+    $m_a->text_contains(
+        "Reminder 'root reminder': Status changed from 'resolved' to 'open'",
+        'reopen root reminder' );
 }
 
