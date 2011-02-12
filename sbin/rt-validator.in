@@ -678,19 +678,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         },
     );
 
-# XXX: Links need more love, uri is stored instead of id
-#    # type = DeleteLink
-#    check_integrity(
-#        'Transactions', 'OldValue' => 'Links', 'id',
-#        condition   => 's.Type = ?',
-#        bind_values => [ 'DeleteLink' ],
-#    );
-#    # type = AddLink
-#    check_integrity(
-#        'Transactions', 'NewValue' => 'Links', 'id',
-#        condition   => 's.Type = ?',
-#        bind_values => [ 'AddLink' ],
-#    );
+#   type = DeleteLink or AddLink
+#   handled in 'Links: *' checks as {New,Old}Value store URIs
 
     # type = Set, Field = Queue
     check_integrity(
@@ -889,6 +878,171 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
         }
     }
 };
+
+push @CHECKS, 'Links: wrong organization' => sub {
+    my @URI_USES = (
+        { model => 'Transaction', column => 'OldValue', Additional => { Type => 'DeleteLink' } },
+        { model => 'Transaction', column => 'NewValue', Additional => { Type => 'AddLink' } },
+        { model => 'Link', column => 'Target' },
+        { model => 'Link', column => 'Base' },
+    );
+
+    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my $scheme = $rt_uri->Scheme;
+    my $prefix = $rt_uri->LocalURIPrefix;
+
+    foreach my $use ( @URI_USES ) {
+        my $table = m2t( $use->{'model'} );
+        my $column = $use->{'column'};
+
+        my $query = "SELECT id, $column FROM $table WHERE"
+            . " $column LIKE ? AND $column NOT LIKE ?";
+        my @binds = ($scheme ."://%", $prefix ."%");
+
+        while ( my ($k, $v) = each %{ $use->{'Aditional'} || {} } ) {
+            $query .= " AND $k = ?";
+            push @binds, $v;
+        }
+        my $sth = execute_query( $query, @binds );
+        while ( my ($id, $value) = $sth->fetchrow_array ) {
+            print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
+            my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
+            next unless my $replace_with = prompt(
+                'Replace',
+                "Column $column in $table is a link. Local links has scheme '$scheme'"
+                ." followed by organization name from the config file. There is record"
+                ." #$id that has scheme '$scheme', but organization is '$wrong_org'."
+                ." Most probably you changed organization, but didn't update links."
+                ." It's ok to replace these wrong links.\n",
+                "Links: wrong organization $wrong_org"
+            );
+
+            print "Updating record(s) in $table\n" if $opt{'verbose'};
+            my $wrong_prefix = $scheme . '://'. $wrong_org;
+            my $query = "UPDATE $table SET $column = ". sql_concat('?', "SUBSTR($column, ?)")
+                ." WHERE $column LIKE ?";
+            execute_query( $query, $prefix, length($wrong_prefix)+1, $wrong_prefix .'/%' );
+
+            $redo_check{'Links: wrong organization'} = 1;
+            $redo_check{'Links: LocalX for non-ticket'} = 1;
+            last; # plenty of chances we covered all cases with one update
+        }
+    }
+};
+
+push @CHECKS, 'Links: LocalX for non-ticket' => sub {
+    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my $scheme = $rt_uri->Scheme;
+    my $prefix = $rt_uri->LocalURIPrefix;
+    my $table = m2t('Link');
+
+    foreach my $dir ( 'Target', 'Base' ) {
+        my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir NOT LIKE ?";
+        my @binds = ($scheme ."://%", $prefix ."/ticket/%");
+
+        my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
+        while ( my ($id, $value) = $sth->fetchrow_array ) {
+            print STDERR "Record #$id in $table. Value of Local$dir is not 0\n";
+            next unless my $replace_with = prompt(
+                'Replace',
+                "Column Local$dir in $table should be 0 if $dir column is not link"
+                ." to a ticket. It's ok to replace with 0.\n",
+            );
+
+            print "Updating record(s) in $table\n" if $opt{'verbose'};
+            execute_query( "UPDATE $table SET Local$dir = 0 WHERE $where", @binds );
+            $redo_check{'Links: wrong organization'} = 1;
+
+            last; # we covered all cases with one update
+        }
+    }
+};
+
+push @CHECKS, 'Links: LocalX != X' => sub {
+    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my $scheme = $rt_uri->Scheme;
+    my $prefix = $rt_uri->LocalURIPrefix .'/ticket/';
+    my $table = m2t('Link');
+
+    foreach my $dir ( 'Target', 'Base' ) {
+        # we limit to $dir = */ticket/* so it doesn't conflict with previouse check
+        # previouse check is more important as there was a bug in RT when Local$dir
+        # was set for not tickets
+        my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir != ". sql_concat('?', "Local$dir");
+        my @binds = ($prefix ."%", $prefix);
+
+        my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
+        while ( my ($id, $value) = $sth->fetchrow_array ) {
+            print STDERR "Record #$id in $table. Value of $dir doesn't match ticket id in Local$dir\n";
+            next unless my $replace_with = prompt(
+                'Replace',
+                "For ticket links column $dir in $table table should end with"
+                ." ticket id from Local$dir. It's probably ok to fix $dir column.\n",
+            );
+
+            print "Updating record(s) in $table\n" if $opt{'verbose'};
+            execute_query(
+                "UPDATE $table SET $dir = ". sql_concat('?', "Local$dir") ." WHERE $where",
+                $prefix, @binds
+            );
+
+            last; # we covered all cases with one update
+        }
+    }
+};
+
+push @CHECKS, 'Links: missing object' => sub {
+    my @URI_USES = (
+        { model => 'Transaction', column => 'OldValue', Additional => { Type => 'DeleteLink' } },
+        { model => 'Transaction', column => 'NewValue', Additional => { Type => 'AddLink' } },
+        { model => 'Link', column => 'Target' },
+        { model => 'Link', column => 'Base' },
+    );
+
+    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my $scheme = $rt_uri->Scheme;
+    my $prefix = $rt_uri->LocalURIPrefix;
+
+    foreach my $use ( @URI_USES ) {
+        my $stable = m2t( $use->{'model'} );
+        my $scolumn = $use->{'column'};
+
+        foreach my $tmodel ( @models ) {
+            my $tclass = 'RT::'. $tmodel;
+            my $ttable = m2t($tmodel);
+
+            my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
+
+            my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
+                ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
+                ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
+            my @binds = (length($tprefix) + 1, $tprefix.'%');
+
+            while ( my ($k, $v) = each %{ $use->{'Aditional'} || {} } ) {
+                $query .= " AND s.$k = ?";
+                push @binds, $v;
+            }
+
+            my $sth = execute_query( $query, @binds );
+            while ( my ($sid) = $sth->fetchrow_array ) {
+                print STDERR "Link in $scolumn column in record #$sid in $stable table points"
+                    ." to not existing object.\n";
+                next unless prompt(
+                    'Delete',
+                    "Column $scolumn in $stable table is a link to an object that doesn't exist."
+                    ." You can delete such records, however make sure there is no other"
+                    ." errors with links.\n",
+                    'Link to a missing object in $ttable'
+                );
+
+                delete_record($stable, $sid);
+            }
+        }
+    }
+};
+
+
+
 my %CHECKS = @CHECKS;
 
 @do_check = do { my $i = 1; grep $i++%2, @CHECKS };
@@ -945,7 +1099,8 @@ sub check_integrity {
             print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
         }
         print STDERR "\t". describe( $stable, $sid ) ."\n";
-        $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) ) if $args{'action'};
+        $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) )
+            if $args{'action'};
     }
 }
 
@@ -1057,6 +1212,24 @@ sub execute_query {
     my $sth = $dbh->prepare( $query ) or die "couldn't prepare $query\n\tError: ". $dbh->errstr;
     $sth->execute( @binds ) or die "couldn't execute $query\n\tError: ". $sth->errstr;
     return $sth;
+}
+
+sub sql_concat {
+    return $_[0] if @_ <= 1;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq 'Pg' ) {
+        return '('. join( ' || ', @_ ) .')';
+    }
+    return sql_concat('CONCAT('. join( ', ', splice @_, 0, 2 ).')', @_);
+}
+
+sub sql_str2int {
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq 'Pg' ) {
+        return "($_[0])::integer";
+    }
+    return $_[0];
 }
 
 { my %cached_answer;
