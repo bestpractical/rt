@@ -186,7 +186,7 @@ sub write_down_message {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local (@ARGV, $/); <> };
+        my $message = \do { local (@ARGV, $/); <STDIN> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
             exit 0;
