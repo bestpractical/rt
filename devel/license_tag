@@ -104,6 +104,7 @@ File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
 File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
+File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'etc/upgrade');
 tag_makefile ('Makefile.in');
 tag_makefile ('README');
 
