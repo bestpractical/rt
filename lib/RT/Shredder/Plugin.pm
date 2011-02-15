@@ -46,6 +46,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
+
 package RT::Shredder::Plugin;
 
 use strict;
@@ -127,7 +128,7 @@ sub List
         push @files, glob $mask;
     }
 
-    my %res = map { $_ =~ m/([^\\\/]+)\.pm$/; $1 => $_ } reverse @files;
+    my %res = map { if ( $_ =~ m/([^\\\/]+)\.pm$/) { $1 => $_ } } reverse @files;
 
     return %res unless $type;
 
