@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%# <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -17,7 +17,7 @@
 %#
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
-%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %#
 %# You should have received a copy of the GNU General Public License
@@ -39,7 +39,7 @@
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
 %# you are the copyright holder for those contributions and you grant
-%# Best Practical Solutions, LLC a nonexclusive, worldwide, irrevocable,
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
