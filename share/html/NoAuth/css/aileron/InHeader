@@ -61,7 +61,7 @@ jQuery(document).ready(function(){
         extraWidth: 2
     };
 
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish();
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled').supersubs().superfish({ dropShadows: false }).supposition();
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ speed: 0 });
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled').supersubs().superfish({ dropShadows: false, speed: 0 }).supposition();
 });
 </script>
