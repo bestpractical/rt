@@ -1262,7 +1262,7 @@ sub _PrefName {
         $name = ref($name).'-'.$name->Id;
     }
 
-    return 'Pref-'.$name;
+    return 'Pref-'. $name;
 }
 
 =head2 Preferences NAME/OBJ DEFAULT
@@ -1273,15 +1273,24 @@ override the entries with user preferences.
 
 =cut
 
+our %PREFERENCES_CACHE = ();
+
 sub Preferences {
     my $self  = shift;
-    my $name = _PrefName (shift);
+    my $name = _PrefName(shift);
     my $default = shift;
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
+    my $content;
+    if ( exists $PREFERENCES_CACHE{ $self->id }{ $name } ) {
+        $content = $PREFERENCES_CACHE{ $self->id }{ $name };
+    }
+    else {
+        my $attr = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadByNameAndObject( Object => $self, Name => $name );
+        $PREFERENCES_CACHE{ $self->id }{ $name } = $content
+            = $attr->Id ? $attr->Content : undef;
+    }
 
-    my $content = $attr->Id ? $attr->Content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1291,7 +1300,7 @@ sub Preferences {
             exists $content->{$_} or $content->{$_} = $default->{$_};
         }
     } elsif (defined $default) {
-        $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
+        $RT::Logger->error("Preferences $name for user #".$self->Id." is hash but default is not");
     }
     return $content;
 }
@@ -1309,6 +1318,8 @@ sub SetPreferences {
 
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
+
+    # we clear cache in RT::Attribute
 
     my $attr = RT::Attribute->new( $self->CurrentUser );
     $attr->LoadByNameAndObject( Object => $self, Name => $name );
