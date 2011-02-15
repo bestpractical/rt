@@ -898,10 +898,11 @@ sub Meta {
 sub Sections {
     my $self = shift;
     my %seen;
-    return sort
+    my @sections = sort
         grep !$seen{$_}++,
         map $_->{'Section'} || 'General',
         values %META;
+    return @sections;
 }
 
 sub Options {
