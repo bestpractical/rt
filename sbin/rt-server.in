@@ -51,6 +51,12 @@ use strict;
 
 # fix lib paths, some may be relative
 BEGIN {
+    die <<EOT if ${^TAINT};
+RT does not run under Perl's "taint mode".  Remove -T from the command
+line, or remove the PerlTaintCheck parameter from your mod_perl
+configuration.
+EOT
+
     require File::Spec;
     my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
     my $bin_path;
