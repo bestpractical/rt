@@ -122,7 +122,8 @@ In any case it's highly recommended to have a backup before resolving anything.
 
 Press enter to continue.
 END
-    <>;
+# Read a line of text, any line of text
+    <STDIN>;
 }
 
 use RT;
