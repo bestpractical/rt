@@ -3,7 +3,7 @@
 # COPYRIGHT:
 #
 # This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
