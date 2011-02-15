@@ -122,6 +122,11 @@ can be set for each config optin:
     Callback    - subref that receives no arguments.  It returns
                   a hashref of items that are added to the rest
                   of the WidgetArguments
+ PostSet       - subref passed the RT::Config object and the current and
+                 previous setting of the config option.  This is called well
+                 before much of RT's subsystems are initialized, so what you
+                 can do here is pretty limited.  It's mostly useful for
+                 effecting the value of other config options early.
  PostLoadCheck - subref passed the RT::Config object and the current
                  setting of the config option.  Can make further checks
                  (such as seeing if a library is installed) and then change
@@ -563,7 +568,23 @@ our %META = (
                 }
             }
         },
-    }
+    },
+    LogToScreen => {
+        PostSet => sub {
+            my $self  = shift;
+            my $value = shift;
+            $self->SetFromConfig(
+                Option => \'LogToSTDERR',
+                Value  => [$value],
+                %{$self->Meta('LogToScreen')->{'Source'}}
+            );
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
+                if $self->Meta('LogToScreen')->{'Source'}{'Package'};
+        },
+    },
 );
 my %OPTIONS = ();
 
@@ -860,6 +881,8 @@ sub Set {
         {no warnings 'once'; no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
+    $META{$name}->{'PostSet'}->($self, $OPTIONS{$name}, $old)
+        if $META{$name}->{'PostSet'};
     return $self->_ReturnValue( $old, $type );
 }
 

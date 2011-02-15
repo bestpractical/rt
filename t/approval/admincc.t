@@ -12,7 +12,7 @@ use RT;
 use RT::Test tests => 62;
 use RT::Test::Email;
 
-RT->Config->Set( LogToScreen => 'debug' );
+RT->Config->Set( LogToSTDERR => 'debug' );
 RT->Config->Set( UseTransactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
 

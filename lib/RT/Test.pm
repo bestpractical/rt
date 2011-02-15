@@ -300,7 +300,7 @@ sub bootstrap_logging {
 
     print $config <<END;
 Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
+Set( \$LogToSTDERR , "warning");
 Set( \$LogToFile, 'debug' );
 Set( \$LogDir, q{$tmp{'directory'}} );
 Set( \$LogToFileNamed, 'rt.debug.log' );

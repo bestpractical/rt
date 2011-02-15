@@ -1,0 +1,6 @@
+UPGRADING FROM RT 4.0.0 and greater
+
+* The $LogToScreen config setting is now named $LogToSTDERR which better
+  describes what the log level controls.  Setting $LogToScreen will still work,
+  but an informational notice will be issued on server start telling you about
+  the rename.  To avoid this you should set $LogToSTDERR instead.
