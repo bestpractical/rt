@@ -117,10 +117,10 @@ sub Init {
     foreach my $l ( @lang ) {
         $import{$l} = [
             Gettext => $RT::LexiconPath."/$l.po",
-            Gettext => $RT::LocalLexiconPath."/*/$l.po",
-            Gettext => $RT::LocalLexiconPath."/$l.po",
         ];
         push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
+        push @{ $import{$l} }, (Gettext => $RT::LocalLexiconPath."/*/$l.po",
+                                Gettext => $RT::LocalLexiconPath."/$l.po");
     }
 
     # Acquire all .po files and iterate them into lexicons
