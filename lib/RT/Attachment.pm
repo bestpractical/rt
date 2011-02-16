@@ -125,26 +125,39 @@ sub Create {
     # If we possibly can, collapse it to a singlepart
     $Attachment->make_singlepart;
 
+    my $head = $Attachment->head;
+
     # Get the subject
-    my $Subject = $Attachment->head->get( 'subject', 0 );
+    my $Subject = $head->get( 'subject', 0 );
     $Subject = '' unless defined $Subject;
     chomp $Subject;
     utf8::decode( $Subject ) unless utf8::is_utf8( $Subject );
 
     #Get the Message-ID
-    my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
+    my $MessageId = $head->get( 'Message-ID', 0 );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
     $MessageId =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename;
+    my $Filename = $head->recommended_filename;
     # remove path part. 
     $Filename =~ s!.*/!! if $Filename;
 
+    my $content;
+    unless ( $head->get('Content-Length') ) {
+        my $length = 0;
+        if ( defined $Attachment->bodyhandle ) {
+            $content = $Attachment->bodyhandle->as_string;
+            utf8::encode( $content ) if utf8::is_utf8( $content );
+            $length = length $content;
+        }
+        $head->replace( 'Content-Length' => $length );
+    }
+    $head = $head->as_string;
+
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
-    my $head = $Attachment->head->as_string;
     utf8::decode( $head ) unless utf8::is_utf8( $head );
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
@@ -180,7 +193,8 @@ sub Create {
     #If it's not multipart
     else {
 
-        my ($ContentEncoding, $Body, $ContentType, $Filename) = $self->_EncodeLOB(
+        my ($encoding, $type);
+        ($encoding, $content, $type, $Filename) = $self->_EncodeLOB(
             $Attachment->bodyhandle->as_string,
             $Attachment->mime_type,
             $Filename
@@ -188,12 +202,12 @@ sub Create {
 
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
-            ContentType     => $ContentType,
-            ContentEncoding => $ContentEncoding,
+            ContentType     => $type,
+            ContentEncoding => $encoding,
             Parent          => $args{'Parent'},
             Headers         => $head,
             Subject         => $Subject,
-            Content         => $Body,
+            Content         => $content,
             Filename        => $Filename,
             MessageId       => $MessageId,
         );
