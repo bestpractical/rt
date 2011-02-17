@@ -358,35 +358,22 @@ sub bootstrap_db {
         $args{$forceopt}=1;
     }
 
-    if ($args{nodb}) {
-        $args{noinitialdata} = 1;
-        $args{nodata} = 1;
-    }
-    elsif ($args{noinitialdata}) {
-        $args{nodata} = 1;
-    }
+    return if $args{nodb};
 
-    unless ($args{nodb}) {
-        __create_database();
+    my $db_type = RT->Config->Get('DatabaseType');
+    __create_database();
+    __reconnect_rt('as dba');
+    $RT::Handle->InsertSchema;
+    $RT::Handle->InsertACL unless $db_type eq 'Oracle';
 
-        __reconnect_rt('dba');
-        $RT::Handle->InsertSchema;
+    RT->InitLogging;
+    __reconnect_rt();
 
-        my $db_type = RT->Config->Get('DatabaseType');
-        $RT::Handle->InsertACL unless $db_type eq 'Oracle';
+    $RT::Handle->InsertInitialData
+        unless $args{noinitialdata};
 
-        RT->InitLogging;
-
-        unless ($args{noinitialdata}) {
-            __reconnect_rt();
-            $RT::Handle->InsertInitialData;
-        }
-
-        unless ( $args{'nodata'} ) {
-            __reconnect_rt();
-            $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
-        }
-    }
+    $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" )
+        unless $args{noinitialdata} or $args{nodata};
 }
 
 sub bootstrap_plugins {
