@@ -545,6 +545,8 @@ sub __disconnect_rt {
 
     $RT::Handle = undef;
 
+    delete $RT::System->{attributes};
+
     DBIx::SearchBuilder::Record::Cachable->FlushCache
           if DBIx::SearchBuilder::Record::Cachable->can("FlushCache");
 }
@@ -1265,9 +1267,6 @@ sub start_plack_server {
         push @SERVERS, $pid;
         my $Tester = Test::Builder->new;
         $Tester->ok(1, @_);
-
-        # the attribute cache holds on to a stale dbh
-        delete $RT::System->{attributes};
 
         __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
