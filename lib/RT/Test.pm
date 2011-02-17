@@ -436,7 +436,7 @@ sub bootstrap_plugins_db {
             if $ENV{'TEST_VERBOSE'};
 
         unless ( -e $etc_path ) {
-# we can not say if plugin has no data or we screwed with etc path
+            # We can't tell if the plugin has no data, or we screwed up the etc/ path
             Test::More::ok(1, "There is no etc dir: no schema" );
             Test::More::ok(1, "There is no etc dir: no ACLs" );
             Test::More::ok(1, "There is no etc dir: no data" );
