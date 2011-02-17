@@ -32,9 +32,12 @@ not vulnerable!  To upgrade stored passwords to a stronger hash, run:
 
 We've proved that it's possible to delete set of records
 from Transactions table without losing functionality. To delete
-record run the following script:
+records run the following script:
 
     perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
+
+If you chose not to run the shrink_cgm_table.pl script when you upgraded to 3.8,
+you should read more about it below and run it at this point.
 
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
@@ -143,9 +146,16 @@ UPGRADING FROM 3.7.85 and earlier - Changes:
 
 We've proved that it's possible to delete pretty big set of records
 from CachedGroupMembers table without losing functionality. To delete
-record run the following script:
+record run the following script.  If you don't run this, you may
+occasionally see problems where RT miscounts users, particularly in the
+chart functionality.
 
     perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_cgm_table.pl
+
+After you run this, you'll have significantly reduced the number of
+records in your CachedGroupMembers table and may need to tell your
+database to refresh indexes/statistics.  Please consult your DBA for
+specific instructions for your database.
 
 UPGRADING FROM 3.7.81 and earlier - Changes:
 

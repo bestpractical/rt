@@ -50,11 +50,6 @@ o   Various and sundry perl modules
 GENERAL INSTALLATION
 --------------------
 
-This is a rough guide to installing RT. For more detail, you'll
-want to read a more comprehensive installation guide at:
-
-    http://wiki.bestpractical.com/index.cgi?InstallationGuides
-
 1   Unpack this distribution other than where you want to install RT
 
      To do this cleanly, run the following command:
@@ -72,10 +67,11 @@ want to read a more comprehensive installation guide at:
     default install directory in /opt/rt3 does not work under SELinux's
     default configuration.
 
-    If you're upgrading RT then it worth to read UPGRADING document at this
-    moment. Some extension you're using may have been integrated into
-    core. It's recommended to use new clean directory when you're
-    upgrading to new major release (for example from 3.6.x to 3.8.x).
+    If you're upgrading RT stop and review the UPGRADING document.
+    Some extensions you're using may have been integrated into
+    core, or there may be other extra steps to follow. It's recommended
+    that you use a new clean directory when you're upgrading to
+    new major release (for example from 3.6.x to 3.8.x).
 
 3   Make sure that RT has everything it needs to run.
 
@@ -159,9 +155,7 @@ want to read a more comprehensive installation guide at:
 
 8  If you're upgrading from RT 2.0:
 
-    Use the RT::Extension::RT2toRT3 module to upgrade to the current RT
-    release.  You can download it from CPAN here:
-    http://search.cpan.org/dist/RT-Extension-RT2toRT3/
+    Read more in UPGRADING
 
 9   Configure the email and web gateways, as described below.
 
@@ -188,8 +182,6 @@ want to read a more comprehensive installation guide at:
     Until you do this, RT will not be able to send or receive email,
     nor will it be more than marginally functional.  This is not an
     optional step.
-
-
 
 
 SETTING UP THE WEB INTERFACE
@@ -385,42 +377,42 @@ To report a bug, send email to rt-bugs@fsck.com.
 
 
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
-# 
+#
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -429,5 +421,5 @@ To report a bug, send email to rt-bugs@fsck.com.
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
