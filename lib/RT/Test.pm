@@ -380,14 +380,11 @@ sub bootstrap_db {
         unless ($args{noinitialdata}) {
             __reconnect_rt();
             $RT::Handle->InsertInitialData;
-
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
         }
 
         unless ( $args{'nodata'} ) {
             __reconnect_rt();
             $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
         }
     }
 }
@@ -547,6 +544,9 @@ sub __disconnect_rt {
     $DBIx::SearchBuilder::Handle::PrevHandle = undef;
 
     $RT::Handle = undef;
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+          if DBIx::SearchBuilder::Record::Cachable->can("FlushCache");
 }
 
 
