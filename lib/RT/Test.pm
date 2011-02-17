@@ -385,7 +385,6 @@ sub bootstrap_db {
         unless $args{noinitialdata} or $args{nodata};
 
     $self->bootstrap_plugins_db( %args );
-    __reconnect_rt();
 }
 
 sub bootstrap_plugins_paths {
@@ -466,6 +465,7 @@ sub bootstrap_plugins_db {
             Test::More::ok(1, "There is no data file" );
         }
     }
+    __reconnect_rt();
 }
 
 sub _get_dbh {
