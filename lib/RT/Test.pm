@@ -536,9 +536,7 @@ sub __reconnect_rt {
 
 sub __disconnect_rt {
     # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
-    return unless $RT::Handle;
-    my $dbh = $RT::Handle->dbh;
-    $dbh->disconnect if $dbh;
+    $RT::Handle->dbh->disconnect if $RT::Handle and $RT::Handle->dbh;
 
     %DBIx::SearchBuilder::Handle::DBIHandle = ();
     $DBIx::SearchBuilder::Handle::PrevHandle = undef;
