@@ -937,8 +937,10 @@ push @CHECKS, 'Links: LocalX for non-ticket' => sub {
     my $table = m2t('Link');
 
     foreach my $dir ( 'Target', 'Base' ) {
+        # we look only at links with correct organization, previouse check deals
+        # with incorrect orgs
         my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir NOT LIKE ?";
-        my @binds = ($scheme ."://%", $prefix ."/ticket/%");
+        my @binds = ($prefix ."/%", $prefix ."/ticket/%");
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
