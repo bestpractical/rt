@@ -899,7 +899,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
             . " $column LIKE ? AND $column NOT LIKE ?";
         my @binds = ($scheme ."://%", $prefix ."%");
 
-        while ( my ($k, $v) = each %{ $use->{'Aditional'} || {} } ) {
+        while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
             $query .= " AND $k = ?";
             push @binds, $v;
         }
@@ -1018,7 +1018,7 @@ push @CHECKS, 'Links: missing object' => sub {
                 ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
             my @binds = (length($tprefix) + 1, $tprefix.'%');
 
-            while ( my ($k, $v) = each %{ $use->{'Aditional'} || {} } ) {
+            while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
                 $query .= " AND s.$k = ?";
                 push @binds, $v;
             }
