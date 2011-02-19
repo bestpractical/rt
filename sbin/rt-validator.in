@@ -105,8 +105,8 @@ Options:
 
 Description:
 
-This script checks integrity of records in RT's DB. May delete some invalid
-records or ressurect accidentally deleted.
+This script checks the integrity of records in RT's DB. May be used to delete
+some invalid records or ressurect accidentally deleted records.
 
 END
     exit 1;
@@ -115,8 +115,8 @@ END
 sub usage_warning {
     print <<END;
 This utility can fix some issues with DB by creating or updating. In some
-cases there is no enough data to resurect a missing record, but records which
-refers to a missing can be deleted. It's up to you to decide what to do.
+cases there is not enough data to resurect a missing record, but records which
+refer to a missing record can be deleted. It's up to you to decide what to do.
 
 In any case it's highly recommended to have a backup before resolving anything.
 
@@ -226,7 +226,7 @@ my (@do_check, %redo_check);
 my @CHECKS;
 foreach my $table ( qw(Users Groups) ) {
     push @CHECKS, "$table -> Principals" => sub {
-        my $msg = "A record in $table refers not existing record in Principals."
+        my $msg = "A record in $table refers to a nonexistent record in Principals."
             ." The script can either create missing record in Principals"
             ." or delete record in $table.";
         my ($type) = ($table =~ /^(.*)s$/);
@@ -254,7 +254,7 @@ foreach my $table ( qw(Users Groups) ) {
     };
 
     push @CHECKS, "Principals -> $table" => sub {
-        my $msg = "A record in Principals refers not existing record in $table."
+        my $msg = "A record in Principals refers to a nonexistent record in $table."
             ." In some cases it's possible to resurrect manually such records,"
             ." but this utility can only delete";
 
@@ -489,7 +489,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
             my $id = shift;
             return unless prompt(
                 'Delete',
-                "Found a record in CachedGroupMembers with Via referencing not existing record."
+                "Found a record in CachedGroupMembers with Via referencing a nonexistent record."
             );
 
             delete_record( 'CachedGroupMembers', $id );
