@@ -552,10 +552,11 @@ sub Wipeout
         die "Couldn't commit transaction" unless $RT::Handle->Commit;
     };
     if( $@ ) {
+        my $error = $@;
         $RT::Handle->Rollback('force');
         $self->RollbackDumpTo( Mark => $mark ) if $mark;
-        die $@ if RT::Shredder::Exception::Info->caught;
-        die "Couldn't wipeout object: $@";
+        die $error if RT::Shredder::Exception::Info->caught;
+        die "Couldn't wipeout object: $error";
     }
 }
 
