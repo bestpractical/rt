@@ -82,6 +82,7 @@ GetOptions(
     'resolve',
     'force',
     'verbose|v',
+    'links-only',
 );
 
 usage() unless $opt{'check'};
@@ -98,10 +99,12 @@ Options:
     $0 --check --verbose --resolve
     $0 --check --verbose --resolve --force
 
---check   - is mandatory argument, you can use -c, as well.
---verbose - print additional info to STDOUT
---resolve - enable resolver that can delete or create some records
---force   - resolve without asking questions
+--check      - is mandatory argument, you can use -c, as well.
+--verbose    - print additional info to STDOUT
+--resolve    - enable resolver that can delete or create some records
+--force      - resolve without asking questions
+--links-only - only run the Link validation routines, useful if you changed your
+               Organization
 
 Description:
 
@@ -1044,10 +1047,13 @@ push @CHECKS, 'Links: missing object' => sub {
 };
 
 
-
 my %CHECKS = @CHECKS;
 
 @do_check = do { my $i = 1; grep $i++%2, @CHECKS };
+
+if ($opt{'links-only'}) {
+    @do_check = grep { /^Links:/ } @do_check;
+}
 
 while ( my $check = shift @do_check ) {
     $CHECKS{ $check }->();
