@@ -526,7 +526,7 @@ apachectl:
 SNAPSHOT=$(shell git describe --tags)
 snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
-	( cd $(SNAPSHOT) && autoconf && ./configure )
+	( cd $(SNAPSHOT) && autoconf && PERL=/usr/bin/perl ./configure )
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	rm -fr "$(SNAPSHOT)/"
 
