@@ -155,7 +155,7 @@ if ($ENV{RT_TESTING}) {
 }
 
 # when used as a psgi file
-unless ($0 eq __FILE__) {
+if (caller) {
     return $app;
 }
 
