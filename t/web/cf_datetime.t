@@ -3,17 +3,15 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 51;
+use RT::Test tests => undef;
+
+plan skip_all => 'test with apache+mod_perl has a bug with timezones'
+    if $ENV{RT_TEST_WEB_HANDLER} and $ENV{RT_TEST_WEB_HANDLER} =~ /apache\+mod_perl/;
+
+plan tests => 51;
+
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
-my ($baseurl, $m);
-
-SKIP: {
-    skip 'test with apache+mod_perl has a bug of timezone', 51
-      if $ENV{RT_TEST_WEB_HANDLER}
-          && $ENV{RT_TEST_WEB_HANDLER} =~ /apache/
-          && $ENV{RT_TEST_WEB_HANDLER} !~ /fastcgi/;
-
-($baseurl, $m) = RT::Test->started_ok;
+my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 my $root = RT::User->new( RT->SystemUser );
 ok( $root->Load('root'), 'load root user' );
@@ -184,7 +182,6 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
     $m->content_lacks('foodate', 'invalid dates not set');
-}
 }
 
 sub is_results_number { 
