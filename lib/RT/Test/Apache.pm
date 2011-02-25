@@ -50,13 +50,13 @@ package RT::Test::Apache;
 use strict;
 use warnings;
 
-my $apache_module_prefix;
+my $apache_module_prefix = $ENV{RT_TEST_APACHE_MODULES};
 my $apxs =
      $ENV{RT_TEST_APXS}
   || RT::Test->find_executable('apxs')
   || RT::Test->find_executable('apxs2');
 
-if ($apxs) {
+if ($apxs and not $apache_module_prefix) {
     $apache_module_prefix = `$apxs -q LIBEXECDIR`;
     chomp $apache_module_prefix;
 }
