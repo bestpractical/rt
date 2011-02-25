@@ -114,7 +114,7 @@ sub start_server {
     $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
         my $tries = 10;
-        while ( !-e $opt{'pid_file'} ) {
+        while ( !-s $opt{'pid_file'} ) {
             $tries--;
             last unless $tries;
             sleep 1;
