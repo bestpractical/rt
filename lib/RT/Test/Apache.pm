@@ -114,10 +114,18 @@ sub start_server {
             last unless $tries;
             sleep 1;
         }
-        Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
-            unless -e $opt{'pid_file'};
-        open( my $pid_fh, '<', $opt{'pid_file'} )
-            or Test::More::BAIL_OUT("Couldn't open pid file: $!");
+        my $pid_fh;
+        unless (-e $opt{'pid_file'} and open($pid_fh, '<', $opt{'pid_file'})) {
+            Test::More::BAIL_OUT("Couldn't start apache server, no pid file (unknown error)")
+                  unless -e $opt{log_file};
+
+            open my $log, "<", $opt{log_file};
+            my $error = do {local $/; <$log>};
+            close $log;
+            $RT::Logger->error($error) if $error;
+            Test::More::BAIL_OUT("Couldn't start apache server!");
+        }
+
         my $pid = <$pid_fh>;
         chomp $pid;
         $pid;
