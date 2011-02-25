@@ -31,7 +31,7 @@ diag "test squished files with customized files and devel mode disabled";
 SKIP:
 {
     skip 'need plack server to reinitialize', 6
-      if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
+      if $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
     RT::Test->stop_server;
     RT->AddJavaScript( 'IE7/IE7.js' );
     RT->AddStyleSheets( 'print.css' );

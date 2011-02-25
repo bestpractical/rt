@@ -1194,7 +1194,8 @@ sub started_ok {
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
         if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
-    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'plack';
+    $ENV{'RT_TEST_WEB_HANDLER'} ||= 'plack';
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'};
     my ($server, $variant) = split /\+/, $which, 2;
 
     my $function = 'start_'. $server .'_server';
@@ -1290,15 +1291,14 @@ sub stop_server {
     my $in_end = shift;
 
     my $sig = 'TERM';
-    $sig = 'INT' if !$ENV{'RT_TEST_WEB_HANDLER'}
-                    || $ENV{'RT_TEST_WEB_HANDLER'} =~/^standalone(?:\+|\z)/;
+    $sig = 'INT' if $ENV{'RT_TEST_WEB_HANDLER'} eq "plack";
     kill $sig, @SERVERS;
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
 
     sleep 2
-      if !$in_end && $ENV{'RT_TEST_WEB_HANDLER'} && $ENV{'RT_TEST_WEB_HANDLER'} =~ /apache/;
+      if !$in_end && $ENV{'RT_TEST_WEB_HANDLER'} =~ /^apache/;
 
     @SERVERS = ();
 }

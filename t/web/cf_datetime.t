@@ -6,7 +6,7 @@ use warnings;
 use RT::Test tests => undef;
 
 plan skip_all => 'test with apache+mod_perl has a bug with timezones'
-    if $ENV{RT_TEST_WEB_HANDLER} and $ENV{RT_TEST_WEB_HANDLER} =~ /apache\+mod_perl/;
+    if $ENV{RT_TEST_WEB_HANDLER} eq "apache+mod_perl";
 
 plan tests => 51;
 
