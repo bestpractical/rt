@@ -68,14 +68,14 @@ it knows where to find RT:
         RedirectMatch permanent (.*)/$ $1/index.html
 
         DocumentRoot "/opt/rt4/share/html"
-        <Directory "/opt/rt4/share/html">
+        <Location />
             Order allow,deny
             Allow from all
 
             SetHandler perl-script
             PerlHandler Plack::Handler::Apache1
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
-        </Directory>
+        </Location>
     </VirtualHost>
 
 =head3 mod_perl 2.xx
@@ -112,14 +112,14 @@ it knows where to find RT:
         RedirectMatch permanent (.*)/$ $1/index.html
 
         DocumentRoot "/opt/rt4/share/html"
-        <Directory "/opt/rt4/share/html">
+        <Location />
             Order allow,deny
             Allow from all
 
             SetHandler perl-script
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
-        </Directory>
+        </Location>
     <Perl>
         use Plack::Handler::Apache2;
         Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
