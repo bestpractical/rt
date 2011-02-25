@@ -1276,6 +1276,7 @@ sub start_inline_server {
 sub start_apache_server {
     my $self = shift;
     my $variant = shift || 'mod_perl';
+    $ENV{RT_TEST_WEB_HANDLER} = "apache+$variant";
 
     require RT::Test::Apache;
     my $pid = RT::Test::Apache->start_server($variant || 'mod_perl', $port, \%tmp);
