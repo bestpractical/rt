@@ -25,7 +25,6 @@ diag "test squished files with devel mode disabled";
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_lacks( 'IE7=', 'no IE7.js by default' );
 
-    RT::Test->stop_server;
 }
 
 diag "test squished files with customized files and devel mode disabled";
@@ -33,6 +32,7 @@ SKIP:
 {
     skip 'need plack server to reinitialize', 6
       if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
+    RT::Test->stop_server;
     RT->AddJavaScript( 'IE7/IE7.js' );
     RT->AddStyleSheets( 'print.css' );
     ( $url, $m ) = RT::Test->started_ok;
@@ -49,11 +49,11 @@ SKIP:
       $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_contains( 'IE7=', 'has IE7.js' );
-    RT::Test->stop_server;
 }
 
 diag "test squished files with devel mode enabled";
 {
+    RT::Test->stop_server;
     RT->Config->Set( 'DevelMode' => 1 );
     RT->AddJavaScript( 'IE7/IE7.js' );
     RT->AddStyleSheets( 'nottherebutwedontcare.css' );
