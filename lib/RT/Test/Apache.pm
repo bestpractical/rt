@@ -135,6 +135,11 @@ sub apache_server_info {
         || $self->find_apache_server
         || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
 
+    Test::More::BAIL_OUT(
+        "Couldn't find apache modules directory (set APXS= or RT_TEST_APACHE_MODULES=)"
+    ) unless -d $apache_module_prefix;
+
+
     RT::Test::diag("Using '$bin' apache executable for testing");
 
     my $info = `$bin -V`;
