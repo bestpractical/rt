@@ -674,7 +674,9 @@ sub create_ticket {
             Test::More::is( $got, $expected, 'correct CF values' );
         }
         else {
-            next if ref $args{$field} || !$ticket->can($field) || ref $ticket->$field();
+            next if ref $args{$field};
+            next unless $ticket->can($field) or $ticket->_Accessible($field,"read");
+            next if ref $ticket->$field();
             Test::More::is( $ticket->$field(), $args{$field}, "$field is correct" );
         }
     }
