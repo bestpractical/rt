@@ -973,8 +973,10 @@ push @CHECKS, 'Links: LocalX != X' => sub {
         # we limit to $dir = */ticket/* so it doesn't conflict with previouse check
         # previouse check is more important as there was a bug in RT when Local$dir
         # was set for not tickets
-        my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir != ". sql_concat('?', "Local$dir");
-        my @binds = ($prefix ."%", $prefix);
+        # XXX: we have issue with MergedInto links - "LocalX !~ X"
+        my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir != ". sql_concat('?', "Local$dir")
+            ." AND Type != ?";
+        my @binds = ($prefix ."%", $prefix, 'MergedInto');
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
