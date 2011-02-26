@@ -314,7 +314,9 @@ sub set_config_wrapper {
     *RT::Config::Set = sub {
         # Determine if the caller is either from a test script, or
         # from helper functions called by test script to alter
-        # configuration that should be written.
+        # configuration that should be written.  This is necessary
+        # because some extensions (RTIR, for example) temporarily swap
+        # configuration values out and back in Mason during requests.
         my @caller = caller(1); # preserve list context
         @caller = caller(0) unless @caller;
 
