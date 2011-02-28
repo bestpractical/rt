@@ -99,24 +99,7 @@ sub NewItem {
     my $self = shift;
     return(RT::ScripCondition->new($self->CurrentUser));
 }
-
-        eval "require RT::ScripConditions_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripConditions_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripConditions_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripConditions_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripConditions_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripConditions_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

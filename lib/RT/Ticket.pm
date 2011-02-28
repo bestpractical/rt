@@ -648,24 +648,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::Ticket_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Ticket_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Ticket_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Ticket_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Ticket_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Ticket_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

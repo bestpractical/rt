@@ -838,24 +838,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::User_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::User_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::User_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/User_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

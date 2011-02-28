@@ -356,24 +356,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::Attachment_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attachment_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attachment_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

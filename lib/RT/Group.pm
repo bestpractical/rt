@@ -242,24 +242,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::Group_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Group_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Group_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Group_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Group_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Group_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

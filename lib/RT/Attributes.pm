@@ -99,24 +99,7 @@ sub NewItem {
     my $self = shift;
     return(RT::Attribute->new($self->CurrentUser));
 }
-
-        eval "require RT::Attributes_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attributes_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attributes_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attributes_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

@@ -68,13 +68,7 @@ use warnings;
 package RT::Search::Generic;
 use base 'RT::Search';
 
-eval "require RT::Search::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Vendor.pm});
-warn "RT::Search::Generic has become RT::Search. Please adjust your RT::Search::Generic_Vendor file at " . $INC{"RT/Search/Generic_Vendor.pm"} if !$@;
-
-eval "require RT::Search::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Local.pm});
-warn "RT::Search::Generic has become RT::Search. Please adjust your RT::Search::Generic_Local file at " . $INC{"RT/Search/Generic_Local.pm"} if !$@;
+RT::Base->_ImportOverlays;
 
 1;
 

@@ -99,24 +99,7 @@ sub NewItem {
     my $self = shift;
     return(RT::Queue->new($self->CurrentUser));
 }
-
-        eval "require RT::Queues_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Queues_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Queues_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

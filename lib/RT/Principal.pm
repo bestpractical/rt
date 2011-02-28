@@ -196,24 +196,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::Principal_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Principal_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Principal_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

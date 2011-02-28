@@ -286,24 +286,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::ScripCondition_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripCondition_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripCondition_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripCondition_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

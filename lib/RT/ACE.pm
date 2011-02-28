@@ -284,24 +284,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::ACE_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACE_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ACE_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACE_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ACE_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ACE_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

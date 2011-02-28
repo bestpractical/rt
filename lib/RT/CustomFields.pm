@@ -110,24 +110,7 @@ sub NewItem {
     my $self = shift;
     return(RT::CustomField->new($self->CurrentUser));
 }
-
-        eval "require RT::CustomFields_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CustomFields_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CustomFields_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

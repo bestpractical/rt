@@ -345,14 +345,6 @@ sub TicketLinks {
     return $args{'Graph'};
 }
 
-eval "require RT::Graph::Tickets_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Graph/Tickets_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Graph::Tickets_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Graph/Tickets_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

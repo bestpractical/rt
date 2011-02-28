@@ -309,24 +309,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::Attribute_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attribute_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Attribute_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Attribute_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 
