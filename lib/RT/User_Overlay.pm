@@ -1545,7 +1545,7 @@ sub WatchedQueues {
 
 }
 
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this user which are inconsistent
 with their current delegation rights.  Does not perform permission
@@ -1559,12 +1559,15 @@ and logs an internal error if the deletion fails (should not happen).
 
 =cut
 
-# XXX Currently there is a _CleanupInvalidDelegations method in both
+# XXX Currently there is a CleanupInvalidDelegations method in both
 # RT::User and RT::Group.  If the recursive cleanup call for groups is
 # ever unrolled and merged, this code will probably want to be
 # factored out into RT::Principal.
 
-sub _CleanupInvalidDelegations {
+# backcompat for 3.8.8 and before
+*_CleanupInvalidDelegations = \&CleanupInvalidDelegations;
+
+sub CleanupInvalidDelegations {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
           @_ );

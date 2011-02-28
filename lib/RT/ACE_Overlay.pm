@@ -481,7 +481,7 @@ sub _Delete {
     # revoke all rights delegated by the recipient.
     if ($val and ($self->RightName() eq 'DelegateRights' or
 		  $self->RightName() eq 'SuperUser')) {
-	$val = $self->PrincipalObj->_CleanupInvalidDelegations( InsideTransaction => 1 );
+	$val = $self->PrincipalObj->CleanupInvalidDelegations( InsideTransaction => 1 );
     }
 
     if ($val) {
