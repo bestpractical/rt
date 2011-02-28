@@ -424,15 +424,24 @@ our %META = (
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('RTAddressRegexp');
-            return if $value;
-
-            $RT::Logger->debug(
-                'The RTAddressRegexp option is not set in the config.'
-                .' Not setting this option results in additional SQL queries to'
-                .' check whether each address belongs to RT or not.'
-                .' It is especially important to set this option if RT recieves'
-                .' emails on addresses that are not in the database or config.'
-            );
+            if (not $value) {
+                $RT::Logger->debug(
+                    'The RTAddressRegexp option is not set in the config.'
+                    .' Not setting this option results in additional SQL queries to'
+                    .' check whether each address belongs to RT or not.'
+                    .' It is especially important to set this option if RT recieves'
+                    .' emails on addresses that are not in the database or config.'
+                );
+            } elsif (ref $value and ref $value eq "Regexp") {
+                # Ensure that the regex is case-insensitive; while the
+                # local part of email addresses is _technically_
+                # case-sensitive, most MTAs don't treat it as such.
+                $RT::Logger->warning(
+                    'RTAddressRegexp is set to a case-sensitive regular expression.'
+                    .' This may lead to mail loops with MTAs which treat the'
+                    .' local part as case-insensitive -- which is most of them.'
+                ) if "$value" =~ /^\(\?[a-z]*-([a-z]*):/ and "$1" =~ /i/;
+            }
         },
     },
     # User overridable mail options
