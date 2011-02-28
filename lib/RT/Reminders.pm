@@ -90,8 +90,8 @@ sub Collection {
 
     $col->FromSQL($query);
 
-    $col->OrderBy( FIELD => 'Due' );
-    
+    $col->OrderByCols( { FIELD => 'Due' }, { FIELD => 'id' } );
+
     return($col);
 }
 
