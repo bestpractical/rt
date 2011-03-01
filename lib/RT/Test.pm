@@ -1296,6 +1296,7 @@ sub start_apache_server {
 sub stop_server {
     my $self = shift;
     my $in_end = shift;
+    return unless @SERVERS;
 
     my $sig = 'TERM';
     $sig = 'INT' if $ENV{'RT_TEST_WEB_HANDLER'} eq "plack";
