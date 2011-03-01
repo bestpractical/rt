@@ -1810,7 +1810,7 @@ default to the date for next March or last March?
 
 Set C<$AmbiguousDayInPast> for the last date, or
 C<$AmbiguousDayInFuture> for the next date; the default is usually
-correct.
+correct.  If both are set, C<$AmbiguousDayInPast> takes precedence.
 
 =cut
 
