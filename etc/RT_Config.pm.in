@@ -58,7 +58,7 @@ and NOT
 
 C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
 
-This setting would make RT behave exactly as it does without the 
+This setting would make RT behave exactly as it does without the
 setting enabled.
 
 =cut
@@ -700,7 +700,7 @@ Set(@EmailDashboardRemove, ());
 
 =head1 GnuPG Configuration
 
-A full description of the (somewhat extensive) GnuPG integration can be found 
+A full description of the (somewhat extensive) GnuPG integration can be found
 by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
         lib/RT/Crypt/GnuPG.pm` from your RT install directory).
 
