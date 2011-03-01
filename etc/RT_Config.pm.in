@@ -2318,26 +2318,6 @@ Set($RecordBaseClass, 'DBIx::SearchBuilder::Record::Cachable');
 
 =back
 
-=head1 Deprecated Options
-
-=over 4
-
-=item C<$AlwaysUseBase64>
-
-Encode blobs as base64 in DB (?)
-
-=item C<$TicketBaseURI>
-
-Base URI to tickets in this system; used when loading (?)
-
-=item C<$UseCodeTickets>
-
-This option is exists for backwards compatibility.  Don't use it.
-
-=back
-
-=cut
-
 =head1 Articles
 
 =item C<$ArticleOnTicketCreate>
