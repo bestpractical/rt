@@ -1075,8 +1075,6 @@ Should the ticket create and update forms use a more space efficient
 two column layout.  This layout may not work in narrow browsers if you
 set a MessageBoxWidth (below).
 
-Default: yes
-
 =cut
 
 Set($UseSideBySideLayout, 1);
@@ -1086,8 +1084,6 @@ Set($UseSideBySideLayout, 1);
 For message boxes, set the entry box width, height and what type of
 wrapping to use.  These options can be overridden by users in their
 preferences.
-
-Default width: undef, height: 15
 
 When the width is set to undef, no column count is specified and the
 message box will take up 100% of the available width.  Combining this
@@ -1103,8 +1099,6 @@ Set($MessageBoxWidth, undef);
 Set($MessageBoxHeight, 15);
 
 =item C<$MessageBoxWrap>
-
-Default wrapping: "SOFT"  (choices "SOFT", "HARD")
 
 Wrapping is disabled when using MessageBoxRichText because
 of a bad interaction between IE and wrapping with the Rich
@@ -1709,8 +1703,6 @@ autocomplete unless you override their accessibility using a local overlay or a
 plugin.  Out of the box the following fields are public: Name, EmailAddress,
 RealName, NickName, and Organization.
 
-Default: C<< Set( $UserAutocompleteFields, { EmailAddress => 'STARTSWITH', Name => 'STARTSWITH', RealName => 'LIKE' })] ) >>
-
 =cut
 
 Set( $UserAutocompleteFields, {
@@ -1725,8 +1717,6 @@ Should unprivileged users be allowed to autocomplete users.  Setting this
 option to a true value means unprivileged users will be able to search all your
 users.
 
-Default: C<< Set( $AllowUserAutocompleteForUnprivileged, 0 ) >>
-
 =cut
 
 Set( $AllowUserAutocompleteForUnprivileged, 0 );
@@ -1735,8 +1725,6 @@ Set( $AllowUserAutocompleteForUnprivileged, 0 );
 
 Enable this to redirect to the created ticket display page automatically
 when using QuickCreate.
-
-Default: C<< Set( $DisplayTicketAfterQuickCreate, 0 ) >>
 
 =cut
 
