@@ -113,7 +113,7 @@ sub start_server {
 
     $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
-        my $tries = 10;
+        my $tries = 15;
         while ( !-s $opt{'pid_file'} ) {
             $tries--;
             last unless $tries;
