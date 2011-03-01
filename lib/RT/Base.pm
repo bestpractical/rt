@@ -51,6 +51,7 @@ use Carp ();
 use Scalar::Util ();
 
 use strict;
+use warnings;
 use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);
@@ -87,7 +88,7 @@ sub CurrentUser {
         $self->{'original_user'} = $self->{'user'};
         my $current_user = $_[0];
         if ( ref $current_user eq 'RT::User' ) {
-            $self->{'user'} = new RT::CurrentUser;
+            $self->{'user'} = RT::CurrentUser->new;
             $self->{'user'}->Load( $current_user->id );
         } else {
             $self->{'user'} = $current_user;
