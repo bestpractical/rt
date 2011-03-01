@@ -34,8 +34,8 @@ C<$rtname> is the string that RT will look for in mail messages to
 figure out what ticket a new piece of mail belongs to.
 
 Your domain name is recommended, so as not to pollute the namespace.
-once you start using a given tag, you should probably never change it.
-(otherwise, mail for existing tickets won't get put in the right place)
+Once you start using a given tag, you should probably never change it;
+otherwise, mail for existing tickets won't get put in the right place.
 
 =cut
 
@@ -46,7 +46,7 @@ Set($rtname , "example.com");
 
 This regexp controls what subject tags RT recognizes as its own.
 If you're not dealing with historical C<$rtname> values, you'll likely
-never have to enable this feature.
+never have to change this configuration.
 
 Be VERY CAREFUL with it. Note that it overrides C<$rtname> for subject
 token matching and that you should use only "non-capturing" parenthesis
@@ -58,7 +58,7 @@ and NOT
 
 C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
 
-This setting would make RT behave exactly as it does without the
+The setting below would make RT behave exactly as it does without the
 setting enabled.
 
 =cut
@@ -70,8 +70,10 @@ setting enabled.
 =item C<$Organization>
 
 You should set this to your organization's DNS domain. For example,
-I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
-guarantee that ticket URIs are unique and easy to construct.
+I<fsck.com> or I<asylum.arkham.ma.us>. It is used by the linking
+interface to guarantee that ticket URIs are unique and easy to
+construct.  Changing it after you have created tickets in the system
+will B<break> all existing ticket links!
 
 =cut
 
@@ -88,8 +90,10 @@ Set($MinimumPasswordLength , "5");
 
 =item C<$Timezone>
 
-C<$Timezone> is used to convert times entered by users into GMT and back again
-It should be set to a timezone recognized by your server.
+C<$Timezone> is the default timezone, used to convert times entered by
+users into GMT, as they are stored in the database, and back again;
+users can override this.  It should be set to a timezone recognized by
+your server.
 
 =cut
 
@@ -152,8 +156,8 @@ Set($DatabasePassword , '@DB_RT_PASS@');
 
 =item C<$DatabaseName>
 
-The name of the RT's database on your database server. For Oracle
-it's SID, DB objects are created in L<$DatabaseUser>'s schema.
+The name of the RT database on your database server. For Oracle, the
+SID and database objects are created in L<$DatabaseUser>'s schema.
 
 =cut
 
@@ -161,8 +165,9 @@ Set($DatabaseName , '@DB_DATABASE@');
 
 =item C<$DatabaseRequireSSL>
 
-If you're using Postgres and have compiled in SSL support,
-set C<$DatabaseRequireSSL> to 1 to turn on SSL communication.
+If you're using Postgres and have compiled in SSL support, set
+C<$DatabaseRequireSSL> to 1 to turn on SSL communication with the
+database.
 
 =cut
 
@@ -185,12 +190,12 @@ Set($UseSQLForACLChecks, undef);
 
 On the display page of a ticket from search results, RT provides links
 to the first, next, previous and last ticket from the results.  In
-order to build these links, TY needs to fetch the full result set from
+order to build these links, RT needs to fetch the full result set from
 the database, which can be resource-intensive.
 
 Set C<$TicketsItemMapSize> to number of tickets you want RT to examine
 to build these links. If the full result set is larger than this
-number, RT will omitthe "last" link in the menu.  Set this to zero to
+number, RT will omit the "last" link in the menu.  Set this to zero to
 always examine all results.
 
 =cut
@@ -258,7 +263,8 @@ Set($TruncateLongAttachments , undef);
 =item C<$DropLongAttachments>
 
 If this is set to a non-undef value, RT will silently drop attachments
-longer than C<MaxAttachmentSize>.
+longer than C<MaxAttachmentSize>.  C<$TruncateLongAttachments>, above,
+takes priority over this.
 
 =cut
 
@@ -286,10 +292,14 @@ all addresses used by your RT.  This lets RT avoid sending mail to
 itself.  It will also hide RT addresses from the list of "One-time Cc"
 and Bcc lists on ticket reply.
 
-If you have a number of addresses configured in your RT database already, you
-can generate a naive first pass regexp by using
+If you have a number of addresses configured in your RT database
+already, you can generate a naive first pass regexp by using:
 
     perl etc/upgrade/generate-rtaddressregexp
+
+If left blank, RT will generate a regexp for you, based on your
+comment and correspond address settings on your queues; this comes at
+a small cost in start-up speed.
 
 =cut
 
@@ -388,7 +398,7 @@ Set($MailCommand , 'sendmailpipe');
 
 =item C<$SetOutgoingMailFrom>
 
-C<$SetOutgoingMailFrom> tells RT to set the sender envelope with the correspond
+C<$SetOutgoingMailFrom> tells RT to set the sender envelope to the Correspond
 mail address of the ticket's queue.
 
 Warning: If you use this setting, bounced mails will appear to be incoming
@@ -405,10 +415,11 @@ address of the queue as it is handed to sendmail -f. This helps force
 the From_ header away from www-data or other email addresses that show
 up in the "Sent by" line in Outlook.
 
-The option is a hash reference of queue name to email address.
+The option is a hash reference of queue name to email address.  If
+there is no ticket involved, then the value of the C<Default> key will
+be used.
 
-If there is no ticket involved, then the value of the C<Default> key will be
-used.
+This option is irrelevant unless C<$SetOutgoingMailFrom> is set.
 
 =cut
 
@@ -431,7 +442,7 @@ by including an explicit Precedence header.
 
 If you set this value to C<undef> then we do not set a default
 Precedence header to outgoing mail. However, if there already is a
-Precedence header it will be preserved.
+Precedence header, it will be preserved.
 
 =cut
 
@@ -996,6 +1007,7 @@ Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
 =item C<$LogoURL>
 
 C<$LogoURL> points to the URL of the RT logo displayed in the web UI.
+This can also be configured via the web UI.
 
 =cut
 
@@ -1038,10 +1050,9 @@ Set($LogoImageWidth, 181);
 
 =item C<$WebNoAuthRegex>
 
-What portion of RT's URL space should not require authentication.
-
-This is mostly for extension and doesn't mean RT will work without
-login if you change it.
+What portion of RT's URL space should not require authentication.  The
+default is almost certainly correct, and should only be changed if you
+are extending RT.
 
 =cut
 
@@ -1052,7 +1063,7 @@ Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 What portion of RT's URLspace should be accessible to Unprivileged users
 This does not override the redirect from F</Ticket/Display.html> to
 F</SelfService/Display.html> when Unprivileged users attempt to access
-ticked displays
+ticked displays.
 
 =cut
 
@@ -1152,7 +1163,7 @@ Set($WikiImplicitLinks, 0);
 
 =item C<$TrustHTMLAttachments>
 
-if C<TrustHTMLAttachments> is not defined, we will display them
+If C<TrustHTMLAttachments> is not defined, we will display them
 as text. This prevents malicious HTML and JavaScript from being
 sent in a request (although there is probably more to it than that)
 
@@ -1279,7 +1290,7 @@ Set($AutoCreate, undef);
 C<$WebSessionClass> is the class you wish to use for managing Sessions.
 It defaults to use your SQL database, but if you are using MySQL 3.x and
 plans to use non-ascii Queue names, uncomment and add this line to
-F<RT_SiteConfig.pm> will prevent session corruption.
+F<RT_SiteConfig.pm> to prevent session corruption.
 
 =cut
 
@@ -1308,12 +1319,13 @@ Set($LogoutRefresh, 1);
 
 =item C<$WebSecureCookies>
 
-By default, RT's session cookie isn't marked as "secure" Some web browsers
-will treat secure cookies more carefully than non-secure ones, being careful
-not to write them to disk, only send them over an SSL secured connection
-and so on. To enable this behaviour, set C<$WebSecureCookies> to a true value.
-NOTE: You probably don't want to turn this on I<unless> users are only connecting
-via SSL encrypted HTTP connections.
+By default, RT's session cookie isn't marked as "secure" Some web
+browsers will treat secure cookies more carefully than non-secure
+ones, being careful not to write them to disk, only sendine them over
+an SSL secured connection, and so on. To enable this behaviour, set
+C<$WebSecureCookies> to a true value.  NOTE: You probably don't want
+to turn this on I<unless> users are only connecting via SSL encrypted
+HTTPS connections.
 
 =cut
 
@@ -1323,7 +1335,7 @@ Set($WebSecureCookies, 0);
 
 By default, RT clears its database cache after every page view.
 This ensures that you've always got the most current information
-when working in a multi-process (mod_perl or FastCGI) Environment
+when working in a multi-process (mod_perl or FastCGI) Environment.
 Setting C<$WebFlushDbCacheEveryRequest> to '0' will turn this off,
 which will speed RT up a bit, at the expense of a tiny bit of data
 accuracy.
@@ -1336,9 +1348,9 @@ Set($WebFlushDbCacheEveryRequest, '1');
 =item C<$MaxInlineBody>
 
 C<$MaxInlineBody> is the maximum attachment size that we want to see
-inline when viewing a transaction.  RT will inline any text if value
-is undefined or 0.  This option can be overridden by users in their
-preferences.
+inline when viewing a transaction.  RT will inline any text if the
+value is undefined or 0.  This option can be overridden by users in
+their preferences.
 
 =cut
 
@@ -1347,7 +1359,7 @@ Set($MaxInlineBody, 12000);
 =item C<$DefaultSummaryRows>
 
 C<$DefaultSummaryRows> is default number of rows displayed in for search
-results on the frontpage.
+results on the front page.
 
 =cut
 
@@ -1408,11 +1420,10 @@ Set($ShowTransactionImages, 1);
 
 =item C<$PlainTextPre>
 
-Normally plaintext attachments are displayed as HTML with line
-breaks preserved.  This causes space- and tab-based formatting not
-to be displayed correctly.  By setting $PlainTextPre they'll be
-displayed using <pre> instead so such formatting works, but they'll
-use a monospaced font, no matter what the value of C<$PlainTextMono> is.
+Normally plaintext attachments are displayed as HTML with line breaks
+preserved.  This causes space- and tab-based formatting not to be
+displayed correctly.  By setting $PlainTextPre messages will be
+displayed using <pre>; this option overrides C<$PlainTextMono>.
 
 =cut
 
@@ -1421,10 +1432,9 @@ Set($PlainTextPre, 0);
 
 =item C<$PlainTextMono>
 
-To display plaintext attachments,
 Set C<$PlainTextMono> to 1 to use monospaced font and preserve
-formatting, but unlike PlainTextPre, the text will wrap to fit into the
-UI.
+formatting; unlike C<$PlainTextPre>, the text will wrap to fit width
+of the browser window.
 
 =cut
 
@@ -1500,9 +1510,9 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
 
 =item C<%AdminSearchResultFormat>
 
-In admin interface format strings similar to tickets search result
-formats are used. Use C<%AdminSearchResultFormat> to define format
-strings per RT class.
+In the admin interface, format strings similar to tickets result
+formats are used. Use C<%AdminSearchResultFormat> to define the format
+strings used in the admin interface on a per-RT-class basis.
 
 =cut
 
@@ -1628,11 +1638,12 @@ provides two formats:
   link after the URL.
 
 * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-  replace URL with link and *adds spaces* into text if it's longer
-  then 30 chars. This allow browser to wrap long URLs and avoid
-  horizontal scrolling.
+  replaces the URL with a link and *adds spaces* into the text if it
+  is longer then 30 characters. This allows the browser to wrap long
+  URLs and avoid horizontal scrolling.
 
-See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
+See F<share/html/Elements/MakeClicky> for documentation on how to add
+your own styles of link detection.
 
 =cut
 
@@ -1750,9 +1761,10 @@ Set(@LexiconLanguages, qw(*));
 =item C<@EmailInputEncodings>
 
 An array that contains default encodings used to guess which charset
-an attachment uses if not specified. Must be recognized by
-L<Encode::Guess>. First element can be '*' that enables encoding
-detection using L<Encode::Detect::Detector> if it's installed.
+an attachment uses, if it does not specify one explicitly.  All
+options must be recognized by L<Encode::Guess>.  The first element may
+also be '*', which enables encoding detection using
+L<Encode::Detect::Detector>, if installed.
 
 =cut
 
@@ -1775,9 +1787,10 @@ Set($EmailOutputEncoding, 'utf-8');
 
 =item C<$DateTimeFormat>
 
-You can choose date and time format.  See "Output formatters"
-section in perldoc F<lib/RT/Date.pm> for more options.  This option can
-be overridden by users in their preferences.
+You can choose date and time format.  See the "Output formatters"
+section in perldoc F<lib/RT/Date.pm> for more options.  This option
+can be overridden by users in their preferences.
+
 Some examples:
 
 C<Set($DateTimeFormat, 'LocalizedDateTime');>
@@ -1807,10 +1820,9 @@ past value? For example, should a date of "Tuesday" default to mean
 the date for next Tuesday or last Tuesday? Should the date "March 1"
 default to the date for next March or last March?
 
-Set $<AmbiguousDayInPast> for the last date, or $<$AmbiguousDayInFuture> for the
-next date.
-
-The default is usually good.
+Set C<$AmbiguousDayInPast> for the last date, or
+C<$AmbiguousDayInFuture> for the next date; the default is usually
+correct.
 
 =cut
 
@@ -2118,9 +2130,9 @@ Set($LinkTransactionsRun1Scrip, 0);
 
 =item C<$StrictLinkACL>
 
-When this feature is enabled a user needs I<ModifyTicket> rights on both
-tickets to link them together, otherwise he can have rights on either of
-them.
+When this feature is enabled a user needs I<ModifyTicket> rights on
+both tickets to link them together; otherwise, I<ModifyTicket> rights
+on either of them is sufficient.
 
 =cut
 
@@ -2169,9 +2181,10 @@ enable this option.
 =cut
 
 Set($CanonicalizeRedirectURLs, 0);
+
 =item C<$EnableReminders>
 
-Hide links/portlets related to Reminders by setting this to 0
+Hide all links and portlets related to Reminders by setting this to 0
 
 =cut
 
@@ -2182,6 +2195,7 @@ Set($EnableReminders,1);
 
 Set C<@Plugins> to a list of external RT plugins that should be enabled (those
 plugins have to be previously downloaded and installed).
+
 Example:
 
 C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
@@ -2192,7 +2206,8 @@ Set(@Plugins, ());
 
 =item C<@JSFiles>
 
-a list of JavaScript files to be included in head
+A list of JavaScript files to be included in head.  Removing any of
+the default entries is not suggested.
 
 Example:
 
@@ -2220,12 +2235,11 @@ Set(@JSFiles, qw/
 
 =item C<$JSMinPath>
 
-Path to jsmin binary.
-You can go to http://www.crockford.com/javascript/jsmin.html to get one.
+Path to the jsmin binary, available from http://www.crockford.com/javascript/jsmin.html
 
-If specified, it'll be used to minify C<JSFiles>.
-If fails, RT will then try module L<JavaScript::Minifier>.
-If that still fails, RT will simply concatenate js files.
+If specified, it will be used to minify C<JSFiles>.  If it cannot be
+found, RT will fall back to the L<JavaScript::Minifier> module;
+failing that, RT will will simply concatenate the files.
 
 Example:
 
@@ -2235,7 +2249,7 @@ C<Set($JSMinPath, '/path/to/jsmin');>
 
 =item C<@CSSFiles>
 
-a list of css files to be included in head
+A list of additional CSS files to be included in head.
 
 Example:
 
@@ -2254,16 +2268,13 @@ Set(@CSSFiles, qw//);
 =item C<$ShowRTPortal>
 
 RT can show administrators a feed of recent RT releases and other
-related announcements and information from Best Practical on the
-top level Configuration page.
+related announcements and information from Best Practical on the top
+level Configuration page.  This feature helps you stay up to date on
+RT security announcements and version updates.
 
-This feature helps you stay up to date on RT security
-announcements and version updates.
-
-RT provides this feature using an "iframe" on
-C</Admin/index.html> which asks the administrator's
-browser to show an inline page from Best Practical's
-website.
+RT provides this feature using an "iframe" on C</Admin/index.html>
+which asks the administrator's browser to show an inline page from
+Best Practical's website.
 
 If you'd rather not make this feature available to
 your administrators, set C<$ShowRTPortal> to a false
@@ -2282,16 +2293,35 @@ Set($ShowRTPortal => 1);
 
 =item C<$DevelMode>
 
-RT comes with a "Development mode" setting.
-This setting, as a convenience for developers, turns on
-all sorts of development options that you most likely don't want in
-production:
+RT comes with a "Development mode" setting.  This setting, as a
+convenience for developers, turns on several of development options
+that you most likely don't want in production:
 
-* Turns off Mason's 'static_source' directive. By default, you can't
-  edit RT's web ui components on the fly and have RT magically pick up
-  your changes. (It's a big performance hit)
+=over 4
 
-* More to come
+=item *
+
+Uses L<Module::Refresh> to reload changed Perl modules on each
+request.
+
+=item *
+
+Turns off Mason's C<static_source> directive; this causes Mason to
+reload template files which have been modified on disk.
+
+=item *
+
+Turns on Mason's HTML C<error_format>; this renders compilation errors
+to the browser, along with a full stack trace.  It is possible for
+stack traces to reveal sensitive information such as passwords or
+ticket content.
+
+=item *
+
+Turns off caching of callbacks; this enables additional callbacks to
+be added while the server is running.
+
+=back
 
 =cut
 
