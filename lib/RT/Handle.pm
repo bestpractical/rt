@@ -845,6 +845,22 @@ sub InsertData {
                 next;
             }
 
+            if ( $item->{'BasedOn'} ) {
+                my $basedon = RT::CustomField->new($RT::SystemUser);
+                my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
+                                                        LookupType => $new_entry->LookupType );
+                if ($ok) {
+                    ($ok, $msg) = $new_entry->SetBasedOn( $basedon );
+                    if ($ok) {
+                        $RT::Logger->debug("Added BasedOn $item->{BasedOn}: $msg");
+                    } else {
+                        $RT::Logger->error("Failed to add basedOn $item->{BasedOn}: $msg");
+                    }
+                } else {
+                    $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn");
+                }
+            }
+
             foreach my $value ( @{$values} ) {
                 my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 $RT::Logger->error( $msg ) unless $return;
