@@ -262,6 +262,13 @@ sub _psgi_response_cb {
     Plack::Util::response_cb
             ($ret,
              sub {
+                 my $res = shift;
+
+                 if ( RT->Config->ExtraSecurity('Clickjacking') ) {
+                     # XXX TODO: Do we want to make the value of this header configurable?
+                     Plack::Util::header_set($res->[1], 'X-Frame-Options' => 'DENY');
+                 }
+
                  return sub {
                      if (!defined $_[0]) {
                          $cleanup->();

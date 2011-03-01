@@ -55,6 +55,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 </%init>
 <html>
 <head>
+<& /Elements/Framekiller &>
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')|n%>/m/style.css"/>
 <title><%$title%></title>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>

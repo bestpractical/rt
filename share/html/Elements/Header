@@ -54,6 +54,8 @@
   <head>
     <title><%$Title%></title>
 
+    <& /Elements/Framekiller &>
+
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
     <meta http-equiv="refresh" content="<% $Refresh %>" />
 % }
