@@ -1271,6 +1271,10 @@ sub start_inline_server {
     require Test::WWW::Mechanize::PSGI;
     unshift @RT::Test::Web::ISA, 'Test::WWW::Mechanize::PSGI';
 
+    # Clear out squished CSS and JS cache, since it's retained across
+    # servers, since it's in-process
+    RT::Interface::Web->ClearSquished;
+
     Test::More::ok(1, "psgi test server ok");
     return ("http://localhost:$port", RT::Test::Web->new);
 }

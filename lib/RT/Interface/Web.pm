@@ -98,6 +98,18 @@ sub SquishedJS {
     return $js;
 }
 
+=head2 ClearSquished
+
+Removes the cached CSS and JS entries, forcing them to be regenerated
+on next use.
+
+=cut
+
+sub ClearSquished {
+    undef $SQUISHED_JS;
+    %SQUISHED_CSS = ();
+}
+
 =head2 EscapeUTF8 SCALARREF
 
 does a css-busting but minimalist escaping of whatever html you're passing in.
