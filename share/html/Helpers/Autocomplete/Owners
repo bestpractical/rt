@@ -76,6 +76,8 @@ my $isSU = $session{CurrentUser}
 
 # Turn RT::Ticket-1|RT::Queue-2 into ['RT::Ticket', 1], ['RT::Queue', 2]
 foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
+    next unless $spec->[0] =~ /^RT::(Ticket|Queue)$/;
+
     my $object = $spec->[0]->new( $session{'CurrentUser'} );
 
     if ( $spec->[1] ) {
