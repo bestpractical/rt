@@ -345,9 +345,6 @@ sub _DoCount {
     return $self->SUPER::_DoCount(@_);
 }
 
-eval "require RT::SearchBuilder_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Vendor.pm});
-eval "require RT::SearchBuilder_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

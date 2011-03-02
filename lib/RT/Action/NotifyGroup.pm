@@ -201,14 +201,6 @@ L<RT::Action::NotifyGroupAsComment>, F<rt-email-group-admin>
 
 =cut
 
-eval "require RT::Action::NotifyGroup_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyGroup_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Action::NotifyGroup_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyGroup_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

@@ -1239,10 +1239,7 @@ sub PostProcess {
 
 }
 
-eval "require RT::Action::CreateTickets_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm} );
-eval "require RT::Action::CreateTickets_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;
 

@@ -2254,9 +2254,6 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-eval "require RT::Interface::Web_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm} );
-eval "require RT::Interface::Web_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;

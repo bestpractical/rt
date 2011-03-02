@@ -250,14 +250,7 @@ sub VerifyDecrypt {
     return $status, @res, @nested;
 }
 
-eval "require RT::Interface::Email::Auth::GnuPG_Vendor";
-die $@
-  if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Vendor.pm} );
-eval "require RT::Interface::Email::Auth::GnuPG_Local";
-die $@
-  if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;
 

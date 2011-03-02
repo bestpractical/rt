@@ -219,9 +219,6 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::Action_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm});
-eval "require RT::Action_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

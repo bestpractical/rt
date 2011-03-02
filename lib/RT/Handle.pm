@@ -1065,9 +1065,6 @@ sub ACLEquivGroupId {
 
 __PACKAGE__->FinalizeDatabaseType;
 
-eval "require RT::Handle_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});
-eval "require RT::Handle_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

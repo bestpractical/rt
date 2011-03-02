@@ -102,10 +102,7 @@ sub IsApplicable  {
 }
 # }}}
 
-eval "require RT::Action::ResolveMembers_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMembers_Vendor.pm});
-eval "require RT::Action::ResolveMembers_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMembers_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
 

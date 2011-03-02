@@ -1809,9 +1809,6 @@ sub _RecordSendEmailFailure {
     }
 }
 
-eval "require RT::Interface::Email_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Email_Vendor.pm} );
-eval "require RT::Interface::Email_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Email_Local.pm} );
+RT::Base->_ImportOverlays();
 
 1;

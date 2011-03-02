@@ -97,9 +97,6 @@ sub Commit {
     return 1;
 }
 
-eval "require RT::Action::AutoOpen_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Vendor.pm});
-eval "require RT::Action::AutoOpen_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

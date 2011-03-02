@@ -306,15 +306,7 @@ sub vsplit {
     return \@words;
 }
 
-eval "require RT::Interface::REST_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Interface/REST_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Interface::REST_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Interface/REST_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;
 

@@ -189,9 +189,6 @@ sub SubjectTag {
     return grep !$seen{lc $_}++, values %$map;
 }
 
-eval "require RT::System_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Vendor.pm});
-eval "require RT::System_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

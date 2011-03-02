@@ -127,9 +127,6 @@ sub SetRTSpecialHeaders {
 
 # }}}
 
-eval "require RT::Action::Autoreply_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Vendor.pm});
-eval "require RT::Action::Autoreply_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

@@ -71,15 +71,7 @@ sub GetTemplate {
     return $template;
 }
 
-eval "require RT::Approval::Rule_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Approval/Rule_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Approval::Rule_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Approval/Rule_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;
 

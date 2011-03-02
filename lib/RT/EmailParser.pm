@@ -629,9 +629,6 @@ sub DESTROY {
 
 
 
-eval "require RT::EmailParser_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm});
-eval "require RT::EmailParser_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

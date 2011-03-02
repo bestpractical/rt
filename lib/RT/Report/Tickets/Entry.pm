@@ -79,14 +79,6 @@ sub LabelValue {
     return $value;
 }
 
-eval "require RT::Report::Tickets::Entry_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets/Entry_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Report::Tickets::Entry_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets/Entry_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

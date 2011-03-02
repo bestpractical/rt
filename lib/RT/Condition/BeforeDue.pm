@@ -78,9 +78,6 @@ sub IsApplicable {
     }
 }
 
-eval "require RT::Condition::BeforeDue_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/BeforeDue_Vendor.pm});
-eval "require RT::Condition::BeforeDue_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/BeforeDue_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

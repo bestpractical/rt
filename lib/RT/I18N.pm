@@ -550,10 +550,7 @@ sub SetMIMEHeadToEncoding {
 }
 # }}}
 
-eval "require RT::I18N_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Vendor.pm});
-eval "require RT::I18N_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;  # End of module.
 

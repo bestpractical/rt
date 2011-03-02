@@ -98,9 +98,6 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::FromSQL_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Vendor.pm});
-eval "require RT::Search::FromSQL_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

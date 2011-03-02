@@ -174,9 +174,6 @@ sub GetCurrentUser {
     return ( $CurrentUser, 1 );
 }
 
-eval "require RT::Interface::Email::Auth::MailFrom_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/MailFrom_Vendor.pm});
-eval "require RT::Interface::Email::Auth::MailFrom_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/MailFrom_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
