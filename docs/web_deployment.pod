@@ -131,33 +131,23 @@ configuration examples.
 
 =cut
 
-=head1 Extra
+=head1 Running RT at /rt rather than /
 
-=head2 RT web in sublocation like /rt
-
-=head3 Update RT config
-
-Set C<$WebPath> config in F<RT_SiteConfig.pm>:
+First you need to tell RT where it's located by setting C<$WebPath> in your F<RT_SiteConfig.pm>:
 
     Set($WebPath, "/rt");
 
-=head3 Update web server config
+Then you need to update your Apache configuration to match.  Prefix the RT related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.
 
-=head4 If it's Apache
+For example: if you're using the sample FastCGI config above, you might change it to:
 
-Prefix RT related C<Alias>, C<ScriptAlias> and C<Location> directives with '/rt'
+    Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
+    ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
 
-e.g.
-        
-        Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
-        ScriptAlias /rt /opt/rt4/sbin/rt-server.fcgi/
-
-        <Location /rt>
+    <Location /rt>
         ...
-        </Location>
+    </Location>
 
-=head4 If it's not Apache
-
-Please see L<Plack::Handler::FCGI> or the web server's documents for
-configuration examples.
+If you're not using Apache, please see L<Plack::Handler::FCGI> or the web
+server's own documentation for configuration examples.
 
