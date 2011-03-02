@@ -158,6 +158,9 @@ it to:
         ...
     </Location>
 
+If you're using the sample mod_perl configuration, you only need to change the
+C<Location> directive.
+
 If you're not using Apache, please see L<Plack::Handler::FCGI> or the web
 server's own documentation for configuration examples.
 
