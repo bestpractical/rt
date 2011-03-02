@@ -10,12 +10,6 @@ package RT;
 
 RT::Config
 
-=for testing
-
-use RT::Config;
-
-=cut
-
 =head1 WARNING
 
 NEVER EDIT RT_Config.pm.
