@@ -192,7 +192,7 @@ my $text_threshold = 0.6;
 my @results;
 
 my $has_color_analyzer =
-eval { require Imager; require Convert::Color; 1 };
+eval { require GD; require Convert::Color; 1 };
 
 my $img;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
@@ -203,9 +203,8 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                     data => $file_hash->{LargeContent} } );
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
-    $img = Imager->new;
-    unless ( $img->read(data => $file_hash->{LargeContent}) ) {
-        push @results, loc("Unable to read image: [_1]", $img->errstr);
+    unless ( $img = GD::Image->new($file_hash->{LargeContent}) ) {
+        push @results, loc("Unable to read image");
         undef $img;
     }
 }
@@ -216,9 +215,8 @@ else {
     if (my $attr = RT->System->FirstAttribute('UserLogo')) {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
-            $img = Imager->new;
-            unless ( $img->read(data => $content->{data}) ) {
-                push @results, loc("Unable to read image: [_1]", $img->errstr);
+            unless ( $img = GD::Image->new($content->{data}) ) {
+                push @results, loc("Unable to read image");
                 undef $img;
             }
         }
@@ -260,10 +258,9 @@ sub analyze_img {
     my $img = shift;
     my $color;
 
-    for my $i (0..$img->getwidth-1) {
-        for my $j (0..$img->getheight-1) {
-            my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
-            pop @color;
+    for my $i (0..$img->width-1) {
+        for my $j (0..$img->height-1) {
+            my @color = $img->rgb( $img->getPixel($i,$j) );
             my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
             my $c = join(',',@color);
             next if $hsl->lightness < 0.1;
