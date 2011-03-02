@@ -133,7 +133,8 @@ configuration examples.
 
 =head1 Running RT at /rt rather than /
 
-First you need to tell RT where it's located by setting C<$WebPath> in your F<RT_SiteConfig.pm>:
+First you need to tell RT where it's located by setting C<$WebPath> in your
+F<RT_SiteConfig.pm>:
 
     # Important: don't include a trailing slash here.  Read `perldoc
     # etc/RT_Config.pm` for more information.
@@ -144,7 +145,8 @@ related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.  You
 should also make sure C<DocumentRoot> is B<not> set to
 C</opt/rt4/share/html/>, otherwise RT's source will be served from C</>.
 
-For example: if you're using the sample FastCGI config above, you might change it to:
+For example: if you're using the sample FastCGI config above, you might change
+it to:
 
     Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
     ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
