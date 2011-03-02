@@ -56,7 +56,7 @@
 <div id="simple-customize">
 <div id="upload-logo">
   <h2>Logo</h2>
-% if ($img) {
+% if ($imgdata) {
   <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo?<% time() %>" />
 % }
   <form method="POST" enctype="multipart/form-data">
@@ -190,11 +190,8 @@ require JSON;
 
 my $text_threshold = 0.6;
 my @results;
+my $imgdata;
 
-my $has_color_analyzer =
-eval { require GD; require Convert::Color; 1 };
-
-my $img;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
     my ($id, $msg) = RT->System->SetAttribute( Name => "UserLogo",
                                                 Description => "User-provided logo",
@@ -203,10 +200,7 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                     data => $file_hash->{LargeContent} } );
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
-    unless ( $img = GD::Image->new($file_hash->{LargeContent}) ) {
-        push @results, loc("Unable to read image");
-        undef $img;
-    }
+    $imgdata = $file_hash->{LargeContent};
 }
 elsif ($ARGS{'reset_logo'}) {
     RT->System->DeleteAttribute('UserLogo');
@@ -215,10 +209,7 @@ else {
     if (my $attr = RT->System->FirstAttribute('UserLogo')) {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
-            unless ( $img = GD::Image->new($content->{data}) ) {
-                push @results, loc("Unable to read image");
-                undef $img;
-            }
+            $imgdata = $content->{data};
         }
         else {
             RT->System->DeleteAttribute('UserLogo');
@@ -251,8 +242,23 @@ if (!$user_css) {
 
 # XXX: move this to some other modules
 
-my $colors = $img && $has_color_analyzer? analyze_img($img) : undef;
 use List::MoreUtils qw(uniq);
+
+my $has_color_analyzer = eval { require Convert::Color; 1 };
+my $colors;
+
+if (    $imgdata
+    and not RT->Config->Get('DisableGD')
+    and $has_color_analyzer)
+{
+    require GD;
+    if ( my $img = GD::Image->new($imgdata) ) {
+        $colors = analyze_img($img);
+    }
+    else {
+        push @results, loc("Unable to read image");
+    }
+}
 
 sub analyze_img {
     my $img = shift;
