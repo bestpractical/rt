@@ -22,7 +22,8 @@ like ($t_link->url, qr/$id/, 'link to the ticket we created');
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 $m->get ( $url.'Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
-my $cus_qs = $m->find_link( text => "Quick search" );
+$m->get ( $url );
+my $cus_qs = $m->find_link( text => "Edit", url_regex => qr/QueueSummary/ );
 $m->get ($cus_hp);
 $m->content_contains('highest priority tickets');
 
@@ -66,7 +67,7 @@ $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 my $nlinks = $#{$m->find_all_links( text => "General" )};
 $m->get ($cus_qs);
 $m->form_name ('Preferences');
-$m->untick('Want-General', '1');
+$m->untick( Want => 'General');
 $m->click_button (name => 'Save');
 
 $m->get( $url );
@@ -76,7 +77,7 @@ is ($#{$m->find_all_links( text => "General" )}, $nlinks - 1,
 # get it back
 $m->get ($cus_qs);
 $m->form_name ('Preferences');
-$m->tick('Want-General', '1');
+$m->tick( Want => 'General' );
 $m->click_button (name => 'Save');
 
 $m->get( $url );
