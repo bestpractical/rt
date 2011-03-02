@@ -146,7 +146,7 @@ should also make sure C<DocumentRoot> is B<not> set to
 C</opt/rt4/share/html/>, otherwise RT's source will be served from C</>.
 
 For example: if you're using the sample FastCGI config above, you might change
-it to:
+the relevant directives to:
 
     Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
     ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
