@@ -135,6 +135,8 @@ configuration examples.
 
 First you need to tell RT where it's located by setting C<$WebPath> in your F<RT_SiteConfig.pm>:
 
+    # Important: don't include a trailing slash here.  Read `perldoc
+    # etc/RT_Config.pm` for more information.
     Set($WebPath, "/rt");
 
 Then you need to update your Apache configuration to match.  Prefix the RT related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.
