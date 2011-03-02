@@ -45,31 +45,51 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span class="label">
-  <a href="<% $url %>"><&|/l, $Rows, $Description &>This user's [_1] highest priority [_2] tickets</&>:</a>
-</span>
-<ul>
-%while (my $w=$tickets->Next) {
-%my $uri = RT::URI->new( $session{'CurrentUser'} );
-%$uri->FromObject($w);
-<li class="value"><& /Elements/ShowLink, URI => $uri &></li>
-%}
-</ul>
+<span class="label"><a href="<% $url %>"><% $title %>:</a></span>
+
+<& /Elements/CollectionList,
+    %QueryProperties,
+
+    Class          => 'RT::Tickets',
+    Page           => 1,
+    AllowSorting   => 0,
+    ShowNavigation => 0,
+&>
 <%INIT>
+
+my $title = loc("This user's [_1] highest priority [_2] tickets", $Rows, $Description );
+
 my $sql = "Requestor.id = ". $Requestor->id;
 if (@$conditions) {
     $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
 }
-my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$tickets->FromSQL( $sql );
-$tickets->RowsPerPage( $Rows );
-$tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
+
+my %QueryProperties = (
+    Query      => $sql,
+    OrderBy    => 'Priority',
+    Order      => 'DESC',
+    Rows       => $Rows || 10,
+    ShowHeader => 0,
+    Format     => qq{
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
+       '(__OwnerName__)&nbsp;<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>&nbsp;[__Status__]'
+    },
+);
 
 my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
    $url .= $m->comp('/Elements/QueryString',
-                    Query       => $sql,
-                    OrderBy     => 'Priority',
-                    Order       => 'DESC' );
+                    Query       => $QueryProperties{'Query'},
+                    OrderBy     => $QueryProperties{'OrderBy'},
+                    Order       => $QueryProperties{'Order'},
+           );
+
+$m->callback(
+    %ARGS,
+
+    Title           => \$title,
+    QueryProperties => \%QueryProperties,
+);
+
 </%INIT>
 <%ARGS>
 $Requestor => undef
