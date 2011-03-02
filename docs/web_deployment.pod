@@ -139,12 +139,18 @@ First you need to tell RT where it's located by setting C<$WebPath> in your F<RT
     # etc/RT_Config.pm` for more information.
     Set($WebPath, "/rt");
 
-Then you need to update your Apache configuration to match.  Prefix the RT related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.
+Then you need to update your Apache configuration to match.  Prefix the RT
+related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.  You
+should also make sure C<DocumentRoot> is B<not> set to
+C</opt/rt4/share/html/>, otherwise RT's source will be served from C</>.
 
 For example: if you're using the sample FastCGI config above, you might change it to:
 
     Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
     ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
+
+    # Set DocumentRoot as appropriate for the other content you want to serve
+    DocumentRoot /var/www
 
     <Location /rt>
         ...
