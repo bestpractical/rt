@@ -6,17 +6,19 @@
 
 package RT;
 
+#############################  WARNING  #############################
+#                                                                   #
+#                     NEVER EDIT RT_Config.pm !                     #
+#                                                                   #
+#       Instead, copy any sections you want to change to            #
+#       F<RT_SiteConfig.pm> and edit them there.  Otherwise,        #
+#       your changes will be lost when you upgrade RT.              #
+#                                                                   #
+#############################  WARNING  #############################
+
 =head1 NAME
 
 RT::Config
-
-=head1 WARNING
-
-NEVER EDIT RT_Config.pm.
-
-Instead, copy any sections you want to change to F<RT_SiteConfig.pm> and edit them there.
-
-=cut
 
 =head1 Base Configuration
 
