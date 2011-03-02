@@ -10,9 +10,9 @@ package RT;
 #                                                                   #
 #                     NEVER EDIT RT_Config.pm !                     #
 #                                                                   #
-#       Instead, copy any sections you want to change to            #
-#       F<RT_SiteConfig.pm> and edit them there.  Otherwise,        #
-#       your changes will be lost when you upgrade RT.              #
+#         Instead, copy any sections you want to change to          #
+#         RT_SiteConfig.pm and edit them there.  Otherwise,         #
+#         your changes will be lost when you upgrade RT.            #
 #                                                                   #
 #############################  WARNING  #############################
 
