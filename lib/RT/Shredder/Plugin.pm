@@ -127,7 +127,10 @@ sub List
         push @files, glob $mask;
     }
 
-    my %res = map { if ( $_ =~ m/([^\\\/]+)\.pm$/) { $1 => $_ } } reverse @files;
+    my %res;
+    for my $f (reverse @files) {
+        $res{$1} = $_ if $f =~ /([^\\\/]+)\.pm$/;
+    }
 
     return %res unless $type;
 
