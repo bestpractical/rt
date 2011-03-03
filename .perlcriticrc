@@ -17,6 +17,10 @@ exclude = Modules::RequireFilenameMatchesPackage Subroutines::ProhibitExplicitRe
 # RT is a big user of my $self = shift; and will continue doing so
 #
 
+# 3.8 hasn't converted to using RT->SystemUser and the like and still reaches
+# for RT:: in a lot of places.  Quiet that down with what seems like a slightly
+# larger hammer than I would like.
+#
 # Eliminate globals declared with `our' or `use vars'.
 [Variables::ProhibitPackageVars]
 # set_themes                         = core maintenance pbp
@@ -28,7 +32,7 @@ exclude = Modules::RequireFilenameMatchesPackage Subroutines::ProhibitExplicitRe
 # packages = Data::Dumper File::Find FindBin Log::Log4perl
 
 # The set of packages to allow variables for, in addition to those given in "packages".
-# add_packages = 
+add_packages = RT
 
 # Write `eval { my $foo; bar($foo) }' instead of `eval "my $foo; bar($foo);"'.
 [BuiltinFunctions::ProhibitStringyEval]
