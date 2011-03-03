@@ -56,9 +56,7 @@
 <div id="simple-customize">
 <div id="upload-logo">
   <h2>Logo</h2>
-% if ($imgdata) {
-  <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo?<% time() %>" />
-% }
+  <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
   <form method="POST" enctype="multipart/form-data">
     <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
     <input type="file" name="logo-upload" id="logo-upload" /><br />
@@ -187,6 +185,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperU
 }
 
 require JSON;
+use Digest::MD5 'md5_hex';
 
 my $text_threshold = 0.6;
 my @results;
@@ -197,7 +196,9 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                 Description => "User-provided logo",
                                                 Content => {
                                                     type => $file_hash->{ContentType},
-                                                    data => $file_hash->{LargeContent} } );
+                                                    data => $file_hash->{LargeContent},
+                                                    hash => md5_hex($file_hash->{LargeContent}),
+                                                } );
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
     $imgdata = $file_hash->{LargeContent};
