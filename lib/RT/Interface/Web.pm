@@ -1014,11 +1014,21 @@ sub ValidateWebConfig {
     $_has_validated_web_config = 1;
 
     if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-        $RT::Logger->warn("The SERVER_PORT environment variable ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort)");
+        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort)");
     }
 
-    if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-        $RT::Logger->warn("The SERVER_NAME environment variable ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain)");
+    if ($ENV{HTTP_HOST}) {
+        # match "example.com" or "example.com:80"
+        my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
+
+        if ($host ne RT->Config->Get('WebDomain')) {
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain)");
+        }
+    }
+    else {
+        if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain)");
+        }
     }
 
     if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
