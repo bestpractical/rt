@@ -1020,6 +1020,10 @@ sub ValidateWebConfig {
     if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
         $RT::Logger->warn("The SERVER_NAME environment variable ($ENV{SERVER_PORT}) from a web request does NOT match the configured WebDomain ($RT::WebDomain)");
     }
+
+    if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
+        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath)");
+    }
 }
 
 package HTML::Mason::Commands;
