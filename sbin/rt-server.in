@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -51,6 +51,12 @@ use strict;
 
 # fix lib paths, some may be relative
 BEGIN {
+    die <<EOT if ${^TAINT};
+RT does not run under Perl's "taint mode".  Remove -T from the command
+line, or remove the PerlTaintCheck parameter from your mod_perl
+configuration.
+EOT
+
     require File::Spec;
     my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
     my $bin_path;
@@ -155,7 +161,7 @@ if ($ENV{RT_TESTING}) {
 }
 
 # when used as a psgi file
-unless ($0 eq __FILE__) {
+if (caller) {
     return $app;
 }
 

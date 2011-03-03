@@ -1,0 +1,20 @@
+% if ( RT->Config->ExtraSecurity('Clickjacking') ) {
+%# This is defeatable.  The current best known implemention uses CSS to hide
+%# the content and JS to re-show it, but that fails poorly for clients that
+%# don't run JS.
+<script>
+if (window.top !== window.self) {
+    document.write = "";
+
+    window.top.location = window.self.location;
+
+    setTimeout(function(){
+        document.body.innerHTML = "";
+    }, 1);
+
+    window.self.onload = function(){
+        document.body.innerHTML = "";
+    };
+}
+</script>
+% }

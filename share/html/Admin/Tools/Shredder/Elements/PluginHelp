@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -65,7 +65,7 @@ unless( $file ) {
 
 use RT::Shredder::POD qw();
 my $text = '';
-open my $io_handle, ">:scalar", \$text or die "Can't open scalar for write: $!";
+open( my $io_handle, ">:scalar", \$text ) or die "Can't open scalar for write: $!";
 RT::Shredder::POD::plugin_html( $file, $io_handle );
 if ( $Plugin eq 'Base' ) {
     $file =~ s/\.pm$/\/Search.pm/;

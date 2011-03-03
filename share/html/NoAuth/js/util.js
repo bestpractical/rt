@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -186,8 +186,8 @@ function checkAllObjects()
 }
 
 function checkboxToInput(target,checkbox,val){    
-    var tar = jQuery('#'+target);
-    var box = jQuery('#' + checkbox);
+    var tar = jQuery('#' + escapeCssSelector(target));
+    var box = jQuery('#' + escapeCssSelector(checkbox));
     if(box.attr('checked')){
         if (tar.val()==''){
             tar.val(val);
@@ -200,6 +200,7 @@ function checkboxToInput(target,checkbox,val){
         tar.val(tar.val().replace(val+', ',''));
         tar.val(tar.val().replace(val,''));
     }
+    jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
 }
 
 // ahah for back compatibility as plugins may still use it
@@ -340,3 +341,7 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
+
+function escapeCssSelector(str) {
+    return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
+}

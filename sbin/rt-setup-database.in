@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -105,7 +105,7 @@ RT->InitClasses();
 # get customized root password
 my $root_password;
 if ( $args{'root-password-file'} ) {
-    open my $fh, '<', $args{'root-password-file'}
+    open( my $fh, '<', $args{'root-password-file'} )
       or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
     $root_password = <$fh>;
     chomp $root_password;
@@ -318,14 +318,14 @@ sub action_upgrade {
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
 
     my @versions = get_versions_from_to($base_dir, $upgrading_from, undef);
+    return (1, "No DB changes since $upgrading_from")
+        unless @versions;
+
     if (RT::Handle::cmp_version($versions[-1], $upgrading_to) > 0) {
         print "\n***** There are upgrades for $versions[-1], which is later than $upgrading_to,\n";
         print   "***** which you are nominally upgrading to.  Upgrading to $versions[-1] instead.\n";
         $upgrading_to = $versions[-1];
     }
-
-    return (1, "No DB changes between $upgrading_from and $upgrading_to")
-        unless @versions;
 
     print "\nGoing to apply following upgrades:\n";
     print map "* $_\n", @versions;
@@ -394,7 +394,7 @@ sub action_upgrade {
 sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
-    opendir my $dh, $base_dir or die "couldn't open dir: $!";
+    opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
     my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
     closedir $dh;
 

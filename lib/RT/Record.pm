@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -722,7 +722,7 @@ Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) bas
 sub _EncodeLOB {
         my $self = shift;
         my $Body = shift;
-        my $MIMEType = shift;
+        my $MIMEType = shift || '';
         my $Filename = shift;
 
         my $ContentEncoding = 'none';

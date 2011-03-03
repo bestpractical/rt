@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -224,7 +224,7 @@ sub bootstrap_config {
     $tmp{'config'}{'RT'} = File::Spec->catfile(
         "$tmp{'directory'}", 'RT_SiteConfig.pm'
     );
-    open my $config, '>', $tmp{'config'}{'RT'}
+    open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
@@ -262,7 +262,7 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 Set( \$MailCommand, sub {
     my \$MIME = shift;
 
-    open my \$handle, '>>', '$mail_catcher'
+    open( my \$handle, '>>', '$mail_catcher' )
         or die "Unable to open '$mail_catcher' for appending: \$!";
 
     \$MIME->print(\$handle);
@@ -292,7 +292,7 @@ sub bootstrap_logging {
     $tmp{'log'}{'RT'} = File::Spec->catfile(
         "$tmp{'directory'}", 'rt.debug.log'
     );
-    open my $fh, '>', $tmp{'log'}{'RT'}
+    open( my $fh, '>', $tmp{'log'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
     # make world writable so apache under different user
     # can write into it
@@ -313,8 +313,13 @@ sub set_config_wrapper {
     my $old_sub = \&RT::Config::Set;
     no warnings 'redefine';
     *RT::Config::Set = sub {
-        my @caller = caller;
-        if ( ($caller[1]||'') =~ /\.t$/ ) {
+        # Determine if the caller is either from a test script, or
+        # from helper functions called by test script to alter
+        # configuration that should be written.
+        my @caller = caller(1); # preserve list context
+        @caller = caller(0) unless @caller;
+
+        if ( ($caller[1]||'') =~ /\.t$/) {
             my ($self, $name) = @_;
             my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
             my %sigils = (
@@ -323,7 +328,7 @@ sub set_config_wrapper {
                 SCALAR => '$',
             );
             my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open my $fh, '>>', $tmp{'config'}{'RT'}
+            open( my $fh, '>>', $tmp{'config'}{'RT'} )
                 or die "Couldn't open config file: $!";
             require Data::Dumper;
             local $Data::Dumper::Terse = 1;
@@ -925,7 +930,7 @@ sub open_mailgate_ok {
     my $baseurl = shift;
     my $queue   = shift || 'general';
     my $action  = shift || 'correspond';
-    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    Test::More::ok(open(my $mail, '|-', "$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
     return $mail;
 }
 
@@ -1209,15 +1214,17 @@ sub start_plack_server {
              kill 'USR1' => getppid();
          });
 
+    # We are expecting a USR1 from the child process after it's ready
+    # to listen.  We set this up _before_ we fork to avoid race
+    # conditions.
+    my $handled;
+    local $SIG{USR1} = sub { $handled = 1};
+
     my $pid = fork();
     die "failed to fork" unless defined $pid;
 
     if ($pid) {
-        # We are expecting a USR1 from the child process after it's
-        # ready to listen.
-        my $handled;
-        $SIG{USR1} = sub { $handled = 1};
-        sleep 15;
+        sleep 15 unless $handled;
         Test::More::diag "did not get expected USR1 for test server readiness"
             unless $handled;
         push @SERVERS, $pid;
@@ -1304,7 +1311,7 @@ sub file_content {
 
     Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
-    open my $fh, "<:raw", $path
+    open( my $fh, "<:raw", $path )
         or do {
             warn "couldn't open file '$path': $!" unless $args{noexist};
             return ''

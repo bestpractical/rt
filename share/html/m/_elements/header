@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -55,6 +55,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 </%init>
 <html>
 <head>
+<& /Elements/Framekiller &>
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')|n%>/m/style.css"/>
 <title><%$title%></title>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>

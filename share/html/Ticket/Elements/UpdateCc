@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -55,13 +55,14 @@
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-<input 
-id="UpdateCc-<%$addr%>" 
-name="UpdateCc-<%$addr%>" 
-    type="checkbox" 
+<input
+    id="UpdateCc-<%$addr%>"
+    name="UpdateCc-<%$addr%>"
+    class="onetime onetimecc"
+    type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
 % $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' );"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 </td></tr>
@@ -73,10 +74,11 @@ name="UpdateCc-<%$addr%>"
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
-    type="checkbox" 
+    class="onetime onetimebcc"
+    type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
 % $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' );"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}

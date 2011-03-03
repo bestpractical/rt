@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -85,17 +85,6 @@ sub Limit  {
     my %args = ( ENTRYAGGREGATOR => 'AND',
 		 OPERATOR => '=',
 		 @_);
-    
-    #if someone's trying to search for tickets, try to resolve the uris for searching.
-    
-    if (  ( $args{'OPERATOR'} eq '=') and
-	      ( ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target') )
-       ) {
-	  my $dummy = RT::URI->new($self->CurrentUser);
-	   $dummy->FromURI($args{'VALUE'});
-	   # $uri = $dummy->URI;
-    }
-
 
     # If we're limiting by target, order by base
     # (Order by the thing that's changing)

@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -268,7 +268,7 @@ sub slurp_message {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local ( @ARGV, $/ ); <> };
+        my $message = \do { local ( @ARGV, $/ ); <STDIN> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
             $self->exit_with_success;

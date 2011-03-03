@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %#
 %#
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -43,6 +43,7 @@
 %# royalty-free, perpetual, license to use, copy, create derivative
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
-%#%# END BPS TAGGED BLOCK }}}
+%#
+%# END BPS TAGGED BLOCK }}}
 <&|/l&>Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers.</&>
 <&|/l&>Separate multiple entries with spaces.</&>

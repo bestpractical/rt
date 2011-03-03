@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -127,7 +127,7 @@ sub List
         push @files, glob $mask;
     }
 
-    my %res = map { $_ =~ m/([^\\\/]+)\.pm$/; $1 => $_ } reverse @files;
+    my %res = map { if ( $_ =~ m/([^\\\/]+)\.pm$/) { $1 => $_ } } reverse @files;
 
     return %res unless $type;
 

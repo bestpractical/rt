@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -88,7 +88,7 @@ sub file_handle {
     my $self    = shift;
     my $file    = shift;
     my $content = $HTML::Mason::Commands::m->scomp("/NoAuth/css/$file") || '';
-    open my $fh, '<', \$content or die "$!";
+    open( my $fh, '<', \$content ) or die $!;
     return $fh;
 }
 

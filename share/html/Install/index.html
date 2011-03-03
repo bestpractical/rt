@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -96,7 +96,7 @@ my $file = RT::Installer->ConfigFile();
 
 if ( ! -e $file ) {
     # write a blank RT_SiteConfig.pm
-    open my $fh, '>', $file or die $!;
+    open( my $fh, '>', $file ) or die $!;
     close $fh;
 }
 elsif ( ! -w $file ) {

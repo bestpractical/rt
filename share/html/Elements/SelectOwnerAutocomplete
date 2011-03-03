@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-%#                                          <jesse@bestpractical.com>
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -50,6 +50,7 @@ $Name           => undef
 $Objects        => []
 $Default        => 0
 $ValueAttribute => 'Name'
+$TicketObj      => undef
 </%ARGS>
 <%INIT>
 $ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
@@ -60,6 +61,8 @@ if ( $Default and not $Default =~ /\D/ ) {
     my $user = RT::User->new( $session{'CurrentUser'} );
     $user->Load($Default);
     $value = $user->$ValueAttribute;
+} elsif (defined $TicketObj) {
+    $value = $TicketObj->OwnerObj->$ValueAttribute;
 }
 
 # Map to a string of RT::Ticket-1|RT::Queue-5|...

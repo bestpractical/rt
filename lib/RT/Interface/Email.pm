@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -445,7 +445,8 @@ sub SendEmail {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
-            open my $mail, "|$path $args" or die "couldn't execute program: $!";
+            open( my $mail, '|-', "$path $args >/dev/null" )
+                or die "couldn't execute program: $!";
 
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };

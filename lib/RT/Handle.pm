@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -458,10 +458,10 @@ sub InsertSchema {
 
     my (@schema);
 
-    open my $fh_schema, "<$file";
+    open( my $fh_schema, '<', $file ) or die $!;
 
     my $has_local = 0;
-    open my $fh_schema_local, "<" . $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type )
+    open( my $fh_schema_local, "<" . $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type ))
         and $has_local = 1;
 
     my $statement = "";

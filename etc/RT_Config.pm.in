@@ -906,9 +906,9 @@ Set($MoreAboutRequestorExtraInfo, '');
 
 =item C<$MoreAboutRequestorGroupsLimit>
 
-By default, the 'More about requestor' box on Ticket/Display.html shows all
-the groups of the Requestor.
-Use this to limit the number of groups.
+By default, the 'More about requestor' box on Ticket/Display.html
+shows all the groups of the Requestor.  Use this to limit the number
+of groups; a value of undef removes the group display entirely.
 
 e.g.
 
@@ -916,7 +916,7 @@ Set($MoreAboutRequestorGroupsLimit, 10);
 
 =cut
 
-Set($MoreAboutRequestorGroupsLimit, undef);
+Set($MoreAboutRequestorGroupsLimit, 0);
 
 =item C<$AutocompleteOwners>
 
@@ -1730,6 +1730,21 @@ Default: C<< Set( $DisplayTicketAfterQuickCreate, 0 ) >>
 
 Set( $DisplayTicketAfterQuickCreate, 0 );
 
+=item C<@ExtraSecurity>
+
+This is a list of extra security measures to enable that help keep your RT
+safe.  If you don't know what these mean, you should almost certainly leave the
+defaults alone.
+
+    Clickjacking - Enables framekiller javascript and adds an X-Frame-Options:
+                   DENY header to all requests
+
+Default: C<< Set( @ExtraSecurity, qw(Clickjacking) ) >>
+
+=cut
+
+Set( @ExtraSecurity, qw(Clickjacking) );
+
 =back
 
 =head1 UTF-8 Configuration
@@ -1820,7 +1835,7 @@ Set($AmbiguousDayInFuture, 0);
 
 =head1 Approval Configuration
 
-Configration for the approvl system
+Configuration for the approval system
 
 =over 4
 

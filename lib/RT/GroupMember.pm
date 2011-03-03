@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -429,6 +429,42 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+
+=cut
+
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
+
+
+=cut
+
+
 
 sub _CoreAccessible {
     {
@@ -439,6 +475,14 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         MemberId =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Creator =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy =>
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated =>
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

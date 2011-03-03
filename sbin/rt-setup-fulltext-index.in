@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -390,7 +390,7 @@ sub ora_create_stop_list {
         undef, $name, 'BASIC_STOPLIST'
     );
 
-    open my $fh, '<:utf8', $file
+    open( my $fh, '<:utf8', $file )
         or die "couldn't open file '$file': $!";
     while ( my $word = <$fh> ) {
         chomp $word;

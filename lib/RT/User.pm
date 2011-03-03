@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -1568,7 +1568,7 @@ sub SetPrivateKey {
     );
     return ($status, $self->loc("Couldn't set private key"))
         unless $status;
-    return ($status, $self->loc("Unset private key"));
+    return ($status, $self->loc("Set private key"));
 }
 
 sub BasicColumns {

@@ -2,9 +2,9 @@
     sub {
         $RT::Logger->warning(
             "Going to add [OLD] prefix to all templates in approvals queue."
-            ." If you never used approvals then you can delete all these"
-            ." templates with [OLD] prefix. Leave the new ones there because"
-            ." maybe you will eventually want to use start using approvals."
+            ." If you have never used approvals, you can safely delete all the"
+            ." templates with the [OLD] prefix. Leave the new Approval templates because"
+            ." you may eventually want to start using approvals."
         );
 
         my $approvals_q = RT::Queue->new( RT->SystemUser );

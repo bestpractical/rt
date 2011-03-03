@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -195,9 +195,9 @@ sub GetMessageContent {
     
     #Load the sourcefile, if it's been handed to us
     if ($source) {
-	open (SOURCE, "<$source");
-	@lines = (<SOURCE>);
-	close (SOURCE);
+	open( SOURCE, '<', $source ) or die $!;
+	@lines = (<SOURCE>) or die $!;
+	close (SOURCE) or die $!;
     }
     elsif ($args{'Content'}) {
 	@lines = split('\n',$args{'Content'});
@@ -209,7 +209,7 @@ sub GetMessageContent {
     for (@lines) {
 	print $fh $_;
     }
-    close ($fh);
+    close ($fh) or die $!;
     
     #Edit the file if we need to
     if ($edit) {	
@@ -221,9 +221,9 @@ sub GetMessageContent {
 	system ($ENV{'EDITOR'}, $filename);
     }	
     
-    open (READ, "<$filename");
+    open( READ, '<', $filename ) or die $!;
     my @newlines = (<READ>);
-    close (READ);
+    close (READ) or die $!;
 
     unlink ($filename) unless (debug());
     return(\@newlines);

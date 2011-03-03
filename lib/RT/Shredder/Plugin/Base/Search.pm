@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -76,10 +76,11 @@ Allow you to limit search results. B<< Default value is C<10> >>.
 sub SupportArgs
 {
     my %seen;
-    return sort
+    my @args = sort
         grep $_ && !$seen{$_},
             shift->SUPER::SupportArgs(@_),
             qw(limit);
+    return @args;
 }
 
 sub TestArgs

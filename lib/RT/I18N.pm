@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -117,10 +117,10 @@ sub Init {
     foreach my $l ( @lang ) {
         $import{$l} = [
             Gettext => $RT::LexiconPath."/$l.po",
-            Gettext => $RT::LocalLexiconPath."/*/$l.po",
-            Gettext => $RT::LocalLexiconPath."/$l.po",
         ];
         push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
+        push @{ $import{$l} }, (Gettext => $RT::LocalLexiconPath."/*/$l.po",
+                                Gettext => $RT::LocalLexiconPath."/$l.po");
     }
 
     # Acquire all .po files and iterate them into lexicons

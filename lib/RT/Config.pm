@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -992,10 +992,11 @@ sub Meta {
 sub Sections {
     my $self = shift;
     my %seen;
-    return sort
+    my @sections = sort
         grep !$seen{$_}++,
         map $_->{'Section'} || 'General',
         values %META;
+    return @sections;
 }
 
 sub Options {
@@ -1105,6 +1106,20 @@ sub UpdateOption {
         $META{$name}{$type} = $args{$type};
     }
     return 1;
+}
+
+=head2 ExtraSecurity NAME
+
+Returns true if NAME is included in the C<@ExtraSecurity> list, false if not.
+
+This is currently a convenience method for C<< grep { lc $_ eq lc $name } RT->Config->Get('ExtraSecurity') >>.
+
+=cut
+
+sub ExtraSecurity {
+    my $self = shift;
+    my $name = lc shift;
+    return scalar grep { lc $_ eq $name } $self->Get('ExtraSecurity');
 }
 
 RT::Base->_ImportOverlays();

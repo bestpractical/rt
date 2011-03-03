@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -516,6 +516,7 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
+        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -563,6 +564,15 @@ sub AttemptExternalAuth {
 
         if ( _UserLoggedIn() ) {
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
+            # It is possible that we did a redirect to the login page,
+            # if the external auth allows lack of auth through with no
+            # REMOTE_USER set, instead of forcing a "permission
+            # denied" message.  Honor the $next.
+            Redirect($next) if $next;
+            # Unlike AttemptPasswordAuthentication below, we do not
+            # force a redirect to / if $next is not set -- otherwise,
+            # straight-up external auth would always redirect to /
+            # when you first hit it.
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
             $user = $orig_user;
@@ -841,7 +851,7 @@ sub SendStaticFile {
         $type ||= "application/octet-stream";
     }
     $HTML::Mason::Commands::r->content_type($type);
-    open my $fh, "<$file" or die "couldn't open file: $!";
+    open( my $fh, '<', $file ) or die "couldn't open file: $!";
     binmode($fh);
     {
         local $/ = \16384;
