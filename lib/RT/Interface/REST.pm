@@ -51,6 +51,7 @@
 
 package RT::Interface::REST;
 use strict;
+use warnings;
 use RT;
 
 BEGIN {
@@ -160,8 +161,8 @@ sub form_parse {
                 pop @v while (@v && $v[-1] eq '');
 
                 # Strip longest common leading indent from text.
-                my ($ws, $ls) = ("");
-                foreach $ls (map {/^(\s+)/} @v[1..$#v]) {
+                my $ws = ("");
+                foreach my $ls (map {/^(\s+)/} @v[1..$#v]) {
                     $ws = $ls if (!$ws || length($ls) < length($ws));
                 }
                 s/^$ws// foreach @v;
@@ -189,8 +190,7 @@ sub form_parse {
     }
     push(@forms, [ $c, $o, $k, $e ]) if ($e || $c || @$o);
 
-    my $l;
-    foreach $l (keys %$k) {
+    foreach my $l (keys %$k) {
         $k->{$l} = vsplit($k->{$l}) if (ref $k->{$l} eq 'ARRAY');
     }
 
@@ -202,7 +202,7 @@ sub form_compose {
     my ($forms) = @_;
     my (@text, $form);
 
-    foreach $form (@$forms) {
+    foreach my $form (@$forms) {
         my ($c, $o, $k, $e) = @$form;
         my $text = "";
 
@@ -216,7 +216,7 @@ sub form_compose {
         elsif ($o) {
             my (@lines, $key);
 
-            foreach $key (@$o) {
+            foreach my $key (@$o) {
                 my ($line, $sp, $v);
                 my @values = (ref $k->{$key} eq 'ARRAY') ?
                                @{ $k->{$key} } :
@@ -225,7 +225,7 @@ sub form_compose {
                 $sp = " "x(length("$key: "));
                 $sp = " "x4 if length($sp) > 16;
 
-                foreach $v (@values) {
+                foreach my $v (@values) {
                     $v = '' unless defined $v;
                     if ( $v =~ /\n/) {
                         $v =~ s/^/$sp/gm;
@@ -293,9 +293,9 @@ sub vpush {
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
     my ($val) = @_;
-    my ($line, $word, @words);
+    my @words;
 
-    foreach $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : ($val||''))
+    foreach my $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : ($val||''))
     {
         # XXX: This should become a real parser, ? la Text::ParseWords.
         $line =~ s/^\s+//;
