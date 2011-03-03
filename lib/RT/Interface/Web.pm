@@ -208,6 +208,8 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->autoflush( $HTML::Mason::Commands::m->request_comp->attr('AutoFlush') )
         if ( $HTML::Mason::Commands::m->request_comp->attr_exists('AutoFlush') );
 
+    ValidateWebConfig();
+
     DecodeARGS($ARGS);
     PreprocessTimeUpdates($ARGS);
 
@@ -1000,6 +1002,16 @@ sub LogRecordedSQLStatements {
                 . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
         );
     }
+
+}
+
+my $_has_validated_web_config = 0;
+sub ValidateWebConfig {
+    my $self = shift;
+
+    # do this once per server instance, not once per request
+    return if $_has_validated_web_config;
+    $_has_validated_web_config = 1;
 
 }
 
