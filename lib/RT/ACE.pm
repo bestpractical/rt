@@ -566,7 +566,7 @@ sub _ParseObjectArg {
     if( $args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'}) ) {
 	$RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
 	return ();
-    } elsif( $args{'Object'} && !UNIVERSAL::can($args{'Object'},'id') ) {
+    } elsif( $args{'Object'} && ref($args{'Object'}) &&  !$args{'Object'}->can('id') ) {
 	$RT::Logger->crit( "Method called called Object that has no id method" );
 	return ();
     } elsif( $args{'Object'} ) {

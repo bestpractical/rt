@@ -76,10 +76,11 @@ Allow you to limit search results. B<< Default value is C<10> >>.
 sub SupportArgs
 {
     my %seen;
-    return sort
+    my @args = sort
         grep $_ && !$seen{$_},
             shift->SUPER::SupportArgs(@_),
             qw(limit);
+    return @args;
 }
 
 sub TestArgs

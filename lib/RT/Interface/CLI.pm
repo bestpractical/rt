@@ -196,8 +196,8 @@ sub GetMessageContent {
     #Load the sourcefile, if it's been handed to us
     if ($source) {
 	open( SOURCE, '<', $source ) or die $!;
-	@lines = (<SOURCE>);
-	close (SOURCE);
+	@lines = (<SOURCE>) or die $!;
+	close (SOURCE) or die $!;
     }
     elsif ($args{'Content'}) {
 	@lines = split('\n',$args{'Content'});
@@ -209,7 +209,7 @@ sub GetMessageContent {
     for (@lines) {
 	print $fh $_;
     }
-    close ($fh);
+    close ($fh) or die $!;
     
     #Edit the file if we need to
     if ($edit) {	
@@ -223,7 +223,7 @@ sub GetMessageContent {
     
     open( READ, '<', $filename ) or die $!;
     my @newlines = (<READ>);
-    close (READ);
+    close (READ) or die $!;
 
     unlink ($filename) unless (debug());
     return(\@newlines);

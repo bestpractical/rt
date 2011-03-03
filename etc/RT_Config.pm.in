@@ -1835,7 +1835,7 @@ Set($AmbiguousDayInFuture, 0);
 
 =head1 Approval Configuration
 
-Configration for the approvl system
+Configuration for the approval system
 
 =over 4
 

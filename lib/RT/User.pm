@@ -1568,7 +1568,7 @@ sub SetPrivateKey {
     );
     return ($status, $self->loc("Couldn't set private key"))
         unless $status;
-    return ($status, $self->loc("Unset private key"));
+    return ($status, $self->loc("Set private key"));
 }
 
 sub BasicColumns {
