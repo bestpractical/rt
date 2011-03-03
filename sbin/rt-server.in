@@ -185,6 +185,16 @@ else {
     push @args, '--port', $port;
 }
 
+# inform the rest of the system what port we're using
+my $old_app = $app;
+$app = sub {
+    my $env = shift;
+
+    $env->{'rt.port'} = $port;
+
+    $old_app->($env, @_);
+};
+
 push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @args;
 
