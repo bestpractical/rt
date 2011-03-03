@@ -48,6 +48,8 @@
 
 package RT::Interface::Email::Auth::MailFrom;
 use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
+use strict;
+use warnings;
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 

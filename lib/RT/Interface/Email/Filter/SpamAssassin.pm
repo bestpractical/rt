@@ -47,6 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Email::Filter::SpamAssassin;
+use strict;
+use warnings;
 
 use Mail::SpamAssassin;
 my $spamtest = Mail::SpamAssassin->new();
