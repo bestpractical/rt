@@ -1013,6 +1013,9 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
+    if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
+        $RT::Logger->warn("The \$SERVER_PORT environment variable ($ENV{SERVER_PORT}) from a web request does NOT match the configured WebPort ($RT::WebPort)");
+    }
 }
 
 package HTML::Mason::Commands;
