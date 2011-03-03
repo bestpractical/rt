@@ -87,6 +87,7 @@ ul.list-menu ul li {
 
 #rt-portal .titlebox-content {
     height: 100%;
+    padding: 0;
 }
 
 #rt-portal .titlebox.rolled-up {
