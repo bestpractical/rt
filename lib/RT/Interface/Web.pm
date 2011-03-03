@@ -1014,7 +1014,7 @@ sub ValidateWebConfig {
     $_has_validated_web_config = 1;
 
     if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort)");
+        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 
     if ($ENV{HTTP_HOST}) {
@@ -1022,17 +1022,17 @@ sub ValidateWebConfig {
         my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
 
         if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain)");
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
     else {
         if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain)");
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
 
     if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
-        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath)");
+        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath). You should fix your Set(\$WebPath, ...) setting in RT_SiteConfig.pm otherwise your internal links may be broken.");
     }
 }
 
