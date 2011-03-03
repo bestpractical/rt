@@ -1018,7 +1018,7 @@ sub ValidateWebConfig {
     }
 
     if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-        $RT::Logger->warn("The SERVER_NAME environment variable ($ENV{SERVER_PORT}) does NOT match the configured WebDomain ($RT::WebDomain)");
+        $RT::Logger->warn("The SERVER_NAME environment variable ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain)");
     }
 
     if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
