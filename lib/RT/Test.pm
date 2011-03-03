@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -312,8 +312,13 @@ sub set_config_wrapper {
     my $old_sub = \&RT::Config::Set;
     no warnings 'redefine';
     *RT::Config::Set = sub {
-        my @caller = caller;
-        if ( ($caller[1]||'') =~ /\.t$/ ) {
+        # Determine if the caller is either from a test script, or
+        # from helper functions called by test script to alter
+        # configuration that should be written.
+        my @caller = caller(1); # preserve list context
+        @caller = caller(0) unless @caller;
+
+        if ( ($caller[1]||'') =~ /\.t$/) {
             my ($self, $name) = @_;
             my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
             my %sigils = (

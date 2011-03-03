@@ -8,7 +8,7 @@ RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 my ($baseurl, $m);
 
 SKIP: {
-    skip 'test with apache+mod_perl has a bug of timezone', 44
+    skip 'test with apache+mod_perl has a bug of timezone', 51
       if $ENV{RT_TEST_WEB_HANDLER}
           && $ENV{RT_TEST_WEB_HANDLER} =~ /apache/
           && $ENV{RT_TEST_WEB_HANDLER} !~ /fastcgi/;

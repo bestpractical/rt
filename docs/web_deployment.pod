@@ -22,63 +22,7 @@ to use L<Starman>, a high performance preforking server:
 
     /opt/rt4/sbin/rt-server --server Starman --port 8080
 
-=head2 mod_perl
-
-=head3 mod_perl 1.xx
-
-B<WARNING: mod_perl 1.99_xx is not supported.>
-
-See below configuration instructions for mod_perl 2.x.
-
-To install RT with mod_perl 1.x, you'll need to install the
-Apache database connection cache. To make sure it's installed, run
-the following command:
-
-    perl -MCPAN -e'install "Apache::DBI"'
-
-Next, add a few lines to your Apache 1.3.xx configuration file, so that
-it knows where to find RT:
-
-    <IfModule !mpm_netware_module>
-    <IfModule !mpm_winnt_module>
-    User rt
-    Group www
-    </IfModule>
-    </IfModule>
-
-    <VirtualHost rt.example.com>
-        ServerRoot /usr
-        ServerAdmin root@localhost
-
-        LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule env_module modules/mod_env.so
-        LoadModule alias_module modules/mod_alias.so
-        LoadModule perl_module modules/mod_perl.so
-
-        PerlModule Apache::DBI
-
-        # optional apache logs for RT
-        # ErrorLog /opt/rt4/var/log/apache.error
-        # TransferLog /opt/rt4/var/log/apache.access
-        # LogLevel debug
-
-        AddDefaultCharset UTF-8
-        PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
-
-        RedirectMatch permanent (.*)/$ $1/index.html
-
-        DocumentRoot "/opt/rt4/share/html"
-        <Directory "/opt/rt4/share/html">
-            Order allow,deny
-            Allow from all
-
-            SetHandler perl-script
-            PerlHandler Plack::Handler::Apache1
-            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
-        </Directory>
-    </VirtualHost>
-
-=head3 mod_perl 2.xx
+=head2 mod_perl 2.xx
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
@@ -112,14 +56,14 @@ it knows where to find RT:
         RedirectMatch permanent (.*)/$ $1/index.html
 
         DocumentRoot "/opt/rt4/share/html"
-        <Directory "/opt/rt4/share/html">
+        <Location />
             Order allow,deny
             Allow from all
 
             SetHandler perl-script
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
-        </Directory>
+        </Location>
     <Perl>
         use Plack::Handler::Apache2;
         Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
@@ -177,6 +121,13 @@ Apache configuration file telling it about RT:
 To run RT using FastCGI with other web servers like nginx, please see
 L<Plack::Handler::FCGI> for configuration examples.  You should use
 C</opt/rt4/sbin/rt-server.fcgi> as your PSGI-app.
+
+=head2 mod_perl 1.xx
+
+B<WARNING: mod_perl 1.99_xx is not supported.>
+
+To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
+configuration examples.
 
 =cut
 

@@ -2,8 +2,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -552,10 +552,11 @@ sub Wipeout
         die "Couldn't commit transaction" unless $RT::Handle->Commit;
     };
     if( $@ ) {
+        my $error = $@;
         $RT::Handle->Rollback('force');
         $self->RollbackDumpTo( Mark => $mark ) if $mark;
-        die $@ if RT::Shredder::Exception::Info->caught;
-        die "Couldn't wipeout object: $@";
+        die $error if RT::Shredder::Exception::Info->caught;
+        die "Couldn't wipeout object: $error";
     }
 }
 

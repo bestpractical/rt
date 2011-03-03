@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -238,7 +238,7 @@ $deps{'PSGI'} = [ text_to_hash( << '.') ];
 CGI 3.38
 CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
-Plack 0.9942
+Plack 0.9971
 Plack::Handler::Starlet
 CGI::Emulate::PSGI
 .
