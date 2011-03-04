@@ -195,7 +195,7 @@ if ( $last_index != -1 && $args[$last_index+1] =~ /^\d+$/ ) {
     $app = sub {
         my $env = shift;
 
-        $env->{'rt.port'} = $port;
+        $env->{'rt.explicit_port'} = $port;
 
         $old_app->($env, @_);
     };
