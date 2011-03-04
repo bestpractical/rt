@@ -1,0 +1,116 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Widgets/SelectionBox:header, nojs => 1 &>
+
+
+<br />
+
+% for my $pane ( @panes ) {
+<&|/Widgets/TitleBox,
+    title => loc('Dashboards in menu'),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
+</&>
+% }
+
+<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu") &>
+<form method="post" action="DashboardsInMenu.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="submit" class="button" value="<% loc('Reset to default') %>">
+</form>
+</&>
+
+
+<%INIT>
+my @results;
+my $title = loc("Customize").' '.loc("dashboards in menu");
+my $user = $session{'CurrentUser'}->UserObj;
+
+if ($ARGS{Reset}) {
+    my ($ok, $msg) = $user->SetPreferences('DashboardsInMenu', {});
+    push @results, $ok ? loc('Preferences saved.') : $msg;
+    delete $session{'dashboards_in_menu'};
+}
+
+my ($default_dashboards) =
+RT::System->new($session{'CurrentUser'})->Attributes->Named('DashboardsInMenu');
+
+my $dashboard_pref =
+  $session{CurrentUser}->UserObj->Preferences( 'DashboardsInMenu',
+    $default_dashboards ? $default_dashboards->Content : () );
+
+my $current_dashboards = $dashboard_pref->{dashboards} || [];
+
+my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards");
+
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureDashboardsInMenu',
+    Action => 'DashboardsInMenu.html',
+    panes => ['dashboards_in_menu'],
+    items => \@dashboards,
+    current_portlets => $current_dashboards,
+    OnSave => sub {
+        my ( $conf ) = @_;
+        my ( $ok, $msg ) =
+          $user->SetPreferences( 'DashboardsInMenu', $conf );
+        push @results, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
+        delete $session{'dashboards_in_menu'};
+    }
+);
+
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
+
+</%INIT>
+

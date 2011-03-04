@@ -2,8 +2,8 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
-%#                                          <sales@bestpractical.com>
+%# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
 %#
@@ -45,37 +45,32 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$Action
+$OnSave
+$items
+$panes
+$current_portlets
+$ReadOnly => 0
+</%args>
 <%init>
-# put the list of dashboards into the navigation
-use RT::Dashboard;
-my @objs = RT::Dashboard->new($User)->ObjectsForLoading;
-
-my %dashboard_map;
-
-for my $object (@objs) {
-    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject",
-            Object => $object, User => $User );
-
-    push @{ $dashboard_map{$_} }, @{ $new_dashboards->{$_} || [] }
-        for qw/personal system/;
-
-    push @{ $dashboard_map{group}{$_} }, @{ $new_dashboards->{group}{$_} }
-        for keys %{ $new_dashboards->{group} || {} };
+my $portlets = $current_portlets;
+my @panes;
+for my $pane (@$panes) {
+    push @panes, $m->comp(
+        '/Widgets/SelectionBox:new',
+        Action    => $Action,
+        Name      => $pane,
+        Available => $items,
+        AutoSave  => 1,
+        ReadOnly  => $ReadOnly,
+        OnSubmit  => sub {
+            my $sel = shift;
+            $OnSave->( { dashboards => $sel->{Current} } );
+        },
+        Selected => $portlets,
+    );
 }
 
-my @dashboards = (
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{personal} || [] }),
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map{system}   || [] }),
-
-    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map{group}{$_} } }
-        keys %{ $dashboard_map{group} || {} },
-);
-
-$m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboards');
-
-return @dashboards;
+return @panes;
 </%init>
-
-<%args>
-$User => $session{CurrentUser}
-</%args>

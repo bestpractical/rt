@@ -61,16 +61,37 @@ my $query_string = sub {
 my $build_main_nav = sub {
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
-    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
-    my $limit      = 7;
 
-    my $more = 0;
-    if ( @dashboards > $limit ) {
-        $more = 1;
-        splice @dashboards, $limit;
+    unless ($session{'dashboards_in_menu'}) {
+        my $dashboards_in_menu = $session{CurrentUser}->UserObj->Preferences(
+            'DashboardsInMenu',
+            {},
+        );
+
+        unless ($dashboards_in_menu->{dashboards}) {
+            my ($default_dashboards) =
+                RT::System->new( $session{'CurrentUser'} )
+                    ->Attributes
+                    ->Named('DashboardsInMenu');
+            if ($default_dashboards) {
+                $dashboards_in_menu = $default_dashboards->Content;
+            }
+        }
+
+        $session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
     }
-
-    my $position = 0;
+    
+    my @dashboards;
+    for my $id ( @{$session{'dashboards_in_menu'}} ) {
+        my $dash = RT::Dashboard->new( $session{CurrentUser} );
+        my ( $status, $msg ) = $dash->LoadById($id);
+        if ( $status ) {
+            push @dashboards, $dash;
+        }
+        else {
+            $RT::Logger->warning( "Failed to load dashboard $id: $msg" );
+        }
+    }
 
     my $dashes = Menu()->child('home');
     if (@dashboards) {
@@ -79,8 +100,14 @@ my $build_main_nav = sub {
                        path => '/Dashboards/' . $dash->id . '/' . $dash->Name,);
         }
 
-        $dashes->child( more => title => loc('All Dashboards'), path  => 'Dashboards/index.html' );
     }
+
+    $dashes->child(
+        edit => title => loc('Update This Menu'),
+        path => 'Prefs/DashboardsInMenu.html',
+    );
+
+    $dashes->child( more => title => loc('All Dashboards'), path  => 'Dashboards/index.html' );
     my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
     if ( $dashboard->CurrentUserCanCreateAny ) {
         $dashes->child('dashboard_create' => title => loc('New Dashboard') => path => "/Dashboards/Modify.html?Create=1" );
@@ -194,6 +221,8 @@ my $build_admin_menu = sub {
                               description => loc('Modify global user rights') );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html',
                               description => loc('Modify the default "RT at a glance" view') );
+        $admin_global->child( 'dashboards-in-menu' => title => loc('Dashboards in menu'), path => '/Admin/Global/DashboardsInMenu.html',
+                              description => loc('Customize dashboards in menu') );
         $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
                               description => loc('Customize the look of your RT') );
 
@@ -287,6 +316,9 @@ my $build_admin_menu = sub {
             $tabs->child( memberships => title => loc('Memberships'), path => "/Admin/Users/Memberships.html?id=" . $id );
             $tabs->child( history => title => loc('History'), path => "/Admin/Users/History.html?id=" . $id );
             $tabs->child( 'my-rt' => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
+            $tabs->child( 'dashboards-in-menu' => title => loc('Dashboards in menu'),
+                    path => '/Admin/Users/DashboardsInMenu.html?id=' . $id );
+
             if ( RT->Config->Get('GnuPG')->{'enable'} ) {
                 $tabs->child( pgp => title => loc('GnuPG'), path => "/Admin/Users/GnuPG.html?id=" . $id );
             }
@@ -392,6 +424,8 @@ my $build_admin_menu = sub {
         $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
         $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
+        $settings->child( dashboards_in_menu => title => loc('Dashboards in menu'),
+                    path => '/Prefs/DashboardsInMenu.html' );
         $settings->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
 
         my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches' );
