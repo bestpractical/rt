@@ -61,13 +61,24 @@ my $query_string = sub {
 my $build_main_nav = sub {
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
-    my ($default_dashboards) =
-      RT::System->new( $session{'CurrentUser'} )
-      ->Attributes->Named('DashboardsInMenu');
-    my $dashboard_pref =
-      $session{CurrentUser}->UserObj->Preferences( 'DashboardsInMenu',
-        $default_dashboards ? $default_dashboards->Content : () );
-    $session{'dashboards_in_menu'} ||= $dashboard_pref->{dashboards} || [];
+
+    unless ($session{'dashboards_in_menu'}) {
+        my $dashboards_in_menu = $session{CurrentUser}->UserObj->Preferences(
+            'DashboardsInMenu',
+        );
+
+        if (!$dashboards_in_menu) {
+            my ($default_dashboards) =
+                RT::System->new( $session{'CurrentUser'} )
+                    ->Attributes
+                    ->Named('DashboardsInMenu');
+            if ($default_dashboards) {
+                $dashboards_in_menu = $default_dashboards->Content;
+            }
+        }
+
+        $session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
+    }
     
     my @dashboards;
     for my $id ( @{$session{'dashboards_in_menu'}} ) {
