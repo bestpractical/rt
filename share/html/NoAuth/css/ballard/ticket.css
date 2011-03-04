@@ -265,10 +265,10 @@ div.requestor-ticket-links {
 }
 
 
-/* textareas get to be bigger */
-.edit-custom-field.cftype-Text textarea,
-.edit-custom-field.cftype-Freeform input,
-.edit-custom-field.cftype-Wikitext textarea
+/* textareas get to be bigger when we're in a table */
+tr.edit-custom-field.cftype-Text textarea,
+tr.edit-custom-field.cftype-Freeform input,
+tr.edit-custom-field.cftype-Wikitext textarea
 {
     width: 100%;
 }
