@@ -65,9 +65,10 @@ my $build_main_nav = sub {
     unless ($session{'dashboards_in_menu'}) {
         my $dashboards_in_menu = $session{CurrentUser}->UserObj->Preferences(
             'DashboardsInMenu',
+            {},
         );
 
-        if (!$dashboards_in_menu) {
+        unless ($dashboards_in_menu->{dashboards}) {
             my ($default_dashboards) =
                 RT::System->new( $session{'CurrentUser'} )
                     ->Attributes
