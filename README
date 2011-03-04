@@ -97,11 +97,9 @@ GENERAL INSTALLATION
     If you are unsure of your CPAN version, it will be printed when you run the
     shell.
 
-    If you are having trouble installing Imager::File::GIF/PNG/JPEG, you will
-    need the appropriate development libraries (giflib-devel, libpng-devel and
-    libjpeg-devel are the rpm names for these libraries).  You may also want to
-    install gd-devel at this time, along with the graphviz rpms (available from
-    graphviz.org) if you want to use graphs and charts.
+    If you are having trouble installing GD or Graphviz, you should install
+    gd-devel and the graphviz libraries using your distribution's package
+    manager.
 
 5   Check to make sure everything was installed properly.
 

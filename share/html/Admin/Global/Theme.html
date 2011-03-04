@@ -56,7 +56,7 @@
 <div id="simple-customize">
 <div id="upload-logo">
   <h2>Logo</h2>
-% if ($img) {
+% if ($imgdata) {
   <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo?<% time() %>" />
 % }
   <form method="POST" enctype="multipart/form-data">
@@ -190,11 +190,8 @@ require JSON;
 
 my $text_threshold = 0.6;
 my @results;
+my $imgdata;
 
-my $has_color_analyzer =
-eval { require Imager; require Convert::Color; 1 };
-
-my $img;
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
     my ($id, $msg) = RT->System->SetAttribute( Name => "UserLogo",
                                                 Description => "User-provided logo",
@@ -203,11 +200,7 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
                                                     data => $file_hash->{LargeContent} } );
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
-    $img = Imager->new;
-    unless ( $img->read(data => $file_hash->{LargeContent}) ) {
-        push @results, loc("Unable to read image: [_1]", $img->errstr);
-        undef $img;
-    }
+    $imgdata = $file_hash->{LargeContent};
 }
 elsif ($ARGS{'reset_logo'}) {
     RT->System->DeleteAttribute('UserLogo');
@@ -216,11 +209,7 @@ else {
     if (my $attr = RT->System->FirstAttribute('UserLogo')) {
         my $content = $attr->Content;
         if (ref($content) eq 'HASH') {
-            $img = Imager->new;
-            unless ( $img->read(data => $content->{data}) ) {
-                push @results, loc("Unable to read image: [_1]", $img->errstr);
-                undef $img;
-            }
+            $imgdata = $content->{data};
         }
         else {
             RT->System->DeleteAttribute('UserLogo');
@@ -253,17 +242,31 @@ if (!$user_css) {
 
 # XXX: move this to some other modules
 
-my $colors = $img && $has_color_analyzer? analyze_img($img) : undef;
 use List::MoreUtils qw(uniq);
+
+my $has_color_analyzer = eval { require Convert::Color; 1 };
+my $colors;
+
+if (    $imgdata
+    and not RT->Config->Get('DisableGD')
+    and $has_color_analyzer)
+{
+    require GD;
+    if ( my $img = GD::Image->new($imgdata) ) {
+        $colors = analyze_img($img);
+    }
+    else {
+        push @results, loc("Unable to read image");
+    }
+}
 
 sub analyze_img {
     my $img = shift;
     my $color;
 
-    for my $i (0..$img->getwidth-1) {
-        for my $j (0..$img->getheight-1) {
-            my @color = $img->getpixel(x=>$i, y=>$j)->rgba;
-            pop @color;
+    for my $i (0..$img->width-1) {
+        for my $j (0..$img->height-1) {
+            my @color = $img->rgb( $img->getPixel($i,$j) );
             my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
             my $c = join(',',@color);
             next if $hsl->lightness < 0.1;
