@@ -1713,8 +1713,20 @@ sub ProcessACLs {
         # Turn our addprincipal rights spec into a real one
         for my $arg (keys %$ARGSref) {
             next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
-            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
-            push @check, "$principal_id-$1";
+
+            my $tuple = "$principal_id-$1";
+            my $key   = "SetRights-$tuple";
+
+            # If we have it already, that's odd, but merge them
+            if (grep { $_ eq $tuple } @check) {
+                $ARGSref->{$key} = [
+                    (ref $ARGSref->{$key} eq 'ARRAY' ? @{$ARGSref->{$key}} : $ARGSref->{$key}),
+                    (ref $ARGSref->{$arg} eq 'ARRAY' ? @{$ARGSref->{$arg}} : $ARGSref->{$arg}),
+                ];
+            } else {
+                $ARGSref->{$key} = $ARGSref->{$arg};
+                push @check, $tuple;
+            }
         }
     }
 
