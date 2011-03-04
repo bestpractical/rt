@@ -162,10 +162,6 @@ unless ($0 eq __FILE__) {
 
 # load appropriate server
 
-my $explicit_port = $ARGV[0] && $ARGV[0] !~ m/-/ ? shift @ARGV : undef;
-warn "Deprecated: please run $0 --port $explicit_port instead".$/ if $explicit_port;
-my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
-
 require Plack::Runner;
 
 my $is_fastcgi = $0 =~ m/fcgi$/;
@@ -173,27 +169,42 @@ my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
                             $is_fastcgi        ? ( server => 'FCGI' )
                                                : (),
                             env => 'deployment' );
+
+# figure out the port
+my $port;
+
+# handle "rt-server 8888" for back-compat, but complain about it
+if ($ARGV[0] && $ARGV[0] =~ m/^\d+$/) {
+    warn "Deprecated: please run $0 --port $ARGV[0] instead\n";
+    unshift @ARGV, '--port';
+}
+
 my @args = @ARGV;
 
 use List::MoreUtils 'last_index';
-my $last_index = last_index { $_ eq '--port' } @args; 
+my $last_index = last_index { $_ eq '--port' } @args;
+
+my $explicit_port;
 
 if ( $last_index != -1 && $args[$last_index+1] =~ /^\d+$/ ) {
-    $port = $args[$last_index+1];
+    $explicit_port = $args[$last_index+1];
+    $port = $explicit_port;
+
+    # inform the rest of the system what port we manually chose
+    my $old_app = $app;
+    $app = sub {
+        my $env = shift;
+
+        $env->{'rt.port'} = $port;
+
+        $old_app->($env, @_);
+    };
 }
 else {
+    # default to the configured WebPort and inform Plack::Runner
+    $port = RT->Config->Get('WebPort') || '8080';
     push @args, '--port', $port;
 }
-
-# inform the rest of the system what port we're using
-my $old_app = $app;
-$app = sub {
-    my $env = shift;
-
-    $env->{'rt.port'} = $port;
-
-    $old_app->($env, @_);
-};
 
 push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @args;
