@@ -69,6 +69,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
+use List::MoreUtils qw();
 
 =head2 SquishedCSS $style
 
@@ -1742,7 +1743,7 @@ sub ProcessACLs {
         $state{$tuple} = { map { $_ => 1 } @rights };
     }
 
-    foreach my $tuple (@check) {
+    foreach my $tuple (List::MoreUtils::uniq @check) {
         next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
 
         my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
