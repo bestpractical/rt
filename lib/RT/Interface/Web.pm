@@ -1697,7 +1697,7 @@ sub ProcessACLs {
         my $principal;
         if ( $type eq 'user' ) {
             $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->Load( $ARGSref->{$key} );
+            $principal->LoadByCol( Name => $ARGSref->{$key} );
         }
         else {
             $principal = RT::Group->new( $session{'CurrentUser'} );
