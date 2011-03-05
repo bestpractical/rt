@@ -866,7 +866,9 @@ sub RFC2616 {
 
 =head4 iCal
 
-Returns the object's date and time in iCalendar format,
+Returns the object's date and time in iCalendar format.
+If only date requested then users timezone is used, otherwise
+it's UTC.
 
 Supports arguments: C<Date> and C<Time>.
 See </Output formatters> for description of arguments.
@@ -879,8 +881,16 @@ sub iCal {
         Date => 1, Time => 1,
         @_,
     );
+
+    my $tz;
+    if ( $args{'Date'} && !$args{'Time'} ) {
+        $tz = 'user';
+    } else {
+        $tz = 'utc';
+    }
+
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-        $self->Localtime( 'utc' );
+        $self->Localtime( $tz );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
