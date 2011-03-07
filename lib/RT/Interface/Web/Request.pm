@@ -55,6 +55,7 @@ our $VERSION = '0.30';
 use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
+use Sub::StopCalls;
 
 sub new {
     my $class = shift;
@@ -103,43 +104,54 @@ my %called = ();
 sub callback {
     my ($self, %args) = @_;
 
-    my $name = delete $args{'CallbackName'} || 'Default';
-    my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
+    my $page = delete $args{'CallbackPage'};
+    my $defined_page = !!$page;
+    $page ||= $self->callers(0)->path;
     unless ( $page ) {
         $RT::Logger->error("Couldn't get a page name for callbacks");
         return;
     }
 
-    my $CacheKey = "$page--$name";
-    return 1 if delete $args{'CallbackOnce'} && $called{ $CacheKey };
-    $called{ $CacheKey } = 1;
+    my $name = delete $args{'CallbackName'} || 'Default';
+    my $once = delete $args{'CallbackOnce'};
+    my $cache_key = "$page--$name";
 
-    my $callbacks = $cache{ $CacheKey };
-    unless ( $callbacks ) {
-        $callbacks = [];
+    return 1 if $once && $called{ $cache_key };
+    $called{ $cache_key } = 1;
+
+    my $callbacks;
+    unless ( exists $cache{ $cache_key } ) {
         my $path  = "/Callbacks/*$page/$name";
         my @roots = RT::Interface::Web->ComponentRoots;
         my %seen;
-        @$callbacks = (
+        $callbacks = [
             grep defined && length,
             # Skip backup files, files without a leading package name,
             # and files we've already seen
             grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
             map { sort $self->interp->resolver->glob_path($path, $_) }
             @roots
-        );
+        ];
         foreach my $comp (keys %seen) {
             next unless $seen{$comp} > 1;
             $RT::Logger->error("Found more than one occurrence of the $comp callback.  This may cause only one of the callbacks to run.  Look for the duplicate Callback in your @roots");
         }
+        $callbacks = undef unless @$callbacks;
 
-        $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
+        $cache{ $cache_key } = $callbacks unless RT->Config->Get('DevelMode');
+    } else {
+        $callbacks = $cache{ $cache_key };
+    }
+    unless ( $callbacks ) {
+        return Sub::StopCalls::stop() unless $defined_page;
+        return;
     }
 
     my @rv;
     foreach my $cb ( @$callbacks ) {
         push @rv, scalar $self->comp( $cb, %args );
     }
+    return Sub::StopCalls::stop(@rv) if $once && !$defined_page;
     return @rv;
 }
 }
