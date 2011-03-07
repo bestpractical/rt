@@ -190,6 +190,7 @@ sub CleanupRequest {
     }
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
+    %RT::User::PREFERENCES_CACHE = ();
 
     # RT::System persists between requests, so its attributes cache has to be
     # cleared manually. Without this, for example, subject tags across multiple
