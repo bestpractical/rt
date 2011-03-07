@@ -1228,7 +1228,7 @@ sub sql_concat {
     return $_[0] if @_ <= 1;
 
     my $db_type = RT->Config->Get('DatabaseType');
-    if ( $db_type eq 'Pg' ) {
+    if ( $db_type eq 'Pg' || $db_type eq 'SQLite' ) {
         return '('. join( ' || ', @_ ) .')';
     }
     return sql_concat('CONCAT('. join( ', ', splice @_, 0, 2 ).')', @_);
