@@ -536,6 +536,115 @@ our %META = (
                               'You can change the site default in your %Lifecycles config.');
         }
     },
+    WebPath => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            # "In most cases, you should leave $WebPath set to '' (an empty value)."
+            return unless $value;
+
+            # try to catch someone who assumes that you shouldn't leave this empty
+            if ($value eq '/') {
+                $RT::Logger->error("For the WebPath config option, use the empty string instead of /");
+                return;
+            }
+
+            # $WebPath requires a leading / but no trailing /, or it can be blank.
+            return if $value =~ m{^/.+[^/]$};
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebPath config option requires no trailing slash");
+            }
+
+            if ($value !~ m{^/}) {
+                $RT::Logger->error("The WebPath config option requires a leading slash");
+            }
+        },
+    },
+    WebDomain => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebDomain config option");
+                return;
+            }
+
+            if ($value =~ m{^(\w+://)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a scheme ($1)");
+                return;
+            }
+
+            if ($value =~ m{(/.*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a path ($1)");
+                return;
+            }
+
+            if ($value =~ m{:(\d*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a port ($1)");
+                return;
+            }
+        },
+    },
+    WebPort => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebPort config option");
+                return;
+            }
+
+            if ($value !~ m{^\d+$}) {
+                $RT::Logger->error("The WebPort config option must be an integer");
+            }
+        },
+    },
+    WebBaseURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebBaseURL config option");
+                return;
+            }
+
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebBaseURL config option must contain a scheme (http or https)");
+            }
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebBaseURL config option requires no trailing slash");
+            }
+
+            if ($value =~ m{^https?://.+?(/[^/].*)}i) {
+                $RT::Logger->error("The WebBaseURL config option must not contain a path ($1)");
+            }
+        },
+    },
+    WebURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebURL config option");
+                return;
+            }
+
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebURL config option must contain a scheme (http or https)");
+            }
+
+            if ($value !~ m{/$}) {
+                $RT::Logger->error("The WebURL config option requires a trailing slash");
+            }
+        },
+    },
     EmailInputEncodings => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
@@ -563,7 +672,7 @@ our %META = (
                 }
             }
         },
-    }
+    },
 );
 my %OPTIONS = ();
 
