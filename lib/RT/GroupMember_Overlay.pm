@@ -337,7 +337,7 @@ sub Delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    $err = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
+    $err = $self->MemberObj->CleanupInvalidDelegations(InsideTransaction => 1);
     unless ($err) {
 	$RT::Logger->warning("Unable to revoke delegated rights for principal ".$self->Id);
 	$RT::Handle->Rollback();

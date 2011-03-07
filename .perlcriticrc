@@ -1,0 +1,45 @@
+# space separated list of strings to regex match against rules
+exclude = Modules::RequireFilenameMatchesPackage Subroutines::ProhibitExplicitReturnUndef Subroutines::RequireArgUnpacking
+
+# [Modules::RequireFilenameMatchesPackage]
+# versions up to RT 3.8 use _Overlay files to separate generated code
+# from core code, as such there are a lot of needless warnings about
+# this.  These were removed in 4.0 so skipping this will not be required
+#
+# [Subroutines::ProhibitExplicitReturnUndef] 
+# RT is documented to return undef in a number of places, and on a
+# stable series I'm hesitant to go around changing to implicitly return
+# undef.  We can clean this up in 4.0 and ensure that if something
+# calling us in list context really needs that explicit undef, it
+# doesn't break on a minor release upgrade.
+#
+# [Subroutines::RequireArgUnpacking]
+# RT is a big user of my $self = shift; and will continue doing so
+#
+
+# 3.8 hasn't converted to using RT->SystemUser and the like and still reaches
+# for RT:: in a lot of places.  Quiet that down with what seems like a slightly
+# larger hammer than I would like.
+#
+# Eliminate globals declared with `our' or `use vars'.
+[Variables::ProhibitPackageVars]
+# set_themes                         = core maintenance pbp
+# add_themes                         =
+# severity                           = 3
+# maximum_violations_per_document    = no_limit
+
+# The base set of packages to allow variables for.
+# packages = Data::Dumper File::Find FindBin Log::Log4perl
+
+# The set of packages to allow variables for, in addition to those given in "packages".
+add_packages = RT
+
+# Write `eval { my $foo; bar($foo) }' instead of `eval "my $foo; bar($foo);"'.
+[BuiltinFunctions::ProhibitStringyEval]
+# set_themes                         = bugs core pbp
+# add_themes                         =
+# severity                           = 5
+# maximum_violations_per_document    = no_limit
+
+# Allow eval of "use" and "require" strings.
+allow_includes = 1

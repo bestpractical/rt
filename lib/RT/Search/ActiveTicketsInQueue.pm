@@ -90,9 +90,6 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::ActiveTicketsInQueue_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/ActiveTicketsInQueue_Vendor.pm});
-eval "require RT::Search::ActiveTicketsInQueue_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/ActiveTicketsInQueue_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

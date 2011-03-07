@@ -162,9 +162,6 @@ sub SetRecipients {
 
 }
 
-eval "require RT::Action::Notify_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Vendor.pm});
-eval "require RT::Action::Notify_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

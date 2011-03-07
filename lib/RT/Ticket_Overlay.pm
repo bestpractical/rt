@@ -944,15 +944,14 @@ sub Import {
 
     $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
 
-    my $watcher;
-    foreach $watcher ( @{ $args{'Cc'} } ) {
+    foreach my $watcher ( @{ $args{'Cc'} } ) {
         $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'AdminCc'} } ) {
+    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
         $self->_AddWatcher( Type => 'AdminCc', Email => $watcher,
             Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'Requestor'} } ) {
+    foreach my $watcher ( @{ $args{'Requestor'} } ) {
         $self->_AddWatcher( Type => 'Requestor', Email => $watcher,
             Silent => 1 );
     }

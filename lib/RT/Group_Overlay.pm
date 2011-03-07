@@ -1189,9 +1189,9 @@ sub _DeleteMember {
 
 # }}}
 
-# {{{ sub _CleanupInvalidDelegations
+# {{{ sub CleanupInvalidDelegations
 
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by members of this group which are
 inconsistent with their current delegation rights.  Does not perform
@@ -1206,12 +1206,15 @@ and logs an internal error if the deletion fails (should not happen).
 
 =cut
 
-# XXX Currently there is a _CleanupInvalidDelegations method in both
+# XXX Currently there is a CleanupInvalidDelegations method in both
 # RT::User and RT::Group.  If the recursive cleanup call for groups is
 # ever unrolled and merged, this code will probably want to be
 # factored out into RT::Principal.
 
-sub _CleanupInvalidDelegations {
+# backcompat for 3.8.8 and before
+*_CleanupInvalidDelegations = \&CleanupInvalidDelegations;
+
+sub CleanupInvalidDelegations {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
 		  @_ );
@@ -1228,7 +1231,7 @@ sub _CleanupInvalidDelegations {
     $members->LimitToUsers();
     $RT::Handle->BeginTransaction() unless $in_trans;
     while ( my $member = $members->Next()) {
-	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
+	my $ret = $member->MemberObj->CleanupInvalidDelegations(InsideTransaction => 1,
 								 Object => $args{Object});
 	unless ($ret) {
 	    $RT::Handle->Rollback() unless $in_trans;

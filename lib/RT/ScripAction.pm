@@ -263,24 +263,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::ScripAction_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripAction_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripAction_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripAction_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripAction_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripAction_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

@@ -3134,9 +3134,9 @@ is a description of the purpose of that TicketRestriction
 sub DescribeRestrictions {
     my $self = shift;
 
-    my ( $row, %listing );
+    my %listing;
 
-    foreach $row ( keys %{ $self->{'TicketRestrictions'} } ) {
+    foreach my $row ( keys %{ $self->{'TicketRestrictions'} } ) {
         $listing{$row} = $self->{'TicketRestrictions'}{$row}{'DESCRIPTION'};
     }
     return (%listing);
@@ -3211,9 +3211,8 @@ sub DeleteRestriction {
 sub _RestrictionsToClauses {
     my $self = shift;
 
-    my $row;
     my %clause;
-    foreach $row ( keys %{ $self->{'TicketRestrictions'} } ) {
+    foreach my $row ( keys %{ $self->{'TicketRestrictions'} } ) {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 
         # We need to reimplement the subclause aggregation that SearchBuilder does.

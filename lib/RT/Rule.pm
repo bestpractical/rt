@@ -105,14 +105,6 @@ sub RunScripAction {
 
 }
 
-eval "require RT::Rule_Vendor";
-if ($@ && $@ !~ qr{^Can't locate RT/Rule_Vendor.pm}) {
-    die $@;
-};
-
-eval "require RT::Rule_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Rule_Local.pm}) {
-    die $@;
-};
+RT::Base->_ImportOverlays();
 
 1;

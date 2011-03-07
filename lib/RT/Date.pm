@@ -1040,9 +1040,6 @@ sub Timezone {
 }
 
 
-eval "require RT::Date_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Vendor.pm});
-eval "require RT::Date_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

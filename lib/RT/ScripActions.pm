@@ -99,24 +99,7 @@ sub NewItem {
     my $self = shift;
     return(RT::ScripAction->new($self->CurrentUser));
 }
-
-        eval "require RT::ScripActions_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripActions_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripActions_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripActions_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ScripActions_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ScripActions_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

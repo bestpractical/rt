@@ -112,9 +112,6 @@ sub CreateTransaction {
 }
     
 
-eval "require RT::Action::RecordCorrespondence_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Vendor.pm});
-eval "require RT::Action::RecordCorrespondence_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

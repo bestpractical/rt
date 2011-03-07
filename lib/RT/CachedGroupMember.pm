@@ -242,24 +242,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::CachedGroupMember_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMember_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CachedGroupMember_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMember_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::CachedGroupMember_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMember_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

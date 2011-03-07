@@ -1,0 +1,8 @@
+=head1 Perl::Critic
+
+RT ships a .perlcriticrc which can be used by running perlcritic from
+the root of the rt tarball.  It disables or turns on flags for a few
+policies.  Reasoning for those changes can be found in the .perlcriticrc
+file itself.
+
+=cut

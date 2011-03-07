@@ -216,9 +216,9 @@ sub RevokeRight {
 
 # }}}
 
-# {{{ sub _CleanupInvalidDelegations
+# {{{ sub CleanupInvalidDelegations
 
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 sub CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this principal which are
 inconsistent with this principal's current delegation rights.  Does
@@ -240,14 +240,18 @@ and logs an internal error if the deletion fails (should not happen).
 # This is currently just a stub for the methods of the same name in
 # RT::User and RT::Group.
 
-sub _CleanupInvalidDelegations {
+# backcompat for 3.8.8 and before
+*_CleanupInvalidDelegations = \&CleanupInvalidDelegations;
+
+sub CleanupInvalidDelegations {
     my $self = shift;
     unless ( $self->Id ) {
 	$RT::Logger->warning("Principal not loaded.");
 	return (undef);
     }
-    return ($self->Object->_CleanupInvalidDelegations(@_));
+    return ($self->Object->CleanupInvalidDelegations(@_));
 }
+
 
 # }}}
 

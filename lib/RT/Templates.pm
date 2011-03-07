@@ -99,24 +99,7 @@ sub NewItem {
     my $self = shift;
     return(RT::Template->new($self->CurrentUser));
 }
-
-        eval "require RT::Templates_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Templates_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Templates_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Templates_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::Templates_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Templates_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

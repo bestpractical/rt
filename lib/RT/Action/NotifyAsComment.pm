@@ -70,9 +70,6 @@ sub SetReturnAddress {
     return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
 }
 
-eval "require RT::Action::NotifyAsComment_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Vendor.pm});
-eval "require RT::Action::NotifyAsComment_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

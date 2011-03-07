@@ -379,24 +379,7 @@ sub _CoreAccessible {
  }
 };
 
-
-        eval "require RT::ObjectCustomFieldValue_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Overlay.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ObjectCustomFieldValue_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Vendor.pm}) {
-            die $@;
-        };
-
-        eval "require RT::ObjectCustomFieldValue_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomFieldValue_Local.pm}) {
-            die $@;
-        };
-
-
-
+RT::Base->_ImportOverlays();
 
 =head1 SEE ALSO
 

@@ -68,13 +68,6 @@ use warnings;
 package RT::Action::Generic;
 use base 'RT::Action';
 
-eval "require RT::Action::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Vendor.pm});
-warn "RT::Action::Generic has become RT::Action. Please adjust your deprecated RT::Action::Generic_Vendor file at " . $INC{"RT/Action/Generic_Vendor.pm"} if !$@;
-
-eval "require RT::Action::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Local.pm});
-warn "RT::Action::Generic has become RT::Action. Please adjust your deprecated RT::Action::Generic_Local file at " . $INC{"RT/Action/Generic_Local.pm"} if !$@;
-
+RT::Base->_ImportOverlays();
 1;
 

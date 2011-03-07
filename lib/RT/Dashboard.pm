@@ -350,9 +350,6 @@ sub CurrentUserCanSubscribe {
     $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
 }
 
-eval "require RT::Dashboard_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Dashboard_Vendor.pm});
-eval "require RT::Dashboard_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Dashboard_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

@@ -51,6 +51,7 @@ use Carp ();
 use Scalar::Util ();
 
 use strict;
+use warnings;
 use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);
@@ -87,7 +88,7 @@ sub CurrentUser {
         $self->{'original_user'} = $self->{'user'};
         my $current_user = $_[0];
         if ( ref $current_user eq 'RT::User' ) {
-            $self->{'user'} = new RT::CurrentUser;
+            $self->{'user'} = RT::CurrentUser->new;
             $self->{'user'}->Load( $current_user->id );
         } else {
             $self->{'user'} = $current_user;
@@ -163,10 +164,17 @@ sub loc_fuzzy {
     }
 }
 
-eval "require RT::Base_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
-eval "require RT::Base_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
+sub _ImportOverlays {
+    my $class = shift;
+    my ($package,undef,undef) = caller();
+    $package =~ s|::|/|g;
+    for (qw(Overlay Vendor Local)) {
+        my $filename = $package."_".$_.".pm";
+        eval { require $filename };
+        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+    }
+}
 
+__PACKAGE__->_ImportOverlays();
 
 1;

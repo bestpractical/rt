@@ -256,9 +256,6 @@ sub debug {
 # }}}
 
 
-eval "require RT::Interface::CLI_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Vendor.pm});
-eval "require RT::Interface::CLI_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;

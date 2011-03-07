@@ -142,9 +142,6 @@ sub AsString {
     return $self->URI;
 }
 
-eval "require RT::URI::base_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/base_Vendor.pm});
-eval "require RT::URI::base_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/base_Local.pm});
+RT::Base->_ImportOverlays();
 
 1;
