@@ -57,11 +57,11 @@
 % if ( $single_column || $i % 2 ) {
 <tr class="edit-custom-field">
 % }
-    <td class="cflabel cftype-<% $type %> cfname-<% $escaped_name %>" id="cflabel-<% $CustomField->Id %>" >
+    <td class="cflabel cftype-<% $type %> cfname-<% $escaped_name %>" id="<% $CFIDPrefix %>cflabel-<% $CustomField->Id %>" >
       <b><% loc($CustomField->Name) %></b><br />
       <i><% $CustomField->FriendlyType %></i>
     </td>
-    <td class="entry cftype-<% $type %> cfname-<% $escaped_name %>" id="cfentry-<% $CustomField->Id %>">
+    <td class="entry cftype-<% $type %> cfname-<% $escaped_name %>" id="<% $CFIDPrefix %>cfentry-<% $CustomField->Id %>">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField, 
@@ -112,4 +112,5 @@ $TicketObj => undef
 $QueueObj => undef
 $OnCreate => undef
 $DefaultsFromTopArguments => 1
+$CFIDPrefix => ''
 </%ARGS>
