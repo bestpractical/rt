@@ -143,7 +143,7 @@ sub import {
 
     RT::InitPluginPaths();
 
-    RT::ConnectToDatabase()
+    __reconnect_rt()
         unless $args{nodb};
 
     RT::InitClasses();
@@ -358,64 +358,27 @@ sub bootstrap_db {
     }
 
     require RT::Handle;
-    # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->SystemDSN,
-               $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
     if (my $forceopt = $ENV{RT_TEST_FORCE_OPT}) {
         Test::More::diag "forcing $forceopt";
         $args{$forceopt}=1;
     }
 
-    if ($args{nodb}) {
-        $args{noinitialdata} = 1;
-        $args{nodata} = 1;
-    }
-    elsif ($args{noinitialdata}) {
-        $args{nodata} = 1;
-    }
+    return if $args{nodb};
 
-    unless ($args{nodb}) {
-        unless ( $ENV{RT_TEST_PARALLEL} ) {
-            # already dropped db in parallel tests, need to do so for other cases.
-            RT::Handle->DropDatabase( $dbh, Force => 1 )
-        }
-        RT::Handle->CreateDatabase( $dbh );
-        $dbh->disconnect;
-        $created_new_db++;
+    my $db_type = RT->Config->Get('DatabaseType');
+    __create_database();
+    __reconnect_rt('as dba');
+    $RT::Handle->InsertSchema;
+    $RT::Handle->InsertACL unless $db_type eq 'Oracle';
 
-        $dbh = _get_dbh(RT::Handle->DSN,
-                        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+    RT->InitLogging;
+    __reconnect_rt();
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( $dbh );
-        $RT::Handle->InsertSchema( $dbh );
+    $RT::Handle->InsertInitialData
+        unless $args{noinitialdata};
 
-        my $db_type = RT->Config->Get('DatabaseType');
-        $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
-
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
-        RT->InitLogging;
-
-        unless ($args{noinitialdata}) {
-            $RT::Handle->InsertInitialData;
-
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
-        }
-
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase();
-        $RT::Handle->PrintError;
-        $RT::Handle->dbh->{PrintError} = 1;
-
-        unless ( $args{'nodata'} ) {
-            $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
-        }
-    }
+    $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" )
+        unless $args{noinitialdata} or $args{nodata};
 }
 
 sub bootstrap_plugins {
@@ -512,6 +475,72 @@ sub _get_dbh {
     }
     return $dbh;
 }
+
+sub __create_database {
+    # bootstrap with dba cred
+    my $dbh = _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+
+    unless ( $ENV{RT_TEST_PARALLEL} ) {
+        # already dropped db in parallel tests, need to do so for other cases.
+        __drop_database( $dbh );
+
+    }
+    RT::Handle->CreateDatabase( $dbh );
+    $dbh->disconnect;
+    $created_new_db++;
+}
+
+sub __drop_database {
+    my $dbh = shift;
+
+    # Pg doesn't like if you issue a DROP DATABASE while still connected
+    # it's still may fail if web-server is out there and holding a connection
+    __disconnect_rt();
+
+    my $my_dbh = $dbh? 0 : 1;
+    $dbh ||= _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+    RT::Handle->DropDatabase( $dbh );
+    $dbh->disconnect if $my_dbh;
+}
+
+sub __reconnect_rt {
+    my $as_dba = shift;
+    __disconnect_rt();
+
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( undef );
+    $RT::Handle->Connect(
+        $as_dba
+        ? (User => $ENV{RT_DBA_USER}, Password => $ENV{RT_DBA_PASSWORD})
+        : ()
+    );
+    $RT::Handle->PrintError;
+    $RT::Handle->dbh->{PrintError} = 1;
+    return $RT::Handle->dbh;
+}
+
+sub __disconnect_rt {
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    $RT::Handle->dbh->disconnect if $RT::Handle and $RT::Handle->dbh;
+
+    %DBIx::SearchBuilder::Handle::DBIHandle = ();
+    $DBIx::SearchBuilder::Handle::PrevHandle = undef;
+
+    $RT::Handle = undef;
+
+    delete $RT::System->{attributes};
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+          if DBIx::SearchBuilder::Record::Cachable->can("FlushCache");
+}
+
 
 =head1 UTILITIES
 
@@ -1219,6 +1248,7 @@ sub start_plack_server {
     my $handled;
     local $SIG{USR1} = sub { $handled = 1};
 
+    __disconnect_rt();
     my $pid = fork();
     die "failed to fork" unless defined $pid;
 
@@ -1230,12 +1260,7 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, @_);
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
-        # the attribute cache holds on to a stale dbh
-        delete $RT::System->{attributes};
-
+        __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
     }
 
@@ -1381,14 +1406,7 @@ END {
     }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-
-        # Pg doesn't like if you issue a DROP DATABASE while still connected
-        my $dbh = $RT::Handle->dbh;
-        $dbh->disconnect if $dbh;
-
-        $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
-        RT::Handle->DropDatabase( $dbh, Force => 1 );
-        $dbh->disconnect;
+        __drop_database();
     }
 }
 
