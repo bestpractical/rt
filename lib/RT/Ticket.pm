@@ -1817,7 +1817,7 @@ sub QueueObj {
 
 Takes nothing. Returns SubjectTag for this ticket. Includes
 queue's subject tag or rtname if that is not set, ticket
-id and braces, for example:
+id and brackets, for example:
 
     [support.example.com #123456]
 
