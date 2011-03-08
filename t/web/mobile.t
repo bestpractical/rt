@@ -181,7 +181,7 @@ $m->back;
 diag "test bookmarked tickets link";
 my $ticket = RT::Ticket->new(RT::CurrentUser->new('root'));
 $ticket->Load(11);
-$ticket->ToggleBookmark;
+$root->ToggleBookmark($ticket);
 
 $m->follow_link_ok( { text => 'Bookmarked tickets' } );
 $m->content_contains( 'Found 1 ticket', 'found 1 ticket' );

@@ -1608,6 +1608,62 @@ sub Bookmarks {
     return keys %$bookmarks;
 }
 
+=head2 HasBookmark TICKET
+
+Returns whether the provided ticket is bookmarked by the user.
+
+=cut
+
+sub HasBookmark {
+    my $self   = shift;
+    my $ticket = shift;
+    my $id     = $ticket->id;
+
+    # maintain bookmarks across merges
+    my @ids = ($id, $ticket->Merged);
+
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
+
+    my @bookmarked = grep { $bookmarks->{ $_ } } $self->Bookmarks;
+    return @bookmarked ? 1 : 0;
+}
+
+=head2 ToggleBookmark TICKET
+
+Toggles whether the provided ticket is bookmarked by the user.
+
+=cut
+
+sub ToggleBookmark {
+    my $self   = shift;
+    my $ticket = shift;
+    my $id     = $ticket->id;
+
+    # maintain bookmarks across merges
+    my @ids = ($id, $ticket->Merged);
+
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
+
+    my $is_bookmarked;
+
+    if ( grep { $bookmarks->{ $_ } } @ids ) {
+        delete $bookmarks->{ $_ } foreach @ids;
+        $is_bookmarked = 0;
+    } else {
+        $bookmarks->{ $id } = 1;
+        $is_bookmarked = 1;
+    }
+
+    $self->SetAttribute(
+        Name    => 'Bookmarks',
+        Content => $bookmarks,
+    );
+
+    return $is_bookmarked;
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:

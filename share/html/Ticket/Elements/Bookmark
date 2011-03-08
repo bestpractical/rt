@@ -51,10 +51,10 @@ $ticket->Load( $id );
 
 my $is_bookmarked;
 if ($Toggle) {
-    $is_bookmarked = $ticket->ToggleBookmark;
+    $is_bookmarked = $session{'CurrentUser'}->UserObj->ToggleBookmark($ticket);
 }
 else {
-    $is_bookmarked = $ticket->IsBookmarked;
+    $is_bookmarked = $session{'CurrentUser'}->UserObj->HasBookmark($ticket);
 }
 </%INIT>
 <%ARGS>

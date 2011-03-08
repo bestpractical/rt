@@ -3680,60 +3680,6 @@ sub ACLEquivalenceObjects {
 
 }
 
-=head2 IsBookmarked
-
-Checks whether the ticket is bookmarked by the CurrentUser.
-
-=cut
-
-sub IsBookmarked {
-    my $self = shift;
-    my $id = $self->id;
-
-    # maintain bookmarks across merges
-    my @ids = ($id, $self->Merged);
-
-    my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
-    $bookmarks = $bookmarks ? $bookmarks->Content : {};
-
-    my @bookmarked = grep { $bookmarks->{ $_ } } @ids;
-    return @bookmarked ? 1 : 0;
-}
-
-=head2 ToggleBookmark
-
-Toggles whether the ticket is bookmarked by the CurrentUser.
-
-=cut
-
-sub ToggleBookmark {
-    my $self = shift;
-    my $id   = $self->id;
-
-    # maintain bookmarks across merges
-    my @ids = ($id, $self->Merged);
-
-    my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
-    $bookmarks = $bookmarks ? $bookmarks->Content : {};
-
-    my $is_bookmarked;
-
-    if ( grep { $bookmarks->{ $_ } } @ids ) {
-        delete $bookmarks->{ $_ } foreach @ids;
-        $is_bookmarked = 0;
-    } else {
-        $bookmarks->{ $id } = 1;
-        $is_bookmarked = 1;
-    }
-
-    $self->CurrentUser->UserObj->SetAttribute(
-        Name    => 'Bookmarks',
-        Content => $bookmarks,
-    );
-
-    return $is_bookmarked;
-}
-
 1;
 
 =head1 AUTHOR
