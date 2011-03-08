@@ -46,35 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
-$bookmarks = $bookmarks->Content if $bookmarks;
-$bookmarks ||= {};
+my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+$ticket->Load( $id );
 
-my $bookmarked = $bookmarks->{ $id }; # we still not sure if it's undef
-
-my @ids;
-if ( $Toggle || !$bookmarked ) {
-    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
-    $ticket->Load( $id );
-    return unless $id = $ticket->id;
-
-    @ids = ($id, $ticket->Merged);
+my $bookmarked;
+if ($Toggle) {
+    $bookmarked = $ticket->ToggleBookmark;
 }
-
-if ( $Toggle ) {
-    if ( grep $bookmarks->{ $_ }, @ids ) {
-        delete $bookmarks->{ $_ } foreach @ids;
-        $bookmarked = 0;
-    } else {
-        $bookmarks->{ $id } = 1;
-        $bookmarked = 1;
-    }
-    $session{'CurrentUser'}->UserObj->SetAttribute(
-        Name    => 'Bookmarks',
-        Content => $bookmarks,
-    );
-} elsif ( !$bookmarked ) {
-    $bookmarked = grep $bookmarks->{ $_ }, @ids;
+else {
+    $bookmarked = $ticket->IsBookmarked;
 }
 </%INIT>
 <%ARGS>
