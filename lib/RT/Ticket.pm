@@ -3688,14 +3688,18 @@ Checks whether the ticket is bookmarked by the CurrentUser.
 
 sub IsBookmarked {
     my $self = shift;
+    my $id = $self->id;
+
+    my @ids = $id;
+    if ($id != $self->EffectiveId) {
+        push @ids, $self->Merged;
+    }
 
     my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
-    return 0 if !$bookmarks;
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
 
-    $bookmarks = $bookmarks->Content;
-    return 0 if !$bookmarks;
-
-    return $bookmarks->{ $self->id } ? 1 : 0;
+    my @bookmarked = grep { $bookmarks->{ $_ } } @ids;
+    return @bookmarked ? 1 : 0;
 }
 
 =head2 ToggleBookmark
