@@ -60,6 +60,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 % my ($jquery) = grep { /^jquery-\d+\./ } RT::Interface::Web->JSFiles;
 <script src="<% RT->Config->Get('WebPath') %>/static/js/<% $jquery %>"></script>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes" /> <!-- hide browser chrome in webclipped RT -->
 <& /Elements/Framekiller &>
 </head>
 <body>
