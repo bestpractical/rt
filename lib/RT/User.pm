@@ -1591,6 +1591,23 @@ sub BasicColumns {
     );
 }
 
+=head2 Bookmarks
+
+Returns an unordered list of IDs representing the user's bookmarked tickets.
+
+=cut
+
+sub Bookmarks {
+    my $self = shift;
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    return if !$bookmarks;
+
+    $bookmarks = $bookmarks->Content;
+    return if !$bookmarks;
+
+    return keys %$bookmarks;
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:

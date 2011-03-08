@@ -296,12 +296,7 @@ sub _BookmarkLimit {
     die "Invalid operator $op for __Bookmarked__ search on $field"
         unless $op =~ /^(=|!=)$/;
 
-    my @bookmarks = do {
-        my $tmp = $sb->CurrentUser->UserObj->FirstAttribute('Bookmarks');
-        $tmp = $tmp->Content if $tmp;
-        $tmp ||= {};
-        grep $_, keys %$tmp;
-    };
+    my @bookmarks = $sb->CurrentUser->UserObj->Bookmarks;
 
     return $sb->_SQLLimit(
         FIELD    => $field,
