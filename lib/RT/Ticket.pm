@@ -3690,10 +3690,8 @@ sub IsBookmarked {
     my $self = shift;
     my $id = $self->id;
 
-    my @ids = $id;
-    if ($id != $self->EffectiveId) {
-        push @ids, $self->Merged;
-    }
+    # maintain bookmarks across merges
+    my @ids = ($id, $self->Merged);
 
     my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
     $bookmarks = $bookmarks ? $bookmarks->Content : {};
@@ -3712,10 +3710,8 @@ sub ToggleBookmark {
     my $self = shift;
     my $id   = $self->id;
 
-    my @ids = $id;
-    if ($id != $self->EffectiveId) {
-        push @ids, $self->Merged;
-    }
+    # maintain bookmarks across merges
+    my @ids = ($id, $self->Merged);
 
     my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
     $bookmarks = $bookmarks ? $bookmarks->Content : {};
