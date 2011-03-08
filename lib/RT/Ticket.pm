@@ -3680,6 +3680,23 @@ sub ACLEquivalenceObjects {
 
 }
 
+=head2 IsBookmarked
+
+Checks whether the ticket is bookmarked by the CurrentUser.
+
+=cut
+
+sub IsBookmarked {
+    my $self = shift;
+
+    my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
+    return 0 if !$bookmarks;
+
+    $bookmarks = $bookmarks->Content;
+    return 0 if !$bookmarks;
+
+    return $bookmarks->{ $self->id } ? 1 : 0;
+}
 
 1;
 
