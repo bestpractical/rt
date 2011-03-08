@@ -179,7 +179,10 @@ ok( $m->find_link( text_regex => qr/ticket2/ ), 'has ticket2 link' );
 $m->back;
 
 diag "test bookmarked tickets link";
-$root->SetAttribute( Name => 'Bookmarks', Content => { 11 => 1 } );
+my $ticket = RT::Ticket->new(RT::CurrentUser->new('root'));
+$ticket->Load(11);
+$ticket->ToggleBookmark;
+
 $m->follow_link_ok( { text => 'Bookmarked tickets' } );
 $m->content_contains( 'Found 1 ticket', 'found 1 ticket' );
 ok( $m->find_link( text_regex => qr/ticket1/ ), 'has ticket1 link' );
