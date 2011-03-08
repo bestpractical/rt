@@ -3713,10 +3713,12 @@ sub ToggleBookmark {
     my $id   = $self->id;
 
     my @ids = $id;
-
-    if ($self->id != $self->EffectiveId) {
-        push @ids, $ticket->Merged;
+    if ($id != $self->EffectiveId) {
+        push @ids, $self->Merged;
     }
+
+    my $bookmarks = $self->CurrentUser->UserObj->FirstAttribute('Bookmarks');
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
 
     my $is_bookmarked;
 
