@@ -91,10 +91,8 @@ my $search;
             $_->{'Rows'} = 999;
 
             # DEPRECATED: will be here for a while up to 3.10/4.0
-            my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
-            $bookmarks = $bookmarks->Content if $bookmarks;
-            $bookmarks ||= {};
-            my $query = join( " OR ", map " id = '$_' ", grep $bookmarks->{$_}, keys %$bookmarks ) || 'id=0';
+            my @bookmarks = $session{'CurrentUser'}->UserObj->Bookmarks;
+            my $query = join(" OR ", map " id = '$_' ", @bookmarks ) || 'id=0';
             $_->{'Query'} =~ s/__Bookmarks__/( $query )/g;
         }
     }
