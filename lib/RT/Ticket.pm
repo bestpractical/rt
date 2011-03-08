@@ -3714,14 +3714,14 @@ sub ToggleBookmark {
         push @ids, $ticket->Merged;
     }
 
-    my $bookmarked;
+    my $is_bookmarked;
 
-    if ( grep $bookmarks->{ $_ }, @ids ) {
+    if ( grep { $bookmarks->{ $_ } } @ids ) {
         delete $bookmarks->{ $_ } foreach @ids;
-        $bookmarked = 0;
+        $is_bookmarked = 0;
     } else {
         $bookmarks->{ $id } = 1;
-        $bookmarked = 1;
+        $is_bookmarked = 1;
     }
 
     $self->CurrentUser->UserObj->SetAttribute(
@@ -3729,7 +3729,7 @@ sub ToggleBookmark {
         Content => $bookmarks,
     );
 
-    return $bookmarked;
+    return $is_bookmarked;
 }
 
 1;

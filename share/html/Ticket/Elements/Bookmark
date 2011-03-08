@@ -49,12 +49,12 @@
 my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
 $ticket->Load( $id );
 
-my $bookmarked;
+my $is_bookmarked;
 if ($Toggle) {
-    $bookmarked = $ticket->ToggleBookmark;
+    $is_bookmarked = $ticket->ToggleBookmark;
 }
 else {
-    $bookmarked = $ticket->IsBookmarked;
+    $is_bookmarked = $ticket->IsBookmarked;
 }
 </%INIT>
 <%ARGS>
@@ -64,7 +64,7 @@ $Toggle => 0
 <span class="toggle-bookmark-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
 <a align="right" href="<% $url %>" onclick="jQuery('.toggle-bookmark-<% $id |n%>').load('<% $url |n %>'); return false;" >
-% if ( $bookmarked ) {
+% if ( $is_bookmarked ) {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
