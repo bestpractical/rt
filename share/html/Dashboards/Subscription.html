@@ -62,13 +62,13 @@
 <tr><td class="label">
 <&|/l&>Dashboard</&>:
 </td><td class="value">
-<% $DashboardObj->Name %>
+<% $Dashboard->Name %>
 </td></tr>
 
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @portlets = grep { defined } $DashboardObj->Portlets;
+% my @portlets = grep { defined } $Dashboard->Portlets;
 % if (!@portlets) {
 (<&|/l&>none</&>)
 % } else {
@@ -193,11 +193,11 @@ my $Loaded = 0;
 my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Timezone');
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-my ($ok, $msg) = $DashboardObj->LoadById($id);
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my ($ok, $msg) = $Dashboard->LoadById($id);
 $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 
-my $SubscriptionObj = $DashboardObj->Subscription;
+my $SubscriptionObj = $Dashboard->Subscription;
 
 $id = $SubscriptionObj ? $SubscriptionObj->SubValue('DashboardId') : $ARGS{'id'};
 
@@ -244,7 +244,7 @@ if (defined $ARGS{Save}) {
     # create
     else {
         Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
-            unless $DashboardObj->CurrentUserCanSubscribe;
+            unless $Dashboard->CurrentUserCanSubscribe;
 
         $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
         ($ok, $msg) = $SubscriptionObj->Create(
@@ -255,7 +255,7 @@ if (defined $ARGS{Save}) {
             Content     => \%fields,
         );
         if ($ok) {
-            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
+            push @results, loc("Subscribed to dashboard [_1]", $Dashboard->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
                 unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};
         }
@@ -266,10 +266,10 @@ if (defined $ARGS{Save}) {
 }
 
 if ($SubscriptionObj) {
-    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
+    $title = loc("Modify the subscription to dashboard [_1]", $Dashboard->Name);
 }
 else {
-    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->Name);
+    $title = loc("Subscribe to dashboard [_1]", $Dashboard->Name);
 }
 
 </%INIT>

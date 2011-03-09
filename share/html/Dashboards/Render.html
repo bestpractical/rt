@@ -56,11 +56,11 @@
 <& /Elements/Tabs &>
 % }
 
-% $m->callback(CallbackName => 'BeforeTable', Dashboard => $DashboardObj, show_cb => $show_cb);
+% $m->callback(CallbackName => 'BeforeTable', Dashboard => $Dashboard, show_cb => $show_cb);
 
 <table class="dashboard" id="dashboard-<%$id%>">
 
-% $m->callback(CallbackName => 'BeforePanes', Dashboard => $DashboardObj, show_cb => $show_cb);
+% $m->callback(CallbackName => 'BeforePanes', Dashboard => $Dashboard, show_cb => $show_cb);
 
 <tr valign="top">
 
@@ -74,11 +74,11 @@
 
 </tr>
 
-% $m->callback(CallbackName => 'AfterPanes', Dashboard => $DashboardObj, show_cb => $show_cb);
+% $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard, show_cb => $show_cb);
 
 </table>
 
-% $m->callback(CallbackName => 'AfterTable', Dashboard => $DashboardObj, show_cb => $show_cb);
+% $m->callback(CallbackName => 'AfterTable', Dashboard => $Dashboard, show_cb => $show_cb);
 
 % if (!$Preview) {
 % my $edit = RT->Config->Get('WebPath') . '/Dashboards/Modify.html?id='.$id;
@@ -94,8 +94,8 @@
 
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-my ($ok, $msg) = $DashboardObj->LoadById($id);
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my ($ok, $msg) = $Dashboard->LoadById($id);
 $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 
 my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
@@ -116,15 +116,15 @@ unless (defined($rows)) {
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
 
-my $title = loc 'Dashboard [_1]', $DashboardObj->Name;
+my $title = loc 'Dashboard [_1]', $Dashboard->Name;
 
 my $show_cb = sub {
     my $pane = shift;
     $m->comp('Elements/ShowPortlet/dashboard',
-        Portlet   => $DashboardObj,
+        Portlet   => $Dashboard,
         Rows      => $rows,
         Preview   => $Preview,
-        Dashboard => $DashboardObj,
+        Dashboard => $Dashboard,
         Pane      => $pane,
         Depth     => 0,
     );
