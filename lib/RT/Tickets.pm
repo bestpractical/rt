@@ -1403,7 +1403,7 @@ use Regexp::Common qw(RE_net_IPv4);
 use Regexp::Common::net::CIDR;
 
 sub _CustomFieldLimit_IPAddressRange {
-    my ($self, $field, $cf, $value, $op, %rest) = @_;
+    my ($self, $field, $cf, $value, $op, $TicketCFs, %rest) = @_;
     my ($start_ip, $end_ip) = split /-/, $value;
 
     $self->_OpenParen;
@@ -1446,6 +1446,57 @@ sub _CustomFieldLimit_IPAddressRange {
     $self->_CloseParen;
 
     return 1;
+}
+
+
+sub _CustomFieldLimit_Date {
+    my ($self, $field, $cf, $value, $op, $TicketCFs, %rest) = @_;
+
+    return unless $op eq '=';
+    if ( $value =~ /:/ ) {
+        # there is time speccified.
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+        $self->_SQLLimit(
+            ALIAS    => $TicketCFs,
+            FIELD    => 'Content',
+            OPERATOR => "=",
+            VALUE    => $date->ISO,
+            %rest,
+        );
+    }
+    else {
+        # no time specified, that means we want everything on a
+        # particular day.  in the database, we need to check for >
+        # and < the edges of that day.
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+        $date->SetToMidnight( Timezone => 'server' );
+        my $daystart = $date->ISO;
+        $date->AddDay;
+        my $dayend = $date->ISO;
+
+        $self->_OpenParen;
+
+        $self->_SQLLimit(
+            ALIAS    => $TicketCFs,
+            FIELD    => 'Content',
+            OPERATOR => ">=",
+            VALUE    => $daystart,
+            %rest,
+        );
+
+        $self->_SQLLimit(
+            ALIAS    => $TicketCFs,
+            FIELD    => 'Content',
+            OPERATOR => "<=",
+            VALUE    => $dayend,
+            %rest,
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+        $self->_CloseParen;
+    }
 }
 
 sub _CustomFieldLimit {
@@ -1521,7 +1572,7 @@ sub _CustomFieldLimit {
     }
     elsif ( $op !~ /^[<>]=?$/ && (  $cf && $cf->Type eq 'IPAddressRange')) {
 
-        my $handled = $self->_CustomFieldLimit_IPAddressRange($field, $cf, $value, $op, %rest);
+        my $handled = $self->_CustomFieldLimit_IPAddressRange($field, $cf, $value, $op, undef, %rest);
 
     } 
     elsif ( !$negative_op || $single_value ) {
@@ -1553,51 +1604,7 @@ sub _CustomFieldLimit {
 
             # need special treatment for Date
             if ( $cf->Type eq 'DateTime' && $op eq '=' ) {
-
-                if ( $value =~ /:/ ) {
-                    # there is time speccified.
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set( Format => 'unknown', Value => $value );
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => "=",
-                        VALUE    => $date->ISO,
-                        %rest,
-                    );
-                }
-                else {
-                # no time specified, that means we want everything on a
-                # particular day.  in the database, we need to check for >
-                # and < the edges of that day.
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set( Format => 'unknown', Value => $value );
-                    $date->SetToMidnight( Timezone => 'server' );
-                    my $daystart = $date->ISO;
-                    $date->AddDay;
-                    my $dayend = $date->ISO;
-
-                    $self->_OpenParen;
-
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => ">=",
-                        VALUE    => $daystart,
-                        %rest,
-                    );
-
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => "<=",
-                        VALUE    => $dayend,
-                        %rest,
-                        ENTRYAGGREGATOR => 'AND',
-                    );
-
-                    $self->_CloseParen;
-                }
+                my $handled = $self->_CustomFieldLimit_Date($field, $cf, $value, $op, $TicketCFs, %rest);
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
