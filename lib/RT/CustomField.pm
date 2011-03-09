@@ -211,9 +211,9 @@ sub RegisterType {
 
 sub GetTypeClass {
     my ($self) = @_;
+    return unless $self->Type;
     my $type = $FieldTypes{$self->Type};
     $type ? $type->{class} : undef;
-#    $FieldTypes{$name}{class};
 }
 
 __PACKAGE__->RegisterType(
