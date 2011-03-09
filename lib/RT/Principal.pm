@@ -301,10 +301,7 @@ sub HasRight {
 
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-
-    unshift @{ $args{'EquivObjects'} }, $RT::System
-        unless $self->can('_IsOverrideGlobalACL')
-            && $self->_IsOverrideGlobalACL( $args{'Object'} );
+    unshift @{ $args{'EquivObjects'} }, $RT::System;
 
     # If we've cached a win or loss for this lookup say so
 
@@ -377,9 +374,7 @@ sub HasRights {
     push @{ $args{'EquivObjects'} }, $object;
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System
-        unless $self->can('_IsOverrideGlobalACL')
-            && $self->_IsOverrideGlobalACL( $object );
+    unshift @{ $args{'EquivObjects'} }, $RT::System;
 
     my %res = ();
     {
