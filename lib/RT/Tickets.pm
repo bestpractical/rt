@@ -1498,7 +1498,7 @@ sub _CustomFieldLimit_Date {
 
 # returns true if the custom field type expansion has handled the rest of the query
 sub _CustomFieldLimit_TypeExpansion {
-    my ($self, $field, $cf, $value, $op, undef, %rest) = @_;
+    my ($self, $field, $cf, $value, $op, %rest) = @_;
 
     if ($cf->Type eq 'IPAddressRange') {
         return $self->_CustomFieldLimit_IPAddressRange($field, $value, $op, %rest);
@@ -1594,7 +1594,7 @@ sub _CustomFieldLimit {
         # if column is not defined, that means the CF type still has
         # change to expand the query into actual column clauses
         return if
-            $self->_CustomFieldLimit_TypeExpansion($field, $cf, $value, $op, undef, %rest);
+            $self->_CustomFieldLimit_TypeExpansion($field, $cf, $value, $op, %rest);
     }
 
     if ( !$negative_op || $single_value ) {
