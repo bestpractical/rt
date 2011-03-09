@@ -1403,7 +1403,7 @@ use Regexp::Common qw(RE_net_IPv4);
 use Regexp::Common::net::CIDR;
 
 sub _CustomFieldLimit_IPAddressRange {
-    my ($self, $field, $cf, $value, $op, $TicketCFs, %rest) = @_;
+    my ($self, $field, $value, $op, %rest) = @_;
 
     return if $op =~ /^[<>]=?$/;
 
@@ -1453,7 +1453,7 @@ sub _CustomFieldLimit_IPAddressRange {
 
 
 sub _CustomFieldLimit_Date {
-    my ($self, $field, $cf, $value, $op, $TicketCFs, %rest) = @_;
+    my ($self, $field, $value, $op, %rest) = @_;
 
     return unless $op eq '=';
     if ( $value =~ /:/ ) {
@@ -1494,6 +1494,21 @@ sub _CustomFieldLimit_Date {
         $self->_CloseParen;
     }
     return 1;
+}
+
+# returns true if the custom field type expansion has handled the rest of the query
+sub _CustomFieldLimit_TypeExpansion {
+    my ($self, $field, $cf, $value, $op, undef, %rest) = @_;
+
+    if ($cf->Type eq 'IPAddressRange') {
+        return $self->_CustomFieldLimit_IPAddressRange($field, $value, $op, %rest);
+    }
+
+    if ( $cf->Type eq 'DateTime' ) {
+        return $self->_CustomFieldLimit_Date($field, $value, $op, %rest);
+    }
+
+    return;
 }
 
 sub _CustomFieldLimit {
@@ -1570,7 +1585,6 @@ sub _CustomFieldLimit {
         return;
     }
 
-    my $handled = 0;
     unless ($cf) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load($field);
@@ -1579,17 +1593,9 @@ sub _CustomFieldLimit {
     if ($cf && !$column) {
         # if column is not defined, that means the CF type still has
         # change to expand the query into actual column clauses
-        if ($cf->Type eq 'IPAddressRange') {
-            $handled = $self->_CustomFieldLimit_IPAddressRange($field, $cf, $value, $op, undef, %rest);
-        }
-
-        # need special treatment for Date
-        if ( $cf->Type eq 'DateTime' ) {
-            $handled = $self->_CustomFieldLimit_Date($field, $cf, $value, $op, undef, %rest);
-        }
+        return if
+            $self->_CustomFieldLimit_TypeExpansion($field, $cf, $value, $op, undef, %rest);
     }
-
-    return if $handled;
 
     if ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
