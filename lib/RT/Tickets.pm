@@ -1478,20 +1478,15 @@ sub _CustomFieldLimit_Date {
 
         $self->_OpenParen;
 
-        $self->_SQLLimit(
-            ALIAS    => $TicketCFs,
-            FIELD    => 'Content',
-            OPERATOR => ">=",
-            VALUE    => $daystart,
-            %rest,
+
+        $self->_CustomFieldLimit(
+            'CF', '>=', $daystart, %rest,
+            SUBKEY => $rest{'SUBKEY'}. '.Content',
         );
 
-        $self->_SQLLimit(
-            ALIAS    => $TicketCFs,
-            FIELD    => 'Content',
-            OPERATOR => "<=",
-            VALUE    => $dayend,
-            %rest,
+        $self->_CustomFieldLimit(
+            'CF', '<=', $dayend, %rest,
+            SUBKEY => $rest{'SUBKEY'}. '.Content',
             ENTRYAGGREGATOR => 'AND',
         );
 
