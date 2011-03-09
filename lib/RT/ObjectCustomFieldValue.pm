@@ -66,7 +66,87 @@ use base 'RT::Record';
 sub Table {'ObjectCustomFieldValues'}
 
 
+sub _CanonicalizeForCreate {
+    my ($self, $cf_as_sys, $args) = @_;
 
+    if($cf_as_sys->Type eq 'IPAddress') {
+        if ( $args->{'Content'} ) {
+            $args->{'Content'} = $self->ParseIP( $args->{'Content'} );
+        }
+
+        unless ( defined $args->{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content is an invalid IP address") )
+              : 0;
+        }
+    }
+
+    if($cf_as_sys->Type eq 'IPAddressRange') {
+        if ($args->{'Content'}) {
+            ($args->{'Content'}, $args->{'LargeContent'}) = $self->ParseIPRange( $args->{'Content'} );
+        }
+        $args->{'ContentType'} = 'text/plain';
+
+        unless ( defined $args->{'Content'} ) {
+            return
+              wantarray
+              ? ( 0, $self->loc("Content is an invalid IP address range") )
+              : 0;
+        }
+    }
+
+    return wantarray ? (1) : 1;
+}
+
+# XXX: not yet, the ipaddressrange belongs to some deeper hook for CFLimit
+sub _CanonicalizeForSearch {
+    my ($self, $cf, $value, $op) = @_;
+
+    if ( $cf && $cf->Type eq 'IPAddress' ) {
+        my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
+        if ($parsed) {
+            $value = $parsed;
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddress");
+        }
+    }
+
+    if ( $cf->Type eq 'IPAddressRange' ) {
+
+        if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
+
+            # convert incomplete 192.168/24 to 192.168.0.0/24 format
+            $value =
+              join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
+              || $value;
+        }
+
+        my ( $start_ip, $end_ip ) =
+          RT::ObjectCustomFieldValue->ParseIPRange($value);
+        if ( $start_ip && $end_ip ) {
+            if ( $op =~ /^([<>])=?$/ ) {
+                my $is_less = $1 eq '<' ? 1 : 0;
+                if ( $is_less ) {
+                    $value = $start_ip;
+                }
+                else {
+                    $value = $end_ip;
+                }
+            }
+            else {
+                $value = join '-', $start_ip, $end_ip;
+            }
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid IPAddressRange");
+        }
+    }
+
+    return $value;
+
+}
 
 sub Create {
     my $self = shift;
@@ -86,30 +166,12 @@ sub Create {
     my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
     $cf_as_sys->Load($args{'CustomField'});
 
-    if($cf_as_sys->Type eq 'IPAddress') {
-        if ( $args{'Content'} ) {
-            $args{'Content'} = $self->ParseIP( $args{'Content'} );
-        }
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address") )
-              : 0;
-        }
-    }
-
-    if($cf_as_sys->Type eq 'IPAddressRange') {
-        if ($args{'Content'}) {
-            ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
-        }
-        $args{'ContentType'} = 'text/plain';
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address range") )
-              : 0;
+    if ( defined $args{'Content'} ) {
+        my ($ret, $msg) = $self->_CanonicalizeForCreate( $cf_as_sys, \%args );
+        unless ( $ret ) {
+            return wantarray
+                ? ( 0, $msg )
+                : 0;
         }
     }
 
