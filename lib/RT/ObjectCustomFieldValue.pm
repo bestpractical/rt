@@ -52,11 +52,6 @@ use strict;
 use warnings;
 
 use RT::Interface::Web;
-use Regexp::Common qw(RE_net_IPv4);
-use Regexp::IPv6 qw($IPv6_re);
-use Regexp::Common::net::CIDR;
-require Net::CIDR;
-
 
 
 
@@ -69,83 +64,30 @@ sub Table {'ObjectCustomFieldValues'}
 sub _CanonicalizeForCreate {
     my ($self, $cf_as_sys, $args) = @_;
 
-    if($cf_as_sys->Type eq 'IPAddress') {
-        if ( $args->{'Content'} ) {
-            $args->{'Content'} = $self->ParseIP( $args->{'Content'} );
-        }
+    my $class = $cf_as_sys->GetTypeClass;
 
-        unless ( defined $args->{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address") )
-              : 0;
-        }
-    }
-
-    if($cf_as_sys->Type eq 'IPAddressRange') {
-        if ($args->{'Content'}) {
-            ($args->{'Content'}, $args->{'LargeContent'}) = $self->ParseIPRange( $args->{'Content'} );
-        }
-        $args->{'ContentType'} = 'text/plain';
-
-        unless ( defined $args->{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address range") )
-              : 0;
+    if ($class) {
+        my ($ret, $msg) = $class->CanonicalizeForCreate( $cf_as_sys, $args );
+        unless ($ret) {
+            return (0, $self->loc($msg));
         }
     }
 
     return wantarray ? (1) : 1;
 }
 
-# XXX: not yet, the ipaddressrange belongs to some deeper hook for CFLimit
 sub _CanonicalizeForSearch {
     my ($self, $cf, $value, $op) = @_;
 
-    if ( $cf && $cf->Type eq 'IPAddress' ) {
-        my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
-        if ($parsed) {
-            $value = $parsed;
-        }
-        else {
-            $RT::Logger->warn("$value is not a valid IPAddress");
-        }
-    }
+    return unless $cf;
 
-    if ( $cf->Type eq 'IPAddressRange' ) {
+    my $class = $cf->GetTypeClass;
 
-        if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
-
-            # convert incomplete 192.168/24 to 192.168.0.0/24 format
-            $value =
-              join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
-              || $value;
-        }
-
-        my ( $start_ip, $end_ip ) =
-          RT::ObjectCustomFieldValue->ParseIPRange($value);
-        if ( $start_ip && $end_ip ) {
-            if ( $op =~ /^([<>])=?$/ ) {
-                my $is_less = $1 eq '<' ? 1 : 0;
-                if ( $is_less ) {
-                    $value = $start_ip;
-                }
-                else {
-                    $value = $end_ip;
-                }
-            }
-            else {
-                $value = join '-', $start_ip, $end_ip;
-            }
-        }
-        else {
-            $RT::Logger->warn("$value is not a valid IPAddressRange");
-        }
+    if ($class) {
+        $value = $class->CanonicalizeForSearch( $cf, $value, $op );
     }
 
     return $value;
-
 }
 
 sub Create {
@@ -226,7 +168,7 @@ sub LoadByCols {
         $cf->Load( $args{CustomField} );
         if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
 
-            my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
+            my ( $sIP, $eIP ) = RT::CustomField::Type::IPAddressRange->ParseIPRange( $args{'Content'} );
             if ( $sIP && $eIP ) {
                 $self->SUPER::LoadByCols( %args,
                                           Content      => $sIP,
@@ -307,6 +249,7 @@ content, try "LargeContent"
 
 my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
 my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
+use Regexp::IPv6 qw($IPv6_re);
 
 sub Content {
     my $self = shift;
@@ -477,97 +420,6 @@ sub IncludeContentForValue {
     my $self = shift;
     return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
 }
-
-
-sub ParseIPRange {
-    my $self = shift;
-    my $value = shift or return;
-    $value = lc $value;
-    $value =~ s!^\s+!!;
-    $value =~ s!\s+$!!;
-    
-    if ( $value =~ /^$RE{net}{CIDR}{IPv4}{-keep}$/go ) {
-        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
-        $value = (Net::CIDR::cidr2range( $cidr ))[0] || $value;
-    }
-    elsif ( $value =~ /^$IPv6_re(?:\/\d+)?$/o ) {
-        $value = (Net::CIDR::cidr2range( $value ))[0] || $value;
-    }
-    
-    my ($sIP, $eIP);
-    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
-        $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-    }
-    elsif ( $value =~ /^($RE{net}{IPv4})-($RE{net}{IPv4})$/o ) {
-        $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-        $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
-    }
-    elsif ( $value =~ /^($IPv6_re)$/o ) {
-        $sIP = $self->ParseIP( $1 );
-        $eIP = $sIP;
-    }
-    elsif ( $value =~ /^($IPv6_re)-($IPv6_re)$/o ) {
-        ($sIP, $eIP) = ( $1, $2 );
-        $sIP = $self->ParseIP( $sIP );
-        $eIP = $self->ParseIP( $eIP );
-    }
-    else {
-        return;
-    }
-
-    ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
-    
-    return $sIP, $eIP;
-}
-
-sub ParseIP {
-    my $self = shift;
-    my $value = shift or return;
-    $value = lc $value;
-    $value =~ s!^\s+!!;
-    $value =~ s!\s+$!!;
-
-    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
-        return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-    }
-    elsif ( $value =~ /^$IPv6_re$/o ) {
-
-        # up_fields are before '::'
-        # low_fields are after '::' but without v4
-        # v4_fields are the v4
-        my ( @up_fields, @low_fields, @v4_fields );
-        my $v6;
-        if ( $value =~ /(.*:)(\d+\..*)/ ) {
-            ( $v6, my $v4 ) = ( $1, $2 );
-            chop $v6 unless $v6 =~ /::$/;
-            while ( $v4 =~ /(\d+)\.(\d+)/g ) {
-                push @v4_fields, sprintf '%.2x%.2x', $1, $2;
-            }
-        }
-        else {
-            $v6 = $value;
-        }
-
-        my ( $up, $low );
-        if ( $v6 =~ /::/ ) {
-            ( $up, $low ) = split /::/, $v6;
-        }
-        else {
-            $up = $v6;
-        }
-
-        @up_fields = split /:/, $up;
-        @low_fields = split /:/, $low if $low;
-
-        my @zero_fields =
-          ('0000') x ( 8 - @v4_fields - @up_fields - @low_fields );
-        my @fields = ( @up_fields, @zero_fields, @low_fields, @v4_fields );
-
-        return join ':', map { sprintf "%.4x", hex "0x$_" } @fields;
-    }
-    return;
-}
-
 
 =head2 id
 

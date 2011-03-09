@@ -1,0 +1,86 @@
+package RT::CustomField::Type::IPAddress;
+use strict;
+use warnings;
+
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::IPv6 qw($IPv6_re);
+
+sub CanonicalizeForCreate {
+    my ($self, $cf, $args) = @_;
+
+    if ( $args->{'Content'} ) {
+        $args->{'Content'} = $self->ParseIP( $args->{'Content'} );
+    }
+
+
+    unless ( defined $args->{'Content'} ) {
+        return wantarray
+              ? ( 0, "Content is an invalid IP address" ) # loc
+              : 0;
+    }
+
+    return wantarray ? ( 1 ) : 1;
+}
+
+sub CanonicalizeForSearch {
+    my ($self, $cf, $value, $op ) = @_;
+
+    my $parsed = $self->ParseIP($value);
+    if ($parsed) {
+        $value = $parsed;
+    }
+    else {
+        $RT::Logger->warn("$value is not a valid IPAddress");
+    }
+    return $value;
+}
+
+sub ParseIP {
+    my $self = shift;
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
+
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
+        return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $value =~ /^$IPv6_re$/o ) {
+
+        # up_fields are before '::'
+        # low_fields are after '::' but without v4
+        # v4_fields are the v4
+        my ( @up_fields, @low_fields, @v4_fields );
+        my $v6;
+        if ( $value =~ /(.*:)(\d+\..*)/ ) {
+            ( $v6, my $v4 ) = ( $1, $2 );
+            chop $v6 unless $v6 =~ /::$/;
+            while ( $v4 =~ /(\d+)\.(\d+)/g ) {
+                push @v4_fields, sprintf '%.2x%.2x', $1, $2;
+            }
+        }
+        else {
+            $v6 = $value;
+        }
+
+        my ( $up, $low );
+        if ( $v6 =~ /::/ ) {
+            ( $up, $low ) = split /::/, $v6;
+        }
+        else {
+            $up = $v6;
+        }
+
+        @up_fields = split /:/, $up;
+        @low_fields = split /:/, $low if $low;
+
+        my @zero_fields =
+          ('0000') x ( 8 - @v4_fields - @up_fields - @low_fields );
+        my @fields = ( @up_fields, @zero_fields, @low_fields, @v4_fields );
+
+        return join ':', map { sprintf "%.4x", hex "0x$_" } @fields;
+    }
+    return;
+}
+
+1;

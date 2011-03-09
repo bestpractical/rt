@@ -170,25 +170,6 @@ our %FieldTypes = (
                     'Select up to [_1] datetimes',                    # loc
                   ]
                 },
-
-    IPAddress => {
-        sort_order => 110,
-        selection_type => 0,
-
-        labels => [ 'Enter multiple IP addresses',       # loc
-                    'Enter one IP address',             # loc
-                    'Enter up to [_1] IP addresses',     # loc
-                  ]
-                },
-    IPAddressRange => {
-        sort_order => 120,
-        selection_type => 0,
-
-        labels => [ 'Enter multiple IP address ranges',       # loc
-                    'Enter one IP address range',             # loc
-                    'Enter up to [_1] IP address ranges',     # loc
-                  ]
-                },
 );
 
 
@@ -217,6 +198,50 @@ our $RIGHT_CATEGORIES = {
 
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
+
+
+sub RegisterType {
+    my ($class, $name, $param) = @_;
+    $FieldTypes{$name} = $param;
+
+    if (my $class = $param->{class}) {
+        $class->require or die $UNIVERSAL::require::ERROR;
+    }
+}
+
+sub GetTypeClass {
+    my ($self) = @_;
+    my $type = $FieldTypes{$self->Type};
+    $type ? $type->{class} : undef;
+#    $FieldTypes{$name}{class};
+}
+
+__PACKAGE__->RegisterType(
+    IPAddress => {
+        sort_order => 110,
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP addresses',       # loc
+                    'Enter one IP address',             # loc
+                    'Enter up to [_1] IP addresses',     # loc
+                  ],
+        class => 'RT::CustomField::Type::IPAddress',
+    },
+
+);
+
+__PACKAGE__->RegisterType(
+    IPAddressRange => {
+        sort_order => 120,
+        selection_type => 0,
+
+        labels => [ 'Enter multiple IP address ranges',       # loc
+                    'Enter one IP address range',             # loc
+                    'Enter up to [_1] IP address ranges',     # loc
+                  ],
+        class => 'RT::CustomField::Type::IPAddressRange',
+    },
+);
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
