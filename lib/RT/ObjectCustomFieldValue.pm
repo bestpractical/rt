@@ -166,14 +166,16 @@ sub LoadByCols {
     if ( $args{CustomField} ) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $args{CustomField} );
-        if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
 
-            my ( $sIP, $eIP ) = RT::CustomField::Type::IPAddressRange->ParseIPRange( $args{'Content'} );
-            if ( $sIP && $eIP ) {
-                $self->SUPER::LoadByCols( %args,
-                                          Content      => $sIP,
-                                          LargeContent => $eIP
-                                        );
+        if ( exists $args{'Content'} && defined $args{'Content'} ) {
+            my ($ret, $msg) = $self->_CanonicalizeForCreate( $cf, \%args );
+            if ($ret) {
+                $self->SUPER::LoadByCols( %args );
+            }
+            else {
+                return wantarray
+                ? ( 0, $msg )
+                : 0;
             }
         }
     }
