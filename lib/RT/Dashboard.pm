@@ -165,7 +165,7 @@ attributes under the hood.
 
 sub PostLoadValidate {
     my $self = shift;
-    return (0, "Invalid object type") unless $self->Name eq 'Dashboard';
+    return (0, "Invalid object type") unless $self->{'Attribute'}->Name eq 'Dashboard';
     return 1;
 }
 
