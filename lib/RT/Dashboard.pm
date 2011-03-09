@@ -156,6 +156,19 @@ sub UpdateAttribute {
     return ($status, $msg);
 }
 
+=head2 PostLoadValidate
+
+Ensure that the ID corresponds to an actual dashboard object, since it's all
+attributes under the hood.
+
+=cut
+
+sub PostLoadValidate {
+    my $self = shift;
+    return (0, "Invalid object type") unless $self->Name eq 'Dashboard';
+    return 1;
+}
+
 =head2 Panes
 
 Returns a hashref of pane name to portlets
