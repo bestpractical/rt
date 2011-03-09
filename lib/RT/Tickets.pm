@@ -1404,6 +1404,9 @@ use Regexp::Common::net::CIDR;
 
 sub _CustomFieldLimit_IPAddressRange {
     my ($self, $field, $cf, $value, $op, $TicketCFs, %rest) = @_;
+
+    return if $op =~ /^[<>]=?$/;
+
     my ($start_ip, $end_ip) = split /-/, $value;
 
     $self->_OpenParen;
@@ -1490,6 +1493,7 @@ sub _CustomFieldLimit_Date {
 
         $self->_CloseParen;
     }
+    return 1;
 }
 
 sub _CustomFieldLimit {
@@ -1562,13 +1566,32 @@ sub _CustomFieldLimit {
             ENTRYAGGREGATOR => 'AND',
         ) if $CFs;
         $self->_CloseParen;
+
+        return;
     }
-    elsif ( $op !~ /^[<>]=?$/ && (  $cf && $cf->Type eq 'IPAddressRange')) {
 
-        my $handled = $self->_CustomFieldLimit_IPAddressRange($field, $cf, $value, $op, undef, %rest);
+    my $handled = 0;
+    unless ($cf) {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load($field);
+    }
 
-    } 
-    elsif ( !$negative_op || $single_value ) {
+    if ($cf && !$column) {
+        # if column is not defined, that means the CF type still has
+        # change to expand the query into actual column clauses
+        if ($cf->Type eq 'IPAddressRange') {
+            $handled = $self->_CustomFieldLimit_IPAddressRange($field, $cf, $value, $op, undef, %rest);
+        }
+
+        # need special treatment for Date
+        if ( $cf->Type eq 'DateTime' ) {
+            $handled = $self->_CustomFieldLimit_Date($field, $cf, $value, $op, undef, %rest);
+        }
+    }
+
+    return if $handled;
+
+    if ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
         my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
@@ -1592,14 +1615,7 @@ sub _CustomFieldLimit {
             $self->_CloseParen;
         }
         else {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->Load($field);
-
-            # need special treatment for Date
-            if ( $cf->Type eq 'DateTime' && $op eq '=' ) {
-                my $handled = $self->_CustomFieldLimit_Date($field, $cf, $value, $op, $TicketCFs, %rest);
-            }
-            elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
+            if ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
                     $self->_SQLLimit(
                         ALIAS    => $TicketCFs,
