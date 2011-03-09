@@ -189,14 +189,13 @@
 <%INIT>
 
 my ($title, @results);
-my ($val, $msg);
 my $Loaded = 0;
 my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Timezone');
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-($val, $msg) = $DashboardObj->LoadById($id);
-$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $id, $msg));
+my ($ok, $msg) = $DashboardObj->LoadById($id);
+$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 
 my $SubscriptionObj = $DashboardObj->Subscription;
 
@@ -232,7 +231,7 @@ if (defined $ARGS{Save}) {
     # update
     if ($SubscriptionObj) {
         $id = delete $fields{'DashboardId'}; # immutable
-        ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
+        ($ok, $msg) = $SubscriptionObj->SetSubValues(%fields);
         $fields{'DashboardId'} = $id;
 
         # not so good to spew base64-encoded data at the user :)
@@ -248,14 +247,14 @@ if (defined $ARGS{Save}) {
             unless $DashboardObj->CurrentUserCanSubscribe;
 
         $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
-        my ($val, $msg) = $SubscriptionObj->Create(
+        ($ok, $msg) = $SubscriptionObj->Create(
             Name        => 'Subscription',
             Description => 'Subscription to dashboard ' . $id,
             ContentType => 'storable',
             Object      => $session{'CurrentUser'}->UserObj,
             Content     => \%fields,
         );
-        if ($val) {
+        if ($ok) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
                 unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};

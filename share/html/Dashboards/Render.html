@@ -96,7 +96,7 @@
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $DashboardObj->LoadById($id);
-Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
+$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 
 my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 my $rows;
