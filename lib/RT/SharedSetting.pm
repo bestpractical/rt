@@ -155,7 +155,7 @@ sub LoadById {
 
 =head2 PostLoad
 
-Called after after successful L</Load>.
+Called after a successful L</Load>.
 
 =cut
 
