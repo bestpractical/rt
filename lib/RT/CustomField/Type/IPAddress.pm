@@ -35,6 +35,20 @@ sub CanonicalizeForSearch {
     return $value;
 }
 
+my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
+my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
+
+sub Stringify {
+    my ($self, $ocfv) = @_;
+    my $content = $ocfv->_Value('Content');
+
+    if ( $content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+        $content = sprintf "%d.%d.%d.%d", split /\./, $1;
+    }
+
+    return $content
+}
+
 sub ParseIP {
     my $self = shift;
     my $value = shift or return;

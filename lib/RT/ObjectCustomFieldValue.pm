@@ -249,48 +249,16 @@ content, try "LargeContent"
 
 =cut
 
-my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
-my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
-use Regexp::IPv6 qw($IPv6_re);
-
 sub Content {
     my $self = shift;
 
-    my $content = $self->_Value('Content');
-    if (   $self->CustomFieldObj->Type eq 'IPAddress'
-        || $self->CustomFieldObj->Type eq 'IPAddressRange' )
-    {
+    my $class = $self->CustomFieldObj->GetTypeClass;
 
-        if ( $content =~ /^\s*($re_ip_serialized)\s*$/o ) {
-            $content = sprintf "%d.%d.%d.%d", split /\./, $1;
-        }
-
-        return $content if $self->CustomFieldObj->Type eq 'IPAddress';
-
-        my $large_content = $self->__Value('LargeContent');
-        if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
-            my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
-            if ( $content eq $eIP ) {
-                return $content;
-            }
-            else {
-                return $content . "-" . $eIP;
-            }
-        }
-        elsif ( $large_content =~ /^\s*($IPv6_re)\s*$/o ) {
-            my $eIP = $1;
-            if ( $content eq $eIP ) {
-                return $content;
-            }
-            else {
-                return $content . "-" . $eIP;
-            }
-        }
-        else {
-            return $content;
-        }
+    if ($class) {
+        return $class->Stringify( $self );
     }
 
+    my $content = $self->_Value('Content');
     if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {

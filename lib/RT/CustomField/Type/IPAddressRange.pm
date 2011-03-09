@@ -2,7 +2,7 @@ package RT::CustomField::Type::IPAddressRange;
 use strict;
 use warnings;
 
-use RT::CustomField::Type::IPAddress;
+use base qw(RT::CustomField::Type::IPAddress);
 
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
@@ -60,7 +60,37 @@ sub CanonicalizeForSearch {
     return $value;
 }
 
-*ParseIP = \&RT::CustomField::Type::IPAddress::ParseIP;
+my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
+my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
+use Regexp::IPv6 qw($IPv6_re);
+
+sub Stringify {
+    my ($self, $ocfv) = @_;
+    my $content = $self->SUPER::Stringify($ocfv);
+
+    my $large_content = $ocfv->__Value('LargeContent');
+    if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {
+        my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+        if ( $content eq $eIP ) {
+            return $content;
+        }
+        else {
+            return $content . "-" . $eIP;
+        }
+    }
+    elsif ( $large_content =~ /^\s*($IPv6_re)\s*$/o ) {
+        my $eIP = $1;
+        if ( $content eq $eIP ) {
+            return $content;
+        }
+        else {
+            return $content . "-" . $eIP;
+        }
+    }
+    else {
+        return $content;
+    }
+}
 
 sub ParseIPRange {
     my $self = shift;
