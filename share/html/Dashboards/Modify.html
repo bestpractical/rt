@@ -119,7 +119,7 @@ else {
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
-        $ok || Abort($msg);
+        $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
     }
 
     if ($id) {
