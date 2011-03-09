@@ -117,7 +117,6 @@ my ($my_tickets) =
   map { ( $_->possible_values )[1] }
   grep { ( $_->value_names )[1] =~ /Saved Search: My Tickets/ } @input;
 $form->value('Searches-body-Available' => $my_tickets );
-$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
