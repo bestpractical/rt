@@ -1457,12 +1457,10 @@ sub _CustomFieldLimit_Date {
         # there is time speccified.
         my $date = RT::Date->new( $self->CurrentUser );
         $date->Set( Format => 'unknown', Value => $value );
-        $self->_SQLLimit(
-            ALIAS    => $TicketCFs,
-            FIELD    => 'Content',
-            OPERATOR => "=",
-            VALUE    => $date->ISO,
-            %rest,
+
+        $self->_CustomFieldLimit(
+            'CF', '=', $date->ISO, %rest,
+            SUBKEY => $rest{'SUBKEY'}. '.Content',
         );
     }
     else {
