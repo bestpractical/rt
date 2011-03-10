@@ -194,8 +194,6 @@ my $build_admin_menu = sub {
                               description => loc('Modify global user rights') );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html',
                               description => loc('Modify the default "RT at a glance" view') );
-        $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
-                              description => loc('Customize the look of your RT') );
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
@@ -207,6 +205,9 @@ my $build_admin_menu = sub {
         }
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
                              description => loc('Permanently wipeout data from RT'));
+        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
+                              description => loc('Customize the look of your RT') );
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
         my $type = $1;
         my $tabs = PageMenu();
