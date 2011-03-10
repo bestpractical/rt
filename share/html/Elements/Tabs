@@ -205,7 +205,7 @@ my $build_admin_menu = sub {
         }
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
                              description => loc('Permanently wipeout data from RT'));
-        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
+        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Tools/Theme.html',
                               description => loc('Customize the look of your RT') );
 
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
