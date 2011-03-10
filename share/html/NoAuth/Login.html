@@ -46,6 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
+if ( RT::Interface::Web->MobileClient()) {
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."m/login");
+    $m->abort();
+}
+
 my ($good, $msg) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
 $ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
