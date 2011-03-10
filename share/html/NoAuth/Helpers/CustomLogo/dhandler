@@ -46,13 +46,16 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-RT::Interface::Web::StaticFileHeaders();
 if ( my $attr = $RT::System->FirstAttribute('UserLogo') ) {
+    # The extra path in the url doesn't matter, we always want to serve the
+    # latest logo if we have one.
+    RT::Interface::Web::StaticFileHeaders();
     my $content = $attr->Content;
-    $r->content_type($content->{type}) ;
+    $r->content_type( $content->{type} );
     $m->out( $content->{data} );
-    $m->abort;
 }
-# XXX: 404
-
+else {
+    # 404
+    return $m->decline;
+}
 </%INIT>
