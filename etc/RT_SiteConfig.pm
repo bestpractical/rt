@@ -10,7 +10,7 @@
 #
 # The converse is also true, if this file isn't valid perl, you're
 # going to run into trouble. To check your SiteConfig file, use
-# this comamnd:
+# this command:
 #
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
 #
