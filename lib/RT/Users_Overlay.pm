@@ -405,6 +405,12 @@ sub WhoHaveRoleRight
     );
 
     my @objects = $self->_GetEquivObjects( %args );
+
+    # RT::Principal->RolesWithRight only expects EquivObjects, so we need to
+    # fill it.  At the very least it needs $args{Object}, which
+    # _GetEquivObjects above does for us.
+    unshift @{$args{'EquivObjects'}}, @objects;
+
     my @roles = RT::Principal->RolesWithRight( %args );
     unless ( @roles ) {
         $self->_AddSubClause( "WhichRole", "(main.id = 0)" );
