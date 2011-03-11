@@ -53,8 +53,6 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
 
 
-    # Tell FastCGI to put its temporary files somewhere sane.
-    FastCgiIpcDir /tmp
 
     FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
