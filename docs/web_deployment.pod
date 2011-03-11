@@ -26,34 +26,13 @@ to use L<Starman>, a high performance preforking server:
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
-Add a few lines to your Apache 2.xx configuration file, so that
-it knows where to find RT:
-
-    <IfModule !mpm_netware_module>
-    <IfModule !mpm_winnt_module>
-    User rt
-    Group www
-    </IfModule>
-    </IfModule>
-
     <VirtualHost rt.example.com>
-        ServerRoot /usr
-        ServerAdmin root@localhost
-
-        LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule env_module modules/mod_env.so
-        LoadModule alias_module modules/mod_alias.so
-        LoadModule perl_module modules/mod_perl.so
-
-        # optional apache logs for RT
+        ### Optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
-        PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
-
-        RedirectMatch permanent (.*)/$ $1/index.html
 
         DocumentRoot "/opt/rt4/share/html"
         <Location />
@@ -86,19 +65,11 @@ Apache configuration file telling it about RT:
 
     FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
-    <IfModule !mpm_netware_module>
-    <IfModule !mpm_winnt_module>
-    User rt
-    Group www
-    </IfModule>
-    </IfModule>
 
     <VirtualHost rt.example.com>
-        ServerAdmin root@localhost
 
-        LoadModule fastcgi_module modules/mod_fastcgi.so
 
-        # optional apache logs for RT
+        ### Optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
