@@ -51,6 +51,10 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
 =head2 mod_fastcgi
 
+    # Tell FastCGI to put its temporary files somewhere sane; this may
+    # be necessary if your distribution doesn't already set it
+    #FastCgiIpcDir /tmp
+
     FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
     <VirtualHost rt.example.com>
