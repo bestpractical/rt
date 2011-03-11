@@ -49,16 +49,9 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
         </Perl>
     </VirtualHost>
 
-=head2 FastCGI
+=head2 mod_fastcgi
 
-In the most basic configuration, you can set up your webserver to run
-as a user who is a member of the "rt" unix group so that the FastCGI script
-can read RT's configuration file.  It's important to understand the security
-implications of this configuration, which are discussed in the document
-mentioned above.
 
-To run RT using FastCGI, you'll need to add a few lines to your
-Apache configuration file telling it about RT:
 
     # Tell FastCGI to put its temporary files somewhere sane.
     FastCgiIpcDir /tmp
