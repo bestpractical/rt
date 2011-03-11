@@ -257,7 +257,16 @@ if (    $imgdata
         $colors = analyze_img($img);
     }
     else {
-        push @results, loc("Unable to read image");
+        my %can;
+        for my $type (qw(Png Jpeg Gif)) {
+            $can{$type}++ if GD::Image->can("newFrom${type}Data");
+        }
+        push @results, loc(
+            "Unable to read image to analyze colors. This might be"
+            . " because you uploaded an image type that your particular version"
+            . " of GD doesn't support. Supported types are: [_1]",
+            join(", ", map { uc } keys %can)
+        );
     }
 }
 
