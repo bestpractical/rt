@@ -51,15 +51,9 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
 =head2 mod_fastcgi
 
-
-
-
     FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
-
     <VirtualHost rt.example.com>
-
-
         ### Optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
@@ -77,6 +71,29 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
             Options +ExecCGI
             AddHandler fastcgi-script fcgi
+        </Location>
+    </VirtualHost>
+
+=head2 mod_fcgid
+
+    <VirtualHost rt.example.com>
+        ### Optional apache logs for RT
+        # ErrorLog /opt/rt4/var/log/apache2.error
+        # TransferLog /opt/rt4/var/log/apache2.access
+        # LogLevel debug
+
+        AddDefaultCharset UTF-8
+
+        Alias /NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
+        ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
+
+        DocumentRoot "/opt/rt4/share/html"
+        <Location />
+            Order allow,deny
+            Allow from all
+
+            Options +ExecCGI
+            AddHandler fcgid-script fcgi
         </Location>
     </VirtualHost>
 
