@@ -198,6 +198,8 @@ my $build_admin_menu = sub {
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
                              description => loc('Detailed information about your RT setup') );
+        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Tools/Theme.html',
+                              description => loc('Customize the look of your RT') );
         if (RT->Config->Get('StatementLog')
             && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html',
@@ -205,8 +207,6 @@ my $build_admin_menu = sub {
         }
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
                              description => loc('Permanently wipeout data from RT'));
-        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Tools/Theme.html',
-                              description => loc('Customize the look of your RT') );
 
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
         my $type = $1;
