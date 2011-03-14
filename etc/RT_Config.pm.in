@@ -95,7 +95,7 @@ at.
 C<$WebPath> requires a leading / but no trailing /, or it can be
 blank.
 
-In most cases, you should leave C<$WebPath> set to '' (an empty
+In most cases, you should leave C<$WebPath> set to "" (an empty
 value).
 
 =cut
