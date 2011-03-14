@@ -638,8 +638,7 @@ tag into subject of the outgoing message, so recipients' replies go
 into RT as correspondents.
 
 To change this behavior, set C<$ForwardFromUser> to true value and RT
-will use address of the current user and leave subject without RT's
-tag.
+will use the address of the current user and remove RT's subject tag.
 
 =cut
 
