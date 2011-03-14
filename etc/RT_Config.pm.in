@@ -407,7 +407,7 @@ address passed to it.
 
 =item C<$CanonicalizeOnCreate>
 
-Set this to true and the create new user page will use the values that
+Set this to 1 and the create new user page will use the values that
 you enter in the form but use the function CanonicalizeUserInfo in
 F<RT/User_Local.pm>
 
@@ -417,7 +417,7 @@ Set($CanonicalizeOnCreate, 0);
 
 =item C<$ValidateUserEmailAddresses>
 
-If C<$ValidateUserEmailAddresses> is true, RT will refuse to create
+If C<$ValidateUserEmailAddresses> is 1, RT will refuse to create
 users with an invalid email address (as specified in RFC 2822) or with
 an email address made of multiple email addresses.
 
@@ -434,7 +434,7 @@ L<RT::Interface::Email> to use; see L<rt-mailgate>
 
 =item C<$UnsafeEmailCommands>
 
-C<$UnsafeEmailCommands>, if set to true, enables 'take' and 'resolve'
+C<$UnsafeEmailCommands>, if set to 1, enables 'take' and 'resolve'
 as possible actions via the mail gateway.  As its name implies, this
 is very unsafe, as it allows email with a forged sender to possibly
 resolve arbitrary tickets!
@@ -637,7 +637,7 @@ By default, RT forwards a message using queue's address and adds RT's
 tag into subject of the outgoing message, so recipients' replies go
 into RT as correspondents.
 
-To change this behavior, set C<$ForwardFromUser> to true value and RT
+To change this behavior, set C<$ForwardFromUser> to 1 and RT
 will use the address of the current user and remove RT's subject tag.
 
 =cut
@@ -749,7 +749,7 @@ Set($SMTPFrom, undef);
 
 =item C<$SMTPDebug>
 
-C<$SMTPDebug> should be set to true to debug SMTP mail sending
+C<$SMTPDebug> should be set to 1 to debug SMTP mail sending
 
 =cut
 
@@ -1006,7 +1006,7 @@ Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
 By default, RT clears its database cache after every page view.  This
 ensures that you've always got the most current information when
 working in a multi-process (mod_perl or FastCGI) Environment.  Setting
-C<$WebFlushDbCacheEveryRequest> to '0' will turn this off, which will
+C<$WebFlushDbCacheEveryRequest> to 0 will turn this off, which will
 speed RT up a bit, at the expense of a tiny bit of data accuracy.
 
 =cut
@@ -1038,7 +1038,7 @@ Set(
 
 RT stores dates using the UTC timezone in the DB, so charts grouped by
 dates and time are not representative. Set C<$ChartsTimezonesInDB> to
-a true value to enable timezone conversions using your DB's
+a 1 to enable timezone conversions using your DB's
 capabilities. You may need to do some work on the DB side to use this
 feature, read more in F<docs/timezones_in_charts.pod>.
 
@@ -1171,8 +1171,7 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
 =item C<%FullTextSearch>
 
 Full text search (FTS) without indexes is a very slow operation and by
-default is disabled at all. To enable FTS set key 'Enable' to true
-value.
+default is disabled at all. To enable FTS set key 'Enable' to 1.
 
 Setup of indexes and filling them with data requires additional steps
 that vary from DB to DB. Use F<sbin/rt-setup-fulltext-index> helper
@@ -1192,9 +1191,9 @@ Set(%FullTextSearch,
 
 =item C<$DontSearchFileAttachments>
 
-If C<$DontSearchFileAttachments> is set to a true value, then uploaded
-files (attachments with file names) are not searched during
-full-content ticket searches.
+If C<$DontSearchFileAttachments> is set to 1, then uploaded files
+(attachments with file names) are not searched during full-content
+ticket searches.
 
 =cut
 
@@ -1289,7 +1288,7 @@ Set($EditCustomFieldsSingleColumn, 0);
 
 =item C<$ShowUnreadMessageNotifications>
 
-If set to a true value, RT will prompt users when there are new,
+If set to 1, RT will prompt users when there are new,
 unread messages on tickets they are viewing.
 
 =cut
@@ -1298,7 +1297,7 @@ Set($ShowUnreadMessageNotifications, 0);
 
 =item C<$AutocompleteOwners>
 
-If true, the owner drop-downs for ticket update/modify and the query
+If set to 1, the owner drop-downs for ticket update/modify and the query
 builder are replaced by text fields that autocomplete.  This can
 alleviate the sometimes huge owner list for installations where many
 users have the OwnTicket right.
@@ -1329,8 +1328,8 @@ Set($UserAutocompleteFields, {
 =item C<$AllowUserAutocompleteForUnprivileged>
 
 Should unprivileged users be allowed to autocomplete users.  Setting
-this option to a true value means unprivileged users will be able to
-search all your users.
+this option to 1 means unprivileged users will be able to search all
+your users.
 
 =cut
 
@@ -1347,10 +1346,10 @@ Set($DisplayTicketAfterQuickCreate, 0);
 
 =item C<$WikiImplicitLinks>
 
-Support implicit links in WikiText custom fields?  A true value causes
-InterCapped or ALLCAPS words in WikiText fields to automatically
-become links to searches for those words.  If used on Articles, it
-links to the Article with that name.
+Support implicit links in WikiText custom fields?  Setting this to 1
+causes InterCapped or ALLCAPS words in WikiText fields to automatically
+become links to searches for those words.  If used on Articles, it links
+to the Article with that name.
 
 =cut
 
@@ -1474,7 +1473,7 @@ Set($MessageBoxIncludeSignatureOnComment, 1);
 =item C<$OldestTransactionsFirst>
 
 By default, RT shows newest transactions at the bottom of the ticket
-history page, if you want see them at the top set this to '0'.  This
+history page, if you want see them at the top set this to 0.  This
 option can be overridden by users in their preferences.
 
 =cut
@@ -1533,10 +1532,10 @@ Set($AttachmentUnits, undef);
 
 =item C<$PreferRichText>
 
-If C<$PreferRichText> is set to a true value, RT will show HTML/Rich
-text messages in preference to their plain-text alternatives. RT
-"scrubs" the HTML to show only a minimal subset of HTML to avoid
-possible contamination by cross-site-scripting attacks.
+If C<$PreferRichText> is set to 1, RT will show HTML/Rich text messages
+in preference to their plain-text alternatives. RT "scrubs" the HTML to
+show only a minimal subset of HTML to avoid possible contamination by
+cross-site-scripting attacks.
 
 =cut
 
@@ -1587,9 +1586,9 @@ Set($PlainTextMono, 0);
 
 =item C<$SuppressInlineTextFiles>
 
-If C<$SuppressInlineTextFiles> is set to a true value, then uploaded
-text files (text-type attachments with file names) are prevented from
-being displayed in-line when viewing a ticket's history.
+If C<$SuppressInlineTextFiles> is set to 1, then uploaded text files
+(text-type attachments with file names) are prevented from being
+displayed in-line when viewing a ticket's history.
 
 =cut
 
@@ -1627,12 +1626,11 @@ Set(@Active_MakeClicky, qw());
 
 =item C<$ParseNewMessageForTicketCcs>
 
-If C<$ParseNewMessageForTicketCcs> is true, RT will attempt to divine
-Ticket 'Cc' watchers from the To and Cc lines of incoming messages.
-Be forewarned that if you have I<any> addresses which forward mail to
-RT automatically and you enable this option without modifying
-C<$RTAddressRegexp> below, you will get yourself into a heap of
-trouble.
+If C<$ParseNewMessageForTicketCcs> is set to 1, RT will attempt to
+divine Ticket 'Cc' watchers from the To and Cc lines of incoming
+messages.  Be forewarned that if you have I<any> addresses which forward
+mail to RT automatically and you enable this option without modifying
+C<$RTAddressRegexp> below, you will get yourself into a heap of trouble.
 
 =cut
 
@@ -1662,7 +1660,7 @@ Set($StrictLinkACL, 1);
 =item C<$RedistributeAutoGeneratedMessages>
 
 Should RT redistribute correspondence that it identifies as machine
-generated?  A true value will do so; setting this to '0' will cause no
+generated?  A 1 will do so; setting this to 0 will cause no
 such messages to be redistributed.  You can also use 'privileged' (the
 default), which will redistribute only to privileged users. This helps
 to protect against malformed bounces and loops caused by auto-created
@@ -1674,8 +1672,7 @@ Set($RedistributeAutoGeneratedMessages, "privileged");
 
 =item C<$ApprovalRejectionNotes>
 
-Should rejection notes from approvals be sent to the requestors?  The
-default is true.
+Should rejection notes from approvals be sent to the requestors?
 
 =cut
 
@@ -1742,7 +1739,7 @@ Set($WebExternalAuto, undef);
 
 =item C<$AutoCreate>
 
-If C<$WebExternalAuto> is true, C<$AutoCreate> will be passed to
+If C<$WebExternalAuto> is set to 1, C<$AutoCreate> will be passed to
 User's Create method.  Use it to set defaults, such as creating
 Unprivileged users with C<{ Privileged => 0 }> This must be a hashref.
 
@@ -1788,9 +1785,9 @@ By default, RT's session cookie isn't marked as "secure" Some web
 browsers will treat secure cookies more carefully than non-secure
 ones, being careful not to write them to disk, only sending them over
 an SSL secured connection, and so on. To enable this behavior, set
-C<$WebSecureCookies> to a true value.  NOTE: You probably don't want
-to turn this on I<unless> users are only connecting via SSL encrypted
-HTTPS connections.
+C<$WebSecureCookies> to 1.  NOTE: You probably don't want to turn this
+on I<unless> users are only connecting via SSL encrypted HTTPS
+connections.
 
 =cut
 
@@ -1931,7 +1928,7 @@ Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
 If you want to allow people to encrypt attachments inside the DB then
-set C<AllowEncryptDataInDB> to true.
+set C<AllowEncryptDataInDB> to 1.
 
 Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
 emails encrypted for key RT doesn't have and can not decrypt.
