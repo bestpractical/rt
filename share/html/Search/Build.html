@@ -309,7 +309,7 @@ elsif ( $query{'Query'} ) {
     $QueryString = $m->comp('/Elements/QueryString', %query );
 }
 
-
+$m->notes(QueryString => $QueryString);
 </%INIT>
 
 <%ARGS>
