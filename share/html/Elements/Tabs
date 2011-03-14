@@ -351,7 +351,7 @@ my $build_admin_menu = sub {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            my $section = $tabs->child( select => title => loc("Articles"), path => "/Admin/Articles/Classes/" );
+            my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
             $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
 
