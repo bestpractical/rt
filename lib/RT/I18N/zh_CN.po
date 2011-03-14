@@ -1,17 +1,16 @@
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-27 03:03+0000\n"
-"PO-Revision-Date: 2010-10-31 23:53+0000\n"
+"POT-Creation-Date: 2010-12-28 20:38+0000\n"
+"PO-Revision-Date: 2011-02-27 07:12+0000\n"
 "Last-Translator: sunnavy <sunnavy@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-27 19:45+0000\n"
-"X-Generator: Launchpad (build 12138)\n"
+"X-Launchpad-Export-Date: 2011-03-14 09:57+0000\n"
+"X-Generator: Launchpad (build 12568)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -99,7 +98,7 @@ msgstr "%1 %2 %3 %4:%5 %6"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
-#: lib/RT/Record.pm:1717 lib/RT/Transaction_Overlay.pm:734 lib/RT/Transaction_Overlay.pm:777
+#: lib/RT/Record.pm:1717 lib/RT/Transaction_Overlay.pm:736 lib/RT/Transaction_Overlay.pm:779
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -111,13 +110,13 @@ msgstr "%2 已创建为 %1"
 msgid "%1 %2 ago"
 msgstr "%1 %2之前"
 
-#: lib/RT/Record.pm:1724 lib/RT/Transaction_Overlay.pm:741
+#: lib/RT/Record.pm:1724 lib/RT/Transaction_Overlay.pm:743
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1已从%2改为%3"
 
-#: lib/RT/Record.pm:1721 lib/RT/Transaction_Overlay.pm:737 lib/RT/Transaction_Overlay.pm:783
+#: lib/RT/Record.pm:1721 lib/RT/Transaction_Overlay.pm:739 lib/RT/Transaction_Overlay.pm:785
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -295,13 +294,13 @@ msgstr "%1是个本地对象，但却不在数据库里"
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 已经完全初始化了。不需要再创建任何的数据库表或者加入元数据，点击下面的'自定基本项'继续自定RT."
 
-#: lib/RT/Transaction_Overlay.pm:620 share/html/Ticket/Elements/ShowDates:80
+#: lib/RT/Transaction_Overlay.pm:622 share/html/Ticket/Elements/ShowDates:80
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:682 lib/RT/Transaction_Overlay.pm:872 lib/RT/Transaction_Overlay.pm:877 lib/RT/Transaction_Overlay.pm:891 lib/RT/Transaction_Overlay.pm:900 lib/RT/Transaction_Overlay.pm:905
+#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:684 lib/RT/Transaction_Overlay.pm:874 lib/RT/Transaction_Overlay.pm:879 lib/RT/Transaction_Overlay.pm:893 lib/RT/Transaction_Overlay.pm:902 lib/RT/Transaction_Overlay.pm:907
 #. ($self->loc( $args{'Field'} ),            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
@@ -309,6 +308,10 @@ msgstr "%1 (%2)"
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 msgid "%1 changed from %2 to %3"
 msgstr "%1 的值从%2改为 %3"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 changed from '%2' to '%3'"
+msgstr "%1 已由'%2' 改为 '%3'"
 
 #: share/html/Search/Chart.html:2 share/html/Search/Elements/ResultViews:64
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
@@ -334,22 +337,22 @@ msgstr "无法将%1设定为 %2。"
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1 无法初始更新 (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm:2547
+#: lib/RT/Ticket_Overlay.pm:2546
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 无法将现况设成已解决。RT 数据库内容可能不一致。"
 
-#: lib/RT/Transaction_Overlay.pm:649
+#: lib/RT/Transaction_Overlay.pm:651
 #. ($obj_type)
 msgid "%1 created"
 msgstr "%1已创建"
 
-#: lib/RT/Transaction_Overlay.pm:660
+#: lib/RT/Transaction_Overlay.pm:662
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "%1已删除"
 
-#: lib/RT/Transaction_Overlay.pm:655
+#: lib/RT/Transaction_Overlay.pm:657
 #. ($obj_type)
 msgid "%1 disabled"
 msgstr "%1已停用"
@@ -359,7 +362,7 @@ msgstr "%1已停用"
 msgid "%1 doesn't exist."
 msgstr "%1不存在."
 
-#: lib/RT/Transaction_Overlay.pm:652
+#: lib/RT/Transaction_Overlay.pm:654
 #. ($obj_type)
 msgid "%1 enabled"
 msgstr "%1已启用"
@@ -390,7 +393,7 @@ msgstr "%1是从外部定时程序(如cron)来对申请单进行操作的工具�
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1是一个由cron运行的工具，可以分派所有延期的通知生成每个用户的摘要。"
 
-#: lib/RT/Queue_Overlay.pm:793 lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1107 lib/RT/Ticket_Overlay.pm:1116 share/html/Ticket/Create.html:406 share/html/Ticket/Update.html:275
+#: lib/RT/Queue_Overlay.pm:793 lib/RT/Queue_Overlay.pm:799 lib/RT/Ticket_Overlay.pm:1106 lib/RT/Ticket_Overlay.pm:1115 share/html/Ticket/Create.html:406 share/html/Ticket/Update.html:275
 #. ($email, $self->loc($args{'Type'}))
 #. ($args{'Email'}, $self->loc($args{'Type'}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -403,7 +406,7 @@ msgstr "%1是RT接收邮件的地址，加到%2会导致邮件循环发送"
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1已不再是此队列的%2."
 
-#: lib/RT/Ticket_Overlay.pm:1286
+#: lib/RT/Ticket_Overlay.pm:1285
 #. ($principal->Object->Name,                         $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1已不再是此申请单的%2."
@@ -414,6 +417,10 @@ msgid "%1 is no longer a value for custom field %2"
 msgstr "%1已不再是自定字段%2的值"
 
 #: NOT FOUND IN SOURCE
+msgid "%1 is not valid lifecycle"
+msgstr "%1 不是一个有效的生命周期"
+
+#: NOT FOUND IN SOURCE
 msgid "%1 isn't a valid Queue id."
 msgstr "%1 不是一个合法的队列编号。"
 
@@ -421,6 +428,14 @@ msgstr "%1 不是一个合法的队列编号。"
 #. ($minutes)
 msgid "%1 min"
 msgstr "%1分钟"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 most recently updated articles"
+msgstr "%1 最近更新的文章"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 newest articles"
+msgstr "%1 最新的文章"
 
 #: etc/initialdata:564
 msgid "%1 newest unowned tickets"
@@ -497,12 +512,12 @@ msgstr "%1内的%2的%3对象"
 #: share/html/Admin/Users/GnuPG.html:112
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
-msgstr ""
+msgstr "%1 的 GnuPG 密钥"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
 msgid "%1's current password"
-msgstr ""
+msgstr "%1 的当前密码"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65
 #. ($m->scomp('/Elements/ShowUser', User => $object))
@@ -544,7 +559,15 @@ msgstr "%1k字节"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:132
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1 分钟"
+
+#: NOT FOUND IN SOURCE
+msgid "%1s"
+msgstr "%1 秒"
+
+#: NOT FOUND IN SOURCE
+msgid "%quant(%1,article)"
+msgstr "%1 篇文章"
 
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
@@ -561,8 +584,32 @@ msgid "'%1' is an invalid value for status"
 msgstr "'%1' 不是一个合法的状态值"
 
 #: NOT FOUND IN SOURCE
+msgid "'%1' isn't a valid class identifier"
+msgstr "'%1' 不是一个有效的类型标识符"
+
+#: NOT FOUND IN SOURCE
 msgid "'%1' not a recognized action. "
 msgstr "'%1'为无法辨识的动作。 "
+
+#: NOT FOUND IN SOURCE
+msgid "'Roles'"
+msgstr "'角色'"
+
+#: NOT FOUND IN SOURCE
+msgid "'System'"
+msgstr "'系统'"
+
+#: NOT FOUND IN SOURCE
+msgid "'User Groups'"
+msgstr "'用户群组'"
+
+#: NOT FOUND IN SOURCE
+msgid "'Users'"
+msgstr "'用户'"
+
+#: NOT FOUND IN SOURCE
+msgid "(Check box to complete)"
+msgstr "(标记要完成的项目)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -602,7 +649,7 @@ msgstr "(如果留白, 则默认为%1)"
 msgid "(No Value)"
 msgstr "(没有值)"
 
-#: share/html/Admin/Elements/EditCustomFields:98 share/html/Admin/Elements/ListGlobalCustomFields:55
+#: share/html/Admin/Elements/EditCustomFields:95 share/html/Admin/Elements/ListGlobalCustomFields:55
 msgid "(No custom fields)"
 msgstr "(没有自定字段)"
 
@@ -699,8 +746,16 @@ msgid "(new)"
 msgstr "(创建)"
 
 #: NOT FOUND IN SOURCE
+msgid "(no Summary)"
+msgstr "(没有摘要)"
+
+#: NOT FOUND IN SOURCE
 msgid "(no name listed)"
 msgstr "(没有列出姓名)"
+
+#: NOT FOUND IN SOURCE
+msgid "(no name)"
+msgstr "(没有名称)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
@@ -710,7 +765,7 @@ msgstr "(没有公钥!)"
 msgid "(no subject)"
 msgstr "(没有主题)"
 
-#: lib/RT/Transaction_Overlay.pm:675 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:100 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81
+#: lib/RT/Transaction_Overlay.pm:677 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:100 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81
 msgid "(no value)"
 msgstr "(无)"
 
@@ -797,6 +852,14 @@ msgid "<% $_ %>"
 msgstr "<% $_ %>"
 
 #: NOT FOUND IN SOURCE
+msgid "<% $field->{'name'} %>"
+msgstr "<% $field->{'name'} %>"
+
+#: NOT FOUND IN SOURCE
+msgid "<%$Action%> here"
+msgstr "<%$Action%> 在此"
+
+#: NOT FOUND IN SOURCE
 msgid "<%$_%>"
 msgstr "<%$_%>"
 
@@ -821,6 +884,10 @@ msgstr "<input type=\"submit\" value=\"创建申请单\">&nbsp;%1"
 #: share/html/User/Prefs.html:182
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
 msgstr "<p>所有的iCal种子都内嵌一个授权给您的密钥。如果您的某个iCal种子的URL暴露在外部世界，您可以获得一个新的密钥，<b>断开以下所有已经存在的iCal种子</b> 。</p>"
+
+#: NOT FOUND IN SOURCE
+msgid "<tt>%1</tt> - <i>%2s</i>"
+msgstr "<tt>%1</tt> - <i>%2秒</i>"
 
 #: etc/initialdata:193
 msgid "A blank template"
@@ -898,7 +965,7 @@ msgstr "没有找到Action '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "Action committed."
-msgstr "动作执行完成"
+msgstr "动作执行完成。"
 
 #: bin/rt-crontool:231
 msgid "Action committed.\\n"
@@ -913,12 +980,24 @@ msgid "Action prepared..."
 msgstr "动作准备完成..."
 
 #: NOT FOUND IN SOURCE
+msgid "Actions"
+msgstr "动作"
+
+#: NOT FOUND IN SOURCE
 msgid "Activated Date"
 msgstr "申请激活时间"
 
 #: NOT FOUND IN SOURCE
+msgid "Active Tickets"
+msgstr "活动的申请单"
+
+#: NOT FOUND IN SOURCE
 msgid "Add"
 msgstr "创建"
+
+#: NOT FOUND IN SOURCE
+msgid "Add %1"
+msgstr "添加 %1"
 
 #: share/html/Search/Bulk.html:103
 msgid "Add AdminCc"
@@ -996,6 +1075,10 @@ msgstr "创建并开始搜索"
 msgid "Add comments or replies to selected tickets"
 msgstr "创建注释或回复到指定的申请单"
 
+#: NOT FOUND IN SOURCE
+msgid "Add group"
+msgstr "添加群组"
+
 #: share/html/Admin/Groups/Members.html:65 share/html/User/Groups/Members.html:62
 msgid "Add members"
 msgstr "创建成员"
@@ -1003,6 +1086,10 @@ msgstr "创建成员"
 #: share/html/Admin/Queues/People.html:89 share/html/Ticket/Elements/AddWatchers:51
 msgid "Add new watchers"
 msgstr "创建关注者"
+
+#: NOT FOUND IN SOURCE
+msgid "Add rights for this %1"
+msgstr "为 %1 添加权限"
 
 #: share/html/Search/Build.html:89
 msgid "Add these terms"
@@ -1016,6 +1103,10 @@ msgstr "加入这些条件和搜索"
 msgid "Add these terms to your search"
 msgstr "将这些条件加进搜索内"
 
+#: NOT FOUND IN SOURCE
+msgid "Add user"
+msgstr "添加用户"
+
 #: share/html/Search/Bulk.html:193
 msgid "Add values"
 msgstr "创建值"
@@ -1025,15 +1116,23 @@ msgid "Add, delete and modify custom field values for objects"
 msgstr "创建、删除及修改对象的自定字段值"
 
 #: NOT FOUND IN SOURCE
+msgid "Add, modify and delete custom field values for objects"
+msgstr "添加、修改与删除对象的字段值"
+
+#: NOT FOUND IN SOURCE
 msgid "AddNextState"
 msgstr "创建下一项关卡"
+
+#: NOT FOUND IN SOURCE
+msgid "Added %1 to members of %2 for this queue."
+msgstr "添加 %1 为 %2 该队列的成员"
 
 #: lib/RT/Queue_Overlay.pm:853
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "单位已创建为此队列的 %1"
 
-#: lib/RT/Ticket_Overlay.pm:1158
+#: lib/RT/Ticket_Overlay.pm:1157
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "单位已创建为此申请单的 %1"
@@ -1045,6 +1144,10 @@ msgstr "额外提示"
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
 msgstr "地址"
+
+#: NOT FOUND IN SOURCE
+msgid "Address 2"
+msgstr "地址 2"
 
 #: share/html/Admin/Users/Modify.html:134 share/html/Elements/RT__User/ColumnMap:106 share/html/User/Prefs.html:125
 msgid "Address1"
@@ -1123,6 +1226,10 @@ msgid "AdminCcs"
 msgstr "管理员抄送"
 
 #: NOT FOUND IN SOURCE
+msgid "AdminClass"
+msgstr "管理类别"
+
+#: NOT FOUND IN SOURCE
 msgid "AdminComment"
 msgstr "管理员注释"
 
@@ -1136,7 +1243,7 @@ msgstr "管理自定字段"
 
 #: lib/RT/CustomField_Overlay.pm:115
 msgid "AdminCustomFieldValues"
-msgstr ""
+msgstr "管理自定字段值"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminCustomFields"
@@ -1174,6 +1281,10 @@ msgstr "管理个人群组"
 msgid "AdminQueue"
 msgstr "管理队列"
 
+#: NOT FOUND IN SOURCE
+msgid "AdminTopics"
+msgstr "管理主题"
+
 #: lib/RT/System.pm:84
 msgid "AdminUsers"
 msgstr "管理用户"
@@ -1207,6 +1318,10 @@ msgid "Advanced Search Criteria"
 msgstr "进阶搜索条件"
 
 #: NOT FOUND IN SOURCE
+msgid "Advanced search"
+msgstr "高级搜索"
+
+#: NOT FOUND IN SOURCE
 msgid "Age"
 msgstr "经历时间"
 
@@ -1231,6 +1346,14 @@ msgid "All Approvals Passed"
 msgstr "完成全部批准"
 
 #: NOT FOUND IN SOURCE
+msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
+msgstr "本类型的所有文章都列于申请单回复页面的下拉列表"
+
+#: NOT FOUND IN SOURCE
+msgid "All Classes"
+msgstr "所有类型"
+
+#: NOT FOUND IN SOURCE
 msgid "All Condition"
 msgstr "所有条件"
 
@@ -1238,9 +1361,17 @@ msgstr "所有条件"
 msgid "All Custom Fields"
 msgstr "所有自定字段"
 
+#: NOT FOUND IN SOURCE
+msgid "All Dashboards"
+msgstr "所有表单"
+
 #: share/html/Admin/Queues/index.html:110
 msgid "All Queues"
 msgstr "所有队列"
+
+#: NOT FOUND IN SOURCE
+msgid "All Tickets"
+msgstr "所有申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "All Users"
@@ -1253,6 +1384,26 @@ msgstr "处理完成！您现在可以继续进行 %1。"
 #: share/html/Admin/Queues/index.html:100
 msgid "All queues matching search criteria"
 msgstr "满足条件的队列"
+
+#: NOT FOUND IN SOURCE
+msgid "All tickets"
+msgstr "所有申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "All topics"
+msgstr "所有主题"
+
+#: NOT FOUND IN SOURCE
+msgid "Allow creation of saved searches"
+msgstr "允许创建已存搜索"
+
+#: NOT FOUND IN SOURCE
+msgid "Allow loading of saved searches"
+msgstr "允许加载已存搜索"
+
+#: NOT FOUND IN SOURCE
+msgid "Allow writing Perl code in templates, scrips, etc"
+msgstr "允许在模板、脚本等处写 Perl 代码"
 
 #: NOT FOUND IN SOURCE
 msgid "Allowance Request"
@@ -1277,6 +1428,10 @@ msgstr "AND/OR"
 #: NOT FOUND IN SOURCE
 msgid "Any Condition"
 msgstr "任意条件"
+
+#: NOT FOUND IN SOURCE
+msgid "Any field"
+msgstr "任何字段"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
@@ -1403,6 +1558,54 @@ msgstr "四月"
 msgid "Are you sure to delete checked items?"
 msgstr "您确定要删除？"
 
+#: NOT FOUND IN SOURCE
+msgid "Are you sure you want to delete this article?"
+msgstr "确定要删除该文章吗?"
+
+#: NOT FOUND IN SOURCE
+msgid "Article #%1 deleted"
+msgstr "文章 #%1 已删除"
+
+#: NOT FOUND IN SOURCE
+msgid "Article #%1: %2"
+msgstr "文章 #%1: %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Article %1"
+msgstr "文章 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Article %1 created"
+msgstr "文章 %1 已创建"
+
+#: NOT FOUND IN SOURCE
+msgid "Article Administration"
+msgstr "文章管理页面"
+
+#: NOT FOUND IN SOURCE
+msgid "Article Deleted"
+msgstr "文章已删除"
+
+#: NOT FOUND IN SOURCE
+msgid "Article not found"
+msgstr "文章未找到"
+
+#: NOT FOUND IN SOURCE
+msgid "Articles"
+msgstr "文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Articles in %1"
+msgstr "%1 的文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Articles matching %1"
+msgstr "匹配 %1 的文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Articles with no topics"
+msgstr "无主题的文章"
+
 #: share/html/Search/Elements/DisplayOptions:78
 msgid "Asc"
 msgstr "递增"
@@ -1414,6 +1617,10 @@ msgstr "递增"
 #: lib/RT/Queue_Overlay.pm:94
 msgid "Assign and remove custom fields"
 msgstr "指派及移除自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Assign and remove queue custom fields"
+msgstr "指派或移除队列自定字段"
 
 #: lib/RT/Queue_Overlay.pm:94
 msgid "AssignCustomFields"
@@ -1559,7 +1766,7 @@ msgstr "批量批准"
 
 #: NOT FOUND IN SOURCE
 msgid "Bcc"
-msgstr "密件抄送"
+msgstr "密送"
 
 #: share/html/Admin/CustomFields/GroupRights.html:93 share/html/Admin/CustomFields/UserRights.html:74
 msgid "Be sure to save your changes"
@@ -1609,13 +1816,29 @@ msgstr "将搜索结果转为可放入书签的网址"
 msgid "Bookmarkable link"
 msgstr "可放入书签的网址"
 
+#: NOT FOUND IN SOURCE
+msgid "Bookmarkable link for this search"
+msgstr "可添加为书签的该搜索链接"
+
 #: etc/initialdata:577 etc/upgrade/3.7.82/content:3
 msgid "Bookmarked Tickets"
 msgstr "收藏的书签"
 
+#: NOT FOUND IN SOURCE
+msgid "Bookmarked tickets"
+msgstr "已加入书签的申请单"
+
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
 msgstr "精简邮件头"
+
+#: NOT FOUND IN SOURCE
+msgid "Browse by topic"
+msgstr "根据主题浏览"
+
+#: NOT FOUND IN SOURCE
+msgid "Browse the SQL queries made in this process"
+msgstr "浏览该进程中的 SQL 队列"
 
 #: share/html/Ticket/Elements/Tabs:321
 msgid "Bulk Update"
@@ -1654,7 +1877,7 @@ msgstr "CF"
 msgid "Can not load saved search \"%1\""
 msgstr "加载\"%1\"失败"
 
-#: lib/RT/User_Overlay.pm:1612
+#: lib/RT/User_Overlay.pm:1633
 msgid "Can not modify system users"
 msgstr "无法更改系统用户"
 
@@ -1698,6 +1921,10 @@ msgstr "无法同时指定起始申请单与目的申请单"
 #: NOT FOUND IN SOURCE
 msgid "Cancel"
 msgstr "取消"
+
+#: NOT FOUND IN SOURCE
+msgid "Cannot add link to plain number"
+msgstr "不能为编号添加链接"
 
 #: share/html/Ticket/Create.html:342
 msgid "Cannot create tickets in a disabled queue."
@@ -1771,6 +1998,14 @@ msgstr "更改密码"
 msgid "ChangeOwnerUI"
 msgstr "可否选择队列拥有人"
 
+#: NOT FOUND IN SOURCE
+msgid "Chart"
+msgstr "图表"
+
+#: NOT FOUND IN SOURCE
+msgid "Chart Properties"
+msgstr "图表属性"
+
 #: share/html/Elements/Submit:90
 msgid "Check All"
 msgstr "选择全部"
@@ -1815,9 +2050,37 @@ msgstr "选择一个数据库引擎"
 msgid "Choose a date"
 msgstr "选择日期"
 
+#: NOT FOUND IN SOURCE
+msgid "Choose from Topics for %1"
+msgstr "从 %1 的主题选择"
+
 #: share/html/Admin/Users/Modify.html:144 share/html/Elements/RT__User/ColumnMap:116 share/html/User/Prefs.html:133
 msgid "City"
 msgstr "城市"
+
+#: NOT FOUND IN SOURCE
+msgid "Class"
+msgstr "类型"
+
+#: NOT FOUND IN SOURCE
+msgid "Class Name"
+msgstr "类型名称"
+
+#: NOT FOUND IN SOURCE
+msgid "Class id"
+msgstr "类型id"
+
+#: NOT FOUND IN SOURCE
+msgid "Class is already applied Globally"
+msgstr "类型已应用到全局"
+
+#: NOT FOUND IN SOURCE
+msgid "Class is already applied to %1"
+msgstr "类型已应用到 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Classes"
+msgstr "类型"
 
 #: NOT FOUND IN SOURCE
 msgid "ClassicUI"
@@ -1923,7 +2186,7 @@ msgstr "对 %1 的注释"
 msgid "Comments about this user"
 msgstr "该用户的注释"
 
-#: lib/RT/Transaction_Overlay.pm:721
+#: lib/RT/Transaction_Overlay.pm:723
 msgid "Comments added"
 msgstr "创建注释完成"
 
@@ -1983,6 +2246,10 @@ msgid "Configuration"
 msgstr "配置"
 
 #: NOT FOUND IN SOURCE
+msgid "Configuration for queue %1"
+msgstr "队列 %1 的配置"
+
+#: NOT FOUND IN SOURCE
 msgid "Confirm"
 msgstr "确认"
 
@@ -2013,6 +2280,14 @@ msgstr "无法解读联络日期 '%1'"
 #: lib/RT/Tickets_Overlay.pm:126 share/html/Admin/Elements/ModifyTemplate:67 share/html/Elements/QuickCreate:70 share/html/Elements/SelectAttachmentField:50 share/html/Ticket/ModifyAll.html:140
 msgid "Content"
 msgstr "内容"
+
+#: NOT FOUND IN SOURCE
+msgid "Content is an invalid IP address"
+msgstr "内容是无效的IP地址"
+
+#: NOT FOUND IN SOURCE
+msgid "Content is an invalid IP address range"
+msgstr "内容是无效的IP地址范围"
 
 #: share/html/Elements/SelectAttachmentField:51
 msgid "Content-Type"
@@ -2050,7 +2325,7 @@ msgstr "回复"
 msgid "Correspondence Address"
 msgstr "申请单回复地址"
 
-#: lib/RT/Transaction_Overlay.pm:717
+#: lib/RT/Transaction_Overlay.pm:719
 msgid "Correspondence added"
 msgstr "创建申请单回复"
 
@@ -2084,7 +2359,7 @@ msgstr "无法创建自定字段值：%1"
 msgid "Could not change owner. "
 msgstr "无法更改拥有人。 "
 
-#: lib/RT/Ticket_Overlay.pm:2830 lib/RT/Ticket_Overlay.pm:2838 lib/RT/Ticket_Overlay.pm:2855
+#: lib/RT/Ticket_Overlay.pm:2829 lib/RT/Ticket_Overlay.pm:2837 lib/RT/Ticket_Overlay.pm:2854
 #. ($del_msg)
 #. ($add_msg)
 #. ($msg)
@@ -2117,6 +2392,10 @@ msgstr "无法创建群组"
 msgid "Could not create item"
 msgstr "无法创建项目"
 
+#: NOT FOUND IN SOURCE
+msgid "Could not create search: %1"
+msgstr "无法创建搜索: %1"
+
 #: share/html/Admin/Global/Template.html:95 share/html/Admin/Queues/Template.html:96
 #. ($msg)
 msgid "Could not create template: %1"
@@ -2126,7 +2405,7 @@ msgstr "无法创建模板：%1"
 msgid "Could not create ticket. Queue not set"
 msgstr "无法创建申请单。队列未指定"
 
-#: lib/RT/User_Overlay.pm:189 lib/RT/User_Overlay.pm:203 lib/RT/User_Overlay.pm:212 lib/RT/User_Overlay.pm:221 lib/RT/User_Overlay.pm:230 lib/RT/User_Overlay.pm:244 lib/RT/User_Overlay.pm:254 lib/RT/User_Overlay.pm:403
+#: lib/RT/User_Overlay.pm:190 lib/RT/User_Overlay.pm:204 lib/RT/User_Overlay.pm:213 lib/RT/User_Overlay.pm:222 lib/RT/User_Overlay.pm:231 lib/RT/User_Overlay.pm:245 lib/RT/User_Overlay.pm:255 lib/RT/User_Overlay.pm:404
 msgid "Could not create user"
 msgstr "无法创建用户"
 
@@ -2139,6 +2418,10 @@ msgid "Could not create workflow: %1"
 msgstr "无法创建流程：%1"
 
 #: NOT FOUND IN SOURCE
+msgid "Could not delete search %1: %2"
+msgstr "无法删除搜索 %1: %2"
+
+#: NOT FOUND IN SOURCE
 msgid "Could not find a ticket with id %1"
 msgstr "找不到编号 %1 的申请单"
 
@@ -2146,11 +2429,11 @@ msgstr "找不到编号 %1 的申请单"
 msgid "Could not find group %1."
 msgstr "找不到群组 %1。"
 
-#: lib/RT/Queue_Overlay.pm:832 lib/RT/Ticket_Overlay.pm:1126
+#: lib/RT/Queue_Overlay.pm:832 lib/RT/Ticket_Overlay.pm:1125
 msgid "Could not find or create that user"
 msgstr "找不到或无法创建该用户"
 
-#: lib/RT/Queue_Overlay.pm:907 lib/RT/Ticket_Overlay.pm:1207
+#: lib/RT/Queue_Overlay.pm:907 lib/RT/Ticket_Overlay.pm:1206
 msgid "Could not find that principal"
 msgstr "找不到该单位"
 
@@ -2162,6 +2445,10 @@ msgstr "找不到用户 %1。"
 #. ($self->ObjectName)
 msgid "Could not load %1 attribute"
 msgstr "无法加载属性 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not load Class %1"
+msgstr "无法加载类新 %1"
 
 #: share/html/Admin/CustomFields/Objects.html:110
 msgid "Could not load CustomField %1"
@@ -2185,7 +2472,7 @@ msgstr "无法加载搜索属性"
 msgid "Could not make that principal a %1 for this queue"
 msgstr "无法将该单位设为此队列的 %1。"
 
-#: lib/RT/Ticket_Overlay.pm:1147
+#: lib/RT/Ticket_Overlay.pm:1146
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "无法将该单位设为此申请单的 %1。"
@@ -2195,12 +2482,12 @@ msgstr "无法将该单位设为此申请单的 %1。"
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "无法将单位作为%1从队列移除。"
 
-#: lib/RT/Ticket_Overlay.pm:1274
+#: lib/RT/Ticket_Overlay.pm:1273
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
 msgstr "无法将单位作为%1从申请单移除。"
 
-#: lib/RT/User_Overlay.pm:129
+#: lib/RT/User_Overlay.pm:130
 msgid "Could not set user info"
 msgstr "无法设定用户信息"
 
@@ -2216,6 +2503,14 @@ msgstr "无法创建成员至群组"
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr "无法应用自定字段到改对象因该字段已应用到全局"
 
+#: NOT FOUND IN SOURCE
+msgid "Couldn't compile %1 codeblock '%2': %3"
+msgstr "无法编译 %1 码块 '%2': %3"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't compile template codeblock '%1': %2"
+msgstr "无法编译模板码块 '%1': %2"
+
 #: lib/RT/Record.pm:1749 lib/RT/Record.pm:1801
 #. ($msg)
 #. ($Msg)
@@ -2225,6 +2520,10 @@ msgstr "无法创建事务： %1"
 #: lib/RT/CustomField_Overlay.pm:1176
 msgid "Couldn't create record"
 msgstr "无法创建记录"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't create record: %1"
+msgstr "无法创建记录: %1"
 
 #: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
@@ -2278,7 +2577,7 @@ msgstr "无法加载类型 %1"
 msgid "Couldn't load Custom Field #%1"
 msgstr "无法加载自定字段 #%1"
 
-#: share/html/Admin/Elements/EditCustomFields:136 share/html/Admin/Elements/EditCustomFields:146
+#: share/html/Admin/Elements/EditCustomFields:133 share/html/Admin/Elements/EditCustomFields:143
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
 msgstr "无法加载自定字段 #%1"
@@ -2300,7 +2599,7 @@ msgstr "无法加载 RT 设定档 '%1' %2"
 msgid "Couldn't load Scrips."
 msgstr "无法加载脚本。"
 
-#: lib/RT/Ticket_Overlay.pm:1736
+#: lib/RT/Ticket_Overlay.pm:1735
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr "无法加载申请单%1的副本。"
@@ -2381,10 +2680,18 @@ msgstr "无法加载模板 #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名用户(%1)"
 
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load the specified principal"
+msgstr "无法加载指定的单位"
+
 #: lib/RT/Action/CreateTickets.pm:453 share/html/SelfService/Display.html:158
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load topic membership while trying to delete it"
+msgstr "在尝试删除的过程中无法加载主题成员"
 
 #: share/html/Ticket/Forward.html:92 share/html/Ticket/GnuPG.html:75
 #. ($QuoteTransaction)
@@ -2411,7 +2718,7 @@ msgstr "无法加载用户 #%1 或用户 '%2'"
 msgid "Couldn't load user '%1'"
 msgstr "无法加载用户 '%1'"
 
-#: lib/RT/Ticket_Overlay.pm:1053
+#: lib/RT/Ticket_Overlay.pm:1052
 #. ($args{'Email'})
 msgid "Couldn't parse address from '%1' string"
 msgstr "无法从 '%1' 解析到地址"
@@ -2426,7 +2733,11 @@ msgstr "无法用解密的数据替换内容： %1"
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "无法用加密的数据替换内容： %1"
 
-#: lib/RT/Ticket_Overlay.pm:2410
+#: NOT FOUND IN SOURCE
+msgid "Couldn't resolve '%1' into a Link."
+msgstr "无法将 '%1' 分解为链接."
+
+#: lib/RT/Ticket_Overlay.pm:2409
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
 msgstr "无法将‘%1’解析为网址"
@@ -2441,7 +2752,7 @@ msgstr "无法解析源 '%1' 到一个URI"
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "无法解析目标 '%1'  到一个URI"
 
-#: lib/RT/Interface/Email.pm:670 lib/RT/Interface/Email.pm:732
+#: lib/RT/Interface/Email.pm:671 lib/RT/Interface/Email.pm:733
 msgid "Couldn't send email"
 msgstr "无法发送邮件"
 
@@ -2450,11 +2761,11 @@ msgstr "无法发送邮件"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "无法设置%1关注者: %2"
 
-#: lib/RT/User_Overlay.pm:1785
+#: lib/RT/User_Overlay.pm:1806
 msgid "Couldn't set private key"
 msgstr "无法设置私有钥"
 
-#: lib/RT/User_Overlay.pm:1769
+#: lib/RT/User_Overlay.pm:1790
 msgid "Couldn't unset private key"
 msgstr "无法取消私有钥"
 
@@ -2478,6 +2789,10 @@ msgstr "创建申请单"
 msgid "Create User:"
 msgstr "创建成员："
 
+#: NOT FOUND IN SOURCE
+msgid "Create a Class"
+msgstr "创建类型"
+
 #: share/html/Admin/CustomFields/Modify.html:147 share/html/Admin/Elements/EditCustomField:98
 msgid "Create a CustomField"
 msgstr "创建自定字段"
@@ -2494,6 +2809,14 @@ msgstr "为 %1 队列创建自定字段"
 #: NOT FOUND IN SOURCE
 msgid "Create a new Custom Field"
 msgstr "创建自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new article"
+msgstr "创建新文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new article in"
+msgstr "创建新文章于"
 
 #: share/html/Dashboards/Modify.html:102 share/html/Dashboards/Modify.html:133
 msgid "Create a new dashboard"
@@ -2526,6 +2849,10 @@ msgstr "创建脚本"
 #: NOT FOUND IN SOURCE
 msgid "Create a new template"
 msgstr "创建模板"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new template for queue %1"
+msgstr "创建队列 %1 的新模板"
 
 #: share/html/Ticket/Create.html:335
 msgid "Create a new ticket"
@@ -2568,6 +2895,18 @@ msgstr "创建申请单"
 msgid "Create a workflow"
 msgstr "创建流程"
 
+#: NOT FOUND IN SOURCE
+msgid "Create an article"
+msgstr "创建文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Create an article in class..."
+msgstr "创建文章，类型为..."
+
+#: NOT FOUND IN SOURCE
+msgid "Create articles in this class"
+msgstr "在此类型中创建文章"
+
 #: lib/RT/Group_Overlay.pm:98
 msgid "Create dashboards for this group"
 msgstr "为这个群组创建表单"
@@ -2579,6 +2918,10 @@ msgstr "创建失败：%1 / %2 / %3 "
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
 msgstr "创建失败：%1/%2/%3"
+
+#: NOT FOUND IN SOURCE
+msgid "Create group dashboards"
+msgstr "创建群组表单"
 
 #: NOT FOUND IN SOURCE
 msgid "Create new item"
@@ -2598,6 +2941,10 @@ msgstr "创建系统表单"
 
 #: share/html/SelfService/Create.html:113
 msgid "Create ticket"
+msgstr "创建申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Create tickets"
 msgstr "创建申请单"
 
 #: lib/RT/Queue_Overlay.pm:107
@@ -2631,6 +2978,34 @@ msgstr "创建、删除及更改个人群组"
 #: lib/RT/System.pm:84
 msgid "Create, delete and modify users"
 msgstr "创建、删除及更改用户"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete Access Control List entries"
+msgstr "创建、修改与删除访问控制列表条目"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete custom fields"
+msgstr "创建、修改与删除访问自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete custom fields values"
+msgstr "创建、修改与删除访问自定字段值"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete queue"
+msgstr "创建、修改与删除访问队列"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete saved searches"
+msgstr "创建、修改与删除访问已存搜索"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, modify and delete users"
+msgstr "创建、修改与删除访问用户"
+
+#: NOT FOUND IN SOURCE
+msgid "CreateArticle"
+msgstr "创建文章"
 
 #: lib/RT/Dashboard.pm:81
 msgid "CreateDashboard"
@@ -2666,9 +3041,17 @@ msgstr "创建者"
 msgid "Created CustomField %1"
 msgstr "自定字段%1创建成功"
 
+#: NOT FOUND IN SOURCE
+msgid "Created by"
+msgstr "创建者"
+
 #: share/html/Tools/Reports/Elements/Tabs:65 share/html/Tools/Reports/index.html:68
 msgid "Created in a date range"
 msgstr "在指定日期范围内创建"
+
+#: NOT FOUND IN SOURCE
+msgid "Created search %1"
+msgstr "已创建搜索 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -2727,6 +3110,10 @@ msgid "Current Scrips"
 msgstr "当前脚本"
 
 #: NOT FOUND IN SOURCE
+msgid "Current Search"
+msgstr "当前搜索"
+
+#: NOT FOUND IN SOURCE
 msgid "Current Status"
 msgstr "目前状态"
 
@@ -2772,6 +3159,10 @@ msgid "Custom Fields for %1"
 msgstr "%1 的自定字段"
 
 #: NOT FOUND IN SOURCE
+msgid "Custom Fields for queue %1"
+msgstr "队列 %1 的自定字段"
+
+#: NOT FOUND IN SOURCE
 msgid "Custom Fields which apply to all queues"
 msgstr "适用于所有队列的自定字段"
 
@@ -2787,7 +3178,7 @@ msgstr "自定动作前准备程序"
 msgid "Custom condition"
 msgstr "自定条件"
 
-#: share/html/Admin/Elements/EditCustomFields:112 share/html/Admin/Elements/EditCustomFields:123
+#: share/html/Admin/Elements/EditCustomFields:109 share/html/Admin/Elements/EditCustomFields:120
 #. ($MoveCustomFieldUp)
 #. ($MoveCustomFieldDown)
 msgid "Custom field #%1 is not applied to this object"
@@ -2861,7 +3252,7 @@ msgstr "自定字段值删除成功"
 msgid "Custom.Ownership"
 msgstr "自定: 拥有状态"
 
-#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:725 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:727 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "自定字段"
 
@@ -2884,6 +3275,10 @@ msgstr "自定邮件地址"
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:66 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
 msgstr "自定邮件配置"
+
+#: NOT FOUND IN SOURCE
+msgid "Customize the look of your RT"
+msgstr "自定 RT 外观"
 
 #: lib/RT/Installer.pm:109
 msgid "DBA password"
@@ -3052,7 +3447,7 @@ msgstr "默认更改模板"
 msgid "Default: %1"
 msgstr "默认值：%1"
 
-#: lib/RT/Transaction_Overlay.pm:703
+#: lib/RT/Transaction_Overlay.pm:705
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "默认：%1/%2 已自 %3 改为 %4"
@@ -3149,6 +3544,14 @@ msgstr "删除"
 msgid "Delete Template"
 msgstr "删除模板"
 
+#: NOT FOUND IN SOURCE
+msgid "Delete article #%1"
+msgstr "删除文章 #%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Delete articles in this class"
+msgstr "删除该类型的文章"
+
 #: lib/RT/Group_Overlay.pm:100
 msgid "Delete dashboards for this group"
 msgstr "删除该群组的表单"
@@ -3157,6 +3560,14 @@ msgstr "删除该群组的表单"
 #. ($msg)
 msgid "Delete failed: %1"
 msgstr "删除失败：%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Delete group dashboards"
+msgstr "删除群组表单"
+
+#: NOT FOUND IN SOURCE
+msgid "Delete operation is disabled by lifecycle configuration"
+msgstr "删除被生命周期配置停用的操作"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
@@ -3177,6 +3588,10 @@ msgstr "删除申请单"
 #: share/html/Search/Bulk.html:194
 msgid "Delete values"
 msgstr "删除值"
+
+#: NOT FOUND IN SOURCE
+msgid "DeleteArticle"
+msgstr "删除文章"
 
 #: lib/RT/Dashboard.pm:83
 msgid "DeleteDashboard"
@@ -3217,6 +3632,10 @@ msgid "Deleted search"
 msgstr "已删除的搜索"
 
 #: NOT FOUND IN SOURCE
+msgid "Deleted search %1"
+msgstr "删除搜索 %1"
+
+#: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
 msgstr "删除此对象可能破坏参考完整性"
 
@@ -3224,7 +3643,7 @@ msgstr "删除此对象可能破坏参考完整性"
 msgid "Deleting this object would break referential integrity"
 msgstr "删除此对象会破坏完整性"
 
-#: lib/RT/User_Overlay.pm:415
+#: lib/RT/User_Overlay.pm:416
 msgid "Deleting this object would violate referential integrity"
 msgstr "删除此对象会破坏完整性"
 
@@ -3284,22 +3703,22 @@ msgstr "可连续处理"
 msgid "Dependencies: \\n"
 msgstr "附属性：\\n"
 
-#: lib/RT/Transaction_Overlay.pm:805
+#: lib/RT/Transaction_Overlay.pm:807
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "已加入可连续处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:845
+#: lib/RT/Transaction_Overlay.pm:847
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "已移除可连续处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:802
+#: lib/RT/Transaction_Overlay.pm:804
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "已加入需先处理的申请单 %1"
 
-#: lib/RT/Transaction_Overlay.pm:842
+#: lib/RT/Transaction_Overlay.pm:844
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "已移除需先处理的申请单 %1"
@@ -3341,6 +3760,10 @@ msgid "Description:"
 msgstr "描述："
 
 #: NOT FOUND IN SOURCE
+msgid "Detailed information about your RT setup"
+msgstr "RT设定的详细信息"
+
+#: NOT FOUND IN SOURCE
 msgid "Details"
 msgstr "细节"
 
@@ -3372,6 +3795,10 @@ msgstr "显示"
 msgid "Display Access Control List"
 msgstr "显示权限控制清单"
 
+#: NOT FOUND IN SOURCE
+msgid "Display Article %1"
+msgstr "显示文章 %1"
+
 #: share/html/Search/Elements/DisplayOptions:99
 msgid "Display Columns"
 msgstr "显示字段"
@@ -3395,6 +3822,10 @@ msgstr "显示此群组的已存搜索"
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
 msgstr "显示第%1号申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgstr "以 %1GNU GPL%2</a> 第二版发布。"
 
 #: share/html/Elements/Footer:64
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
@@ -3456,6 +3887,10 @@ msgstr "下载 dumpfile"
 msgid "Dr."
 msgstr "博士"
 
+#: NOT FOUND IN SOURCE
+msgid "Dropdown"
+msgstr "下拉列表"
+
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:921 lib/RT/Tickets_Overlay.pm:121 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:217 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:144 share/html/Ticket/Elements/ShowDates:66
 msgid "Due"
 msgstr "到期日期"
@@ -3485,6 +3920,10 @@ msgstr "无法加载申请单 '%1'：%2.\\n"
 msgid "Easy updating of your open tickets"
 msgstr "更新您已打开的申请单"
 
+#: NOT FOUND IN SOURCE
+msgid "Easy viewing of your reminders"
+msgstr "提醒項目的便捷视图"
+
 #: share/html/Elements/Dashboards:53 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:134
 msgid "Edit"
 msgstr "编辑"
@@ -3513,6 +3952,10 @@ msgstr "为所有的队列编辑自定字段"
 #: share/html/Admin/Global/CustomFields/Users.html:56
 msgid "Edit Custom Fields for all users"
 msgstr "编辑适用于所有用户的自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit Custom Fields for articles in all classes"
+msgstr "编辑所有类型的文章自定字段"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for queue %1"
@@ -3548,6 +3991,10 @@ msgid "Edit Workflows for queue %1"
 msgstr "编辑队列 %1 的流程"
 
 #: NOT FOUND IN SOURCE
+msgid "Edit global topic hierarchy"
+msgstr "编辑全局主题层次"
+
+#: NOT FOUND IN SOURCE
 msgid "Edit keywords"
 msgstr "编辑关键词"
 
@@ -3572,6 +4019,10 @@ msgid "Edit templates for %1"
 msgstr "编辑 %1 的模板"
 
 #: NOT FOUND IN SOURCE
+msgid "Edit topic hierarchy for %1"
+msgstr "编辑 %1 的主题层次"
+
+#: NOT FOUND IN SOURCE
 msgid "Edit workflows for %1"
 msgstr "编辑 %1 的流程"
 
@@ -3582,6 +4033,10 @@ msgstr "编辑已存搜索"
 #: share/html/Search/Elements/ResultViews:63
 msgid "Editable text"
 msgstr "可编辑文本"
+
+#: NOT FOUND IN SOURCE
+msgid "Editing Configuration for Class %1"
+msgstr "编辑类型 %1 的配置"
 
 #: share/html/Admin/Queues/Modify.html:176
 #. ($QueueObj->Name)
@@ -3624,7 +4079,7 @@ msgstr "最高学历"
 msgid "EffectiveId"
 msgstr "有效编号"
 
-#: lib/RT/Record.pm:1300 lib/RT/Record.pm:1381 lib/RT/Ticket_Overlay.pm:2280 lib/RT/Ticket_Overlay.pm:2375
+#: lib/RT/Record.pm:1300 lib/RT/Record.pm:1381 lib/RT/Ticket_Overlay.pm:2279 lib/RT/Ticket_Overlay.pm:2374
 msgid "Either base or target must be specified"
 msgstr "需要指定源申请单或目标申请单"
 
@@ -3645,7 +4100,7 @@ msgstr "电子邮件信箱"
 msgid "Email Digest"
 msgstr "邮件摘要"
 
-#: lib/RT/User_Overlay.pm:547
+#: lib/RT/User_Overlay.pm:548
 msgid "Email address in use"
 msgstr "邮箱已被使用"
 
@@ -3685,6 +4140,10 @@ msgstr "代理激活"
 msgid "Enabled"
 msgstr "启用"
 
+#: NOT FOUND IN SOURCE
+msgid "Enabled (Unchecking this box disables this class)"
+msgstr "启用 (不勾选将停用该类型)"
+
 #: share/html/Admin/CustomFields/Modify.html:124 share/html/Admin/Elements/EditCustomField:74
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "启用(不勾选将停用此自定字段)"
@@ -3696,6 +4155,10 @@ msgstr "启用(不勾选将停用此群组)"
 #: share/html/Admin/Queues/Modify.html:119
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "启用(不勾选将停用此队列)"
+
+#: NOT FOUND IN SOURCE
+msgid "Enabled Classes"
+msgstr "启用类型"
 
 #: NOT FOUND IN SOURCE
 msgid "Enabled Custom Fields"
@@ -3763,6 +4226,18 @@ msgstr "试用期满日"
 msgid "English Name"
 msgstr "英文姓名"
 
+#: NOT FOUND IN SOURCE
+msgid "Enter articles, tickets, or other URLs related to this article."
+msgstr "输入与该文章相关的文章、申请单或其他URL"
+
+#: NOT FOUND IN SOURCE
+msgid "Enter multiple IP address ranges"
+msgstr "输入多个 IP 地址范围"
+
+#: NOT FOUND IN SOURCE
+msgid "Enter multiple IP addresses"
+msgstr "输入多个 IP 地址"
+
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter multiple values"
 msgstr "输入多个值"
@@ -3774,6 +4249,14 @@ msgstr "输入多个值(带自动补全功能)"
 #: share/html/Elements/EditLinks:127
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
 msgstr "输入要将对象链接到的对象或URI地址. 各项间请以空白隔开."
+
+#: NOT FOUND IN SOURCE
+msgid "Enter one IP address"
+msgstr "输入一个 IP 地址"
+
+#: NOT FOUND IN SOURCE
+msgid "Enter one IP address range"
+msgstr "输入一个 IP 地址范围"
 
 #: NOT FOUND IN SOURCE
 msgid "Enter one or more conditions below to search for users"
@@ -3794,6 +4277,14 @@ msgstr "输入要将队列链接到的队列或URI地址. 各项间请以空白�
 #: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:230 share/html/Ticket/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "输入要将申请单链接到的申请单编号或URI地址. 各项之间请以空白隔开."
+
+#: NOT FOUND IN SOURCE
+msgid "Enter up to %1 IP address ranges"
+msgstr "最多可输入 %1 个 IP 地址范围"
+
+#: NOT FOUND IN SOURCE
+msgid "Enter up to %1 IP addresses"
+msgstr "最多可输入 %1 个 IP 地址"
 
 #: lib/RT/CustomField_Overlay.pm:68
 msgid "Enter up to %1 values"
@@ -3851,11 +4342,11 @@ msgstr "队列->创建关注者的参数错误"
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr "队列->删除关注者的参数错误"
 
-#: lib/RT/Ticket_Overlay.pm:1085
+#: lib/RT/Ticket_Overlay.pm:1084
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申请单->创建关注者的参数错误"
 
-#: lib/RT/Ticket_Overlay.pm:1241
+#: lib/RT/Ticket_Overlay.pm:1240
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "申请单->删除关注者的参数错误"
 
@@ -3871,6 +4362,14 @@ msgstr "错误: 表单不存在"
 msgid "Error: bad GnuPG data"
 msgstr "错误: 错误的GnuPG数据"
 
+#: NOT FOUND IN SOURCE
+msgid "Error: cannot change privacy value of existing search"
+msgstr "错误: 无法改变当前搜索的隐私值"
+
+#: NOT FOUND IN SOURCE
+msgid "Error: could not load saved search %1: %2"
+msgstr "错误: 无法加载已存搜索 %1: %2"
+
 #: etc/initialdata:417 etc/upgrade/3.7.10/content:26
 msgid "Error: no private key"
 msgstr "错误: 没有私钥"
@@ -3878,6 +4377,10 @@ msgstr "错误: 没有私钥"
 #: etc/initialdata:395 etc/upgrade/3.7.10/content:4
 msgid "Error: public key"
 msgstr "错误: 公钥"
+
+#: NOT FOUND IN SOURCE
+msgid "Error: search %1 not updated: %2"
+msgstr "错误: 搜索 %1 未更新: %2"
 
 #: bin/rt-crontool:389
 msgid "Escalate tickets"
@@ -3891,7 +4394,7 @@ msgstr "预计"
 msgid "Estimated"
 msgstr "预计"
 
-#: lib/RT/Handle.pm:648
+#: lib/RT/Handle.pm:649
 msgid "Everyone"
 msgstr "所有人"
 
@@ -3912,6 +4415,10 @@ msgid "Example:"
 msgstr "范例："
 
 #: NOT FOUND IN SOURCE
+msgid "ExecuteCode"
+msgstr "执行代码"
+
+#: NOT FOUND IN SOURCE
 msgid "Existing user renamed from %1 to %2"
 msgstr "当前用户 %1 已改名为 %2"
 
@@ -3927,7 +4434,7 @@ msgstr "汇出"
 msgid "ExtendedStatus"
 msgstr "扩展状态"
 
-#: lib/RT/User_Overlay.pm:1099
+#: lib/RT/User_Overlay.pm:1117
 msgid "External authentication enabled."
 msgstr "外部认证已启用"
 
@@ -3959,9 +4466,21 @@ msgstr "外部接口网址"
 msgid "Extra info"
 msgstr "备注"
 
+#: NOT FOUND IN SOURCE
+msgid "Extract Article"
+msgstr "提取文章"
+
 #: etc/initialdata:97 etc/upgrade/3.8.3/content:75
 msgid "Extract Subject Tag"
 msgstr "提取主题标签"
+
+#: NOT FOUND IN SOURCE
+msgid "Extract a new article from ticket #%1"
+msgstr "从申请单 #%1 提取新文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Extract article from ticket #%1 into class %2"
+msgstr "从申请单 #%1 中提取文章至类型 %2"
 
 #: etc/initialdata:98 etc/upgrade/3.8.3/content:76
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
@@ -3981,11 +4500,11 @@ msgstr "创建属性%1失败"
 msgid "Failed to create search attribute"
 msgstr "搜索属性创建失败"
 
-#: lib/RT/User_Overlay.pm:290
+#: lib/RT/User_Overlay.pm:291
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "找不到‘内部成员’虚拟群组的用户。"
 
-#: lib/RT/User_Overlay.pm:297
+#: lib/RT/User_Overlay.pm:298
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "找不到‘非内部成员’虚拟群组的用户。"
 
@@ -4030,8 +4549,16 @@ msgid "February"
 msgstr "二月"
 
 #: NOT FOUND IN SOURCE
+msgid "Feeds"
+msgstr "馈送"
+
+#: NOT FOUND IN SOURCE
 msgid "Female"
 msgstr "女"
+
+#: NOT FOUND IN SOURCE
+msgid "Field"
+msgstr "字段"
 
 #: NOT FOUND IN SOURCE
 msgid "Field Content:"
@@ -4155,7 +4682,7 @@ msgstr "搜索申请单"
 
 #: share/html/Admin/Elements/ShowKeyInfo:58
 msgid "Fingerprint"
-msgstr ""
+msgstr "指纹"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:65
 msgid "Finish"
@@ -4225,6 +4752,10 @@ msgstr "转发消息并返回"
 msgid "Forward Ticket"
 msgstr "转发申请单"
 
+#: NOT FOUND IN SOURCE
+msgid "Forward messages outside of RT"
+msgstr "转发信息至 RT 之外"
+
 #: lib/RT/Queue_Overlay.pm:116
 msgid "Forward messages to third person(s)"
 msgstr "转发消息给第三人"
@@ -4242,6 +4773,14 @@ msgstr "转发事务#%1"
 #: lib/RT/Queue_Overlay.pm:116
 msgid "ForwardMessage"
 msgstr "转发消息"
+
+#: NOT FOUND IN SOURCE
+msgid "Forwarded Ticket to %1"
+msgstr "转发申请单至 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Forwarded Transaction #%1 to %2"
+msgstr "转发事务 #%1 至 %2"
 
 #: share/html/Search/Results.html:154
 #. ($ticketcount)
@@ -4324,6 +4863,10 @@ msgstr "性别"
 msgid "General"
 msgstr "通用"
 
+#: NOT FOUND IN SOURCE
+msgid "General rights"
+msgstr "一般权限"
+
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
 msgstr "从文件中提取模板"
@@ -4336,7 +4879,7 @@ msgstr "准备开始"
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "取得目前用户的 pgp 签章\\n"
 
-#: lib/RT/Transaction_Overlay.pm:771
+#: lib/RT/Transaction_Overlay.pm:773
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "交给%1"
@@ -4410,7 +4953,7 @@ msgstr "%1的GnuPG私钥"
 
 #: share/html/Admin/Queues/Modify.html:128 share/html/Admin/Queues/Modify.html:138
 msgid "GnuPG private keys"
-msgstr ""
+msgstr "GnuPG 私钥"
 
 #: share/html/Admin/Elements/ShowKeyInfo:88
 #. ($EmailAddress)
@@ -4421,6 +4964,10 @@ msgstr "%1的GnuPG公钥"
 msgid "Go"
 msgstr "执行"
 
+#: NOT FOUND IN SOURCE
+msgid "Go to user"
+msgstr "跳到用户"
+
 #: share/html/Admin/CustomFields/index.html:87 share/html/Admin/Groups/index.html:83 share/html/Admin/Queues/People.html:82 share/html/Admin/Queues/People.html:86 share/html/Admin/Queues/index.html:90 share/html/Admin/Users/index.html:90 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:90
 msgid "Go!"
 msgstr "执行!"
@@ -4428,6 +4975,10 @@ msgstr "执行!"
 #: NOT FOUND IN SOURCE
 msgid "Good pgp sig from %1\\n"
 msgstr "%1 的 pgp 签章是正确的\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Goto Ticket"
+msgstr "跳到申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "Goto page"
@@ -4535,7 +5086,11 @@ msgstr "群组已启用"
 msgid "Group has no such member"
 msgstr "群组里没有这个成员"
 
-#: lib/RT/Group_Overlay.pm:980 lib/RT/Queue_Overlay.pm:838 lib/RT/Queue_Overlay.pm:913 lib/RT/Ticket_Overlay.pm:1133 lib/RT/Ticket_Overlay.pm:1213
+#: NOT FOUND IN SOURCE
+msgid "Group name '%1' is already in use"
+msgstr "群组名称 '%1' 已经被使用"
+
+#: lib/RT/Group_Overlay.pm:980 lib/RT/Queue_Overlay.pm:838 lib/RT/Queue_Overlay.pm:913 lib/RT/Ticket_Overlay.pm:1132 lib/RT/Ticket_Overlay.pm:1212
 msgid "Group not found"
 msgstr "找不到群组"
 
@@ -4648,9 +5203,21 @@ msgstr "帮助我们建立RT的默认值"
 msgid "Hidden"
 msgstr "隐藏"
 
+#: NOT FOUND IN SOURCE
+msgid "Hide quoted text"
+msgstr "隐藏引用文本"
+
+#: NOT FOUND IN SOURCE
+msgid "Hide ticket history by default"
+msgstr "默认隐藏申请单历史"
+
 #: share/html/Admin/Elements/GroupTabs:72 share/html/Admin/Elements/QueueTabs:90 share/html/Admin/Elements/UserTabs:66 share/html/Ticket/Elements/ShowHistory:55 share/html/Ticket/Elements/Tabs:125
 msgid "History"
 msgstr "历史记录"
+
+#: NOT FOUND IN SOURCE
+msgid "History for article #%1"
+msgstr "文章 #%1 的历史"
 
 #: share/html/Admin/Groups/History.html:64
 #. ($GroupObj->Name)
@@ -4670,6 +5237,10 @@ msgstr "用户%1的记录"
 #: share/html/Elements/DashboardTabs:87
 msgid "Home"
 msgstr "主页"
+
+#: NOT FOUND IN SOURCE
+msgid "Home Phone"
+msgstr "家庭电话"
 
 #: lib/RT/Config.pm:274
 msgid "Home page refresh interval"
@@ -4695,7 +5266,7 @@ msgstr "小时"
 msgid "Hours"
 msgstr "小时"
 
-#: lib/RT/Base.pm:136
+#: lib/RT/Base.pm:137
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "我有%1份固体搅拌器."
@@ -4748,6 +5319,10 @@ msgstr "如果已经有了正常工作的RT，在这里您还可以确定数据�
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "如果RT的端口发生变化，请重启RT"
 
+#: NOT FOUND IN SOURCE
+msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
+msgstr "如果您改变了 RT 运行的端口，您需要重启服务器才能登录。"
+
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:155 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
 msgstr "若已更新以上数据，请记得"
@@ -4773,6 +5348,18 @@ msgstr "此字段值不可更改"
 msgid "Import"
 msgstr "汇入"
 
+#: NOT FOUND IN SOURCE
+msgid "Inactive Tickets"
+msgstr "非活动的申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Include Article:"
+msgstr "包括文章:"
+
+#: NOT FOUND IN SOURCE
+msgid "Include disabled classes in listing."
+msgstr "包括列表中停用的类型"
+
 #: share/html/Admin/CustomFields/index.html:84
 msgid "Include disabled custom fields in listing."
 msgstr "包括停用的自定字段"
@@ -4792,6 +5379,10 @@ msgstr "包括停用的用户"
 #: share/html/Admin/CustomFields/Modify.html:101
 msgid "Include page"
 msgstr "引入页面"
+
+#: NOT FOUND IN SOURCE
+msgid "Include subtopics"
+msgstr "包括副主题"
 
 #: NOT FOUND IN SOURCE
 msgid "Incomplete Query"
@@ -4845,6 +5436,14 @@ msgstr "初始优先级"
 msgid "Initialize Database"
 msgstr "初始化数据库"
 
+#: NOT FOUND IN SOURCE
+msgid "Input can not be parsed as an IP address"
+msgstr "输入无法解析为IP地址"
+
+#: NOT FOUND IN SOURCE
+msgid "Input can not be parsed as an IP address range"
+msgstr "输入无法解析为IP地址范围"
+
 #: lib/RT/ScripAction_Overlay.pm:131
 msgid "Input error"
 msgstr "输入错误"
@@ -4863,7 +5462,7 @@ msgstr "安装RT"
 msgid "Interest noted"
 msgstr "登记成功"
 
-#: lib/RT/Ticket_Overlay.pm:3327
+#: lib/RT/Ticket_Overlay.pm:3326
 msgid "Internal Error"
 msgstr "内部错误"
 
@@ -4871,6 +5470,18 @@ msgstr "内部错误"
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "内部错误：%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Internal error: %1"
+msgstr "内部错误: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid %1"
+msgstr "无效 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid %1 argument"
+msgstr "无效 %1 参数"
 
 #: share/html/Install/Global.html:90 share/html/Install/Sendmail.html:92
 #. ($_, $ARGS{$_})
@@ -4883,9 +5494,29 @@ msgstr "无效的%1: '%2'不是邮箱"
 msgid "Invalid %1: it should be a number"
 msgstr "无效的%1: 必须是数字"
 
+#: NOT FOUND IN SOURCE
+msgid "Invalid Class"
+msgstr "无效类型"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Custom Field values source"
+msgstr "无效自定字段值来源"
+
 #: lib/RT/Group_Overlay.pm:626
 msgid "Invalid Group Type"
 msgstr "错误的群组类型"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Queue, unable to apply Class: %1"
+msgstr "无效队列，无法应用类型: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Render Type"
+msgstr "无效渲染类型"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Render Type for custom field of type %1"
+msgstr "无效的类型 %1 自定字段渲染类型"
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid Right"
@@ -4898,6 +5529,10 @@ msgstr "错误的类型"
 #: lib/RT/Record.pm:926
 msgid "Invalid data"
 msgstr "无效的数据"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid lifecycle name"
+msgstr "无效生命周期名称"
 
 #: lib/RT/CustomField_Overlay.pm:1130
 msgid "Invalid object"
@@ -4920,6 +5555,10 @@ msgstr "无效的样式：%1"
 msgid "Invalid queue"
 msgstr "无效的队列"
 
+#: NOT FOUND IN SOURCE
+msgid "Invalid queue role group type %1"
+msgstr "无效队列角色群组类型 %1"
+
 #: lib/RT/ACE_Overlay.pm:281
 msgid "Invalid right"
 msgstr "无效的权限"
@@ -4929,7 +5568,7 @@ msgstr "无效的权限"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "无效的权限. 不能规范化权限'%1'"
 
-#: lib/RT/User_Overlay.pm:537
+#: lib/RT/User_Overlay.pm:538
 msgid "Invalid syntax for email address"
 msgstr "无效的邮箱"
 
@@ -4998,6 +5637,10 @@ msgstr "一月"
 msgid "Job"
 msgstr "职称"
 
+#: NOT FOUND IN SOURCE
+msgid "Join or leave group"
+msgstr "加入或退出群组"
+
 #: lib/RT/Group_Overlay.pm:92
 msgid "Join or leave this group"
 msgstr "加入或离开此群组"
@@ -5037,6 +5680,10 @@ msgstr "保持'localhost'如果你不确定的话。保持空白意味着通过�
 #: NOT FOUND IN SOURCE
 msgid "Keyword"
 msgstr "关键词"
+
+#: NOT FOUND IN SOURCE
+msgid "Keyword and intuition-based searching"
+msgstr "基于关键词与直观的搜索"
 
 #: NOT FOUND IN SOURCE
 msgid "LabelAttachments"
@@ -5090,6 +5737,10 @@ msgstr "上次更新日期"
 msgid "Last Updated By"
 msgstr "上次更新者"
 
+#: NOT FOUND IN SOURCE
+msgid "Last updated"
+msgstr "上次更新"
+
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
 msgstr "上次更新者"
@@ -5142,6 +5793,10 @@ msgstr "内部成员（具有个人权限）"
 #: share/html/Install/index.html:86
 msgid "Let's go!"
 msgstr "开始"
+
+#: NOT FOUND IN SOURCE
+msgid "Lifecycle"
+msgstr "生命周期"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
@@ -5213,12 +5868,24 @@ msgid "Links"
 msgstr "链接"
 
 #: NOT FOUND IN SOURCE
+msgid "List"
+msgstr "列表"
+
+#: NOT FOUND IN SOURCE
 msgid "List All Users"
 msgstr "列出所有用户数据"
 
 #: share/html/Search/Elements/EditSearches:79
 msgid "Load"
 msgstr "加载"
+
+#: NOT FOUND IN SOURCE
+msgid "Load a saved search"
+msgstr "加载已存搜索"
+
+#: NOT FOUND IN SOURCE
+msgid "Load saved search"
+msgstr "加载已存搜索"
 
 #: share/html/Search/Elements/EditSearches:77
 msgid "Load saved search:"
@@ -5251,6 +5918,10 @@ msgstr "已加载已存搜索\"%1\""
 msgid "Loaded search %1"
 msgstr "已加载搜索 %1"
 
+#: NOT FOUND IN SOURCE
+msgid "Loading..."
+msgstr "正在加载..."
+
 #: lib/RT/Config.pm:342
 msgid "Locale"
 msgstr "本地"
@@ -5277,12 +5948,16 @@ msgstr "记录档名"
 
 #: lib/RT/Interface/Web.pm:582
 msgid "Logged in"
-msgstr ""
+msgstr "已登录"
 
 #: share/html/Elements/PersonalQuickbar:54
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
 msgid "Logged in as %1"
 msgstr "用户：%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Logged in as <span class=\"current-user\">%1</span>"
+msgstr "以 <span class=\"current-user\">%1</span> 帐号登录"
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
@@ -5393,6 +6068,10 @@ msgstr "管理用户与密码"
 msgid "Manager"
 msgstr "经理"
 
+#: NOT FOUND IN SOURCE
+msgid "Mapping between queues' lifecycles is incomplete. Contact your system administrator."
+msgstr "未完成队列生命周期之间的对映，请联系系统管理员。"
+
 #: lib/RT/Date.pm:90
 msgid "Mar"
 msgstr "三月"
@@ -5439,18 +6118,18 @@ msgstr "05"
 
 #: share/html/Elements/QuickCreate:60
 msgid "Me"
-msgstr ""
+msgstr "我"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
 msgstr "成员"
 
-#: lib/RT/Transaction_Overlay.pm:818
+#: lib/RT/Transaction_Overlay.pm:820
 #. ($value)
 msgid "Member %1 added"
 msgstr "成员%1已创建"
 
-#: lib/RT/Transaction_Overlay.pm:858
+#: lib/RT/Transaction_Overlay.pm:860
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "成员%1已删除"
@@ -5484,12 +6163,12 @@ msgstr "隶属于"
 msgid "Members"
 msgstr "成员"
 
-#: lib/RT/Transaction_Overlay.pm:815
+#: lib/RT/Transaction_Overlay.pm:817
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "已加入群组%1"
 
-#: lib/RT/Transaction_Overlay.pm:855
+#: lib/RT/Transaction_Overlay.pm:857
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "已从群组%1移除"
@@ -5503,15 +6182,15 @@ msgstr "所属群组"
 msgid "Memberships of the user %1"
 msgstr "用户%1的所属群组"
 
-#: lib/RT/Ticket_Overlay.pm:2654
+#: lib/RT/Ticket_Overlay.pm:2653
 msgid "Merge Successful"
 msgstr "整合完成"
 
-#: lib/RT/Ticket_Overlay.pm:2532
+#: lib/RT/Ticket_Overlay.pm:2531
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "整合失败. 无法设定有效编号"
 
-#: lib/RT/Ticket_Overlay.pm:2549
+#: lib/RT/Ticket_Overlay.pm:2548
 msgid "Merge failed. Couldn't set Status"
 msgstr "整合失败. 无法设定状态"
 
@@ -5519,7 +6198,7 @@ msgstr "整合失败. 无法设定状态"
 msgid "Merge into"
 msgstr "整合到"
 
-#: lib/RT/Transaction_Overlay.pm:821
+#: lib/RT/Transaction_Overlay.pm:823
 #. ($value)
 msgid "Merged into %1"
 msgstr "已整合到%1"
@@ -5527,6 +6206,10 @@ msgstr "已整合到%1"
 #: share/html/Search/Bulk.html:170 share/html/Ticket/Update.html:134
 msgid "Message"
 msgstr "消息"
+
+#: NOT FOUND IN SOURCE
+msgid "Message body is not shown because it is too large."
+msgstr "由于信息过大，信息内容未显示"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:166 share/html/Ticket/Elements/ShowTransactionAttachments:229
 msgid "Message body is not shown because sender requested not to inline it."
@@ -5552,7 +6235,11 @@ msgstr "消息框高度"
 msgid "Message box width"
 msgstr "消息框宽度"
 
-#: lib/RT/Ticket_Overlay.pm:2198
+#: NOT FOUND IN SOURCE
+msgid "Message box wrapping"
+msgstr "消息框包装"
+
+#: lib/RT/Ticket_Overlay.pm:2197
 msgid "Message could not be recorded"
 msgstr "无法记录消息"
 
@@ -5560,7 +6247,7 @@ msgstr "无法记录消息"
 msgid "Message for user"
 msgstr "给用户的消息"
 
-#: lib/RT/Ticket_Overlay.pm:2201
+#: lib/RT/Ticket_Overlay.pm:2200
 msgid "Message recorded"
 msgstr "消息记录成功"
 
@@ -5581,6 +6268,10 @@ msgid "Misc. Expense"
 msgstr "杂费"
 
 #: NOT FOUND IN SOURCE
+msgid "Miscellaneous"
+msgstr "杂项"
+
+#: NOT FOUND IN SOURCE
 msgid "Mismatched parentheses"
 msgstr "未对齐的括号"
 
@@ -5596,9 +6287,17 @@ msgstr "缺少必填字段"
 msgid "Mobile"
 msgstr "手机"
 
+#: NOT FOUND IN SOURCE
+msgid "Mobile Phone"
+msgstr "移动电话"
+
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "MobilePhone"
 msgstr "手机"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify"
+msgstr "更改"
 
 #: lib/RT/Queue_Overlay.pm:90
 msgid "Modify Access Control List"
@@ -5630,9 +6329,17 @@ msgstr "更改成员"
 msgid "Modify Rights"
 msgstr "更改权限"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify Scrip templates"
+msgstr "更改脚本模板"
+
 #: lib/RT/Queue_Overlay.pm:95
 msgid "Modify Scrip templates for this queue"
 msgstr "更改此队列的模板"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify Scrips"
+msgstr "更改脚本"
 
 #: lib/RT/Queue_Overlay.pm:98
 msgid "Modify Scrips for this queue"
@@ -5671,6 +6378,10 @@ msgstr "更改%1队列内的脚本"
 #: share/html/Admin/Global/Scrip.html:76
 msgid "Modify a scrip that applies to all queues"
 msgstr "更改适用于所有队列的脚本"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify article #%1"
+msgstr "更改文章 #%1"
 
 #: share/html/Admin/CustomFields/Objects.html:156
 #. ($CF->Name)
@@ -5723,6 +6434,10 @@ msgstr "更改全局设定的用户权限"
 msgid "Modify global scrips"
 msgstr "更改全局脚本"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify global topics"
+msgstr "更改全局主题"
+
 #: share/html/Admin/Global/UserRights.html:48 share/html/Admin/Global/UserRights.html:51 share/html/Admin/Global/index.html:75
 msgid "Modify global user rights"
 msgstr "更改全局的用户权限"
@@ -5731,9 +6446,21 @@ msgstr "更改全局的用户权限"
 msgid "Modify global user rights."
 msgstr "更改全局的用户权限."
 
+#: NOT FOUND IN SOURCE
+msgid "Modify group dashboards"
+msgstr "更改群组表单"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify group membership roster"
+msgstr "更改群组成员名单"
+
 #: lib/RT/Group_Overlay.pm:87
 msgid "Modify group metadata or delete group"
 msgstr "更改及删除群组"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify group rights for Class %1"
+msgstr "更改类型 %1 的群组权限"
 
 #: share/html/Admin/CustomFields/GroupRights.html:108
 #. ($CustomFieldObj->Name)
@@ -5754,9 +6481,17 @@ msgstr "更改队列%1的群组权限"
 msgid "Modify membership roster for this group"
 msgstr "更改群组的成员名单"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify metadata and custom fields for this class"
+msgstr "更改该类型的元数据与自定字段"
+
 #: lib/RT/System.pm:85
 msgid "Modify one's own RT account"
 msgstr "更改个人帐号信息"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify or delete articles in this class"
+msgstr "更改或删除该类型的文章"
 
 #: share/html/Admin/Queues/People.html:48 share/html/Admin/Queues/People.html:52
 #. ($QueueObj->Name)
@@ -5772,6 +6507,10 @@ msgstr "更改申请单#%1链接到的人员"
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
 msgstr "更改个人表单"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify queue watchers"
+msgstr "更改队列的关注者"
 
 #: share/html/Admin/Queues/Scrips.html:69
 #. ($QueueObj->Name)
@@ -5791,9 +6530,17 @@ msgstr "更改系统表单"
 msgid "Modify template %1"
 msgstr "更改模板%1"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify template %1 for queue %2"
+msgstr "更改队列 %2 中的模板 %1"
+
 #: share/html/Admin/Global/Templates.html:67
 msgid "Modify templates which apply to all queues"
 msgstr "更改适用于所有队列的模板"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify the content of dashboard %1"
+msgstr "更改表单 %1 的内容"
 
 #: share/html/Dashboards/Modify.html:126
 #. ($Dashboard->Name)
@@ -5828,6 +6575,10 @@ msgstr "更改表单的订阅"
 msgid "Modify the user %1"
 msgstr "更改用户%1"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify this search..."
+msgstr "更改该搜索..."
+
 #: share/html/Ticket/ModifyAll.html:61
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
@@ -5838,9 +6589,29 @@ msgstr "更改申请单# %1"
 msgid "Modify ticket #%1"
 msgstr "更改申请单# %1"
 
+#: NOT FOUND IN SOURCE
+msgid "Modify ticket status"
+msgstr "更改申请单状态"
+
 #: lib/RT/Queue_Overlay.pm:111
 msgid "Modify tickets"
 msgstr "更改申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify topic for %1"
+msgstr "更改 %1 的主题"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify topic hierarchy associated with this class"
+msgstr "更改与该类型相关的主题层次"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify topics for articles in this class"
+msgstr "更改该类型的文章主题"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify user rights for class %1"
+msgstr "更改类型 %1 的用户权限"
 
 #: share/html/Admin/CustomFields/UserRights.html:99
 #. ($CustomFieldObj->Name)
@@ -5862,6 +6633,10 @@ msgid "Modify watchers for queue '%1'"
 msgstr "更改 '%1' 的关注者"
 
 #: NOT FOUND IN SOURCE
+msgid "Modify who receives mail for ticket #%1"
+msgstr "更改申请单 #%1 的邮件接收者"
+
+#: NOT FOUND IN SOURCE
 msgid "Modify workflow %1"
 msgstr "更改流程 %1"
 
@@ -5872,6 +6647,14 @@ msgstr "更改适用于所有队列的流程"
 #: lib/RT/Queue_Overlay.pm:90
 msgid "ModifyACL"
 msgstr "更改权限清单"
+
+#: NOT FOUND IN SOURCE
+msgid "ModifyArticle"
+msgstr "更改文章"
+
+#: NOT FOUND IN SOURCE
+msgid "ModifyArticleTopics"
+msgstr "更改文章主题"
 
 #: lib/RT/CustomField_Overlay.pm:116 lib/RT/Queue_Overlay.pm:93
 msgid "ModifyCustomField"
@@ -5913,6 +6696,10 @@ msgstr "更改模板"
 msgid "ModifyTicket"
 msgstr "更改申请单"
 
+#: NOT FOUND IN SOURCE
+msgid "ModifyTicketStatus"
+msgstr "更改申请单状态"
+
 #: share/html/Admin/Tools/Configuration.html:205
 msgid "Module"
 msgstr "模块"
@@ -5920,6 +6707,10 @@ msgstr "模块"
 #: lib/RT/Date.pm:104
 msgid "Mon"
 msgstr "星期一"
+
+#: NOT FOUND IN SOURCE
+msgid "Mon-Fri at %1"
+msgstr "每周一至周五 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Mon."
@@ -5941,6 +6732,10 @@ msgstr "更多"
 #. ($name)
 msgid "More about %1"
 msgstr "关于%1的进一步信息"
+
+#: NOT FOUND IN SOURCE
+msgid "More about the requestors"
+msgstr "关于申请者的更多情况"
 
 #: NOT FOUND IN SOURCE
 msgid "Morning Shift"
@@ -5966,7 +6761,7 @@ msgstr "上移"
 msgid "Multiple"
 msgstr "多个"
 
-#: lib/RT/User_Overlay.pm:160
+#: lib/RT/User_Overlay.pm:161
 msgid "Must specify 'Name' attribute"
 msgstr "必须指定'Name'的属性"
 
@@ -5977,11 +6772,15 @@ msgstr "我的%1申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "My Approvals"
-msgstr "队列批准"
+msgstr "我的批准单"
 
 #: share/html/Tools/Elements/Tabs:70 share/html/Tools/index.html:73
 msgid "My Day"
 msgstr "我今天的工作"
+
+#: NOT FOUND IN SOURCE
+msgid "My Reminders"
+msgstr "我的提醒项目"
 
 #: NOT FOUND IN SOURCE
 msgid "My Requests"
@@ -5999,6 +6798,10 @@ msgstr "我的队列批准单"
 msgid "My dashboards"
 msgstr "我的表单"
 
+#: NOT FOUND IN SOURCE
+msgid "My reminders"
+msgstr "我的提醒项目"
+
 #: share/html/Search/Elements/SearchPrivacy:55
 msgid "My saved searches"
 msgstr "我的已存搜索"
@@ -6015,9 +6818,13 @@ msgstr "(换行)"
 msgid "Name"
 msgstr "名称"
 
-#: lib/RT/User_Overlay.pm:167
+#: lib/RT/User_Overlay.pm:168
 msgid "Name in use"
 msgstr "帐号已有人使用"
+
+#: NOT FOUND IN SOURCE
+msgid "Name:"
+msgstr "名称:"
 
 #: share/html/Tools/index.html:60
 msgid "Named, shared collection of portlets"
@@ -6038,6 +6845,14 @@ msgstr "绝不"
 #: share/html/Admin/Global/Scrip.html:65 share/html/Admin/Global/Scrips.html:62 share/html/Admin/Global/Template.html:80 share/html/Admin/Global/Templates.html:62 share/html/Dashboards/Elements/Tabs:102 share/html/Elements/RT__Ticket/ColumnMap:251
 msgid "New"
 msgstr "创建"
+
+#: NOT FOUND IN SOURCE
+msgid "New Article"
+msgstr "新文章"
+
+#: NOT FOUND IN SOURCE
+msgid "New Dashboard"
+msgstr "新表单"
 
 #: share/html/Elements/EditLinks:118 share/html/Ticket/Elements/BulkLinks:122
 msgid "New Links"
@@ -6088,7 +6903,7 @@ msgstr "创建消息"
 msgid "New password"
 msgstr "新密码"
 
-#: lib/RT/User_Overlay.pm:725
+#: lib/RT/User_Overlay.pm:726
 msgid "New password notification sent"
 msgstr "已发送新密码通知"
 
@@ -6124,9 +6939,13 @@ msgstr "创建模板"
 msgid "New ticket"
 msgstr "创建申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2504
+#: lib/RT/Ticket_Overlay.pm:2503
 msgid "New ticket doesn't exist"
 msgstr "新申请单不存在"
+
+#: NOT FOUND IN SOURCE
+msgid "New tickets can not have status '%1' in this queue."
+msgstr "该队列的新申请单的状态不能为 '%1'."
 
 #: NOT FOUND IN SOURCE
 msgid "New user"
@@ -6181,9 +7000,17 @@ msgstr "否"
 msgid "No %1 loaded"
 msgstr "%1没有加载"
 
+#: NOT FOUND IN SOURCE
+msgid "No Articles match %1"
+msgstr "没有匹配 %1 的文章"
+
 #: share/html/Admin/CustomFields/UserRights.html:88
 msgid "No Class defined"
 msgstr "尚未定义类型"
+
+#: NOT FOUND IN SOURCE
+msgid "No Classes matching search criteria found."
+msgstr "没有找到匹配搜索条件的类型."
 
 #: share/html/Admin/CustomFields/Modify.html:167 share/html/Admin/Elements/EditCustomField:121
 msgid "No CustomField"
@@ -6204,6 +7031,10 @@ msgstr "没有搜索"
 #: share/html/Admin/Queues/GroupRights.html:120 share/html/Admin/Queues/UserRights.html:89
 msgid "No Queue defined"
 msgstr "尚未定义队列"
+
+#: NOT FOUND IN SOURCE
+msgid "No RT user found. Please consult your RT administrator."
+msgstr "没有找到 RT 用户. 请咨询您的 RT 管理员."
 
 #: bin/rt-crontool:123
 msgid "No RT user found. Please consult your RT administrator.\\n"
@@ -6278,7 +7109,7 @@ msgstr "没有适合的密钥"
 msgid "No keys for this address"
 msgstr "没有这个地址的密钥"
 
-#: lib/RT/Ticket_Overlay.pm:2142
+#: lib/RT/Ticket_Overlay.pm:2141
 msgid "No message attached"
 msgstr "没有附上消息"
 
@@ -6290,7 +7121,7 @@ msgstr "没有提供名字"
 msgid "No need to encrypt"
 msgstr "不许要加密"
 
-#: lib/RT/User_Overlay.pm:971
+#: lib/RT/User_Overlay.pm:972
 msgid "No password set"
 msgstr "没有设定密码"
 
@@ -6311,19 +7142,27 @@ msgstr "没有创建用户的权限"
 msgid "No permission to display that ticket"
 msgstr "没有显示该申请单的权限"
 
+#: NOT FOUND IN SOURCE
+msgid "No permission to modify article"
+msgstr "没有更改文章的权限"
+
 #: share/html/Search/Elements/EditSearches:242
 msgid "No permission to save system-wide searches"
 msgstr "没有保存全局已存搜索的权限"
 
-#: lib/RT/User_Overlay.pm:1448
+#: lib/RT/User_Overlay.pm:1466
 msgid "No permission to set preferences"
 msgstr "没有首选项设置的权限"
+
+#: NOT FOUND IN SOURCE
+msgid "No permission to view Article"
+msgstr "没有查看文章的权限"
 
 #: share/html/SelfService/Update.html:122
 msgid "No permission to view update ticket"
 msgstr "没有视图申请单更新的权限"
 
-#: lib/RT/Queue_Overlay.pm:886 lib/RT/Ticket_Overlay.pm:1192
+#: lib/RT/Queue_Overlay.pm:886 lib/RT/Ticket_Overlay.pm:1191
 msgid "No principal specified"
 msgstr "未指定单位"
 
@@ -6367,7 +7206,7 @@ msgstr "没有要进行的搜索"
 msgid "No subject"
 msgstr "没有标题"
 
-#: lib/RT/User_Overlay.pm:1777
+#: lib/RT/User_Overlay.pm:1798
 msgid "No such key or it's not suitable for signing"
 msgstr "没有密钥或者它不能做签名"
 
@@ -6379,7 +7218,7 @@ msgstr "未指定申请单编号"
 msgid "No tickets found."
 msgstr "没有找到申请单"
 
-#: lib/RT/Transaction_Overlay.pm:617 lib/RT/Transaction_Overlay.pm:643
+#: lib/RT/Transaction_Overlay.pm:619 lib/RT/Transaction_Overlay.pm:645
 msgid "No transaction type specified"
 msgstr "未指定事务类型"
 
@@ -6398,6 +7237,10 @@ msgstr "找不到符合搜索条件的用户."
 #: NOT FOUND IN SOURCE
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "找不到合格的 RT 用户。RT cvs 处理器已停用。请向 RT 管理者询问。\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "No value sent to _Set!"
+msgstr "没有发送至 _Set的值!"
 
 #: lib/RT/Record.pm:920
 msgid "No value sent to _Set!\\n"
@@ -6443,6 +7286,10 @@ msgstr "尚未登录"
 msgid "Not set"
 msgstr "尚未设定"
 
+#: NOT FOUND IN SOURCE
+msgid "Not using a mobile browser?"
+msgstr "未使用移动浏览器?"
+
 #: share/html/NoAuth/Reminder.html:50
 msgid "Not yet implemented."
 msgstr "尚未实现."
@@ -6459,7 +7306,7 @@ msgstr "备注"
 msgid "Notes:"
 msgstr "备注："
 
-#: lib/RT/User_Overlay.pm:728
+#: lib/RT/User_Overlay.pm:729
 msgid "Notification could not be sent"
 msgstr "无法发送通知"
 
@@ -6824,11 +7671,11 @@ msgstr "其它e-mail帐号 (仅e-mail通知;多笔帐号请用逗号','区隔)"
 msgid "Out of range"
 msgstr "期限外"
 
-#: lib/RT/Transaction_Overlay.pm:709
+#: lib/RT/Transaction_Overlay.pm:711
 msgid "Outgoing email about a comment recorded"
 msgstr "已记录发送的注释邮件"
 
-#: lib/RT/Transaction_Overlay.pm:713
+#: lib/RT/Transaction_Overlay.pm:715
 msgid "Outgoing email recorded"
 msgstr "已记录发送的邮件"
 
@@ -6873,7 +7720,7 @@ msgstr "拥有人"
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "拥有人'%1'没有权限拥有此申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2868
+#: lib/RT/Ticket_Overlay.pm:2867
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
 msgstr "拥有人已从%1改为%2"
@@ -6882,7 +7729,7 @@ msgstr "拥有人已从%1改为%2"
 msgid "Owner could not be set."
 msgstr "无法设定拥有人."
 
-#: lib/RT/Transaction_Overlay.pm:759
+#: lib/RT/Transaction_Overlay.pm:761
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "强制将拥有人从%1改为%2"
@@ -6919,6 +7766,10 @@ msgstr "找不到页面"
 msgid "Pager"
 msgstr "寻呼机"
 
+#: NOT FOUND IN SOURCE
+msgid "Pager Phone"
+msgstr "寻呼电话"
+
 #: share/html/Elements/RT__User/ColumnMap:101
 msgid "PagerPhone"
 msgstr "寻呼机"
@@ -6947,20 +7798,24 @@ msgstr "密码"
 msgid "Password Reminder"
 msgstr "密码提示"
 
-#: lib/RT/Transaction_Overlay.pm:883 lib/RT/User_Overlay.pm:982
+#: lib/RT/Transaction_Overlay.pm:885 lib/RT/User_Overlay.pm:983
 msgid "Password changed"
 msgstr "密码更改完成"
 
-#: lib/RT/User_Overlay.pm:948
+#: lib/RT/User_Overlay.pm:949
 msgid "Password has not been set."
 msgstr "密码未设定"
 
-#: lib/RT/User_Overlay.pm:150 lib/RT/User_Overlay.pm:974
+#: lib/RT/User_Overlay.pm:151 lib/RT/User_Overlay.pm:975
 #. (RT->Config->Get('MinimumPasswordLength'))
 msgid "Password needs to be at least %1 characters long"
 msgstr "密码长度至少为%1个字符"
 
-#: lib/RT/User_Overlay.pm:981
+#: NOT FOUND IN SOURCE
+msgid "Password not printed"
+msgstr "密码未打印"
+
+#: lib/RT/User_Overlay.pm:982
 msgid "Password set"
 msgstr "密码已设定"
 
@@ -6973,7 +7828,7 @@ msgstr "密码太短"
 msgid "Password: %1"
 msgstr "密码：%1"
 
-#: lib/RT/User_Overlay.pm:967
+#: lib/RT/User_Overlay.pm:968
 msgid "Password: Permission Denied"
 msgstr "密码：没有权限"
 
@@ -6981,7 +7836,7 @@ msgstr "密码：没有权限"
 msgid "PasswordChange"
 msgstr "密码更改"
 
-#: lib/RT/User_Overlay.pm:944
+#: lib/RT/User_Overlay.pm:945
 msgid "Passwords do not match."
 msgstr "两次密码不符."
 
@@ -7006,12 +7861,20 @@ msgid "People"
 msgstr "人员"
 
 #: NOT FOUND IN SOURCE
+msgid "People related to queue %1"
+msgstr "与队列 %1 有关的人"
+
+#: NOT FOUND IN SOURCE
 msgid "People with Queue Rights"
 msgstr "拥有队列权限人员"
 
 #: etc/initialdata:88
 msgid "Perform a user-defined action"
 msgstr "执行用户自定的动作"
+
+#: NOT FOUND IN SOURCE
+msgid "Perl"
+msgstr "Perl"
 
 #: share/html/Admin/Tools/Configuration.html:237
 msgid "Perl configuration"
@@ -7021,7 +7884,11 @@ msgstr "Perl设定"
 msgid "Perl library search order"
 msgstr "Perl库的搜索顺序"
 
-#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:641 lib/RT/Attachment_Overlay.pm:642 lib/RT/Attachment_Overlay.pm:703 lib/RT/Attachment_Overlay.pm:704 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:189 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1043 lib/RT/CustomField_Overlay.pm:1089 lib/RT/CustomField_Overlay.pm:1133 lib/RT/CustomField_Overlay.pm:1249 lib/RT/CustomField_Overlay.pm:1390 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:218 lib/RT/CustomField_Overlay.pm:405 lib/RT/CustomField_Overlay.pm:434 lib/RT/CustomField_Overlay.pm:740 lib/RT/Group_Overlay.pm:1137 lib/RT/Group_Overlay.pm:1141 lib/RT/Group_Overlay.pm:1150 lib/RT/Group_Overlay.pm:1260 lib/RT/Group_Overlay.pm:1264 lib/RT/Group_Overlay.pm:1270 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:578 lib/RT/Group_Overlay.pm:586 lib/RT/Group_Overlay.pm:684 lib/RT/Group_Overlay.pm:688 lib/RT/Group_Overlay.pm:694 lib/RT/Group_Overlay.pm:939 lib/RT/Group_Overlay.pm:943 lib/RT/Group_Overlay.pm:956 lib/RT/Queue_Overlay.pm:1161 lib/RT/Queue_Overlay.pm:154 lib/RT/Queue_Overlay.pm:172 lib/RT/Queue_Overlay.pm:510 lib/RT/Queue_Overlay.pm:536 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:773 lib/RT/Queue_Overlay.pm:926 lib/RT/Queue_Overlay.pm:935 lib/RT/Queue_Overlay.pm:948 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:510 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1225 lib/RT/Ticket_Overlay.pm:1235 lib/RT/Ticket_Overlay.pm:1249 lib/RT/Ticket_Overlay.pm:1345 lib/RT/Ticket_Overlay.pm:1703 lib/RT/Ticket_Overlay.pm:1857 lib/RT/Ticket_Overlay.pm:2041 lib/RT/Ticket_Overlay.pm:2091 lib/RT/Ticket_Overlay.pm:2287 lib/RT/Ticket_Overlay.pm:2300 lib/RT/Ticket_Overlay.pm:2381 lib/RT/Ticket_Overlay.pm:2394 lib/RT/Ticket_Overlay.pm:2495 lib/RT/Ticket_Overlay.pm:2509 lib/RT/Ticket_Overlay.pm:2770 lib/RT/Ticket_Overlay.pm:2781 lib/RT/Ticket_Overlay.pm:2787 lib/RT/Ticket_Overlay.pm:2990 lib/RT/Ticket_Overlay.pm:2994 lib/RT/Ticket_Overlay.pm:3131 lib/RT/Ticket_Overlay.pm:3321 lib/RT/Transaction_Overlay.pm:613 lib/RT/Transaction_Overlay.pm:637 lib/RT/User_Overlay.pm:1201 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1615 lib/RT/User_Overlay.pm:1762 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
+#: NOT FOUND IN SOURCE
+msgid "Permanently wipeout data from RT"
+msgstr "永久删除 RT 的数据"
+
+#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:641 lib/RT/Attachment_Overlay.pm:642 lib/RT/Attachment_Overlay.pm:703 lib/RT/Attachment_Overlay.pm:704 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:189 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1043 lib/RT/CustomField_Overlay.pm:1089 lib/RT/CustomField_Overlay.pm:1133 lib/RT/CustomField_Overlay.pm:1249 lib/RT/CustomField_Overlay.pm:1390 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:218 lib/RT/CustomField_Overlay.pm:405 lib/RT/CustomField_Overlay.pm:434 lib/RT/CustomField_Overlay.pm:740 lib/RT/Group_Overlay.pm:1137 lib/RT/Group_Overlay.pm:1141 lib/RT/Group_Overlay.pm:1150 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1267 lib/RT/Group_Overlay.pm:1273 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:578 lib/RT/Group_Overlay.pm:586 lib/RT/Group_Overlay.pm:684 lib/RT/Group_Overlay.pm:688 lib/RT/Group_Overlay.pm:694 lib/RT/Group_Overlay.pm:939 lib/RT/Group_Overlay.pm:943 lib/RT/Group_Overlay.pm:956 lib/RT/Queue_Overlay.pm:1161 lib/RT/Queue_Overlay.pm:154 lib/RT/Queue_Overlay.pm:172 lib/RT/Queue_Overlay.pm:510 lib/RT/Queue_Overlay.pm:536 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:773 lib/RT/Queue_Overlay.pm:926 lib/RT/Queue_Overlay.pm:935 lib/RT/Queue_Overlay.pm:948 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:510 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1066 lib/RT/Ticket_Overlay.pm:1072 lib/RT/Ticket_Overlay.pm:1079 lib/RT/Ticket_Overlay.pm:1224 lib/RT/Ticket_Overlay.pm:1234 lib/RT/Ticket_Overlay.pm:1248 lib/RT/Ticket_Overlay.pm:1344 lib/RT/Ticket_Overlay.pm:1702 lib/RT/Ticket_Overlay.pm:1856 lib/RT/Ticket_Overlay.pm:2040 lib/RT/Ticket_Overlay.pm:2090 lib/RT/Ticket_Overlay.pm:2286 lib/RT/Ticket_Overlay.pm:2299 lib/RT/Ticket_Overlay.pm:2380 lib/RT/Ticket_Overlay.pm:2393 lib/RT/Ticket_Overlay.pm:2494 lib/RT/Ticket_Overlay.pm:2508 lib/RT/Ticket_Overlay.pm:2769 lib/RT/Ticket_Overlay.pm:2780 lib/RT/Ticket_Overlay.pm:2786 lib/RT/Ticket_Overlay.pm:2989 lib/RT/Ticket_Overlay.pm:2993 lib/RT/Ticket_Overlay.pm:3130 lib/RT/Ticket_Overlay.pm:3320 lib/RT/Transaction_Overlay.pm:615 lib/RT/Transaction_Overlay.pm:639 lib/RT/User_Overlay.pm:1219 lib/RT/User_Overlay.pm:125 lib/RT/User_Overlay.pm:1636 lib/RT/User_Overlay.pm:1783 lib/RT/User_Overlay.pm:284 lib/RT/User_Overlay.pm:674 lib/RT/User_Overlay.pm:709 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
 msgstr "没有权限"
 
@@ -7125,13 +7992,17 @@ msgstr "请先选中要删除的对象"
 msgid "Please check the URL and try again."
 msgstr "请检查URL链接是否正确，然后再试."
 
-#: lib/RT/User_Overlay.pm:938
+#: lib/RT/User_Overlay.pm:939
 msgid "Please enter your current password correctly."
 msgstr "请输入您当前的密码."
 
-#: lib/RT/User_Overlay.pm:941
+#: lib/RT/User_Overlay.pm:942
 msgid "Please enter your current password."
 msgstr "请输入您当前的密码."
+
+#: NOT FOUND IN SOURCE
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgstr "请注意，申请单需具有以下状态之一( %1 )，才会在此显示。 关于功能更加强大的搜索，请访问 <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">搜索生成器界面</a>."
 
 #: NOT FOUND IN SOURCE
 msgid "Please select a group"
@@ -7287,7 +8158,7 @@ msgstr "隐私设定："
 msgid "Private Key"
 msgstr "私钥"
 
-#: lib/RT/Handle.pm:649 share/html/Admin/Users/Modify.html:115
+#: lib/RT/Handle.pm:650 share/html/Admin/Users/Modify.html:115
 msgid "Privileged"
 msgstr "内部成员"
 
@@ -7320,7 +8191,7 @@ msgstr "项目名称"
 msgid "Projects"
 msgstr "项目"
 
-#: lib/RT/Handle.pm:663
+#: lib/RT/Handle.pm:664
 msgid "Pseudogroup for internal use"
 msgstr "内部用的虚拟群组"
 
@@ -7474,6 +8345,10 @@ msgstr "由我管理的队列"
 #: share/html/Elements/MySupportQueues:48
 msgid "Queues I'm an AdminCc for"
 msgstr "我作为管理员抄送人的队列"
+
+#: NOT FOUND IN SOURCE
+msgid "Quick Create"
+msgstr "快速创建"
 
 #: NOT FOUND IN SOURCE
 msgid "Quick Search"
@@ -7724,6 +8599,10 @@ msgstr "您确定要驳回这张申请单吗？"
 msgid "Recipient"
 msgstr "收件人"
 
+#: NOT FOUND IN SOURCE
+msgid "Recipients"
+msgstr "收件人"
+
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
 msgstr "记录所有的更新"
@@ -7732,22 +8611,26 @@ msgstr "记录所有的更新"
 msgid "Recursive member"
 msgstr "递归的成员"
 
-#: lib/RT/Transaction_Overlay.pm:812
+#: NOT FOUND IN SOURCE
+msgid "Refer to"
+msgstr "参考"
+
+#: lib/RT/Transaction_Overlay.pm:814
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "已加入%1为参考本申请单"
 
-#: lib/RT/Transaction_Overlay.pm:852
+#: lib/RT/Transaction_Overlay.pm:854
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "已移除%1为参考本申请单"
 
-#: lib/RT/Transaction_Overlay.pm:809
+#: lib/RT/Transaction_Overlay.pm:811
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "已加入参考申请单%1"
 
-#: lib/RT/Transaction_Overlay.pm:849
+#: lib/RT/Transaction_Overlay.pm:851
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "已移除参考申请单%1"
@@ -7833,17 +8716,33 @@ msgstr "每60分钟刷新一次搜索结果"
 msgid "Refresh this page every %1 minutes."
 msgstr "每%1分钟刷新此页面"
 
-#: lib/RT/Transaction_Overlay.pm:916
+#: NOT FOUND IN SOURCE
+msgid "Reject tickets"
+msgstr "驳回申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "RejectTicket"
+msgstr "驳回申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Remember default queue"
+msgstr "记住默认队列"
+
+#: NOT FOUND IN SOURCE
+msgid "Reminder"
+msgstr "提醒"
+
+#: lib/RT/Transaction_Overlay.pm:918
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "已创建提醒项目'%1'"
 
-#: lib/RT/Transaction_Overlay.pm:929
+#: lib/RT/Transaction_Overlay.pm:931
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "已完成提醒项目'%1'"
 
-#: lib/RT/Transaction_Overlay.pm:922
+#: lib/RT/Transaction_Overlay.pm:924
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "已重新打开提醒项目'%1'"
@@ -7881,6 +8780,18 @@ msgstr "移除抄送"
 #: share/html/Search/Bulk.html:97
 msgid "Remove Requestor"
 msgstr "移除申请人"
+
+#: NOT FOUND IN SOURCE
+msgid "Removed %1 from members of %2 for this queue."
+msgstr "在该队列将 %1 的 %2 成员资格移除."
+
+#: NOT FOUND IN SOURCE
+msgid "Render Type"
+msgstr "渲染类型"
+
+#: NOT FOUND IN SOURCE
+msgid "Replaces the owner dropdowns with textboxes"
+msgstr "用文本框来替代所有者的下拉列表"
 
 #: share/html/Ticket/Elements/ShowTransaction:187 share/html/Ticket/Elements/Tabs:175
 msgid "Reply"
@@ -7966,6 +8877,10 @@ msgstr "未指定必要的参数'%1'"
 #: share/html/Elements/Submit:101
 msgid "Reset"
 msgstr "重置"
+
+#: NOT FOUND IN SOURCE
+msgid "Reset RT at a glance"
+msgstr "重置 RT"
 
 #: share/html/User/Prefs.html:184
 msgid "Reset secret authentication token"
@@ -8084,7 +8999,7 @@ msgstr "权限已取消"
 msgid "Rights"
 msgstr "权限及个人"
 
-#: lib/RT/Interface/Web.pm:1538
+#: lib/RT/Interface/Web.pm:1543
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "无法将权限赋予%1"
@@ -8092,6 +9007,14 @@ msgstr "无法将权限赋予%1"
 #: NOT FOUND IN SOURCE
 msgid "Rights could not be revoked for %1"
 msgstr "无法取消 %1 的权限"
+
+#: NOT FOUND IN SOURCE
+msgid "Rights for Administrators"
+msgstr "管理员的权限"
+
+#: NOT FOUND IN SOURCE
+msgid "Rights for Staff"
+msgstr "工作人员的权限"
 
 #: NOT FOUND IN SOURCE
 msgid "Role Members"
@@ -8137,6 +9060,10 @@ msgstr "SMTP 寄件地址"
 msgid "SMTPServer"
 msgstr "SMTP 服务器"
 
+#: NOT FOUND IN SOURCE
+msgid "SQL Queries"
+msgstr "SQL 查询"
+
 #: lib/RT/Installer.pm:68
 msgid "SQLite"
 msgstr "SQLite"
@@ -8177,6 +9104,14 @@ msgstr "作为新的保存"
 msgid "Save changes"
 msgstr "保存更改"
 
+#: NOT FOUND IN SOURCE
+msgid "Save new"
+msgstr "保存为新文件"
+
+#: NOT FOUND IN SOURCE
+msgid "Save this search"
+msgstr "保存该搜索"
+
 #: lib/RT/SharedSetting.pm:196
 #. ($self->ObjectName, $name)
 msgid "Saved %1 %2"
@@ -8187,6 +9122,10 @@ msgstr "已保存%1 %2"
 msgid "Saved Search %1 not found"
 msgstr "找不到已存搜索%1"
 
+#: NOT FOUND IN SOURCE
+msgid "Saved Searches"
+msgstr "已存搜索"
+
 #: share/html/Search/Chart.html:98
 msgid "Saved charts"
 msgstr "已存图表"
@@ -8194,6 +9133,10 @@ msgstr "已存图表"
 #: NOT FOUND IN SOURCE
 msgid "Saved search %1"
 msgstr "成功保存搜索：%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Saved search %1 not found"
+msgstr "未找到已存搜索 %1"
 
 #: share/html/Search/Elements/EditSearches:135 share/html/Widgets/SavedSearch:185
 msgid "Saved searches"
@@ -8254,6 +9197,14 @@ msgid "Search"
 msgstr "搜索"
 
 #: NOT FOUND IN SOURCE
+msgid "Search %1 updated"
+msgstr "搜索 %1已更新"
+
+#: NOT FOUND IN SOURCE
+msgid "Search Articles"
+msgstr "搜索文章"
+
+#: NOT FOUND IN SOURCE
 msgid "Search Criteria"
 msgstr "搜索条件"
 
@@ -8265,9 +9216,21 @@ msgstr "搜索首选项"
 msgid "Search attribute load failure"
 msgstr "搜索属性加载失败"
 
+#: NOT FOUND IN SOURCE
+msgid "Search for Articles articles matching"
+msgstr "根据文章匹配搜索文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Search for Articles matching"
+msgstr "搜索文章匹配"
+
 #: share/html/Approvals/Elements/PendingMyApproval:57
 msgid "Search for approvals"
 msgstr "批准请求单搜索"
+
+#: NOT FOUND IN SOURCE
+msgid "Search for articles"
+msgstr "搜索文章"
 
 #: share/html/Search/Simple.html:77
 msgid "Search for tickets"
@@ -8284,6 +9247,10 @@ msgstr "搜索申请单。请输入<strong>编号</strong>、<strong>队列名�
 #: share/html/User/Elements/Tabs:73
 msgid "Search options"
 msgstr "搜索选项"
+
+#: NOT FOUND IN SOURCE
+msgid "Search results"
+msgstr "搜索结果"
 
 #: share/html/Search/Chart.html:73
 #. ($PrimaryGroupByLabel)
@@ -8326,6 +9293,10 @@ msgstr "安全性："
 msgid "See also:"
 msgstr "参见："
 
+#: NOT FOUND IN SOURCE
+msgid "See articles in this class"
+msgstr "在该类型搜索文章"
+
 #: lib/RT/Queue_Overlay.pm:92
 msgid "See custom field values"
 msgstr "查阅自定字段值"
@@ -8338,6 +9309,10 @@ msgstr "查阅自定字段"
 msgid "See exact outgoing email messages and their recipeients"
 msgstr "查阅送出的电子邮件及收件人"
 
+#: NOT FOUND IN SOURCE
+msgid "See that this class exists"
+msgstr "保证类型存在"
+
 #: lib/RT/Queue_Overlay.pm:102
 msgid "See ticket private commentary"
 msgstr "查阅申请单内的私人注释"
@@ -8345,6 +9320,10 @@ msgstr "查阅申请单内的私人注释"
 #: lib/RT/Queue_Overlay.pm:101
 msgid "See ticket summaries"
 msgstr "查阅申请单总览"
+
+#: NOT FOUND IN SOURCE
+msgid "SeeClass"
+msgstr "查看类型"
 
 #: lib/RT/CustomField_Overlay.pm:113 lib/RT/Queue_Overlay.pm:92
 msgid "SeeCustomField"
@@ -8378,13 +9357,25 @@ msgstr "选择"
 msgid "Select All"
 msgstr "全选"
 
+#: NOT FOUND IN SOURCE
+msgid "Select Custom Fields for Articles in all Classes"
+msgstr "选择所有类型文章的自定字段"
+
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
 msgstr "选择数据库类型"
 
+#: NOT FOUND IN SOURCE
+msgid "Select a Class"
+msgstr "选择类型"
+
 #: share/html/Admin/CustomFields/index.html:97
 msgid "Select a Custom Field"
 msgstr "选择自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Select a color for the section"
+msgstr "选择段落的颜色"
 
 #: share/html/Admin/Groups/index.html:88
 msgid "Select a group"
@@ -8402,13 +9393,29 @@ msgstr "为您新的申请单选择一个队列"
 msgid "Select a queue to link to"
 msgstr "请选择要连结队列"
 
+#: NOT FOUND IN SOURCE
+msgid "Select a section"
+msgstr "选择段落"
+
 #: share/html/Admin/Users/index.html:48 share/html/Admin/Users/index.html:51 share/html/Admin/Users/index.html:54
 msgid "Select a user"
 msgstr "选择用户"
 
+#: NOT FOUND IN SOURCE
+msgid "Select an Article from %1"
+msgstr "从 %1 中选择文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Select an Article to include"
+msgstr "选择文章以包括"
+
 #: share/html/Install/index.html:59
 msgid "Select another language"
 msgstr "选择另一种语言"
+
+#: NOT FOUND IN SOURCE
+msgid "Select box"
+msgstr "选择框"
 
 #: NOT FOUND IN SOURCE
 msgid "Select custom field"
@@ -8434,9 +9441,25 @@ msgstr "选择应用于所有队列内申请单的自定字段"
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "选择应用于所有队列内申请单之更改的自定字段"
 
+#: NOT FOUND IN SOURCE
+msgid "Select date"
+msgstr "选择日期"
+
+#: NOT FOUND IN SOURCE
+msgid "Select datetime"
+msgstr "选择时间"
+
 #: share/html/User/Elements/GroupTabs:73
 msgid "Select group"
 msgstr "选择群组"
+
+#: NOT FOUND IN SOURCE
+msgid "Select multiple dates"
+msgstr "选择多个日期"
+
+#: NOT FOUND IN SOURCE
+msgid "Select multiple datetimes"
+msgstr "选择多个时间"
 
 #: lib/RT/CustomField_Overlay.pm:61
 msgid "Select multiple values"
@@ -8461,6 +9484,18 @@ msgstr "选择脚本"
 #: share/html/Admin/Queues/Template.html:78 share/html/Admin/Queues/Templates.html:70
 msgid "Select template"
 msgstr "选择模板"
+
+#: NOT FOUND IN SOURCE
+msgid "Select topics for this article"
+msgstr "选择该文章的主题"
+
+#: NOT FOUND IN SOURCE
+msgid "Select up to %1 dates"
+msgstr "最多可选择 %1 个日期"
+
+#: NOT FOUND IN SOURCE
+msgid "Select up to %1 datetimes"
+msgstr "最多可选择 %1 个时间"
 
 #: lib/RT/CustomField_Overlay.pm:63
 msgid "Select up to %1 values"
@@ -8490,6 +9525,10 @@ msgstr "单一选项"
 msgid "Selected Custom Fields"
 msgstr "已选择的自定字段"
 
+#: NOT FOUND IN SOURCE
+msgid "Selected Queues"
+msgstr "已选队列"
+
 #: lib/RT/Crypt/GnuPG.pm:2022
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "选择的密钥不被信任或不存在."
@@ -8510,7 +9549,7 @@ msgstr "选择的项目已更改. 请保存您的更改"
 msgid "Self Service"
 msgstr "自助服务"
 
-#: lib/RT/Interface/Email.pm:733
+#: lib/RT/Interface/Email.pm:734
 msgid "Send email successfully"
 msgstr "邮件已发送"
 
@@ -8575,10 +9614,14 @@ msgid "Sep."
 msgstr "09"
 
 #: NOT FOUND IN SOURCE
+msgid "Separate multiple entries with spaces."
+msgstr "以空格区分多个条目"
+
+#: NOT FOUND IN SOURCE
 msgid "September"
 msgstr "九月"
 
-#: lib/RT/User_Overlay.pm:1787
+#: lib/RT/User_Overlay.pm:1808
 msgid "Set private key"
 msgstr ""
 
@@ -8606,9 +9649,17 @@ msgstr "显示"
 msgid "Show Approvals"
 msgstr "显示待批准申请单"
 
+#: NOT FOUND IN SOURCE
+msgid "Show Approvals tab"
+msgstr "显示批准标签栏"
+
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
 msgstr "显示字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Show Configuration tab"
+msgstr "显示配置标签栏"
 
 #: share/html/Ticket/Elements/Tabs:316
 msgid "Show Results"
@@ -8639,9 +9690,17 @@ msgstr "显示已驳回的批准请求单"
 msgid "Show details"
 msgstr "显示细节"
 
+#: NOT FOUND IN SOURCE
+msgid "Show global templates"
+msgstr "显示全局模板"
+
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:101
 msgid "Show link descriptions"
 msgstr "显示链接描述"
+
+#: NOT FOUND IN SOURCE
+msgid "Show no tickets for the Requestor"
+msgstr "对申请者显示无申请单"
 
 #: lib/RT/Config.pm:306
 msgid "Show oldest history first"
@@ -8651,9 +9710,25 @@ msgstr "先显示最老的历史记录"
 msgid "Show pending requests"
 msgstr "显示待处理的批准请求单"
 
+#: NOT FOUND IN SOURCE
+msgid "Show quoted text"
+msgstr "显示引用文本"
+
 #: share/html/Approvals/Elements/PendingMyApproval:64
 msgid "Show requests awaiting other approvals"
 msgstr "显示尚待他人批准请求的批准请求单"
+
+#: NOT FOUND IN SOURCE
+msgid "Show the Requestor's 10 highest priority closed tickets"
+msgstr "显示申请者 10 个最优先的关闭申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Show the Requestor's 10 highest priority open tickets"
+msgstr "显示申请者 10 个最优先的开放申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "Show the Requestor's 10 highest priority tickets"
+msgstr "显示申请者 10 个最优先的申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "Show ticket private commentary"
@@ -8671,9 +9746,21 @@ msgstr "显示权限清单"
 msgid "ShowApprovalsTab"
 msgstr "显示批准请求单标签"
 
+#: NOT FOUND IN SOURCE
+msgid "ShowArticle"
+msgstr "显示文章"
+
+#: NOT FOUND IN SOURCE
+msgid "ShowArticleHistory"
+msgstr "显示文章历史"
+
 #: lib/RT/System.pm:88
 msgid "ShowConfigTab"
 msgstr "显示设定标签"
+
+#: NOT FOUND IN SOURCE
+msgid "ShowGlobalTemplates"
+msgstr "显示全局模板"
 
 #: lib/RT/Queue_Overlay.pm:103
 msgid "ShowOutgoingEmail"
@@ -8743,6 +9830,10 @@ msgstr "签名已停用"
 #: lib/RT/Queue_Overlay.pm:519
 msgid "Signing enabled"
 msgstr "签名已启用"
+
+#: NOT FOUND IN SOURCE
+msgid "Simple"
+msgstr "简单"
 
 #: share/html/Elements/Tabs:71
 msgid "Simple Search"
@@ -8868,14 +9959,22 @@ msgstr "州"
 msgid "Status"
 msgstr "状态"
 
+#: NOT FOUND IN SOURCE
+msgid "Status '%1' isn't a valid status for tickets in this queue."
+msgstr "状态 '%1' 不是该队列申请单的有效状态."
+
 #: etc/initialdata:285
 msgid "Status Change"
 msgstr "状态改变"
 
-#: lib/RT/Transaction_Overlay.pm:668
+#: lib/RT/Transaction_Overlay.pm:670
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
 msgstr "状态从%1改为%2"
+
+#: NOT FOUND IN SOURCE
+msgid "Status changes"
+msgstr "状态改变"
 
 #: NOT FOUND IN SOURCE
 msgid "StatusChange"
@@ -8904,14 +10003,14 @@ msgstr "强制拥有申请单"
 msgid "Step %1 of %2"
 msgstr "%2的步骤%1"
 
-#: lib/RT/Transaction_Overlay.pm:765
+#: lib/RT/Transaction_Overlay.pm:767
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "拥有人从%1强制更换"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
-msgstr "拥有人从 %1 强制更换 "
+msgstr "拥有人从%1强制更换 "
 
 #: share/html/Search/Elements/EditFormat:82
 msgid "Style"
@@ -8929,7 +10028,7 @@ msgstr "主题"
 msgid "Subject Tag"
 msgstr "主题标签"
 
-#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:787
+#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:789
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "标题已改为%1"
@@ -8994,6 +10093,10 @@ msgstr "已解密数据"
 msgid "Successfuly encrypted data"
 msgstr "已加密数据"
 
+#: NOT FOUND IN SOURCE
+msgid "Summary"
+msgstr "摘要"
+
 #: lib/RT/Date.pm:103
 msgid "Sun"
 msgstr "星期日"
@@ -9050,7 +10153,7 @@ msgstr "系统默认"
 msgid "System Defined"
 msgstr "系统定义"
 
-#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1538 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1543 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "系统错误"
 
@@ -9075,9 +10178,9 @@ msgstr "系统权限"
 msgid "System Tools"
 msgstr "系统工具"
 
-#: lib/RT/Transaction_Overlay.pm:686
+#: lib/RT/Transaction_Overlay.pm:688
 msgid "System error"
-msgstr ""
+msgstr "系统错误"
 
 #: lib/RT/ACE_Overlay.pm:413
 msgid "System error. Right not delegated."
@@ -9103,7 +10206,7 @@ msgstr "系统权限"
 msgid "SystemInternal"
 msgstr "系统内部用"
 
-#: lib/RT/Handle.pm:715
+#: lib/RT/Handle.pm:716
 msgid "SystemRolegroup for internal use"
 msgstr "内部使用的系统角色群组"
 
@@ -9127,7 +10230,7 @@ msgstr "自行拥有申请单"
 msgid "TakeTicket"
 msgstr "自行拥有申请单"
 
-#: lib/RT/Transaction_Overlay.pm:750
+#: lib/RT/Transaction_Overlay.pm:752
 msgid "Taken"
 msgstr "已受理"
 
@@ -9172,8 +10275,16 @@ msgid "Template Name"
 msgstr "通知模板名称"
 
 #: NOT FOUND IN SOURCE
+msgid "Template compiles"
+msgstr "模板编译"
+
+#: NOT FOUND IN SOURCE
 msgid "Template deleted"
 msgstr "模板已删除"
+
+#: NOT FOUND IN SOURCE
+msgid "Template does not include Perl code"
+msgstr "模板不包括Perl代码"
 
 #: lib/RT/Template_Overlay.pm:383
 msgid "Template is empty"
@@ -9199,6 +10310,10 @@ msgstr "模板解析完成"
 msgid "Template parsing error"
 msgstr "模板解析错误"
 
+#: NOT FOUND IN SOURCE
+msgid "Template parsing error: %1"
+msgstr "模板解析错误: %1"
+
 #: share/html/Admin/Elements/QueueTabs:72 share/html/Admin/Elements/SystemTabs:59 share/html/Admin/Global/index.html:60
 msgid "Templates"
 msgstr "模板"
@@ -9210,6 +10325,10 @@ msgstr "通知模板 "
 #: NOT FOUND IN SOURCE
 msgid "Templates for %1\\n"
 msgstr "找不到 %1 的模板\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Templates for queue %1"
+msgstr "队列 %1 的模板"
 
 #: NOT FOUND IN SOURCE
 msgid "Text"
@@ -9227,7 +10346,7 @@ msgstr "已经是目前字段的值"
 msgid "That is not a value for this custom field"
 msgstr "不是该自定字段的值"
 
-#: lib/RT/Ticket_Overlay.pm:1714
+#: lib/RT/Ticket_Overlay.pm:1713
 msgid "That is the same value"
 msgstr "同样的值"
 
@@ -9240,7 +10359,7 @@ msgstr "单位已经拥有该权限"
 msgid "That principal is already a %1 for this queue"
 msgstr "单位已经是该队列的%1"
 
-#: lib/RT/Ticket_Overlay.pm:1138
+#: lib/RT/Ticket_Overlay.pm:1137
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "单位已经是该申请单的%1"
@@ -9250,16 +10369,16 @@ msgstr "单位已经是该申请单的%1"
 msgid "That principal is not a %1 for this queue"
 msgstr "单位不是该队列的%1"
 
-#: lib/RT/Ticket_Overlay.pm:1260
+#: lib/RT/Ticket_Overlay.pm:1259
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
 msgstr "单位不是该申请单的%1"
 
-#: lib/RT/Ticket_Overlay.pm:1710
+#: lib/RT/Ticket_Overlay.pm:1709
 msgid "That queue does not exist"
 msgstr "队列不存在"
 
-#: lib/RT/Ticket_Overlay.pm:2999
+#: lib/RT/Ticket_Overlay.pm:2998
 msgid "That ticket has unresolved dependencies"
 msgstr "申请单有尚未解决的附属申请单"
 
@@ -9267,27 +10386,27 @@ msgstr "申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "用户已具有该项权限"
 
-#: lib/RT/Action/CreateTickets.pm:483 lib/RT/Ticket_Overlay.pm:2816
+#: lib/RT/Action/CreateTickets.pm:483 lib/RT/Ticket_Overlay.pm:2815
 msgid "That user already owns that ticket"
 msgstr "用户已经拥有该申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Ticket_Overlay.pm:2758
 msgid "That user does not exist"
 msgstr "用户不存在"
 
-#: lib/RT/User_Overlay.pm:304
+#: lib/RT/User_Overlay.pm:305
 msgid "That user is already privileged"
 msgstr "用户已经是内部成员"
 
-#: lib/RT/User_Overlay.pm:325
+#: lib/RT/User_Overlay.pm:326
 msgid "That user is already unprivileged"
 msgstr "用户属于非内部成员群组"
 
-#: lib/RT/User_Overlay.pm:317
+#: lib/RT/User_Overlay.pm:318
 msgid "That user is now privileged"
 msgstr "用户已加入内部成员群组"
 
-#: lib/RT/User_Overlay.pm:338
+#: lib/RT/User_Overlay.pm:339
 msgid "That user is now unprivileged"
 msgstr "用户已加入非内部成员群组"
 
@@ -9295,7 +10414,7 @@ msgstr "用户已加入非内部成员群组"
 msgid "That user is now unprivilegedileged"
 msgstr "这名用户已加入非内部成员群组"
 
-#: lib/RT/Ticket_Overlay.pm:2809
+#: lib/RT/Ticket_Overlay.pm:2808
 msgid "That user may not own tickets in that queue"
 msgstr "用户不能拥有该队列里的申请单"
 
@@ -9310,6 +10429,10 @@ msgstr "基本信息"
 #: lib/RT/ACE_Overlay.pm:101
 msgid "The CC of a ticket"
 msgstr "申请单的抄送人"
+
+#: NOT FOUND IN SOURCE
+msgid "The Class of the Article identified by %1 is not applied to the current Queue"
+msgstr "标识为 %1 的文章类型不适用于当前队列"
 
 #: lib/RT/Installer.pm:110
 msgid "The DBA's database password"
@@ -9329,7 +10452,7 @@ msgstr "数据库服务器的域名"
 
 #: bin/rt-crontool:379
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
-msgstr ""
+msgstr "以下命令将在“一般”队列中找到所有活动的申请单，如果已经过期的话则将其优先值设为99："
 
 #: NOT FOUND IN SOURCE
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
@@ -9409,9 +10532,17 @@ msgstr "申请单有未读信息"
 msgid "There is marginal trust in this key"
 msgstr "密钥被部分信任(marginal)"
 
+#: NOT FOUND IN SOURCE
+msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
+msgstr "有超过一个名为 '%1' 的群组。这将会造成部分管理界面的矛盾，因此建议您重命名有冲突的群组。"
+
 #: lib/RT/Crypt/GnuPG.pm:2041
 msgid "There is no key suitable for encryption."
 msgstr "没有适合加密的密钥"
+
+#: NOT FOUND IN SOURCE
+msgid "There is no mapping for statuses between these queues. Contact your system administrator."
+msgstr "没有该队列之间状态的绘图，请联系系统管理员。"
 
 #: lib/RT/Crypt/GnuPG.pm:2045
 msgid "There is one suitable key, but trust level is not set."
@@ -9429,22 +10560,38 @@ msgstr "这些配置选项包括运行RT的基本选项。我们需要知道此R
 msgid "Third-"
 msgstr "三"
 
+#: NOT FOUND IN SOURCE
+msgid "This Custom Field can not have list of values"
+msgstr "该自定字段不能具有值列表"
+
 #: lib/RT/CustomField_Overlay.pm:1094
 msgid "This custom field does not apply to that object"
 msgstr "此自定字段没有应用于该对象"
+
+#: NOT FOUND IN SOURCE
+msgid "This custom field has no Render Types"
+msgstr "该自定字段没有渲染类型"
 
 #: share/html/Admin/Tools/Configuration.html:52
 msgid "This feature is only available to system administrators"
 msgstr "此功能仅限系统管理员使用"
 
+#: NOT FOUND IN SOURCE
+msgid "This feature is only available to system administrators."
+msgstr "此功能只适用于系统管理员。"
+
 #: lib/RT/Interface/Web/Session.pm:277
 #. ($RT::MasonSessionDir)
 msgid "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
-msgstr "可能是因为目录'%1'不能写或者数据库的一个表丢失或损坏。"
+msgstr "可能是因为不能写入目录'%1'，或者数据库的一个表丢失或损坏。"
 
 #: share/html/Ticket/Elements/PreviewScrips:58
 msgid "This message will be sent to..."
 msgstr "此消息会发送给..."
+
+#: NOT FOUND IN SOURCE
+msgid "This server process has recorded no SQL queries."
+msgstr "服务器进程记录没有SQL查询."
 
 #: NOT FOUND IN SOURCE
 msgid "This ticket %1 %2 (%3)\\n"
@@ -9457,6 +10604,10 @@ msgstr "此工具会让用户经由RT执行任意命令。"
 #: lib/RT/Transaction_Overlay.pm:356
 msgid "This transaction appears to have no content"
 msgstr "事务没有内容"
+
+#: NOT FOUND IN SOURCE
+msgid "This user's %1 highest priority %2 tickets"
+msgstr "用户 %1 最优先处理的 %2 张申请单"
 
 #: share/html/Ticket/Elements/ShowRequestor:85
 #. ($rows)
@@ -9575,8 +10726,16 @@ msgid "Ticket Type"
 msgstr "队列种类"
 
 #: NOT FOUND IN SOURCE
+msgid "Ticket and Transaction"
+msgstr "申请单与事务"
+
+#: NOT FOUND IN SOURCE
 msgid "Ticket attachment"
 msgstr "申请单附件"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket composition"
+msgstr "申请单构成"
 
 #: lib/RT/Tickets_Overlay.pm:2194
 msgid "Ticket content"
@@ -9629,6 +10788,10 @@ msgstr "找不到申请单"
 #: etc/initialdata:286
 msgid "Ticket status changed"
 msgstr "申请单状态已改变"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket update"
+msgstr "申请单更新"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket watchers"
@@ -9750,6 +10913,14 @@ msgstr "如果需要支持、培训、定制开发或许可，请联系%1。"
 msgid "Todo"
 msgstr "待办事项"
 
+#: NOT FOUND IN SOURCE
+msgid "Toggle %quant(%1,query,queries)"
+msgstr "切换 %1 项查询"
+
+#: NOT FOUND IN SOURCE
+msgid "Toggle stack trace"
+msgstr "切换堆栈轨迹"
+
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:918 lib/RT/Tickets_Overlay.pm:118 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:99
 msgid "Told"
 msgstr "告知日期"
@@ -9762,6 +10933,26 @@ msgstr "告知日期(相对值)"
 msgid "Tools"
 msgstr "工具"
 
+#: NOT FOUND IN SOURCE
+msgid "Topic Name"
+msgstr "主题名称"
+
+#: NOT FOUND IN SOURCE
+msgid "Topic membership added"
+msgstr "主题成员已添加"
+
+#: NOT FOUND IN SOURCE
+msgid "Topic membership removed"
+msgstr "主题成员已移除"
+
+#: NOT FOUND IN SOURCE
+msgid "Topic not found"
+msgstr "未找到主题"
+
+#: NOT FOUND IN SOURCE
+msgid "Topics"
+msgstr "主题"
+
 #: share/html/Search/Elements/Chart:144
 msgid "Total"
 msgstr "总数"
@@ -9770,7 +10961,7 @@ msgstr "总数"
 msgid "Transaction"
 msgstr "事务"
 
-#: lib/RT/Transaction_Overlay.pm:910
+#: lib/RT/Transaction_Overlay.pm:912
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "事务%1被清除"
@@ -9803,7 +10994,7 @@ msgstr "创建更改时"
 msgid "TransactionDate"
 msgstr "事务日期"
 
-#: lib/RT/Transaction_Overlay.pm:975
+#: lib/RT/Transaction_Overlay.pm:977
 msgid "Transactions are immutable"
 msgstr "不可更改事务"
 
@@ -9835,34 +11026,70 @@ msgstr "星期二"
 msgid "Type"
 msgstr "类型"
 
+#: NOT FOUND IN SOURCE
+msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
+msgstr "在文章编号前输入<b>a:</b> ，在申请单编号前输入 <b>t:</b>"
+
 #: lib/RT/CustomField_Overlay.pm:810
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr "类型从'%1'更改为'%2'"
 
+#: NOT FOUND IN SOURCE
+msgid "Unable to add topic membership"
+msgstr "无法添加主题成员"
+
+#: NOT FOUND IN SOURCE
+msgid "Unable to delete topic membership in %1"
+msgstr "无法删除 %1 主题的成员"
+
 #: share/html/Search/Elements/EditSearches:288
 msgid "Unable to determine object type or id"
 msgstr "无法确定对象类型或编号"
 
+#: NOT FOUND IN SOURCE
+msgid "Unable to load article"
+msgstr "无法加载文章"
+
+#: NOT FOUND IN SOURCE
+msgid "Unable to read image: %1"
+msgstr "无法读图像: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Unable to set UserCSS: %1"
+msgstr "无法设置用户 CSS: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Unable to set UserLogo: %1"
+msgstr "无法设置用户 Logo: %1"
+
 #: share/html/Search/Elements/EditSearches:276
 #. ($msg)
 msgid "Unable to set privacy id: %1"
-msgstr ""
+msgstr "无法设置隐私id: %1"
 
 #: share/html/Search/Elements/EditSearches:285
 #. (loc('Permission Denied'))
 msgid "Unable to set privacy object or id: %1"
-msgstr ""
+msgstr "无法设置隐私对象或id: %1"
 
 #: share/html/Search/Elements/EditSearches:268
 #. ($msg)
 msgid "Unable to set privacy object: %1"
-msgstr ""
+msgstr "无法设置隐私对象: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Unable to subscribe to dashboard %1: Permission Denied"
+msgstr "无法订阅表单 %1: 权限被拒绝"
 
 #: share/html/Dashboards/Subscription.html:254
 #. ($DashboardId)
 msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr "无法订阅表单%1: 没有权限"
+
+#: NOT FOUND IN SOURCE
+msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
+msgstr "Uncheck boxes to disable notifications to the listed recipients <b>仅针对该事务</b>不勾选以停止通知列出的收件人；在<a href=\"%1\">“人员页面”</a>中进行永久取消的管理。"
 
 #: lib/RT/ScripCondition_Overlay.pm:126
 msgid "Unimplemented"
@@ -9903,27 +11130,39 @@ msgstr "不限制"
 msgid "Unlimited"
 msgstr "全数显示"
 
+#: NOT FOUND IN SOURCE
+msgid "Unnamed dashboard"
+msgstr "未命名表单"
+
 #: share/html/Search/Elements/SelectSearchesForObjects:62
 msgid "Unnamed search"
 msgstr "未命名的搜索"
 
-#: lib/RT/Handle.pm:650
+#: NOT FOUND IN SOURCE
+msgid "Unowned tickets"
+msgstr "未分配的申请单"
+
+#: lib/RT/Handle.pm:651
 msgid "Unprivileged"
 msgstr "非内部成员"
 
-#: share/html/Admin/Elements/EditCustomFields:74
+#: share/html/Admin/Elements/EditCustomFields:71
 msgid "Unselected Custom Fields"
 msgstr "未选择的自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "Unselected Queues"
+msgstr "未选中队列"
 
 #: share/html/Admin/CustomFields/Objects.html:87
 msgid "Unselected objects"
 msgstr "未选择的对象"
 
-#: lib/RT/User_Overlay.pm:1771
+#: lib/RT/User_Overlay.pm:1792
 msgid "Unset private key"
 msgstr "未设定主密钥"
 
-#: lib/RT/Transaction_Overlay.pm:746
+#: lib/RT/Transaction_Overlay.pm:748
 msgid "Untaken"
 msgstr "未被受理"
 
@@ -9942,6 +11181,10 @@ msgstr "更新"
 #: NOT FOUND IN SOURCE
 msgid "Update All"
 msgstr "全部更新"
+
+#: NOT FOUND IN SOURCE
+msgid "Update Chart"
+msgstr "更新图表"
 
 #: share/html/Search/Chart.html:94 share/html/Ticket/Graphs/Elements/EditGraphProperties:121
 msgid "Update Graph"
@@ -9979,7 +11222,7 @@ msgstr "批量更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:523 lib/RT/Interface/Web.pm:1389
+#: lib/RT/Action/CreateTickets.pm:523 lib/RT/Interface/Web.pm:1394
 msgid "Update not recorded."
 msgstr "更新未被记录."
 
@@ -10009,7 +11252,7 @@ msgstr "更新申请单#%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单#%1(%2)"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:1389
+#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:1394
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新类型既非回复也非注释"
 
@@ -10029,6 +11272,10 @@ msgstr "已更新已存搜索\"%1\""
 #: share/html/Tools/Offline.html:94
 msgid "Upload"
 msgstr "上传"
+
+#: NOT FOUND IN SOURCE
+msgid "Upload a new logo"
+msgstr "上传新logo"
 
 #: lib/RT/CustomField_Overlay.pm:86
 msgid "Upload multiple files"
@@ -10058,6 +11305,10 @@ msgstr "上传最多%1张图片"
 msgid "Upload your changes"
 msgstr "上传您的更改"
 
+#: NOT FOUND IN SOURCE
+msgid "Usage:"
+msgstr "使用情况:"
+
 #: sbin/rt-email-digest:88
 msgid "Usage: "
 msgstr "使用: "
@@ -10065,6 +11316,14 @@ msgstr "使用: "
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
 msgstr "使用SSL?"
+
+#: NOT FOUND IN SOURCE
+msgid "Use a two column layout for create and update forms?"
+msgstr "使用两列的布局来创建与更新表单?"
+
+#: NOT FOUND IN SOURCE
+msgid "Use autocomplete to find owners?"
+msgstr "使用自动完成来寻找拥有人?"
 
 #: lib/RT/Config.pm:336
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
@@ -10083,6 +11342,10 @@ msgstr "使用其它的 RT 管理工具"
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 msgid "Use system default (%1)"
 msgstr "使用系统默认值(%1)"
+
+#: NOT FOUND IN SOURCE
+msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
+msgstr "使用下拉列表菜单来选择您想要提取为新文章的申请单更新。"
 
 #: lib/RT/Config.pm:326
 msgid "Use this to protect the format of plain text"
@@ -10149,7 +11412,7 @@ msgstr "用户设定"
 msgid "User Shift"
 msgstr "员工班别"
 
-#: lib/RT/Interface/Web.pm:1913
+#: lib/RT/Interface/Web.pm:1918
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "用户试图在%2对象 #%3 的自定字段%1上执行未知的更新操作"
@@ -10159,7 +11422,7 @@ msgstr "用户试图在%2对象 #%3 的自定字段%1上执行未知的更新操
 msgid "User could not be created: %1"
 msgstr "无法创建用户：%1"
 
-#: lib/RT/User_Overlay.pm:264
+#: lib/RT/User_Overlay.pm:265
 msgid "User created"
 msgstr "用户已创建"
 
@@ -10175,11 +11438,11 @@ msgstr "用户 %1 (%2) 创建完成"
 msgid "User defined groups"
 msgstr "用户定义的群组"
 
-#: lib/RT/User_Overlay.pm:1216
+#: lib/RT/User_Overlay.pm:1234
 msgid "User disabled"
 msgstr "用户已停用"
 
-#: lib/RT/User_Overlay.pm:1218
+#: lib/RT/User_Overlay.pm:1236
 msgid "User enabled"
 msgstr "用户已启用"
 
@@ -10187,7 +11450,7 @@ msgstr "用户已启用"
 msgid "User has empty email address"
 msgstr "用户的邮箱为空"
 
-#: lib/RT/User_Overlay.pm:489 lib/RT/User_Overlay.pm:509
+#: lib/RT/User_Overlay.pm:490 lib/RT/User_Overlay.pm:510
 msgid "User loaded"
 msgstr "已加载用户"
 
@@ -10268,8 +11531,36 @@ msgstr "各种各样的RT报表"
 msgid "Version"
 msgstr "版本"
 
+#: NOT FOUND IN SOURCE
+msgid "View Scrip templates"
+msgstr "查看脚本模板"
+
+#: NOT FOUND IN SOURCE
+msgid "View Scrips"
+msgstr "查看脚本"
+
+#: NOT FOUND IN SOURCE
+msgid "View custom field values"
+msgstr "查看自定字段值"
+
+#: NOT FOUND IN SOURCE
+msgid "View custom fields"
+msgstr "查看自定字段"
+
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
+msgstr "查看群组表单"
+
+#: NOT FOUND IN SOURCE
+msgid "View exact outgoing email messages and their recipients"
+msgstr "查看外送电子邮件信息及收件人细节"
+
+#: NOT FOUND IN SOURCE
+msgid "View group"
+msgstr "查看群组"
+
+#: NOT FOUND IN SOURCE
+msgid "View group dashboards"
 msgstr "查看群组表单"
 
 #: NOT FOUND IN SOURCE
@@ -10280,13 +11571,33 @@ msgstr "视图记录档"
 msgid "View personal dashboards"
 msgstr "查看个人表单"
 
+#: NOT FOUND IN SOURCE
+msgid "View queue"
+msgstr "查看队列"
+
+#: NOT FOUND IN SOURCE
+msgid "View saved searches"
+msgstr "查看已存搜索"
+
 #: lib/RT/Dashboard.pm:80
 msgid "View system dashboards"
 msgstr "查看系统表单"
 
+#: NOT FOUND IN SOURCE
+msgid "View ticket private commentary"
+msgstr "查看申请单隐私评论"
+
+#: NOT FOUND IN SOURCE
+msgid "View ticket summaries"
+msgstr "查看申请单摘要"
+
 #: lib/RT/Date.pm:115
 msgid "W3CDTF"
 msgstr "W3CDTF"
+
+#: NOT FOUND IN SOURCE
+msgid "WARNING: Saving search to user-level privacy"
+msgstr "警告: 保存搜索为用户层次隐私"
 
 #: lib/RT/Config.pm:194
 msgid "WYSIWYG composer height"
@@ -10331,6 +11642,10 @@ msgstr "关注者"
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr "可以用数据库管理员的身分连接到数据库。请点击'自定基本项'继续自定RT。"
+
+#: NOT FOUND IN SOURCE
+msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
+msgstr "当类别以另一自定字段为基础时，我们当前无法渲染列表。请使用其他的渲染类型。"
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
@@ -10400,6 +11715,10 @@ msgstr "批准请求单创建之后，通知应受理的拥有人及管理抄送
 msgid "When anything happens"
 msgstr "当任何事情发生时"
 
+#: NOT FOUND IN SOURCE
+msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
+msgstr "WYSIWYG 编辑器未启用时，此设置将决定自动换行线是否发送至 RT。"
+
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr "当点击'检查数据库是否可连接'时，可能会有一点延迟(因为RT正在尝试连接数据库)"
@@ -10461,6 +11780,10 @@ msgid "Work"
 msgstr "工作"
 
 #: NOT FOUND IN SOURCE
+msgid "Work Phone"
+msgstr "工作电话"
+
+#: NOT FOUND IN SOURCE
 msgid "Work offline"
 msgstr "离线工作"
 
@@ -10504,7 +11827,11 @@ msgstr "XXX CHANGEME 您是未经授权的用户"
 msgid "Yes"
 msgstr "是"
 
-#: lib/RT/Ticket_Overlay.pm:2925
+#: NOT FOUND IN SOURCE
+msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
+msgstr "您可以在RT<a href=\"%1\">编辑该表单</a> 与 <a href=\"%2\">您的订阅</a> to it in RT."
+
+#: lib/RT/Ticket_Overlay.pm:2924
 msgid "You already own this ticket"
 msgstr "您已是这份申请单的拥有人"
 
@@ -10533,17 +11860,25 @@ msgstr "您可以按右方的‘下载’键来取得。"
 msgid "You can also edit the predefined search itself"
 msgstr "您也可以直接编辑预定义的搜索"
 
-#: lib/RT/User_Overlay.pm:932
+#: NOT FOUND IN SOURCE
+msgid "You can insert ticket content into any freeform, text or wiki field."
+msgstr "您不能在申请单内容插入任何自由形式、文本或wiki字段"
+
+#: lib/RT/User_Overlay.pm:933
 msgid "You can not set password."
 msgstr "不能设置密码."
 
-#: lib/RT/Ticket_Overlay.pm:2802
+#: lib/RT/Ticket_Overlay.pm:2801
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "只能重新指派您所拥有或是没有拥有人的申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2798
+#: lib/RT/Ticket_Overlay.pm:2797
 msgid "You can only take tickets that are unowned"
 msgstr "您只能受理尚无拥有人的申请单"
+
+#: NOT FOUND IN SOURCE
+msgid "You can't change status from '%1' to '%2'."
+msgstr "您不能将改变状态 '%1' 至 '%2'."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoRights:54
 msgid "You don't have <b>SuperUser</b> right."
@@ -10564,17 +11899,21 @@ msgstr "您已注销."
 
 #: share/html/Admin/Queues/Modify.html:139
 msgid "You have enabled GnuPG support but have not set a comment address for this queue."
-msgstr ""
+msgstr "您已经启用 GnuPG 支持，但是没有为此队列设置评论地址"
 
 #: share/html/Admin/Queues/Modify.html:129
 msgid "You have enabled GnuPG support but have not set a correspondence address for this queue."
-msgstr ""
+msgstr "您已经启用 GnuPG 支持，但是没有为此队列设置一致的地址"
 
 #: share/html/SelfService/Display.html:133
 msgid "You have no permission to create tickets in that queue."
 msgstr "您没有在该队列创建申请单的权限."
 
-#: lib/RT/Ticket_Overlay.pm:1723
+#: NOT FOUND IN SOURCE
+msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
+msgstr "您可以为文章添加 \"a:###\" 形式的链接，其中 j### 代表文章的数字"
+
+#: lib/RT/Ticket_Overlay.pm:1722
 msgid "You may not create requests in that queue."
 msgstr "您无法在该队列中创建申请单。"
 
@@ -10582,13 +11921,17 @@ msgstr "您无法在该队列中创建申请单。"
 msgid "You must enter an Administrative password"
 msgstr "必须输入管理员密码"
 
+#: NOT FOUND IN SOURCE
+msgid "You must set StatementLog to true to enable this query history page."
+msgstr "您必须设置指令日志为真，以启用该队列的历史页面"
+
 #: share/html/Admin/Queues/Modify.html:140
 msgid "You must set a comment address for this queue in order to configure a GnuPG private key."
-msgstr ""
+msgstr "您必须为该队列设定一个评论地址，以配置 GnuPG 私钥"
 
 #: share/html/Admin/Queues/Modify.html:130
 msgid "You must set a correspondence address for this queue in order to configure a GnuPG private key."
-msgstr ""
+msgstr "您必须为该队列设定一个一致的地址，以配置 GnuPG 私钥"
 
 #: NOT FOUND IN SOURCE
 msgid "You need to restart the Request Tracker service for saved changes to take effect."
@@ -10622,7 +11965,7 @@ msgstr "RT 管理员可能设错了由 RT 寄出的邮件收件人标头档"
 msgid "Your current password"
 msgstr "当前密码"
 
-#: lib/RT/User_Overlay.pm:1108
+#: lib/RT/User_Overlay.pm:1126
 msgid "Your password is not set."
 msgstr "密码未设置."
 
@@ -10670,6 +12013,14 @@ msgstr "[没有标题]"
 msgid "[none]"
 msgstr "[无]"
 
+#: NOT FOUND IN SOURCE
+msgid "a custom field"
+msgstr "自定字段"
+
+#: NOT FOUND IN SOURCE
+msgid "active"
+msgstr "活动的"
+
 #: lib/RT/Config.pm:325
 msgid "add <pre> tag around plain text attachments"
 msgstr "在纯文本附件周围增加<pre>标签"
@@ -10695,6 +12046,14 @@ msgid "allow loading of saved searches"
 msgstr "允许加载已存搜索"
 
 #: NOT FOUND IN SOURCE
+msgid "and before"
+msgstr "与之前"
+
+#: NOT FOUND IN SOURCE
+msgid "and not"
+msgstr "与否"
+
+#: NOT FOUND IN SOURCE
 msgid "approving"
 msgstr "待批准"
 
@@ -10713,7 +12072,7 @@ msgstr "早于"
 
 #: share/html/Admin/Global/MyRT.html:91
 msgid "body"
-msgstr ""
+msgstr "主体"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -10723,9 +12082,17 @@ msgstr "从下到上"
 msgid "chart"
 msgstr "图表"
 
+#: NOT FOUND IN SOURCE
+msgid "check this box to apply this Class globally to all Queues."
+msgstr "选中本框以在全部的队列应用该类型。"
+
 #: share/html/Admin/CustomFields/Objects.html:68
 msgid "check this box to apply this Custom Field to all objects."
 msgstr "标记此项以应用到所有对象"
+
+#: NOT FOUND IN SOURCE
+msgid "check this box to remove this Class globally and be able to choose specific Queues."
+msgstr "选中本框以移除该全局类型，之后即能为此类型选择特定的队列。"
 
 #: share/html/Admin/CustomFields/Objects.html:63
 msgid "check this box to remove this Custom Field from all objects and be able to choose specific objects."
@@ -10831,6 +12198,10 @@ msgid "download"
 msgstr "下载"
 
 #: NOT FOUND IN SOURCE
+msgid "duration"
+msgstr "持续"
+
+#: NOT FOUND IN SOURCE
 msgid "email address"
 msgstr "电子邮件信箱"
 
@@ -10894,6 +12265,10 @@ msgstr "完全"
 msgid "greater than"
 msgstr "大于"
 
+#: NOT FOUND IN SOURCE
+msgid "group"
+msgstr "群组"
+
 #: lib/RT/Group_Overlay.pm:159
 #. ($self->Name)
 msgid "group '%1'"
@@ -10902,6 +12277,10 @@ msgstr "群组'%1'"
 #: NOT FOUND IN SOURCE
 msgid "grouped by %1"
 msgstr "按 %1 分组"
+
+#: NOT FOUND IN SOURCE
+msgid "hide quoted text"
+msgstr "隐藏引用文本"
 
 #: lib/RT/Date.pm:346
 msgid "hours"
@@ -10914,6 +12293,22 @@ msgstr "iCal"
 #: lib/RT/Tickets_Overlay.pm:100 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:56
 msgid "id"
 msgstr "编号"
+
+#: NOT FOUND IN SOURCE
+msgid "in class %1"
+msgstr "在类型 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "inactive"
+msgstr "非活动的"
+
+#: NOT FOUND IN SOURCE
+msgid "includes %1"
+msgstr "包括 %1"
+
+#: NOT FOUND IN SOURCE
+msgid "index"
+msgstr "索引"
 
 #: NOT FOUND IN SOURCE
 msgid "info"
@@ -11086,6 +12481,10 @@ msgstr "队列%1 %2"
 msgid "rejected"
 msgstr "已驳回"
 
+#: NOT FOUND IN SOURCE
+msgid "requires running rt-crontool"
+msgstr "需要运行 rt-crontool"
+
 #: lib/RT/Queue_Overlay.pm:81
 msgid "resolved"
 msgstr "已解决"
@@ -11114,6 +12513,14 @@ msgstr "显示批准申请标签"
 msgid "show Configuration tab"
 msgstr "显示设定标签"
 
+#: NOT FOUND IN SOURCE
+msgid "show quoted text"
+msgstr "显示引用文本"
+
+#: NOT FOUND IN SOURCE
+msgid "sidebar"
+msgstr "侧边栏"
+
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "site config"
 msgstr "site配置"
@@ -11125,6 +12532,10 @@ msgstr "电子表格"
 #: lib/RT/Queue_Overlay.pm:80
 msgid "stalled"
 msgstr "延迟"
+
+#: NOT FOUND IN SOURCE
+msgid "statement"
+msgstr "指令"
 
 #: NOT FOUND IN SOURCE
 msgid "style: %1"
@@ -11202,10 +12613,18 @@ msgstr "无限制的"
 msgid "unresolved"
 msgstr "未处理"
 
+#: NOT FOUND IN SOURCE
+msgid "user"
+msgstr "用户"
+
 #: lib/RT/Group_Overlay.pm:156
 #. ($user->Object->Name)
 msgid "user %1"
 msgstr "用户%1"
+
+#: NOT FOUND IN SOURCE
+msgid "username"
+msgstr "用户名"
 
 #: lib/RT/Config.pm:164
 msgid "verbose"
