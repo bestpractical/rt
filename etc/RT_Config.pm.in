@@ -1037,10 +1037,10 @@ Set(
 =item C<$ChartsTimezonesInDB>
 
 RT stores dates using the UTC timezone in the DB, so charts grouped by
-dates and time are not representative. Set C<$ChartsTimezonesInDB> to
-1 to enable timezone conversions using your DB's
-capabilities. You may need to do some work on the DB side to use this
-feature, read more in F<docs/timezones_in_charts.pod>.
+dates and time are not representative. Set C<$ChartsTimezonesInDB> to 1
+to enable timezone conversions using your DB's capabilities. You may
+need to do some work on the DB side to use this feature, read more in
+F<docs/timezones_in_charts.pod>.
 
 At this time, this feature only applies to MySQL and PostgreSQL.
 
