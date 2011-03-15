@@ -51,4 +51,14 @@ $Portlet
 $Rows => 20
 $Preview => 0
 </%args>
-% $m->comp($Portlet->{path});
+<%init>
+my $full_path = $Portlet->{path};
+(my $path = $full_path) =~ s{^/Elements/}{};
+
+my $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
+</%init>
+% if (!$allowed) {
+%     $m->out(loc("Invalid portlet [_1]", $path));
+% } else {
+%     $m->comp($full_path);
+% }
