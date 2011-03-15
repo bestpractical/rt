@@ -70,6 +70,14 @@ if ( exists $ARGS{'show_name'} ) {
 use Scalar::Util qw(blessed);
 my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
 
+# If we have the attribute, but no content, we don't really have a user logo
+if ($user_logo) {
+    my $content = $user_logo->Content;
+    undef $user_logo
+        unless ref $content eq 'HASH'
+           and defined $content->{'data'};
+}
+
 </%INIT>
 <%ARGS>
 $ShowName => 1

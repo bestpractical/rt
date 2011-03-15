@@ -60,6 +60,13 @@
   <form method="POST" enctype="multipart/form-data">
     <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
     <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <div class="gd-support">
+% if (%gd_can) {
+    <&|/l, join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can) &>Your system supports automatic color suggestions for: [_1]</&>
+% } else {
+    <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
+% }
+    </div>
     <input name="reset_logo" value="Reset to default RT Logo" type="submit" />
     <input type="submit" value="Upload" />
   </form>
@@ -247,17 +254,30 @@ use List::MoreUtils qw(uniq);
 
 my $has_color_analyzer = eval { require Convert::Color; 1 };
 my $colors;
+my %gd_can;
 
-if (    $imgdata
-    and not RT->Config->Get('DisableGD')
-    and $has_color_analyzer)
-{
+if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     require GD;
-    if ( my $img = GD::Image->new($imgdata) ) {
-        $colors = analyze_img($img);
+
+    # Always find out what GD can read...
+    for my $type (qw(Png Jpeg Gif)) {
+        $gd_can{$type}++ if GD::Image->can("newFrom${type}Data");
     }
-    else {
-        push @results, loc("Unable to read image");
+
+    # ...but only analyze the image if we have data
+    if ($imgdata) {
+        if ( my $img = GD::Image->new($imgdata) ) {
+            $colors = analyze_img($img);
+        }
+        else {
+            push @results, loc(
+                "Automatically suggested theme colors aren't available for your image. This might be"
+                . " because you uploaded an image type that your installed version"
+                . " of GD doesn't support. Supported types are: [_1]."
+                . " You can recompile libgd and GD.pm to include support for other image types.",
+                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can)
+            );
+        }
     }
 }
 
