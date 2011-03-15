@@ -79,6 +79,14 @@ if ( $opt && keys %$opt ) {
 
 exit;
 
+sub usage {
+    require Pod::Usage;
+    import Pod::Usage;
+    my @args = ( -verbose => 1 );
+    push @args, ( -message => "@_\n" ) if @_;
+    pod2usage(@args);
+}
+
 sub stats {
     my %opt = %{ shift() };
     my $dir = shift || 'lib/RT/I18N';
@@ -184,6 +192,7 @@ sub clean {
 sub rosetta {
     my %opt = %{ shift() };
     my $url = shift or die 'must provide rosseta download url or directory with new po files';
+    my $i18ndir = shift || 'lib/RT/I18N';
 
     my $dir;
     if ( $url =~ m/^[a-z]+:\/\// ) {
@@ -207,7 +216,7 @@ sub rosetta {
         die "Is not URL or directory: '$url'";
     }
 
-    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    my @files = ( <$dir/rt/*.po>, <$dir/*.po> );
     unless ( @files ) {
         print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
         exit;
@@ -221,7 +230,7 @@ sub rosetta {
 
     for ( @files ) {
         my ($lang) = m/([\w_]+)\.po/;
-        my $fn_orig = "lib/RT/I18N/$lang.po";
+        my $fn_orig = "$i18ndir/$lang.po";
 
         print "$_ -> $fn_orig\n";
 
@@ -241,6 +250,13 @@ sub rosetta {
             $ext->set_msgstr($msgid, $msgstr)
                 if $ext->msgstr($msgid) eq '' && $msgstr;
         }
+	# don't want translated local strings to forget
+	foreach my $qmsgid ( keys %$po_orig ) {
+	    my $msgid = Locale::PO->dequote($qmsgid);
+	    next if $msgid eq '';
+	    $ext->set_msgstr($msgid, Locale::PO->dequote($po_orig->{$qmsgid}{msgstr}))
+		unless $ext->has_msgid($msgid);
+	}
         if ( $opt{'boundary'} && $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
             my @ids = $ext->msgids;
             my $translated = 0;
@@ -259,7 +275,7 @@ sub rosetta {
         }
         $ext->write_po($fn_orig);
     }
-    extract({});
+    extract({}, <$i18ndir/*.po>);
 }
 
 sub extract {
@@ -267,3 +283,159 @@ sub extract {
     system($^X, 'sbin/extract-message-catalog', @_);
 }
 
+__END__
+
+=head1 NAME
+
+rt-message-catalog - the message catalog maintenance tool
+
+=head1 SYNOPSIS
+
+rt-message-catalog command [options] [args]
+
+command:
+
+  stats [I18N-directory]
+    calculates translation statistics
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+
+  shrink [options] [I18N-directory]
+    shrinks lexicon
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+      --update
+	    defaults to true
+      --keep {not-referenced|not-translated|equal}
+	    self-documenting...
+
+  clean [options] [I18N-directory]
+    the same as 'shrink --keep not-translated --keep equal'
+
+  rosetta [options] url-or-dir [I18N-directory]
+    merges rosetta translations and then do command extract
+      <url-or-dir>
+	    either a Rosetta download URL or a directory with already
+	    downloaded and extracted lexicons from Rosetta
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+      --boundary num
+	    num defaults to 20. Lexicon is deleted if less than num%
+	    messages are translated.
+
+  extract [lexicons-to-update]
+    extracts messages from sources and updates lexicons
+      <lexicons-to-update>
+	    defaults to lib/RT/I18N/*.po lib/RT/I18N/*.pot po/*.po po/*.pot
+
+=head1 COMMANDS
+
+=over 4
+
+
+=item B<stats>
+
+This command calculates percents of translated messages per lexicon.
+
+C<stats [I18N-directory]>
+
+=over 4
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=back
+
+
+=item B<shrink>
+
+This command shrinks the lexicons by redundant information.
+The redundacy wanted can be specified with option C<--keep>
+
+C<shrink [options] [I18N-directory]>
+
+=over 4
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=item C<--update>
+
+It defaults to true, that is update lexicons.
+
+=item C<--keep key>
+
+One or more of following values can be passed.
+
+=over 4
+
+=item C<not-referenced>
+
+Keep messages not referenced in source code.
+
+=item C<not-translated>
+
+Keep messages without translation.
+
+=item C<equal>
+
+Keep messages translated into the equal string.
+
+=back
+
+=back
+
+
+=item B<clean>
+
+This command does the same as C<shrink --keep not-translated --keep equal>.
+
+
+=item B<rosetta>
+
+This command merges Rosetta translations with a content of lexicons. Rosetta
+translations are given by direcotry with already extracted lexicons from
+Rosetta or download URL from Rosetta. The command C<extract> is called to
+comments with source code references are back again at the end.
+
+C<rosetta [options] url-or-dir [I18N-directory]>
+
+=over 4
+
+=item C<url-or-dir>
+
+Either a Rosetta download URL or a directory with already
+downloaded and extracted lexicons from Rosetta.
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=item C<--boundary num>
+
+Num defaults to 20. A lexicon is deleted if less than num%
+messages are translated.
+
+=back
+
+
+=item B<extract>
+
+This command extracts messages from sources and updates lexicons.
+
+C<extracts [lexicon-to-update..]>
+
+=over 4
+
+=item C<lexicon-to-update>
+
+This is the message catalog (lexicon) to update with all messages found in the source code.
+It defaults to a list of globs C<lib/RT/I18N/*.po> C<lib/RT/I18N/*.pot> C<po/*.po> C<po/*.pot>.
+
+=back
+
+=back
+
+=cut
