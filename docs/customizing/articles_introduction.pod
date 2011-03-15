@@ -1,9 +1,14 @@
 
-=head1 INTRODUCTION
+=head1 Articles
+
+Articles are a way of managing stock answers or frequently asked
+questions.  Articles are a collection of custom fields whose values can
+be easily inserted into ticket replies.  They are organized into classes
+and topics.
 
 =head2 UI
 
-The User interface to Articles is available from the Tools -> Articles
+The user interface to Articles is available from the Tools -> Articles
 menu.  Admin functionality can be found under Tools -> Configuration ->
 Articles.  Once configured, articles will become available for searching
 on the Reply/Comment page on tickets.  There are configuration variables
