@@ -1,12 +1,66 @@
-Security tips for running RT3
+=head1 RT Security
 
-0   Protect your RT installation by making it only accessible via SSL
+=head2 Reporting security vulnerabilities in RT
 
-1   Be sure to change the password for the root user of RT.  The default password is "password".  This can be changed via the RT web interface at: Preferences > About me
+If you believe you've discovered a security issue in RT, please send an
+email to <security@bestpractical.com> with a detailed description of the
+issue, and a secure means to respond to you (such as your PGP public
+key).
 
-2   Be sure to protect your RT_SiteConfig.pm file if it contains database credentials or other sensitive information.  This file only needs to be readable by RT and your web server.  One way to accomplish this is to make the file readable only by root and the group that RT runs as, and then make sure your web server is a member of that group.  Advanced configuration may be required if other users have the ability to run CGIs or access the server where RT is running.  Otherwise, those users may have access to become RT superusers.
 
-3   Be sure to protect your database.  If it does not need to talk to the world, then don't allow it to listen for remote connections.  With MySQL this can be accomplished via "skip-networking".  If you use your database for other things and must allow remote connections, be sure to use a strong, hard to guess  password for RT.
+=head2 Security tips for running RT3
 
-4   Apache, lighttpd, and most other web servers support name based virtual hosts.  When possible, configure RT as a name based virtual host to raise the bar against DNS rebinding attacks.  Note:  If when you visit http://your.servers.ipaddress.here you see RT, it means you are not likely getting this additional protection.
+=over
 
+=item *
+
+Protect your RT installation by making it only accessible via SSL.  This
+will protect against users' passwords being sniffed as they go over the
+wire, as well as helping prevent phishing attacks.
+
+
+=item *
+
+Be sure to change the password for the C<root> user of RT.  The default
+password is C<password>.  This can be changed via the RT web interface
+at: Preferences > About me
+
+
+=item *
+
+Be sure to protect your F<RT_SiteConfig.pm> file if it contains database
+credentials or other sensitive information.  This file only needs to be
+readable by RT and your web server.  One way to accomplish this is to
+make the file readable only by root and the group that RT runs as, and
+then make sure your web server is a member of that group.  Advanced
+configuration may be required if other users have the ability to run
+CGIs or access the server where RT is running.
+
+
+=item *
+
+Be sure to protect your database.  If it does not need to talk to the
+world, then don't allow it to listen for remote connections.  With MySQL
+this can be accomplished via C<skip-networking>.  If you use your
+database for other things and must allow remote connections, be sure to
+use a strong, hard to guess password for RT.
+
+
+=item *
+
+Apache, lighttpd, and most other web servers support name based virtual
+hosts.  When possible, configure RT as a name based virtual host to
+raise the bar against DNS rebinding attacks.  If, when you visit
+http://your.servers.ipaddress.here you see RT, it means you are not
+likely getting this additional protection.
+
+
+=item *
+
+Use groups to organize RT permissions.  Granting permissions per-user
+makes them, in general, more easily over-granted and forgotten, and more
+likely to diverge from each other, forming a maintenance hassle.
+
+=back
+
+=cut
