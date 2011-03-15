@@ -84,6 +84,10 @@ A localization function. See L<Locale::Maketext>.
 
 =head3 Selected Simple template variables
 
+Since method calls are not allowed in simple templates, many common
+method results have been placed into scalar variables for the template's
+use.  Among them:
+
 =over 4
 
 =item $TicketId
