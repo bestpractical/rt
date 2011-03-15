@@ -190,6 +190,30 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 </td>
 </table>
 
+<&|/Widgets/TitleBox, title => loc("Global Attributes") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Name</&></th>
+<th class="collection-as-table"><&|/l&>Value</&></th>
+</tr>
+% my $attrs = $RT::System->Attributes;
+% my $index_size = 0;
+% while ( my $attr = $attrs->Next ) {
+<tr class="<% $index_size%2 ? 'oddline' : 'evenline'%>">
+% if ($attr->Name eq 'UserLogo') {
+%   my $content = $attr->Content;
+%   $content->{data} = defined $content->{data} ? 'DATA' : 'undef'
+%       if exists $content->{data};
+<td><% $attr->Name %></td><td><% stringify($content) |n %></td>
+% } else {
+<td><% $attr->Name %></td><td><% stringify($attr->Content) |n %></td>
+% }
+</tr>
+% $index_size++;
+% }
+</table>
+</&>
+
 <&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
