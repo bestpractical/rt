@@ -202,7 +202,8 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 <tr class="<% $index_size%2 ? 'oddline' : 'evenline'%>">
 % if ($attr->Name eq 'UserLogo') {
 %   my $content = $attr->Content;
-%   delete $content->{data};
+%   $content->{data} = defined $content->{data} ? 'DATA' : 'undef'
+%       if exists $content->{data};
 <td><% $attr->Name %></td><td><% stringify($content) |n %></td>
 % } else {
 <td><% $attr->Name %></td><td><% stringify($attr->Content) |n %></td>
