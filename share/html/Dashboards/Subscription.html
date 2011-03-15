@@ -226,41 +226,56 @@ for my $field (keys %fields) {
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field});
 }
+
+
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
-    # update
-    if ($SubscriptionObj) {
-        $id = delete $fields{'DashboardId'}; # immutable
-        ($ok, $msg) = $SubscriptionObj->SetSubValues(%fields);
-        $fields{'DashboardId'} = $id;
+    my $ok = 1;
 
-        # not so good to spew base64-encoded data at the user :)
-        if ($msg =~ /^Content changed from/) {
-            $msg = "Subscription updated.";
+    # validation
+    if ($fields{Recipient}) {
+        my @addresses = Email::Address->parse($fields{Recipient});
+        if (@addresses == 0) {
+            push @results, loc('Recipient must be an email address');
+            $ok = 0;
         }
-
-        push @results, $msg;
     }
-    # create
-    else {
-        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
-            unless $Dashboard->CurrentUserCanSubscribe;
 
-        $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
-        ($ok, $msg) = $SubscriptionObj->Create(
-            Name        => 'Subscription',
-            Description => 'Subscription to dashboard ' . $id,
-            ContentType => 'storable',
-            Object      => $session{'CurrentUser'}->UserObj,
-            Content     => \%fields,
-        );
-        if ($ok) {
-            push @results, loc("Subscribed to dashboard [_1]", $Dashboard->Name);
-            push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};
+    if ($ok) {
+        # update
+        if ($SubscriptionObj) {
+            $id = delete $fields{'DashboardId'}; # immutable
+            ($ok, $msg) = $SubscriptionObj->SetSubValues(%fields);
+            $fields{'DashboardId'} = $id;
+
+            # not so good to spew base64-encoded data at the user :)
+            if ($msg =~ /^Content changed from/) {
+                $msg = "Subscription updated.";
+            }
+
+            push @results, $msg;
         }
+        # create
         else {
-            push @results, loc('Subscription could not be created: [_1]', $msg);
+            Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
+                unless $Dashboard->CurrentUserCanSubscribe;
+
+            $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
+            ($ok, $msg) = $SubscriptionObj->Create(
+                Name        => 'Subscription',
+                Description => 'Subscription to dashboard ' . $id,
+                ContentType => 'storable',
+                Object      => $session{'CurrentUser'}->UserObj,
+                Content     => \%fields,
+            );
+            if ($ok) {
+                push @results, loc("Subscribed to dashboard [_1]", $Dashboard->Name);
+                push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
+                    unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};
+            }
+            else {
+                push @results, loc('Subscription could not be created: [_1]', $msg);
+            }
         }
     }
 }
