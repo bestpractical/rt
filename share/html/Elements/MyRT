@@ -94,7 +94,7 @@ my $show_cb = sub {
     } elsif ( $type eq 'system' ) {
         $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows }, IgnoreMissing => 1 );
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
     } else {
         $RT::Logger->error("unknown portlet type '$type'");
     }
