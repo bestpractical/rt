@@ -2,23 +2,22 @@
 
 =head2 Description
 
-C<External custom fields> is extension to custom fields that allow
-you to define CF with a dynamic list of values. Loading values into
-this custom fields requires writing a little Perl code to fetch the
-data from the external source; the code that we added to RT 3.7
-allows it to load data from arbitrary external sources.
+C<External custom fields> is an extension to custom fields that allow
+you to define CFs with dynamic lists of values. Loading values into
+these custom fields requires writing a little Perl code to fetch the
+data from the external source.
 
 =head2 Introduction into writing source of values
 
-For each type of data source that you want, you'll need to put a file
-in F</opt/rt3/local/lib/RT/CustomFieldValues/> (or equivilent if you
-installed RT someplace other than F</opt/rt3>). To get a sense of the
-code that you'll need to write, take a look at the code in 
-L</opt/rt3/lib/RT/CustomFieldValues/Groups.pm> for a simple example
+For each type of data source that you want, you'll need to put a file in
+F</opt/rt4/local/lib/RT/CustomFieldValues/> (or equivilent if you
+installed RT into someplace other than F</opt/rt4>). To get a sense of
+the code that you'll need to write, take a look at the code in
+L</opt/rt4/lib/RT/CustomFieldValues/Groups.pm> for a simple example
 which just uses RT's API to pull in a list of RT's groups.
 
-Running C<perldoc /opt/rt3/lib/RT/CustomFieldValues/External.pm> will
-show you the documentation for the API that needs to be fulfilled, by
+Running C<perldoc /opt/rt4/lib/RT/CustomFieldValues/External.pm> will
+show you the documentation for the API that needs to be fulfilled;
 copying and editing the C<Groups> example is probably a fine place to
 start.
 
@@ -28,20 +27,17 @@ Later in this doc we'll describe the example a little bit more.
 
 After the custom code is written, you need to tell RT about its
 existence by adding something like following to your RT_SiteConfig.pm:
-Set(@CustomFieldValuesSources, "RT::CustomFieldValues::MySource");
+
+    Set(@CustomFieldValuesSources, "RT::CustomFieldValues::MySource");
 
 The value in quotes should be the name of the class that you created.
 
-Stop and start your web server to enable any config changes. Open the web interface with
-as an administrative user (such as root) create new custom field. In order to use
-a custom source of values, you should select a custom field type
-that lets users pick values from a list, for example it could be C<Select *>
-or a type with autocompletion. It shouldn't be C<Enter one value> type
-as this type doesn't allow user to choose values. Other types that
-don't have a defined list of values are also unacceptable.
-
-Save the changes, now you have ability to select a "source" for values.
-Choose the class you wrote from the list and save changes.
+Stop and start your web server to enable any config changes. Open the
+web interface as an administrative user (such as root), and create new
+custom field. Set its type to be a Select or Autocomplete field, and
+save the changes.  You should now you have ability to select a "source"
+for values.  Choose the class you wrote from the list and the save
+changes.
 
 =head2 How to write custom source
 
@@ -53,14 +49,14 @@ There are two main methods you want to override:
 =item SourceDescription
 
 This method should return a string describing the data source; this is
-the identifier which the adimistrator will see in the dropdown in the web
-interface. See L</Configuration>.
+the identifier which the adimistrator will see in the dropdown in the
+web interface. See L</Configuration>.
 
 =item ExternalValues
 
 This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
-C<sortorder>. C<name> is most important one. The others are optional
+C<sortorder>. C<name> is most important one; the others are optional.
 
 =back
 
@@ -92,6 +88,3 @@ Here's a simple static example:
   }
   
   1; # don't forget to return some true value
-
-That's all. Install and configure your class as described in the L</Configuration> section.
-
