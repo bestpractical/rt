@@ -1,42 +1,30 @@
-=head1 INTRODUCTION
+=head1 Queue subject tags
 
-This text is about 'Subject Tag' property of a queue. This
-property allows you to use different tags in subjects of
-RT's notifications, by default it's rtname option from
-the config file as it's been for a long time, now you can
-use different values for different queues.
+This document is about the 'Subject Tag' property of a queue. This
+property allows you to use different tags in the subjects of email which
+RT sends.  By default, the C<rtname> option from the configuration file
+is used for all queues; by changing the subject tag on a per-queue
+basis, you can effectively "brand" individual queues in a single RT
+instance.
 
-=head1 CONFIGURATION
+=head2 Setting the subject tag
 
-=head2 Setting subject tag
+In RT's web UI, go to -E<gt> Configuration -E<gt> Queues -E<gt> Select,
+and select the queue to change.  Enter the 'subject tag' you wish, then
+click "save changes."
 
-Open RT's web UI, goto -E<gt> Configuration -E<gt> Queues
--E<gt> select a queue -E<gt> set 'subject tag' -E<gt>
-save changes.
+=head2 Using the subject tag in templates
 
-=head2 Using tag in templates
+Usually, you won't need to add any code to your templates to make the
+subject tags work. A tag will automatically be added in the beginning of
+subject before sending email out.
 
-Usually you don't need to add some code into templates to
-make subject tags work. A tag will be added in the
-beginning of subject right before sending email out.
-
-If you want to subjects to be "prefix [tag] real subject" like
-in default autoreply then you can use the following code in
-templates to place subject tag whenever you want in a template:
+If you want to subjects to be "prefix [tag] real subject" like in
+default Autoreply template, you can use the following code in templates
+to place of the subject tag:
 
     { $Ticket->SubjectTag }
 
-B<Note> that in the extension from the CPAN Tag method have
-been used when in 3.8 and newer it's SubjectTag, so you have to upgrade
-your templates. Read L</UPGRADING> below.
-    
-=head1 This functionality vs. RT-Extension-BrandedQueues
-
-RT-Extension-BrandedQueues is extension that's available from
-the CPAN for older versions of RT. Starting from RT 3.8 it's
-been integrated into RT core. If you are B<UPGRADING> from
-older version and were using extension from the CPAN then you
-MUST read L</UPGRADING> below.
 
 =head1 UPGRADING
 
@@ -46,33 +34,42 @@ You need to modify any of your email templates which use
 the $rtname variable. To edit your templates, log into RT
 as your administrative user, then click:
 
-Configuration -> Global -> Templates -> <Some template name>
+    Configuration -> Global -> Templates -> Select -> <Some template name>
 
-For example, RT's default "Autoreply" includes this line:
+The only template which ships with RT which needs updating is the
+"Autoreply" template, which includes this line:
 
- "There is no need to reply to this message right now.  Your ticket has been
- assigned an ID of [{$rtname} #{$Ticket->id()}]."
+    "There is no need to reply to this message right now.  Your ticket
+    has been assigned an ID of [{$rtname} #{$Ticket->id()}]."
 
 Change this line to read:
 
- "There is no need to reply to this message right now.  Your ticket has been
- assigned an ID of { $Ticket->SubjectTag }."
+    "There is no need to reply to this message right now.  Your ticket
+    has been assigned an ID of { $Ticket->SubjectTag }."
 
 =head2 For users of RT-Extension-BrandedQueues
 
-1) You MUST uninstall RT-Extension-BrandedQueues before upgrade
-or use clean new dir for installation and reinstall your local
-customizations. The latter way is recommended as there are many
-changes in RT 3.8 and several extensions have been integrated
-into core.
+RT-Extension-BrandedQueues was an implementation of this functionality
+which is available from CPAN for older versions of RT.  The
+functionality was folded into core RT in version 3.8 and above; if you
+are B<UPGRADING> from an older version of RT where you were using this
+extension, follow the instructions below:
 
-2) We expect that you have backup of your RT DB around during upgrade.
+1) You MUST uninstall RT-Extension-BrandedQueues before upgrading, or
+reinstall RT into a new directory, and reinstall your local
+customizations. The latter is recommended, as there are many changes in
+RT 3.8 and several extensions have been integrated into core.
 
-3) After upgrade run perl script 'etc/upgrade/3.8-branded-queues-extension'.
-This script will convert data in the DB into new format.
+2) Ensure that you have a current backup of your RT database, and you
+can restore from it.
 
-4) In templates where you were using Tag method (for example
-C<< $Ticket-E<gt>QueueObj-E<gt>Tag >>) replace it with
-new code. Read more in L</"Using tag in templates">.
+3) After upgrading, run the 'etc/upgrade/3.8-branded-queues-extension'.
+perl script.  This will convert the extension's configuration into new
+format.
+
+4) In templates where you were using the Tag method (for example C<<
+$Ticket-E<gt>QueueObj-E<gt>Tag >>), replace it with C<<
+$Ticket->SubjectTag >>, as noted above in L</"Using the subject tag in
+templates">.
 
 =cut
