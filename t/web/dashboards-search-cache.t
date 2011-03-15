@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 20;
+use RT::Test tests => 23;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -71,3 +71,7 @@ TODO: {
     $m->text_contains('Saved Search: New Name');
     $m->text_unlike(qr/Saved Search: Original Name/); # t-w-m lacks text_lacks
 }
+
+$m->get_ok("/Dashboards/Render.html?id=$dashboard_id");
+$m->text_contains('New Name');
+$m->text_unlike(qr/Original Name/); # t-w-m lacks text_lacks
