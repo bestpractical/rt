@@ -358,6 +358,12 @@ sub SendEmail {
         return -1;
     }
 
+    if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
+        and !$args{'Entity'}->head->get("Precedence")
+    ) {
+        $args{'Entity'}->head->set( 'Precedence', $precedence );
+    }
+
     if ( $TransactionObj && !$TicketObj
         && $TransactionObj->ObjectType eq 'RT::Ticket' )
     {
