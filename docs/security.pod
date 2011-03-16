@@ -9,7 +9,7 @@ key).
 
 More information is available at L<http://bestpractical.com/security/>.
 
-=head2 Security tips for running RT3
+=head2 Security tips for running RT
 
 =over
 
