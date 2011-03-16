@@ -137,10 +137,10 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
                                         Name     => $ARGS{'Name'});
 
     if ($ok) {
-        push @results, loc("Dashboard updated");
+        push @results, loc("Dashboard [_1] updated", $Dashboard->Name);
     }
     else {
-        push @results, loc("Dashboard could not be updated: [_1]", $msg);
+        push @results, loc("Dashboard [_1] could not be updated: [_2]", $Dashboard->Name, $msg);
     }
 
 }
