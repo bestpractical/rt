@@ -51,9 +51,9 @@ use a strong, hard to guess password for RT.
 
 Apache, lighttpd, and most other web servers support name based virtual
 hosts.  When possible, configure RT as a name based virtual host to
-raise the bar against DNS rebinding attacks.  If, when you visit
-http://your.servers.ipaddress.here you see RT, it means you are not
-likely getting this additional protection.
+raise the bar against DNS rebinding attacks.  If you see RT when you
+visit http://your.servers.ipaddress.here, it means you are likely not
+getting this additional protection.
 
 
 =item *
