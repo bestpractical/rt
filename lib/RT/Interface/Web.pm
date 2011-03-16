@@ -2645,8 +2645,7 @@ sub ProcessTicketReminders {
             }
 
             push @results, map {
-                loc( "Reminder '[_1]': ", $old_subject || $reminder->Subject )
-                  . $_
+                loc( "Reminder '[_1]': [_2]", $old_subject || $reminder->Subject, $_ )
             } @subresults;
         }
     }
@@ -2664,8 +2663,7 @@ sub ProcessTicketReminders {
         );
         if ( $status ) {
             push @results,
-              loc( "Reminder '[_1]': ", $args->{'NewReminder-Subject'} )
-              . loc("Created");
+              loc( "Reminder '[_1]': [_2]", $args->{'NewReminder-Subject'}, loc("Created") )
         }
         else {
             push @results, $msg;
