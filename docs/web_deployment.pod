@@ -26,34 +26,13 @@ to use L<Starman>, a high performance preforking server:
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
-Add a few lines to your Apache 2.xx configuration file, so that
-it knows where to find RT:
-
-    <IfModule !mpm_netware_module>
-    <IfModule !mpm_winnt_module>
-    User rt
-    Group www
-    </IfModule>
-    </IfModule>
-
     <VirtualHost rt.example.com>
-        ServerRoot /usr
-        ServerAdmin root@localhost
-
-        LoadModule authz_host_module modules/mod_authz_host.so
-        LoadModule env_module modules/mod_env.so
-        LoadModule alias_module modules/mod_alias.so
-        LoadModule perl_module modules/mod_perl.so
-
-        # optional apache logs for RT
+        ### Optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
-        PerlSetEnv RT_SITE_CONFIG /opt/rt4/etc/RT_SiteConfig.pm
-
-        RedirectMatch permanent (.*)/$ $1/index.html
 
         DocumentRoot "/opt/rt4/share/html"
         <Location />
@@ -64,41 +43,23 @@ it knows where to find RT:
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
         </Location>
-    <Perl>
-        use Plack::Handler::Apache2;
-        Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
-    </Perl>
+        <Perl>
+            use Plack::Handler::Apache2;
+            Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
+        </Perl>
     </VirtualHost>
 
-=head2 FastCGI
+=head2 mod_fastcgi
 
-In the most basic configuration, you can set up your webserver to run
-as a user who is a member of the "rt" unix group so that the FastCGI script
-can read RT's configuration file.  It's important to understand the security
-implications of this configuration, which are discussed in the document
-mentioned above.
-
-To run RT using FastCGI, you'll need to add a few lines to your
-Apache configuration file telling it about RT:
-
-    # Tell FastCGI to put its temporary files somewhere sane.
-    FastCgiIpcDir /tmp
+    # Tell FastCGI to put its temporary files somewhere sane; this may
+    # be necessary if your distribution doesn't already set it
+    #FastCgiIpcDir /tmp
 
     FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
-    <IfModule !mpm_netware_module>
-    <IfModule !mpm_winnt_module>
-    User rt
-    Group www
-    </IfModule>
-    </IfModule>
-
     <VirtualHost rt.example.com>
-        ServerAdmin root@localhost
-
-        LoadModule fastcgi_module modules/mod_fastcgi.so
-
-        # optional apache logs for RT
+        ### Optional apache logs for RT
+        # Ensure that your log rotation scripts know about these files
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
@@ -118,9 +79,95 @@ Apache configuration file telling it about RT:
         </Location>
     </VirtualHost>
 
-To run RT using FastCGI with other web servers like nginx, please see
-L<Plack::Handler::FCGI> for configuration examples.  You should use
-C</opt/rt4/sbin/rt-server.fcgi> as your PSGI-app.
+=head2 mod_fcgid
+
+    <VirtualHost rt.example.com>
+        ### Optional apache logs for RT
+        # Ensure that your log rotation scripts know about these files
+        # ErrorLog /opt/rt4/var/log/apache2.error
+        # TransferLog /opt/rt4/var/log/apache2.access
+        # LogLevel debug
+
+        AddDefaultCharset UTF-8
+
+        Alias /NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
+        ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
+
+        DocumentRoot "/opt/rt4/share/html"
+        <Location />
+            Order allow,deny
+            Allow from all
+
+            Options +ExecCGI
+            AddHandler fcgid-script fcgi
+        </Location>
+    </VirtualHost>
+
+=head3 nginx
+
+C<nginx> requires that you start RT's fastcgi process externally, for
+example using C<spawn-fcgi>:
+
+    spawn-fcgi -u www-data -g www-data -a 127.0.0.1 -p 9000 \
+        -- /opt/rt4/sbin/rt-server.fcgi
+
+With the nginx configuration:
+
+    server {
+        listen 80;
+        server_name rt.example.com;
+        access_log  /var/log/nginx/access.log;
+
+        location / {
+            fastcgi_param  QUERY_STRING       $query_string;
+            fastcgi_param  REQUEST_METHOD     $request_method;
+            fastcgi_param  CONTENT_TYPE       $content_type;
+            fastcgi_param  CONTENT_LENGTH     $content_length;
+
+            fastcgi_param  SCRIPT_NAME        "";
+            fastcgi_param  PATH_INFO          $uri;
+            fastcgi_param  REQUEST_URI        $request_uri;
+            fastcgi_param  DOCUMENT_URI       $document_uri;
+            fastcgi_param  DOCUMENT_ROOT      $document_root;
+            fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+
+            fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+            fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+
+            fastcgi_param  REMOTE_ADDR        $remote_addr;
+            fastcgi_param  REMOTE_PORT        $remote_port;
+            fastcgi_param  SERVER_ADDR        $server_addr;
+            fastcgi_param  SERVER_PORT        $server_port;
+            fastcgi_param  SERVER_NAME        $server_name;
+            fastcgi_pass 127.0.0.1:9000;
+        }
+
+        location /NoAuth/images {
+            root /opt/rt4/share/html;
+        }
+    }
+
+=head3 lighttpd
+
+    server.modules += ( "mod_fastcgi" )
+    $HTTP["host"] =~ "^rt.example.com" {
+        alias.url = (
+            "/NoAuth/images/" => "/opt/rt4/share/html/NoAuth/images/",
+        )
+        $HTTP["url"] !~ "^/NoAuth/images/" {
+            fastcgi.server = (
+                "/" => (
+                    "rt" => (
+                        "port"        => "9000",
+                        "bin-path"    => "/opt/rt4/sbin/rt-server.fcgi",
+                        "check-local" => "disable",
+                        "fix-root-scriptname" => "enable",
+                    )
+                )
+            )
+        }
+    }
+
 
 =head2 mod_perl 1.xx
 
