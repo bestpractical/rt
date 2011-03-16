@@ -59,6 +59,7 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
+        # Ensure that your log rotation scripts know about these files
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
@@ -82,6 +83,7 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
+        # Ensure that your log rotation scripts know about these files
         # ErrorLog /opt/rt4/var/log/apache2.error
         # TransferLog /opt/rt4/var/log/apache2.access
         # LogLevel debug
