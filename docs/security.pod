@@ -7,6 +7,7 @@ email to <security@bestpractical.com> with a detailed description of the
 issue, and a secure means to respond to you (such as your PGP public
 key).
 
+More information is available at L<http://bestpractical.com/security/>.
 
 =head2 Security tips for running RT3
 
