@@ -2243,6 +2243,50 @@ Set(%Lifecycles,
             'deleted -> open'  => { label => 'Undelete'                      },
         ],
     },
+# don't change lifecyle of the approvals, they are not capable to deal with
+# custom statuses
+    approvals => {
+        initial         => [ 'new' ],
+        active          => [ 'open', 'stalled' ],
+        inactive        => [ 'resolved', 'rejected', 'deleted' ],
+
+        defaults => {
+            on_create => 'new',
+            on_merge => 'resolved',
+        },
+
+        transitions => {
+            ''       => [qw(new open resolved)],
+
+            # from   => [ to list ],
+            new      => [qw(open stalled resolved rejected deleted)],
+            open     => [qw(new stalled resolved rejected deleted)],
+            stalled  => [qw(new open rejected resolved deleted)],
+            resolved => [qw(new open stalled rejected deleted)],
+            rejected => [qw(new open stalled resolved deleted)],
+            deleted  => [qw(new open stalled rejected resolved)],
+        },
+        rights => {
+            '* -> deleted'  => 'DeleteTicket',
+            '* -> rejected' => 'ModifyTicket',
+            '* -> *'        => 'ModifyTicket',
+        },
+        actions => [
+            'new -> open'      => { label => 'Open It',  update => 'Respond' },
+            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
+            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
+            'new -> deleted'   => { label => 'Delete'                        },
+
+            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
+            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
+            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
+
+            'stalled -> open'  => { label => 'Open It'                       },
+            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
+            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
+            'deleted -> open'  => { label => 'Undelete'                      },
+        ],
+    },
 );
 
 
