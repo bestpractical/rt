@@ -282,15 +282,17 @@ sub rosetta {
     extract({}, <$i18ndir/*.po>);
 }
 
-our $FILECAT = {};
-
 sub extract {
     my %opt = %{ shift() };
     @_ = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @_;
 
+    my $FILECAT = {};
+
     # extract all strings and stuff them into $FILECAT
     # scan html dir for extensions
-    File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 },
+    File::Find::find(
+            {   wanted => sub { extract_strings_from_code($FILECAT) },
+                follow => 1 },
             qw(bin sbin lib share html etc) );
 
     # remove msgid with $ in it.  XXX: perhaps give some warnings here
@@ -321,7 +323,7 @@ sub extract {
         $lang =~ s|\.po$||;
         $lang =~ s|\.pot$||;
 
-        update($lang, $dict);
+        update($lang, $dict, $FILECAT);
     }
 }
 
@@ -329,6 +331,7 @@ sub extract {
 # {{{ pull strings out of the code.
 
 sub extract_strings_from_code {
+    my ($FILECAT) = @_;
     my $file = $_;
 
     local $/;
@@ -462,8 +465,7 @@ sub extract_strings_from_code {
 # }}} extract from strings
 
 sub update {
-    my $lang = shift;
-    my $file = shift;
+    my ($lang, $file, $FILECAT) = @_;
     my ( %Lexicon, %Header);
     my $out = '';
 
