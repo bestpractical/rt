@@ -2,17 +2,17 @@ RT is an enterprise-grade issue tracking system. It allows organizations
 to keep track of what needs to get done, who is working on which tasks,
 what's already been done, and when tasks were (or weren't) completed.
 
-RT doesn't cost anything to use, no matter how much you use it; it
-is freely available under the terms of Version 2 of the GNU General
-Public License.
+RT doesn't cost anything to use, no matter how much you use it; it is
+freely available under the terms of Version 2 of the GNU General Public
+License.
 
 RT is commercially-supported software. To purchase support, training,
 custom development, or professional services, please get in touch with
-us at sales@bestpractical.com.
+us at <sales@bestpractical.com>.
 
      Jesse Vincent
      Best Practical Solutions, LLC
-     March, 2010
+     March, 2011
 
 
 REQUIRED PACKAGES
@@ -20,8 +20,8 @@ REQUIRED PACKAGES
 
 o   Perl 5.8.3 or later (http://www.perl.org).
 
-        Perl versions prior to 5.8.3 contain bugs that could result
-        in data corruption. RT won't start on older versions.
+        Perl versions prior to 5.8.3 contain bugs that could result in
+        data corruption. RT won't start on older versions.
 
 o   A supported SQL database
 
@@ -38,163 +38,164 @@ o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
         RT's FastCGI handler needs to access RT's configuration file.
 
 o   Various and sundry perl modules
-        A tool included with RT takes care of the installation of
-        most of these automatically during the install process.
 
-        The tool supplied with RT uses Perl's CPAN system
-        (http://www.cpan.org) to install modules. Some operating
-        systems package all or some of the modules required, and
-        you may be better off installing the modules that way.
+        A tool included with RT takes care of the installation of most
+        of these automatically during the install process.
+
+        The tool supplied with RT uses Perl's CPAN (http://www.cpan.org)
+        to install modules. Some operating systems package all or some
+        of the modules required, and you may be better off installing
+        the modules that way.
 
 
 GENERAL INSTALLATION
 --------------------
 
-1   Unpack this distribution other than where you want to install RT
+ 1) Unpack this distribution other than where you want to install RT.
+    To do this cleanly, run the following command:
 
-     To do this cleanly, run the following command:
+        tar xzvf rt.tar.gz -C /tmp
 
-       tar xzvf rt.tar.gz -C /tmp
+ 2) Run the "configure" script.  To see the list of options, run:
 
-2   Run the "configure" script.
+        ./configure --help
 
-       ./configure --help to see the list of options
-       ./configure (with the flags you want)
+    Peruse the options, then rerun ./configure with the flags you want.
 
     RT defaults to installing in /opt/rt4 with MySQL as its database. It
-    tries to guess which of www-data, www, apache or nobody your webserver
-    will run as, but you can override that behavior.  Note that the
-    default install directory in /opt/rt4 does not work under SELinux's
-    default configuration.
+    tries to guess which of www-data, www, apache or nobody your
+    webserver will run as, but you can override that behavior.  Note
+    that the default install directory in /opt/rt4 does not work under
+    SELinux's default configuration.
 
-    If you're upgrading RT please review the UPGRADING document at
-    this point. Some extensions you are using may have been integrated into the
-    core or there may be extra upgrade scripts to run. Use a new, clean
-    directory when you're upgrading to a new major release (for example
-    from 3.6.x to 3.8.x or to 4.0.x).
+    If you are upgrading from a previous version of RT, please review
+    the upgrade notes for the appropriate versions, which can be found
+    in docs/UPGRADING-* If you are coming from 3.8.6 to 4.0.x you should
+    review both the UPGRADING-3.8 and UPGRADING-4.0 file.  Similarly, if
+    you were coming from 3.6.7, you would want to review UPGRADING-3.6,
+    UPGRADING-3.8 and UPGRADING-4.0
 
-3   Make sure that RT has everything it needs to run.
+    It is particularly important that you read the warnings at the top of
+    UPGRADING-4.0 for some common issues.
 
+ 3) Make sure that RT has the Perl and system libraries it needs to run.
     Check for missing dependencies by running:
 
-       make testdeps
+        make testdeps
 
-4   If the script reports any missing dependencies, install them by hand
-    or run the following command as a user who has permission to install perl
-    modules on your system:
+ 4) If the script reports any missing dependencies, install them by
+    hand, or run the following command as a user who has permission to
+    install perl modules on your system:
 
-       make fixdeps
+        make fixdeps
 
     Some modules require user input or environment variables to install
     correctly, so it may be necessary to install them manually.
 
-    If you are installing with CPAN module older than 1.84, you will need to
-    start CPAN (by running perl -MCPAN -e shell) and upgrade the CPAN shell
-    with:
+    If you are installing with CPAN module older than 1.84, you will
+    need to start CPAN (by running perl -MCPAN -e shell) and upgrade the
+    CPAN shell with:
 
-       install CPAN
+        install CPAN
 
-    If you are unsure of your CPAN version, it will be printed when you run the
-    shell.
+    If you are unsure of your CPAN version, it will be printed when you
+    run the shell.
 
-    If you are having trouble installing GD or Graphviz, you should install
-    gd-devel and the graphviz libraries using your distribution's package
-    manager.
+    If you are having trouble installing GD or Graphviz, you should
+    install gd-devel and the graphviz libraries using your
+    distribution's package manager.
 
-5   Check to make sure everything was installed properly.
+ 5) Check to make sure everything was installed properly.
 
-       make testdeps
+        make testdeps
 
-     It might sometimes be necessary to run "make fixdeps" several times
-     to install all necessary perl modules.
+    It might sometimes be necessary to run "make fixdeps" several times
+    to install all necessary perl modules.
 
-6   If this is a new installation (not an upgrade):
+6a) If this is a NEW installation (not an upgrade):
 
-     As a user with permission to install RT in your chosen directory, type:
+      As a user with permission to install RT in your chosen directory,
+      type:
 
-       make install
+          make install
 
-     To configure RT with the web installer, run:
+      To configure RT with the web installer, run:
 
-       /opt/rt4/sbin/rt-server
+          /opt/rt4/sbin/rt-server
 
-     and follow the instructions.  Once completed, you should now have
-     a working RT instance running with te standalone rt-server.
-     Press Ctrl-C to stop it, and proceed to Step 9 to configure
-     recommended deployment environment for production.
+      and follow the instructions.  Once completed, you should now have a
+      working RT instance running with the standalone rt-server.  Press
+      Ctrl-C to stop it, and proceed to Step 7 to configure a recommended
+      deployment environment for production.
 
-     To configure RT manually, you must setup etc/RT_SiteConfig.pm in
-     your RT installation directory.  You'll need to add any values
-     you need to change from the defaults in etc/RT_Config.pm
+      To configure RT manually, you must setup etc/RT_SiteConfig.pm in
+      your RT installation directory.  You'll need to add any values you
+      need to change from the defaults in etc/RT_Config.pm
 
-     As a user with permission to read RT's configuration file, type:
+      As a user with permission to read RT's configuration file, type:
 
-       make initialize-database
+          make initialize-database
 
-     If the make fails, type:
+      If the make fails, type:
 
-       make dropdb
+          make dropdb
 
-     and start over from step 6
+      and re-run 'make initialize-database'.
 
-7   If you're upgrading from RT 3.0 or newer:
+6b) If you are UPGRADING from a previous installation:
 
-     Read through the UPGRADING document included in this distribution. If
-     you're using MySQL, read through UPGRADING.mysql as well.
+      Before upgrading, always ensure that you have a complete current
+      backup. If you don't have a current backup, upgrading your database
+      could accidentally damage it and lose data, or worse.
 
-     It includes special upgrade instructions that will help you get this
-     new version of RT up and running smoothly.
+      If you are using MySQL, please read the instructions in
+      docs/UPGRADING.mysql as well to ensure that you do not corrupt
+      existing data.
 
-     As a user with permission to install RT in your chosen installation
-     directory, type:
+      First, stop your webserver.  You may also wish to put incoming email
+      into a hold queue, to avoid temporary delivery failure messages if
+      your upgrade is expected to take several hours.
 
-       make upgrade
+      Next, install new binaries, config files and libraries by running:
 
-     This will install new binaries, config files and libraries without
-     overwriting your RT database.
+          make upgrade
 
-     Update etc/RT_SiteConfig.pm in your RT installation directory.
-     You'll need to add any new values you need to change from the defaults
-     in etc/RT_Config.pm
+      This will also display the appropriate rt-setup-database command to
+      upgrade your database.  You should back up your database before
+      running this command.  When you run it, you will be prompted for
+      your previous version of RT (such as 3.6.4) so that the appropriate
+      set of database upgrades can be applied.
 
-     You may also need to update RT's database.  You can do this with
-     the rt-setup-database tool.  Replace root with the name of the dba
-     user on your database (root is the default for MySQL).
+      Finally, clear the Mason cache dir:
 
-     You will be prompted for your previous version of RT (such as 3.6.4)
-     so that we can calculate which database updates to apply
+          rm -fr /opt/rt4/var/mason_data/obj
 
-     You should back up your database before running this command.
+      You may then start your web server again.
 
-       /opt/rt4/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+ 7) Configure the web server, as described in docs/web_deployment.pod,
+    and the email gateway, as described below.
 
-     Clear mason cache dir:
+    NOTE: root's password for the web interface is "password" (without
+    the quotes).  Not changing this is a SECURITY risk!
 
-       rm -fr /opt/rt4/var/mason_data/obj
+    Once you've set up the web interface, consider setting up automatic
+    logout for inactive sessions. For more information about how to do
+    that, run:
 
-     Stop and start web-server.
+        perldoc /path/to/rt/sbin/rt-clean-sessions
 
+ 8) Set up users, groups, queues, scrips and access control.
 
-8  If you're upgrading from RT 2.0:
+    Until you do this, RT will not be able to send or receive email, nor
+    will it be more than marginally functional.  This is not an optional
+    step.
 
-    Read more in UPGRADING and docs/UPGRADING-2.x
-
-9  Configure the web server, as described in docs/web_deployment.pod, and
-   the email gateway, as described below.
-
-     NOTE: root's password for the web interface is "password"
-     (without the quotes).  Not changing this is a SECURITY risk!
-
-     Once you've set up the web interface, consider setting up automatic
-     logout for inactive sessions. For more information about how to do that,
-     run: perldoc /path/to/rt/sbin/rt-clean-sessions
-
-10  Set up automated recurring tasks (cronjobs):
+ 9) Set up automated recurring tasks (cronjobs):
 
     To generate email digest messages, you must arrange for the provided
     utility to be run once daily, and once weekly. You may also want to
-    arrange for the rt-email-dashboards utility to be run hourly.
-    For example, if your task scheduler is cron, you can configure it as
+    arrange for the rt-email-dashboards utility to be run hourly.  For
+    example, if your task scheduler is cron, you can configure it as
     follows:
 
         crontab -e    # as the RT administrator (probably root)
@@ -203,64 +204,42 @@ GENERAL INSTALLATION
         0 0 * * 0 /opt/rt4/sbin/rt-email-digest -m weekly
         0 * * * * /opt/rt4/sbin/rt-email-dashboards
 
+10) Configure the RT email gateway.  To let email flow to your RT
+    server, you need to add a few lines of configuration to your mail
+    server's "aliases" file. These lines "pipe" incoming email messages
+    from your mail server to RT.
 
-11   Set up users, groups, queues, scrips and access control.
+    Add the following lines to /etc/aliases (or your local equivalent)
+    on your mail server:
 
-    Until you do this, RT will not be able to send or receive email,
-    nor will it be more than marginally functional.  This is not an
-    optional step.
+        rt:         "|/opt/rt4/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
+        rt-comment: "|/opt/rt4/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
 
+    You'll need to add similar lines for each queue you want to be able to
+    send email to. To find out more about how to configure RT's email
+    gateway, type:
 
-SETTING UP THE MAIL GATEWAY
----------------------------
-
-To let email flow to your RT server, you need to add a few lines of
-configuration to your mail server's "aliases" file. These lines "pipe"
-incoming email messages from your mail server to RT.
-
-Add the following lines to /etc/aliases (or your local equivalent) on your mail server:
-
-rt:         "|/opt/rt4/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
-rt-comment: "|/opt/rt4/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
-
-You'll need to add similar lines for each queue you want to be able
-to send email to. To find out more about how to configure RT's email
-gateway, type:
-
-       perldoc /opt/rt4/bin/rt-mailgate
-
+           perldoc /opt/rt4/bin/rt-mailgate
 
 
 GETTING HELP
 ------------
 
-If RT is mission-critical for you or if you use it heavily, we recommend that
-you purchase a commercial support contract.  Details on support contracts
-are available at http://www.bestpractical.com or by writing to
+If RT is mission-critical for you or if you use it heavily, we recommend
+that you purchase a commercial support contract.  Details on support
+contracts are available at http://www.bestpractical.com or by writing to
 <sales@bestpractical.com>.
 
-If you're interested in having RT extended or customized or would like more
-information about commercial support options, please send email to
+If you're interested in having RT extended or customized or would like
+more information about commercial support options, please send email to
 <sales@bestpractical.com> to discuss rates and availability.
 
 
+MAILING LISTS AND WIKI
+----------------------
 
-RT WEBSITE
-----------
-
-For current information about RT, check out the RT website at
-     http://www.bestpractical.com/
-
-You'll find screenshots, a pointer to the current version of RT, contributed
-patches, and lots of other great stuff.
-
-
-
-RT-USERS MAILING LIST
----------------------
-
-To keep up to date on the latest RT tips, techniques and extensions,
-you probably want to join the rt-users mailing list.  Send a message to:
+To keep up to date on the latest RT tips, techniques and extensions, you
+may wish to join the rt-users mailing list.  Send a message to:
 
       rt-users-request@lists.bestpractical.com
 
@@ -270,25 +249,34 @@ with the body of the message consisting of only the word:
 
 If you're interested in hacking on RT, you'll want to subscribe to
 <rt-devel@lists.bestpractical.com>.  Subscribe to it with instructions
-similar to those above.
+similar to those above.  Address questions about the stable release to
+the rt-users list, and questions about the development version to the
+rt-devel list.
 
-Address questions about the stable release to the rt-users list, and
-questions about the development version to the rt-devel list.  If you feel
-your questions are best not asked publicly, send them personally to
-<jesse@bestpractical.com>.
+The RT wiki, at http://requesttracker.wikia.com/ , is also a potential
+resource.
 
+
+SECURITY
+--------
+
+If you believe you've discovered a security issue in RT, please send an
+email to <security@bestpractical.com> with a detailed description of the
+issue, and a secure means to respond to you (such as your PGP public
+key).  You can find our PGP key and fingerprint at
+http://bestpractical.com/security/
 
 
 BUGS
 ----
 
 RT's a pretty complex application, and as you get up to speed, you might
-run into some trouble. Generally, it's best to ask about things you
-run into on the rt-users mailinglist (or pick up a commercial support
-contract from Best Practical). But, sometimes people do run into bugs. In
-the exceedingly unlikely event that you hit a bug in RT, please report
-it! We'd love to hear about problems you have with RT, so we can fix them.
-To report a bug, send email to rt-bugs@fsck.com.
+run into some trouble. Generally, it's best to ask about things you run
+into on the rt-users mailinglist (or pick up a commercial support
+contract from Best Practical). But, sometimes people do run into
+bugs. In the exceedingly unlikely event that you hit a bug in RT, please
+report it! We'd love to hear about problems you have with RT, so we can
+fix them.  To report a bug, send email to <rt-bugs@bestpractical.com>.
 
 
 # BEGIN BPS TAGGED BLOCK {{{
