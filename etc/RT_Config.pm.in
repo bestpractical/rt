@@ -2208,7 +2208,9 @@ Set(%Lifecycles,
 
         defaults => {
             on_create => 'new',
-            on_merge => 'resolved',
+            on_merge  => 'resolved',
+            approved  => 'open',
+            denied    => 'rejeceted',
         },
 
         transitions => {
