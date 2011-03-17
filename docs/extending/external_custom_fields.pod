@@ -10,7 +10,7 @@ data from the external source.
 =head2 Introduction into writing source of values
 
 For each type of data source that you want, you'll need to put a file in
-F</opt/rt4/local/lib/RT/CustomFieldValues/> (or equivilent if you
+F</opt/rt4/local/lib/RT/CustomFieldValues/> (or equivalent if you
 installed RT into someplace other than F</opt/rt4>). To get a sense of
 the code that you'll need to write, take a look at the code in
 L</opt/rt4/lib/RT/CustomFieldValues/Groups.pm> for a simple example
@@ -49,7 +49,7 @@ There are two main methods you want to override:
 =item SourceDescription
 
 This method should return a string describing the data source; this is
-the identifier which the adimistrator will see in the dropdown in the
+the identifier which the administrator will see in the dropdown in the
 web interface. See L</Configuration>.
 
 =item ExternalValues
