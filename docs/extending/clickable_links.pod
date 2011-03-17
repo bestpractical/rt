@@ -1,0 +1,186 @@
+=head1 MakeClicky extension
+
+=head2 Description
+
+I<MakeClicky> detects various formats of data in headers and email
+messages, and makes them into links in RT's web UI.
+
+=head2 Configuration
+
+You can configure which actions are enabled from RT config with the
+@Active_MakeClicky option, which should contain an ordered list of the
+actions you want to apply.
+
+By default, RT provides two actions:
+
+=over 4
+
+=item C<httpurl>
+
+Detects C<http://> and C<https://> URLs and adds an C<[Open URL]> link
+after the URL.
+
+=item C<httpurl_overwrite>
+
+Detects URLs as C<httpurl> format, but replaces the URL with a link, and
+B<adds spaces> into the text if it is longer then 30 characters. This
+allows the browser to wrap long URLs, and avoid horizontal scrolling.
+
+=back
+
+RTIR, an RT extension for CERT teams (not installed with core RT),
+shipps with several additional actions you can use: C<ip>, C<ipdecimal>,
+C<email>, C<domain> and C<RIPE>.
+
+=head2 Order of actions
+
+The order of the actions is important in situations when you use
+multiple actions that could match the same block of text; only the first
+matching action from the list is applied. For example, it makes no sense
+to use C<httpurl> and C<httpurl_overwrite> at the same time, as both
+actions always match the same pieces of text.
+
+=head2 How it works
+
+Each action consists of regular expression and function that does text
+replacement.  When you open the history of a ticket, RT searches in the
+text with the given regular expresion for matches. If it finds a match,
+it calls the function with the match as the argument, then replaces the
+matched text with the string returned by the function.
+
+While RT only searches plaintext content, the actions can generate
+arbitrary HTML.
+
+=head2 Writing custom MakeClicky actions
+
+To extend the list of actions with your own types of data, use the
+provided callback. Specifically, create the file
+F<local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>.
+
+It will be called with the following arguments:
+
+=over 4
+
+=item types
+
+An array reference of hash references.  Modify this array
+reference to add your own types; the first matching type will be
+used. Each hashref should contain:
+
+=over 4
+
+=item name
+
+The name of the data format; this is used in the configuration file to
+enable the format.
+
+=item regex
+
+A regular expression to match against.
+
+=item action
+
+The name of the action to run (see "actions", below)
+
+=back
+
+=item actions
+
+A hash reference of 'actions'.  Modify this hash reference to change or
+add action types.  Values are subroutine references which will get
+called when needed.  They should return the modified string. Note that
+subroutine B<must escape> HTML.
+
+=item handler
+
+A subroutine reference; modify it only if you have to. This can be used
+to add pre- or post-processing around all actions.
+
+=back
+
+=head2 Actions' arguments
+
+A hash is passed to the action with two keys that always exist:
+
+=over 4
+
+=item value
+
+The full match of the regular expression; this is the block of text that
+will be replaced with action's result.
+
+=item all_matches
+
+And arrayref with all of the match's capturing groups; for example if
+your regexp is C<qr{ticket\s+#(\d+)}>, then the first element will be
+full match ("ticket #XXX"), the same as in 'value' key, but the second
+element of the array will be the id of a ticket (XXX).  Using this, you
+can avoid reparsing the value in the action.  Only the first eight
+groups of your regexps are passed to action.
+
+=back
+
+=head2 Custom MakeClicky action example
+
+Create a new file F</opt/rt4/local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>
+with the content:
+
+  <%ARGS>
+  $types   => []
+  $actions => {}
+  </%ARGS>
+  <%INIT>
+  my $web_path = RT->Config->Get('WebPath');
+  
+  # action that takes ticket ID as argument and returns link to the ticket
+  $actions->{'link_ticket'} = sub {
+      my %args = @_;
+      my $id = $args{'all_matches'}[1];
+      return qq{<a href="$web_path/Ticket/Display.html?id=$id">$args{value}</a>};
+  };
+  
+  # add action to the list
+  push @$types, {
+      # name, that should be used in config to activate action
+      name   => 'short_ticket_link',
+      # regular expression that matches text 'ticket #xxx'
+      regex  => qr{ticket\s+#(\d+)}i,
+      # name of the action that should be applied
+      action => 'link_ticket',
+  };
+  </%INIT>
+
+That's all; add C<short_ticket_link> to the C<@Active_MakeClicky> option
+in your C<RT_SiteConfig.pm>, and restart your server.  Creating a ticket
+with "ticket #1" in the body should cause that text to be automatically
+linked to the ticket in question.
+
+=head2 Notes for custom clicky actions writers
+
+=over
+
+=item *
+
+Note that an action B<must escape> illegal HTML characters with entities
+and/or arguments in URLs.
+
+=item *
+
+Complex regular expressions could slow down RT, as the conversion is run
+each time a user opens a ticket, for every transaction.  For long
+tickets and complex regular expressions, this can slow down ticket
+display notably.
+
+=item *
+
+Try to match the shortest expression you need with your regular
+expression; otherwise another action may miss its chance to match.
+
+=item *
+
+Whenever possible, precalculate values using closures around the
+functions.
+
+=back
+
+=cut

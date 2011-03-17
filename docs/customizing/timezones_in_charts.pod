@@ -1,0 +1,88 @@
+=head1 INTRODUCTION
+
+Every date in RT's DB is stored in UTC format. This affects charts
+grouped by time periods (Annually, Monthly, etc.), in that they are by
+default shown in UTC. To produce charts that are in a specific timezone,
+we have to use database-specific functions to convert between timezones;
+unsurprisingly, each DB has very different requirements.
+
+=head1 CONFIGURATION
+
+This code is experimental; you can enable it using the
+C<$ChartsTimezonesInDB> configuration option.
+
+=head1 DATABASE SPECIFIC NOTES
+
+=head2 mysql
+
+The time adjustment cannot simply be converted using a numeric time
+shift, as this shift value depends on the daylight saving time
+properties of the time zone.
+
+mysql since 4.1.3 supports named timezones, but you have to fill special
+tables with up-to-date timezone data. On modern systems, this is usually
+a simple case of:
+
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+
+mysql's doc recommends you restart server after running this; you can
+read more about mysql's timezone support at
+L<http://dev.mysql.com/doc/refman/5.0/en/time-zone-support.html>
+
+=head2 PostgreSQL
+
+PostgreSQL uses your operating system's functions to convert timezones.
+Thus, you don't need to do anything in particular except to make sure
+that the data in F</usr/share/zoneinfo> is up to date. On some systems
+this may mean upgrading a system package.
+
+=head3 Note for users of Pg 7.2 and older or users upgraded from those
+
+You should be sure that timestamps in RT DB have no TZ set. The
+TIMESTAMP column type in PostgreSQL prior to Pg 7.3 had timezone info by
+default; this has been removed in more recent versions.  If your RT
+database has this embedded timezone info, you will need to alter the
+columns to remove them before enabling this feature.
+
+=head2 Other databases
+
+There is no implementation for Oracle or SQLite at current.
+
+=head1 FOR DEVELOPERS
+
+=head2 PostgreSQL
+
+We use the timestamp type for all datetime fields. It either has
+timezone info or not, since by default Pg 7.3 and above have no
+timezone. Conversion is kinda tricky:
+
+    timezone('Europe/Moscow', timezone('UTC', column_without_tz_info))
+    timezone('to_tz', timezone('from_tz', column_without_tz_info))
+
+This function flips the HAS_TZ flag on the argument, and moves the
+timestamp to UTC. The first call makes no conversion, but flips the
+HAS_TZ flag; the second call flips it back and does actual conversion.
+
+For more information, See
+L<http://www.postgresql.org/docs/7.4/static/functions-datetime.html#FUNCTIONS-DATETIME-ZONECONVERT>
+and
+L<http://www.postgresql.org/docs/7.4/static/datatype-datetime.html#DATATYPE-TIMEZONES>
+
+=head2 mysql
+
+Once timezone information is loaded into tables on the server,
+we have all the same set of named timezones in the system
+and DateTime (DateTime project has copy of the TZ data in a module).
+
+CONVERT_TZ(TS, from, to) exists since mysql 4.1.3. Note that it takes a
+timestamp, so it only supports limitted date range (usuall 1970-2038).
+
+=head2 Oracle
+
+Look at FROM_TZ function.
+
+=head2 SQLite
+
+Has no apparent timezone support.
+
+=cut
