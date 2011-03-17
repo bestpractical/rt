@@ -3,8 +3,8 @@
 
 Articles are a way of managing stock answers or frequently asked
 questions.  Articles are a collection of custom fields whose values can
-be easily inserted into ticket replies.  They are organized into classes
-and topics.
+be easily inserted into ticket replies or searched and browsed within
+RT.  They are organized into classes and topics.
 
 =head2 UI
 
