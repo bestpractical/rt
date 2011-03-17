@@ -125,7 +125,7 @@ GENERAL INSTALLATION
 
       and follow the instructions.  Once completed, you should now have a
       working RT instance running with the standalone rt-server.  Press
-      Ctrl-C to stop it, and proceed to Step 7 to configure recommended
+      Ctrl-C to stop it, and proceed to Step 7 to configure a recommended
       deployment environment for production.
 
       To configure RT manually, you must setup etc/RT_SiteConfig.pm in
