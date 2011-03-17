@@ -19,9 +19,9 @@ Usually, you won't need to add any code to your templates to make the
 subject tags work. A tag will automatically be added in the beginning of
 subject before sending email out.
 
-If you want to subjects to be "prefix [tag] real subject" like in
+If you want your subject to be "prefix [tag] real subject" like in
 default Autoreply template, you can use the following code in templates
-to place of the subject tag:
+to control the placement of the subject tag:
 
     { $Ticket->SubjectTag }
 
