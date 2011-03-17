@@ -2069,6 +2069,16 @@ When tickets are merged status of the ticket that merged is changed by
 force to this. It should be one of inactive statuses; 'resolved' or
 its equivalent is most probably the best candidate.
 
+=item approved
+
+When an approval accepted status of depending tickets changed
+to this value.
+
+=item denied
+
+When an approval denied status of depending tickets changed
+to this value.
+
 =back
 
 =head2 Transitions between statuses and UI actions
