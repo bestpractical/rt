@@ -82,7 +82,7 @@ sub Commit {    # XXX: from custom prepare code
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );
         $rejected->SetStatus(
-            Status => 'rejected',
+            Status => $rejected->QueueObj->Lifecycle->DefaultStatus('denied') || 'rejected',
             Force  => 1,
         );
     }

@@ -86,7 +86,10 @@ sub Commit {
             }
 
         }
-        $obj->SetStatus( Status => 'open', Force => 1 );
+        $obj->SetStatus(
+            Status => $obj->QueueObj->Lifecycle->DefaultStatus('approved') || 'open',
+            Force => 1,
+        );
     }
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
