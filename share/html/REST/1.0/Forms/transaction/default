@@ -96,6 +96,34 @@ if ($tid) {
       push @data, [ Created    => $t->Created   ]
   	    if (!%$fields || exists $fields->{lc 'Created'});
   
+     # Display custom fields
+      my $CustomFields = $t->CustomFields;
+      while (my $cf = $CustomFields->Next()) {
+          next unless !%$fields
+                   || exists $fields->{"cf.{".lc($cf->Name)."}"}
+                   || exists $fields->{"cf-".lc $cf->Name};
+  
+          my $vals = $t->CustomFieldValues($cf->Id());
+          my @out = ();
+          if ( $cf->SingleValue ) {
+              my $v = $vals->Next;
+              push @out, $v->Content if $v;
+          }
+          else {
+              while (my $v = $vals->Next()) {
+                  my $content = $v->Content;
+                  $content =~ s/'/\\'/g;
+                  if ( $v->Content =~ /,/ ) {
+                      push @out, q{'} . $content . q{'};
+                  }
+                  else {
+                      push @out, $content;
+                  }
+              }
+          }
+          push @data, [ ('CF.{' . $cf->Name . '}') => join ',', @out ];
+      }
+
       if (!%$fields || exists $fields->{lc 'Attachments'}) {
   	    my $attachlist;
   	    my $attachments = $t->Attachments;
