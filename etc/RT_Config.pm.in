@@ -2220,7 +2220,7 @@ Set(%Lifecycles,
             on_create => 'new',
             on_merge  => 'resolved',
             approved  => 'open',
-            denied    => 'rejeceted',
+            denied    => 'rejected',
         },
 
         transitions => {
