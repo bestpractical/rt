@@ -950,7 +950,6 @@ sub SetSubject {
     }
 
     my $message = $self->TransactionObj->Attachments;
-    $message->RowsPerPage(1);
     if ( $self->{'Subject'} ) {
         $subject = $self->{'Subject'};
     } elsif ( my $first = $message->First ) {
