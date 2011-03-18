@@ -1,4 +1,3 @@
-#!/usr/bin/perl -w
 use strict;
 
 use RT::Test nodata => 1, tests => 35;

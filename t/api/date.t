@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 
 use Test::MockTime qw(set_fixed_time restore_time);
 use DateTime;
