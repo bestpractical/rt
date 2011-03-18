@@ -346,7 +346,7 @@ sub update {
         elsif ($_) {
             $out .= "#: NOT FOUND IN SOURCE\n";
         }
-        foreach my $entry ( grep { $_->[2] } @{ $FILECAT{$_} } ) {
+        foreach my $entry ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $FILECAT{$_} } ) {
             my ( $file, $line, $var ) = @{$entry};
             $var =~ s/^\s*,\s*//;
             $var =~ s/\s*$//;
