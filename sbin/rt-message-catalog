@@ -57,14 +57,15 @@ use Getopt::Long;
 use Locale::PO;
 use Regexp::Common;
 
-use constant PO_DIR => 'share/po';
+use constant PO_DIR         => 'share/po';
+use constant LOCAL_PO_DIR   => 'local/po';
 
 my %commands = (
     stats   => { },
-    shrink  => { 'update!' => 1, 'keep=s@' => [] },
+    shrink  => { 'update!' => 1, 'keep=s@' => [], 'exclude-from=s@' => [] },
     clean   => { 'update!' => 1 },
     rosetta => { 'boundary=i' => 20 },
-    extract => { },
+    extract => { 'local!' => 0 },
 );
 
 unshift @ARGV, 'extract' if $0 =~ m/\bextract-message-catalog$/;
@@ -151,7 +152,20 @@ sub shrink {
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
         $stats{ $po_file } = { };
+        my @exclude = ( );
+        if ( $opt{'exclude-from'} ) {
+            my $fname = $po_file;
+            $fname =~ s{^.*/}{};
+            foreach my $edir ( @{$opt{'exclude-from'}} ) {
+                $_ = "$edir/$fname";
+                push @exclude, Locale::PO->load_file_ashash($_) if -f $_;
+            }
+        }
         foreach my $entry ( splice @$array, 1 ) {
+            if ( grep(exists ${$_}{$entry->msgid}, @exclude) ) {
+                $stats{ $po_file }{'excluded'}++;
+                next;
+            }
             if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
                 $stats{ $po_file }{'not-referenced'}++;
                 next;
@@ -176,7 +190,7 @@ sub shrink {
     foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
         my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
         my @tmp;
-        foreach ( qw(not-referenced not-translated equal) ) {
+        foreach ( qw(excluded not-referenced not-translated equal) ) {
             next unless my $v = $stats{ $po_file }{ $_ };
             push @tmp, "$_: $v";
         }
@@ -287,18 +301,37 @@ sub rosetta {
 
 sub extract {
     my %opt = %{ shift() };
-    # po dir is for extensions
-    @_ = (<@{[PO_DIR]}/*.po>, <@{[PO_DIR]}/*.pot>, <po/*.po>, <po/*.pot>) unless @_;
 
-    # extract all strings and stuff them into $FILECAT
+    unless ( @_ ) {
+        @_ = $opt{'local'} ? (<@{[LOCAL_PO_DIR]}/*.po>)
+            : (<@{[PO_DIR]}/*.po>, <@{[PO_DIR]}/*.pot>, <po/*.po>, <po/*.pot>);
+	    # po dir is for extensions
+    }
+
+    my @path = qw(bin sbin lib share html etc);
+    my $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts!;
+    if ( $opt{'local'} ) {
+        @path = qw(local);
+        $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|share/fonts|local/plugins!;
+    }
+
     my $FILECAT = {};
 
+    # extract all strings and stuff them into $FILECAT
     # scan html dir for extensions
     File::Find::find(
-            {   wanted => sub { extract_strings_from_code($FILECAT) },
+            {   wanted => sub {
+                    return if -d $_ || !-e _;
+                    return if $File::Find::dir =~ $re_dirname_exclude;
+                    return if /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/;
+                    return if /~|,D|,B$|extract-message-catalog$|rt-message-catalog$|tweak-template-locstring$/;
+                    return if /^[\.#]/;
+                    return if -f "$_.in";
+                    extract_strings_from_code($FILECAT);
+                },
                 follow => 1 },
-            qw(bin sbin lib share html etc) );
-    
+            @path );
+
     # ensure proper escaping and [_1] => %1 transformation
     foreach my $str ( sort keys %$FILECAT ) {
         my $entry = $FILECAT->{$str};
@@ -347,6 +380,12 @@ sub extract {
             warn "Interpolated variable '$1' in '$str' at $location\n";
         }
     }
+
+    if ( $opt{'local'} ) {
+        shrink({ 'keep'         => [ qw(not-referenced not-translated equal) ],
+                 'exclude-from' => [ PO_DIR, <local/plugins/*/po> ] },
+            LOCAL_PO_DIR);
+    }
 }
 
 sub extract_strings_from_code {
@@ -354,14 +393,6 @@ sub extract_strings_from_code {
     my $file = $_;
 
     local $/;
-    return if ( -d $_ || !-e _ );
-    return
-      if ( $File::Find::dir =~
-        qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
-    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
-    return if ( /~|,D|,B$|extract-message-catalog$|rt-message-catalog$|tweak-template-locstring$/ );
-    return if ( /^[\.#]/ );
-    return if ( -f "$_.in" );
 
     print "Looking at $File::Find::name\n";
     my $filename = $File::Find::name;
@@ -643,6 +674,8 @@ command:
 	    defaults to true
       --keep {not-referenced|not-translated|equal}
 	    self-documenting...
+      --exclude ex-po-directory
+            exclude messages from catalog under ex-po-directory
 
   clean [options] [po-directory]
     the same as 'shrink --keep not-translated --keep equal'
@@ -658,10 +691,13 @@ command:
 	    num defaults to 20. Lexicon is deleted if less than num%
 	    messages are translated.
 
-  extract [lexicons-to-update]
+  extract [options] [lexicons-to-update]
     extracts messages from sources and updates lexicons
       <lexicons-to-update>
 	    defaults to share/po/*.po share/po/*.pot po/*.po po/*.pot
+            without --local option or to local/po/*.po with --local option
+      --local
+            extracts messages from local/ tree instead from base directory
 
 =head1 COMMANDS
 
@@ -720,6 +756,10 @@ Keep messages translated into the equal string.
 
 =back
 
+=item C<--exclude ex-po-directory>
+
+Exclude all messages found in a catalog under C<ex-po-directory>.
+
 =back
 
 
@@ -768,6 +808,14 @@ C<extracts [lexicon-to-update..]>
 
 This is the message catalog (lexicon) to update with all messages found in the source code.
 It defaults to a list of globs C<share/po/*.po> C<share/po/*.pot> C<po/*.po> C<po/*.pot>.
+when no option C<--local> is present. If option C<--local> is present it defaults to glob
+C<local/po/*.po>.
+
+=item C<--local>
+
+Extracts messages from C<local> tree instead from base directory if this option is present.
+Command C<shrink> is called to exclude messages from C<share/po> and <local/plugins/*/po>
+after extracting messages from C<local> tree.
 
 =back
 
