@@ -56,10 +56,10 @@ use Regexp::Common;
 
 my %commands = (
     stats   => { },
-    shrink  => { 'update!' => 1, 'keep=s@' => [] },
+    shrink  => { 'update!' => 1, 'keep=s@' => [], 'exclude-from=s@' => [] },
     clean   => { 'update!' => 1 },
     rosetta => { 'boundary=i' => 20 },
-    extract => { },
+    extract => { 'local!' => 0 },
 );
 
 unshift @ARGV, 'extract' if $0 =~ m/\bextract-message-catalog$/;
@@ -146,7 +146,20 @@ sub shrink {
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
         $stats{ $po_file } = { };
+        my @exclude = ( );
+        if ( $opt{'exclude-from'} ) {
+            my $fname = $po_file;
+            $fname =~ s{^.*/}{};
+            foreach my $edir ( @{$opt{'exclude-from'}} ) {
+                $_ = "$edir/$fname";
+                push @exclude, Locale::PO->load_file_ashash($_) if -f $_;
+            }
+        }
         foreach my $entry ( splice @$array, 1 ) {
+            if ( grep(exists ${$_}{$entry->msgid}, @exclude) ) {
+                $stats{ $po_file }{'excluded'}++;
+                next;
+            }
             if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
                 $stats{ $po_file }{'not-referenced'}++;
                 next;
@@ -171,7 +184,7 @@ sub shrink {
     foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
         my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
         my @tmp;
-        foreach ( qw(not-referenced not-translated equal) ) {
+        foreach ( qw(excluded not-referenced not-translated equal) ) {
             next unless my $v = $stats{ $po_file }{ $_ };
             push @tmp, "$_: $v";
         }
@@ -284,16 +297,35 @@ sub rosetta {
 
 sub extract {
     my %opt = %{ shift() };
-    @_ = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @_;
+
+    unless ( @_ ) {
+        @_ = $opt{'local'} ? (<local/po/*.po>)
+            : (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>);
+    }
+
+    my @path = qw(bin sbin lib share html etc);
+    my $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts!;
+    if ( $opt{'local'} ) {
+        @path = qw(local);
+        $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|share/fonts|local/plugins!;
+    }
 
     my $FILECAT = {};
 
     # extract all strings and stuff them into $FILECAT
     # scan html dir for extensions
     File::Find::find(
-            {   wanted => sub { extract_strings_from_code($FILECAT) },
+            {   wanted => sub {
+                    return if -d $_;
+                    return if $File::Find::dir =~ $re_dirname_exclude;
+                    return if /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/;
+                    return if /~|,D|,B$|extract-message-catalog$|rt-message-catalog$|tweak-template-locstring$/;
+                    return if /^[\.#]/;
+                    return if -f "$_.in";
+                    extract_strings_from_code($FILECAT);
+                },
                 follow => 1 },
-            qw(bin sbin lib share html etc) );
+            @path );
 
     # remove msgid with $ in it.  XXX: perhaps give some warnings here
     $FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
@@ -325,6 +357,12 @@ sub extract {
 
         update($lang, $dict, $FILECAT);
     }
+
+    if ( $opt{'local'} ) {
+        shrink({ 'keep'         => [ qw(not-referenced not-translated equal) ],
+                 'exclude-from' => [ qw(lib/RT/I18N), <local/plugins/*/po> ] },
+            'local/po');
+    }
 }
 
 
@@ -335,14 +373,6 @@ sub extract_strings_from_code {
     my $file = $_;
 
     local $/;
-    return if ( -d $_ );
-    return
-      if ( $File::Find::dir =~
-        qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
-    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
-    return if ( /~|,D|,B$|extract-message-catalog$|rt-message-catalog$|tweak-template-locstring$/ );
-    return if ( /^[\.#]/ );
-    return if ( -f "$_.in" );
 
     print "Looking at $File::Find::name\n";
     my $filename = $File::Find::name;
@@ -625,6 +655,8 @@ command:
 	    defaults to true
       --keep {not-referenced|not-translated|equal}
 	    self-documenting...
+      --exclude ex-I18N-directory
+            exclude messages from catalog under ex-I18N-directory
 
   clean [options] [I18N-directory]
     the same as 'shrink --keep not-translated --keep equal'
@@ -640,10 +672,14 @@ command:
 	    num defaults to 20. Lexicon is deleted if less than num%
 	    messages are translated.
 
-  extract [lexicons-to-update]
+  extract [options] [lexicons-to-update]
     extracts messages from sources and updates lexicons
       <lexicons-to-update>
 	    defaults to lib/RT/I18N/*.po lib/RT/I18N/*.pot po/*.po po/*.pot
+            without --local option or to local/po/*.po with --local option
+      --local
+            extracts messages from local/ tree instead from base directory
+
 
 =head1 COMMANDS
 
@@ -702,6 +738,10 @@ Keep messages translated into the equal string.
 
 =back
 
+=item C<--exclude ex-I18N-directory>
+
+Exclude all messages found in a catalog under C<ex-I18N-directory>.
+
 =back
 
 
@@ -749,7 +789,15 @@ C<extracts [lexicon-to-update..]>
 =item C<lexicon-to-update>
 
 This is the message catalog (lexicon) to update with all messages found in the source code.
-It defaults to a list of globs C<lib/RT/I18N/*.po> C<lib/RT/I18N/*.pot> C<po/*.po> C<po/*.pot>.
+It defaults to a list of globs C<lib/RT/I18N/*.po> C<lib/RT/I18N/*.pot> C<po/*.po> C<po/*.pot>
+when no option C<--local> is present. If option C<--local> is present it defaults to glob
+C<local/po/*.po>.
+
+=item C<--local>
+
+Extracts messages from C<local> tree instead from base directory if this option is present.
+Command C<shrink> is called to exclude messages from C<lib/RT/I18N> and <local/plugins/*/po>
+after extracting messages from C<local> tree.
 
 =back
 
