@@ -1,0 +1,52 @@
+my $convert_attributes = sub {
+    my $obj = shift;
+
+    for my $attribute ($obj->Attributes->Named('Dashboard')) {
+        my $dashboard = RT::Dashboard->new($RT::SystemUser);
+
+        my ($ok, $msg) = $dashboard->Create(
+            Name       => $attr->Description,
+            Content    => $attr->Content,
+            ObjectType => ref($obj),
+            ObjectId   => $obj->id,
+        );
+
+        if (!$ok) {
+            $RT::Logger->error("Unable to reify attribute " . $attr->id . " into a dashboard: $msg");
+            next;
+        }
+
+        ($ok, $msg) = $attr->Delete;
+
+        if (!$ok) {
+            $RT::Logger->error("Reified attribute into dashboard " . $dashboard->id . " but couldn't delete attribute: $msg");
+            next;
+        }
+
+        $RT::Logger->debug("Reified attribute into a dashboard: $msg");
+    }
+};
+
+@Final = (
+    sub {
+        my $users = RT::Users->new($RT::SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            $convert_attributes->($user);
+        }
+    },
+    sub {
+        my $groups = RT::Groups->new($RT::SystemUser);
+        $groups->UnLimit;
+
+        while (my $group = $groups->Next) {
+            $convert_attributes->($group);
+        }
+    },
+    sub {
+        my $system = RT::System->new($RT::SystemUser);
+        $convert_attributes->($system);
+    },
+);
+
