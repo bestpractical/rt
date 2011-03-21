@@ -69,7 +69,14 @@ my $convert_attributes = sub {
                     next;
                 }
 
-                $subscription->SetSubValue(DashboardId => $new_id);
+                my ($ok, $msg) = $subscription->SetSubValue(DashboardId => $new_id);
+
+                if (!$ok) {
+                    $RT::Logger->error("Unable to update subscription " . $subscription->id . " from dashboard $old_id to $new_id: $msg");
+                    next;
+                }
+
+                $RT::Logger->debug("Updated subscription " . $subscription->id . " from dashboard $old_id to $new_id");
             }
         }
     },
