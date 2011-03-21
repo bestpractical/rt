@@ -576,10 +576,6 @@ sub AttemptExternalAuth {
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
             $user = $orig_user;
-
-            if ( RT->Config->Get('WebExternalOnly') ) {
-                TangentForLoginWithError('You are not an authorized user');
-            }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
