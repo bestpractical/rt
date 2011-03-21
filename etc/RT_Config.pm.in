@@ -1697,6 +1697,17 @@ Should rejection notes from approvals be sent to the requestors?
 
 Set($ApprovalRejectionNotes, 1);
 
+=item C<$DisallowExecuteCode>
+
+If set to a true value, the C<ExecuteCode> right will be removed from
+all users, B<including> the superuser.  This is intended for when RT is
+installed into a shared environment where even the superuser should not
+be allowed to run arbitrary Perl code on the server via scrips.
+
+=cut
+
+Set($DisallowExecuteCode, 0);
+
 =back
 
 
