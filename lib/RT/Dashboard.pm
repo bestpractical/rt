@@ -427,6 +427,92 @@ sub CurrentUserCanCreateAny {
     return 0;
 }
 
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+=head2 Name
+
+Returns the current value of Name.
+(In the database, Name is stored as varchar(255).)
+
+=head2 SetName VALUE
+
+Set Name to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
+
+=head2 Content
+
+Returns the current value of Content.
+(In the database, Content is stored as blob.)
+
+=head2 SetContent VALUE
+
+Set Content to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Content will be stored as a blob.)
+
+=head2 ObjectType
+
+Returns the current value of ObjectType.
+(In the database, ObjectType is stored as varchar(64).)
+
+=head2 SetObjectType VALUE
+
+Set ObjectType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(64).)
+
+=head2 ObjectId
+
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
+
+=head2 SetObjectId VALUE
+
+Set ObjectId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
+
+=cut
+
+sub _CoreAccessible {
+    {
+        id => {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Content => {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+        ObjectType => {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        ObjectId => {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Creator => {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+ }
+};
+
 RT::Base->_ImportOverlays();
 
 1;
+
