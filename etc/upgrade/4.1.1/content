@@ -1,7 +1,11 @@
+my %new_id_for;
+
 my $convert_attributes = sub {
     my $obj = shift;
 
     for my $attribute ($obj->Attributes->Named('Dashboard')) {
+        my $attr_id = $attribute->id;
+
         my $dashboard = RT::Dashboard->new($RT::SystemUser);
 
         my ($ok, $msg) = $dashboard->Create(
@@ -12,18 +16,20 @@ my $convert_attributes = sub {
         );
 
         if (!$ok) {
-            $RT::Logger->error("Unable to reify attribute " . $attr->id . " into a dashboard: $msg");
+            $RT::Logger->error("Unable to reify attribute $attr_id into a dashboard: $msg");
             next;
         }
+
+        $new_id_for{$attr_id} = $dashboard->id;
 
         ($ok, $msg) = $attr->Delete;
 
         if (!$ok) {
-            $RT::Logger->error("Reified attribute into dashboard " . $dashboard->id . " but couldn't delete attribute: $msg");
+            $RT::Logger->error("Reified attribute $attr_id into dashboard " . $dashboard->id . " but couldn't delete attribute: $msg");
             next;
         }
 
-        $RT::Logger->debug("Reified attribute into a dashboard: $msg");
+        $RT::Logger->debug("Reified attribute $attr_id into a dashboard: $msg");
     }
 };
 
@@ -47,6 +53,25 @@ my $convert_attributes = sub {
     sub {
         my $system = RT::System->new($RT::SystemUser);
         $convert_attributes->($system);
+    },
+
+    sub {
+        my $users = RT::Users->new($RT::SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            for my $subscription ($users->Attributes->Named('Subscription')) {
+                my $old_id = $subscription->SubValue('DashboardId');
+                my $new_id = $new_id_for{$old_id};
+
+                if (!$new_id) {
+                    $RT::Logger->error("Can't update subscription " . $subscription->id . " for old-style dashboard $old_id since it has no new-style ID");
+                    next;
+                }
+
+                $subscription->SetSubValue(DashboardId => $new_id);
+            }
+        }
     },
 );
 
