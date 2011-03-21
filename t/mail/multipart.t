@@ -46,13 +46,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-
-=head1 NAME
-
-rt-mailgate - Mail interface to RT3.
-
-=cut
-
 use strict;
 use warnings;
 
