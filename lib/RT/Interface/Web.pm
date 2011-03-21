@@ -709,7 +709,7 @@ sub Redirect {
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
-    # don't do this if $RT::CanoniaclRedirectURLs is true
+    # don't do this if $RT::CanonicalizeRedirectURLs is true
     if (   !RT->Config->Get('CanonicalizeRedirectURLs')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
