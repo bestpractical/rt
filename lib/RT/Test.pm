@@ -151,8 +151,6 @@ sub import {
 
     RT::LoadConfig;
 
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-
     RT::InitPluginPaths();
     RT::InitClasses();
 
