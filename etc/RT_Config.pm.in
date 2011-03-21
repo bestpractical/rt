@@ -1199,6 +1199,15 @@ ticket searches.
 
 Set($DontSearchFileAttachments, undef);
 
+=item C<$DontSearchBinaryAttachments>
+
+If C<$DontSearchBinaryAttachments> is set to 1, then unrecognized binary
+data types will not be searched during full-content ticket searches.
+
+=cut
+
+Set($DontSearchBinaryAttachments, undef);
+
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 
 When query in simple search doesn't have status info, use this to only
