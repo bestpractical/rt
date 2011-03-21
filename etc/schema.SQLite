@@ -504,3 +504,16 @@ Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL
 );
+
+CREATE TABLE Dashboards (
+  id INTEGER PRIMARY KEY,
+  Name varchar(255) NOT NULL,
+  Content LONGTEXT NULL,
+  ObjectType varchar(25) NOT NULL,
+  ObjectId INTEGER default 0,
+  Creator integer NULL,
+  Created DATETIME NULL,
+  LastUpdatedBy integer NULL,
+  LastUpdated DATETIME NULL
+);
+

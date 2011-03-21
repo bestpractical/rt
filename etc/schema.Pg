@@ -713,3 +713,17 @@ LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
 
+CREATE SEQUENCE dashboards_id_seq;
+CREATE TABLE Dashboards (
+  id INTEGER DEFAULT nextval('dashboards_id_seq'),
+  Name varchar(255) NOT NULL,
+  Content text,
+  ObjectType varchar(64),
+  ObjectId integer,
+  Creator integer NOT NULL DEFAULT 0,
+  Created TIMESTAMP NULL,
+  LastUpdatedBy integer NOT NULL DEFAULT 0,
+  LastUpdated TIMESTAMP NULL,
+  PRIMARY KEY (id)
+);
+
