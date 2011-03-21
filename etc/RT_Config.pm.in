@@ -1373,6 +1373,16 @@ reply page should include the content of the messages to be sent.
 
 Set($PreviewScripMessages, 0);
 
+=item C<$SimplifiedRecipients>
+
+If C<$SimplifiedRecipients> is set, a simple list of who will receive
+B<any> kind of mail will be shown on the ticket reply page, instead of a
+detailed breakdown by scrip.
+
+=cut
+
+Set($SimplifiedRecipients, 0);
+
 =back
 
 
