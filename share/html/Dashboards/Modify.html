@@ -101,7 +101,7 @@ else {
     if ($id eq 'new') {
         $tried_create = 1;
 
-        my ($val, $msg) = $Dashboard->Save(
+        my ($val, $msg) = $Dashboard->Create(
             Name    => $ARGS{'Name'},
             Privacy => $ARGS{'Privacy'},
         );
