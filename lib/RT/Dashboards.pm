@@ -76,6 +76,21 @@ sub RecordClass {
     return 'RT::Dashboard';
 }
 
+=head2 LimitToObject
+
+The Dashboards object will load the dashboards belonging to the passed-in user
+or group. Repeated calls to the same object should DTRT.
+
+=cut
+
+sub LimitToObject {
+    my $self = shift;
+    my $obj  = shift;
+
+    my $privacy = join('-',ref($obj),$obj->Id);
+    return $self->LimitToPrivacy($privacy);
+}
+
 =head2 LimitToPrivacy
 
 Takes one argument: a privacy string, of the format "<class>-<id>", as produced
