@@ -109,6 +109,17 @@ sub LimitToPrivacy {
     }
 }
 
+=head2 NewItem
+
+Returns an empty new L<RT::Dashboard> record.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return RT::Dashboard->new($self->CurrentUser);
+}
+
 RT::Base->_ImportOverlays();
 
 1;
