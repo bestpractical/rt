@@ -108,8 +108,7 @@ Returns a hashref of pane name to portlets
 
 sub Panes {
     my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return $self->{'Attribute'}->SubValue('Panes') || {};
+    return $self->Content->{Panes} || {};
 }
 
 =head2 Portlets
