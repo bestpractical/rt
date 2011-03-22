@@ -98,7 +98,7 @@ You can add the following to RT_SiteConfig.pm, but may want to collapse it into 
 Keep in mind that this only contains the email addresses that RT knows about, you should also examine
 your mail system for aliases that reach RT but which RT doesn't know about.
 ENDDESCRIPTION
-print "Set(\$RTAddressRegexp,qr{^(?:${re})\$});\n";
+print "Set(\$RTAddressRegexp,qr{^(?:${re})\$}i);\n";
 
 sub merge {
     my $merged = shift;

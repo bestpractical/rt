@@ -130,7 +130,14 @@ sub import {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
 
+    push @{ $args{'plugins'} ||= [] }, @{ $args{'requires'} }
+        if $args{'requires'};
+    push @{ $args{'plugins'} ||= [] }, $args{'testing'}
+        if $args{'testing'};
+
     $class->bootstrap_tempdir;
+
+    $class->bootstrap_plugins_paths( %args );
 
     $class->bootstrap_config( %args );
 
@@ -144,16 +151,14 @@ sub import {
 
     RT::InitPluginPaths();
 
-    RT::ConnectToDatabase()
+    __reconnect_rt()
         unless $args{nodb};
 
     RT::InitClasses();
     RT::InitLogging();
 
-    $class->bootstrap_plugins( %args );
-
     RT->Plugins;
-    
+
     RT::I18N->Init();
     RT->Config->PostLoadCheck;
 
@@ -232,7 +237,7 @@ Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
 Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr));
-Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
+Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
         print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
@@ -240,6 +245,10 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
     } else {
         print $config "Set( \$DatabaseName , '$dbname');\n";
         print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    }
+
+    if ( $args{'plugins'} ) {
+        print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
     }
 
     if ( $INC{'Devel/Cover.pm'} ) {
@@ -359,83 +368,45 @@ sub bootstrap_db {
     }
 
     require RT::Handle;
-    # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->SystemDSN,
-               $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
     if (my $forceopt = $ENV{RT_TEST_FORCE_OPT}) {
         Test::More::diag "forcing $forceopt";
         $args{$forceopt}=1;
     }
 
-    if ($args{nodb}) {
-        $args{noinitialdata} = 1;
-        $args{nodata} = 1;
-    }
-    elsif ($args{noinitialdata}) {
-        $args{nodata} = 1;
-    }
+    return if $args{nodb};
 
-    unless ($args{nodb}) {
-        unless ( $ENV{RT_TEST_PARALLEL} ) {
-            # already dropped db in parallel tests, need to do so for other cases.
-            RT::Handle->DropDatabase( $dbh, Force => 1 )
-        }
-        RT::Handle->CreateDatabase( $dbh );
-        $dbh->disconnect;
-        $created_new_db++;
+    my $db_type = RT->Config->Get('DatabaseType');
+    __create_database();
+    __reconnect_rt('as dba');
+    $RT::Handle->InsertSchema;
+    $RT::Handle->InsertACL unless $db_type eq 'Oracle';
 
-        $dbh = _get_dbh(RT::Handle->DSN,
-                        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
+    RT->InitLogging;
+    __reconnect_rt();
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( $dbh );
-        $RT::Handle->InsertSchema( $dbh );
+    $RT::Handle->InsertInitialData
+        unless $args{noinitialdata};
 
-        my $db_type = RT->Config->Get('DatabaseType');
-        $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+    $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" )
+        unless $args{noinitialdata} or $args{nodata};
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
-        RT->InitLogging;
-
-        unless ($args{noinitialdata}) {
-            $RT::Handle->InsertInitialData;
-
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
-        }
-
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase();
-        $RT::Handle->PrintError;
-        $RT::Handle->dbh->{PrintError} = 1;
-
-        unless ( $args{'nodata'} ) {
-            $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
-            DBIx::SearchBuilder::Record::Cachable->FlushCache;
-        }
-    }
+    $self->bootstrap_plugins_db( %args );
 }
 
-sub bootstrap_plugins {
+sub bootstrap_plugins_paths {
     my $self = shift;
     my %args = @_;
 
-    return unless $args{'requires'};
+    return unless $args{'plugins'};
+    my @plugins = @{ $args{'plugins'} };
 
-    my @plugins = @{ $args{'requires'} };
-    push @plugins, $args{'testing'}
-        if $args{'testing'};
-
-    require RT::Plugin;
     my $cwd;
     if ( $args{'testing'} ) {
         require Cwd;
         $cwd = Cwd::getcwd();
     }
 
+    require RT::Plugin;
     my $old_func = \&RT::Plugin::_BasePath;
     no warnings 'redefine';
     *RT::Plugin::_BasePath = sub {
@@ -450,17 +421,17 @@ sub bootstrap_plugins {
         }
         return $old_func->(@_);
     };
+}
 
-    RT->Config->Set( Plugins => @plugins );
-    RT->InitPluginPaths();
+sub bootstrap_plugins_db {
+    my $self = shift;
+    my %args = @_;
 
-    my $dba_dbh;
-    $dba_dbh = _get_dbh(
-        RT::Handle->DSN,
-        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD},
-    ) if @plugins;
+    return unless $args{'plugins'};
 
     require File::Spec;
+
+    my @plugins = @{ $args{'plugins'} };
     foreach my $name ( @plugins ) {
         my $plugin = RT::Plugin->new( name => $name );
         Test::More::diag( "Initializing DB for the $name plugin" )
@@ -470,31 +441,37 @@ sub bootstrap_plugins {
         Test::More::diag( "etc path of the plugin is '$etc_path'" )
             if $ENV{'TEST_VERBOSE'};
 
-        if ( -e $etc_path ) {
-            my ($ret, $msg) = $RT::Handle->InsertSchema( $dba_dbh, $etc_path );
-            Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
-
-            ($ret, $msg) = $RT::Handle->InsertACL( $dba_dbh, $etc_path );
-            Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
-
-            my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
-            if ( -e $data_file ) {
-                ($ret, $msg) = $RT::Handle->InsertData( $data_file );;
-                Test::More::ok($ret, "Inserted data".($msg||''));
-            } else {
-                Test::More::ok(1, "There is no data file" );
-            }
-        }
-        else {
-# we can not say if plugin has no data or we screwed with etc path
+        unless ( -e $etc_path ) {
+            # We can't tell if the plugin has no data, or we screwed up the etc/ path
             Test::More::ok(1, "There is no etc dir: no schema" );
             Test::More::ok(1, "There is no etc dir: no ACLs" );
             Test::More::ok(1, "There is no etc dir: no data" );
+            next;
         }
 
-        $RT::Handle->Connect; # XXX: strange but mysql can loose connection
+        __reconnect_rt('as dba');
+
+        { # schema
+            my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
+        }
+
+        { # ACLs
+            my ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
+        }
+
+        # data
+        my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
+        if ( -e $data_file ) {
+            __reconnect_rt();
+            my ($ret, $msg) = $RT::Handle->InsertData( $data_file );;
+            Test::More::ok($ret, "Inserted data".($msg||''));
+        } else {
+            Test::More::ok(1, "There is no data file" );
+        }
     }
-    $dba_dbh->disconnect if $dba_dbh;
+    __reconnect_rt();
 }
 
 sub _get_dbh {
@@ -513,6 +490,72 @@ sub _get_dbh {
     }
     return $dbh;
 }
+
+sub __create_database {
+    # bootstrap with dba cred
+    my $dbh = _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+
+    unless ( $ENV{RT_TEST_PARALLEL} ) {
+        # already dropped db in parallel tests, need to do so for other cases.
+        __drop_database( $dbh );
+
+    }
+    RT::Handle->CreateDatabase( $dbh );
+    $dbh->disconnect;
+    $created_new_db++;
+}
+
+sub __drop_database {
+    my $dbh = shift;
+
+    # Pg doesn't like if you issue a DROP DATABASE while still connected
+    # it's still may fail if web-server is out there and holding a connection
+    __disconnect_rt();
+
+    my $my_dbh = $dbh? 0 : 1;
+    $dbh ||= _get_dbh(
+        RT::Handle->SystemDSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
+    );
+    RT::Handle->DropDatabase( $dbh );
+    $dbh->disconnect if $my_dbh;
+}
+
+sub __reconnect_rt {
+    my $as_dba = shift;
+    __disconnect_rt();
+
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( undef );
+    $RT::Handle->Connect(
+        $as_dba
+        ? (User => $ENV{RT_DBA_USER}, Password => $ENV{RT_DBA_PASSWORD})
+        : ()
+    );
+    $RT::Handle->PrintError;
+    $RT::Handle->dbh->{PrintError} = 1;
+    return $RT::Handle->dbh;
+}
+
+sub __disconnect_rt {
+    # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
+    $RT::Handle->dbh->disconnect if $RT::Handle and $RT::Handle->dbh;
+
+    %DBIx::SearchBuilder::Handle::DBIHandle = ();
+    $DBIx::SearchBuilder::Handle::PrevHandle = undef;
+
+    $RT::Handle = undef;
+
+    delete $RT::System->{attributes};
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+          if DBIx::SearchBuilder::Record::Cachable->can("FlushCache");
+}
+
 
 =head1 UTILITIES
 
@@ -1220,6 +1263,7 @@ sub start_plack_server {
     my $handled;
     local $SIG{USR1} = sub { $handled = 1};
 
+    __disconnect_rt();
     my $pid = fork();
     die "failed to fork" unless defined $pid;
 
@@ -1231,12 +1275,7 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, @_);
 
-        $RT::Handle = RT::Handle->new;
-        $RT::Handle->dbh( undef );
-        RT->ConnectToDatabase;
-        # the attribute cache holds on to a stale dbh
-        delete $RT::System->{attributes};
-
+        __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
     }
 
@@ -1382,14 +1421,7 @@ END {
     }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-
-        # Pg doesn't like if you issue a DROP DATABASE while still connected
-        my $dbh = $RT::Handle->dbh;
-        $dbh->disconnect if $dbh;
-
-        $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
-        RT::Handle->DropDatabase( $dbh, Force => 1 );
-        $dbh->disconnect;
+        __drop_database();
     }
 }
 

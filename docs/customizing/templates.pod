@@ -39,8 +39,8 @@ allowed.
 
 Templates of type C<Perl> are evaluated using L<Text::Template>
 which allows arbitrary code execution. Only users which have the global
-C<ExecuteCode> privilege may write templates of type C<Perl>. Historically,
-this has been the only type of Template available.
+C<ExecuteCode> privilege may write templates of type C<Perl>. Prior to
+RT 4.0, this was the only type of Template available.
 
 Templates of type C<Simple> permit only simple variable interpolation.
 No special privilege beyond C<ModifyTemplate> is needed to write C<Simple>
@@ -83,6 +83,10 @@ A localization function. See L<Locale::Maketext>.
 =back
 
 =head3 Selected Simple template variables
+
+Since method calls are not allowed in simple templates, many common
+method results have been placed into scalar variables for the template's
+use.  Among them:
 
 =over 4
 

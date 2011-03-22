@@ -154,13 +154,6 @@ sub Load {
     # do the recursive load thing. be careful to cache all
     # the interim tickets we try so we don't loop forever.
 
-    # FIXME: there is no TicketBaseURI option in config
-    my $base_uri = RT->Config->Get('TicketBaseURI') || '';
-    #If it's a local URI, turn it into a ticket id
-    if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
-        $id = $1;
-    }
-
     unless ( $id =~ /^\d+$/ ) {
         $RT::Logger->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);

@@ -69,6 +69,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
+use List::MoreUtils qw();
 
 =head2 SquishedCSS $style
 
@@ -207,6 +208,8 @@ sub HandleRequest {
 
     $HTML::Mason::Commands::m->autoflush( $HTML::Mason::Commands::m->request_comp->attr('AutoFlush') )
         if ( $HTML::Mason::Commands::m->request_comp->attr_exists('AutoFlush') );
+
+    ValidateWebConfig();
 
     DecodeARGS($ARGS);
     PreprocessTimeUpdates($ARGS);
@@ -1017,6 +1020,44 @@ sub LogRecordedSQLStatements {
 
 }
 
+my $_has_validated_web_config = 0;
+sub ValidateWebConfig {
+    my $self = shift;
+
+    # do this once per server instance, not once per request
+    return if $_has_validated_web_config;
+    $_has_validated_web_config = 1;
+
+    if ($ENV{'rt.explicit_port'}) {
+        if ($ENV{SERVER_PORT} != $ENV{'rt.explicit_port'}) {
+            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+        }
+    }
+    else {
+        if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
+            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+        }
+    }
+
+    if ($ENV{HTTP_HOST}) {
+        # match "example.com" or "example.com:80"
+        my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
+
+        if ($host ne RT->Config->Get('WebDomain')) {
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+        }
+    }
+    else {
+        if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+        }
+    }
+
+    if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
+        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath). You should fix your Set(\$WebPath, ...) setting in RT_SiteConfig.pm otherwise your internal links may be broken.");
+    }
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -1696,7 +1737,7 @@ sub ProcessACLs {
         my $principal;
         if ( $type eq 'user' ) {
             $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->Load( $ARGSref->{$key} );
+            $principal->LoadByCol( Name => $ARGSref->{$key} );
         }
         else {
             $principal = RT::Group->new( $session{'CurrentUser'} );
@@ -1713,8 +1754,20 @@ sub ProcessACLs {
         # Turn our addprincipal rights spec into a real one
         for my $arg (keys %$ARGSref) {
             next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
-            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
-            push @check, "$principal_id-$1";
+
+            my $tuple = "$principal_id-$1";
+            my $key   = "SetRights-$tuple";
+
+            # If we have it already, that's odd, but merge them
+            if (grep { $_ eq $tuple } @check) {
+                $ARGSref->{$key} = [
+                    (ref $ARGSref->{$key} eq 'ARRAY' ? @{$ARGSref->{$key}} : $ARGSref->{$key}),
+                    (ref $ARGSref->{$arg} eq 'ARRAY' ? @{$ARGSref->{$arg}} : $ARGSref->{$arg}),
+                ];
+            } else {
+                $ARGSref->{$key} = $ARGSref->{$arg};
+                push @check, $tuple;
+            }
         }
     }
 
@@ -1730,7 +1783,7 @@ sub ProcessACLs {
         $state{$tuple} = { map { $_ => 1 } @rights };
     }
 
-    foreach my $tuple (@check) {
+    foreach my $tuple (List::MoreUtils::uniq @check) {
         next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
 
         my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
@@ -2750,7 +2803,7 @@ sub _NewScrubber {
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
+        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE]
     );
     $scrubber->comment(0);
 

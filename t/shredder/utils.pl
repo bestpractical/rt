@@ -293,15 +293,9 @@ sub restore_savepoint { return __cp_db( savepoint_name( shift ) => db_name() ) }
 sub __cp_db
 {
     my( $orig, $dest ) = @_;
-    delete $RT::System->{attributes};
-    $RT::Handle->dbh->disconnect;
-    # DIRTY HACK: undef Handles to force reconnect
-    $RT::Handle = undef;
-    %DBIx::SearchBuilder::DBIHandle = ();
-    $DBIx::SearchBuilder::PrevHandle = undef;
-
+    RT::Test::__disconnect_rt();
     File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
-    RT::ConnectToDatabase();
+    RT::Test::__reconnect_rt();
     return;
 }
 

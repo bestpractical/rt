@@ -1,0 +1,7 @@
+UPGRADING FROM 2.x:
+
+The core RT distribution does not contain the tool to upgrade RT from
+version 2.0; the tool, can be downloaded from CPAN at
+http://search.cpan.org/dist/RT-Extension-RT2toRT3/
+
+Further instructions may be found in that distribution's README file.

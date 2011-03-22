@@ -134,7 +134,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     ( $Ticket, @results ) =
-    CreateTicket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
+    CreateTicket( Attachments => $session{'Attachments'}, %ARGS );
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', Why => join( "\n", @results ));
