@@ -48,17 +48,11 @@
 
 =head1 NAME
 
-  RT::Dashboards - a pseudo-collection for Dashboard objects.
+  RT::Dashboards - a collection for Dashboard objects
 
 =head1 SYNOPSIS
 
-  use RT::Dashboards
-
-=head1 DESCRIPTION
-
-  Dashboards is an object consisting of a number of Dashboard objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
-  is not.
+  use RT::Dashboards;
 
 =head1 METHODS
 
@@ -66,15 +60,12 @@
 =cut
 
 package RT::Dashboards;
+use strict;
+use warnings;
+
+use base 'RT::SearchBuilder';
 
 use RT::Dashboard;
-
-use strict;
-use base 'RT::SharedSettings';
-
-sub RecordClass {
-    return 'RT::Dashboard';
-}
 
 =head2 LimitToObject
 
@@ -116,10 +107,6 @@ sub LimitToPrivacy {
     } else {
         $RT::Logger->error("Could not load object $privacy");
     }
-}
-
-sub ColumnMapClassName {
-    return 'RT__Dashboard';
 }
 
 RT::Base->_ImportOverlays();
