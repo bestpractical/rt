@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % foreach my $Object (@Objects) {
 %   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
-%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
+%   $Dashboards->LimitToObject($Object);
 %   my $title;
 %   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
 %       $title = loc("My dashboards");

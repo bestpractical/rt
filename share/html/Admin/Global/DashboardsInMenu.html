@@ -71,7 +71,7 @@ my $default_dashboards_in_menu =
 
 use RT::Dashboards;
 my $dashboards = RT::Dashboards->new( $RT::SystemUser );
-$dashboards->LimitToPrivacy('RT::System-' . $sys->id);
+$dashboards->LimitToObject($sys);
 
 my @dashboards;
 while ( my $dashboard = $dashboards->Next ) {
