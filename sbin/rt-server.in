@@ -91,7 +91,6 @@ if (grep { m/help/ } @ARGV) {
 
 require RT;
 RT->LoadConfig();
-require Module::Refresh if RT->Config->Get('DevelMode');
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
