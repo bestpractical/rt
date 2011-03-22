@@ -45,22 +45,12 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-# lib/RT/Interface/REST.pm
-#
-
 package RT::Interface::REST;
 use strict;
 use RT;
 
-BEGIN {
-    use base 'Exporter';
-    use vars qw($VERSION @EXPORT);
-
-    $VERSION = do { my @r = (q$Revision: 1.00$ =~ /\d+/g); sprintf "%d."."%02d"x$#r, @r };
-
-    @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
-}
+use base 'Exporter';
+our @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 
 sub custom_field_spec {
     my $self    = shift;
