@@ -82,7 +82,7 @@ sub LimitToObject {
 
     $self->Limit(
         FIELD => 'ObjectType',
-        VALUE => ref($obj);
+        VALUE => ref($obj),
     );
 
     $self->Limit(
