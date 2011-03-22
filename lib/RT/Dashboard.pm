@@ -100,6 +100,24 @@ RT::System::AddRightCategories(
     DeleteOwnDashboard => 'Staff',
 );
 
+=head2 Create
+
+Accepts a C<Privacy> instead of an C<ObjectType> and C<ObjectId>.
+
+=cut
+
+sub Create {
+    my $self = shift;
+    my %args = @_;
+
+    # canonicalize Privacy into ObjectType and ObjectId
+    if ($args{Privacy}) {
+        ($args{ObjectType}, $args{ObjectId}) = split '-', delete $args{Privacy};
+    }
+
+    return $self->SUPER::Create(%args);
+}
+
 =head2 Panes
 
 Returns a hashref of pane name to portlets
