@@ -48,17 +48,13 @@
 
 =head1 NAME
 
-  RT::Dashboard - an API for saving and retrieving dashboards
+  RT::Dashboard - a dashboard object
 
 =head1 SYNOPSIS
 
-  use RT::Dashboard
+  use RT::Dashboard;
 
 =head1 DESCRIPTION
-
-  Dashboard is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a name, and a number of
-  saved searches and portlets.
 
 =head1 METHODS
 
@@ -66,15 +62,16 @@
 =cut
 
 package RT::Dashboard;
-
-use RT::SavedSearch;
-
 use strict;
 use warnings;
 
-use base qw/RT::SharedSetting/;
+use base 'RT::Record';
 
+use RT::SavedSearch;
 use RT::System;
+
+sub Table { 'Dashboards' }
+
 RT::System::AddRights(
     SubscribeDashboard => 'Subscribe to dashboards', #loc_pair
 
