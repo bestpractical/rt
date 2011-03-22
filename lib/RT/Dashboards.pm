@@ -67,6 +67,8 @@ use base 'RT::SearchBuilder';
 
 use RT::Dashboard;
 
+sub Table { 'Dashboards' }
+
 =head2 LimitToObject
 
 The Dashboards object will load the dashboards belonging to the passed-in user
