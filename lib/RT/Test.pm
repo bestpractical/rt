@@ -145,6 +145,8 @@ sub import {
 
     RT::LoadConfig;
 
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+
     $class->bootstrap_db( %args );
 
     RT::InitPluginPaths();

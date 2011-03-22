@@ -125,8 +125,6 @@ sub LoadConfig {
         $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
 
-    require Module::Refresh if RT->Config->Get('DevelMode');
-
     return $Config;
 }
 
