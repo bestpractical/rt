@@ -49,7 +49,7 @@
 
 <& /SelfService/Elements/MyRequests,
     %ARGS,
-    status          => ['rejected', 'resolved'],
+    status          => [ RT::Queue->InactiveStatusArray ],
     friendly_status => loc('closed'), 
 	BaseURL         => RT->Config->Get('WebPath') ."/SelfService/Closed.html?",
 	Page            => $Page,

@@ -45,7 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
- $m->comp('../_elements/ticket_list', %ARGS, query => 'Requestors.EmailAddress = "'.$session{CurrentUser}->EmailAddress.'" AND (Status != "resolved" AND Status != "rejected" AND Status != "stalled")'); 
-$m->abort();
-</%init>
+<%INIT>
+if ( my $attr = $RT::System->FirstAttribute('UserLogo') ) {
+    # The extra path in the url doesn't matter, we always want to serve the
+    # latest logo if we have one.
+    RT::Interface::Web::StaticFileHeaders();
+    my $content = $attr->Content;
+    $r->content_type( $content->{type} );
+    $m->out( $content->{data} );
+}
+else {
+    # 404
+    return $m->decline;
+}
+</%INIT>

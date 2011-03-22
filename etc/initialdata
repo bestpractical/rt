@@ -19,6 +19,7 @@
              CorrespondAddress => "",
              CommentAddress    => "", },
            { Name        => '___Approvals',
+             Lifecycle   => 'approvals',
              Description => 'A system-internal queue for the approvals system',
              Disabled    => 2, } );
 

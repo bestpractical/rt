@@ -69,6 +69,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
+use List::MoreUtils qw();
 
 =head2 SquishedCSS $style
 
@@ -1736,7 +1737,7 @@ sub ProcessACLs {
         my $principal;
         if ( $type eq 'user' ) {
             $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->Load( $ARGSref->{$key} );
+            $principal->LoadByCol( Name => $ARGSref->{$key} );
         }
         else {
             $principal = RT::Group->new( $session{'CurrentUser'} );
@@ -1753,8 +1754,20 @@ sub ProcessACLs {
         # Turn our addprincipal rights spec into a real one
         for my $arg (keys %$ARGSref) {
             next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
-            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
-            push @check, "$principal_id-$1";
+
+            my $tuple = "$principal_id-$1";
+            my $key   = "SetRights-$tuple";
+
+            # If we have it already, that's odd, but merge them
+            if (grep { $_ eq $tuple } @check) {
+                $ARGSref->{$key} = [
+                    (ref $ARGSref->{$key} eq 'ARRAY' ? @{$ARGSref->{$key}} : $ARGSref->{$key}),
+                    (ref $ARGSref->{$arg} eq 'ARRAY' ? @{$ARGSref->{$arg}} : $ARGSref->{$arg}),
+                ];
+            } else {
+                $ARGSref->{$key} = $ARGSref->{$arg};
+                push @check, $tuple;
+            }
         }
     }
 
@@ -1770,7 +1783,7 @@ sub ProcessACLs {
         $state{$tuple} = { map { $_ => 1 } @rights };
     }
 
-    foreach my $tuple (@check) {
+    foreach my $tuple (List::MoreUtils::uniq @check) {
         next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
 
         my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
@@ -2743,7 +2756,7 @@ sub _NewScrubber {
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
+        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE]
     );
     $scrubber->comment(0);
 

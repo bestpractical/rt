@@ -124,7 +124,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Tools' },         '-> Tools' );
 
-        for my $tab ( 'Configuration.html', 'Shredder' ) {
+        for my $tab ( 'Configuration.html', 'Shredder', 'Theme' ) {
             $m->follow_link_ok( { url_regex => qr!/Admin/Tools/$tab! },
                 "-> /Admin/Tools/$tab" );
         }
@@ -136,7 +136,7 @@ diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
         $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
         $m->follow_link_ok( { text => 'Global' },        '-> Global' );
 
-        for my $id ( 'group-rights', 'user-rights', 'my-rt', 'theme' )
+        for my $id ( 'group-rights', 'user-rights', 'my-rt' )
         {
             $m->follow_link_ok( { id => 'tools-config-global-' . $id }, "-> $id" );
         }
