@@ -80,35 +80,15 @@ sub LimitToObject {
     my $self = shift;
     my $obj  = shift;
 
-    my $privacy = join('-',ref($obj),$obj->Id);
-    return $self->LimitToPrivacy($privacy);
-}
+    $self->Limit(
+        FIELD => 'ObjectType',
+        VALUE => ref($obj);
+    );
 
-=head2 LimitToPrivacy
-
-Takes one argument: a privacy string, of the format "<class>-<id>", as produced
-by RT::Dashboard::Privacy(). The Dashboards object will load the dashboards
-belonging to that user or group. Repeated calls to the same object should DTRT.
-
-=cut
-
-sub LimitToPrivacy {
-    my $self = shift;
-    my $privacy = shift;
-
-    my $object = $self->_GetObject($privacy);
-
-    if ($object) {
-        $self->{'objects'} = [];
-        my @dashboard_atts = $object->Attributes->Named('Dashboard');
-        foreach my $att (@dashboard_atts) {
-            my $dashboard = RT::Dashboard->new($self->CurrentUser);
-            $dashboard->Load($privacy, $att->Id);
-            push(@{$self->{'objects'}}, $dashboard);
-        }
-    } else {
-        $RT::Logger->error("Could not load object $privacy");
-    }
+    $self->Limit(
+        FIELD => 'ObjectId',
+        VALUE => $obj->id,
+    );
 }
 
 =head2 NewItem
