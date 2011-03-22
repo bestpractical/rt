@@ -100,59 +100,6 @@ RT::System::AddRightCategories(
     DeleteOwnDashboard => 'Staff',
 );
 
-=head2 ObjectName
-
-An object of this class is called "dashboard"
-
-=cut
-
-sub ObjectName { "dashboard" }
-
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
-
-    return $object->AddAttribute(
-        'Name'        => 'Dashboard',
-        'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
-    );
-}
-
-sub UpdateAttribute {
-    my $self = shift;
-    my $args = shift;
-
-    my ($status, $msg) = (1, undef);
-    if (defined $args->{'Panes'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Panes => $args->{'Panes'},
-        );
-    }
-
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'})
-            unless $self->Name eq $args->{'Name'};
-    }
-
-    if ($status && $args->{'Privacy'}) {
-        my ($new_obj_type, $new_obj_id) = split /-/, $args->{'Privacy'};
-        my ($obj_type, $obj_id) = split /-/, $self->Privacy;
-
-        my $attr = $self->{'Attribute'};
-        if ($new_obj_type ne $obj_type) {
-            ($status, $msg) = $attr->SetObjectType($new_obj_type);
-        }
-        if ($status && $new_obj_id != $obj_id ) {
-            ($status, $msg) = $attr->SetObjectId($new_obj_id);
-        }
-        $self->{'Privacy'} = $args->{'Privacy'} if $status;
-    }
-
-    return ($status, $msg);
-}
-
 =head2 Panes
 
 Returns a hashref of pane name to portlets
