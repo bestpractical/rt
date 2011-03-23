@@ -1307,8 +1307,12 @@ sub CreateTicket {
             next;
         }
 
-        my %web_args = map { $_ => $ARGS{$_} }
-            grep { /^Object-RT::Ticket--CustomField-$cfid-/ } keys %ARGS;
+        my %web_args =
+            map { /^Object-RT::Ticket--CustomField-$cfid-(\w+)$/
+                      ? ( $1 => $1 eq 'Upload' ? scalar $m->cgi_object->upload($_)
+                                               : $ARGS{$_} )
+                      : ()
+                  } keys %ARGS;
 
         _FillCreateArgsFromWebArgs($cf, \%web_args, \%create_args);
     }
@@ -1347,9 +1351,10 @@ sub _FillCreateArgsFromWebArgs {
 
     my $key = "CustomField-".$cf->Id;
     for my $arg (keys %$web_args) {
-        next if $arg =~ /-(?:Magic|Category)$/;
-        if ( $arg =~ /-Upload$/ ) {
-            $create_args->{$key} = _UploadedFile($arg);
+        next if $arg =~ /^(?:Magic|Category)$/;
+        if ( $arg eq 'Upload' ) {
+            $create_args->{$key} = _UploadedFileArgs($web_args->{$arg})
+                if $web_args->{$arg};
             next;
         }
 
@@ -2524,6 +2529,13 @@ sub _UploadedFile {
     my $arg         = shift;
     my $cgi_object  = $m->cgi_object;
     my $fh          = $cgi_object->upload($arg) or return undef;
+
+    return _UploadedFileArgs($fh);
+}
+
+sub _UploadedFileArgs {
+    my $fh          = shift;
+    my $cgi_object  = $m->cgi_object;
     my $upload_info = $cgi_object->uploadInfo($fh);
 
     my $filename = "$fh";
