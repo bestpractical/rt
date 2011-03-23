@@ -4,15 +4,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-28 20:38+0000\n"
+"POT-Creation-Date: 2011-03-17 11:52+0000\n"
 "PO-Revision-Date: 2010-05-18 08:36+0000\n"
 "Last-Translator: Karl Ove Hufthammer <karl@huftis.org>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-14 09:57+0000\n"
-"X-Generator: Launchpad (build 12568)\n"
+"X-Launchpad-Export-Date: 2011-03-23 16:02+0000\n"
+"X-Generator: Launchpad (build 12633)\n"
 
 # Merk: For alle tekstane i denne omsettinga er bruk av store og små bokstaver og punktum / ikkje punktum på slutten av tekstar *veldig* bevisst, og kan avvika fra dei engelske originaltekstane (men er meir konsekvent i brukergrensesnittet). Dei bør derfor ikkje endrast.
 #: NOT FOUND IN SOURCE
@@ -1171,9 +1171,9 @@ msgstr "aug."
 msgid "August"
 msgstr "august"
 
-#: share/html/Admin/Tools/Theme.html:279
-#. (                . " because you uploaded an image type that your installed version"                . " of GD doesn't support. Supported types are: [_1]."                . " You can recompile libgd and GD.pm to include support for other image types.",                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
-msgid "Automatically suggested theme colors aren't available for your image. This might be"
+#: share/html/Admin/Tools/Theme.html:277
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
 #: etc/initialdata:196
@@ -8830,7 +8830,7 @@ msgid "Your password is not set."
 msgstr "Passordet er ikkje registrert"
 
 #: share/html/Admin/Tools/Theme.html:65
-#. (join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
+#. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 

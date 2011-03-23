@@ -1084,9 +1084,9 @@ msgstr ""
 msgid "Aug"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:279
-#. (                . " because you uploaded an image type that your installed version"                . " of GD doesn't support. Supported types are: [_1]."                . " You can recompile libgd and GD.pm to include support for other image types.",                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
-msgid "Automatically suggested theme colors aren't available for your image. This might be"
+#: share/html/Admin/Tools/Theme.html:277
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
 #: etc/initialdata:196
@@ -8092,7 +8092,7 @@ msgid "Your password is not set."
 msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:65
-#. (join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
+#. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 
