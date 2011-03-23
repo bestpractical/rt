@@ -1285,6 +1285,7 @@ sub CreateTicket {
             : ( $ARGS{'AttachTickets'} ) );
     }
 
+    my %ticket_cfs;
     foreach my $arg ( keys %ARGS ) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
@@ -1294,41 +1295,22 @@ sub CreateTicket {
 
         # Object-RT::Ticket--CustomField-3-Values
         elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)/ ) {
-            my $cfid = $1;
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->Load($cfid);
-            unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #" . $cfid );
-                next;
-            }
-
-            if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile($arg);
-                next;
-            }
-
-            my $type = $cf->Type;
-
-            my @values = ();
-            if ( ref $ARGS{$arg} eq 'ARRAY' ) {
-                @values = @{ $ARGS{$arg} };
-            } elsif ( $type =~ /text/i ) {
-                @values = ( $ARGS{$arg} );
-            } else {
-                no warnings 'uninitialized';
-                @values = split /\r*\n/, $ARGS{$arg};
-            }
-            @values = grep length, map {
-                s/\r+\n/\n/g;
-                s/^\s+//;
-                s/\s+$//;
-                $_;
-                }
-                grep defined, @values;
-
-            $create_args{"CustomField-$cfid"} = \@values;
+            $ticket_cfs{$1} = 1;
         }
+    }
+
+    for my $cfid (sort keys %ticket_cfs) {
+        my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+        $cf->Load($cfid);
+        unless ( $cf->id ) {
+            $RT::Logger->error( "Couldn't load custom field #" . $cfid );
+            next;
+        }
+
+        my %web_args = map { $_ => $ARGS{$_} }
+            grep { /^Object-RT::Ticket--CustomField-$cfid-/ } keys %ARGS;
+
+        _FillCreateArgsFromWebArgs($cf, \%web_args, \%create_args);
     }
 
     # turn new link lists into arrays, and pass in the proper arguments
@@ -1359,6 +1341,39 @@ sub CreateTicket {
 
 }
 
+
+sub _FillCreateArgsFromWebArgs {
+    my ($cf, $web_args, $create_args) = @_;
+
+    my $key = "CustomField-".$cf->Id;
+    for my $arg (keys %$web_args) {
+        next if $arg =~ /-(?:Magic|Category)$/;
+        if ( $arg =~ /-Upload$/ ) {
+            $create_args->{$key} = _UploadedFile($arg);
+            next;
+        }
+
+        my $type = $cf->Type;
+
+        my @values = ();
+        if ( ref $web_args->{$arg} eq 'ARRAY' ) {
+            @values = @{ $web_args->{$arg} };
+        } elsif ( $type =~ /text/i ) {
+            @values = ( $web_args->{$arg} );
+        } else {
+            no warnings 'uninitialized';
+            @values = split /\r*\n/, $web_args->{$arg};
+        }
+        @values = grep length, map {
+            s/\r+\n/\n/g;
+            s/^\s+//;
+            s/\s+$//;
+            $_;
+        } grep defined, @values;
+
+        $create_args->{$key} = \@values;
+    }
+}
 
 
 =head2  LoadTicket id
