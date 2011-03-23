@@ -243,6 +243,19 @@ __PACKAGE__->RegisterType(
     },
 );
 
+__PACKAGE__->RegisterType(
+    ImageWithCaption => {
+        sort_order => 55,
+        selection_type => 0,
+        labels         => [
+                    'Upload multiple images with caption',   # loc
+                    'Upload one image with caption',         # loc
+                    'Upload up to [_1] images with caption', # loc
+                  ],
+        class => 'RT::CustomField::Type::ImageWithCaption',
+    }
+);
+
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
 

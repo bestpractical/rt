@@ -2170,7 +2170,7 @@ sub _ProcessObjectCustomFieldUpdates {
             next if defined $args{'ARGS'}->{'Values'} && length $args{'ARGS'}->{'Values'};
 
             # "Empty" values does not mean anything for Image and Binary fields
-            next if $cf_type =~ /^(?:Image|Binary)$/;
+            next if $cf_type =~ /^(?:Image|Binary|ImageWithCaption)$/;
 
             $arg = 'Values';
             $args{'ARGS'}->{'Values'} = undef;
