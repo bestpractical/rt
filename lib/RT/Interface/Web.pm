@@ -1350,6 +1350,14 @@ sub _FillCreateArgsFromWebArgs {
     my ($cf, $web_args, $create_args) = @_;
 
     my $key = "CustomField-".$cf->Id;
+
+    my $class = $cf->GetTypeClass;
+
+    if ($class && $class->can('CreateArgsFromWebArgs')) {
+        $create_args->{$key} = $class->CreateArgsFromWebArgs($cf, $web_args);
+        return;
+    }
+
     for my $arg (keys %$web_args) {
         next if $arg =~ /^(?:Magic|Category)$/;
         if ( $arg eq 'Upload' ) {
