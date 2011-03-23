@@ -1191,9 +1191,10 @@ Set(%FullTextSearch,
 
 =item C<$DontSearchFileAttachments>
 
+This refers to F<sbin/rt-setup-fulltext-index>.
+
 If C<$DontSearchFileAttachments> is set to 1, then uploaded files
-(attachments with file names) are not searched during full-content
-ticket searches.
+(attachments with file names) are not indexed.
 
 =cut
 
@@ -1201,8 +1202,13 @@ Set($DontSearchFileAttachments, undef);
 
 =item C<$DontSearchBinaryAttachments>
 
+This refers to F<sbin/rt-setup-fulltext-index>.
+
+By default, text attachments are always indexed, and a known set of
+binary attachments are always skipped.
+
 If C<$DontSearchBinaryAttachments> is set to 1, then unrecognized binary
-data types will not be searched during full-content ticket searches.
+data types will not be indexed.
 
 =cut
 
