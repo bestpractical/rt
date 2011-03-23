@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 use strict;
 use warnings;
 use RT::Test nodb => 1, tests => 6;
