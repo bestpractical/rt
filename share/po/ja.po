@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-28 20:38+0000\n"
-"PO-Revision-Date: 2011-01-11 03:06+0000\n"
-"Last-Translator: KURASHIKI Satoru <Unknown>\n"
+"POT-Creation-Date: 2011-03-17 11:52+0000\n"
+"PO-Revision-Date: 2011-03-18 22:17+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-14 09:56+0000\n"
-"X-Generator: Launchpad (build 12568)\n"
+"X-Launchpad-Export-Date: 2011-03-23 16:02+0000\n"
+"X-Generator: Launchpad (build 12633)\n"
 "X-Poedit-Country: JAPAN\n"
 "X-Poedit-SearchPath-0: \n"
 "X-Poedit-Basepath: /usr/local/share/request-tracker3.8/\n"
@@ -131,7 +131,7 @@ msgstr "%1の%2を保存しました"
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1「%2」を更新しました"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:14
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -369,12 +369,12 @@ msgstr "%1分"
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
-msgstr "%1 件の最近更新された記事"
+msgstr "%1件の最近更新された記事"
 
 #: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
 msgid "%1 newest articles"
-msgstr ""
+msgstr "%1件の最新記事"
 
 #: etc/initialdata:563
 msgid "%1 newest unowned tickets"
@@ -414,16 +414,16 @@ msgstr "%1はグループチケットのすべてのメンバーを解決状態�
 
 #: lib/RT/CustomField.pm:1094
 msgid "%1's %2 objects"
-msgstr ""
+msgstr "%1の%2オブジェクト"
 
 #: lib/RT/CustomField.pm:1095
 msgid "%1's %2's %3 objects"
-msgstr ""
+msgstr "%1の%2の%3オブジェクト"
 
 #: share/html/Admin/Users/GnuPG.html:107
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
-msgstr ""
+msgstr "%1 の GnuPG 鍵"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
@@ -483,7 +483,7 @@ msgstr "%1秒"
 #: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
 msgid "%quant(%1,article)"
-msgstr ""
+msgstr "%1件の記事"
 
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
@@ -526,7 +526,7 @@ msgstr "(削除するにはボックスをチェック)"
 
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
-msgstr ""
+msgstr "削除するにはボックスをチェック"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check boxes to disable notifications to the listed recipients)"
@@ -596,7 +596,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:59 share/html/Articles/Article/Elements/EditTopics:76 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:136 share/html/Articles/Topics.html:238 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(名前なし)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264 share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
@@ -959,7 +959,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:82
 msgid "All Dashboards"
-msgstr ""
+msgstr "すべてのダッシュボード"
 
 #: share/html/Admin/Queues/index.html:110
 msgid "All Queues"
@@ -1085,22 +1085,22 @@ msgstr ""
 #: share/html/Articles/Article/Delete.html:99
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
-msgstr ""
+msgstr "記事「%1」を削除しました"
 
 #: share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
 msgid "Article #%1: %2"
-msgstr ""
+msgstr "記事「%1」: %2"
 
 #: lib/RT/URI/fsck_com_article.pm:207
 #. ($self->Object->id)
 msgid "Article %1"
-msgstr ""
+msgstr "記事「%1」"
 
 #: lib/RT/Article.pm:215
 #. ($self->id)
 msgid "Article %1 created"
-msgstr ""
+msgstr "記事「%1」を作成しました"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
@@ -1108,15 +1108,15 @@ msgstr ""
 
 #: lib/RT/Article.pm:323
 msgid "Article Deleted"
-msgstr ""
+msgstr "記事を削除しました"
 
 #: share/html/Articles/Article/Display.html:76 share/html/Articles/Article/Elements/ShowHistory:64 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
-msgstr ""
+msgstr "記事が見つかりません"
 
 #: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:173 share/html/Elements/Tabs:179 share/html/Elements/Tabs:96
 msgid "Articles"
-msgstr ""
+msgstr "記事"
 
 #: share/html/Articles/Topics.html:130
 #. ($currtopic->Name)
@@ -1201,9 +1201,9 @@ msgstr "8"
 msgid "August"
 msgstr "8月"
 
-#: share/html/Admin/Tools/Theme.html:279
-#. (                . " because you uploaded an image type that your installed version"                . " of GD doesn't support. Supported types are: [_1]."                . " You can recompile libgd and GD.pm to include support for other image types.",                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
-msgid "Automatically suggested theme colors aren't available for your image. This might be"
+#: share/html/Admin/Tools/Theme.html:277
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
 #: etc/initialdata:196
@@ -1976,7 +1976,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:231
 msgid "Create a new article"
-msgstr ""
+msgstr "記事の作成"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
@@ -2026,7 +2026,7 @@ msgstr "チケット作成"
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
-msgstr ""
+msgstr "記事の作成"
 
 #: share/html/Articles/Article/PreCreate.html:48 share/html/Articles/Article/PreCreate.html:49
 msgid "Create an article in class..."
@@ -2122,7 +2122,7 @@ msgstr "作成日"
 
 #: share/html/Elements/ColumnMap:76
 msgid "Created By"
-msgstr ""
+msgstr "作成者"
 
 #: share/html/Admin/CustomFields/Modify.html:179 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name())
@@ -2132,7 +2132,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
-msgstr ""
+msgstr "作成者"
 
 #: NOT FOUND IN SOURCE
 msgid "Created in a date range"
@@ -2451,7 +2451,7 @@ msgstr "テンプレートの削除"
 #: share/html/Articles/Article/Delete.html:103
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
-msgstr ""
+msgstr "記事「%1」の削除"
 
 #: lib/RT/Class.pm:98
 msgid "Delete articles in this class"
@@ -2627,7 +2627,7 @@ msgstr ""
 #: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
-msgstr ""
+msgstr "記事「%1」の表示"
 
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
@@ -3044,7 +3044,7 @@ msgstr "その他の情報"
 
 #: share/html/Elements/Tabs:534
 msgid "Extract Article"
-msgstr ""
+msgstr "記事を採取する"
 
 #: etc/initialdata:97 etc/upgrade/3.8.3/content:75
 msgid "Extract Subject Tag"
@@ -3053,7 +3053,7 @@ msgstr ""
 #: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 #. ($Ticket)
 msgid "Extract a new article from ticket #%1"
-msgstr ""
+msgstr "チケット「%1」から新しい記事を採取する"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:48
 #. ($Ticket, $ClassObj->Name)
@@ -3520,7 +3520,7 @@ msgstr "更新履歴"
 #: share/html/Articles/Article/History.html:52
 #. ($id)
 msgid "History for article #%1"
-msgstr ""
+msgstr "記事「%1」の履歴"
 
 #: share/html/Admin/Groups/History.html:59
 #. ($GroupObj->Name)
@@ -3629,7 +3629,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
-msgstr ""
+msgstr "記事を含める"
 
 #: share/html/Admin/Articles/Classes/index.html:68
 msgid "Include disabled classes in listing."
@@ -4443,7 +4443,7 @@ msgstr ""
 #: share/html/Articles/Article/Edit.html:209 share/html/Articles/Article/Edit.html:317
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
-msgstr ""
+msgstr "記事「％１」を更新"
 
 #: share/html/Admin/Articles/Classes/Objects.html:147 share/html/Admin/CustomFields/Objects.html:155
 #. ($CF->Name)
@@ -4586,7 +4586,7 @@ msgstr ""
 #: share/html/Dashboards/Modify.html:126
 #. ($Dashboard->Name)
 msgid "Modify the dashboard %1"
-msgstr ""
+msgstr "ダッシュボード「%1」を更新"
 
 #: share/html/Elements/Tabs:196
 msgid "Modify the default \"RT at a glance\" view"
@@ -4600,7 +4600,7 @@ msgstr "グループ%1を変更"
 #: share/html/Dashboards/Subscription.html:270
 #. ($DashboardObj->Name)
 msgid "Modify the subscription to dashboard %1"
-msgstr ""
+msgstr "ダッシュボード「%1」の予約購読を更新"
 
 #: share/html/Admin/Users/Modify.html:296
 #. ($UserObj->Name)
@@ -4782,7 +4782,7 @@ msgstr "私の一日"
 
 #: share/html/Elements/Tabs:109
 msgid "My Reminders"
-msgstr ""
+msgstr "私のリマインダ"
 
 #: share/html/Approvals/index.html:48
 msgid "My approvals"
@@ -4794,7 +4794,7 @@ msgstr "私のダッシュボード"
 
 #: share/html/Elements/MyReminders:51 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
-msgstr ""
+msgstr "私のリマインダ"
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:54 share/html/Elements/SavedSearches:54 share/html/Search/Elements/SearchPrivacy:55
 msgid "My saved searches"
@@ -4830,11 +4830,11 @@ msgstr "新規"
 
 #: share/html/Elements/Tabs:674
 msgid "New Article"
-msgstr ""
+msgstr "新しい記事"
 
 #: share/html/Elements/Tabs:86
 msgid "New Dashboard"
-msgstr ""
+msgstr "新しいダッシュボード"
 
 #: share/html/Elements/EditLinks:118 share/html/Ticket/Elements/BulkLinks:122
 msgid "New Links"
@@ -5044,7 +5044,7 @@ msgstr "そのチケットを表示する許可がありません"
 
 #: share/html/Articles/Article/Delete.html:94
 msgid "No permission to modify article"
-msgstr ""
+msgstr "記事を更新する許可がされていません"
 
 #: share/html/Search/Elements/EditSearches:243
 msgid "No permission to save system-wide searches"
@@ -5056,7 +5056,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Edit.html:324
 msgid "No permission to view Article"
-msgstr ""
+msgstr "記事を表示する許可がされていません"
 
 #: share/html/SelfService/Update.html:101
 msgid "No permission to view update ticket"
@@ -6111,13 +6111,13 @@ msgstr ""
 
 #: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:79
 msgid "Reminder"
-msgstr ""
+msgstr "リマインダ"
 
 #: lib/RT/Interface/Web.pm:2017 lib/RT/Transaction.pm:950
 #. ($ticket->Subject)
 #. ($args->{'NewReminder-Subject'})
 msgid "Reminder '%1' added"
-msgstr ""
+msgstr "リマインダ「%1」を追加しました"
 
 #: lib/RT/Transaction.pm:963
 #. ($ticket->Subject)
@@ -6136,7 +6136,7 @@ msgstr "リマインダ通知"
 #: share/html/Ticket/Reminders.html:48
 #. ($Ticket->Id)
 msgid "Reminders for ticket #%1"
-msgstr ""
+msgstr "チケット#%1のリマインダ"
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -7144,7 +7144,7 @@ msgstr "予約購読"
 #: share/html/Dashboards/Subscription.html:264
 #. ($msg)
 msgid "Subscription could not be created: %1"
-msgstr ""
+msgstr "予約購読することができませんでした: %1"
 
 #: lib/RT/Attachment.pm:739
 msgid "Successfuly decrypted data"
@@ -7871,7 +7871,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Delete.html:89 share/html/Articles/Article/Edit.html:239
 msgid "Unable to load article"
-msgstr ""
+msgstr "記事が見つかりません"
 
 #: share/html/Admin/Tools/Theme.html:237
 #. ($msg)
@@ -7945,7 +7945,7 @@ msgstr "無制限"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:63
 msgid "Unnamed dashboard"
-msgstr ""
+msgstr "名前なしのダッシュボード"
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:60 share/html/Elements/RT__SavedSearch/ColumnMap:63 share/html/Search/Elements/SelectSearchesForObjects:63
 msgid "Unnamed search"
@@ -8599,7 +8599,7 @@ msgid "Your request was rejected."
 msgstr "あなたのリクエストは拒否されました。"
 
 #: share/html/Admin/Tools/Theme.html:65
-#. (join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
+#. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 

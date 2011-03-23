@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-28 20:38+0000\n"
-"PO-Revision-Date: 2011-02-09 08:37+0000\n"
-"Last-Translator: torben <Unknown>\n"
+"POT-Creation-Date: 2011-03-17 11:52+0000\n"
+"PO-Revision-Date: 2011-03-22 15:26+0000\n"
+"Last-Translator: Florian Wallner <fwallner@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-14 09:57+0000\n"
-"X-Generator: Launchpad (build 12568)\n"
+"X-Launchpad-Export-Date: 2011-03-23 16:01+0000\n"
+"X-Generator: Launchpad (build 12633)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -34,7 +34,7 @@ msgstr " (unzuverlässig!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
-msgstr "#"
+msgstr "Nr"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:187
 #. ($TicketObj->Id, $TicketObj->Subject || '')
@@ -495,7 +495,7 @@ msgstr ""
 #: share/html/Admin/Tools/Queries.html:109
 #. (sprintf('%.4f', $duration))
 msgid "%1s"
-msgstr ""
+msgstr "%1 Sek."
 
 #: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
@@ -711,7 +711,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
-msgstr ""
+msgstr "Hier <%$Action%>"
 
 #: NOT FOUND IN SOURCE
 msgid "<%$_%>"
@@ -1294,9 +1294,9 @@ msgstr "Aug."
 msgid "August"
 msgstr "August"
 
-#: share/html/Admin/Tools/Theme.html:279
-#. (                . " because you uploaded an image type that your installed version"                . " of GD doesn't support. Supported types are: [_1]."                . " You can recompile libgd and GD.pm to include support for other image types.",                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
-msgid "Automatically suggested theme colors aren't available for your image. This might be"
+#: share/html/Admin/Tools/Theme.html:277
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
 #: etc/initialdata:196
@@ -2239,7 +2239,7 @@ msgstr "Anfrage erzeugen"
 
 #: lib/RT/Queue.pm:112
 msgid "Create tickets"
-msgstr ""
+msgstr "Ticket anlegen"
 
 #: NOT FOUND IN SOURCE
 msgid "Create tickets in this queue"
@@ -2864,7 +2864,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:457
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
@@ -3102,7 +3102,7 @@ msgstr "Email"
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "Email Address"
-msgstr ""
+msgstr "E-Mail-Adresse"
 
 #: NOT FOUND IN SOURCE
 msgid "Email Configuration"
@@ -3449,7 +3449,7 @@ msgstr "Februar"
 
 #: share/html/Elements/Tabs:617
 msgid "Feeds"
-msgstr ""
+msgstr "Feeds"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:62
 msgid "Field"
@@ -4500,7 +4500,7 @@ msgstr "Adresse"
 
 #: lib/RT/Interface/Web.pm:633
 msgid "Logged in"
-msgstr ""
+msgstr "Angemeldet"
 
 #: NOT FOUND IN SOURCE
 msgid "Logged in as %1"
@@ -9372,7 +9372,7 @@ msgid "Your request was rejected."
 msgstr "Ihre Anfrage wurde abgewiesen"
 
 #: share/html/Admin/Tools/Theme.html:65
-#. (join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can))
+#. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 
