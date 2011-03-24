@@ -68,23 +68,41 @@
 </tr>
 <tr>
 <td>&nbsp;</td>
-<td><input type="checkbox" name="Enabled" value="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this class)</&></td>
+<td>
+    <input type="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
+    <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
+</td>
 </tr>
 <tr>
 <td>&nbsp;</td>
-<td><input type="checkbox" name="HotList" value="1" <%$HotListChecked%>> <&|/l&>All Articles in this class should be listed in a dropdown of the ticket reply page</&></td>
+<td>
+    <input type="checkbox" id="HotList" name="HotList" value="1" <%$HotListChecked%>>
+    <label for="HotList"><&|/l&>All Articles in this class should be listed in a dropdown of the ticket reply page</&></label>
+</td>
 </tr>
 </table>
 
 <h3>When inserting articles in this class into emails:</h3>
 <ul>
-<li><input type="checkbox" name="Include-Name" value="1" <% $include{Name} %>> Include article name</li>
-<li><input type="checkbox" name="Include-Summary" value="1" <% $include{Summary} %>> Include article summary</li>
+<li>
+    <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
+    <label for="Include-Name"><&|/l&>Include article name</&></label>
+</li>
+<li>
+    <input type="checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
+    <label for="Include-Summary"><&|/l&>Include article summary</&></label>
+</li>
 % while (my $cf = $cfs->Next) {
 <li>Include custom field '<% $cf->Name %>'
   <ul>
-    <li><input type="checkbox" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />Title</li>
-    <li><input type="checkbox" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />Value</li>
+    <li>
+        <input type="checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
+        <label for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
+    </li>
+    <li>
+        <input type="checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
+        <label for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
+    </li>
   </ul>
 </li>
 % }
