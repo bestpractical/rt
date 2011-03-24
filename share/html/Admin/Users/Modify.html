@@ -103,12 +103,13 @@
 <br />
 <&| /Widgets/TitleBox, title => loc('Access control') &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> />
-<&|/l&>Let this user access RT</&><br />
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+<label for="Enabled"><&|/l&>Let this user access RT</&></label><br />
 
 
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-<input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked||''%> /> <&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)<br />
+<input type="checkbox" class="checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked||''%> />
+<label for="Privileged"><&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)</label><br />
 
 <& /Elements/EditPassword,
     User => $UserObj,
