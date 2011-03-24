@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rt\n"
+"Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: HI Help <help@hi.is>\n"
 "POT-Creation-Date: 2011-03-24 11:43+0000\n"
 "PO-Revision-Date: 2010-12-28 22:01+0000\n"

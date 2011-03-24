@@ -4,7 +4,7 @@
 # Fernando Frota Machado de Morais <frota@cecom.ufmg.br>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.8.x\n"
+"Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-24 11:43+0000\n"
 "PO-Revision-Date: 2010-04-27 02:52+0000\n"

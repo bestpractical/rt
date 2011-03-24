@@ -2,7 +2,7 @@
 # First Author: Burak Gürsoy <burak@cpan.org>, Jun 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.8.x\n"
+"Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-24 11:43+0000\n"
 "PO-Revision-Date: 2010-05-18 11:20+0000\n"

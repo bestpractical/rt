@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rt\n"
+"Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-03-24 11:43+0000\n"
 "PO-Revision-Date: 2011-03-15 16:08+0000\n"
