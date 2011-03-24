@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-24 11:43+0000\n"
 "PO-Revision-Date: 2010-12-28 22:39+0000\n"
 "Last-Translator: Kevin Falcone <Unknown>\n"
