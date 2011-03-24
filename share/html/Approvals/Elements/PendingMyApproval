@@ -55,13 +55,20 @@
 % }
 
 <&| /Widgets/TitleBox, title => loc("Search for approvals") &>
-<input type="checkbox" class="checkbox" value="1" name="ShowPending"
+<input type="checkbox" class="checkbox" value="1" id="ShowPending" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})
-        && qq[checked="checked"] |n%> /> <&|/l&>Show pending requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> /> <&|/l&>Show approved requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
+        && qq[checked="checked"] |n%> />
+<label for="ShowPending"><&|/l&>Show pending requests</&></label><br />
+
+<input type="checkbox" class="checkbox" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
+<label for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
+
+<input type="checkbox" class="checkbox" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
+<label for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
+
+<input type="checkbox" class="checkbox" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
+<label for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
 
 <&|/l, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
 

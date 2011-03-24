@@ -53,11 +53,13 @@
 <form method="post" action="Quicksearch.html" name="Preferences">
 <ul>
 % for my $queue (@queues) {
-<li><input type="checkbox" class="checkbox" name="Want-<%$queue->Name%>" value="1"
+<li><input type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 checked="checked"
 % }
-/><%$queue->Name%>: <%$queue->Description%></li>
+/>
+<label for="Want-<%$queue->Name%>"><%$queue->Name%>: <%$queue->Description%></label>
+</li>
 % }
 </ul>
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
