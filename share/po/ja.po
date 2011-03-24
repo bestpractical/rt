@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-17 11:52+0000\n"
-"PO-Revision-Date: 2011-03-18 22:17+0000\n"
+"POT-Creation-Date: 2011-03-24 11:43+0000\n"
+"PO-Revision-Date: 2011-03-23 17:20+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-23 16:02+0000\n"
+"X-Launchpad-Export-Date: 2011-03-24 20:32+0000\n"
 "X-Generator: Launchpad (build 12633)\n"
 "X-Poedit-Country: JAPAN\n"
 "X-Poedit-SearchPath-0: \n"
@@ -270,7 +270,7 @@ msgstr "%1は「%2」から「%3」に変更されました"
 #: share/html/Admin/CustomFields/Modify.html:210
 #. (loc("Render Type"), $original, $RenderType)
 msgid "%1 changed from '%2' to '%3'"
-msgstr ""
+msgstr "%1は「%2」から「%3」に変更されました"
 
 #: share/html/Search/Chart.html:2
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
@@ -359,7 +359,7 @@ msgstr "%1はもうカスタムフィールド%2の値ではありません"
 #: lib/RT/Queue.pm:273
 #. ($value)
 msgid "%1 is not valid lifecycle"
-msgstr ""
+msgstr "%1は無効な生活環です"
 
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
@@ -685,7 +685,7 @@ msgstr ""
 #: share/html/Admin/Tools/Queries.html:80
 #. ($request->{Path}, sprintf('%.4f', $total))
 msgid "<tt>%1</tt> - <i>%2s</i>"
-msgstr ""
+msgstr "<tt>%1</tt> - <i>%2秒</i>"
 
 #: etc/initialdata:193
 msgid "A blank template"
@@ -975,7 +975,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
-msgstr ""
+msgstr "すべてのチケット"
 
 #: share/html/Articles/Topics.html:52
 msgid "All topics"
@@ -1245,7 +1245,7 @@ msgstr "本当に変更を保存しますか"
 
 #: etc/initialdata:192
 msgid "Blank"
-msgstr ""
+msgstr "空"
 
 #: share/html/Dashboards/Queries.html:179
 msgid "Body"
@@ -1265,11 +1265,11 @@ msgstr ""
 
 #: etc/initialdata:576 etc/upgrade/3.7.82/content:3
 msgid "Bookmarked Tickets"
-msgstr ""
+msgstr "ブックマークのチケット"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "ブックマークのチケット"
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
@@ -3738,7 +3738,7 @@ msgstr ""
 #: share/html/Admin/Elements/EditRights:125
 #. ($type)
 msgid "Invalid %1"
-msgstr ""
+msgstr "%1 には無効な値です"
 
 #: share/html/Articles/Article/Search.html:166
 #. ('LoadSavedSearch')
@@ -3792,7 +3792,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:416
 msgid "Invalid lifecycle name"
-msgstr ""
+msgstr "%1は無効な生活環です"
 
 #: lib/RT/CustomField.pm:1370
 msgid "Invalid object"
@@ -3999,7 +3999,7 @@ msgstr "Let's go!"
 
 #: share/html/Admin/Queues/Modify.html:67
 msgid "Lifecycle"
-msgstr ""
+msgstr "生活環"
 
 #: share/html/Search/Elements/EditFormat:67
 msgid "Link"
@@ -6144,7 +6144,7 @@ msgstr "管理Ccを削除する"
 
 #: share/html/Ticket/Elements/Bookmark:88
 msgid "Remove Bookmark"
-msgstr ""
+msgstr "ブックマークの削除"
 
 #: share/html/Search/Bulk.html:91
 msgid "Remove Cc"

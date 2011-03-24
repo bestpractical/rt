@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-17 11:52+0000\n"
-"PO-Revision-Date: 2011-03-23 16:00+0000\n"
+"POT-Creation-Date: 2011-03-24 11:43+0000\n"
+"PO-Revision-Date: 2011-03-23 16:08+0000\n"
 "Last-Translator: Emmanuel Lacour <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-23 16:01+0000\n"
+"X-Launchpad-Export-Date: 2011-03-24 20:34+0000\n"
 "X-Generator: Launchpad (build 12633)\n"
 
 #: NOT FOUND IN SOURCE
@@ -1299,7 +1299,7 @@ msgstr "Essentiel"
 
 #: share/html/Ticket/Forward.html:70
 msgid "Bcc"
-msgstr ""
+msgstr "Cci"
 
 #: NOT FOUND IN SOURCE
 msgid "Be sure to save your changes"
@@ -1335,7 +1335,7 @@ msgstr "Tickets favoris"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "Tickets favoris"
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
@@ -1347,7 +1347,7 @@ msgstr "Parcourir par rubrique"
 
 #: share/html/Elements/Tabs:206
 msgid "Browse the SQL queries made in this process"
-msgstr ""
+msgstr "Parcourir les requêtes SQL exécutées par ce processus"
 
 #: share/html/Elements/Tabs:613
 msgid "Bulk Update"
@@ -1453,7 +1453,7 @@ msgstr "Changer"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
-msgstr ""
+msgstr "Passer le ticket d'approbation en statut ouvert"
 
 #: share/html/SelfService/Prefs.html:53
 msgid "Change password"
@@ -2899,7 +2899,7 @@ msgstr "Mise à jour facile de vos tickets ouverts"
 
 #: share/html/Elements/Tabs:110
 msgid "Easy viewing of your reminders"
-msgstr ""
+msgstr "Accès rapide à vos rappels"
 
 #: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:694 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
@@ -6890,7 +6890,7 @@ msgstr "Préférences de recherche"
 
 #: share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles articles matching"
-msgstr ""
+msgstr "Rechercher des articles d'articles correspondant"
 
 #: share/html/Articles/Elements/BeforeMessageBox:55
 msgid "Search for Articles matching"
@@ -9363,7 +9363,7 @@ msgstr "groupe '%1'"
 
 #: share/html/Ticket/Elements/ShowHistory:82
 msgid "hide quoted text"
-msgstr ""
+msgstr "cacher le texte cité"
 
 #: lib/RT/Date.pm:346
 msgid "hours"
@@ -9381,16 +9381,16 @@ msgstr "n°"
 #. ($Class->Name)
 #. ($class->Name)
 msgid "in class %1"
-msgstr ""
+msgstr "dans la classe %1"
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsInactive:48
 msgid "inactive"
-msgstr ""
+msgstr "inactifs"
 
 #: share/html/Admin/Elements/EditRights:153
 #. ($inc)
 msgid "includes %1"
-msgstr ""
+msgstr "inclus %1"
 
 #: share/html/Admin/Tools/Queries.html:85
 msgid "index"
@@ -9499,7 +9499,7 @@ msgstr "le jour"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "one"
-msgstr ""
+msgstr "une"
 
 #: lib/RT/Queue.pm:84 share/html/SelfService/Elements/MyRequests:76
 msgid "open"
@@ -9540,7 +9540,7 @@ msgstr "rejeté"
 
 #: share/html/Admin/Queues/Modify.html:97
 msgid "requires running rt-crontool"
-msgstr ""
+msgstr "nécessite l'utilisation de rt-crontool"
 
 #: lib/RT/Queue.pm:86
 msgid "resolved"
@@ -9568,11 +9568,11 @@ msgstr "montrer l'onglet de configuration"
 
 #: share/html/Ticket/Elements/ShowHistory:83
 msgid "show quoted text"
-msgstr ""
+msgstr "afficher le texte cité"
 
 #: share/html/Admin/Tools/Configuration.html:80
 msgid "site config"
-msgstr ""
+msgstr "configuration du site"
 
 #: lib/RT/Queue.pm:85
 msgid "stalled"
@@ -9580,7 +9580,7 @@ msgstr "stagnant"
 
 #: share/html/Admin/Tools/Queries.html:87
 msgid "statement"
-msgstr ""
+msgstr "requête"
 
 #: share/html/Admin/Global/MyRT.html:89
 msgid "summary"
