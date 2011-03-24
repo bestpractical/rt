@@ -80,8 +80,8 @@
 <table>
 <tr><td class="label"> <&|/l&>Make Owner</&>: </td>
 <td class="value"> <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
-(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
- <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>) </td></tr>
+<label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
+<% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
 <tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
 <td class="value"> <input name="AddRequestor" size="20" value="<% $ARGS{AddRequestor} || '' %>" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
