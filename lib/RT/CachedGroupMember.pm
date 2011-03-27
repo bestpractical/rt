@@ -96,12 +96,11 @@ Create takes a hash of values and creates a row in the database:
 
 sub Create {
     my $self = shift;
-    my %args = ( Group           => '',
-                 Member          => '',
-                 ImmediateParent => '',
-                 Via             => '0',
-                 Disabled        => '0',
-                 @_ );
+    my %args = (
+        Group           => undef,
+        Member          => undef,
+        @_
+    );
 
     unless (    $args{'Member'}
              && UNIVERSAL::isa( $args{'Member'}, 'RT::Principal' )
@@ -115,71 +114,93 @@ sub Create {
         $RT::Logger->debug("$self->Create: bogus Group argument");
     }
 
-    unless (    $args{'ImmediateParent'}
-             && UNIVERSAL::isa( $args{'ImmediateParent'}, 'RT::Principal' )
-             && $args{'ImmediateParent'}->Id ) {
-        $RT::Logger->debug("$self->Create: bogus ImmediateParent argument");
-    }
+    $args{'Disabled'} = $args{'Group'}->Disabled? 1 : 0;
 
-    # If the parent group for this group member is disabled, it's disabled too, along with all its children
-    if ( $args{'ImmediateParent'}->Disabled ) {
-        $args{'Disabled'} = $args{'ImmediateParent'}->Disabled;
-    }
+    $self->LoadByCols(
+        GroupId           => $args{'Group'}->Id,
+        MemberId          => $args{'Member'}->Id,
+    );
 
-    my $id = $self->SUPER::Create(
-                              GroupId           => $args{'Group'}->Id,
-                              MemberId          => $args{'Member'}->Id,
-                              ImmediateParentId => $args{'ImmediateParent'}->Id,
-                              Disabled          => $args{'Disabled'},
-                              Via               => $args{'Via'}, );
-
-    unless ($id) {
-        $RT::Logger->warning( "Couldn't create "
-                           . $args{'Member'}
-                           . " as a cached member of "
-                           . $args{'Group'}->Id . " via "
-                           . $args{'Via'} );
-        return (undef);  #this will percolate up and bail out of the transaction
-    }
-    if ( $self->__Value('Via') == 0 ) {
-        my ( $vid, $vmsg ) = $self->__Set( Field => 'Via', Value => $id );
-        unless ($vid) {
-            $RT::Logger->warning( "Due to a via error, couldn't create "
-                               . $args{'Member'}
-                               . " as a cached member of "
-                               . $args{'Group'}->Id . " via "
-                               . $args{'Via'} );
-            return (undef)
-              ;          #this will percolate up and bail out of the transaction
+    my $id;
+    if ( $id = $self->id ) {
+        if ( $self->Disabled != $args{'Disabled'} && $args{'Disabled'} == 0 ) {
+            my ($status) = $self->SetDisabled( 0 );
+            return undef unless $status;
         }
+        return $id;
     }
 
+    ($id) = $self->SUPER::Create(
+        GroupId           => $args{'Group'}->Id,
+        MemberId          => $args{'Member'}->Id,
+        Disabled          => $args{'Disabled'},
+    );
+    unless ($id) {
+        $RT::Logger->warning(
+            "Couldn't create ". $args{'Member'} ." as a cached member of "
+            . $args{'Group'} ." via ". $args{'Via'}
+        );
+        return (undef);
+    }
     return $id if $args{'Member'}->id == $args{'Group'}->id;
 
-    if ( $args{'Member'}->IsGroup() ) {
-        my $GroupMembers = $args{'Member'}->Object->MembersObj();
-        while ( my $member = $GroupMembers->Next() ) {
-            my $cached_member =
-              RT::CachedGroupMember->new( $self->CurrentUser );
-            my $c_id = $cached_member->Create(
-                                             Group  => $args{'Group'},
-                                             Member => $member->MemberObj,
-                                             ImmediateParent => $args{'Member'},
-                                             Disabled => $args{'Disabled'},
-                                             Via      => $id );
-            unless ($c_id) {
-                return (undef);    #percolate the error upwards.
-                     # the caller will log an error and abort the transaction
-            }
-
-        }
+    my $table = $self->Table;
+    if ( !$args{'Disabled'} && $args{'Member'}->IsGroup ) {
+        # update existing records, in case we activated some paths
+        my $query = "
+            SELECT CGM3.id FROM
+                $table CGM1 CROSS JOIN $table CGM2
+                JOIN $table CGM3
+                    ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+            WHERE
+                CGM1.MemberId = ? AND (CGM1.GroupId != CGM1.MemberId OR CGM1.MemberId = ?)
+                AND CGM2.GroupId = ? AND (CGM2.GroupId != CGM2.MemberId OR CGM2.GroupId = ?)
+                AND CGM1.Disabled = 0 AND CGM2.Disabled = 0 AND CGM3.Disabled > 0
+        ";
+        $RT::Handle->SimpleUpdateFromSelect(
+            $table, { Disabled => 0 }, $query,
+            $args{'Group'}->id, $args{'Group'}->id,
+            $args{'Member'}->id, $args{'Member'}->id
+        ) or return undef;
     }
 
-    return ($id);
+    my @binds;
 
+    my $disabled_clause;
+    if ( $args{'Disabled'} ) {
+        $disabled_clause = '?';
+        push @binds, $args{'Disabled'};
+    } else {
+        $disabled_clause = 'CASE WHEN CGM1.Disabled + CGM2.Disabled > 0 THEN 1 ELSE 0 END';
+    }
+
+    my $query = "SELECT CGM1.GroupId, CGM2.MemberId, $disabled_clause FROM
+        $table CGM1 CROSS JOIN $table CGM2
+        LEFT JOIN $table CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+        WHERE
+            CGM1.MemberId = ? AND (CGM1.GroupId != CGM1.MemberId OR CGM1.MemberId = ?)
+            AND CGM3.id IS NULL
+    ";
+    push @binds, $args{'Group'}->id, $args{'Group'}->id;
+
+    if ( $args{'Member'}->IsGroup ) {
+        $query .= "
+            AND CGM2.GroupId = ?
+            AND (CGM2.GroupId != CGM2.MemberId OR CGM2.GroupId = ?)
+        ";
+        push @binds, $args{'Member'}->id, $args{'Member'}->id;
+    }
+    else {
+        $query .= " AND CGM2.id = ?";
+        push @binds, $id;
+    }
+    $RT::Handle->InsertFromSelect(
+        $table, ['GroupId', 'MemberId', 'Disabled'], $query, @binds,
+    );
+
+    return $id;
 }
-
-
 
 =head2 Delete
 
