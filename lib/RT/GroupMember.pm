@@ -124,6 +124,8 @@ sub Create {
         return (undef);
     }
 
+    my $gid = $args{'Group'}->id;
+    my $mid = $args{'Member'}->id;
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
@@ -143,7 +145,7 @@ sub Create {
             $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
             return(undef);
         }
-        elsif ( $args{'Member'}->Id == $args{'Group'}->Id) {
+        elsif ( $mid == $gid) {
             $RT::Logger->debug("Can't add a group to itself");
             $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
             return(undef);
@@ -152,8 +154,8 @@ sub Create {
 
 
     my $id = $self->SUPER::Create(
-        GroupId  => $args{'Group'}->Id,
-        MemberId => $args{'Member'}->Id
+        GroupId  => $gid,
+        MemberId => $mid
     );
 
     unless ($id) {
@@ -163,51 +165,9 @@ sub Create {
 
     my $cached_member = RT::CachedGroupMember->new( $self->CurrentUser );
     my $cached_id     = $cached_member->Create(
-        Member          => $args{'Member'},
         Group           => $args{'Group'},
-        ImmediateParent => $args{'Group'},
-        Via             => '0'
+        Member          => $args{'Member'},
     );
-
-
-    #When adding a member to a group, we need to go back
-    #and popuplate the CachedGroupMembers of all the groups that group is part of .
-
-    my $cgm = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-    # find things which have the current group as a member. 
-    # $group is an RT::Principal for the group.
-    $cgm->LimitToGroupsWithMember( $args{'Group'}->Id );
-    $cgm->Limit(
-        SUBCLAUSE => 'filter', # dont't mess up with prev condition
-        FIELD => 'MemberId',
-        OPERATOR => '!=',
-        VALUE => 'main.GroupId',
-        QUOTEVALUE => 0,
-        ENTRYAGGREGATOR => 'AND',
-    );
-
-    while ( my $parent_member = $cgm->Next ) {
-        my $parent_id = $parent_member->MemberId;
-        my $via       = $parent_member->Id;
-        my $group_id  = $parent_member->GroupId;
-
-          my $other_cached_member =
-          RT::CachedGroupMember->new( $self->CurrentUser );
-        my $other_cached_id = $other_cached_member->Create(
-            Member          => $args{'Member'},
-                      Group => $parent_member->GroupObj,
-            ImmediateParent => $parent_member->MemberObj,
-            Via             => $parent_member->Id
-        );
-        unless ($other_cached_id) {
-            $RT::Logger->err( "Couldn't add " . $args{'Member'}
-                  . " as a submember of a supergroup" );
-            $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
-            return (undef);
-        }
-    } 
-
     unless ($cached_id) {
         $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         return (undef);
@@ -290,50 +250,26 @@ Expects to be called _outside_ a transaction
 sub Delete {
     my $self = shift;
 
-
     $RT::Handle->BeginTransaction();
-
-    # Find all occurrences of this member as a member of this group
-    # in the cache and nuke them, recursively.
-
-    # The following code will delete all Cached Group members
-    # where this member's group is _not_ the primary group 
-    # (Ie if we're deleting C as a member of B, and B happens to be 
-    # a member of A, will delete C as a member of A without touching
-    # C as a member of B
-
-    my $cached_submembers = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-    $cached_submembers->Limit(
-        FIELD    => 'MemberId',
-        OPERATOR => '=',
-        VALUE    => $self->MemberObj->Id
-    );
-
-    $cached_submembers->Limit(
-        FIELD    => 'ImmediateParentId',
-        OPERATOR => '=',
-        VALUE    => $self->GroupObj->Id
-    );
-
-
-
-
-
-    while ( my $item_to_del = $cached_submembers->Next() ) {
-        my $del_err = $item_to_del->Delete();
-        unless ($del_err) {
-            $RT::Handle->Rollback();
-            $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->Id);
-            return (undef);
-        }
-    }
 
     my ($err, $msg) = $self->SUPER::Delete();
     unless ($err) {
-            $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
+        $RT::Logger->error("Couldn't delete cached group submember ".$self->Id);
         $RT::Handle->Rollback();
         return (undef);
+    }
+
+    my $cgm = RT::CachedGroupMember->new( $self->CurrentUser );
+    $cgm->LoadByCols( GroupId => $self->GroupId, MemberId => $self->MemberId, );
+    if ( $cgm->id ) {
+        my $status = $cgm->Delete;
+        unless ($status) {
+            $RT::Logger->error("Couldn't delete cached group member");
+            $RT::Handle->Rollback;
+            return (undef);
+        }
+    } else {
+        $RT::Logger->warning("There was no CGM record matching GM record");
     }
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -342,7 +278,6 @@ sub Delete {
 
     $RT::Handle->Commit();
     return ($err);
-
 }
 
 
