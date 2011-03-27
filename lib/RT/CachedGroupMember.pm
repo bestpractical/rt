@@ -213,36 +213,144 @@ mysql supported foreign keys with cascading deletes.
 sub Delete {
     my $self = shift;
 
-    
-    my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
-        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-        $deletable->Limit( FIELD    => 'id',
-                           OPERATOR => '!=',
-                           VALUE    => $self->id );
-        $deletable->Limit( FIELD    => 'Via',
-                           OPERATOR => '=',
-                           VALUE    => $self->id );
-
-        while ( my $kid = $deletable->Next ) {
-            my $kid_err = $kid->Delete();
-            unless ($kid_err) {
-                $RT::Logger->error(
-                              "Couldn't delete CachedGroupMember " . $kid->Id );
-                return (undef);
-            }
-        }
+    if ( $self->MemberId == $self->GroupId ) {
+        # deleting self-referenced means that we're deleting a principal
+        # itself and all records where it's a parent or member should
+        # be deleted beforehead
+        return $self->SUPER::Delete( @_ );
     }
-    my $ret = $self->SUPER::Delete();
-    unless ($ret) {
-        $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
-        return (undef);
+
+    my $table = $self->Table;
+
+    my $member_is_group = $self->MemberObj->IsGroup;
+
+    my $query;
+    if ( $member_is_group ) {
+        $query = "
+            SELECT CGM1.id FROM
+                CachedGroupMembers CGM1
+                JOIN CachedGroupMembers CGMA ON CGMA.MemberId = ?
+                JOIN CachedGroupMembers CGMD ON CGMD.GroupId = ?
+                LEFT JOIN GroupMembers GM1
+                    ON GM1.GroupId = CGM1.GroupId AND GM1.MemberId = CGM1.MemberId
+            WHERE
+                CGM1.GroupId = CGMA.GroupId AND CGM1.MemberId = CGMD.MemberId
+                AND CGM1.GroupId != CGM1.MemberId
+                AND GM1.id IS NULL
+        ";
     }
-    return $ret;
+    else {
+        $query = "
+            SELECT CGM1.id FROM
+                CachedGroupMembers CGM1
+                JOIN CachedGroupMembers CGMA ON CGMA.MemberId = ?
+                LEFT JOIN GroupMembers GM1
+                    ON GM1.GroupId = CGM1.GroupId AND GM1.MemberId = CGM1.MemberId
+            WHERE
+                CGM1.GroupId = CGMA.GroupId
+                AND CGM1.MemberId = ?
+                AND GM1.id IS NULL
+        ";
+    }
+
+    my $res = $RT::Handle->DeleteFromSelect(
+        $table, $query,
+        $self->GroupId, $self->MemberId,
+    );
+    return $res unless $res;
+
+    my @binds;
+    if ( $member_is_group ) {
+        $query =
+            "SELECT DISTINCT CGM1.GroupId, CGM2.MemberId, 1
+            FROM $table CGM1 CROSS JOIN $table CGM2
+            JOIN $table CGM3 ON CGM3.GroupId != CGM3.MemberId AND CGM3.GroupId = CGM1.GroupId
+            JOIN $table CGM4 ON CGM4.GroupId != CGM4.MemberId AND CGM4.MemberId = CGM2.MemberId
+                AND CGM3.MemberId = CGM4.GroupId
+            LEFT JOIN $table CGM5
+                ON CGM5.GroupId = CGM1.GroupId AND CGM5.MemberId = CGM2.MemberId
+            WHERE
+                CGM1.MemberId = ?
+                AND CGM2.GroupId = ?
+                AND CGM5.id IS NULL
+        ";
+        @binds = ($self->GroupId, $self->MemberId);
+
+    } else {
+        $query =
+            "SELECT DISTINCT CGM1.GroupId, ?, 1
+            FROM $table CGM1
+            JOIN $table CGM3 ON CGM3.GroupId != CGM3.MemberId AND CGM3.GroupId = CGM1.GroupId
+            JOIN $table CGM4 ON CGM4.GroupId != CGM4.MemberId AND CGM4.MemberId = ?
+                AND CGM3.MemberId = CGM4.GroupId
+            LEFT JOIN $table CGM5
+                ON CGM5.GroupId = CGM1.GroupId AND CGM5.MemberId = ?
+            WHERE
+                CGM1.MemberId = ?
+                AND CGM5.id IS NULL
+        ";
+        @binds = (
+            ($self->MemberId)x3,
+            $self->GroupId,
+        );
+    }
+
+    $res = $RT::Handle->InsertFromSelect(
+        $table, ['GroupId', 'MemberId', 'Disabled'], $query, @binds
+    );
+    return $res unless $res;
+
+    if ( $res > 0 && $member_is_group ) {
+        $query =
+            "SELECT main.id
+            FROM $table main
+            JOIN $table CGMA ON CGMA.MemberId = ?
+            JOIN $table CGMD ON CGMD.GroupId = ?
+
+            JOIN $table CGM3 ON CGM3.GroupId != CGM3.MemberId
+                AND CGM3.GroupId = main.GroupId
+                AND CGM3.Disabled = 0
+            JOIN $table CGM4 ON CGM4.GroupId != CGM4.MemberId
+                AND CGM4.MemberId = main.MemberId
+                AND CGM4.Disabled = 0
+                AND CGM3.MemberId = CGM4.GroupId
+            WHERE
+                main.GroupId = CGMA.GroupId
+                AND main.MemberId = CGMD.MemberId
+                AND main.Disabled = 1
+        ";
+    }
+    elsif ( $res > 0 ) {
+        $query =
+            "SELECT main.id
+            FROM $table main
+            JOIN $table CGMA ON CGMA.MemberId = ?
+
+            JOIN $table CGM3 ON CGM3.GroupId != CGM3.MemberId
+                AND CGM3.GroupId = main.GroupId
+                AND CGM3.Disabled = 0
+            JOIN $table CGM4 ON CGM4.GroupId != CGM4.MemberId
+                AND CGM4.MemberId = main.MemberId
+                AND CGM4.Disabled = 0
+                AND CGM3.MemberId = CGM4.GroupId
+            WHERE
+                main.GroupId = CGMA.GroupId
+                AND main.MemberId = ?
+                AND main.Disabled = 1
+        ";
+    }
+
+    $res = $RT::Handle->SimpleUpdateFromSelect(
+        $table, { Disabled => 0 }, $query,
+        $self->GroupId,
+        $self->MemberId,
+    ) if $res > 0;
+    return $res unless $res;
+
+    if ( my $m = $self->can('_FlushKeyCache') ) { $m->($self) };
+
+    return 1;
 }
-
-
 
 =head2 SetDisabled
 
