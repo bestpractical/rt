@@ -219,6 +219,7 @@ foreach my $arg ( keys %ARGS ) {
     for ( my $i = 0; $i < @ops; $i++ ) {
         my ( $op, $value ) = ( $ops[$i], $values[$i] );
         next if !defined $value || $value eq '';
+        my $rawvalue = $value;
 
         if ( $value eq 'NULL' && $op =~ /=/ ) {
             if ( $op eq '=' ) {
@@ -240,7 +241,8 @@ foreach my $arg ( keys %ARGS ) {
         my $clause = {
             Key   => $keyword,
             Op    => $op,
-            Value => $value
+            Value => $value,
+            RawValue => $rawvalue,
         };
 
         push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
