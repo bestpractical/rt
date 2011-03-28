@@ -326,22 +326,15 @@ CREATE SEQUENCE cachedgroupmembers_id_seq;
 
 CREATE TABLE CachedGroupMembers (
         id int DEFAULT nextval('cachedgroupmembers_id_seq'),
-        GroupId int, 
-        MemberId int, 
-        Via int, 
-        ImmediateParentId int, 
+        GroupId int NOT NULL,
+        MemberId int NOT NULL,
         Disabled integer NOT NULL DEFAULT 0 , 
         PRIMARY KEY (id)
 
 );
 
-CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId, GroupId, Disabled);
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
-CREATE INDEX CachedGroupMembers3  on CachedGroupMembers (MemberId,ImmediateParentId);
-
-
-
-
+CREATE UNIQUE INDEX CGM1 ON CachedGroupMembers (GroupId,MemberId);
+CREATE INDEX CGM2 ON CachedGroupMembers (MemberId);
 
 
 
