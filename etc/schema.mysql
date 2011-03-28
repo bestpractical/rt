@@ -203,12 +203,8 @@ CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
 
 create table CachedGroupMembers (
         id int auto_increment,
-        GroupId int, # foreign key to Principals
-        MemberId int, # foreign key to Principals
-        Via int, #foreign key to CachedGroupMembers. (may point to $self->id)
-        ImmediateParentId int, #foreign key to prinicpals.
-                               # this points to the group that the member is
-                               # a member of, for ease of deletes.
+        GroupId int NOT NULL, # foreign key to Principals
+        MemberId int NOT NULL, # foreign key to Principals
         Disabled int2 NOT NULL DEFAULT 0 , # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
@@ -217,9 +213,10 @@ create table CachedGroupMembers (
         PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
-CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
-
+# we can create UNIQUE ON (GroupId,MemberId), but it only a few bytes shorter than
+# the following and there is no need to do that
+CREATE UNIQUE INDEX CGM1 ON CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE UNIQUE INDEX CGM2 ON CachedGroupMembers (MemberId,GroupId,Disabled);
 
 
 CREATE TABLE Users (
