@@ -451,20 +451,19 @@ abort with a C<403> error.
 =cut
 
 sub MaybeRejectPrivateComponentRequest {
-    my $m = $HTML::Mason::Commands::m;
-    my $path = $m->base_comp->path;
+    my $path = $ENV{PATH_INFO};
 
     if ($path =~ m{
             / # leading slash
             ( Elements    |
               _elements   | # mobile UI
               Widgets     |
-              dhandler    |
-              autohandler |
+              dhandler    | # requesting this directly is suspicious
+              autohandler | # ditto
               l           ) # loc component
             ( $ | / ) # trailing slash or end of path
         }xi) {
-            $m->abort(403);
+            $HTML::Mason::Commands::m->abort(403);
     }
 
     return;
