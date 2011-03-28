@@ -451,6 +451,14 @@ abort with a C<403> error.
 =cut
 
 sub MaybeRejectPrivateComponentRequest {
+    # We must use PATH_INFO directly because $m->base_comp and $m->request_comp
+    # are resolved to a file on disk, which is too late. This means that
+    # requesting squished CSS looks like the user requested the dhandler
+    # directly. What we really want is the URL directly requested by the user.
+    # Unfortunately we don't keep the Plack::Request around. If we did, it'd be
+    # cleaner to use $request->path_info here. Either way, PATH_INFO is
+    # unescaped for us, so requesting /%61utohandler doesn't circumvent this
+    # check. See t/web/private-components.t
     my $path = $ENV{PATH_INFO};
 
     if ($path =~ m{
