@@ -48,7 +48,6 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
-$SecondaryGroupBy => undef
 $ChartStyle => 'bars'
 </%args>
 <%init>
