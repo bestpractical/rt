@@ -1095,16 +1095,13 @@ Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueu
 =item C<$UseSQLForACLChecks>
 
 Historically, ACLs were checked on display, which could lead to empty
-search pages and wrong ticket counts.  Set C<$UseSQLForACLChecks> to 1
-to limit search results in SQL instead, which eliminates these
-problems.
-
-This option is still relatively new; it may result in performance
-problems in some cases, or significant speedups in others.
+search pages and wrong ticket counts.  Set C<$UseSQLForACLChecks> to 0
+to go back to this method; this will reduce the complexity of the
+generated SQL statements, at the cost of the aforementioned bugs.
 
 =cut
 
-Set($UseSQLForACLChecks, undef);
+Set($UseSQLForACLChecks, 1);
 
 =item C<$TicketsItemMapSize>
 
