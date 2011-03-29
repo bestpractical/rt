@@ -1932,9 +1932,20 @@ sub OrderByCols {
            foreach my $uid ( $self->CurrentUser->Id, RT->Nobody->Id ) {
                if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
                    my $f = ($row->{'ALIAS'} || 'main') .'.Owner';
-                   push @res, { %$row, ALIAS => '', FIELD => "CASE WHEN $f=$uid THEN 1 ELSE 0 END", ORDER => $order } ;
+                   push @res, {
+                       %$row,
+                       FIELD => undef,
+                       ALIAS => '',
+                       FUNCTION => "CASE WHEN $f=$uid THEN 1 ELSE 0 END",
+                       ORDER => $order
+                   };
                } else {
-                   push @res, { %$row, FIELD => "Owner=$uid", ORDER => $order } ;
+                   push @res, {
+                       %$row,
+                       FIELD => undef,
+                       FUNCTION => "Owner=$uid",
+                       ORDER => $order
+                   };
                }
            }
 
