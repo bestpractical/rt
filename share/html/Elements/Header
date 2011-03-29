@@ -55,7 +55,7 @@
     <title><%$Title%></title>
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
-    <meta http-equiv="refresh" content="<% $Refresh %>" />
+    <meta http-equiv="refresh" content="<% $1 %>" />
 % }
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
