@@ -5,7 +5,7 @@ use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
-use RT::Test tests => 44;
+use RT::Test tests => 50;
 
 my $cookie_jar = HTTP::Cookies->new;
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -256,3 +256,30 @@ diag "send query with not quoted negative number";
         "query is the same"
     );
 }
+
+diag "click advanced, enter an invalid SQL IS restriction, apply and check that we corrected it";
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_number(3), "found the form");
+    $agent->field("Query", "Requestor.EmailAddress IS 'FOOBAR'");
+    $agent->submit;
+    is( getQueryFromForm($agent),
+        "Requestor.EmailAddress IS NULL",
+        "foobar is replaced by NULL"
+    );
+}
+
+diag "click advanced, enter an invalid SQL IS NOT restriction, apply and check that we corrected it";
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_number(3), "found the form");
+    $agent->field("Query", "Requestor.EmailAddress IS NOT 'FOOBAR'");
+    $agent->submit;
+    is( getQueryFromForm($agent),
+        "Requestor.EmailAddress IS NOT NULL",
+        "foobar is replaced by NULL"
+    );
+}
+
