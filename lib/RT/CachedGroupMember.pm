@@ -542,6 +542,369 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head1 FOR DEVELOPERS
+
+=head2 New structure without Via and ImmediateParent
+
+We have id, GroupId, MemberId, Disabled. In this schema
+we have unique index on GroupId and MemberId that will
+improve selects.
+
+Disabled column is complex as it's reflects all possible
+paths between group and member. If at least one active path
+exists then the record is active.
+
+When a GM record is added we do only two queries: insert
+new CGM records and update Disabled on old paths.
+
+When a GM record is deleted we update CGM in two steps:
+delete all potential candidates and re-insert them. We
+do this within one transaction.
+
+=head2 SQL behind maintaining CGM table
+
+=head3 Terminology
+
+=over 4
+
+=item * An(E) - all ancestors of E including E itself
+
+=item * De(E) - all descendants of E including E itself
+
+=back
+
+=head3 Adding a (G -> M) record
+
+When a new (G -> M) record added we should connect all An(G)
+to all De(M). The following select fetches all new records:
+
+    SELECT CGM1.GroupId, CGM2.MemberId FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+    WHERE
+        CGM1.MemberId = G
+        AND CGM2.GroupId = M
+    ;
+
+It handles G and M itself as we always have (E->E) records
+for groups.
+
+Some of this records may exist in the table, so we should skip existing:
+
+    SELECT CGM1.GroupId, CGM2.MemberId FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+        LEFT JOIN CachedGroupMembers CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+    WHERE
+        CGM1.MemberId = G
+        AND CGM2.GroupId = M
+        AND CGM3.id IS NULL
+    ;
+
+In order to do less checks we should skip (E->E) records, but not those
+that touch our G and M:
+
+    SELECT CGM1.GroupId, CGM2.MemberId FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+        LEFT JOIN CachedGroupMembers CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+    WHERE
+        CGM1.MemberId = G AND (CGM1.GroupId != CGM1.MemberId OR CGM1.MemberId = G)
+        AND CGM2.GroupId = M AND (CGM2.GroupId != CGM2.MemberId OR CGM2.GroupId = M)
+        AND CGM3.id IS NULL
+    ;
+
+=head4 Disabled column on insert
+
+We should handle properly Disabled column.
+
+If the GM record we're adding is disabled then all new paths we add as well
+disabled and existing one are not affected.
+
+Otherwise activity of new paths depends on entries that got connected and existing
+paths have to be updated.
+
+New paths:
+
+    SELECT CGM1.GroupId, CGM2.MemberId, IF(CGM1.Disabled+CGM2.Disabled > 0, 1, 0) FROM
+    ...
+
+Updating old paths, the following records should be activated:
+
+    SELECT CGM3.id FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+        JOIN CachedGroupMembers CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+    WHERE
+        CGM1.MemberId = G AND (CGM1.GroupId != CGM1.MemberId OR CGM1.MemberId = G)
+        AND CGM2.GroupId = M AND (CGM2.GroupId != CGM2.MemberId OR CGM2.GroupId = M)
+        AND CGM1.Disabled = 0 AND CGM2.Disabled = 0 AND CGM3.Disabled > 0
+    ;
+
+It's better to do this before we insert new records, so we scan less records
+to find things we need updating.
+
+=head3 mysql performance
+
+Sample results:
+
+    10k  - 0.4x seconds
+    100k - 4.x seconds
+    1M   - 4x.x seconds
+
+As long as innodb_buffer_pool_size is big enough to store insert buffer,
+and MIN(tmp_table_size, max_heap_table_size) allow us to store tmp table
+in the memory. For 100k records we need less than 15 MBytes. Disk I/O
+heavily degrades performance.
+
+=head2 Deleting a (G->M) record
+
+In case record is deleted from GM table we should re-evaluate records in CGM.
+
+Candidates for deletion are any records An(G) -> De(M):
+
+    SELECT CGM3.id FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+        JOIN CachedGroupMembers CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+    WHERE
+        CGM1.MemberId = G
+        AND CGM2.GroupId = M
+    ;
+
+Some of these records may still have alternative routes. A candidate (G', M')
+stays in the table if following records exist in GM and CGM tables.
+(G', X) in CGM, (X,Y) in GM and (Y,M') in CGM, where X ~ An(G) and Y !~ An(G).
+And here is SQL to select records that should be deleted:
+
+    SELECT CGM3.id FROM
+        CachedGroupMembers CGM1
+        CROSS JOIN CachedGroupMembers CGM2
+        JOIN CachedGroupMembers CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+
+    WHERE
+        CGM1.MemberId = G
+        AND CGM2.GroupId = M
+        AND NOT EXISTS (
+            SELECT CGM4.GroupId FROM
+                CachedGroupMembers CGM4
+                    ON CGM4.GroupId = CGM3.GroupId
+                JOIN GroupMembers GM1
+                    ON GM1.GroupId = CGM4.MemberId
+                JOIN GroupMembers CGM5
+                    ON CGM4.GroupId = GM1.MemberId
+                    AND CGM4.MemberId = CGM3.MemberId
+                JOIN CachedGroupMembers CGM6
+                    ON CGM6.GroupId = CGM4.MemberId
+                    AND CGM6.MemberId = G
+                LEFT JOIN CachedGroupMembers CGM7
+                    ON CGM7.GroupId = CGM5.GroupId
+                    AND CGM7.MemberId = G
+            WHERE
+                CGM7.id IS NULL
+        )
+    ;
+
+Fun.
+
+=head3 mysql performance
+
+    10k  - 4.x seconds
+    100k - 13x seconds
+    1M   - not tested
+
+Sadly this query perform much worth comparing to the insert operation. Problem is
+in the select.
+
+=head3 Delete all candidates and re-insert missing (our method)
+
+We can delete all candidates (An(G)->De(M)) from CGM table that are not
+real GM records: then insert records once again.
+
+    SELECT CGM1.id FROM
+        CachedGroupMembers CGM1
+        JOIN CachedGroupMembers CGMA ON CGMA.MemberId = G
+        JOIN CachedGroupMembers CGMD ON CGMD.GroupId = M
+        LEFT JOIN GroupMembers GM1
+            ON GM1.GroupId = CGM1.GroupId AND GM1.MemberId = CGM1.MemberId
+    WHERE
+        CGM1.GroupId = CGMA.GroupId AND CGM1.MemberId = CGMD.MemberId
+        AND CGM1.GroupId != CGM1.MemberId
+        AND GM1.id IS NULL
+    ;
+
+Then we can re-insert data back with insert from select described above.
+
+=head4 Disabled column on delete
+
+We delete all (An(G)->De(M)) and then re-insert survivors, so no other
+records except inserted can gain or loose activity. See this is the same
+as how we deal with it during insert.
+
+=head4 mysql performance
+
+This solution is faster than previous variant, 4-5 times slower than
+create operation, behaves linear.
+
+=head3 Recursive delete
+
+Alternative solution.
+
+Again, some (An(G), De(M)) pairs should be deleted, but some may stay. If
+delete any pair from the set then An(G) and De(M) sets don't change, so
+we can delete things step by step. Run delete operation, if any was deleted
+then run it once again, do it until operation deletes no rows. We shouldn't
+delete records where:
+
+=over 4
+
+=item * GroupId == MemberId
+
+=item * exists matching GM
+
+=item * exists equivalent GM->CGM pair
+
+=item * exists equivalent CGM->GM pair
+
+=back
+
+Query with most conditions in one NOT EXISTS subquery:
+
+    SELECT CGM1.id FROM
+        CachedGroupMembers CGM1
+        JOIN CachedGroupMembers CGMA ON CGMA.MemberId = G
+        JOIN CachedGroupMembers CGMD ON CGMD.GroupId = M
+    WHERE
+        CGM1.GroupId = CGMA.GroupId AND CGM1.MemberId = CGMD.MemberId
+        AND CGM1.GroupId != CGM1.MemberId
+        AND NOT EXISTS (
+            SELECT * FROM
+                CachedGroupMembers CGML
+                CROSS JOIN GroupMembers GM
+                CROSS JOIN CachedGroupMembers CGMR
+            WHERE
+                CGML.GroupId = CGM1.GroupId
+                AND GM.GroupId = CGML.MemberId
+                AND CGMR.GroupId = GM.MemberId
+                AND CGMR.MemberId = CGM1.MemberId
+                AND (
+                    (CGML.GroupId = CGML.MemberId AND CGMR.GroupId != CGMR.MemberId)
+                    OR 
+                    (CGML.GroupId != CGML.MemberId AND CGMR.GroupId = CGMR.MemberId)
+                )
+        )
+    ;
+
+=head4 mysql performance
+
+It's better than first solution, but still it's not linear. Problem is that
+NOT EXISTS means that for every link that should be deleted we have to check too
+many conditions (too many rows to scan). Still delete + insert behave better and
+linear.
+
+=head3 Alternative ways
+
+Store additional info in a table, similar to Via and IP we had. Then we can
+do iterative delete like in the last solution. However, this will slowdown
+insert, probably not that much as I suspect we would be able to push new data
+in one query.
+
+=head2 Disabling a (G->G) record
+
+We're interested only in (G->G) records as CGM path is disabled if group
+is disabled. Disabled users don't affect CGM records.
+
+When (G->G) gets Disabled, 1) (G->De(G)) gets Disabled 2) all active
+(An(G)->De(G)) get disabled unless record has an alternative active path.
+
+First can be done without much problem:
+
+    UPDATE CGM SET Disabled => 1 WHERE GroupId = G;
+
+Second part is harder. Finding an alternative path is harder and similar to
+performing delete in one query.
+
+Instead we disable all candidates and then re-enable required. Selecting
+candidates is simple:
+
+    SELECT main.id FROM CachedGroupMembers main
+        JOIN CachedGroupMembers CGM1 ON main.GroupId = CGM1.GroupId AND CGM1.MemberId = G
+        JOIN CachedGroupMembers CGM2 ON main.MemberId = CGM2.MemberId AND CGM2.GroupId = G
+    WHERE main.Disabled = 0;
+
+We can narrow it down. If (G'->G) is disabled where G'~An(G) then activity
+of (G'->M') where M'~De(G) isn't affected by activity of (G->G):
+
+    SELECT main.id FROM CachedGroupMembers main
+        JOIN CachedGroupMembers CGM1 ON main.GroupId = CGM1.GroupId AND CGM1.MemberId = G
+            AND CGM1.Disabled = 0
+        JOIN CachedGroupMembers CGM2 ON main.MemberId = CGM2.MemberId AND CGM2.GroupId = G
+    WHERE main.Disabled = 0;
+
+Now we can re-enable disabled records which still have active alternative paths:
+
+    SELECT main.id FROM CachedGroupMembers main
+        JOIN CachedGroupMembers CGM1 ON main.GroupId = CGM1.GroupId AND CGM1.MemberId = G
+            AND CGM1.Disabled = 0
+        JOIN CachedGroupMembers CGM2 ON main.MemberId = CGM2.MemberId AND CGM2.GroupId = G
+
+        JOIN CachedGroupMembers CGM3 ON CGM3.Disabled = 0 AND main.GroupId = CGM3.GroupID
+        JOIN CachedGroupMembers CGM4 ON CGM4.Disabled = 0 AND main.MemberId = CGM4.MemberId
+            AND CGM4.GroupId = CGM3.MemberId
+
+    WHERE main.Disabled = 1;
+
+Enabling records is much easier, just update all candidates.
+
+=head2 INDEXING
+
+=head3 Access patterns
+
+We either have group and want members, have member and want groups or
+have both and check existance.
+
+Disabled column has low selectivity.
+
+=head3 Index access without table access
+
+Some databases can access index by prefix and use rest as data source, so
+multi column indexes improve performance.
+
+This works on L<mysql (see "using index")|http://dev.mysql.com/doc/refman/5.1/en/explain-output.html#explain-output-columns>
+and L<Oracle|http://docs.oracle.com/cd/A58617_01/server.804/a58246/access.htm#2174>.
+
+This doesn't work for Pg, but L<comes in 9.2|http://rhaas.blogspot.com/2011/10/fast-counting.html>.
+
+=head3 Indexes
+
+For Oracle, mysql and SQLite:
+
+    UNIQUE ON (GroupId, MemberId, Disabled)
+    UNIQUE ON (MemberId, GroupId, Disabled)
+
+For Pg:
+
+    UNIQUE ON (GroupId, MemberId)
+    (MemberId)
+
+=head2 What's next
+
+We don't create self-referencing records for users and it complicates
+a few code paths in this module. However, we have ACL equiv groups for
+every user and these groups have (G->G) records and (G->U) record. So
+we have one additional group per user and two CGM records.
+
+We can give user's id to ACL equiv group, so G.id = U.id. In this case
+we get (G, G) pair that is at the same time (U->U) and (G->U) pairs.
+It simplifies code in this module and CGM table smaller by one record
+per user.
+
+=cut
 
 sub _CoreAccessible {
     {
