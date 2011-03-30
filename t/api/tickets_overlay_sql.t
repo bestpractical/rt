@@ -1,6 +1,6 @@
 
 use RT;
-use RT::Test tests => 7, config => 'Set( %FullTextSearch, Enable => 1 );';
+use RT::Test tests => 11, config => 'Set( %FullTextSearch, Enable => 1 );';
 
 
 {
@@ -33,6 +33,7 @@ my $string = 'subject/content SQL test';
 
     my $t = RT::Ticket->new(RT->SystemUser);
     ok( $t->Create( Queue => 'General',
+                    Requestor => 'jesse@example.com',
                     Subject => 'another ticket',
                     MIMEObj => $Message,
                     MemberOf => $created[0]
@@ -64,6 +65,16 @@ my $string = 'subject/content SQL test';
         $count++ if $created{ $tick->id };
     }
     is ($count, scalar @created, "number of returned tickets same as entered");
+}
+
+{
+    my ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
+    ok (!$status, "invalid query - Signature not valid") or diag("error: $msg");
+
+    my ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
+    ok ($status, "valid query") or diag("error: $msg");
+    is $tix->Count, 1, "found one ticket";
+    like $tix->First->Subject, qr/another ticket/, "found the right ticket";
 }
 
 
