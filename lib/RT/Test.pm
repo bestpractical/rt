@@ -75,7 +75,7 @@ wrap 'HTTP::Request::Common::form_data',
    };
 
 
-our @EXPORT = qw(is_empty);
+our @EXPORT = qw(is_empty parse_mail);
 our ($port, $dbname);
 our @SERVERS;
 
@@ -1293,6 +1293,14 @@ sub process_in_file {
     seek $out_fh, 0, 0;
 
     return ($out_fh, $out_conf);
+}
+
+sub parse_mail {
+    my $mail = shift;
+    require RT::EmailParser;
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar( $mail );
+    return $parser->Entity;
 }
 
 END {
