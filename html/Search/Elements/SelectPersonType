@@ -72,7 +72,7 @@ else {
    @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
 }
 
-my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone id);
+my @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
 
 </%INIT>
 <%ARGS>
