@@ -796,6 +796,13 @@ sub SendStaticFile {
         }
         $type ||= "application/octet-stream";
     }
+
+    # CGI.pm version 3.51 and 3.52 bang charset=iso-8859-1 onto our JS
+    # since we don't specify a charset
+    if ( $type =~ m{application/javascript} &&
+         $type !~ m{charset=([\w-]+)$} ) {
+         $type .= "; charset=utf-8";
+    }
     $HTML::Mason::Commands::r->content_type($type);
     open( my $fh, '<', $file ) or die "couldn't open file: $!";
     binmode($fh);
