@@ -219,7 +219,34 @@ match lower(colname) agaist lc($val);
 =cut
 
 sub Limit {
-    shift->SUPER::Limit(CASESENSITIVE => 1, @_);
+    my $self = shift;
+    my %ARGS = (
+        CASESENSITIVE => 1,
+        OPERATOR => '=',
+        @_,
+    );
+
+    if ($ARGS{FUNCTION}) {
+        ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
+        $self->SUPER::Limit(%ARGS);
+    } elsif ($ARGS{FIELD} =~ /\W/
+          or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
+                                  |(NOT\s*)?LIKE
+                                  |(NOT\s*)?(STARTS|ENDS)WITH
+                                  |(NOT\s*)?MATCHES
+                                  |IS(\s*NOT)?
+                                  |IN
+                                  |\@\@)$/ix) {
+        $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
+        $self->SUPER::Limit(
+            %ARGS,
+            FIELD    => 'id',
+            OPERATOR => '<',
+            VALUE    => '0',
+        );
+    } else {
+        $self->SUPER::Limit(%ARGS);
+    }
 }
 
 =head2 ItemsOrderBy
