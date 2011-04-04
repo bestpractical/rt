@@ -61,9 +61,7 @@
 <%INIT>
 my $title = loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
-my $Query = "( "
-    . join( ' OR ', map "$_.id = $id", @roles )
-    . ")";
+my $Query = "( Watcher.id = $id )";
 if ( @status ) {
     $Query .= " AND ( "
         . join( ' OR ', map "Status = '$_'", @status )
@@ -73,7 +71,6 @@ my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')
-@roles => ('Watcher')
 @status => RT::Queue->ActiveStatusArray()
 $BaseURL => undef
 $Page => 1
