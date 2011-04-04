@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title =>  $title &>
+<&| /Widgets/TitleBox, title => $title &>
 <& /Elements/CollectionList, Title   => $title,
 			 Format  => $Format, 
 			 Query   => $Query, 
@@ -59,6 +59,7 @@
 </&>
 
 <%INIT>
+my $title = loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
 my $Query = "( "
     . join( ' OR ', map "$_.id = $id", @roles )
@@ -69,11 +70,9 @@ if ( @status ) {
         . " )";
 }
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
-
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')
-$title => loc("My [_1] tickets", $friendly_status)
 @roles => ('Watcher')
 @status => RT::Queue->ActiveStatusArray()
 $BaseURL => undef
