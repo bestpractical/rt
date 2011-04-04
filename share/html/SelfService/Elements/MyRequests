@@ -52,7 +52,7 @@
 			 Order   => @Order, 
 			 OrderBy => @OrderBy,
 			 BaseURL => $BaseURL,
-			 AllowSorting => $AllowSorting,
+			 AllowSorting => 1,
 			 Class   => 'RT::Tickets',
              Rows    => $Rows,
 			 Page    => $Page &>
@@ -78,7 +78,6 @@ $title => loc("My [_1] tickets", $friendly_status)
 @status => RT::Queue->ActiveStatusArray()
 $BaseURL => undef
 $Page => 1
-$AllowSorting => 1
 @Order => ('ASC')
 @OrderBy => ('Created')
 $Rows => 50
