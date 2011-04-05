@@ -2066,7 +2066,43 @@ sub LimitStatus {
     );
 }
 
+=head2 LimitActiveStatus
 
+Limits the status to L<RT::Queue/ActiveStatusArray>
+
+TODO: make this respect lifecycles for the queues associated with the search
+
+=cut
+
+sub LimitActiveStatus {
+    my $self = shift;
+
+    my @active = RT::Queue->ActiveStatusArray();
+    for my $active (@active) {
+        $tickets->LimitStatus(
+            VALUE => $active,
+        );
+    }
+}
+
+=head2 LimitInactiveStatus
+
+Limits the status to L<RT::Queue/InactiveStatusArray>
+
+TODO: make this respect lifecycles for the queues associated with the search
+
+=cut
+
+sub LimitInactiveStatus {
+    my $self = shift;
+
+    my @active = RT::Queue->InactiveStatusArray();
+    for my $active (@active) {
+        $tickets->LimitStatus(
+            VALUE => $active,
+        );
+    }
+}
 
 =head2 IgnoreType
 
