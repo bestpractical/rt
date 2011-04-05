@@ -94,10 +94,15 @@ sub handler {
 
     RT::ConnectToDatabase();
 
-    # Each environment has its own way of handling .. and so on in paths,
-    # so RT consistently forbids such paths.
-    if ( $r->filename =~ m{/\.} ) {
-        $RT::Logger->crit("Invalid request for ".$r->filename." aborting");
+    # none of the methods in $r gives us the information we want (most
+    # canonicalize /foo/../bar to /bar which is exactly what we want to avoid)
+    my $uri = URI->new("http://".$r->hostname.$r->unparsed_uri);
+    my $path = URI::Escape::uri_unescape($uri->path);
+
+    ## Each environment has its own way of handling .. and so on in paths,
+    ## so RT consistently forbids such paths.
+    if ( $path =~ m{/\.} ) {
+        $RT::Logger->crit("Invalid request for ".$path." aborting");
         RT::Interface::Web::Handler->CleanupRequest();
         return 400;
     }
