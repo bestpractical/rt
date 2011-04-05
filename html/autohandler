@@ -126,6 +126,8 @@ unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
 # Set the proper encoding for the current language handle
 $r->content_type("text/html; charset=utf-8");
 
+RT::Interface::Web::MaybeRejectPrivateComponentRequest();
+
 # If it's a noauth file, don't ask for auth.
 if ( $m->base_comp->path =~ $RT::WebNoAuthRegex ) {
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
