@@ -2066,7 +2066,7 @@ sub LimitStatus {
     );
 }
 
-=head2 LimitActiveStatus
+=head2 LimitToActiveStatus
 
 Limits the status to L<RT::Queue/ActiveStatusArray>
 
@@ -2074,7 +2074,7 @@ TODO: make this respect lifecycles for the queues associated with the search
 
 =cut
 
-sub LimitActiveStatus {
+sub LimitToActiveStatus {
     my $self = shift;
 
     my @active = RT::Queue->ActiveStatusArray();
@@ -2085,7 +2085,7 @@ sub LimitActiveStatus {
     }
 }
 
-=head2 LimitInactiveStatus
+=head2 LimitToInactiveStatus
 
 Limits the status to L<RT::Queue/InactiveStatusArray>
 
@@ -2093,7 +2093,7 @@ TODO: make this respect lifecycles for the queues associated with the search
 
 =cut
 
-sub LimitInactiveStatus {
+sub LimitToInactiveStatus {
     my $self = shift;
 
     my @active = RT::Queue->InactiveStatusArray();

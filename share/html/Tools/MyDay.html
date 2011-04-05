@@ -106,7 +106,7 @@ foreach my $arg ( keys %ARGS ) {
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 $Tickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
-$Tickets->LimitActiveStatus;
+$Tickets->LimitToActiveStatus;
 $Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
 
 

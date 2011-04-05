@@ -1080,7 +1080,7 @@ sub UnresolvedDependencies {
     my $self = shift;
     my $deps = RT::Tickets->new($self->CurrentUser);
 
-    $deps->LimitActiveStatus;
+    $deps->LimitToActiveStatus;
     $deps->LimitDependedOnBy($self->Id);
 
     return($deps);

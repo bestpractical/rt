@@ -78,7 +78,7 @@ sub Prepare  {
   my $self = shift;
 
   $self->TicketsObj->LimitQueue(VALUE => $self->Argument);
-  $self->TicketsObj->LimitActiveStatus;
+  $self->TicketsObj->LimitToActiveStatus;
 
   return(1);
 }
