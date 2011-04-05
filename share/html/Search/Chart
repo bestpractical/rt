@@ -109,8 +109,9 @@ unless (keys %data) {
     $data{''} = 0;
 }
 
+my $chart_width = ( scalar keys(%data) && ( scalar keys(%data) * 20 > 600 ) ) ? scalar keys(%data) * 20 : 600;
 
-my $chart = $chart_class->new( 600 => 300 + ($max_key_length * 14) );
+my $chart = $chart_class->new( $chart_width => 300 + ($max_key_length * 14) );
 $chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
 my %font_config = RT->Config->Get('ChartFont');
 my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
@@ -130,7 +131,7 @@ $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
 if ($tix->Count == 0) {
-    my $plot = GD::Image->new(600 => 300 + ($max_key_length * 14) );
+    my $plot = GD::Image->new( $chart_width => 300 + ($max_key_length * 14) );
     $plot->colorAllocate(255, 255, 255); # background
     my $black = $plot->colorAllocate(0, 0, 0);
 
