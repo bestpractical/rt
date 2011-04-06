@@ -74,7 +74,7 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
     unlike $tix->BuildSelectQuery, qr/foobar/, "didn't find foobar in the select";
     like $tix->BuildSelectQuery, qr/Subject IS NULL/, "found right clause";
     
-    my ($status, $msg) = $tix->FromSQL("Subject IS NOT 'foobar'");
+    ($status, $msg) = $tix->FromSQL("Subject IS NOT 'foobar'");
     ok ($status, "valid query") or diag("error: $msg");
     is $tix->Count, 2, "found two tickets";
     unlike $tix->BuildSelectQuery, qr/foobar/, "didn't find foobar in the select";
