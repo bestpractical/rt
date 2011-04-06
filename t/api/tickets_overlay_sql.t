@@ -1,6 +1,6 @@
 
 use RT;
-use RT::Test tests => 11, config => 'Set( %FullTextSearch, Enable => 1 );';
+use RT::Test tests => 12, config => 'Set( %FullTextSearch, Enable => 1 );';
 
 
 {
@@ -68,10 +68,14 @@ my $string = 'subject/content SQL test';
 }
 
 {
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= "@_" };
+
     my ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
     ok (!$status, "invalid query - Signature not valid") or diag("error: $msg");
+    like($warnings, qr/Invalid watcher subfield: 'Signature'/);
 
-    my ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
+    ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
     ok ($status, "valid query") or diag("error: $msg");
     is $tix->Count, 1, "found one ticket";
     like $tix->First->Subject, qr/another ticket/, "found the right ticket";
