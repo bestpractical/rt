@@ -158,6 +158,13 @@ unless ($Attachments) {
 }
 my $titlebar_commands = '';
 
+$m->callback(
+    CallbackName   => 'MassageAttachments',
+    Transaction    => $Transaction,
+    AttachmentsRef => \$Attachments,
+    ARGSRef        => \%ARGS,
+);
+
 if ( $type =~ /EmailRecord$/ ) {
 
     $titlebar_commands .=
