@@ -55,7 +55,8 @@
     <title><%$Title%></title>
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
-    <meta http-equiv="refresh" content="<% $1 %>" />
+%   my $URL = $m->notes->{LogoutURL}; $URL = $URL ? ";URL=$URL" : "";
+    <meta http-equiv="refresh" content="<% "$1$URL" %>" />
 % }
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
