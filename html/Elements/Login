@@ -60,10 +60,7 @@ if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/(.*)}) {
     $req_uri = $1;
 }
 
-my $form_action = defined $goto             ? $goto
-                : defined $req_uri          ? $req_uri
-                :                             $RT::WebPath
-                ;
+my $form_action = defined $req_uri ? $req_uri : $RT::WebPath;
 </%INIT>
 
 <& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
@@ -133,6 +130,5 @@ my $form_action = defined $goto             ? $goto
 <%ARGS>
 $user => ""
 $pass => undef
-$goto => undef
 $Error => undef
 </%ARGS>
