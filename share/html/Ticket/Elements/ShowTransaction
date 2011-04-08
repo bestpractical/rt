@@ -142,6 +142,13 @@ unless ( $type_class ) {
     }
 }
 
+$m->callback(
+    CallbackName   => 'MassageTypeClass',
+    Transaction    => $Transaction,
+    type_class_ref => \$type_class,
+    %ARGS,
+);
+
 my $TicketString = '';
 if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = loc("Ticket #[_1]:", $Transaction->Ticket) .' ';
