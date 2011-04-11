@@ -54,7 +54,7 @@
 <form action="Display.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<table>
+<table width="100%">
     <tr>
         <td class="label">
             <&|/l&>Status</&>
@@ -73,8 +73,8 @@
 
     </tr>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
+    <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,  TicketObj => $Ticket &></td></tr>
 </table>
-<& /Ticket/Elements/EditCustomFields,  TicketObj => $Ticket &>
 <& /Elements/MessageBox, 
     Name => "UpdateContent", 
     QuoteTransaction => $ARGS{QuoteTransaction} 
