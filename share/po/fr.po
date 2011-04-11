@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-24 11:43+0000\n"
-"PO-Revision-Date: 2011-03-23 16:08+0000\n"
+"POT-Creation-Date: 2011-03-25 07:17+0000\n"
+"PO-Revision-Date: 2011-03-25 10:53+0000\n"
 "Last-Translator: Emmanuel Lacour <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-24 20:34+0000\n"
-"X-Generator: Launchpad (build 12633)\n"
+"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -483,17 +483,17 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:131
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1 m"
 
 #: share/html/Admin/Tools/Queries.html:109
 #. (sprintf('%.4f', $duration))
 msgid "%1s"
-msgstr ""
+msgstr "%1 s"
 
 #: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
 msgid "%quant(%1,article)"
-msgstr ""
+msgstr "%quant(%1,article)"
 
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
@@ -528,7 +528,7 @@ msgstr "Utilisateurs"
 
 #: share/html/Ticket/Elements/Reminders:101
 msgid "(Check box to complete)"
-msgstr ""
+msgstr "(Cocher la case pour terminer le rappel)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:67 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:107 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/BulkLinks:117 share/html/Ticket/Elements/EditPeople:79
 msgid "(Check box to delete)"
@@ -684,7 +684,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
-msgstr ""
+msgstr "<%$Action%> ici"
 
 #: NOT FOUND IN SOURCE
 msgid "<%$_%>"
@@ -1180,7 +1180,7 @@ msgstr "Fixer et supprimer les champs personnalisés"
 
 #: lib/RT/Queue.pm:99
 msgid "Assign and remove queue custom fields"
-msgstr ""
+msgstr "Assigner et supprimer des champs personnalisés pour cette file"
 
 #: lib/RT/Queue.pm:99
 msgid "AssignCustomFields"
@@ -1238,7 +1238,7 @@ msgstr "Août"
 #: share/html/Admin/Tools/Theme.html:277
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "Il n'y a pas de couleurs de thème suggérées automatiquement pour votre image. La version de GD installée ne gère peut-être pas le type d'image choisie. Les types gérés sont : %1. Vous pouvez recompiler libgd et GD.pm pour inclure la gestion d'autres types d'image."
 
 #: etc/initialdata:196
 msgid "Autoreply"
@@ -1417,7 +1417,7 @@ msgstr "Impossible de spécifier à la fois la base et la cible"
 
 #: lib/RT/Article.pm:397
 msgid "Cannot add link to plain number"
-msgstr ""
+msgstr "Impossible de créer un lien avec une valeur uniquement numérique"
 
 #: share/html/Ticket/Create.html:365 share/html/m/ticket/create:158
 msgid "Cannot create tickets in a disabled queue."
@@ -2878,7 +2878,7 @@ msgstr "Télécharger le fichier dump"
 
 #: lib/RT/CustomField.pm:83
 msgid "Dropdown"
-msgstr ""
+msgstr "Liste déroulante"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:418 share/html/m/ticket/show:389
 msgid "Due"
@@ -4025,12 +4025,12 @@ msgstr "File invalide, impossible d'appliquer la classe : %1"
 
 #: lib/RT/CustomField.pm:362
 msgid "Invalid Render Type"
-msgstr ""
+msgstr "Type d'affichage invalide"
 
 #: lib/RT/CustomField.pm:1004
 #. ($self->FriendlyType)
 msgid "Invalid Render Type for custom field of type %1"
-msgstr ""
+msgstr "Type d'affichage infalide pour un champs personnalisé de type %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid Right"
@@ -4064,7 +4064,7 @@ msgstr "File invalide"
 #: lib/RT/Queue.pm:820
 #. ($args{Type})
 msgid "Invalid queue role group type %1"
-msgstr ""
+msgstr "Role %1 invalide pour la file"
 
 #: lib/RT/ACE.pm:275
 msgid "Invalid right"
@@ -4160,7 +4160,7 @@ msgstr "Garder 'localhost' si vous n'êtes pas sûr. Laissez vide pour vous conn
 #: lib/RT/Search/Googleish.pm:88
 #. (ref $self)
 msgid "Keyword and intuition-based searching"
-msgstr ""
+msgstr "Recherche intelligente par mots clefs"
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:141 share/html/Install/index.html:56 share/html/User/Prefs.html:76
 msgid "Language"
@@ -4634,7 +4634,7 @@ msgstr "Largeur des boîtes de dialogue"
 
 #: lib/RT/Config.pm:253
 msgid "Message box wrapping"
-msgstr ""
+msgstr "Césure dans les boîtes de réponse"
 
 #: lib/RT/Ticket.pm:2226
 msgid "Message could not be recorded"
@@ -4801,7 +4801,7 @@ msgstr "Modifier les tableaux de bord de groupe"
 
 #: lib/RT/Group.pm:95
 msgid "Modify group membership roster"
-msgstr ""
+msgstr "Modifier la liste des membres d'un groupe"
 
 #: lib/RT/Group.pm:94
 msgid "Modify group metadata or delete group"
@@ -6595,11 +6595,11 @@ msgstr "%1 supprimé des membres de %2 pour cette file."
 
 #: share/html/Admin/CustomFields/Modify.html:72
 msgid "Render Type"
-msgstr ""
+msgstr "Type d'affichage"
 
 #: lib/RT/Config.pm:188
 msgid "Replaces the owner dropdowns with textboxes"
-msgstr ""
+msgstr "Remplacer les listes déroulantes d'intervenants par des boîtes de saisie"
 
 #: share/html/Elements/Tabs:482 share/html/Ticket/Elements/ShowTransaction:185 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
@@ -6814,7 +6814,7 @@ msgstr "Enregistrer sous"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:60
 msgid "Save new"
-msgstr ""
+msgstr "Sauver comme"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:54
 msgid "Save this search"
@@ -7302,7 +7302,7 @@ msgstr "Afficher la description des liens"
 
 #: lib/RT/Config.pm:380
 msgid "Show no tickets for the Requestor"
-msgstr ""
+msgstr "Ne pas afficher les tickets du demandeur"
 
 #: lib/RT/Config.pm:326
 msgid "Show oldest history first"
@@ -7771,7 +7771,7 @@ msgstr "Erreur d'analyse du modèle"
 #: lib/RT/Template.pm:475 lib/RT/Template.pm:677
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
-msgstr ""
+msgstr "Erreur de format de modèle : %1"
 
 #: share/html/Elements/Tabs:150 share/html/Elements/Tabs:255 share/html/Elements/Tabs:335
 msgid "Templates"
@@ -8011,7 +8011,7 @@ msgstr "Ce champ personnalisé ne s'applique pas à cet objet"
 
 #: lib/RT/CustomField.pm:356 lib/RT/CustomField.pm:995
 msgid "This custom field has no Render Types"
-msgstr ""
+msgstr "Aucun type d'affichage d'est défini pour ce champs personnalisé"
 
 #: share/html/Admin/Tools/Configuration.html:52
 msgid "This feature is only available to system administrators"
@@ -8045,7 +8045,7 @@ msgstr "Cette opération semble ne pas avoir de contenu"
 #: share/html/Ticket/Elements/ShowRequestorTickets:49
 #. ($Rows, $Description)
 msgid "This user's %1 highest priority %2 tickets"
-msgstr ""
+msgstr "%1 tickets %2 de plus haute priorité pour cet utilisateur"
 
 #: NOT FOUND IN SOURCE
 msgid "This user's %1 highest priority tickets"
@@ -8124,11 +8124,11 @@ msgstr "Transactions du ticket"
 
 #: share/html/Ticket/Update.html:64
 msgid "Ticket and Transaction"
-msgstr ""
+msgstr "Ticket et transaction"
 
 #: lib/RT/Config.pm:248
 msgid "Ticket composition"
-msgstr ""
+msgstr "Rédaction des tickets"
 
 #: lib/RT/Tickets.pm:2312
 msgid "Ticket content"
@@ -8160,7 +8160,7 @@ msgstr "Statut de ticket modifié"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:63
 msgid "Ticket update"
-msgstr ""
+msgstr "Réponse du ticket"
 
 #: lib/RT/Search/FromSQL.pm:79
 #. (ref $self)
@@ -8620,7 +8620,7 @@ msgstr "Utiliser l'auto-completion pour rechercher les intervenants ?"
 
 #: lib/RT/Config.pm:365
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
-msgstr ""
+msgstr "Utiliser une feuille de style pour afficher les textes utilisant des polices à chasse fixe, en conservant le format, mais en effectuant une césure si nécessaire. Ceci ne fonctionne pas très bien avec IE6, vous devriez utiliser l'option précédente."
 
 #: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
@@ -8874,7 +8874,7 @@ msgstr "Nous sommes capables de trouver votre base de données et de s'y connect
 
 #: lib/RT/CustomField.pm:1009 lib/RT/CustomField.pm:1687
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
-msgstr ""
+msgstr "Il n'est pas possible actuellement de générer une affichage de type liste quand les catégories sont basées sur un autre champs personnalisé. Veuillez utiliser un autre type d'affichage."
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
@@ -8942,7 +8942,7 @@ msgstr "Quand quelque chose arrive"
 
 #: lib/RT/Config.pm:255
 msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
-msgstr ""
+msgstr "Lorsque l'éditeur WYSIWYG n'est pas activé, cette option indique si la césure automatique dans les boîtes de réponse aux tickets sont envoyés à RT ou non."
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
@@ -9290,7 +9290,7 @@ msgstr "effacé"
 
 #: lib/RT/Config.pm:364
 msgid "display wrapped and formatted plain text attachments"
-msgstr ""
+msgstr "afficher les pièces jointes au format texte avec césure et en respectant le formattage"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
@@ -9394,7 +9394,7 @@ msgstr "inclus %1"
 
 #: share/html/Admin/Tools/Queries.html:85
 msgid "index"
-msgstr ""
+msgstr "indexe"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickCFs:100
 msgid "is"
@@ -9632,11 +9632,11 @@ msgstr "groupe %1 non décrit"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "illimité"
 
 #: share/html/Admin/Elements/EditRights:66
 msgid "user"
-msgstr ""
+msgstr "utilisateur"
 
 #: lib/RT/Group.pm:194
 #. ($user->Object->Name)
@@ -9645,7 +9645,7 @@ msgstr "utilisateur %1"
 
 #: share/html/Admin/Elements/EditRights:124
 msgid "username"
-msgstr ""
+msgstr "nom d'utilisateur"
 
 #: lib/RT/Config.pm:177
 msgid "verbose"

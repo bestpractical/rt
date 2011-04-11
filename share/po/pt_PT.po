@@ -5,17 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 4.0.x\n"
-"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-24 11:43+0000\n"
-"PO-Revision-Date: 2010-04-17 08:10+0000\n"
-"Last-Translator: Bruno Cunha <brunoscunha@gmail.com>\n"
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2011-03-25 07:17+0000\n"
+"PO-Revision-Date: 2011-03-28 18:13+0000\n"
+"Last-Translator: Ari Constâncio <Unknown>\n"
 "Language-Team: Portuguese (Portugal) <pt_PT@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-24 20:33+0000\n"
-"X-Generator: Launchpad (build 12633)\n"
+"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -109,7 +109,7 @@ msgstr "%1 %2 gravado."
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 %2 actualizado."
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:14
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -8740,23 +8740,23 @@ msgstr ""
 #: lib/RT/Group.pm:205
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
-msgstr ""
+msgstr "fila %1 %2"
 
 #: lib/RT/Queue.pm:87
 msgid "rejected"
-msgstr ""
+msgstr "rejeitado"
 
 #: share/html/Admin/Queues/Modify.html:97
 msgid "requires running rt-crontool"
-msgstr ""
+msgstr "requer rt-crontool em execução"
 
 #: lib/RT/Queue.pm:86
 msgid "resolved"
-msgstr ""
+msgstr "resolvido"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
 msgid "right to left"
-msgstr ""
+msgstr "da direita para a esquerda"
 
 #: lib/RT/Date.pm:338
 msgid "sec"
@@ -8788,11 +8788,11 @@ msgstr "pendente"
 
 #: share/html/Admin/Tools/Queries.html:87
 msgid "statement"
-msgstr ""
+msgstr "instrução"
 
 #: share/html/Admin/Global/MyRT.html:89
 msgid "summary"
-msgstr ""
+msgstr "resumo"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
@@ -8801,12 +8801,12 @@ msgstr "linhas de sumário"
 #: lib/RT/Group.pm:200
 #. ($self->Type)
 msgid "system %1"
-msgstr ""
+msgstr "sistema %1"
 
 #: lib/RT/Group.pm:211
 #. ($self->Type)
 msgid "system group '%1'"
-msgstr "grupo de sistem %1"
+msgstr "grupo de sistema '%1'"
 
 #: share/html/Elements/Error:70 share/html/SelfService/Error.html:65
 msgid "the calling component did not specify why"
@@ -8823,7 +8823,7 @@ msgstr "O endereço por defeito que será listado em De: e Responder para: cabe�
 #: lib/RT/Group.pm:208
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
-msgstr ""
+msgstr "ticket #%1 %2"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
 msgid "top to bottom"
@@ -8840,11 +8840,11 @@ msgstr "grupo indefinido %1"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "ilimitado"
 
 #: share/html/Admin/Elements/EditRights:66
 msgid "user"
-msgstr ""
+msgstr "utilizador"
 
 #: lib/RT/Group.pm:194
 #. ($user->Object->Name)
@@ -8853,7 +8853,7 @@ msgstr "utilizador %1"
 
 #: share/html/Admin/Elements/EditRights:124
 msgid "username"
-msgstr ""
+msgstr "nome do utilizador"
 
 #: lib/RT/Config.pm:177
 msgid "verbose"

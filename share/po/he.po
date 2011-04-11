@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-24 11:43+0000\n"
-"PO-Revision-Date: 2010-04-27 03:07+0000\n"
-"Last-Translator: Ddorda <Ddorda@ubuntu.com>\n"
+"POT-Creation-Date: 2011-03-25 07:17+0000\n"
+"PO-Revision-Date: 2011-03-26 18:38+0000\n"
+"Last-Translator: NetRun <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-24 20:33+0000\n"
-"X-Generator: Launchpad (build 12633)\n"
+"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -37,12 +37,12 @@ msgstr ""
 #: lib/RT/Date.pm:369
 #. ($s, $time_unit)
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #: lib/RT/Tickets.pm:1972
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr ""
+msgstr "%1 %2 %3"
 
 #: lib/RT/Date.pm:609
 #. ($wday,$mon,$mday,$year)
@@ -64,7 +64,7 @@ msgstr ""
 #. ($field, $new)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 added"
-msgstr ""
+msgstr "%1 %2 נוסף"
 
 #: lib/RT/Date.pm:366
 #. ($s, $time_unit)
@@ -103,7 +103,7 @@ msgstr ""
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 msgid "%1 %2 with template %3"
-msgstr ""
+msgstr "%1 %2 עם תבנית %3"
 
 #: share/html/Ticket/Elements/ShowAttachments:86 share/html/m/ticket/show:342
 #. ($rev->CreatedAsString, $size, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj))
@@ -170,12 +170,12 @@ msgstr ""
 #: bin/rt-crontool:339
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr ""
+msgstr "%1 - ציין את רכיב התנאי בו תרצה להשתמש"
 
 #: bin/rt-crontool:332
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr ""
+msgstr "%1 - ציין את רכיב החיפוש בו תרצה להשתמש"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:4
 #. ('', '', '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -186,7 +186,7 @@ msgstr ""
 #: lib/RT/Record.pm:1761
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
-msgstr ""
+msgstr "%1 הוסף כערך של %2"
 
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
@@ -214,7 +214,7 @@ msgstr ""
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 של %2"
 
 #: lib/RT/Record.pm:500 lib/RT/Transaction.pm:673 lib/RT/Transaction.pm:873 lib/RT/Transaction.pm:878 lib/RT/Transaction.pm:892 lib/RT/Transaction.pm:901 lib/RT/Transaction.pm:939
 #. ($self->loc( $args{'Field'} ),            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
@@ -262,7 +262,7 @@ msgstr "%1 נמחק"
 #: lib/RT/Transaction.pm:646
 #. ($obj_type)
 msgid "%1 disabled"
-msgstr ""
+msgstr "מבוטל"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
@@ -272,7 +272,7 @@ msgstr "%1 אינו קיים."
 #: lib/RT/Transaction.pm:643
 #. ($obj_type)
 msgid "%1 enabled"
-msgstr ""
+msgstr "מופעל"
 
 #: etc/initialdata:552
 msgid "%1 highest priority tickets I own"

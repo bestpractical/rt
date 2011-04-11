@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-24 11:43+0000\n"
-"PO-Revision-Date: 2011-03-22 15:26+0000\n"
+"POT-Creation-Date: 2011-03-25 07:17+0000\n"
+"PO-Revision-Date: 2011-03-25 23:47+0000\n"
 "Last-Translator: Florian Wallner <fwallner@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-24 20:33+0000\n"
-"X-Generator: Launchpad (build 12633)\n"
+"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -357,7 +357,7 @@ msgstr "%1 ist ein Dienstprogramm, welches aus CRON gestartet werden soll. Es se
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr "%1 ist eine RT Mail Adresse. Das Zufügen als %2 würde einen Mail Loop generieren."
+msgstr "%1 ist eine RT Mail Adresse. Das Hinzufügen als %2 würde eine E-Mail Schleife erzeugen."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 is no longer a %2 for this queue."
@@ -490,7 +490,7 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:131
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1 MB"
 
 #: share/html/Admin/Tools/Queries.html:109
 #. (sprintf('%.4f', $duration))
@@ -589,7 +589,7 @@ msgstr "(Sendet ein Blind Carbon Copy - BCC Update and eine mit Komma separierte
 
 #: share/html/Ticket/Create.html:150 share/html/m/ticket/create:329
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr "(Sendet ein Carbon Copy - CC Update and eine mit Komma separierte Liste von Mail Adressen. Zukünftige Updates <strong>werden</strong> ebenfalls übermittelt.)"
+msgstr "(Sendet ein Carbon Copy - CC Update and eine mit Komma separierte Liste von E-Mail Adressen. Zukünftige Updates <strong>werden</strong> ebenfalls übermittelt.)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
@@ -597,7 +597,7 @@ msgstr "(Sendet ein Carbon Copy - CC Update and eine mit Komma separierte Liste 
 
 #: share/html/Ticket/Create.html:134 share/html/m/ticket/create:320
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr "(Sendet ein Carbon Copy - CC Update and eine mit Komma separierte Liste von Mail Adressen. Zukünftige Updates <strong>werden</strong> ebenfalls übermittelt.)"
+msgstr "(Sendet ein Carbon Copy - CC Update and eine mit Komma separierte Liste von E-Mail Adressen. Zukünftige Updates <strong>werden</strong> ebenfalls übermittelt.)"
 
 #: share/html/Admin/Elements/EditScrip:100
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -1169,7 +1169,7 @@ msgstr "April"
 
 #: share/html/Articles/Article/Delete.html:58
 msgid "Are you sure you want to delete this article?"
-msgstr ""
+msgstr "Artikel wirklich löschen?"
 
 #: share/html/Articles/Article/Delete.html:99
 #. ($ArticleObj->Id)
@@ -1578,11 +1578,11 @@ msgstr ""
 #: lib/RT/Class.pm:401
 #. ($queue->Name)
 msgid "Class is already applied to %1"
-msgstr ""
+msgstr "Klasse wurde bereits auf %1 angewendet"
 
 #: share/html/Elements/Tabs:180 share/html/Elements/Tabs:354
 msgid "Classes"
-msgstr ""
+msgstr "Klassen"
 
 #: share/html/Tools/MyDay.html:73 share/html/Widgets/SelectionBox:221
 msgid "Clear"
@@ -1710,7 +1710,7 @@ msgstr "Konfiguration"
 #: share/html/Admin/Queues/Modify.html:180
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
-msgstr ""
+msgstr "Konfiguration für Queue %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Confirm"
@@ -1802,7 +1802,7 @@ msgstr "Konnte Gruppe nicht anlegen"
 #: share/html/Articles/Article/Search.html:195
 #. ($msg)
 msgid "Could not create search: %1"
-msgstr ""
+msgstr "Suche konnte nicht angelegt werden: %1"
 
 #: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
@@ -1824,7 +1824,7 @@ msgstr "Konnte Benutzer nicht anlegen"
 #: share/html/Articles/Article/Search.html:235
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
-msgstr ""
+msgstr "Suche %1 konnte nicht gelöscht werden: %2"
 
 #: lib/RT/Queue.pm:927 lib/RT/Ticket.pm:1125
 msgid "Could not find or create that user"
@@ -2111,7 +2111,7 @@ msgstr "Ziel '%1' kann nicht zu einer URI aufgelöst werden."
 
 #: lib/RT/Interface/Email.pm:705 lib/RT/Interface/Email.pm:767
 msgid "Couldn't send email"
-msgstr "Konnte Email nicht senden"
+msgstr "Konnte E-Mail nicht senden"
 
 #: lib/RT/Ticket.pm:558
 #. ($type, $msg)
@@ -2140,7 +2140,7 @@ msgstr "Erstelle Anfragen"
 
 #: share/html/Admin/Articles/Classes/Modify.html:102
 msgid "Create a Class"
-msgstr ""
+msgstr "Klasse anlegen"
 
 #: share/html/Admin/CustomFields/Modify.html:162 share/html/Admin/Elements/EditCustomField:98
 msgid "Create a CustomField"
@@ -2153,11 +2153,11 @@ msgstr "Erstelle ein benutzerdefiniertes Feld für den Bereich %1"
 
 #: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:231
 msgid "Create a new article"
-msgstr ""
+msgstr "Neuen Artikel anlegen"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
-msgstr ""
+msgstr "Neuen Artikel anlegen unter"
 
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
@@ -2203,15 +2203,15 @@ msgstr "Neue Anfrage erstellen"
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
-msgstr ""
+msgstr "Artikel anlegen"
 
 #: share/html/Articles/Article/PreCreate.html:48 share/html/Articles/Article/PreCreate.html:49
 msgid "Create an article in class..."
-msgstr ""
+msgstr "Artikel in Klasse anlegen..."
 
 #: lib/RT/Class.pm:89
 msgid "Create articles in this class"
-msgstr ""
+msgstr "Artikel in dieser Klasse anlegen"
 
 #: NOT FOUND IN SOURCE
 msgid "Create dashboards for this group"
@@ -2342,7 +2342,7 @@ msgstr "Erstellt in einem Zeitraum"
 #: share/html/Articles/Article/Search.html:191
 #. ($search->Name)
 msgid "Created search %1"
-msgstr ""
+msgstr "Suche %1 angelegt"
 
 #: NOT FOUND IN SOURCE
 msgid "Created tickets in period, grouped by status"
@@ -2374,7 +2374,7 @@ msgstr "Aktuelle Scrips"
 
 #: share/html/Elements/Tabs:599
 msgid "Current Search"
-msgstr ""
+msgstr "Aktuelle Suche"
 
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
@@ -2422,7 +2422,7 @@ msgstr "Benutzerdefinierte Bedingung"
 #. ($MoveCustomFieldUp)
 #. ($MoveCustomFieldDown)
 msgid "Custom field #%1 is not applied to this object"
-msgstr "Benutzerdefiniertes Feld #%1 wurde nicht an dieses Objekt bebunden"
+msgstr "Benutzerdefiniertes Feld #%1 ist nicht dem Objekt zugeordnet"
 
 #: lib/RT/Tickets.pm:2761
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
@@ -2457,7 +2457,7 @@ msgstr "Benutzerdefiniertes Feld '%1'"
 
 #: lib/RT/CustomField.pm:1288
 msgid "Custom field is already applied to the object"
-msgstr "Benutzerdefiniertes Feld ist bereits an das Objekt gebunden"
+msgstr "Benutzerdefiniertes Feld ist bereits diesem Objekt zugeordnet"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field not found"
@@ -2696,11 +2696,11 @@ msgstr "Vorlage löschen"
 #: share/html/Articles/Article/Delete.html:103
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
-msgstr ""
+msgstr "Artikel #%1 löschen"
 
 #: lib/RT/Class.pm:98
 msgid "Delete articles in this class"
-msgstr ""
+msgstr "Artikel in dieser Klasse löschen"
 
 #: NOT FOUND IN SOURCE
 msgid "Delete dashboards for this group"
@@ -2783,7 +2783,7 @@ msgstr "Suche löschen"
 #: share/html/Articles/Article/Search.html:224
 #. ($searchname)
 msgid "Deleted search %1"
-msgstr ""
+msgstr "Suche %1 gelöscht"
 
 # Are these three strings really different?
 #: NOT FOUND IN SOURCE
@@ -2885,7 +2885,7 @@ msgstr "Zeige Zugriffskontroll Liste (ACL) an"
 #: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
-msgstr ""
+msgstr "Artikel %1 anzeigen"
 
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
@@ -2979,7 +2979,7 @@ msgstr "Fehler: %1"
 
 #: share/html/Elements/Tabs:105
 msgid "Easy updating of your open tickets"
-msgstr "Leichtes aktualisieren deiner offenen Anfragen"
+msgstr "Offene Anfragen einfach aktualisieren"
 
 #: share/html/Elements/Tabs:110
 msgid "Easy viewing of your reminders"
@@ -3062,7 +3062,7 @@ msgstr "Veränderbarer Text"
 #: share/html/Admin/Articles/Classes/Modify.html:114
 #. ($ClassObj->Name)
 msgid "Editing Configuration for Class %1"
-msgstr ""
+msgstr "Konfiguration für Klasse %1 bearbeiten"
 
 #: NOT FOUND IN SOURCE
 msgid "Editing Configuration for queue %1"
@@ -3110,19 +3110,19 @@ msgstr "E-Mail Konfiguration"
 
 #: etc/initialdata:456 etc/upgrade/3.7.85/content:4
 msgid "Email Digest"
-msgstr "Email Zusammenfassung"
+msgstr "E-Mail Zusammenfassung"
 
 #: lib/RT/User.pm:568
 msgid "Email address in use"
-msgstr "Email Adresse bereits in Gebrauch"
+msgstr "E-Mail Adresse bereits in Gebrauch"
 
 #: lib/RT/Config.pm:454
 msgid "Email delivery"
-msgstr "Email Zustellung"
+msgstr "E-Mail Zustellung"
 
 #: etc/initialdata:457 etc/upgrade/3.7.85/content:5
 msgid "Email template for periodic notification digests"
-msgstr "Email Vorlage für periodische Nachrichten Zusammenfassungen"
+msgstr "E-Mail Vorlage für periodische Zusammenfassungen der Nachrichten"
 
 #: NOT FOUND IN SOURCE
 msgid "EmailAddress"
@@ -3134,7 +3134,7 @@ msgstr "Aktiviert"
 
 #: share/html/Admin/Articles/Classes/Modify.html:71
 msgid "Enabled (Unchecking this box disables this class)"
-msgstr ""
+msgstr "Aktiviert (Abwahl deaktiviert diese Klasse)"
 
 # ## muss das überhaupt übersetzt werden???
 #: share/html/Admin/CustomFields/Modify.html:136 share/html/Admin/Elements/EditCustomField:74
@@ -3151,7 +3151,7 @@ msgstr "Aktiviert (Abwählen deaktiviert diesen Bereich)"
 
 #: share/html/Admin/Articles/Classes/index.html:80
 msgid "Enabled Classes"
-msgstr ""
+msgstr "aktivierte Klassen"
 
 #: share/html/Admin/Queues/index.html:111
 msgid "Enabled Queues"
@@ -3245,11 +3245,11 @@ msgstr "Gib Anfragen oder URI's ein um zu anderen Anfragen zu verlinken. Trenne 
 
 #: lib/RT/CustomField.pm:189
 msgid "Enter up to %1 IP address ranges"
-msgstr ""
+msgstr "Bis zu %1 IP-Adressbereichen eingeben"
 
 #: lib/RT/CustomField.pm:180
 msgid "Enter up to %1 IP addresses"
-msgstr ""
+msgstr "Bis zu %1 IP-Adressen eingeben"
 
 #: lib/RT/CustomField.pm:95
 msgid "Enter up to %1 values"
@@ -3300,7 +3300,7 @@ msgstr ""
 #: share/html/Articles/Article/Search.html:163
 #. ($ARGS{'LoadSavedSearch'}, $msg)
 msgid "Error: could not load saved search %1: %2"
-msgstr ""
+msgstr "Fehler: Gespeicherte Suche %1 konnte nicht geladen werden: %2"
 
 #: etc/initialdata:417 etc/upgrade/3.7.10/content:26
 msgid "Error: no private key"
@@ -3313,7 +3313,7 @@ msgstr "Fehler: öffentlicher Schlüssel"
 #: share/html/Articles/Article/Search.html:215
 #. ($search->Name, $msg)
 msgid "Error: search %1 not updated: %2"
-msgstr ""
+msgstr "Fehler: Suche %1 konnte nicht aktualisiert werden: %2"
 
 #: bin/rt-crontool:385
 msgid "Escalate tickets"
@@ -3453,7 +3453,7 @@ msgstr "Feeds"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:62
 msgid "Field"
-msgstr ""
+msgstr "Feld"
 
 #: share/html/Admin/CustomFields/Modify.html:84
 msgid "Field values source:"
@@ -3529,7 +3529,7 @@ msgstr "Anfragen finden"
 
 #: share/html/Admin/Elements/ShowKeyInfo:58
 msgid "Fingerprint"
-msgstr ""
+msgstr "Fingerabdruck"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
 msgid "Finish"
@@ -3715,7 +3715,7 @@ msgstr "GnuPG private Schlüssel für %1"
 
 #: share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Modify.html:144
 msgid "GnuPG private keys"
-msgstr ""
+msgstr "Private GnuPG-Schlüssel"
 
 #: share/html/Admin/Elements/ShowKeyInfo:89
 #. ($EmailAddress)
@@ -3791,7 +3791,7 @@ msgstr "Gruppe hat kein solches Mitglied"
 #: lib/RT/Group.pm:529
 #. ($value)
 msgid "Group name '%1' is already in use"
-msgstr ""
+msgstr "Gruppe mit Namen '%1' ist bereits in Gebrauch"
 
 #: lib/RT/Group.pm:905 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1132 lib/RT/Ticket.pm:1210
 msgid "Group not found"
@@ -3888,7 +3888,7 @@ msgstr "Startseite"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "Home Phone"
-msgstr ""
+msgstr "Telefon (Privat)"
 
 #: lib/RT/Config.pm:294
 msgid "Home page refresh interval"
@@ -4050,7 +4050,7 @@ msgstr "Informiere Benutzer über sein zurückgesetztes Passwort"
 
 #: etc/initialdata:419 etc/upgrade/3.7.10/content:28
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
-msgstr "Informiere Benutzer über eine empfange verschlüsselte Email and diese nicht entschlüsselt werden kann, da der private Schlüssel fehlt"
+msgstr "Informiere Benutzer über eine empfange verschlüsselte E-Mail und dass wir keine privaten Schlüssel zum entschlüsseln haben"
 
 #: lib/RT/Tickets.pm:2218 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
@@ -4066,11 +4066,11 @@ msgstr "Initialisiere Datenbank"
 
 #: share/html/Elements/ValidateCustomFields:91
 msgid "Input can not be parsed as an IP address"
-msgstr ""
+msgstr "Eingabe wird nicht als IP-Adresse erkannt"
 
 #: share/html/Elements/ValidateCustomFields:102
 msgid "Input can not be parsed as an IP address range"
-msgstr ""
+msgstr "Eingabe wird nicht als IP-Adressbereich erkannt"
 
 #: lib/RT/ScripAction.pm:131
 msgid "Input error"
@@ -4098,7 +4098,7 @@ msgstr "Interner Fehler: %1"
 #: lib/RT/Article.pm:211
 #. ($txn_msg)
 msgid "Internal error: %1"
-msgstr ""
+msgstr "Interner Fehler: %1"
 
 #: share/html/Admin/Elements/EditRights:125
 #. ($type)
@@ -4127,7 +4127,7 @@ msgstr "%1 ungültig: das sieht nicht wie eine E-Mail Adresse aus"
 
 #: lib/RT/Article.pm:108
 msgid "Invalid Class"
-msgstr ""
+msgstr "Ungültige Klasse"
 
 #: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:667
 msgid "Invalid Custom Field values source"
@@ -4323,7 +4323,7 @@ msgstr "Zuletzt geändert von"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
-msgstr ""
+msgstr "zuletzt geändert"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -4445,11 +4445,11 @@ msgstr "Laden"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:68
 msgid "Load a saved search"
-msgstr ""
+msgstr "Eine gespeicherte Suche laden"
 
 #: share/html/Search/Elements/EditSearches:78
 msgid "Load saved search"
-msgstr ""
+msgstr "Gespeicherte Suchen laden"
 
 #: share/html/Articles/Article/Search.html:66
 msgid "Load saved search:"
@@ -4484,7 +4484,7 @@ msgstr "Geladene Suche %1"
 
 #: share/html/Ticket/Elements/ShowRequestor:112
 msgid "Loading..."
-msgstr ""
+msgstr "Ladevorgang läuft ..."
 
 #: lib/RT/Config.pm:405
 msgid "Locale"
@@ -4509,7 +4509,7 @@ msgstr "Angemeldet als %1"
 #: share/html/Elements/Tabs:383 share/html/Elements/Tabs:729
 #. ($session{'CurrentUser'}->Name)
 msgid "Logged in as <span class=\"current-user\">%1</span>"
-msgstr ""
+msgstr "Angemeldet als <span class=\"current-user\">%1</span>"
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
@@ -4650,7 +4650,7 @@ msgstr "Mai"
 
 #: share/html/Elements/QuickCreate:64
 msgid "Me"
-msgstr ""
+msgstr "Ich"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
@@ -4793,7 +4793,7 @@ msgstr "Minuten"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:105
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverses"
 
 #: NOT FOUND IN SOURCE
 msgid "Mismatched parentheses"
@@ -4809,7 +4809,7 @@ msgstr "Handy"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Telefon (Mobil)"
 
 #: NOT FOUND IN SOURCE
 msgid "MobilePhone"
@@ -4817,7 +4817,7 @@ msgstr "Handy"
 
 #: share/html/Elements/Tabs:666 share/html/Elements/Tabs:684 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
-msgstr ""
+msgstr "Bearbeiten"
 
 #: lib/RT/Class.pm:97
 msgid "Modify Access Control List"
@@ -4845,7 +4845,7 @@ msgstr "Rechte ändern"
 
 #: lib/RT/Queue.pm:100
 msgid "Modify Scrip templates"
-msgstr ""
+msgstr "Scrip-Vorlagen bearbeiten"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Scrip templates for this queue"
@@ -4853,7 +4853,7 @@ msgstr "Ändere Scrip-Vorlagen für diesen Bereich"
 
 #: lib/RT/Queue.pm:103
 msgid "Modify Scrips"
-msgstr ""
+msgstr "Scrips bearbeiten"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Scrips for this queue"
@@ -4890,7 +4890,7 @@ msgstr "Ändern der assoziierte Objekte von %1"
 
 #: lib/RT/Queue.pm:98
 msgid "Modify custom field values"
-msgstr "Custom Field Werte anpassen"
+msgstr "Werte für benutzerdefiniertes Feld anpassen"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify dashboards for this group"
@@ -4945,7 +4945,7 @@ msgstr "Ändere Gruppen-Metadaten oder lösche die Gruppe"
 #: share/html/Admin/Articles/Classes/GroupRights.html:48
 #. ($ClassObj->Name)
 msgid "Modify group rights for Class %1"
-msgstr ""
+msgstr "Gruppenrechte für Klasse %1 bearbeiten"
 
 #: share/html/Admin/CustomFields/GroupRights.html:70
 #. ($CustomFieldObj->Name)
@@ -4976,7 +4976,7 @@ msgstr "Ändert den eigenen RT-Zugang"
 
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
-msgstr ""
+msgstr "Artikel in dieser Klasse löschen oder bearbeiten"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify people related to queue %1"
@@ -5017,7 +5017,7 @@ msgstr "Ändere Vorlage %1"
 #: share/html/Admin/Queues/Template.html:114
 #. (loc( $TemplateObj->Name()), $QueueObj->Name)
 msgid "Modify template %1 for queue %2"
-msgstr ""
+msgstr "Vorlage %1 für Queue %2 bearbeiten"
 
 #: share/html/Admin/Global/Templates.html:53
 msgid "Modify templates which apply to all queues"
@@ -5062,7 +5062,7 @@ msgstr "Ändere Benutzer %1"
 
 #: share/html/Articles/Article/Search.html:78
 msgid "Modify this search..."
-msgstr ""
+msgstr "Diese Suche bearbeiten"
 
 #: share/html/Ticket/ModifyAll.html:58
 #. ($Ticket->Id)
@@ -5076,7 +5076,7 @@ msgstr "Ändere Anfrage #%1"
 
 #: lib/RT/Queue.pm:117
 msgid "Modify ticket status"
-msgstr ""
+msgstr "Ticket-Status ändern"
 
 #: lib/RT/Queue.pm:116
 msgid "Modify tickets"
@@ -5279,7 +5279,7 @@ msgstr "Benutzername ist bereits in Gebrauch"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
-msgstr ""
+msgstr "Name:"
 
 #: NOT FOUND IN SOURCE
 msgid "Named, shared collection of portlets"
@@ -5385,7 +5385,7 @@ msgstr "Neue Anfrage existiert nicht"
 #: lib/RT/Ticket.pm:311
 #. ($self->loc($args{'Status'}))
 msgid "New tickets can not have status '%1' in this queue."
-msgstr ""
+msgstr "In dieser Queue kann ein neues Ticket nicht den Status '%1' haben"
 
 #: NOT FOUND IN SOURCE
 msgid "New user"
@@ -5981,11 +5981,11 @@ msgstr "Ursprüngliche Anfrage: #%1"
 
 #: lib/RT/Transaction.pm:707
 msgid "Outgoing email about a comment recorded"
-msgstr "Ausgehende Mail eines Kommentars gespeichert"
+msgstr "Ausgehende E-Mail über einen Kommentar gespeichert"
 
 #: lib/RT/Transaction.pm:711
 msgid "Outgoing email recorded"
-msgstr "Ausgehende Mail gespeichert"
+msgstr "Ausgehende E-Mail gespeichert"
 
 #: lib/RT/Config.pm:469
 msgid "Outgoing mail"
@@ -6090,7 +6090,7 @@ msgstr "Das Passwort muss mindestens %1 Zeichen lang sein"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
 msgid "Password not printed"
-msgstr ""
+msgstr "Passwort wird nicht angezeigt"
 
 #: lib/RT/User.pm:824
 msgid "Password set"
@@ -6267,7 +6267,7 @@ msgstr "Rolle %1 nicht gefunden."
 
 #: sbin/rt-email-digest:96
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
-msgstr "Drucke das Ergebnis der zusammengefassten Nachrichten nach STDOUT; nicht per Email versenden. Nicht als versendet markieren"
+msgstr "Gebe die zusammengefassten E-Mails nach STDOUT aus. Nicht oer E-Mail versenden. Nicht als versendet markieren."
 
 #: sbin/rt-email-digest:98
 msgid "Print this message"
@@ -6571,7 +6571,7 @@ msgstr "Empfänger"
 
 #: share/html/Ticket/Elements/ShowSimplifiedRecipients:77
 msgid "Recipients"
-msgstr ""
+msgstr "Empfänger"
 
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
@@ -6913,7 +6913,7 @@ msgstr "Rechte für %1 konnten nicht entzogen werden"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:93
 msgid "Rights for Administrators"
-msgstr ""
+msgstr "Rechte für Administratoren"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:92
 msgid "Rights for Staff"
@@ -7085,7 +7085,7 @@ msgstr "Suche nach Anfragen"
 
 #: share/html/Search/Simple.html:57
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-msgstr "Suche nach Anfragen. Gib Anfrage <strong>id's</strong>, <strong>Bereichsnamen</strong>, <strong>Benutzernamen</strong> und Klienten <strong>Email Adressen</strong> ein."
+msgstr "Suche nach Anfragen, geben Sie <strong>Id</strong>, <strong>Bereich</strong>, <strong>Benutzernamen</strong> oder Klienten <strong>Email Adressen</strong> ein."
 
 #: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
@@ -7267,7 +7267,7 @@ msgstr "Wählen Sie benutzerdefinierte Felder für alle Benutzer aus"
 
 #: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:167
 msgid "Select custom fields for tickets in all queues"
-msgstr "Wählen Sie benutzerdefinierte Felder für alle Anfragen in allen Bereichen aus"
+msgstr "Wählen Sie benutzerdefinierte Felder für Anfragen in allen Bereichen aus"
 
 #: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:171
 msgid "Select custom fields for transactions on tickets in all queues"
@@ -7364,7 +7364,7 @@ msgstr "Auswahl wurde geändert. Bitte speichere deine Änderungen"
 
 #: lib/RT/Interface/Email.pm:768
 msgid "Send email successfully"
-msgstr "Email erfolgreich versendet"
+msgstr "E-Mail erfolgreich versendet"
 
 #: NOT FOUND IN SOURCE
 msgid "Send mail to all watchers"
@@ -7384,11 +7384,11 @@ msgstr "Sende eine E-Mail an den Besitzer und alle Beobachter als \"Kommentar\""
 
 #: etc/initialdata:67
 msgid "Send mail to requestors and Ccs"
-msgstr "Schickt eine Nachricht an die Klienten und CCs"
+msgstr "Sende eine E-Mail an die Klienten und CCs"
 
 #: etc/initialdata:62
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr "Schickt einen Kommentar an die Klienten und CCs"
+msgstr "Sende eine E-Mail an die Klienten und CCs als Kommentar"
 
 #: etc/initialdata:33
 msgid "Sends a message to the requestors"
@@ -7396,27 +7396,27 @@ msgstr "Schickt eine Nachricht an die Klienten"
 
 #: etc/initialdata:80 etc/initialdata:84
 msgid "Sends mail to explicitly listed Ccs and Bccs"
-msgstr "Schickt eine Nachricht an die direkt angegebenen CCs und BCCs"
+msgstr "Sendet eine E-Mail an ausdrücklich aufgeführte CCs und BCCs"
 
 #: etc/initialdata:49 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
-msgstr "Schickt eine Nachricht an alle CCs"
+msgstr "Sendet eine E-Mail an alle CCs"
 
 #: etc/initialdata:45 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
-msgstr "Schickt einen Kommentar an alle CCs"
+msgstr "Sendet eine E-Mail an alle CCs als Kommentar"
 
 #: etc/initialdata:57
 msgid "Sends mail to the administrative Ccs"
-msgstr "Schickt eine Nachricht an die administrativen CCs"
+msgstr "Sendet eine E-Mail an administrative CCs"
 
 #: etc/initialdata:53
 msgid "Sends mail to the administrative Ccs as a comment"
-msgstr "Schickt einen Kommentar an die administrativen CCs"
+msgstr "Sendet eine E-Mail an administrative CCs als Kommentar"
 
 #: etc/initialdata:37 etc/initialdata:41
 msgid "Sends mail to the owner"
-msgstr "Schickt eine Nachricht an den Besitzer"
+msgstr "Sendet eine E-Mail an den Besitzer"
 
 #: lib/RT/Date.pm:99
 msgid "Sep"
@@ -7440,7 +7440,7 @@ msgstr "Einstellungen"
 
 #: lib/RT/Config.pm:470
 msgid "Should RT send you mail for ticket updates you make?"
-msgstr "Soll RT dir E-Mails senden, wenn du eine Ticket-Aktualisierung vornimmst?"
+msgstr "Soll RT Ihnen E-Mails für ihre eigenen Aktualisierungen senden?"
 
 #: share/html/Elements/Tabs:425 share/html/Ticket/Elements/ShowTransaction:168
 msgid "Show"
@@ -7557,7 +7557,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:108
 msgid "ShowOutgoingEmail"
-msgstr "AusgehendeNachrichtenAnzeigen"
+msgstr "AusgehendeE-MailAnzeigen"
 
 #: lib/RT/Group.pm:98
 msgid "ShowSavedSearches"
@@ -8165,7 +8165,7 @@ msgstr "Die von Ihnen gewählten Einstellungen wurden in %1 gespeichert."
 
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
-msgstr "Das System kann keine ausgehenden Nachrichten unterzeichnen. Normalerweise ist das ein Hinweis auf ein falsches Passwort oder der GPG Agent läuft nicht. Bitte alarmiere deinen System Administrator umgehend. Die Adressen mit Problemen sind:"
+msgstr "Das System kann ausgehende E-Mails nicht signieren. Normalerweise ist dies ein Hinweis auf ein falsches Passwort oder das der GPG Agent nicht läuft. Bitte informieren Sie umgehend den Systemadministrator. Die Adressen mit Problemen sind:"
 
 #: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:201
 msgid "Theme"
@@ -8467,7 +8467,7 @@ msgstr "An"
 #: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
-msgstr "Für Hilfe, Schulung, angepasste Entwicklungen oder Lizensierung, kontaktiere bitte %1."
+msgstr "Kontaktieren Sie bitte %1 für Unterstützung, Schulung, angepasste Entwicklungen oder bei Lizenzfragen."
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($count)
@@ -8861,7 +8861,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:355
 msgid "Use this to protect the format of plain text"
-msgstr "Nutze dieses um die Formatierung von Plain Text zu schützen"
+msgstr "Nutzen Sie dies, um die Formatierung von reinem Text zu schützen."
 
 #: lib/RT/Record.pm:932 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
@@ -8916,7 +8916,7 @@ msgstr "Benutzer aktiviert"
 
 #: share/html/Admin/Users/GnuPG.html:56
 msgid "User has empty email address"
-msgstr "Benutzer hat eine leere Email Adresse"
+msgstr "Benutzer hat eine leere E-Mail Adresse"
 
 #: lib/RT/User.pm:511 lib/RT/User.pm:531
 msgid "User loaded"
@@ -9057,7 +9057,7 @@ msgstr "Warnung! Dies ist NICHT signiert!"
 
 #: share/html/Dashboards/Subscription.html:260
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
-msgstr "Warnung: Du hast keine Email Adresse eingetragen, Du wirst keine Nachricht bekomme von dieser Anzeigentagel bis du eine vergeben hast"
+msgstr "Warnung: Sie haben keine E-Mail Adresse eingetragen. Sie werden diese Anzeigetafel nicht empfangen, bis Sie eine vergeben haben"
 
 #: lib/RT/Queue.pm:110
 msgid "Watch"
@@ -9125,7 +9125,7 @@ msgstr "Was ist RT?"
 
 #: lib/RT/Installer.pm:163
 msgid "When RT can't handle an email message, where should it be forwarded?"
-msgstr "Wenn RT eine E-Mail nicht bearbeiten kann, wohin soll sie Weitergeleitet werden?"
+msgstr "Wenn RT eine E-Mail nicht bearbeiten kann, wohin soll sie weitergeleitet werden?"
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
@@ -9861,7 +9861,7 @@ msgstr "Die Standard Adresse die in From: und Reply-To: Kopfzeilen von Kommentar
 
 #: lib/RT/Installer.pm:179
 msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
-msgstr "Die Standard Adresse die in From: und Reply-To: Kopfzeilen von Antwort Mails eingetragen wird."
+msgstr "Die Standard Adressen die in From: und Reply-To: Kopfzeilen von Antwort E-Mails eingetragen werden."
 
 #: lib/RT/Group.pm:208
 #. ($self->Instance, $self->Type)
