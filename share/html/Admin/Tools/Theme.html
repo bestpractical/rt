@@ -62,7 +62,7 @@
     <input type="file" name="logo-upload" id="logo-upload" /><br />
     <div class="gd-support">
 % if (%gd_can) {
-    <&|/l, join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can) &>Your system supports automatic color suggestions for: [_1]</&>
+    <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
 % } else {
     <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
@@ -255,6 +255,7 @@ use List::MoreUtils qw(uniq);
 my $has_color_analyzer = eval { require Convert::Color; 1 };
 my $colors;
 my %gd_can;
+my $valid_image_types;
 
 if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     require GD;
@@ -263,6 +264,7 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     for my $type (qw(Png Jpeg Gif)) {
         $gd_can{$type}++ if GD::Image->can("newFrom${type}Data");
     }
+    $valid_image_types = join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can);
 
     # ...but only analyze the image if we have data
     if ($imgdata) {
@@ -270,13 +272,9 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
             $colors = analyze_img($img);
         }
         else {
-            push @results, loc(
-                "Automatically suggested theme colors aren't available for your image. This might be"
-                . " because you uploaded an image type that your installed version"
-                . " of GD doesn't support. Supported types are: [_1]."
-                . " You can recompile libgd and GD.pm to include support for other image types.",
-                join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can)
-            );
+            # This has to be one damn long line because the loc() needs to be
+            # source parsed correctly.
+            push @results, loc("Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: [_1]. You can recompile libgd and GD.pm to include support for other image types.", $valid_image_types);
         }
     }
 }
