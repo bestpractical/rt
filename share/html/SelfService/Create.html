@@ -58,7 +58,7 @@
 </td>
 <td class="value">
     <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id || ''%>" />
-    <strong><%$queue_obj->Name || ''%></strong> (<%$queue_obj->Description || ''%>)
+    <strong><%$queue_obj->Name || ''%></strong> <% $queue_obj->Description ? '('.$queue_obj->Description.')' : '' %>
 </td>
 </tr>
 <% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
