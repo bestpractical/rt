@@ -1,0 +1,6 @@
+<%args>
+$URL
+</%args>
+<%init>
+$$URL = 'http://bestpractical.com/rt';
+</%init>
