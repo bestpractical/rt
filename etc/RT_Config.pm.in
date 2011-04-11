@@ -1327,11 +1327,6 @@ Specifies which fields of L<RT::User> to match against and how to
 match each field when autocompleting users.  Valid match methods are
 LIKE, STARTSWITH, ENDSWITH, =, and !=.
 
-Not all User fields are publicly accessible and hence won't work for
-autocomplete unless you override their accessibility using a local
-overlay or a plugin.  Out of the box the following fields are public:
-Name, EmailAddress, RealName, NickName, and Organization.
-
 =cut
 
 Set($UserAutocompleteFields, {
