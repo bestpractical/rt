@@ -79,7 +79,7 @@ $q->LoadByCols(Name => $Queue);
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
 % if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO(Timezone => 'user')."'"; }
 % if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO(Timezone => 'user')."'"}
-% my $groupby = 'Owner';
+% my $groupby = 'Owner.Name';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
 
