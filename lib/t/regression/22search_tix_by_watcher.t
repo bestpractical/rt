@@ -42,7 +42,7 @@ sub run_tests {
         $count++ foreach grep $_, values %{ $test{$key} };
         is($tix->Count, $count, "found correct number of ticket(s) by '$key'") or $error = 1;
 
-        my $good_tickets = 1;
+        my $good_tickets = ($tix->Count == $count);
         while ( my $ticket = $tix->Next ) {
             next if $test{$key}->{ $ticket->Subject };
             diag $ticket->Subject ." ticket has been found when it's not expected";
@@ -125,10 +125,10 @@ run_tests();
         { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
     'Subject NOT LIKE "x" AND Requestor != "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
-        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
-        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+#    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
+#        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+#    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
+#        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
     'Subject LIKE "x" OR Requestor != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
     'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
@@ -150,6 +150,10 @@ TODO: {
     %test = (
         'Requestor = "x@example.com" AND Requestor = "y@example.com"'
             => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+        'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
+            { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+        'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
+            { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
     );
     run_tests();
 }

@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -79,7 +79,7 @@ $q->LoadByCols(Name => $Queue);
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
 % if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO."'"; }
 % if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO."'"}
-% my $groupby = 'Owner';
+% my $groupby = 'Owner.Name';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
 

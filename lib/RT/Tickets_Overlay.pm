@@ -2,7 +2,7 @@
 # 
 # COPYRIGHT:
 #  
-# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -150,6 +150,13 @@ my %FIELD_METADATA = (
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
     HasAttribute     => [ 'HASATTRIBUTE', 1 ],
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
+);
+
+our %SEARCHABLE_SUBFIELDS = (
+    User => [qw(
+        EmailAddress Name RealName Nickname Organization Address1 Address2
+        WorkPhone HomePhone MobilePhone PagerPhone id
+    )],
 );
 
 # Mapping of Field Type to Function
@@ -844,6 +851,13 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Ticket';
+
+    # Bail if the subfield is not allowed
+    if (    $rest{SUBKEY}
+        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    {
+        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+    }
 
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
@@ -1688,11 +1702,11 @@ sub OrderByCols {
 
            # Ticket.Owner  1 0 0
            my $ownerId = $self->CurrentUser->Id;
-           push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
+           push @res, { %$row, FIELD => undef, FUNCTION => "Owner=$ownerId", ORDER => $order } ;
 
            # Unowned Tickets 0 1 0
            my $nobodyId = $RT::Nobody->Id;
-           push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+           push @res, { %$row, FIELD => undef, FUNCTION => "Owner=$nobodyId", ORDER => $order } ;
 
            push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
        }

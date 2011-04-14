@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -125,6 +125,8 @@ unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
 
 # Set the proper encoding for the current language handle
 $r->content_type("text/html; charset=utf-8");
+
+RT::Interface::Web::MaybeRejectPrivateComponentRequest();
 
 # If it's a noauth file, don't ask for auth.
 if ( $m->base_comp->path =~ $RT::WebNoAuthRegex ) {

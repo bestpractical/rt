@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,8 +53,8 @@
 
 <title><%$Title%></title>
 
-% if ($Refresh && $Refresh > 0) {
-    <meta http-equiv="refresh" content="<%$Refresh%>" />
+% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
+    <meta http-equiv="refresh" content="<% $1 %>" />
 % }
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png" />

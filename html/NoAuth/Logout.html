@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@
 % $m->abort();
 
 <%INIT>
+my $URL = $RT::WebPath."/";
 $m->comp('/Elements/Callback', _CallbackName => 'BeforeSessionDelete', %ARGS);
 
 if (defined %session) {
@@ -68,7 +69,3 @@ if (defined %session) {
 
 $m->comp('/Elements/Callback', _CallbackName => 'AfterSessionDelete', %ARGS);
 </%INIT>
-
-<%ARGS>
-$URL => $RT::WebPath."/"
-</%ARGS>
