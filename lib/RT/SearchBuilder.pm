@@ -117,6 +117,17 @@ sub JoinTransactions {
     return $alias;
 }
 
+sub OrderByCols {
+    my $self = shift;
+    my @sort;
+    for my $s (@_) {
+        next if defined $s->{FIELD} and $s->{FIELD} =~ /\W/;
+        $s->{FIELD} = $s->{FUNCTION} if $s->{FUNCTION};
+        push @sort, $s;
+    }
+    return $self->SUPER::OrderByCols( @sort );
+}
+
 =head2 LimitToEnabled
 
 Only find items that haven't been disabled
