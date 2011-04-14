@@ -1,7 +1,6 @@
 
 use RT;
-use RT::Test tests => 15;
-
+use RT::Test tests => 19;
 
 {
 
@@ -33,6 +32,7 @@ my $string = 'subject/content SQL test';
 
     my $t = RT::Ticket->new($RT::SystemUser);
     ok( $t->Create( Queue => 'General',
+                    Requestor => 'jesse@example.com',
                     Subject => 'another ticket',
                     MIMEObj => $Message,
                     MemberOf => $created[0]
@@ -81,6 +81,15 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
     like $tix->BuildSelectQuery, qr/Subject IS NOT NULL/, "found right clause";
 }
 
+{
+    my ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
+    ok (!$status, "invalid query - Signature not valid") or diag("error: $msg");
+
+    my ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
+    ok ($status, "valid query") or diag("error: $msg");
+    is $tix->Count, 1, "found one ticket";
+    like $tix->First->Subject, qr/another ticket/, "found the right ticket";
+}
 
 }
 
