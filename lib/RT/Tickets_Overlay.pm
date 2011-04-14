@@ -1688,11 +1688,11 @@ sub OrderByCols {
 
            # Ticket.Owner  1 0 0
            my $ownerId = $self->CurrentUser->Id;
-           push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
+           push @res, { %$row, FIELD => undef, FUNCTION => "Owner=$ownerId", ORDER => $order } ;
 
            # Unowned Tickets 0 1 0
            my $nobodyId = $RT::Nobody->Id;
-           push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+           push @res, { %$row, FIELD => undef, FUNCTION => "Owner=$nobodyId", ORDER => $order } ;
 
            push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
        }
