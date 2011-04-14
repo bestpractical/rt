@@ -298,14 +298,27 @@ This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 1, thus
 making sure that by default lots of things don't do extra work trying to 
 match lower(colname) agaist lc($val);
 
+We also force VALUE to C<NULL> when the OPERATOR is C<IS> or C<IS NOT>.
+This ensures that we don't pass invalid SQL to the database or allow SQL
+injection attacks when we pass through user specified values.
+
 =cut
 
 sub Limit {
     my $self = shift;
-    my %args = ( CASESENSITIVE => 1,
-                 @_ );
+    my %args = (
+        CASESENSITIVE => 1,
+        @_
+    );
 
-    return $self->SUPER::Limit(%args);
+    # We use the same regex here that DBIx::SearchBuilder uses to exclude
+    # values from quoting
+    if ( ($args{'OPERATOR'} || '') =~ /IS/i ) {
+        # Don't pass anything but NULL for IS and IS NOT
+        $args{'VALUE'} = 'NULL';
+    }
+
+    $self->SUPER::Limit(%args);
 }
 
 # }}}
