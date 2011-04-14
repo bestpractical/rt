@@ -152,6 +152,13 @@ my %FIELD_METADATA = (
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
 );
 
+our %SEARCHABLE_SUBFIELDS = (
+    User => [qw(
+        EmailAddress Name RealName Nickname Organization Address1 Address2
+        WorkPhone HomePhone MobilePhone PagerPhone id
+    )],
+);
+
 # Mapping of Field Type to Function
 my %dispatch = (
     ENUM            => \&_EnumLimit,
@@ -844,6 +851,13 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Ticket';
+
+    # Bail if the subfield is not allowed
+    if (    $rest{SUBKEY}
+        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    {
+        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+    }
 
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
