@@ -306,19 +306,39 @@ injection attacks when we pass through user specified values.
 
 sub Limit {
     my $self = shift;
-    my %args = (
+    my %ARGS = (
         CASESENSITIVE => 1,
-        @_
+        OPERATOR => '=',
+        @_,
     );
 
     # We use the same regex here that DBIx::SearchBuilder uses to exclude
     # values from quoting
-    if ( ($args{'OPERATOR'} || '') =~ /IS/i ) {
+    if ( $ARGS{'OPERATOR'} =~ /IS/i ) {
         # Don't pass anything but NULL for IS and IS NOT
-        $args{'VALUE'} = 'NULL';
+        $ARGS{'VALUE'} = 'NULL';
     }
 
-    $self->SUPER::Limit(%args);
+    if ($ARGS{FUNCTION}) {
+        ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
+        $self->SUPER::Limit(%ARGS);
+    } elsif ($ARGS{FIELD} =~ /\W/
+          or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
+                                  |(NOT\s*)?LIKE
+                                  |(NOT\s*)?(STARTS|ENDS)WITH
+                                  |(NOT\s*)?MATCHES
+                                  |IS(\s*NOT)?
+                                  |IN)$/ix) {
+        $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
+        $self->SUPER::Limit(
+            %ARGS,
+            FIELD    => 'id',
+            OPERATOR => '<',
+            VALUE    => '0',
+        );
+    } else {
+        $self->SUPER::Limit(%ARGS);
+    }
 }
 
 # }}}
