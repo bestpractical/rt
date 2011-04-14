@@ -790,13 +790,13 @@ sub _TransContentLimit {
         }
 
         my $field = $config->{'Field'} || 'Content';
+        $field = 'Content' if $field =~ /\W/;
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
+            my $alias = $self->{_sql_trattachalias};
             $self->_SQLLimit(
                 %rest,
-                # XXX: Nasty hack
-                ALIAS         => 'CONTAINS( '. $self->{_sql_trattachalias},
-                FIELD         => $field . ', '. $dbh->quote($value) .')',
+                FUNCTION      => "CONTAINS( $alias.$field, ".$dbh->quote($value) .")",
                 OPERATOR      => '>',
                 VALUE         => 0,
                 QUOTEVALUE    => 0,
@@ -1436,9 +1436,7 @@ sub _CustomFieldLimit {
             $args{'OPERATOR'} = 'NOT MATCHES';
         }
         elsif ( $op =~ /^[<>]=?$/ ) {
-            # XXX: VERY DIRTY HACK
-            $args{'ALIAS'} = 'TO_CHAR( '. $args{'ALIAS'};
-            $args{'FIELD'} .= ')'; #, 1, '. (length($args{'VALUE'}) + 1) .')';
+            $args{'FUNCTION'} = "TO_CHAR( $args{'ALIAS'}.LargeContent )";
         }
         return %args;
     };
