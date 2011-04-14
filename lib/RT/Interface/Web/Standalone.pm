@@ -74,6 +74,14 @@ sub handle_request {
 
     Module::Refresh->refresh if $RT::DevelMode;
 
+    # Each environment has its own way of handling .. and so on in paths,
+    # so RT consistently forbids such paths.
+    if ( $cgi->path_info =~ m{/\.} ) {
+        $RT::Logger->crit("Invalid request for ".$cgi->path_info." aborting");
+        print STDOUT "HTTP/1.0 400\r\n\r\n";
+        return RT::Interface::Web::Handler->CleanupRequest();
+    }
+
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if ($@);
 
