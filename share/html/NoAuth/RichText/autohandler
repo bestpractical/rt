@@ -45,40 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select id="<%$Name%>" name="<%$Name%>">
-% if ($AllowNull) {
-<option value="">-</option>
-% }
-% for my $option (@types) {
-%  if ($Suffix) {
-<option value="<% $option %><% $Suffix %>"<%$option eq $Default && qq[ selected="selected"] |n %> ><%loc($option)%></option>
-%   next;
-%  }
-%  foreach my $subtype (@subtypes) {
-<option value="<%"$option.$subtype"%>"<%$option eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($option) %> <% loc($subtype) %></option>
-%  }
-% }
-</select>
-
-<%INIT>
-my @types;
-if ($Scope =~ 'queue') {
-   @types = qw(Cc AdminCc);
+<%init>
+my $file = $m->base_comp->source_file;
+if ($file =~ m{RichText/+FCKeditor}) {
+    $RT::Logger->crit("Invalid request directly to the rich text editor: $file");
+    $m->abort(403);
+} else {
+    $m->call_next();
 }
-elsif ($Suffix eq 'Group') {
-   @types = qw(Requestor Cc AdminCc Watcher);
-}
-else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
-}
-
-my @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
-
-</%INIT>
-<%ARGS>
-$AllowNull => 1
-$Suffix => ''
-$Default=>undef
-$Scope => 'ticket'
-$Name => 'WatcherType'
-</%ARGS>
+</%init>

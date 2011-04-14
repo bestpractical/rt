@@ -123,57 +123,49 @@ sub __BuildLimitCheck {
     my ($self, %args) = (@_);
     return undef unless $args{'FIELD'} =~ /^(?:Name|Description)$/;
 
-    $args{'OPERATOR'} ||= '=';
-    my $quoted_value = $args{'VALUE'};
-    if ( $quoted_value ) {
-        $quoted_value =~ s/'/\\'/g;
-        $quoted_value = "'$quoted_value'";
-    }
+    my $condition = $args{VALUE};
+    my $op = $args{'OPERATOR'} || '=';
+    my $field = $args{FIELD};
 
-    my $code = <<END;
-my \$record = shift;
-my \$value = \$record->$args{'FIELD'};
-my \$condition = $quoted_value;
-END
-
-    if ( $args{'OPERATOR'} =~ /^(?:=|!=|<>)$/ ) {
-        $code .= 'return 0 unless defined $value;';
-        my %h = ( '=' => ' eq ', '!=' => ' ne ', '<>' => ' ne ' );
-        $code .= 'return 0 unless $value'. $h{ $args{'OPERATOR'} } .'$condition;';
-        $code .= 'return 1;'
-    }
-    elsif ( $args{'OPERATOR'} =~ /^(?:LIKE|NOT LIKE)$/i ) {
-        $code .= 'return 0 unless defined $value;';
-        my %h = ( 'LIKE' => ' =~ ', 'NOT LIKE' => ' !~ ' );
-        $code .= 'return 0 unless $value'. $h{ uc $args{'OPERATOR'} } .'/\Q$condition/i;';
-        $code .= 'return 1;'
-    }
-    else {
-        $code .= 'return 0;'
-    }
-    $code = "sub {$code}";
-    my $cb = eval "$code";
-    $RT::Logger->error( "Couldn't build callback '$code': $@" ) if $@;
-    return $cb;
+    return sub {
+        my $record = shift;
+        my $value = $record->$field;
+        return 0 unless defined $value;
+        if ($op eq "=") {
+            return 0 unless $value eq $condition;
+        } elsif ($op eq "!=" or $op eq "<>") {
+            return 0 unless $value ne $condition;
+        } elsif (uc($op) eq "LIKE") {
+            return 0 unless $value =~ /\Q$condition\E/i;
+        } elsif (rc($op) eq "NOT LIKE") {
+            return 0 unless $value !~ /\Q$condition\E/i;
+        } else {
+            return 0;
+        }
+        return 1;
+    };
 }
 
 sub __BuildAggregatorsCheck {
     my $self = shift;
+    my @cbs = grep {$_->{CALLBACK}} @{ $self->{'__external_cf_limits'} };
+    return undef unless @cbs;
 
-    my %h = ( OR => ' || ', AND => ' && ' );
-    
-    my $code = '';
-    for( my $i = 0; $i < @{ $self->{'__external_cf_limits'} }; $i++ ) {
-        next unless $self->{'__external_cf_limits'}->[$i]->{'CALLBACK'};
-        $code .= $h{ uc($self->{'__external_cf_limits'}->[$i]->{'ENTRYAGGREGATOR'} || 'OR') } if $code;
-        $code .= '$sb->{\'__external_cf_limits\'}->['. $i .']->{\'CALLBACK\'}->($record)';
-    }
-    return unless $code;
+    my %h = (
+        OR  => sub { defined $_[0] ? ($_[0] || $_[1]) : $_[1] },
+        AND => sub { defined $_[0] ? ($_[0] && $_[1]) : $_[1] },
+    );
 
-    $code = "sub { my (\$sb,\$record) = (\@_); return $code }";
-    my $cb = eval "$code";
-    $RT::Logger->error( "Couldn't build callback '$code': $@" ) if $@;
-    return $cb;
+    return sub {
+        my ($sb, $record) = @_;
+        my $ok;
+        for my $limit ( @cbs ) {
+            $ok = $h{$limit->{ENTRYAGGREGATOR} || 'OR'}->(
+                $ok, $limit->{CALLBACK}->($record),
+            );
+        }
+        return $ok;
+    };
 }
 
 sub _DoSearch {

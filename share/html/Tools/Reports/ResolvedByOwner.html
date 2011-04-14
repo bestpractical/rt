@@ -59,7 +59,7 @@ $q->LoadByCols(Name => $Queue);
 % if ($Queue) {
 % # if we have a queue, do the search
 % my $query = "Status = 'resolved' AND Queue = '$Queue'";
-% my $groupby = 'Owner';
+% my $groupby = 'Owner.Name';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
 

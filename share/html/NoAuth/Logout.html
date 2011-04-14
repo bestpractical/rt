@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Logout'), Refresh => RT->Config->Get('LogoutRefresh').";URL=$URL" &>
+<& /Elements/Header, Title => loc('Logout'), Refresh => RT->Config->Get('LogoutRefresh') &>
 </div>
 
 <div id="body" class="login-body">
@@ -81,4 +81,5 @@ if (keys %session) {
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
+$m->notes->{LogoutURL} = $URL;
 </%INIT>

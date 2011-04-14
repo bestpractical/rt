@@ -85,6 +85,17 @@ sub _Init  {
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
+sub OrderByCols {
+    my $self = shift;
+    my @sort;
+    for my $s (@_) {
+        next if defined $s->{FIELD} and $s->{FIELD} =~ /\W/;
+        $s->{FIELD} = $s->{FUNCTION} if $s->{FUNCTION};
+        push @sort, $s;
+    }
+    return $self->SUPER::OrderByCols( @sort );
+}
+
 =head2 LimitToEnabled
 
 Only find items that haven't been disabled
@@ -274,14 +285,47 @@ This Limit sub calls SUPER::Limit, but defaults "CASESENSITIVE" to 1, thus
 making sure that by default lots of things don't do extra work trying to 
 match lower(colname) agaist lc($val);
 
+We also force VALUE to C<NULL> when the OPERATOR is C<IS> or C<IS NOT>.
+This ensures that we don't pass invalid SQL to the database or allow SQL
+injection attacks when we pass through user specified values.
+
 =cut
 
 sub Limit {
     my $self = shift;
-    my %args = ( CASESENSITIVE => 1,
-                 @_ );
+    my %ARGS = (
+        CASESENSITIVE => 1,
+        OPERATOR => '=',
+        @_,
+    );
 
-    return $self->SUPER::Limit(%args);
+    # We use the same regex here that DBIx::SearchBuilder uses to exclude
+    # values from quoting
+    if ( $ARGS{'OPERATOR'} =~ /IS/i ) {
+        # Don't pass anything but NULL for IS and IS NOT
+        $ARGS{'VALUE'} = 'NULL';
+    }
+
+    if ($ARGS{FUNCTION}) {
+        ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
+        $self->SUPER::Limit(%ARGS);
+    } elsif ($ARGS{FIELD} =~ /\W/
+          or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
+                                  |(NOT\s*)?LIKE
+                                  |(NOT\s*)?(STARTS|ENDS)WITH
+                                  |(NOT\s*)?MATCHES
+                                  |IS(\s*NOT)?
+                                  |IN)$/ix) {
+        $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
+        $self->SUPER::Limit(
+            %ARGS,
+            FIELD    => 'id',
+            OPERATOR => '<',
+            VALUE    => '0',
+        );
+    } else {
+        $self->SUPER::Limit(%ARGS);
+    }
 }
 
 =head2 ItemsOrderBy

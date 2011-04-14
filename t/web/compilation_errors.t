@@ -5,7 +5,7 @@ use Test::More;
 use File::Find;
 BEGIN {
     sub wanted {
-        -f && /\.html$/ && $_ !~ /Logout.html$/;
+        -f && /\.html$/ && $_ !~ /Logout.html$/ && $File::Find::dir !~ /RichText/;
     }
     my $tests = 4;
     find( sub { wanted() and $tests += 4 }, 'share/html/' );
