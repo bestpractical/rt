@@ -210,6 +210,7 @@ sub CleanupRequest {
 use RT::Interface::Web::Handler;
 use CGI::Emulate::PSGI;
 use Plack::Request;
+use Plack::Response;
 use Plack::Util;
 use Encode qw(encode_utf8);
 
@@ -229,6 +230,14 @@ sub PSGIApp {
 
         my $req = Plack::Request->new($env);
 
+        # CGI.pm normalizes .. out of paths so when you requested
+        # /NoAuth/../Ticket/Display.html we saw Ticket/Display.html
+        # PSGI doesn't normalize .. so we have to deal ourselves.
+        if ( $req->path_info =~ m{/\.} ) {
+            $RT::Logger->crit("Invalid request for ".$req->path_info." aborting");
+            my $res = Plack::Response->new(400);
+            return $self->_psgi_response_cb($res->finalize,sub { $self->CleanupRequest });
+        }
         $env->{PATH_INFO} = $self->_mason_dir_index( $h->interp, $req->path_info);
 
         my $ret;

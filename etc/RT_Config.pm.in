@@ -1191,13 +1191,28 @@ Set(%FullTextSearch,
 
 =item C<$DontSearchFileAttachments>
 
+This refers to F<sbin/rt-setup-fulltext-index>.
+
 If C<$DontSearchFileAttachments> is set to 1, then uploaded files
-(attachments with file names) are not searched during full-content
-ticket searches.
+(attachments with file names) are not indexed.
 
 =cut
 
 Set($DontSearchFileAttachments, undef);
+
+=item C<$DontSearchBinaryAttachments>
+
+This refers to F<sbin/rt-setup-fulltext-index>.
+
+By default, text attachments are always indexed, and a known set of
+binary attachments are always skipped.
+
+If C<$DontSearchBinaryAttachments> is set to 1, then unrecognized binary
+data types will not be indexed.
+
+=cut
+
+Set($DontSearchBinaryAttachments, undef);
 
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 
@@ -1312,11 +1327,6 @@ Specifies which fields of L<RT::User> to match against and how to
 match each field when autocompleting users.  Valid match methods are
 LIKE, STARTSWITH, ENDSWITH, =, and !=.
 
-Not all User fields are publicly accessible and hence won't work for
-autocomplete unless you override their accessibility using a local
-overlay or a plugin.  Out of the box the following fields are public:
-Name, EmailAddress, RealName, NickName, and Organization.
-
 =cut
 
 Set($UserAutocompleteFields, {
@@ -1363,6 +1373,16 @@ reply page should include the content of the messages to be sent.
 =cut
 
 Set($PreviewScripMessages, 0);
+
+=item C<$SimplifiedRecipients>
+
+If C<$SimplifiedRecipients> is set, a simple list of who will receive
+B<any> kind of mail will be shown on the ticket reply page, instead of a
+detailed breakdown by scrip.
+
+=cut
+
+Set($SimplifiedRecipients, 0);
 
 =back
 
@@ -1677,6 +1697,17 @@ Should rejection notes from approvals be sent to the requestors?
 =cut
 
 Set($ApprovalRejectionNotes, 1);
+
+=item C<$DisallowExecuteCode>
+
+If set to a true value, the C<ExecuteCode> right will be removed from
+all users, B<including> the superuser.  This is intended for when RT is
+installed into a shared environment where even the superuser should not
+be allowed to run arbitrary Perl code on the server via scrips.
+
+=cut
+
+Set($DisallowExecuteCode, 0);
 
 =item C<@ExtraSecurity>
 

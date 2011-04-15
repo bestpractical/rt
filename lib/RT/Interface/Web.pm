@@ -223,6 +223,8 @@ sub HandleRequest {
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
 
+    MaybeRejectPrivateComponentRequest();
+
     MaybeShowNoAuthPage($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
@@ -440,6 +442,37 @@ sub MaybeShowNoAuthPage {
     SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 MaybeRejectPrivateComponentRequest
+
+This function will reject calls to private components, like those under
+C</Elements>. If the requested path is a private component then we will
+abort with a C<403> error.
+
+=cut
+
+sub MaybeRejectPrivateComponentRequest {
+    my $m = $HTML::Mason::Commands::m;
+    my $path = $m->request_comp->path;
+
+    # We do not check for dhandler here, because requesting our dhandlers
+    # directly is okay. Mason will invoke the dhandler with a dhandler_arg of
+    # 'dhandler'.
+
+    if ($path =~ m{
+            / # leading slash
+            ( Elements    |
+              _elements   | # mobile UI
+              Widgets     |
+              autohandler | # requesting this directly is suspicious
+              l           ) # loc component
+            ( $ | / ) # trailing slash or end of path
+        }xi) {
+            $m->abort(403);
+    }
+
+    return;
 }
 
 sub InitializeMenu {
@@ -711,7 +744,7 @@ sub Redirect {
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
-    # don't do this if $RT::CanoniaclRedirectURLs is true
+    # don't do this if $RT::CanonicalizeRedirectURLs is true
     if (   !RT->Config->Get('CanonicalizeRedirectURLs')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )

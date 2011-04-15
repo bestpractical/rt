@@ -154,6 +154,13 @@ our %FIELD_METADATA = (
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
 );
 
+our %SEARCHABLE_SUBFIELDS = (
+    User => [qw(
+        EmailAddress Name RealName Nickname Organization Address1 Address2
+        WorkPhone HomePhone MobilePhone PagerPhone id
+    )],
+);
+
 # Mapping of Field Type to Function
 our %dispatch = (
     ENUM            => \&_EnumLimit,
@@ -790,13 +797,13 @@ sub _TransContentLimit {
         }
 
         my $field = $config->{'Field'} || 'Content';
+        $field = 'Content' if $field =~ /\W/;
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
+            my $alias = $self->{_sql_trattachalias};
             $self->_SQLLimit(
                 %rest,
-                # XXX: Nasty hack
-                ALIAS         => 'CONTAINS( '. $self->{_sql_trattachalias},
-                FIELD         => $field . ', '. $dbh->quote($value) .')',
+                FUNCTION      => "CONTAINS( $alias.$field, ".$dbh->quote($value) .")",
                 OPERATOR      => '>',
                 VALUE         => 0,
                 QUOTEVALUE    => 0,
@@ -872,6 +879,13 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Ticket';
+
+    # Bail if the subfield is not allowed
+    if (    $rest{SUBKEY}
+        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    {
+        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+    }
 
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
@@ -1252,7 +1266,7 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 sub _CustomFieldDecipher {
     my ($self, $string) = @_;
 
-    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/);
+    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(Content|LargeContent))?$/);
     $field ||= ($string =~ /^{(.*?)}$/)[0] || $string;
 
     my $cf;
@@ -1436,9 +1450,7 @@ sub _CustomFieldLimit {
             $args{'OPERATOR'} = 'NOT MATCHES';
         }
         elsif ( $op =~ /^[<>]=?$/ ) {
-            # XXX: VERY DIRTY HACK
-            $args{'ALIAS'} = 'TO_CHAR( '. $args{'ALIAS'};
-            $args{'FIELD'} .= ')'; #, 1, '. (length($args{'VALUE'}) + 1) .')';
+            $args{'FUNCTION'} = "TO_CHAR( $args{'ALIAS'}.LargeContent )";
         }
         return %args;
     };
@@ -1932,9 +1944,20 @@ sub OrderByCols {
            foreach my $uid ( $self->CurrentUser->Id, RT->Nobody->Id ) {
                if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
                    my $f = ($row->{'ALIAS'} || 'main') .'.Owner';
-                   push @res, { %$row, ALIAS => '', FIELD => "CASE WHEN $f=$uid THEN 1 ELSE 0 END", ORDER => $order } ;
+                   push @res, {
+                       %$row,
+                       FIELD => undef,
+                       ALIAS => '',
+                       FUNCTION => "CASE WHEN $f=$uid THEN 1 ELSE 0 END",
+                       ORDER => $order
+                   };
                } else {
-                   push @res, { %$row, FIELD => "Owner=$uid", ORDER => $order } ;
+                   push @res, {
+                       %$row,
+                       FIELD => undef,
+                       FUNCTION => "Owner=$uid",
+                       ORDER => $order
+                   };
                }
            }
 

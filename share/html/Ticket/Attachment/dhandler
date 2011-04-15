@@ -81,10 +81,6 @@
      $iana = $iana? $iana->mime_name : $enc;
 	 $content_type .= ";charset=$iana";
 
-     # unless (RT->Config->Get('TrustMIMEAttachments')) {
-     #     $content_type = 'application/octet-stream';
-     # }
-
      $r->content_type( $content_type );
      $m->clear_buffer();
      $m->out($AttachmentObj->OriginalContent);
