@@ -58,7 +58,7 @@ return unless $Object;
 my %headers = (To => {}, Cc => {}, Bcc => {});
 if ($Object->Scrips) {
     for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @{$Object->Scrips->Prepared}) {
-        for my $type qw(To Cc Bcc) {
+        for my $type (qw(To Cc Bcc)) {
             $headers{$type}{$_->address} = $_
                 for $scrip->ActionObj->Action->$type();
         }
@@ -66,7 +66,7 @@ if ($Object->Scrips) {
 }
 if ($Object->Rules) {
     for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @{$Object->Rules}) {
-        for my $type qw(To Cc Bcc) {
+        for my $type (qw(To Cc Bcc)) {
             $headers{$type}{$_} ||= @{[Email::Address->parse($_)]}[0] # Hate list context
                 for @{$rule->{hints}{recipients}{$type}};
         }
@@ -77,7 +77,7 @@ my %recips;
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
 <table>
 <tr>
-% for my $type qw(To Cc Bcc) {
+% for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}};
 <td valign="top"><% $type %>:</td>
 <td valign="top">
