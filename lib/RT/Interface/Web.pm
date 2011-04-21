@@ -2756,6 +2756,7 @@ sub _NewScrubber {
     return $scrubber;
 }
 
+package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
 1;
