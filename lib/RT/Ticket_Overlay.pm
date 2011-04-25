@@ -3226,7 +3226,7 @@ sub _ApplyTransactionBatch {
     my $batch = $self->TransactionBatch;
 
     my %seen;
-    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->Type, grep defined, @{$batch};
+    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
