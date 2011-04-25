@@ -1192,7 +1192,7 @@ links of any type.
 
 =cut
 
-*Links = \&_Links;
+sub Links { shift->_Links(@_) }
 
 sub _Links {
     my $self = shift;
