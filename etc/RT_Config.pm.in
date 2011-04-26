@@ -289,14 +289,7 @@ you're not dealing with historical C<$rtname> values, you'll likely
 never have to change this configuration.
 
 Be B<very careful> with it. Note that it overrides C<$rtname> for
-subject token matching and that you should use only "non-capturing"
-parenthesis grouping. For example:
-
-C<Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
-
-and NOT
-
-C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
+subject token matching.
 
 The setting below would make RT behave exactly as it does without the
 setting enabled.

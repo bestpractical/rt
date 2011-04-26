@@ -1190,13 +1190,15 @@ sub ParseTicketId {
     my $rtname = RT->Config->Get('rtname');
     my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;
 
+    # We use @captures and pull out the last capture value to guard against
+    # someone using (...) instead of (?:...) in $EmailSubjectTagRegex.
     my $id;
-    if ( $Subject =~ /\[$test_name\s+\#(\d+)\s*\]/i ) {
-        $id = $1;
+    if ( my @captures = $Subject =~ /\[$test_name\s+\#(\d+)\s*\]/i ) {
+        $id = $captures[-1];
     } else {
         foreach my $tag ( RT->System->SubjectTag ) {
-            next unless $Subject =~ /\[\Q$tag\E\s+\#(\d+)\s*\]/i;
-            $id = $1;
+            next unless my @captures = $Subject =~ /\[\Q$tag\E\s+\#(\d+)\s*\]/i;
+            $id = $captures[-1];
             last;
         }
     }
