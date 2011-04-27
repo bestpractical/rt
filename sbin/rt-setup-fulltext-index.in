@@ -91,6 +91,7 @@ my %DB = (
 my %OPT = (
     help        => 0,
     ask         => 1,
+    dryrun      => 0,
 );
 
 my %DEFAULT;
@@ -116,6 +117,7 @@ use Getopt::Long qw(GetOptions);
 GetOptions(
     'h|help!'        => \$OPT{'help'},
     'ask!'           => \$OPT{'ask'},
+    'dry-run!'       => \$OPT{'dryrun'},
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
