@@ -120,15 +120,22 @@ if ( $OPT{'help'} ) {
 
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
-    print STDERR "Full text search disabled in the RT config."
-        ." Read documentation for %FullTextSearch config option.";
+    print STDERR <<EOT;
+
+Full text search is disabled in your RT configuration.  Run
+@RT_SBIN_PATH_R@/rt-setup-fulltext-index to configure and enable it.
+
+EOT
     exit 1;
 }
 unless ( $fts_config->{'Indexed'} ) {
-    print STDERR "Full text search is enabled in the RT config,"
-        ." however full text search works without special index,"
-        ." so this tool is not required."
-        ." Read documentation for %FullTextSearch config option.";
+    print STDERR <<EOT;
+
+Full text search is enabled in your RT configuration, but not with any
+full-text database indexing -- hence this tool is not required.  Read
+the documentation for %FullTextSearch in your RT_Config for more details.
+
+EOT
     exit 1;
 }
 
@@ -404,10 +411,10 @@ rt-fulltext-indexer - Indexer for full text search
 
 =head1 DESCRIPTION
 
-This is a helper script to keep full text index in sync with data.
-
-Start from F<sbin/rt-setup-fulltext-index>, adjust config and run
-this script via cron.
+This is a helper script to keep full text indexes in sync with data.  It
+relies on indexes having been properly configured by
+F<sbin/rt-setup-fulltext-index> first.  This script should be run
+occasionally via C<cron>.
 
 =head1 ORACLE
 
@@ -419,18 +426,19 @@ this script via cron.
 
 =head2 DESCRIPTION
 
-Basicly this script runs the following query:
+Basicly, this script simply runs the following query:
 
     begin
     ctx_ddl.sync_index('rt_fts_index', '2M');
     end;
 
-Ammount of memory used for the sync can be controlled with --memory option.
+The ammount of memory used for the sync can be controlled with --memory option.
 
-There is way to do all of this on Oracle side by setting up a DBMS_JOB. Read
-"Managing DML Operations for a CONTEXT Index" chapter from "Text Application
-Developer's Guide" for more info on the topic and how to keep index optimized,
-collect garbage and other stuff.
+There is way to do all of this by setting up a DBMS_JOB; read the
+"Managing DML Operations for a CONTEXT Index" chapter from Oracle's
+"Text Application Developer's Guide" for more info on the topic, and
+details how to keep the index optimized, perform garbage collection, and
+other tasks.
 
 =head1 PG
 
@@ -442,8 +450,9 @@ collect garbage and other stuff.
 
 =head2 DESCRIPTION
 
-This script find attachments that should be indexed and process content if required
-and stores in the index. Use --limit option to specify how many attachments to process.
+This script finds attachments that should be indexed and stores them in
+the index.  You can use the --limit option to specify how many
+attachments to process at once; defaults to 100.
 
 =head1 MYSQL
 
@@ -455,11 +464,12 @@ and stores in the index. Use --limit option to specify how many attachments to p
 
 =head2 DESCRIPTION
 
-This script find attachments that should be indexed and process content if required
-and generates xmlpipe2 document stream that can processed by sphinx. Read more in
-sphinx reference manual.
+This script finds attachments that should be indexed and prints an
+xmlpipe2 document stream that can processed by sphinx; the output should
+be piped into. For more details, see the sphinx reference manual.
 
-Use --limit option to specify how many attachments to process.
+You can use the --limit option to specify how many attachments to
+process at once; defaults to 100.
 
 =cut
 
