@@ -156,8 +156,9 @@ CREATE TABLE $table (
 ) ENGINE=SPHINX CONNECTION="$url"
 END
 
-    print_rt_config( Table => $table, Column => $DEFAULT{'column'} );
     insert_schema( $schema );
+
+    print_rt_config( Table => $table, Column => $DEFAULT{'column'} );
 
     require URI;
     my $urlo = URI->new( $url );
@@ -247,10 +248,6 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             ."$column tsvector )";
     }
 
-    print_rt_config( Table => $table, Column => $column );
-
-    insert_schema_as_dba( $schema );
-
     my $index_type;
     do {
         $index_type = lc prompt(
@@ -263,7 +260,11 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             silent  => !$OPT{'ask'},
         );
     } while ( $index_type ne 'gist' && $index_type ne 'gin' );
+
+    insert_schema_as_dba( $schema );
     insert_schema_as_dba("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
+
+    print_rt_config( Table => $table, Column => $column );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
     {
