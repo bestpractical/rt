@@ -655,16 +655,15 @@ sub _insert_schema {
 
 =head1 NAME
 
-rt-setup-fulltext-index - Helps create indexes for full text search
+rt-setup-fulltext-index - Create indexes for full text search
 
 =head1 DESCRIPTION
 
-Full text search is very database specific. This script setups indexing
-for Oracle, Pg and mysql. Below you can find specifics for your current
-DB.
-
-At the end script prints piece that you should put into RT config to enable
-created index. Don't forget to restart the web-server after changing config.
+Full text indexes are very database specific; this script sets up
+indexing for Oracle, Pg and mysql; specifics for each are below.  After
+creating the indexes, it will print a short section that should be
+inserted into your your RT_SiteConfig.pm to enable the index. You will
+need to restart the web-server after making those changes.
 
 =head1 ORACLE
 
@@ -675,37 +674,39 @@ created index. Don't forget to restart the web-server after changing config.
 
 =head2 DESCRIPTION
 
-Creates Oracle CONTEXT index on the Content column in the Attachments table.
-As well, it creates several preferences, functions and triggers to support
-this index.
+Creates an Oracle CONTEXT index on the Content column in the Attachments
+table.  It also creates several preferences, functions and triggers to
+support this index.
 
-CONTEXT index needs periodic synchronization after any updates. Either use
-F<sbin/rt-fulltext-indexer> or read its documentation for alternatives.
+CONTEXT indexes needperiodic synchronization after any updates; either
+use F<sbin/rt-fulltext-indexer> via cron, or read its documentation for
+alternatives.
 
 =head1 PG
 
 =head2 USAGE
 
     rt-setup-fulltext-index --help
-    rt-setup-fulltext-index --dba postgres --dba-password 'secrete'
+    rt-setup-fulltext-index --dba postgres --dba-password 'secret'
 
 =head2 DESCRIPTION
 
-Creates an additional column to store a ts_vector and then creates either
-GiN or GiST index on it. Use F<sbin/rt-fulltext-indexer> to keep index in
-sync.
+Creates an additional column to store a ts_vector, and then creates
+either a GiN or GiST index on it.  Use F<sbin/rt-fulltext-indexer> via
+cron to keep the index in sync.
 
 =head1 MYSQL
 
 =head2 USAGE
 
     rt-setup-fulltext-index --help
+    rt-setup-fulltext-index --dba root
 
 =head2 DESCRIPTION
 
-Full text search in mysql implemented through Sphinx and MySQL storage
-engine (SphinxSE), so you need mysql compiled with it. Use
-F<sbin/rt-fulltext-indexer> to keep index in sync.
+Full text search in mysql is implemented through the Sphinx storage
+engine (SphinxSE), which your mysql must be compiled with support
+for. Use F<sbin/rt-fulltext-indexer> via cron to keep the index in sync.
 
 =head1 AUTHOR
 
