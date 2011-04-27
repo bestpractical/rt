@@ -121,7 +121,7 @@ GetOptions(
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
-);
+) or show_help();
 
 if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
     show_help( !$OPT{'help'} );
