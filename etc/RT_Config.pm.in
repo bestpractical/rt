@@ -1170,14 +1170,22 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
 
 =item C<%FullTextSearch>
 
-Full text search (FTS) without indexes is a very slow operation and by
-default is disabled at all. To enable FTS set key 'Enable' to 1.
+Full text search (FTS) without database indexing is a very slow
+operation, and is thus disabled by default.
 
-Setup of indexes and filling them with data requires additional steps
-that vary from DB to DB. Use F<sbin/rt-setup-fulltext-index> helper
-for quick start. This script creates required structures in the DB and
-gives some ideas on next steps. Use F<sbin/rt-fulltext-indexer> to
-keep the index in sync.
+To enable and configure database support for full-text indexing, run
+F<sbin/rt-setup-fulltext-index> and follow the prompts it presents.
+This script will create the necessary indexes and inform you how to
+set the %FullTextSearch configuration.
+
+You will also need to update the index by running
+F<sbin/rt-fulltext-indexer> to run at regular intervals; how frequently
+depends entirely on your workload.
+
+It is possible to enable FTS without database indexing support, simply
+by setting the C<Enable> key to 1, while leaving C<Indexed> set to 0.
+This is not generally suggested, as unindexed full-text searching can
+cause severe performance problems.
 
 =cut
 
