@@ -307,7 +307,7 @@ sub last_indexed_pg {
         $alias = $attachments->Join(
             TYPE    => 'left',
             FIELD1 => 'id',
-            TABLE2  => $fts_config->{'table'},
+            TABLE2  => $fts_config->{'Table'},
             FIELD2 => 'id',
         );
     }
