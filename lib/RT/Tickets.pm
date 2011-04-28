@@ -784,7 +784,7 @@ sub _TransContentLimit {
         my $db_type = RT->Config->Get('DatabaseType');
 
         my $alias;
-        if ( $config->{'Table'} ) {
+        if ( $config->{'Table'} and $config->{'Table'} ne "Attachments") {
             $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
                 TYPE   => 'LEFT',
                 ALIAS1 => $self->{'_sql_trattachalias'},
