@@ -105,9 +105,8 @@ sub JoinTransactions {
         TABLE2 => 'Transactions',
         FIELD2 => 'ObjectId',
     );
-    $self->Limit(
+    $self->RT::SearchBuilder::Limit(
         LEFTJOIN => $alias,
-        ALIAS    => $alias,
         FIELD    => 'ObjectType',
         VALUE    => ref $self->NewItem,
     );
