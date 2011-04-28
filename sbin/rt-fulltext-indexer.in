@@ -303,7 +303,7 @@ sub last_indexed_pg {
     my $type = shift;
     my $attachments = attachments( $type );
     my $alias = 'main';
-    if ( $fts_config->{'Table'} && lc $fts_config->{'Table'} ne 'Attachments' ) {
+    if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
         $alias = $attachments->Join(
             TYPE    => 'left',
             FIELD1 => 'id',
