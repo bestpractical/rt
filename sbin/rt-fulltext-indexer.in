@@ -349,7 +349,7 @@ sub process_pg {
 
 sub attachments_text {
     my $res = shift;
-    $res->Limit( FIELD => 'content_type', VALUE => 'text/plain' );
+    $res->Limit( FIELD => 'ContentType', VALUE => 'text/plain' );
     return $res;
 }
 
