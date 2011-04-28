@@ -178,12 +178,22 @@ foreach my $type ( @types ) {
 sub attachments {
     my $type = shift;
     my $res = RT::Attachments->new( RT->SystemUser );
-
-    my $txn_alias = $res->JoinTransactions;
-    $res->Limit( ALIAS => $txn_alias, FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+    my $txn_alias = $res->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'TransactionId',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'id',
+    );
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Ticket',
+    );
     my $ticket_alias = $res->Join(
-        ALIAS1 => $txn_alias, FIELD1 => 'ObjectId',
-        TABLE2 => 'Tickets', FIELD2 => 'id'
+        ALIAS1 => $txn_alias,
+        FIELD1 => 'ObjectId',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'id',
     );
     $res->Limit(
         ALIAS => $ticket_alias,
