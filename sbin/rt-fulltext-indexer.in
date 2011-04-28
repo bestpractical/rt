@@ -326,6 +326,7 @@ sub last_indexed_pg {
         VALUE => 'NULL',
     );
     $attachments->OrderBy( FIELD => 'id', ORDER => 'desc' );
+    $attachments->RowsPerPage( 1 );
     my $res = $attachments->First;
     return 0 unless $res;
     return $res->id;
