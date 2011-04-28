@@ -162,12 +162,9 @@ foreach my $type ( @types ) {
 
     my $found = 0;
     while ( my $a = $attaches->Next ) {
-        print "bla\n";
-        debug("Found attachment #". $a->id );
         next if filter( $type, $a );
-        debug("Attachment #". $a->id ." hasn't been filtered" );
+        debug("Found attachment #". $a->id );
         my $txt = extract($type, $a) or next;
-        debug("Extracted text from attachment #". $a->id );
         $found++;
         process( $type, $a, $txt );
         debug("Processed attachment #". $a->id );
