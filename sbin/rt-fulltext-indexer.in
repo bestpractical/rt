@@ -83,8 +83,9 @@ use RT::Interface::CLI ();
 
 my %OPT = (
     help        => 0,
+    debug       => 0,
 );
-my @OPT_LIST = qw(help|h!);
+my @OPT_LIST = qw(help|h! debug!);
 
 my $db_type = RT->Config->Get('DatabaseType');
 if ( $db_type eq 'Pg' ) {
