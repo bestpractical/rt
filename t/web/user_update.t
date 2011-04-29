@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use utf8;
-use RT::Test tests => 10;
+use RT::Test tests => 9;
 
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
@@ -29,11 +29,4 @@ $m->text_contains("Langは「'ja'」から「'en_us'」に変更されました"
 
 # another spurious update
 $m->content_lacks("That is already the current value");
-
-# This text is not in the RT source (including .po files)!
-# [issues.bestpractical.com #16913]
-TODO: {
-    local $TODO = "this is caused by an overzealous loc_fuzzy";
-    $m->content_lacks("the current value-is-already That");
-};
 
