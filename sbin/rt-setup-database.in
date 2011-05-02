@@ -298,6 +298,7 @@ sub action_upgrade {
     return (0, "Couldn't read dir '$base_dir' with upgrade data")
         unless -d $base_dir || -r _;
 
+    my $version_word_regex = join '|', RT::Handle->version_words;
     my $upgrading_from = undef;
     do {
         if ( defined $upgrading_from ) {
@@ -308,7 +309,7 @@ sub action_upgrade {
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
         $upgrading_from =~ s/\s+//g;
-    } while $upgrading_from !~ /^\d+\.\d+\.\w+$/;
+    } while $upgrading_from !~ /^\d+\.\d+\.\d+(?:$version_word_regex)\d*$/;
 
     my $upgrading_to = $RT::VERSION;
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
@@ -343,7 +344,7 @@ sub action_upgrade {
             chomp $custom_upgrading_to;
             $custom_upgrading_to =~ s/\s+//g;
             last unless $custom_upgrading_to;
-        } while $custom_upgrading_to !~ /^\d+\.\d+\.\w+$/;
+        } while $custom_upgrading_to !~ /^\d+\.\d+\.\d+(?:$version_word_regex)\d*$/;
 
         if ( $custom_upgrading_to ) {
             return (
