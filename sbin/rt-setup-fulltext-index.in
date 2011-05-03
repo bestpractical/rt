@@ -164,8 +164,7 @@ END
 
     require URI;
     my $urlo = URI->new( $url );
-    my $host  = $urlo->host;
-    my $port  = $urlo->port;
+    my ($host, $port)  = split /:/, $urlo->authority;
     my $index = $urlo->path;
 
     my $var_path = RT->var_path;
