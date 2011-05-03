@@ -650,7 +650,7 @@ my $build_admin_menu = sub {
                 );
 
                 $more->child( 'shredder' => title => loc('Shredder'),
-                                path => 'Admin/Tools/Shredder/?' . $shred_args);
+                                path => '/Admin/Tools/Shredder/?' . $shred_args);
             }
 
         }
