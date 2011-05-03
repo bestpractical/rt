@@ -829,6 +829,15 @@ sub _TransContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
+        elsif ( $db_type eq 'mysql' ) {
+            $self->_SQLLimit(
+                %rest,
+                ALIAS       => $alias,
+                FIELD       => $field,
+                OPERATOR    => $op,
+                VALUE       => $value,
+            );
+        }
         else {
             $RT::Logger->error( "Indexed full text search is not supported for $db_type" );
             $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
