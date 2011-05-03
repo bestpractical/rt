@@ -166,6 +166,7 @@ END
     my $urlo = URI->new( $url );
     my ($host, $port)  = split /:/, $urlo->authority;
     my $index = $urlo->path;
+    $index =~ s{^/+}{};
 
     my $var_path = $RT::VarPath;
 
@@ -190,16 +191,16 @@ source rt {
     sql_user        = $sphinx_conf{'user'}
     sql_pass        = $sphinx_conf{'pass'}
 
-    sql_query       = \
-        SELECT a.id, a.content FROM Attachments a \
-        JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \
-        JOIN Tickets t ON txn.ObjectId = t.id \
+    sql_query       = \\
+        SELECT a.id, a.content FROM Attachments a \\
+        JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \\
+        JOIN Tickets t ON txn.ObjectId = t.id \\
         WHERE a.ContentType = 'text/plain' AND t.Status != 'deleted'
 
     sql_query_info  = SELECT * FROM Attachments WHERE id=\$id
 }
 
-index \$index {
+index $index {
     source                  = rt
     path                    = $var_path/sphinx/index
     docinfo                 = extern
