@@ -63,12 +63,13 @@ my @links = (
 );
 
 for my $link (@links) {
-    test_page($link);
+    test_page($m, $link);
 }
 
 $m->get_ok('/NoAuth/Logout.html');
 
 sub test_page {
+    my $m = shift;
     my $link = shift;
     $m->get_ok( $link, $link );
     my $tree = HTML::TreeBuilder->new();
@@ -83,7 +84,7 @@ sub test_page {
       ( $page_menu ? $page_menu->find('a') : () );
 
     for my $link (@links) {
-        test_page($link);
+        test_page($m, $link);
     }
 }
 
