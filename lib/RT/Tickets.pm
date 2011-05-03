@@ -794,7 +794,7 @@ sub _TransContentLimit {
             $alias = $self->{'_sql_trattachalias'};
         }
 
-        my $field = $config->{'Field'} || 'Content';
+        my $field = $config->{'Column'} || 'Content';
         $field = 'Content' if $field =~ /\W/;
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
