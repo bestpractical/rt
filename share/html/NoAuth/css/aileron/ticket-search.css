@@ -63,11 +63,8 @@
     width: 11em;
 }
 
-#pick-criteria td.label * {
- width: 8.5em;
-}
-
 #pick-criteria td.label select {
+  width: 8.5em;
   text-align: right;
 }
 
