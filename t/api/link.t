@@ -1,14 +1,12 @@
-
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 83;
+use RT::Test nodata => 1, tests => 80;
 use RT::Test::Web;
+use Test::Warn;
 
 use RT::Link;
 my $link = RT::Link->new(RT->SystemUser);
-
-use RT::Test::Web;
 
 ok (ref $link);
 isa_ok( $link, 'RT::Link');
@@ -34,26 +32,23 @@ my $child = RT::Ticket->new(RT->SystemUser);
 ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
 
 {
-    my @warnings;
-    local $SIG{__WARN__} = sub {
-        push @warnings, "@_";
-    };
-
+    my ($status, $msg);
     clean_links();
-    my ($status, $msg) = $parent->AddLink;
-    ok(!$status, "didn't create a link: $msg");
-    is(@warnings, 1, "one warning");
-    like(shift @warnings, qr/Base or Target must be specified/, "warned about linking a ticket to itself");
 
-    ($status, $msg) = $parent->AddLink( Base => $parent->id );
+    warning_like {
+        ($status, $msg) = $parent->AddLink;
+    } qr/Base or Target must be specified/, "warned about linking a ticket to itself";
     ok(!$status, "didn't create a link: $msg");
-    is(@warnings, 1, "one warning");
-    like(shift @warnings, qr/Can't link a ticket to itself/, "warned about linking a ticket to itself");
 
-    ($status, $msg) = $parent->AddLink( Base => $parent->id, Type => 'HasMember' );
+    warning_like {
+        ($status, $msg) = $parent->AddLink( Base => $parent->id );
+    } qr/Can't link a ticket to itself/, "warned about linking a ticket to itself";
     ok(!$status, "didn't create a link: $msg");
-    is(@warnings, 1, "one warning");
-    like(shift @warnings, qr/Can't link a ticket to itself/, "warned about linking a ticket to itself");
+
+    warning_like {
+        ($status, $msg) = $parent->AddLink( Base => $parent->id, Type => 'HasMember' );
+    } qr/Can't link a ticket to itself/, "warned about linking a ticket to itself";
+    ok(!$status, "didn't create a link: $msg");
 }
 
 {

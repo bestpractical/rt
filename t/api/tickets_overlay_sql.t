@@ -1,6 +1,7 @@
 
 use RT;
 use RT::Test tests => 20, config => 'Set( %FullTextSearch, Enable => 1 );';
+use Test::Warn;
 
 
 {
@@ -83,12 +84,12 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
 }
 
 {
-    my $warnings;
-    local $SIG{__WARN__} = sub { $warnings .= "@_" };
+    my ($status, $msg);
 
-    my ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
-    ok (!$status, "invalid query - Signature not valid") or diag("error: $msg");
-    like($warnings, qr/Invalid watcher subfield: 'Signature'/);
+    warning_like {
+        ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
+    } qr/Invalid watcher subfield: 'Signature'/;
+    ok(!$status, "invalid query - Signature not valid") or diag("error: $msg");
 
     ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
     ok ($status, "valid query") or diag("error: $msg");
