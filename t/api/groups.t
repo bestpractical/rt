@@ -63,7 +63,7 @@ ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Groups->new(RT->SystemUser);
 $groups->WithRight(Right => 'OwnTicket', Object => $q);
 is($groups->Count, 1);
-($id, $msg) = $global_admin_cc->PrincipalObj->GrantRight(Right =>'OwnTicket', Object=> $RT::System);
+($id, $msg) = $global_admin_cc->PrincipalObj->GrantRight(Right =>'OwnTicket', Object=> RT->System);
 ok ($id,$msg);
 ok (!$testuser->HasRight(Object => $q, Right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
 ($id, $msg) = $q->AddWatcher(Type => 'AdminCc', PrincipalId => $testuser->id);
