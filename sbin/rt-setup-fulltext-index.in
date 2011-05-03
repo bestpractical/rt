@@ -167,13 +167,13 @@ END
     my ($host, $port)  = split /:/, $urlo->authority;
     my $index = $urlo->path;
 
-    my $var_path = RT->var_path;
+    my $var_path = $RT::VarPath;
 
     my %sphinx_conf = ();
-    $sphinx_conf{'host'} = RT->config->get('DatabaseHost');
-    $sphinx_conf{'db'}   = RT->config->get('DatabaseName');
-    $sphinx_conf{'user'} = RT->config->get('DatabaseUser');
-    $sphinx_conf{'pass'} = RT->config->get('DatabasePassword');
+    $sphinx_conf{'host'} = RT->Config->Get('DatabaseHost');
+    $sphinx_conf{'db'}   = RT->Config->Get('DatabaseName');
+    $sphinx_conf{'user'} = RT->Config->Get('DatabaseUser');
+    $sphinx_conf{'pass'} = RT->Config->Get('DatabasePassword');
 
     print <<END
 
@@ -191,10 +191,10 @@ source rt {
     sql_pass        = $sphinx_conf{'pass'}
 
     sql_query       = \
-        SELECT a.id, a.content FROM Attachments a
-        JOIN Transactions txn ON a.transaction_id = txn.id AND txn.object_type = 'RT::Model::Ticket' \
-        JOIN Tickets t ON txn.object_id = t.id \
-        WHERE a.content_type = 'text/plain' AND t.Status != 'deleted'
+        SELECT a.id, a.content FROM Attachments a \
+        JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \
+        JOIN Tickets t ON txn.ObjectId = t.id \
+        WHERE a.ContentType = 'text/plain' AND t.Status != 'deleted'
 
     sql_query_info  = SELECT * FROM Attachments WHERE id=\$id
 }
