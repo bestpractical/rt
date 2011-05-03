@@ -151,7 +151,7 @@ if ( $DB{'type'} eq 'mysql' ) {
 
     my $schema = <<END;
 CREATE TABLE $table (
-    id     INTEGER NOT NULL,
+    id     INTEGER UNSIGNED NOT NULL,
     weight INTEGER NOT NULL,
     $DEFAULT{'column'}  VARCHAR(3072) NOT NULL,
     INDEX($DEFAULT{'column'})
