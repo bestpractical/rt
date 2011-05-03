@@ -72,6 +72,8 @@ sub test_page {
     my $m = shift;
     my $link = shift;
     $m->get_ok( $link, $link );
+    $m->no_warnings_ok($link);
+
     my $tree = HTML::TreeBuilder->new();
     $tree->parse( $m->content );
     $tree->elementify;
