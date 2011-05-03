@@ -112,7 +112,7 @@ unless ($id || $TicketObj) {
 }
 
 if ($ARGS{'id'} eq 'new') {
-    # {{{ Create a new ticket
+    # Create a new ticket
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     $Queue->Load($ARGS{'Queue'});
