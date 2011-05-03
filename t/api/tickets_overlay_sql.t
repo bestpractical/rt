@@ -1,13 +1,7 @@
-
-use RT;
+use strict;
+use warnings;
 use RT::Test tests => 20, config => 'Set( %FullTextSearch, Enable => 1 );';
 use Test::Warn;
-
-
-{
-
-use RT::Tickets;
-use strict;
 
 my $tix = RT::Tickets->new(RT->SystemUser);
 {
@@ -95,7 +89,5 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
     ok ($status, "valid query") or diag("error: $msg");
     is $tix->Count, 1, "found one ticket";
     like $tix->First->Subject, qr/another ticket/, "found the right ticket";
-}
-
 }
 
