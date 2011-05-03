@@ -823,7 +823,7 @@ sub _TransContentLimit {
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
-                FIELD       => $config->{'Column'},
+                FIELD       => $field,
                 OPERATOR    => '@@',
                 VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
