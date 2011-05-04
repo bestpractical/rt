@@ -137,7 +137,7 @@ sub __BuildLimitCheck {
             return 0 unless $value ne $condition;
         } elsif (uc($op) eq "LIKE") {
             return 0 unless $value =~ /\Q$condition\E/i;
-        } elsif (rc($op) eq "NOT LIKE") {
+        } elsif (uc($op) eq "NOT LIKE") {
             return 0 unless $value !~ /\Q$condition\E/i;
         } else {
             return 0;
