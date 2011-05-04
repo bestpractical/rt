@@ -1002,7 +1002,7 @@ sub DeleteWatcher {
         return(0,$self->loc("Group not found"));
     }
 
-    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+    return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
         unless $self->IsRoleGroupType($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
