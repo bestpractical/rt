@@ -56,7 +56,11 @@
 
 <p><&|/l&>Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.</&></p>
 
+% my $config = RT->Config->Get('FullTextSearch') || {};
+% if ( $config->{'Enable'} ) {
 <p><&|/l&>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>.</&></p>
+% }
+
 <p><&|/l&>RT will look for anything else you enter in ticket subjects.</&></p>
 
 % my $status_str = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
