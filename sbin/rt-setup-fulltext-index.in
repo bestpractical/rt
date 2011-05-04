@@ -181,7 +181,7 @@ END
 Below is a simple Sphinx configuration which can be used to index all
 text/plain attachments in your database.  This configuration is not
 ideal; you should read the Sphinx documentation to understand how to
-confiture it to better suit your needs.
+configure it to better suit your needs.
 
 source rt {
     type            = mysql
