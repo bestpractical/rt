@@ -55,3 +55,10 @@
     padding-right: 0.5em;
 }
 
+#topactions form {
+    display: block;
+    float: right;
+    margin-left: 1em;
+    text-align: right;
+}
+
