@@ -239,6 +239,7 @@ END
 elsif ( $DB{'type'} eq 'Pg' ) {
     my $dbh = $RT::Handle->dbh;
 
+    check_tsvalue();
     my $table = prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
@@ -347,6 +348,22 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
 }
 else {
     die "Full-text indexes on $DB{type} are not yet supported";
+}
+
+sub check_tsvalue {
+    my $dbh = $RT::Handle->dbh;
+    my $fts = ($dbh->selectrow_array(<<EOQ))[0];
+SELECT 1 FROM information_schema.routines WHERE routine_name = 'plainto_tsquery'
+EOQ
+    unless ($fts) {
+        print STDERR <<EOT;
+
+Your Postgres server does not include full-text support.  You will need
+to upgrade to Postgres version 8.3 or higher to use full-text indexing.
+
+EOT
+        exit 1;
+    }
 }
 
 sub check_sphinx {
