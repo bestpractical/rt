@@ -5,3 +5,7 @@ The uncompressed version of PIE.htc
 ckeditor
 http://download.cksource.com/CKEditor/CKEditor/CKEditor%203.4.1/ckeditor_3.4.1.tar.gz
 The JS and CSS source files distributed with the version of ckeditor bundled in RT.
+
+jquery-1.4.2.js
+http://code.jquery.com/jquery-1.4.2.js
+Unminified version of jQuery 1.4.2
