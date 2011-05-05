@@ -47,11 +47,35 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<% $caption %>:<br />
+<h1><% $caption %></h1>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
+<input type="hidden" name="GroupField" value="Name" />
+<input type="hidden" name="GroupOp" value="LIKE" />
+<&|/l&>Go to group</&>
+<input type="text" name="GroupString" value="" id="autocomplete-GroupString" />
+<script type="text/javascript">
+    jQuery("#autocomplete-GroupString").autocomplete({
+        source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
+        // Auto-submit once a group is chosen
+        select: function( event, ui ) {
+            jQuery(event.target).val(ui.item.value);
+            jQuery(event.target).closest("form").submit();
+        }
+    });
+</script>
+</form>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
+<&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
+<input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
+</form>
 
 % unless ( $Groups->Count ) {
 <em><&|/l&>No groups matching search criteria found.</&></em>
 % } else {
+<p><&|/l&>Select a group</&>:</p>
 
 <& /Elements/CollectionList,
     OrderBy => 'Name',
@@ -63,15 +87,8 @@
     AllowSorting => 1,
     PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField FindDisabledGroups)],
 &>
-
-<br /><br />
 % }
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
-<&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
-</form>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
