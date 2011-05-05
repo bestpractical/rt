@@ -761,6 +761,7 @@ sub _TransContentLimit {
     # way they get parsed in the tree they're in different subclauses.
 
     my ( $self, $field, $op, $value, %rest ) = @_;
+    $field = 'Content' if $field =~ /\W/;
 
     my $config = RT->Config->Get('FullTextSearch') || {};
     unless ( $config->{'Enable'} ) {
@@ -794,8 +795,7 @@ sub _TransContentLimit {
             $alias = $self->{'_sql_trattachalias'};
         }
 
-        my $field = $config->{'Column'} || 'Content';
-        $field = 'Content' if $field =~ /\W/;
+        my $index = $config->{'Column'};
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
             my $alias = $self->{_sql_trattachalias};
@@ -823,7 +823,7 @@ sub _TransContentLimit {
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
-                FIELD       => $field,
+                FIELD       => $index,
                 OPERATOR    => '@@',
                 VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
@@ -833,7 +833,7 @@ sub _TransContentLimit {
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
-                FIELD       => $field,
+                FIELD       => $index,
                 OPERATOR    => $op,
                 VALUE       => $value,
             );
