@@ -830,6 +830,12 @@ sub _TransContentLimit {
             );
         }
         elsif ( $db_type eq 'mysql' ) {
+            # XXX: We could theoretically skip the join to Attachments,
+            # and have Sphinx simply index and group by the TicketId,
+            # and join Ticket.id to that attribute, which would be much
+            # more efficient -- however, this is only a possibility if
+            # there are no other transaction limits.
+
             # This is a special character.  Note that \ does not escape
             # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
             # 'foo\\;bar' is not a vulnerability, and is still parsed as
