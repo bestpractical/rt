@@ -64,12 +64,12 @@ my $query_link_url = RT->Config->Get('WebPath').'/Search/Results.html';
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
     unless ( $container_object ) {
-        $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $SavedSearch));
+        $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $m->interp->apply_escapes($SavedSearch, 'h')));
         return;
     }
     $search = $container_object->Attributes->WithId($search_id);
     unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
-        $m->out(loc("Saved Search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
+        $m->out(loc("Saved Search [_1] not found", $m->interp->apply_escapes($SavedSearch, 'h'))) unless $IgnoreMissing;
         return;
     }
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
@@ -93,7 +93,7 @@ if ($SavedSearch) {
             if ($custom->Description eq $Name) { $search = $custom; last }
         }
         unless ($search && $search->id) {
-            $m->out("Predefined search $Name not found");
+            $m->out("Predefined search ".$m->interp->apply_escapes($Name, 'h')." not found");
             return;
         }
     }
