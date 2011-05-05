@@ -830,6 +830,13 @@ sub _TransContentLimit {
             );
         }
         elsif ( $db_type eq 'mysql' ) {
+            # This is a special character.  Note that \ does not escape
+            # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
+            # 'foo\\;bar' is not a vulnerability, and is still parsed as
+            # "foo, \, ;, then bar".  Happily, the default mode is
+            # "all", meaning that boolean operators are not special.
+            $value =~ s/;/\\;/g;
+
             my $max = $config->{'MaxMatches'};
             $self->_SQLLimit(
                 %rest,
