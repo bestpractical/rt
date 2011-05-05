@@ -339,13 +339,14 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
 
     my $index_params = join "\n", @params;
     my $index_name = $DEFAULT{prefix} .'index';
-    do_error_is_ok( $dbh => "DROP INDEX $index_name" );
+    do_error_is_ok( $dbh => "DROP INDEX $index_name" )
+        unless $OPT{'dryrun'};
     $dbh->do(
         "CREATE INDEX $index_name ON Attachments(Content)
         indextype is ctxsys.context parameters('
             $index_params
         ')",
-    );
+    ) unless $OPT{'dryrun'};
 
     print_rt_config( IndexName => $index_name );
 }
@@ -429,34 +430,38 @@ sub ora_create_stop_list {
     return '' unless -e $file;
 
     my $name = $DEFAULT{'prefix'} .'stop_list';
-    do_error_is_ok( $dbh => 'begin ctx_ddl.drop_stoplist(?); end;', $name );
-    
-    $dbh->do(
-        'begin ctx_ddl.create_stoplist(?, ?);  end;',
-        undef, $name, 'BASIC_STOPLIST'
-    );
+    unless ($OPT{'dryrun'}) {
+        do_error_is_ok( $dbh => 'begin ctx_ddl.drop_stoplist(?); end;', $name );
 
-    open( my $fh, '<:utf8', $file )
-        or die "couldn't open file '$file': $!";
-    while ( my $word = <$fh> ) {
-        chomp $word;
         $dbh->do(
-            'begin ctx_ddl.add_stopword(?, ?); end;',
-            undef, $name, $word
+            'begin ctx_ddl.create_stoplist(?, ?);  end;',
+            undef, $name, 'BASIC_STOPLIST'
         );
+
+        open( my $fh, '<:utf8', $file )
+            or die "couldn't open file '$file': $!";
+        while ( my $word = <$fh> ) {
+            chomp $word;
+            $dbh->do(
+                'begin ctx_ddl.add_stopword(?, ?); end;',
+                undef, $name, $word
+            );
+        }
+        close $fh;
     }
-    close $fh;
     return sprintf 'stoplist %s', $name;
 }
 
 sub ora_create_section_group {
     my %args = @_;
     my $name = $DEFAULT{'prefix'} .'section_group';
-    do_error_is_ok( $dbh => 'begin ctx_ddl.drop_section_group(?); end;', $name );
-    $dbh->do(
-        'begin ctx_ddl.create_section_group(?, ?);  end;',
-        undef, $name, $args{'type'}
-    );
+    unless ($OPT{'dryrun'}) {
+        do_error_is_ok( $dbh => 'begin ctx_ddl.drop_section_group(?); end;', $name );
+        $dbh->do(
+            'begin ctx_ddl.create_section_group(?, ?);  end;',
+            undef, $name, $args{'type'}
+        );
+    }
     return sprintf 'section group %s', $name;
 }
 
@@ -469,6 +474,7 @@ sub ora_create_storage {
 
 sub ora_create_format_column {
     my $column_name = 'ContentOracleFormat';
+    return $column_name if $OPT{'dryrun'};
     unless (
         $dbh->column_info(
             undef, undef, uc('Attachments'), uc( $column_name )
@@ -548,6 +554,7 @@ sub ora_create_format_column {
 sub ora_create_preference {
     my %info = @_;
     my $name = $DEFAULT{'prefix'} . $info{'name'};
+    return $name if $OPT{'dryrun'};
     do_error_is_ok( $dbh => 'begin ctx_ddl.drop_preference(?); end;', $name );
     $dbh->do(
         'begin ctx_ddl.create_preference(?, ?);  end;',
@@ -568,6 +575,7 @@ sub ora_create_preference {
 sub ora_create_procedure {
     my $text = shift;
 
+    return if $OPT{'dryrun'};
     my $status = $dbh->do($text, { RaiseError => 0 });
 
     # Statement succeeded
