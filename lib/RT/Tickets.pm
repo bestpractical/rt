@@ -833,7 +833,7 @@ sub _TransContentLimit {
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
-                FIELD       => $index,
+                FIELD       => 'query',
                 OPERATOR    => $op,
                 VALUE       => $value,
             );

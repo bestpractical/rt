@@ -104,7 +104,6 @@ if ( $DB{'type'} eq 'Pg' ) {
 elsif ( $DB{'type'} eq 'mysql' ) {
     %DEFAULT = (
         table => 'AttachmentsIndex',
-        column => 'Content',
     );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
@@ -153,14 +152,14 @@ if ( $DB{'type'} eq 'mysql' ) {
 CREATE TABLE $table (
     id     INTEGER UNSIGNED NOT NULL,
     weight INTEGER NOT NULL,
-    $DEFAULT{'column'}  VARCHAR(3072) NOT NULL,
-    INDEX($DEFAULT{'column'})
+    query  VARCHAR(3072) NOT NULL,
+    INDEX(query)
 ) ENGINE=SPHINX CONNECTION="$url"
 END
 
     insert_schema( $schema );
 
-    print_rt_config( Table => $table, Column => $DEFAULT{'column'} );
+    print_rt_config( Table => $table );
 
     require URI;
     my $urlo = URI->new( $url );
