@@ -67,6 +67,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 <a href="<%RT->Config->Get('WebPath')%>/m/"><&|/l&>Homepage</&></a>
 </div>
 % }
+<& /Elements/Logo, ShowName => 0 &>
 % if ($title) {
 <h1><%$title%></h1>
 % }

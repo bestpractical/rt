@@ -352,18 +352,17 @@ div#login-box input[type=text], div#login-box input[type=password] {
     width: 100%;
 }
 
-#bpscredits img {
-    padding-bottom: 1em;
-}
-
-
-
 #bpscredits {
     float: right;
     text-align: right;
     width: auto;
     font-size: 0.8em;
     padding: 1em;
+}
+
+#bpscredits #copyright {
+    padding-top: 4em;
+    background: white url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
 }
 
 
@@ -406,6 +405,20 @@ form {
     font-size: 1em;
     padding: 0.25em;
     color: #000;
+}
+
+#logo {
+    position: absolute;
+    right: 5em;
+    top: 0;
+    height: 1.9em;
+}
+
+#logo a img {
+    border: 0;
+    height: 100% !important;
+    width: auto !important;
+    float: right;
 }
 
 div.txn-content {
