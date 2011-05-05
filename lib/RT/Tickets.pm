@@ -834,7 +834,7 @@ sub _TransContentLimit {
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => 'query',
-                OPERATOR    => $op,
+                OPERATOR    => '=',
                 VALUE       => $value,
             );
         }
