@@ -795,6 +795,7 @@ sub _TransContentLimit {
             $alias = $self->{'_sql_trattachalias'};
         }
 
+        #XXX: handle negative searches
         my $index = $config->{'Column'};
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
@@ -819,7 +820,6 @@ sub _TransContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
-            #XXX: handle negative searches
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
