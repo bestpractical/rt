@@ -10,7 +10,7 @@ my ($major, $minor) = $RT::Handle->dbh->get_info(18) =~ /^0*(\d+)\.0*(\d+)/;
 plan skip_all => "Need Pg 8.2 or higher; we have $major.$minor"
     if "$major.$minor" < 8.2;
 
-plan tests => 11;
+plan tests => 15;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'ContentIndex', Table => 'Attachments' );
 
@@ -74,16 +74,20 @@ sub run_test {
 @tickets = RT::Test->create_tickets(
     { Queue => $q->id },
     { Subject => 'fts test 1', Content => 'book' },
-    { Subject => 'fts test 2', Content => 'bar'  },
+    { Subject => 'fts test 2', Content => 'bars'  },
 );
 sync_index();
 
 my $book = $tickets[0];
-my $bar  = $tickets[1];
+my $bars = $tickets[1];
 
 run_tests(
-    "Content LIKE 'book'" => { $book->id => 1, $bar->id => 0 },
-    "Content LIKE 'bar'"  => { $book->id => 0, $bar->id => 1 },
+    "Content LIKE 'book'" => { $book->id => 1, $bars->id => 0 },
+    "Content LIKE 'bars'" => { $book->id => 0, $bars->id => 1 },
+
+    # make sure that Pg stemming works
+    "Content LIKE 'books'" => { $book->id => 1, $bars->id => 0 },
+    "Content LIKE 'bar'"   => { $book->id => 0, $bars->id => 1 },
 );
 
 @tickets = ();
