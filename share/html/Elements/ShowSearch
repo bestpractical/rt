@@ -93,7 +93,7 @@ if ($SavedSearch) {
             if ($custom->Description eq $Name) { $search = $custom; last }
         }
         unless ($search && $search->id) {
-            $m->out("Predefined search ".$m->interp->apply_escapes($Name, 'h')." not found");
+            $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($Name, 'h')));
             return;
         }
     }
