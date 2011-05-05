@@ -452,13 +452,13 @@ local-install:
 
 
 regenerate-catalogs:
-	$(PERL) devel/extract-message-catalog
+	$(PERL) devel/tools/extract-message-catalog
 
 license-tag:
-	$(PERL) devel/license_tag
+	$(PERL) devel/tools/license_tag
 
 factory: initialize-database
-	cd lib; $(PERL) ../devel/factory  $(DB_DATABASE) RT
+	cd lib; $(PERL) ../devel/tools/factory  $(DB_DATABASE) RT
 
 reconfigure:
 	aclocal -I m4
