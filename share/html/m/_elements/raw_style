@@ -127,7 +127,7 @@ ul.menu li#active a
     color: #800000;
 }
 
-div.titlebox, #bpscredits, .ticket_menu{
+div.titlebox, #bpscredits, #logo, .ticket_menu{
     -moz-border-radius: 1em;
     -webkit-border-radius: 1em;
     margin: 0.5em;
@@ -354,6 +354,7 @@ div#login-box input[type=text], div#login-box input[type=password] {
 
 #bpscredits {
     float: right;
+    clear: right;
     text-align: right;
     width: auto;
     font-size: 0.8em;
@@ -408,17 +409,24 @@ form {
 }
 
 #logo {
-    position: absolute;
-    right: 5em;
-    top: 0;
-    height: 1.9em;
+    float: right;
+    clear: right;
+    text-align: center;
+    padding: 1em;
+    padding-bottom: 0.5em;
+    margin: 0.25em 0.5em 0.25em 0.25em;
+}
+
+#logo .rtname {
+    display: block;
+    font-size: 0.9em;
 }
 
 #logo a img {
     border: 0;
-    height: 100% !important;
+    height: 2em;
     width: auto !important;
-    float: right;
+    padding-bottom: 0.5em;
 }
 
 div.txn-content {

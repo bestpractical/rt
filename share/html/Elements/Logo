@@ -78,9 +78,16 @@ if ($user_logo) {
            and defined $content->{'data'};
 }
 
+if ($OnlyCustom
+    and not $user_logo
+    and ($ARGS{LogoURL}||RT->Config->Get('LogoURL')) =~ /bpslogo\.png$/)
+{
+    return;
+}
 </%INIT>
 <%ARGS>
 $ShowName => 1
+$OnlyCustom => 0
 $Name => undef
 $id => 'logo'
 </%ARGS>
