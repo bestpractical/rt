@@ -272,8 +272,8 @@ elsif ( $DB{'type'} eq 'Pg' ) {
         );
     } while ( $index_type ne 'gist' && $index_type ne 'gin' );
 
-    insert_schema_as_dba( $schema );
-    insert_schema_as_dba("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
+    insert_schema( $schema );
+    insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
 
     print_rt_config( Table => $table, Column => $column );
 }
@@ -666,16 +666,8 @@ END
 }
 
 sub insert_schema {
-    return _insert_schema( $dbh, "Going to run the following in the DB:", @_);
-}
-
-sub insert_schema_as_dba {
-    return _insert_schema( dba_handle(), "Going to run the following in the DB:", @_);
-}
-
-sub _insert_schema {
-    my $dbh = shift;
-    my $message = shift;
+    my $dbh = dba_handle();
+    my $message = "Going to run the following in the DB:";
     my $schema = shift;
     print "$message\n";
     print "    $schema\n\n";
