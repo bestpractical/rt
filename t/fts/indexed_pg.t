@@ -62,7 +62,7 @@ sub run_test {
 
     my $good_tickets = ($tix->Count == $count);
     while ( my $ticket = $tix->Next ) {
-        next if $checks{ $ticket->Subject };
+        next if $checks{ $ticket->id };
         diag $ticket->Subject ." ticket has been found when it's not expected";
         $good_tickets = 0;
     }
@@ -73,14 +73,17 @@ sub run_test {
 
 @tickets = RT::Test->create_tickets(
     { Queue => $q->id },
-    { Subject => 'book', Content => 'book' },
-    { Subject => 'bar', Content => 'bar' },
+    { Subject => 'fts test 1', Content => 'book' },
+    { Subject => 'fts test 2', Content => 'bar'  },
 );
 sync_index();
 
+my $book = $tickets[0];
+my $bar  = $tickets[1];
+
 run_tests(
-    "Content LIKE 'book'" => { book => 1, bar => 0 },
-    "Content LIKE 'bar'" => { book => 0, bar => 1 },
+    "Content LIKE 'book'" => { $book->id => 1, $bar->id => 0 },
+    "Content LIKE 'bar'"  => { $book->id => 0, $bar->id => 1 },
 );
 
 @tickets = ();
