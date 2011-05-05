@@ -681,7 +681,9 @@ sub insert_schema {
     my $message = "Going to run the following in the DB:";
     my $schema = shift;
     print "$message\n";
-    print "    $schema\n\n";
+    my $disp = $schema;
+    $disp =~ s/^/    /mg;
+    print "$disp\n\n";
     return if $OPT{'dryrun'};
 
     my $res = $dbh->do( $schema );
