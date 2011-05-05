@@ -57,7 +57,7 @@ h1 {
     padding-left: 0.2em;
     display: block; 
     background-color: #fff;
-
+    margin: 0;
 }
 
 div.buttons {
