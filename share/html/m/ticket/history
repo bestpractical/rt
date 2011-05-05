@@ -53,7 +53,7 @@ my $t = RT::Ticket->new($session{CurrentUser});
 $t->Load($id);
 my $history = $t->Transactions()->ItemsArrayRef;
 </%init>
-<&| /m/_elements/wrapper, title => $t->Subject &>
+<&| /m/_elements/wrapper, title => loc("#[_1]: [_2]", $t->Id, $t->Subject || '') &>
 <div class="history">
 <& /m/_elements/ticket_menu, ticket => $t &>
 <&|/Widgets/TitleBox &>

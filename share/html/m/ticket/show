@@ -202,7 +202,7 @@ my $print_value = sub {
 };
 
 </%init>
-<&| /m/_elements/wrapper, title => $Ticket->Subject &>
+<&| /m/_elements/wrapper, title => loc("#[_1]: [_2]", $Ticket->Id, $Ticket->Subject || '') &>
 <div id="ticket-show">
 <& /m/_elements/ticket_menu, ticket => $Ticket &>
 
