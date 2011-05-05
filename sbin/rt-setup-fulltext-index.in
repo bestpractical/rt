@@ -147,6 +147,15 @@ if ( $DB{'type'} eq 'mysql' ) {
         default => 'sphinx://localhost:3312/rt',
         silent  => !$OPT{'ask'},
     );
+    my $maxmatches = prompt(
+        message => "Maximum number of matches to return; this is the maximum number of\n"
+                 . "attachment records returned by the search, not the maximum number\n"
+                 . "of tickets.  Both your RT_SiteConfig.pm and your sphinx.conf must\n"
+                 . "agree on this value.  Larger values cause your Sphinx server to\n"
+                 . "consume more memory and CPU time per query.",
+        default => 10000,
+        silent  => !$OPT{'ask'},
+    );
 
     my $schema = <<END;
 CREATE TABLE $table (
@@ -159,7 +168,7 @@ END
 
     insert_schema( $schema );
 
-    print_rt_config( Table => $table );
+    print_rt_config( Table => $table, MaxMatches => $maxmatches );
 
     require URI;
     my $urlo = URI->new( $url );
@@ -217,7 +226,7 @@ searchd {
     read_timeout            = 5
     max_children            = 30
     pid_file                = $var_path/sphinx/searchd.pid
-    max_matches             = 1000
+    max_matches             = $maxmatches
     seamless_rotate         = 1
     preopen_indexes         = 0
     unlink_old              = 1
@@ -627,11 +636,11 @@ You can now configure RT to use the newly-created full-text index by
 adding the following to your RT_SiteConfig.pm:
 
 Set( %FullTextSearch,
-    Enable    => 1,
-    Indexed   => 1,
+    Enable     => 1,
+    Indexed    => 1,
 END
 
-    $config .= sprintf("    %-9s => '$args{$_}',\n",$_)
+    $config .= sprintf("    %-10s => '$args{$_}',\n",$_)
         foreach grep defined $args{$_}, keys %args;
     $config .= ");\n";
 

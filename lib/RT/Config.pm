@@ -511,6 +511,9 @@ our %META = (
                 } elsif ($v->{'Table'} eq "Attachments") {
                     $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
+                } elsif (not $v->{'MaxMatches'}) {
+                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                    $v->{MaxMatches} = 10_000;
                 }
             } else {
                 $RT::Logger->error("Indexed full-text-search not supported for $dbtype");

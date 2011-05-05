@@ -830,12 +830,13 @@ sub _TransContentLimit {
             );
         }
         elsif ( $db_type eq 'mysql' ) {
+            my $max = $config->{'MaxMatches'};
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => 'query',
                 OPERATOR    => '=',
-                VALUE       => $value,
+                VALUE       => "$value;limit=$max;maxmatches=$max",
             );
         }
     } else {
