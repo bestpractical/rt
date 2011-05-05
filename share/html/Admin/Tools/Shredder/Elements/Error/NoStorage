@@ -55,5 +55,5 @@ $Path => ''
 	Title => 'Error',
 &>
 <div class="error">
-<% loc('Shredder needs a directory to write dumps to. Please check that you have <span class="file-path">[_1]</span> and it is writable by your web server.',  $m->interp->apply_escapes( $Path ) ) |n%>
+<% loc('Shredder needs a directory to write dumps to. Please check that you have <span class="file-path">[_1]</span> and it is writable by your web server.',  $m->interp->apply_escapes( $Path, 'h' ) ) |n%>
 </div>
