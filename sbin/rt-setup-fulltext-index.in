@@ -132,8 +132,6 @@ $dbh->{'RaiseError'} = 1;
 $dbh->{'PrintError'} = 1;
 
 if ( $DB{'type'} eq 'mysql' ) {
-    my $dbh = $RT::Handle->dbh;
-
     check_sphinx();
     my $table = prompt(
         message => "Enter name of a new Mysql table that will be used to connect to the\n"
@@ -166,6 +164,8 @@ CREATE TABLE $table (
 ) ENGINE=SPHINX CONNECTION="$url" CHARACTER SET utf8
 END
 
+    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
+        unless $OPT{'dryrun'};
     insert_schema( $schema );
 
     print_rt_config( Table => $table, MaxMatches => $maxmatches );
@@ -237,8 +237,6 @@ END
 
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
-    my $dbh = $RT::Handle->dbh;
-
     check_tsvalue();
     my $table = prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
@@ -254,9 +252,12 @@ elsif ( $DB{'type'} eq 'Pg' ) {
     );
 
     my $schema;
+    my $drop;
     if ( lc($table) eq 'attachments' ) {
+        $drop = "ALTER TABLE $table DROP COLUMN $column";
         $schema = "ALTER TABLE $table ADD COLUMN $column tsvector";
     } else {
+        $drop = "DROP TABLE $table";
         $schema = "CREATE TABLE $table ( "
             ."id INTEGER NOT NULL,"
             ."$column tsvector )";
@@ -272,6 +273,8 @@ elsif ( $DB{'type'} eq 'Pg' ) {
         );
     } while ( $index_type ne 'gist' && $index_type ne 'gin' );
 
+    do_error_is_ok( dba_handle() => $drop )
+        unless $OPT{'dryrun'};
     insert_schema( $schema );
     insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
 
