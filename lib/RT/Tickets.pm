@@ -838,11 +838,6 @@ sub _TransContentLimit {
                 VALUE       => $value,
             );
         }
-        else {
-            $RT::Logger->error( "Indexed full text search is not supported for $db_type" );
-            $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
-            return;
-        }
     } else {
         $self->_SQLLimit(
             %rest,
