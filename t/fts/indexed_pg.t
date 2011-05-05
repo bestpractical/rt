@@ -10,7 +10,7 @@ my ($major, $minor) = $RT::Handle->dbh->get_info(18) =~ /^0*(\d+)\.0*(\d+)/;
 plan skip_all => "Need Pg 8.2 or higher; we have $major.$minor"
     if "$major.$minor" < 8.2;
 
-plan tests => 15;
+plan tests => 19;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'ContentIndex', Table => 'Attachments' );
 
@@ -88,6 +88,10 @@ run_tests(
     # make sure that Pg stemming works
     "Content LIKE 'books'" => { $book->id => 1, $bars->id => 0 },
     "Content LIKE 'bar'"   => { $book->id => 0, $bars->id => 1 },
+
+    # no matches
+    "Content LIKE 'baby'" => { $book->id => 0, $bars->id => 0 },
+    "Content LIKE 'pubs'" => { $book->id => 0, $bars->id => 0 },
 );
 
 @tickets = ();
