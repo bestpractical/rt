@@ -17,3 +17,7 @@ jQuery UI components that go into our minified jquery.ui-1.8.4.custom.min.js
 jquery.ui.accordian-1.8.5.js
 https://github.com/jquery/jquery-ui/zipball/1.8.5
 jQuery UI Accordian component that goes into our minified jquery.ui-1.8.4.custom.min.js
+
+jquery.tablesorter.js
+http://tablesorter.com/jquery.tablesorter.js
+jQuery tablesorter plugin version 2.05b
