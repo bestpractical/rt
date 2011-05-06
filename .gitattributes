@@ -1,2 +1,3 @@
 .gitignore export-ignore 
 .gitattributes export-ignore 
+devel/third-party export-ignore
