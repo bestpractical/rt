@@ -92,15 +92,17 @@ if ( $db_type eq 'Pg' ) {
     %OPT = (
         %OPT,
         limit  => 0,
+        all    => 0,
     );
-    push @OPT_LIST, 'limit=i';
+    push @OPT_LIST, 'limit=i', 'all!';
 }
 elsif ( $db_type eq 'mysql' ) {
     %OPT = (
         %OPT,
         limit  => 0,
+        all    => 0,
     );
-    push @OPT_LIST, 'limit=i';
+    push @OPT_LIST, 'limit=i', 'all!';
 }
 elsif ( $db_type eq 'Oracle' ) {
     %OPT = (
@@ -151,6 +153,7 @@ if ( $db_type eq 'Oracle' ) {
 
 my @types = qw(text html);
 foreach my $type ( @types ) {
+  REDO:
     my $attachments = attachments($type);
     $attachments->Limit(
         FIELD => 'id',
@@ -171,6 +174,7 @@ foreach my $type ( @types ) {
     }
     finalize( $type, $attachments ) if $found;
     clean( $type );
+    goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
 }
 
 sub attachments {
