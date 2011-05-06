@@ -25,11 +25,13 @@ ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
 sub setup_indexing {
+    my $port = RT::Test->generate_port;
     my ($exit_code, $output) = RT::Test->run_and_capture(
         'no-ask'       => 1,
         command        => $RT::SbinPath .'/rt-setup-fulltext-index',
         dba            => $ENV{'RT_DBA_USER'},
         'dba-password' => $ENV{'RT_DBA_PASSWORD'},
+        url            => "sphinx://localhost:$port/rt",
     );
     ok(!$exit_code, "setted up index");
     diag "output: $output" if $ENV{'TEST_VERBOSE'};
