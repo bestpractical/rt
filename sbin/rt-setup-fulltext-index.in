@@ -119,6 +119,12 @@ GetOptions(
     'dry-run!'       => \$OPT{'dryrun'},
     'binary!'        => \$OPT{'binary'},
 
+    'table=s'        => \$OPT{'table'},
+    'column=s'       => \$OPT{'column'},
+    'url=s'          => \$OPT{'url'},
+    'maxmatches=i'   => \$OPT{'maxmatches'},
+    'index-type=s'   => \$OPT{'index-type'},
+
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
 ) or show_help();
@@ -134,19 +140,19 @@ $dbh->{'PrintError'} = 1;
 
 if ( $DB{'type'} eq 'mysql' ) {
     check_sphinx();
-    my $table = prompt(
+    my $table = $OPT{'table'} || prompt(
         message => "Enter name of a new Mysql table that will be used to connect to the\n"
                  . "Sphinx server:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
-    my $url = prompt(
+    my $url = $OPT{'url'} || prompt(
         message => "Enter URL of the sphinx search server; this should be of the form\n"
                  . "sphinx://<server>:<port>/<index name>",
         default => 'sphinx://localhost:3312/rt',
         silent  => !$OPT{'ask'},
     );
-    my $maxmatches = prompt(
+    my $maxmatches = $OPT{'maxmatches'} || prompt(
         message => "Maximum number of matches to return; this is the maximum number of\n"
                  . "attachment records returned by the search, not the maximum number\n"
                  . "of tickets.  Both your RT_SiteConfig.pm and your sphinx.conf must\n"
@@ -239,14 +245,14 @@ END
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
     check_tsvalue();
-    my $table = prompt(
+    my $table = $OPT{'table'} || prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
                  . "table.",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
-    my $column = prompt(
+    my $column = $OPT{'column'} || prompt(
         message => 'Enter the name of a column that will be used to store the Pg tsvector:',
         default => $DEFAULT{'column'},
         silent  => !$OPT{'ask'},
@@ -264,15 +270,15 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             ."$column tsvector )";
     }
 
-    my $index_type;
-    do {
+    my $index_type = $OPT{'index-type'} || '';
+    while ( $index_type ne 'gist' and $index_type ne 'gin' ) {
         $index_type = lc prompt(
             message => "You may choose between GiST or GIN indexes; the former is several times\n"
                      . "slower to search, but takes less space on disk and is faster to update.",
             default => 'GiST',
             silent  => !$OPT{'ask'},
         );
-    } while ( $index_type ne 'gist' && $index_type ne 'gin' );
+    }
 
     do_error_is_ok( dba_handle() => $drop )
         unless $OPT{'dryrun'};
