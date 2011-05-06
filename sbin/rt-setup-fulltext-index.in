@@ -117,6 +117,7 @@ GetOptions(
     'h|help!'        => \$OPT{'help'},
     'ask!'           => \$OPT{'ask'},
     'dry-run!'       => \$OPT{'dryrun'},
+    'binary!'        => \$OPT{'binary'},
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
@@ -503,7 +504,7 @@ sub ora_create_format_column {
                 WHEN fname IS NOT NULL THEN 'ignore'
         };
     }
-    my $binary = $RT::DontSearchBinaryAttachments? 'ignore' : 'binary';
+    my $binary = $OPT{'binary'} ? 'binary' : 'ignore';
     $detect_format .= qq{
                 WHEN type = 'text' THEN 'text'
                 WHEN type = 'text/rtf' THEN '$binary'
@@ -716,6 +717,11 @@ need to restart the web-server after making those changes.
 Creates an Oracle CONTEXT index on the Content column in the Attachments
 table.  It also creates several preferences, functions and triggers to
 support this index.
+
+The Oracle index determines which content-types it will index, at
+creation time.  By default, unknown content-types are ignored; to
+instead index unknown content-types as binary data, pass the C<--binary>
+flag when the index is created.
 
 CONTEXT indexes needperiodic synchronization after any updates; either
 use F<sbin/rt-fulltext-indexer> via cron, or read its documentation for

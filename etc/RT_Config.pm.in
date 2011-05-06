@@ -1208,20 +1208,6 @@ If C<$DontSearchFileAttachments> is set to 1, then uploaded files
 
 Set($DontSearchFileAttachments, undef);
 
-=item C<$DontSearchBinaryAttachments>
-
-This refers to F<sbin/rt-setup-fulltext-index>.
-
-By default, text attachments are always indexed, and a known set of
-binary attachments are always skipped.
-
-If C<$DontSearchBinaryAttachments> is set to 1, then unrecognized binary
-data types will not be indexed.
-
-=cut
-
-Set($DontSearchBinaryAttachments, undef);
-
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 
 When query in simple search doesn't have status info, use this to only
