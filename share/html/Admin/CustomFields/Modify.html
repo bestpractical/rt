@@ -220,7 +220,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     if (($CustomFieldObj->BasedOn||'') ne ($BasedOn||'')) {
         my ($good, $msg) = $CustomFieldObj->SetBasedOn( $BasedOn );
-        push @results, $msg unless $good or $msg =~ /No entry found/;
+        push @results, $msg;
     }
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
