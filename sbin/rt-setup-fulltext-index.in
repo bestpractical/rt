@@ -372,18 +372,9 @@ EOT
 }
 
 sub check_sphinx {
-    my $dbh = $RT::Handle->dbh;
-    my $sphinx = ($dbh->selectrow_array("show variables like 'have_sphinx'"))[1];
-    unless ( $sphinx ) {
-        local $dbh->{'PrintError'} = 0;
-        local $dbh->{'RaiseError'} = 0;
-        $sphinx = ($dbh->selectrow_array(
-            "select 'yes' from INFORMATION_SCHEMA.PLUGINS where PLUGIN_NAME = 'sphinx' AND PLUGIN_STATUS='active'"
-        ))[0];
-    }
+    return if $RT::Handle->CheckSphinxSE;
 
-    unless ( lc($sphinx||'') eq 'yes' ) {
-        print STDERR <<EOT;
+    print STDERR <<EOT;
 
 Your Mysql server has not been compiled with the Sphinx storage engine
 (sphinxse).  Either install your system's sphinxse package, the binaries
@@ -391,8 +382,7 @@ from http://sphinxsearch.org/, or recompile mysql according to the
 instructions in Sphinx's documentation.
 
 EOT
-        exit 1;
-    }
+    exit 1;
 }
 
 sub ora_create_datastore {
