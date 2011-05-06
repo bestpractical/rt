@@ -651,10 +651,7 @@ sub show_help {
     my $error = shift;
     RT::Interface::CLI->ShowHelp(
         ExitValue => $error,
-        Sections => $error
-            ? 'NAME|'. uc($DB{'type'}) .'/USAGE'
-            : 'NAME|DESCRIPTION|'. uc($DB{'type'})
-        ,
+        Sections => 'NAME|DESCRIPTION',
     );
 }
 
@@ -699,63 +696,31 @@ rt-setup-fulltext-index - Create indexes for full text search
 
 =head1 DESCRIPTION
 
-Full text indexes are very database specific; this script sets up
-indexing for Oracle, Pg and mysql; specifics for each are below.  After
-creating the indexes, it will print a short section that should be
-inserted into your your RT_SiteConfig.pm to enable the index. You will
-need to restart the web-server after making those changes.
+This script creates the appropriate tables, columns, functions, and / or
+views necessary for full-text searching for your database type.  It will
+drop any existing indexes in the process.
 
-=head1 ORACLE
+Please read F<docs/full_text_indexing.pod> for complete documentation on
+full-text indexing for your database type.
 
-=head2 USAGE
+If you have a non-standard database administrator user or password, you
+may use the C<--dba> and C<--dba-password> parameters to set them
+explicitly:
 
-    rt-setup-fulltext-index --help
     rt-setup-fulltext-index --dba sysdba --dba-password 'secret'
 
-=head2 DESCRIPTION
-
-Creates an Oracle CONTEXT index on the Content column in the Attachments
-table.  It also creates several preferences, functions and triggers to
-support this index.
+To test what will happen without running any DDL, pass the C<--dryrun>
+flag.
 
 The Oracle index determines which content-types it will index, at
 creation time.  By default, unknown content-types are ignored; to
 instead index unknown content-types as binary data, pass the C<--binary>
 flag when the index is created.
 
-CONTEXT indexes needperiodic synchronization after any updates; either
-use F<sbin/rt-fulltext-indexer> via cron, or read its documentation for
-alternatives.
-
-=head1 PG
-
-=head2 USAGE
-
-    rt-setup-fulltext-index --help
-    rt-setup-fulltext-index --dba postgres --dba-password 'secret'
-
-=head2 DESCRIPTION
-
-Creates an additional column to store a ts_vector, and then creates
-either a GiN or GiST index on it.  Use F<sbin/rt-fulltext-indexer> via
-cron to keep the index in sync.
-
-=head1 MYSQL
-
-=head2 USAGE
-
-    rt-setup-fulltext-index --help
-    rt-setup-fulltext-index --dba root
-
-=head2 DESCRIPTION
-
-Full text search in mysql is implemented through the Sphinx storage
-engine (SphinxSE), which your mysql must be compiled with support
-for. Use F<sbin/rt-fulltext-indexer> via cron to keep the index in sync.
-
 =head1 AUTHOR
 
-Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>
+Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>,
+Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 

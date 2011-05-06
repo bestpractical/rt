@@ -436,65 +436,14 @@ rt-fulltext-indexer - Indexer for full text search
 
 =head1 DESCRIPTION
 
-This is a helper script to keep full text indexes in sync with data.  It
-relies on indexes having been properly configured by
-F<sbin/rt-setup-fulltext-index> first.  This script should be run
-occasionally via C<cron>.
+This is a helper script to keep full text indexes in sync with data.
+Read F<docs/full_text_indexing.pod> for complete details on how and when
+to run it.
 
-=head1 ORACLE
+=head1 AUTHOR
 
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --memory 10M
-
-=head2 DESCRIPTION
-
-Basicly, this script simply runs the following query:
-
-    begin
-    ctx_ddl.sync_index('rt_fts_index', '2M');
-    end;
-
-The ammount of memory used for the sync can be controlled with --memory option.
-
-There is way to do all of this by setting up a DBMS_JOB; read the
-"Managing DML Operations for a CONTEXT Index" chapter from Oracle's
-"Text Application Developer's Guide" for more info on the topic, and
-details how to keep the index optimized, perform garbage collection, and
-other tasks.
-
-=head1 PG
-
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --limit 100
-
-=head2 DESCRIPTION
-
-This script finds attachments that should be indexed and stores them in
-the index.  You can use the --limit option to specify how many
-attachments to process at once; defaults to 100.
-
-=head1 MYSQL
-
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --limit 100
-
-=head2 DESCRIPTION
-
-This script finds attachments that should be indexed and prints an
-xmlpipe2 document stream that can processed by sphinx; the output should
-be piped into. For more details, see the sphinx reference manual.
-
-You can use the --limit option to specify how many attachments to
-process at once; defaults to 100.
+Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>,
+Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 
