@@ -2518,6 +2518,12 @@ Set($LinkTransactionsRun1Scrip, 0);
 This option has been deprecated.  You can configure this site-wide
 with L</Lifecycles> (see L</Labeling and defining actions>).
 
+=item C<@ExtraSecurity>
+
+This option has been deprecated. It supported one option,
+C<Clickjacking>, which has been promoted into the
+C<$DisableFramebusting> config.
+
 =back
 
 =cut
