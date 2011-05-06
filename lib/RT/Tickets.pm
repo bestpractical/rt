@@ -772,6 +772,7 @@ sub _TransContentLimit {
     my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
         $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
             ALIAS1 => $txn_alias,
             FIELD1 => 'id',
             TABLE2 => 'Attachments',
@@ -786,6 +787,7 @@ sub _TransContentLimit {
         my $alias;
         if ( $config->{'Table'} and $config->{'Table'} ne "Attachments") {
             $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
+                TYPE   => 'LEFT',
                 ALIAS1 => $self->{'_sql_trattachalias'},
                 FIELD1 => 'id',
                 TABLE2 => $config->{'Table'},
