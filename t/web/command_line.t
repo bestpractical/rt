@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 297, actual_server => 1;
+use RT::Test tests => 299, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
@@ -274,6 +274,10 @@ expect_like(qr/Status: resolved/, 'Verified change');
 # show ticket list
 expect_send("ls -s -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets...');
 expect_like(qr/$ticket_id: new ticket/, 'Found our ticket');
+
+expect_send("ls -s -t ticket -f Requestors $ticket_id", 'getting Requestors');
+expect_like(qr/$ticket_id\s+foo\@example.com/, 'got Requestors');
+
 # show ticket list verbosely
 expect_send("ls -l -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets verbosely...');
 expect_like(qr/id: ticket\/$ticket_id/, 'Found our ticket');
