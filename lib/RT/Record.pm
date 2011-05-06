@@ -495,7 +495,7 @@ sub _Set {
           $self->loc(
             "[_1] changed from [_2] to [_3]",
             $self->loc( $args{'Field'} ),
-            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            ( $old_val ? '"$old_val"' : $self->loc("(no value)") ),
             '"' . $self->__Value( $args{'Field'}) . '"' 
           );
       } else {
