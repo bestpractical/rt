@@ -267,7 +267,7 @@ sub finalize {
 
 sub clean {
     return goto_specific(
-        prefix    => $db_type,
+        suffix    => $db_type,
         arguments => \@_,
     );
 }
