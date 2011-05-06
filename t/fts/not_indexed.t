@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => 17;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 0 );
 
@@ -53,7 +53,9 @@ sub run_test {
 run_tests(
     "Content LIKE 'book'" => { book => 1, bar => 0 },
     "Content LIKE 'bar'" => { book => 0, bar => 1  },
-    "(Content LIKE 'bar' OR Subject LIKE 'con')" => { 'no content' => 1 },
+    "(Content LIKE 'baz' OR Subject LIKE 'con')" => { 'no content' => 1 },
+    "(Content LIKE 'bar' OR Subject LIKE 'con')" => { 'no content' => 1, bar => 1 },
+    "(Content LIKE 'bar' OR Subject LIKE 'missing')" => { bar => 1 },
 );
 
 
