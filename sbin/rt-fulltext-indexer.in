@@ -99,10 +99,11 @@ if ( $db_type eq 'Pg' ) {
 elsif ( $db_type eq 'mysql' ) {
     %OPT = (
         %OPT,
-        limit  => 0,
-        all    => 0,
+        limit    => 0,
+        all      => 0,
+        xmlpipe2 => 0,
     );
-    push @OPT_LIST, 'limit=i', 'all!';
+    push @OPT_LIST, 'limit=i', 'all!', 'xmlpipe2!';
 }
 elsif ( $db_type eq 'Oracle' ) {
     %OPT = (
@@ -149,6 +150,18 @@ if ( $db_type eq 'Oracle' ) {
         $index, $OPT{'memory'}
     );
     exit;
+} elsif ( $db_type eq 'mysql' ) {
+    unless ($OPT{'xmlpipe2'}) {
+        print STDERR <<EOT;
+
+Updates to the external Sphinx index are done via running the sphinx
+`indexer` tool:
+
+    indexer rt
+
+EOT
+        exit 1;
+    }
 }
 
 my @types = qw(text html);
