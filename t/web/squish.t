@@ -5,7 +5,8 @@ use RT::Test tests => 18;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
-RT->Config->Set( JSFiles => () );
+
+$RT::MasonLocalComponentRoot = RT::Test::get_abs_relocatable_dir('html');
 
 my ( $url, $m );
 
@@ -24,7 +25,7 @@ diag "test squished files with devel mode disabled";
     my ($js_link) =
       $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
-    $m->content_lacks('function showShredderPluginTab', "no util.js");
+    $m->content_lacks('function just_testing', "no not-by-default.js");
 
     RT::Test->stop_server;
 }
@@ -34,7 +35,7 @@ SKIP:
 {
     skip 'need plack server to reinitialize', 6
       if $ENV{RT_TEST_WEB_HANDLER} && $ENV{RT_TEST_WEB_HANDLER} ne 'plack';
-    RT->AddJavaScript( 'util.js' );
+    RT->AddJavaScript( 'not-by-default.js' );
     RT->AddStyleSheets( 'print.css' );
     ( $url, $m ) = RT::Test->started_ok;
 
@@ -49,20 +50,20 @@ SKIP:
     my ($js_link) =
       $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
-    $m->content_contains('function showShredderPluginTab', "has util.js");
+    $m->content_contains('function just_testing', "has not-by-default.js");
     RT::Test->stop_server;
 }
 
 diag "test squished files with devel mode enabled";
 {
     RT->Config->Set( 'DevelMode' => 1 );
-    RT->AddJavaScript( 'util.js' );
+    RT->AddJavaScript( 'not-by-default.js' );
     RT->AddStyleSheets( 'nottherebutwedontcare.css' );
 
     ( $url, $m ) = RT::Test->started_ok;
     $m->login;
     $m->content_unlike( qr!squished-.*?\.(js|css)!,
         'no squished link with develmode' );
-    $m->content_contains('util.js', "found extra javascript resource");
+    $m->content_contains('not-by-default.js', "found extra javascript resource");
     $m->content_contains('nottherebutwedontcare.css', "found extra css resource");
 }
