@@ -73,6 +73,9 @@ sub sync_index {
     close $fh;
     my $exit_code = $?>>8;
     ok(!$exit_code, "indexed") or diag "output: $output";
+
+    # We may need to wait a second for searchd to pick up the changes
+    sleep 1;
 }
 
 sub run_tests {
