@@ -16,7 +16,7 @@ plan skip_all => "No searchd and indexer under PATH"
 
 plan tests => 13;
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'Content', Table => 'AttachmentsIndex' );
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', MaxMatches => 1000 );
 
 setup_indexing();
 
