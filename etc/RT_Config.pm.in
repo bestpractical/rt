@@ -1698,6 +1698,12 @@ Should rejection notes from approvals be sent to the requestors?
 
 Set($ApprovalRejectionNotes, 1);
 
+=head1 Extra security
+
+This is a list of extra security measures to enable that help keep your RT
+safe.  If you don't know what these mean, you should almost certainly leave the
+defaults alone.
+
 =item C<$DisallowExecuteCode>
 
 If set to a true value, the C<ExecuteCode> right will be removed from
@@ -1709,21 +1715,17 @@ be allowed to run arbitrary Perl code on the server via scrips.
 
 Set($DisallowExecuteCode, 0);
 
-=item C<@ExtraSecurity>
+=item C<$DisableFramebusting>
 
-This is a list of extra security measures to enable that help keep your RT
-safe.  If you don't know what these mean, you should almost certainly leave the
-defaults alone.
-
-    Clickjacking - Enables framekiller javascript and adds an X-Frame-Options:
-                   DENY header to all requests
+If set to a true value, framekiller javascript will be disabled and the
+X-Frame-Options: DENY header will be suppressed from all responses.
+This disables RT's clickjacking protection.
 
 =cut
 
-Set( @ExtraSecurity, qw(Clickjacking) );
+Set($DisableFramebusting, 0);
 
 =back
-
 
 =head1 Authorization and user configuration
 

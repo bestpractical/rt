@@ -1,4 +1,4 @@
-% if ( RT->Config->ExtraSecurity('Clickjacking') ) {
+% unless ( RT->Config->Get('DisableFramebusting') ) {
 %# This is defeatable.  The current best known implemention uses CSS to hide
 %# the content and JS to re-show it, but that fails poorly for clients that
 %# don't run JS.

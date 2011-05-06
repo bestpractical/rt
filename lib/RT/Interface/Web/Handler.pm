@@ -273,7 +273,7 @@ sub _psgi_response_cb {
              sub {
                  my $res = shift;
 
-                 if ( RT->Config->ExtraSecurity('Clickjacking') ) {
+                 unless ( RT->Config->Get('DisableFramebusting') ) {
                      # XXX TODO: Do we want to make the value of this header configurable?
                      Plack::Util::header_set($res->[1], 'X-Frame-Options' => 'DENY');
                  }
