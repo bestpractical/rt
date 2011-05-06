@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 18;
+use RT::Test tests => 21;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
@@ -26,6 +26,7 @@ diag "test squished files with devel mode disabled";
       $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_lacks('function just_testing', "no not-by-default.js");
+    $m->content_contains('jQuery.noConflict', "found default js content");
 
     RT::Test->stop_server;
 }
@@ -51,6 +52,7 @@ SKIP:
       $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
     $m->get_ok( $url . $js_link, 'follow squished js' );
     $m->content_contains('function just_testing', "has not-by-default.js");
+    $m->content_contains('jQuery.noConflict', "found default js content");
     RT::Test->stop_server;
 }
 
@@ -66,4 +68,5 @@ diag "test squished files with devel mode enabled";
         'no squished link with develmode' );
     $m->content_contains('not-by-default.js', "found extra javascript resource");
     $m->content_contains('nottherebutwedontcare.css', "found extra css resource");
+    $m->content_contains('jquery_noconflict.js', "found a default js resource");
 }
