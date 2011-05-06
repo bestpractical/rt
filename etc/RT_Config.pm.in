@@ -2487,6 +2487,9 @@ RT has rudimentary SQL statement logging support; simply set
 C<$StatementLog> to be the level that you wish SQL statements to be
 logged at.
 
+Enabling this option will also expose the SQL Queries page in the
+Configuration -> Tools menu for SuperUsers.
+
 =cut
 
 Set($StatementLog, undef);
