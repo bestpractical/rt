@@ -58,7 +58,7 @@
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
 % if ( $config->{'Enable'} ) {
-% if ( $config->{} ) {
+% if ( $config->{'Indexed'} ) {
 <p><&|/l&>You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
 % } else {
 <p><&|/l&>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
