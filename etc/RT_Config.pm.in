@@ -856,7 +856,6 @@ Set(@JSFiles, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
-    jquery.tablesorter.min.js
     jquery-ui-patch-datepicker.js
     ui.timepickr.js
     titlebox-state.js
