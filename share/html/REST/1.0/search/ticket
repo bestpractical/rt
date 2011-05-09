@@ -132,10 +132,11 @@ while (my $ticket = $tickets->Next) {
 		}
 		# Cut off the annoying ticket/ before the id;
 		$key_values->{'id'} = $id;
-		$output .= join("\t", map {$key_values->{$_}} @$order)."\n";
-	
+		$output .= join("\t", map { ref $key_values->{$_} eq 'ARRAY' ?
+join( ', ', @{$key_values->{$_}} ) : $key_values->{$_} } @$order)."\n";
 
-	} else {	
+
+	} else {
         	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
 	}
     }
