@@ -486,7 +486,7 @@ build-snapshot:
 	( cd $(SNAPSHOT) &&\
 	        echo "$(SNAPSHOT)" > .tag &&\
 	        autoconf &&\
-	        INSTALL=install-sh PERL=/usr/bin/perl ./configure --with-db-type=SQLite\
+	        INSTALL=./install-sh PERL=/usr/bin/perl ./configure --with-db-type=SQLite\
 	        --enable-layout=relative --with-web-handler=standalone ./configure \
 	)
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
