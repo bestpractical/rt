@@ -57,7 +57,8 @@ use Regexp::IPv6 qw($IPv6_re);
 use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
-my $IPv6_re = qr/(?:$IPv6_re|::)/;
+# Allow the empty IPv6 address
+$IPv6_re = qr/(?:$IPv6_re|::)/;
 
 
 
