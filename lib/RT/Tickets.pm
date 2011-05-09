@@ -761,6 +761,7 @@ sub _TransContentLimit {
     # way they get parsed in the tree they're in different subclauses.
 
     my ( $self, $field, $op, $value, %rest ) = @_;
+    $field = 'Content' if $field =~ /\W/;
 
     my $config = RT->Config->Get('FullTextSearch') || {};
     unless ( $config->{'Enable'} ) {
@@ -771,6 +772,7 @@ sub _TransContentLimit {
     my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
         $self->{_sql_trattachalias} = $self->_SQLJoin(
+            TYPE   => 'LEFT', # not all txns have an attachment
             ALIAS1 => $txn_alias,
             FIELD1 => 'id',
             TABLE2 => 'Attachments',
@@ -785,6 +787,7 @@ sub _TransContentLimit {
         my $alias;
         if ( $config->{'Table'} and $config->{'Table'} ne "Attachments") {
             $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
+                TYPE   => 'LEFT',
                 ALIAS1 => $self->{'_sql_trattachalias'},
                 FIELD1 => 'id',
                 TABLE2 => $config->{'Table'},
@@ -794,8 +797,8 @@ sub _TransContentLimit {
             $alias = $self->{'_sql_trattachalias'};
         }
 
-        my $field = $config->{'Field'} || 'Content';
-        $field = 'Content' if $field =~ /\W/;
+        #XXX: handle negative searches
+        my $index = $config->{'Column'};
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
             my $alias = $self->{_sql_trattachalias};
@@ -819,20 +822,37 @@ sub _TransContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
-            #XXX: handle negative searches
             $self->_SQLLimit(
                 %rest,
                 ALIAS       => $alias,
-                FIELD       => $config->{'Column'},
+                FIELD       => $index,
                 OPERATOR    => '@@',
                 VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
             );
         }
-        else {
-            $RT::Logger->error( "Indexed full text search is not supported for $db_type" );
-            $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
-            return;
+        elsif ( $db_type eq 'mysql' ) {
+            # XXX: We could theoretically skip the join to Attachments,
+            # and have Sphinx simply index and group by the TicketId,
+            # and join Ticket.id to that attribute, which would be much
+            # more efficient -- however, this is only a possibility if
+            # there are no other transaction limits.
+
+            # This is a special character.  Note that \ does not escape
+            # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
+            # 'foo\\;bar' is not a vulnerability, and is still parsed as
+            # "foo, \, ;, then bar".  Happily, the default mode is
+            # "all", meaning that boolean operators are not special.
+            $value =~ s/;/\\;/g;
+
+            my $max = $config->{'MaxMatches'};
+            $self->_SQLLimit(
+                %rest,
+                ALIAS       => $alias,
+                FIELD       => 'query',
+                OPERATOR    => '=',
+                VALUE       => "$value;limit=$max;maxmatches=$max",
+            );
         }
     } else {
         $self->_SQLLimit(

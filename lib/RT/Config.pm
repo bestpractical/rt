@@ -482,6 +482,45 @@ our %META = (
     },
 
     # Internal config options
+    FullTextSearch => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $v = $self->Get('FullTextSearch');
+            return unless $v->{Enable} and $v->{Indexed};
+            my $dbtype = $self->Get('DatabaseType');
+            if ($dbtype eq 'Oracle') {
+                if (not $v->{IndexName}) {
+                    $RT::Logger->error("No IndexName set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'Pg') {
+                my $bad = 0;
+                if (not $v->{'Column'}) {
+                    $RT::Logger->error("No Column set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Column'} eq "Content"
+                             and (not $v->{'Table'} or $v->{'Table'} eq "Attachments")) {
+                    $RT::Logger->error("Column for full-text index is set to Content, not tsvector column; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'mysql') {
+                if (not $v->{'Table'}) {
+                    $RT::Logger->error("No Table set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Table'} eq "Attachments") {
+                    $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif (not $v->{'MaxMatches'}) {
+                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                    $v->{MaxMatches} = 10_000;
+                }
+            } else {
+                $RT::Logger->error("Indexed full-text-search not supported for $dbtype");
+                $v->{Indexed} = 0;
+            }
+        },
+    },
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
