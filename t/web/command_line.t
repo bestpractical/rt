@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 299, actual_server => 1;
+use RT::Test tests => 303, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
@@ -126,6 +126,11 @@ expect_send("edit ticket/$ticket_id set requestors=foo\@example.com", 'Changing 
 expect_like(qr/Ticket $ticket_id updated/, 'Changed Requestor');
 expect_send("show ticket/$ticket_id -f requestors", 'Verifying change...');
 expect_like(qr/Requestors: foo\@example.com/, 'Verified change');
+# set multiple Requestors
+expect_send("edit ticket/$ticket_id set requestors=foo\@example.com,bar\@example.com", 'Changing Requestor...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed Requestor');
+expect_send("show ticket/$ticket_id -f requestors", 'Verifying change...');
+expect_like(qr/Requestors: bar\@example.com, foo\@example.com/, 'Verified change');
 # change a ticket's Cc
 expect_send("edit ticket/$ticket_id set cc=bar\@example.com", 'Changing Cc...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed Cc');
@@ -276,7 +281,7 @@ expect_send("ls -s -t ticket -o +id \"Status='resolved'\"", 'Listing resolved ti
 expect_like(qr/$ticket_id: new ticket/, 'Found our ticket');
 
 expect_send("ls -s -t ticket -f Requestors $ticket_id", 'getting Requestors');
-expect_like(qr/$ticket_id\s+foo\@example.com/, 'got Requestors');
+expect_like(qr/$ticket_id\s+bar\@example.com,\s+foo\@example.com/, 'got Requestors');
 
 # show ticket list verbosely
 expect_send("ls -l -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets verbosely...');
