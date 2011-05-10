@@ -265,6 +265,6 @@ sub rosetta {
 
 sub extract {
     shift;
-    system($^X, 'devel/extract-message-catalog', @_);
+    system($^X, 'devel/tools/extract-message-catalog', @_);
 }
 
