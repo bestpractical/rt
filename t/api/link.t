@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 83;
+use RT::Test nodata => 1, tests => 87;
 use RT::Test::Web;
 
 use RT::Link;
@@ -209,8 +209,39 @@ ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
     ;
 }
 
+{
+    clean_links();
+    $child->SetStatus('deleted');
+
+    my ($status, $msg) = $parent->AddLink(
+        Type => 'MemberOf', Base => $child->id,
+    );
+    ok(!$status, "can't link to deleted ticket: $msg");
+
+    $child->SetStatus('new');
+    ($status, $msg) = $parent->AddLink(
+        Type => 'MemberOf', Base => $child->id,
+    );
+    ok($status, "created a link: $msg");
+
+    $child->SetStatus('deleted');
+    my $children = $parent->Members;
+    $children->RedoSearch;
+
+    my $total = 0;
+    $total++ while $children->Next;
+    is( $total, 0, 'Next skips deleted tickets' );
+
+    is( @{ $children->ItemsArrayRef },
+        0, 'ItemsArrayRef skips deleted tickets' );
+
+    # back to active status
+    $child->SetStatus('new');
+}
+
 sub clean_links {
     my $links = RT::Links->new( RT->SystemUser );
+    $links->UnLimit;
     while ( my $link = $links->Next ) {
         my ($status, $msg) = $link->Delete;
         $RT::Logger->error("Couldn't delete a link: $msg")
