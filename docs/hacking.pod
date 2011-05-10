@@ -81,10 +81,12 @@ can create and drop databases:
     export RT_DBA_USER=root
     export RT_DBA_PASSWORD=
 
-You'll need to configure RT before running tests.  To do this in place
-without installing:
+You'll need to configure RT and make sure you have all the dependencies
+before running tests.  To do this in place without installing:
 
-    ./configure.ac --with-my-user-group --enable-layout=inplace
+    ./configure.ac --with-my-user-group --enable-layout=inplace --with-devel-mode
+    make testdeps
+    make fixdeps
 
 Adjust the relevant database options as necessary if you want to test on
 Postgres, Oracle, or SQLite.  The default is MySQL.
