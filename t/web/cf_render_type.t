@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => 8;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -43,8 +43,6 @@ diag "let's save it again";
         form_name => "ModifyCustomField",
         button    => 'Update',
     );
-    $m->content_contains( "already the current value",
-        'already current value msg' );
     $m->content_lacks( "Render Type changed from &#39;1&#39; to &#39;Select box&#39;",
         'no buggy RenderType change msg' );
 }
