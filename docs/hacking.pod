@@ -72,25 +72,31 @@ used for indentation.
 
 =head2 Setting up a development environment
 
-=head2 Testsuite
+=head2 Test suite
 
-RT also comes with a fairly complete testsuite.  To run it, you will
+RT also comes with a fairly complete test suite.  To run it, you will
 need to set environment variables to a database user and password which
 can create and drop databases:
 
     export RT_DBA_USER=root
     export RT_DBA_PASSWORD=
 
-To run the testsuite:
+You'll need to configure RT before running tests.  To do this in place
+without installing:
 
-    prove -l t/*,t t/*/*.t
+    ./configure.ac --with-my-user-group --enable-layout=inplace
 
-If you have multiple processors, you can run the testsuite in parallel,
-which will be significantly faster (obviously, adjust the parameter to
-C<-j> as necessary):
+Adjust the relevant database options as necessary if you want to test on
+Postgres, Oracle, or SQLite.  The default is MySQL.
 
-    export RT_TEST_PARALLEL=1
-    prove -l -j5 t/*.t t/*/*.t
+To run the test suite:
+
+    make test
+
+If you have multiple processors, you can run the test suite in parallel,
+which will be significantly faster:
+
+    make test-parallel
 
 The C<*-trunk> and C<master> branches are expected to be passing always
 be passing all tests.  While it is acceptable to break tests in an
