@@ -51,7 +51,8 @@ not include extranous changes.
 
 The RT codebase is more than ten years old; as such, there are sections
 which do not (yet) conform to the guidelines below.  Please attempt to
-follow them, even if the code surrounding your changes does not yet.
+follow the guidelines, even if the code surrounding your changes does
+not yet.
 
 RT also includes a F<.perltidyrc> in its top-level which encodes many of
 the conventions.
