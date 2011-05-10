@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 73;
+use RT::Test tests => 72;
+use Test::Warn;
 use RT::Dashboard::Mailer;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -176,17 +177,9 @@ ok($ok, $msg);
 ($ok, $msg) = $dashboard->Delete;
 ok($ok, $msg);
 
-do {
-    my @warnings;
-    local $SIG{__WARN__} = sub {
-        push @warnings, "@_";
-    };
-
+warning_like {
     RT::Dashboard::Mailer->MailDashboards(All => 1);
-
-    is(@warnings, 1, "one warning");
-    like($warnings[0], qr/Unable to load dashboard $dashboard_id of subscription $subscription_id for user root/);
-};
+} qr/Unable to load dashboard $dashboard_id of subscription $subscription_id for user root/;
 
 @mails = RT::Test->fetch_caught_mails;
 is(@mails, 1, "one mail for subscription failure");

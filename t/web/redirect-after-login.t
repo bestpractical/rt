@@ -53,11 +53,9 @@ diag $url if $ENV{TEST_VERBOSE};
 
     ok( $agent->content =~ /Your username or password is incorrect/i, "Found the error message");
     like( $agent->uri, qr{/NoAuth/Login\.html$}, "now on /NoAuth/Login.html" );
-    $agent->logout();
-
-    # Handle the warning after we're done with the page, since this leaves us
-    # with a completely different $mech
     $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
+
+    $agent->logout();
 }
 
 # test a login from a non-front page, both with a double leading slash and without
@@ -118,6 +116,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
 
     ok( $agent->content =~ /Your username or password is incorrect/i, "Found the error message");
     like( $agent->uri, qr{/NoAuth/Login\.html$}, "still on /NoAuth/Login.html" );
+    $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 
     # try to login again
     ok($agent->current_form->find_input('user'));
@@ -138,10 +137,6 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     is( $agent->uri, $requested, "right URL" );
     like( $agent->{redirected_uri}, qr{/NoAuth/Login\.html}, "We redirected from login");
     $agent->logout();
-
-    # Handle the warning after we're done with the page, since this leaves us
-    # with a completely different $mech
-    $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 }
 
 # test a login from the main page with query params
@@ -165,9 +160,6 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     ok($agent->current_form->find_input('user'));
     ok($agent->current_form->find_input('pass'));
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
-    
-    # Handle the warning after we're done with the page, since this leaves us
-    # with a completely different $mech
     $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 }
 
@@ -185,6 +177,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     ok($agent->current_form->find_input('next'));
     like($agent->value('next'), qr/^[a-z0-9]{32}$/i, "next page argument is a hash");
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
+    $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 
     # Try to login again
     ok($agent->content =~ /username:/i);
@@ -199,10 +192,6 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     is( $agent->uri, $requested, "right URL" );
     like( $agent->{redirected_uri}, qr{/NoAuth/Login\.html}, "We redirected from login");
     $agent->logout();
-
-    # Handle the warning after we're done with the page, since this leaves us
-    # with a completely different $mech
-    $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 }
 
 # test REST login response
@@ -223,9 +212,6 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     is($agent->uri, $requested, "didn't redirect to /NoAuth/Login.html for REST");
     like($agent->content, qr/401 Credentials required/i, "got error status");
     like($agent->content, qr/Your username or password is incorrect/, "got error message");
-    
-    # Handle the warning after we're done with the page, since this leaves us
-    # with a completely different $mech
     $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 }
 

@@ -55,7 +55,7 @@ my @links = (
     '/Admin/Queues/Modify.html?id=' . $queue->id,
     '/Admin/CustomFields/Modify.html?id=' . $cf->id,
     '/Admin/Global/Scrip.html?id=1',
-    '/Admin/Global/Template.html?id=1',
+    '/Admin/Global/Template.html?Template=1',
     '/Admin/Articles/Classes/Modify.html?id=' . $class->id,
     '/Search/Build.html?Query=id<10',
     '/Ticket/Display.html?id=' . $open_ticket->id,
@@ -63,14 +63,17 @@ my @links = (
 );
 
 for my $link (@links) {
-    test_page($link);
+    test_page($m, $link);
 }
 
 $m->get_ok('/NoAuth/Logout.html');
 
 sub test_page {
+    my $m = shift;
     my $link = shift;
     $m->get_ok( $link, $link );
+    $m->no_warnings_ok($link);
+
     my $tree = HTML::TreeBuilder->new();
     $tree->parse( $m->content );
     $tree->elementify;
@@ -83,7 +86,7 @@ sub test_page {
       ( $page_menu ? $page_menu->find('a') : () );
 
     for my $link (@links) {
-        test_page($link);
+        test_page($m, $link);
     }
 }
 

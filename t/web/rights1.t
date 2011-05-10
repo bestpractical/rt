@@ -24,7 +24,6 @@ my $cookie_jar = HTTP::Cookies->new;
 
 $agent->cookie_jar($cookie_jar);
 
-no warnings 'once';
 # get the top page
 $agent->login( $user_obj->Name, 'customer');
 
@@ -36,7 +35,7 @@ ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
-my ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab', Object => $RT::System);
+my ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab', Object => RT->System);
 
 ok($grantid,$grantmsg);
 
