@@ -32,7 +32,7 @@ branch.  Branches to fix bugs should be based off of whichever trunk the
 bug was first found in.  If you found the bug in your RT 4.0.0 install,
 you'd branch from 4.0-trunk.
 
-Feature branches should be named based on the trunk they are branched
+Branches should be named based on the trunk they are branched
 from -- which is to say, the earliest branch they might be merged into.
 For example, a bugfix branched from C<4.0-trunk> might be named
 C<4.0/fail-taint-mode-early>.  A feature branched from C<master> when
