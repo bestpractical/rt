@@ -54,17 +54,19 @@ diag 'only signing. correct passphrase';
 
 diag 'only signing. missing passphrase';
 {
-    my $warnings;
-    local $SIG{__WARN__} = sub {
-        $warnings .= "@_";
-    };
-
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => '' );
+    my %res;
+    warning_like {
+        %res = RT::Crypt::GnuPG::SignEncrypt(
+            Entity     => $entity,
+            Encrypt    => 0,
+            Passphrase => ''
+        );
+    } qr/can't query passphrase in batch mode/;
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
     ok( $res{'error'} || $res{'logger'}, "error is here" );
 
@@ -72,8 +74,6 @@ diag 'only signing. missing passphrase';
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
     is( $status[0]->{'Status'}, 'MISSING', 'missing passphrase');
-
-    like($warnings, qr/bad passphrase/);
 }
 
 diag 'only signing. wrong passphrase';
