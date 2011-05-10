@@ -6,6 +6,14 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 use MIME::Entity;
 
+sub content_as_mime {
+    my $entity = shift;
+    my ( $status, $id ) = RT::Test->send_via_mailgate($entity);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "created ticket" );
+    return RT::Test->last_ticket->Transactions->First->ContentAsMIME;
+}
+
 diag "simple rfc822 attachment";
 {
 
@@ -21,16 +29,38 @@ diag "simple rfc822 attachment";
         To      => 'bar@localhost',
         Subject => 'rfc822',
         Data    => ['rfc822 attachment'],
+        'X-Brokenness' => 'high',
     );
 
     $top->attach(
         Data => $rfc822->stringify,
         Type => 'message/rfc822',
     );
-    like( $top->stringify, qr/foo\@localhost/,
-        'original mail has rfc822 att header' );
 
-    test_mail( $top );
+    my $parsed = content_as_mime($top);
+
+    for my $mime ($top, $parsed) {
+        diag $mime->head->get('X-RT-Original-Encoding') ? "reconstructed mail" : "original mail";
+
+        is $mime->parts, 2, 'two mime parts';
+
+        like $mime->head->get('Subject'), qr/this is top/, 'top subject';
+        like $mime->head->get('From'), qr/root\@localhost/, 'top From';
+        like $mime->parts(0)->bodyhandle->as_string, qr/top mail/, 'content of top';
+        
+        my $attach = $mime->parts(1);
+        my $body   = $attach->bodyhandle->as_string;
+
+        like $attach->head->mime_type, qr/message\/rfc822/, 'attach of type message/rfc822';
+        like $body, qr/rfc822 attachment/, 'attach content';
+
+        headers_like(
+            $attach,
+            Subject         => 'rfc822',
+            From            => 'foo@localhost',
+            'X-Brokenness'  => 'high',
+        );
+    }
 }
 
 diag "multipart rfc822 attachment";
@@ -48,32 +78,62 @@ diag "multipart rfc822 attachment";
         To      => 'bar@localhost',
         Subject => 'rfc822',
         Data    => ['rfc822 attachment'],
+        'X-Brokenness' => 'high',
     );
 
     $rfc822->attach(
-        Data => 'attachment of rfc822 attachment',
-        Type => 'text/plain',
+        Data => '<b>attachment of rfc822 attachment</b>',
+        Type => 'text/html',
     );
 
     $top->attach(
         Data => $rfc822->stringify,
         Type => 'message/rfc822',
     );
-    like( $top->stringify, qr/foo\@localhost/,
-        'original mail has rfc822 att header' );
+    
+    my $parsed = content_as_mime($top);
 
-    test_mail( $top );
+    for my $mime ($top, $parsed) {
+        diag $mime->head->get('X-RT-Original-Encoding') ? "reconstructed mail" : "original mail";
+
+        is $mime->parts, 2, 'two mime parts';
+
+        like $mime->head->get('Subject'), qr/this is top/, 'top subject';
+        like $mime->head->get('From'), qr/root\@localhost/, 'top From';
+        like $mime->parts(0)->bodyhandle->as_string, qr/top mail/, 'content of top';
+        
+        my $attach = $mime->parts(1);
+        my $body   = $attach->bodyhandle->as_string;
+
+        like $attach->head->mime_type, qr/message\/rfc822/, 'attach of type message/rfc822';
+        like $body, qr/rfc822 attachment/, 'attach content';
+        like $body, qr/attachment of rfc822 attachment/, 'attach content';
+
+        headers_like(
+            $attach,
+            Subject         => 'rfc822',
+            From            => 'foo@localhost',
+            'X-Brokenness'  => 'high',
+            'Content-Type'  => 'text/plain',
+            'Content-type'  => 'text/html',
+        );
+    }
 }
 
-sub test_mail {
-    my $entity = shift;
-    my ( $status, $id ) = RT::Test->send_via_mailgate($entity);
-    is( $status >> 8, 0, "The mail gateway exited normally" );
-    ok( $id, "created ticket" );
-    my $ticket = RT::Test->last_ticket;
-
-    my $txn = $ticket->Transactions->First;
-    like( $txn->ContentAsMIME->stringify,
-        qr/foo\@localhost/, 'txn content has rfc822 att header' );
-
+sub headers_like {
+    my $attach = shift;
+    my %header = (@_);
+    my $body   = $attach->bodyhandle->as_string;
+    for my $name (keys %header) {
+        if (lc $name eq 'content-type') {
+            like $attach->head->get($name), qr/message\/rfc822/, "attach $name message/rfc822, not from a subpart";
+        } else {
+            is $attach->head->get($name), undef, "attach $name not in part header";
+        }
+        like $body, qr/$name: $header{$name}/i, "attach $name in part body";
+    }
 }
+
+undef $m;
+done_testing;
+
