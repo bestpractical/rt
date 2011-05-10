@@ -147,7 +147,7 @@ Give your branch a name based on what you are attempting to accomplish.
 We suggest that branch names be lower-case and separate words with
 dashes, but this branch name is purely for your own reference.
 
-    git branch -M gnupg-encryption
+    git branch -m gnupg-encryption
 
 =item 6.
 
