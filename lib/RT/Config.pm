@@ -545,16 +545,6 @@ our %META = (
                               'You can change the site default in your %Lifecycles config.');
         }
     },
-    ExtraSecurity => {
-        PostLoadCheck => sub {
-            my $self  = shift;
-            my $value = shift;
-            return unless $value;
-            $RT::Logger->info('The ExtraSecurity config option has been deprecated.  '.
-                              'Its Clickjacking entry has been given its own config, ' .
-                              '$DisableFramebusting');
-        }
-    },
     WebPath => {
         PostLoadCheck => sub {
             my $self  = shift;
