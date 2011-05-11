@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test;
+use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use MIME::Entity;
