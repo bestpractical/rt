@@ -1005,7 +1005,7 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
     if ( @Attributes ) {
-        $RT::Logger->debug("Creating predefined searches...");
+        $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {
