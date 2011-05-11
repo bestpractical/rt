@@ -78,6 +78,7 @@ use warnings;
 use RT::Transaction;
 use MIME::Base64;
 use MIME::QuotedPrint;
+use RT::Util 'mime_recommended_filename';
 
 sub _OverlayAccessible {
   {
@@ -138,7 +139,9 @@ sub Create {
     $MessageId =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename;
+
+    my $Filename = mime_recommended_filename($Attachment);
+
     # remove path part. 
     $Filename =~ s!.*/!! if $Filename;
 

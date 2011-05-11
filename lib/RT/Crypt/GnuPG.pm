@@ -54,7 +54,7 @@ package RT::Crypt::GnuPG;
 use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
-use RT::Util 'safe_run_child';
+use RT::Util 'safe_run_child', 'mime_recommended_filename';
 
 =head1 NAME
 
@@ -769,7 +769,7 @@ sub _SignEncryptAttachmentInline {
         return %res;
     }
 
-    my $filename = $entity->head->recommended_filename || 'no_name';
+    my $filename = mime_recommended_filename( $entity ) || 'no_name';
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         $entity->make_multipart;
         $entity->attach(
