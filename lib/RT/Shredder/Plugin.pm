@@ -129,7 +129,7 @@ sub List
 
     my %res;
     for my $f (reverse @files) {
-        $res{$1} = $_ if $f =~ /([^\\\/]+)\.pm$/;
+        $res{$1} = $f if $f =~ /([^\\\/]+)\.pm$/;
     }
 
     return %res unless $type;
