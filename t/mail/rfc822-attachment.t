@@ -6,14 +6,6 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 use MIME::Entity;
 
-sub content_as_mime {
-    my $entity = shift;
-    my ( $status, $id ) = RT::Test->send_via_mailgate($entity);
-    is( $status >> 8, 0, "The mail gateway exited normally" );
-    ok( $id, "created ticket" );
-    return RT::Test->last_ticket->Transactions->First->ContentAsMIME;
-}
-
 diag "simple rfc822 attachment";
 {
 
@@ -118,6 +110,14 @@ diag "multipart rfc822 attachment";
             'Content-type'  => 'text/html',
         );
     }
+}
+
+sub content_as_mime {
+    my $entity = shift;
+    my ( $status, $id ) = RT::Test->send_via_mailgate($entity);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "created ticket" );
+    return RT::Test->last_ticket->Transactions->First->ContentAsMIME;
 }
 
 sub headers_like {
