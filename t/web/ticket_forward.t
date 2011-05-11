@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 29;
+use RT::Test tests => 32;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $att_fh, $att_file ) =
@@ -96,5 +96,8 @@ diag "Foward Ticket without content" if $ENV{TEST_VERBOSE};
         button    => 'ForwardAndReturn'
     );
     $m->content_contains( 'Send email successfully', 'sent mail msg' );
+    my ($mail) = RT::Test->fetch_caught_mails;
+    like( $mail, qr/Subject: Fwd: \[example\.com #2\] test forward without content/, 'Subject field' );
+    like( $mail, qr/To: rt-test\@example\.com/,             'To field' );
+    like( $mail, qr/This is a forward of ticket #2/,        'content' );
 }
-
