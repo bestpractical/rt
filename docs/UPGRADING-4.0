@@ -6,12 +6,17 @@ If you are upgrading, you will likely want to specify that your database
 is still named rt3 (or import a backup of your database as rt4 so that
 you can feel more confident making the upgrade).
 
+You really shouldn't install RT4 into your RT3 source tree (/opt/rt3)
+and instead should be using make install to set up a clean environment.
+This will allow you to evaluate your local modifications and configuration
+changes as you migrate to 4.0.
+
 If you choose to force RT to install into /opt/rt3, or another existing RT 3.x
 install location, you will encounter issues because we removed the _Overlay
-files (such as Ticket_Overlay.pm).  You will need to manually remove these
-files after the upgrade or RT will fail.  After making a complete backup of
-your /opt/rt3 install, you might use a command like the following to remove the
-_Overlay files:
+files (such as Ticket_Overlay.pm) and relocated other files.  You will
+need to manually remove these files after the upgrade or RT will fail.
+After making a complete backup of your /opt/rt3 install, you might use a
+command like the following to remove the _Overlay files:
 
     find /opt/rt3/lib/ -type f -name '*_Overlay*' -delete
 
