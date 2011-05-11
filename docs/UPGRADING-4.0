@@ -26,6 +26,18 @@ docs/web_deployment.pod for current instructions.  The old
 work with RT 4.0, and should be removed to reduce confusion.
 
 *******
+RT_SiteConfig.pm
+
+You will need to carefully review your local settings when moving from
+3.8 to 4.0.
+
+If you were adding your own custom statuses in earlier versions of RT,
+using ActiveStatus or InactiveStatus you will need to port these to use
+the new Lifecycles functionality.  You can read more about it in
+RT_Config.pm.  In most cases, you can do this by extending the default
+active and inactive lists.
+
+*******
 Upgrading sessions on MySQL
 
 In 4.0.0rc2, RT began shipping an updated schema for the sesions table
@@ -59,6 +71,8 @@ review this for errors.
 
 If you are running RTFM 2.0 with a release of RT, there isn't currently an upgrade
 script that can port RTFM's internal CustomField and Transaction data to RT4.
+
+You must also remove RT::FM from your @Plugins line in RT_SiteConfig.pm.
 
 *******
 The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
