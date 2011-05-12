@@ -161,16 +161,18 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     );
 
     $mime->attach(
-        Path     => $att_file,
-        Type     => 'text/x-diff',
-        Filename => 'awesome.patch',
+        Path        => $att_file,
+        Type        => 'text/x-diff',
+        Filename    => 'awesome.patch',
+        Disposition => 'attachment',
     );
     
     $mime->attach(
-        Path     => RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'),
-        Type     => 'image/png',
-        Filename => 'bpslogo.png',
-        Encoding => 'base64',
+        Path        => RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'),
+        Type        => 'image/png',
+        Filename    => 'bpslogo.png',
+        Encoding    => 'base64',
+        Disposition => 'attachment',
     );
 
     my $ticket = RT::Test->create_ticket(
