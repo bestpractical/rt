@@ -58,14 +58,18 @@
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
   </tr>
+% if ( $Ticket->Cc->MembersObj->Count ) {
   <tr>
     <td class="labeltop"><&|/l&>Cc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
   </tr>
+% }
+% if ( $Ticket->AdminCc->MembersObj->Count ) {
   <tr>
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
   </tr>
+% }
 </table>
 <%INIT>
 </%INIT>

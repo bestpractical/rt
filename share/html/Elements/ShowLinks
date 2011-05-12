@@ -46,13 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
-% }
-    </td>
-    <td class="value">
+% if ( $can_create || $Ticket->DependsOn->Count ) {
 <%PERL>
 my ( @active, @inactive, @not_tickets );
 for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
@@ -70,6 +64,13 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     }
 }
 </%PERL>
+  <tr>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
+% if ($can_create) {
+        <span class="create">(<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
+% }
+    </td>
+    <td class="value">
 <ul>
 % for my $Link (@not_tickets, @active, @inactive) {
 <li><& ShowLink, URI => $Link &></li>
@@ -77,6 +78,9 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
 </ul>
     </td>
   </tr>
+% }
+
+% if ( $can_create || $Ticket->DependedOnBy->Count ) {
   <tr>
     <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:\
 % if ($can_create) {
@@ -91,6 +95,9 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
 </ul>
     </td>
   </tr>
+% }
+
+% if ( $can_create || $Ticket->MemberOf->Count ) {
   <tr>
     <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Parents'), Relation => 'Parents' &>:\
 % if ($can_create) {
@@ -99,6 +106,9 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     </td>
     <td class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></td>
   </tr>
+% }
+
+% if ( $can_create || $Ticket->Members->Count ) {
   <tr>
     <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Children'), Relation => 'Children' &>:\
 % if ($can_create) {
@@ -107,6 +117,9 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     </td>
     <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
   </tr>
+% }
+
+% if ( $can_create || $Ticket->RefersTo->Count ) {
   <tr>
     <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Refers to'), Relation => 'RefersTo' &>:\
 % if ($can_create) {
@@ -121,6 +134,10 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
 </ul>
     </td>
   </tr>
+% }
+
+
+% if ( $can_create || $Ticket->ReferredToBy->Count ) {
   <tr>
     <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:\
 % if ($can_create) {
@@ -136,6 +153,8 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
 </ul>
     </td>
   </tr>
+% }
+
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
 </table>
