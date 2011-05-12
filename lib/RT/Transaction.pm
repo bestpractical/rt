@@ -554,20 +554,21 @@ sub ContentAsMIME {
     # transaction.  Check ACLs here before we go any further.
     return unless $self->CurrentUserCanSee;
 
-    my $entity = MIME::Entity->build(
-        Type        => 'message/rfc822',
-        Description => 'transaction ' . $self->Id,
-    );
-
     my $attachments = RT::Attachments->new( $self->CurrentUser );
     $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
     $attachments->Limit( FIELD => 'TransactionId', VALUE => $self->id );
     $attachments->Limit( FIELD => 'Parent',        VALUE => 0 );
+    $attachments->RowsPerPage(1);
 
-    while ( my $a = $attachments->Next ) {
-        $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME(Children => 1) );
-    }
+    my $top = $attachments->First;
+    return unless $top;
+
+    my $entity = MIME::Entity->build(
+        Type        => 'message/rfc822',
+        Description => 'transaction ' . $self->id,
+        Data        => $top->ContentAsMIME(Children => 1)->as_string,
+    );
+
     return $entity;
 }
 
