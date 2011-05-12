@@ -651,7 +651,8 @@ sub ForwardTicket {
     ) for qw(Create Correspond);
 
     my $entity = MIME::Entity->build(
-        Type => 'multipart/mixed',
+        Type        => 'multipart/mixed',
+        Description => 'forwarded ticket',
     );
     $entity->add_part( $_ ) foreach 
         map $_->ContentAsMIME,
