@@ -555,7 +555,7 @@ sub ContentAsMIME {
     return unless $self->CurrentUserCanSee;
 
     my $entity = MIME::Entity->build(
-        Type        => 'multipart/mixed',
+        Type        => 'message/rfc822',
         Description => 'transaction ' . $self->Id,
     );
 
