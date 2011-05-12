@@ -57,7 +57,7 @@ h1 {
     padding-left: 0.2em;
     display: block; 
     background-color: #fff;
-
+    margin: 0;
 }
 
 div.buttons {
@@ -127,7 +127,7 @@ ul.menu li#active a
     color: #800000;
 }
 
-div.titlebox, #bpscredits, .ticket_menu{
+div.titlebox, #bpscredits, #logo, .ticket_menu{
     -moz-border-radius: 1em;
     -webkit-border-radius: 1em;
     margin: 0.5em;
@@ -156,7 +156,11 @@ hr.clear {
 }
 .value { 
     font-weight: bold;
-    display:inline-block;
+    display: inline-block;
+}
+
+div.value {
+    display: block;
 }
 
 ul.ticketlist {
@@ -352,18 +356,18 @@ div#login-box input[type=text], div#login-box input[type=password] {
     width: 100%;
 }
 
-#bpscredits img {
-    padding-bottom: 1em;
-}
-
-
-
 #bpscredits {
     float: right;
+    clear: right;
     text-align: right;
     width: auto;
     font-size: 0.8em;
     padding: 1em;
+}
+
+#bpscredits #copyright {
+    padding-top: 4em;
+    background: white url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
 }
 
 
@@ -406,6 +410,27 @@ form {
     font-size: 1em;
     padding: 0.25em;
     color: #000;
+}
+
+#logo {
+    float: right;
+    clear: right;
+    text-align: center;
+    padding: 1em;
+    padding-bottom: 0.5em;
+    margin: 0.25em 0.5em 0.25em 0.25em;
+}
+
+#logo .rtname {
+    display: block;
+    font-size: 0.9em;
+}
+
+#logo a img {
+    border: 0;
+    height: 2em;
+    width: auto !important;
+    padding-bottom: 0.5em;
 }
 
 div.txn-content {

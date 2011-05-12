@@ -69,7 +69,7 @@ return unless $Object;
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
           <br />
-%         for my $type qw(To Cc Bcc) {
+%         for my $type (qw(To Cc Bcc)) {
 %             my @addresses =  $scrip->ActionObj->Action->$type();
 %             next unless @addresses;
               <ul>
@@ -97,7 +97,7 @@ return unless $Object;
 %         next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
           <b><% $rule->Describe %></b>
 %         my $data = $rule->{hints}{recipients};
-%         for my $type qw(To Cc Bcc) {
+%         for my $type (qw(To Cc Bcc)) {
 %             next unless @{$data->{$type}};
               <ul>
 %             for my $address (@{$data->{$type}}) {

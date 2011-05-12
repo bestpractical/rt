@@ -453,7 +453,10 @@ sub InitClasses {
         my $scrips = RT::Scrips->new(RT->SystemUser);
         $scrips->Limit( FIELD => 'Stage', OPERATOR => '!=', VALUE => 'Disabled' );
         while ( my $scrip = $scrips->Next ) {
-            $scrip->LoadModules;
+            local $@;
+            eval { $scrip->LoadModules } or
+                $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
+                                   "You should delete or repair this Scrip in the admin UI.\n$@\n");
         }
 
 	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {

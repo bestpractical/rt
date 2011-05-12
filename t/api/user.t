@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 108;
+use RT::Test tests => 111;
 
 
 {
@@ -56,6 +56,14 @@ ok ($id, $msg);
 ok ($id, $msg);
 # can we change the address back to "";  
 ($id,$msg) = $u7->SetEmailAddress('');
+ok ($id, $msg);
+is_empty ($u7->EmailAddress);
+
+# back to something, so we can set undef next successfully
+($id,$msg) = $u7->SetEmailAddress('foo@bar'.$$);
+ok ($id, $msg);
+
+($id,$msg) = $u7->SetEmailAddress(undef);
 ok ($id, $msg);
 is_empty ($u7->EmailAddress);
 

@@ -204,6 +204,7 @@ sub find_apache_server {
 sub fork_exec {
     my $self = shift;
 
+    RT::Test::__disconnect_rt();
     my $pid = fork;
     unless ( defined $pid ) {
         die "cannot fork: $!";
@@ -211,6 +212,7 @@ sub fork_exec {
         exec @_;
         die "can't exec `". join(' ', @_) ."` program: $!";
     } else {
+        RT::Test::__reconnect_rt();
         return $pid;
     }
 }

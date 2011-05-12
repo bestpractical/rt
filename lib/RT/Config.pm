@@ -424,15 +424,24 @@ our %META = (
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('RTAddressRegexp');
-            return if $value;
-
-            $RT::Logger->debug(
-                'The RTAddressRegexp option is not set in the config.'
-                .' Not setting this option results in additional SQL queries to'
-                .' check whether each address belongs to RT or not.'
-                .' It is especially important to set this option if RT recieves'
-                .' emails on addresses that are not in the database or config.'
-            );
+            if (not $value) {
+                $RT::Logger->debug(
+                    'The RTAddressRegexp option is not set in the config.'
+                    .' Not setting this option results in additional SQL queries to'
+                    .' check whether each address belongs to RT or not.'
+                    .' It is especially important to set this option if RT recieves'
+                    .' emails on addresses that are not in the database or config.'
+                );
+            } elsif (ref $value and ref $value eq "Regexp") {
+                # Ensure that the regex is case-insensitive; while the
+                # local part of email addresses is _technically_
+                # case-sensitive, most MTAs don't treat it as such.
+                $RT::Logger->warning(
+                    'RTAddressRegexp is set to a case-sensitive regular expression.'
+                    .' This may lead to mail loops with MTAs which treat the'
+                    .' local part as case-insensitive -- which is most of them.'
+                ) if "$value" =~ /^\(\?[a-z]*-([a-z]*):/ and "$1" =~ /i/;
+            }
         },
     },
     # User overridable mail options
@@ -536,6 +545,115 @@ our %META = (
                               'You can change the site default in your %Lifecycles config.');
         }
     },
+    WebPath => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            # "In most cases, you should leave $WebPath set to '' (an empty value)."
+            return unless $value;
+
+            # try to catch someone who assumes that you shouldn't leave this empty
+            if ($value eq '/') {
+                $RT::Logger->error("For the WebPath config option, use the empty string instead of /");
+                return;
+            }
+
+            # $WebPath requires a leading / but no trailing /, or it can be blank.
+            return if $value =~ m{^/.+[^/]$};
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebPath config option requires no trailing slash");
+            }
+
+            if ($value !~ m{^/}) {
+                $RT::Logger->error("The WebPath config option requires a leading slash");
+            }
+        },
+    },
+    WebDomain => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebDomain config option");
+                return;
+            }
+
+            if ($value =~ m{^(\w+://)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a scheme ($1)");
+                return;
+            }
+
+            if ($value =~ m{(/.*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a path ($1)");
+                return;
+            }
+
+            if ($value =~ m{:(\d*)}) {
+                $RT::Logger->error("The WebDomain config option must not contain a port ($1)");
+                return;
+            }
+        },
+    },
+    WebPort => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebPort config option");
+                return;
+            }
+
+            if ($value !~ m{^\d+$}) {
+                $RT::Logger->error("The WebPort config option must be an integer");
+            }
+        },
+    },
+    WebBaseURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebBaseURL config option");
+                return;
+            }
+
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebBaseURL config option must contain a scheme (http or https)");
+            }
+
+            if ($value =~ m{/$}) {
+                $RT::Logger->error("The WebBaseURL config option requires no trailing slash");
+            }
+
+            if ($value =~ m{^https?://.+?(/[^/].*)}i) {
+                $RT::Logger->error("The WebBaseURL config option must not contain a path ($1)");
+            }
+        },
+    },
+    WebURL => {
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+
+            if (!$value) {
+                $RT::Logger->error("You must set the WebURL config option");
+                return;
+            }
+
+            if ($value !~ m{^https?://}i) {
+                $RT::Logger->error("The WebURL config option must contain a scheme (http or https)");
+            }
+
+            if ($value !~ m{/$}) {
+                $RT::Logger->error("The WebURL config option requires a trailing slash");
+            }
+        },
+    },
     EmailInputEncodings => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
@@ -563,7 +681,7 @@ our %META = (
                 }
             }
         },
-    }
+    },
 );
 my %OPTIONS = ();
 
@@ -996,9 +1114,9 @@ sub SetFromConfig {
 
             # get entry for type we are looking for
             # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. may be we should skip any
+            # Otherwie 5.10 goes boom. maybe we should skip any
             # reference
-            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
+            next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
             my $entry_ref = *{$entry}{ ref($ref) };
             next unless $entry_ref;
 
@@ -1026,10 +1144,11 @@ sub Meta {
 sub Sections {
     my $self = shift;
     my %seen;
-    return sort
+    my @sections = sort
         grep !$seen{$_}++,
         map $_->{'Section'} || 'General',
         values %META;
+    return @sections;
 }
 
 sub Options {

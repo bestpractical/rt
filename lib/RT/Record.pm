@@ -495,7 +495,7 @@ sub _Set {
           $self->loc(
             "[_1] changed from [_2] to [_3]",
             $self->loc( $args{'Field'} ),
-            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
             '"' . $self->__Value( $args{'Field'}) . '"' 
           );
       } else {
@@ -722,7 +722,7 @@ Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) bas
 sub _EncodeLOB {
         my $self = shift;
         my $Body = shift;
-        my $MIMEType = shift;
+        my $MIMEType = shift || '';
         my $Filename = shift;
 
         my $ContentEncoding = 'none';
@@ -733,8 +733,7 @@ sub _EncodeLOB {
         #if the current attachment contains nulls and the
         #database doesn't support embedded nulls
 
-        if ( RT->Config->Get('AlwaysUseBase64') or
-             ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+        if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
             # set a flag telling us to mimencode the attachment
             $ContentEncoding = 'base64';
@@ -1193,7 +1192,7 @@ links of any type.
 
 =cut
 
-*Links = \&_Links;
+sub Links { shift->_Links(@_) }
 
 sub _Links {
     my $self = shift;

@@ -583,7 +583,7 @@ sub Search {
 
 
     require Time::ParseDate;
-    foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
+    foreach my $date (qw(Created< Created> LastUpdated< LastUpdated>)) {
         next unless ( $args{$date} );
         my $seconds = Time::ParseDate::parsedate( $args{$date}, FUZZY => 1, PREFER_PAST => 1 );
         my $date_obj = RT::Date->new( $self->CurrentUser );
@@ -791,7 +791,7 @@ sub Search {
         );
     }
 
-    foreach my $field qw(Name Summary Class) {
+    foreach my $field (qw(Name Summary Class)) {
 
         my @MatchLike =
           ( ref $args{ $field . "~" } eq 'ARRAY' )

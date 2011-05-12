@@ -579,8 +579,9 @@ so that a better email address can be returned
 =cut
 
 sub SetEmailAddress {
-    my $self = shift;
+    my $self  = shift;
     my $Value = shift;
+    $Value = '' unless defined $Value;
 
     my ($val, $message) = $self->ValidateEmailAddress( $Value );
     if ( $val ) {
@@ -1568,7 +1569,7 @@ sub SetPrivateKey {
     );
     return ($status, $self->loc("Couldn't set private key"))
         unless $status;
-    return ($status, $self->loc("Unset private key"));
+    return ($status, $self->loc("Set private key"));
 }
 
 sub BasicColumns {

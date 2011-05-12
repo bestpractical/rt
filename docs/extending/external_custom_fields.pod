@@ -1,0 +1,90 @@
+=head1 External custom fields
+
+=head2 Description
+
+C<External custom fields> is an extension to custom fields that allow
+you to define CFs with dynamic lists of values. Loading values into
+these custom fields requires writing a little Perl code to fetch the
+data from the external source.
+
+=head2 Introduction into writing source of values
+
+For each type of data source that you want, you'll need to put a file in
+F</opt/rt4/local/lib/RT/CustomFieldValues/> (or equivalent if you
+installed RT into someplace other than F</opt/rt4>). To get a sense of
+the code that you'll need to write, take a look at the code in
+L</opt/rt4/lib/RT/CustomFieldValues/Groups.pm> for a simple example
+which just uses RT's API to pull in a list of RT's groups.
+
+Running C<perldoc /opt/rt4/lib/RT/CustomFieldValues/External.pm> will
+show you the documentation for the API that needs to be fulfilled;
+copying and editing the C<Groups> example is probably a fine place to
+start.
+
+Later in this doc we'll describe the example a little bit more.
+
+=head2 Configuration
+
+After the custom code is written, you need to tell RT about its
+existence by adding something like following to your RT_SiteConfig.pm:
+
+    Set(@CustomFieldValuesSources, "RT::CustomFieldValues::MySource");
+
+The value in quotes should be the name of the class that you created.
+
+Stop and start your web server to enable any config changes. Open the
+web interface as an administrative user (such as root), and create new
+custom field. Set its type to be a Select or Autocomplete field, and
+save the changes.  You should now you have ability to select a "source"
+for values.  Choose the class you wrote from the list and the save
+changes.
+
+=head2 How to write custom source
+
+You have to implement a subclass of L<RT::CustomFieldValues::External>.
+There are two main methods you want to override:
+
+=over 4
+
+=item SourceDescription
+
+This method should return a string describing the data source; this is
+the identifier which the administrator will see in the dropdown in the
+web interface. See L</Configuration>.
+
+=item ExternalValues
+
+This method should return an array reference of hash references.  The
+hash references should contain keys for C<name>, C<description>, and
+C<sortorder>. C<name> is most important one; the others are optional.
+
+=back
+
+Here's a simple static example:
+
+  package RT::CustomFieldValues::MySource;
+  
+  # define class inheritance
+  use base qw(RT::CustomFieldValues::External);
+
+  # admin friendly description, the default valuse is the name of the class
+  sub SourceDescription {
+      return 'My Source';
+  }
+  
+  # actual values provider method
+  sub ExternalValues {
+      # return reference to array ([])
+      return [
+          # each element of the array is a reference to hash that describe a value
+          # possible keys are name, description and sortorder
+          { name => 'value1', description => 'external value', sortorder => 1 },
+          { name => 'value2', description => 'another external value', sortorder => 2 },
+          # values without description are also valid, the default description is empty string
+          { name => 'value3', sortorder => 3 },
+          # you can skip sortorder too, but note that the default sortorder is 0 (zero)
+          { name => 'value3' },
+      ];
+  }
+  
+  1; # don't forget to return some true value

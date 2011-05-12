@@ -57,6 +57,10 @@
     font-weight: bold;
 }
 
+#logo-theme-editor a img {
+    border: none;
+}
+
 #simple-customize {
     float: left;
     width: 48%;

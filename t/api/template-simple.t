@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use RT;
 use RT::Test tests => 231;
+use Test::Warn;
 
 my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Load("General");
@@ -126,19 +127,21 @@ SimpleTemplateTest(
     Output  => "test { \$Nonexistent }",
 );
 
-TemplateTest(
-    Content      => "\ntest { \$Ticket->Nonexistent }",
-    PerlOutput   => undef,
-    PerlWarnings => qr/RT::Ticket::Nonexistent Unimplemented/,
-    SimpleOutput => "test { \$Ticket->Nonexistent }",
-);
+warning_like {
+    TemplateTest(
+        Content      => "\ntest { \$Ticket->Nonexistent }",
+        PerlOutput   => undef,
+        SimpleOutput => "test { \$Ticket->Nonexistent }",
+    );
+} qr/RT::Ticket::Nonexistent Unimplemented/;
 
-TemplateTest(
-    Content      => "\ntest { \$Nonexistent->Nonexistent }",
-    PerlOutput   => undef,
-    PerlWarnings => qr/Can't call method "Nonexistent" on an undefined value/,
-    SimpleOutput => "test { \$Nonexistent->Nonexistent }",
-);
+warning_like {
+    TemplateTest(
+        Content      => "\ntest { \$Nonexistent->Nonexistent }",
+        PerlOutput   => undef,
+        SimpleOutput => "test { \$Nonexistent->Nonexistent }",
+    );
+} qr/Can't call method "Nonexistent" on an undefined value/;
 
 TemplateTest(
     Content      => "\ntest { \$Ticket->OwnerObj->Name }",
@@ -146,13 +149,14 @@ TemplateTest(
     SimpleOutput => "test { \$Ticket->OwnerObj->Name }",
 );
 
-TemplateTest(
-    Content      => "\ntest { *!( }",
-    SyntaxError  => 1,
-    PerlOutput   => undef,
-    PerlWarnings => qr/syntax error/,
-    SimpleOutput => "test { *!( }",
-);
+warning_like {
+    TemplateTest(
+        Content      => "\ntest { *!( }",
+        SyntaxError  => 1,
+        PerlOutput   => undef,
+        SimpleOutput => "test { *!( }",
+    );
+} qr/Template parsing error: syntax error/;
 
 TemplateTest(
     Content      => "\ntest { \$rtname ",
@@ -207,11 +211,6 @@ sub IndividualTemplateTest {
         @_,
     );
 
-    my $warnings;
-    local $SIG{__WARN__} = sub {
-        $warnings .= "@_";
-    } if $args{Warnings};
-
     my $t = RT::Template->new(RT->SystemUser);
     $t->Create(
         Name    => $args{Name},
@@ -247,10 +246,6 @@ sub IndividualTemplateTest {
     else {
         ok(!$ok, "expected a failure");
     }
-
-    if ($args{Warnings}) {
-        like($warnings, $args{Warnings}, "warnings matched");
-    }
 }
 
 sub TemplateTest {
@@ -262,9 +257,8 @@ sub TemplateTest {
 
         IndividualTemplateTest(
             %args,
-            Type     => $type,
-            Output   => $args{$type . 'Output'},
-            Warnings => $args{$type . 'Warnings'},
+            Type   => $type,
+            Output => $args{$type . 'Output'},
         );
     }
 }

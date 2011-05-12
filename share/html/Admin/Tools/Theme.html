@@ -1,0 +1,310 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header,
+    Title => loc("Theme"),
+&>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/farbtastic.js"></script>
+
+<div id="simple-customize">
+<div id="upload-logo">
+  <h2>Logo</h2>
+  <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
+  <form method="POST" enctype="multipart/form-data">
+    <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
+    <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <div class="gd-support">
+% if (%gd_can) {
+    <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
+% } else {
+    <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
+% }
+    </div>
+    <input name="reset_logo" value="Reset to default RT Logo" type="submit" />
+    <input type="submit" value="Upload" />
+  </form>
+</div>
+
+<div id="customize-theme">
+  <h2>Customize the RT theme</h2>
+  <ol>
+    <li>
+      <label for="section"><&|/l&>Select a section</&>:</label>
+      <select id="section"></select>
+    </li>
+    <li>
+      <div class="description"><&|/l&>Select a color for the section</&>:</div>
+% if ($colors) {
+<div class="primary-colors">
+%   for (@$colors) {
+%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
+<button type="button" class="color-template"
+        style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+  <&|/l&>Text</&>
+</button>
+%   }
+</div>
+% }
+      <div id="color-picker"></div>
+    </li>
+  </ol>
+</div>
+</div>
+
+<div id="custom-css">
+  <h2>Custom CSS (Advanced)</h2>
+  
+  <form method="POST">
+    <textarea rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
+    <input id="try" type="button" class="button" value="Try" />
+    <input id="reset" type="reset" value="Reset" type="submit" />
+    <input name="reset_css" value="Reset to default RT Theme" type="submit" />
+    <input value="Save" type="submit" />
+  </form>
+</div>
+
+<%ONCE>
+my @sections = (
+    ['Page'         => ['body']],
+    ['Header'       => ['div#quickbar', 'body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
+    ['Page title'   => ['div#header h1']],
+    ['Page content' => ['div#body']],
+    ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
+    ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
+);
+</%ONCE>
+<script type="text/javascript">
+var section_css_mapping = <% JSON::to_json(\@sections) |n%>;
+
+jQuery(function($) {
+
+    jQuery.each(section_css_mapping, function(i,v){
+        $('select#section').append($("<option/>")
+                           .attr('value', v[0])
+                           .text(v[0]));
+    });
+
+    $("style#sitecss").text($('#user_css').val());
+    $('#try').click(function() {
+        $("style#sitecss").text($('#user_css').val());
+    });
+
+    $('#reset').click(function() {
+        setTimeout(function() {
+          $("style#sitecss").text($('#user_css').val());
+        }, 1000);
+    });
+
+    function change_color(bg, fg) {
+      var section = $('select#section').val();
+
+      var applying = jQuery.grep(section_css_mapping, function(a){ return a[0] == section })[0][1];
+      var css = $('#user_css').val();
+      if (applying) {
+          var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
+          for (var name in applying) {
+              var selector = (applying[name]).replace(specials, "\\$1");
+              var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
+              var newcss = "background: " + bg;
+
+              /* Don't set the text color on <body> as it affects too much */
+              if (applying[name] != "body")
+                  newcss += "; color: " + fg;
+
+              /* Kill the border on the quickbar if we're styling it */
+              if (applying[name].match(/quickbar/))
+                  newcss += "; border: none;"
+
+              /* Page title's text color is the selected color */
+              if (applying[name].match(/#header/))
+                  newcss = "color: " + bg;
+
+              /* Nav doesn't need a background, but it wants text color */
+              if (applying[name].match(/#main-navigation/))
+                  newcss = "color: " + fg;
+
+              css = css.replace(rule, applying[name]+" { "+newcss+" }");
+          }
+      }
+      $('#user_css').val(css);
+      $("style#sitecss").text(css);
+    }
+
+    $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });
+
+    $('button.color-template').click(function() {
+      change_color($(this).css('background-color'), $(this).css('color'));
+  });
+
+
+});
+</script>
+<%INIT>
+unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
+    Abort(loc('This feature is only available to system administrators.'));
+}
+
+require JSON;
+use Digest::MD5 'md5_hex';
+
+my $text_threshold = 0.6;
+my @results;
+my $imgdata;
+
+if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+    my ($id, $msg) = RT->System->SetAttribute( Name => "UserLogo",
+                                                Description => "User-provided logo",
+                                                Content => {
+                                                    type => $file_hash->{ContentType},
+                                                    data => $file_hash->{LargeContent},
+                                                    hash => md5_hex($file_hash->{LargeContent}),
+                                                } );
+    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
+
+    $imgdata = $file_hash->{LargeContent};
+}
+elsif ($ARGS{'reset_logo'}) {
+    RT->System->DeleteAttribute('UserLogo');
+}
+else {
+    if (my $attr = RT->System->FirstAttribute('UserLogo')) {
+        my $content = $attr->Content;
+        if (ref($content) eq 'HASH') {
+            $imgdata = $content->{data};
+        }
+        else {
+            RT->System->DeleteAttribute('UserLogo');
+        }
+    }
+}
+
+if ($user_css) {
+    if ($ARGS{'reset_css'}) {
+        RT->System->DeleteAttribute('UserCSS');
+        undef $user_css;
+    }
+    else {
+        my ($id, $msg) = RT->System->SetAttribute( Name => "UserCSS",
+                                                    Description => "User-provided css",
+                                                    Content => $user_css );
+        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
+    }
+}
+
+if (!$user_css) {
+    my $attr = RT->System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : join(
+        "\n\n" => map {
+            join "\n" => "/* ". $_->[0] ." */",
+                         map { "$_ {}" } @{$_->[1]}
+        } @sections
+    );
+}
+
+# XXX: move this to some other modules
+
+use List::MoreUtils qw(uniq);
+
+my $has_color_analyzer = eval { require Convert::Color; 1 };
+my $colors;
+my %gd_can;
+my $valid_image_types;
+
+if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
+    require GD;
+
+    # Always find out what GD can read...
+    for my $type (qw(Png Jpeg Gif)) {
+        $gd_can{$type}++ if GD::Image->can("newFrom${type}Data");
+    }
+    $valid_image_types = join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can);
+
+    # ...but only analyze the image if we have data
+    if ($imgdata) {
+        if ( my $img = GD::Image->new($imgdata) ) {
+            $colors = analyze_img($img);
+        }
+        else {
+            # This has to be one damn long line because the loc() needs to be
+            # source parsed correctly.
+            push @results, loc("Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: [_1]. You can recompile libgd and GD.pm to include support for other image types.", $valid_image_types);
+        }
+    }
+}
+
+sub analyze_img {
+    my $img = shift;
+    my $color;
+
+    for my $i (0..$img->width-1) {
+        for my $j (0..$img->height-1) {
+            my @color = $img->rgb( $img->getPixel($i,$j) );
+            my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
+            my $c = join(',',@color);
+            next if $hsl->lightness < 0.1;
+            $color->{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
+            $color->{$c}->{cnt}++;
+        }
+    }
+
+    for (values %$color) {
+        $_->{rank} = $_->{s} * $_->{cnt};
+    }
+    my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
+                    (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
+    if ((scalar uniq map {$_->{rank}} @top5) == 1) {
+        warn "bad";
+    }
+    return \@top5;
+}
+</%INIT>
+<%ARGS>
+$user_css => ''
+</%ARGS>

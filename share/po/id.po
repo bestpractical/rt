@@ -2,17 +2,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.8.x\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-27 03:03+0000\n"
+"Project-Id-Version: RT 4.0.x\n"
+"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"POT-Creation-Date: 2011-03-25 07:17+0000\n"
 "PO-Revision-Date: 2010-04-27 03:27+0000\n"
 "Last-Translator: tunggul arif siswoyo <tunggul@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=US-ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-16 21:52+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -22,12 +22,12 @@ msgstr " (tidak ada kunci publik!)"
 msgid " (untrusted!)"
 msgstr " (tak terpercaya!)"
 
-#: share/html/Articles/Elements/NewestArticles:50 share/html/Articles/Elements/UpdatedArticles:50 share/html/Elements/RT__Class/ColumnMap:54 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
+#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
 msgstr "#"
 
-#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:185
-#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:187
+#. ($TicketObj->Id, $TicketObj->Subject || '')
 #. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->Id, $ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -48,7 +48,7 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets.pm:1959
+#: lib/RT/Tickets.pm:1972
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
@@ -114,19 +114,19 @@ msgstr ""
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 gunakan template %3"
 
-#: share/html/Ticket/Elements/ShowAttachments:86 share/html/m/ticket/show:341
+#: share/html/Ticket/Elements/ShowAttachments:86 share/html/m/ticket/show:342
 #. ($rev->CreatedAsString, $size, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj))
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) oleh %3"
 
-#: share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:66 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:60 share/html/m/ticket/reply:69
+#: share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:60 share/html/m/ticket/reply:69
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
 #. ($m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj))
 #. (loc($Ticket->Status))
 #. (loc($t->Status))
-#. ($t->OwnerObj->Name)
+#. ($m->scomp('/Elements/ShowUser', User => $t->OwnerObj))
 msgid "%1 (Unchanged)"
 msgstr "(Belum diubah)"
 
@@ -183,8 +183,8 @@ msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - menetapkan modul pencarian yang ingin digunakan oleh anda"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:4
-#. ('', '', '2010', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2010', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Hak Cipta 1996-%3 %4."
 
@@ -218,7 +218,7 @@ msgstr "%1 merupakan objek lokal, namun tidak dapat ditemukan dalam basis data"
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr ""
 
-#: lib/RT/Transaction.pm:613 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:402
+#: lib/RT/Transaction.pm:613 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
@@ -305,7 +305,7 @@ msgstr "%1 adalah sebuah alat yang berfungsi pada tiket dari alat penjadwalan ek
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr ""
 
-#: lib/RT/Queue.pm:888 lib/RT/Queue.pm:894 lib/RT/Ticket.pm:1113 lib/RT/Ticket.pm:1122 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:314 share/html/m/ticket/create:220 share/html/m/ticket/reply:198
+#: lib/RT/Queue.pm:888 lib/RT/Queue.pm:894 lib/RT/Ticket.pm:1106 lib/RT/Ticket.pm:1115 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:314 share/html/m/ticket/create:220 share/html/m/ticket/reply:198
 #. ($email, $self->loc($args{'Type'}))
 #. ($args{'Email'}, $self->loc($args{'Type'}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -317,7 +317,7 @@ msgstr ""
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 tidak lagi menjadi %2 untuk antrian ini."
 
-#: lib/RT/Ticket.pm:1290
+#: lib/RT/Ticket.pm:1283
 #. ($principal->Object->Name,                         $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
 msgstr ""
@@ -337,12 +337,12 @@ msgstr ""
 msgid "%1 min"
 msgstr "%1 menit"
 
-#: share/html/Articles/Elements/UpdatedArticles:47
+#: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
 msgstr ""
 
-#: share/html/Articles/Elements/NewestArticles:47
+#: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
 msgid "%1 newest articles"
 msgstr ""
@@ -412,7 +412,7 @@ msgstr ""
 msgid "%1's dashboards"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/SelectSavedSearches:55 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
+#: share/html/Articles/Article/Elements/SelectSavedSearches:56 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
 #. ($m->scomp('/Elements/ShowUser', User => $Object))
 #. ($m->interp->apply_escapes($Object->Name, 'h'))
 #. ($Object->Name)
@@ -455,7 +455,7 @@ msgstr ""
 msgid "%1s"
 msgstr ""
 
-#: share/html/Articles/Topics.html:251
+#: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
 msgid "%quant(%1,article)"
 msgstr ""
@@ -465,33 +465,33 @@ msgstr ""
 msgid "%quant(%1,hour)"
 msgstr ""
 
-#: lib/RT/Ticket.pm:903
+#: lib/RT/Ticket.pm:896
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' adalah nilai yang tidak valid untuk status"
 
-#: share/html/Articles/Article/Edit.html:134 share/html/Articles/Article/Edit.html:225
+#: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2504
+#: lib/RT/Interface/Web.pm:2589
 msgid "'Roles'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2467
+#: lib/RT/Interface/Web.pm:2552
 msgid "'System'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2485
+#: lib/RT/Interface/Web.pm:2570
 msgid "'User Groups'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2536
+#: lib/RT/Interface/Web.pm:2621
 msgid "'Users'"
 msgstr ""
 
-#: share/html/Ticket/Elements/Reminders:148
+#: share/html/Ticket/Elements/Reminders:101
 msgid "(Check box to complete)"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgstr ""
 msgid "(Check box to delete)"
 msgstr "Contreng untuk menghapus"
 
-#: share/html/Articles/Article/Elements/EditLinks:52
+#: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
 msgstr ""
 
@@ -585,7 +585,7 @@ msgstr ""
 msgid "(empty)"
 msgstr "(kosong)"
 
-#: share/html/Articles/Elements/NewestArticles:65 share/html/Articles/Elements/UpdatedArticles:66
+#: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
 msgstr ""
 
@@ -593,7 +593,7 @@ msgstr ""
 msgid "(no name listed)"
 msgstr "(tidak ada nama yang terdaftar)"
 
-#: share/html/Admin/Articles/Elements/Topics:98 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:75 share/html/Articles/Article/Elements/Preformatted:48 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Elements/BeforeMessageBox:102 share/html/Articles/Elements/BeforeMessageBox:119 share/html/Articles/Elements/BeforeMessageBox:69 share/html/Articles/Elements/BeforeMessageBox:81 share/html/Articles/Elements/BeforeMessageBox:89 share/html/Articles/Elements/NewestArticles:59 share/html/Articles/Elements/ShowTopic:50 share/html/Articles/Elements/UpdatedArticles:60 share/html/Articles/Topics.html:135 share/html/Articles/Topics.html:237 share/html/SelfService/Article/Display.html:48 share/html/SelfService/Article/Search.html:76 share/html/SelfService/Article/Search.html:84
+#: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:59 share/html/Articles/Article/Elements/EditTopics:76 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:136 share/html/Articles/Topics.html:238 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
 msgstr ""
 
@@ -601,7 +601,7 @@ msgstr ""
 msgid "(no pubkey!)"
 msgstr ""
 
-#: lib/RT/Transaction.pm:666 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:54 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81 share/html/m/ticket/show:261
+#: lib/RT/Transaction.pm:666 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:120 share/html/Search/Elements/Chart:81 share/html/m/ticket/show:262
 msgid "(no value)"
 msgstr "(Tidak ada nilai)"
 
@@ -643,7 +643,7 @@ msgstr "(tidak ada judul)"
 msgid "(untrusted!)"
 msgstr ""
 
-#: share/html/Articles/Elements/BeforeMessageBox:67 share/html/Elements/EditCustomFieldSelect:59
+#: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:59
 msgid "-"
 msgstr ""
 
@@ -663,11 +663,11 @@ msgstr "<% $Tiket->Status%>"
 msgid "<% $_ %>"
 msgstr "<% $_ %>"
 
-#: share/html/Ticket/Elements/EditBasics:138
+#: share/html/Ticket/Elements/EditBasics:136
 msgid "<% $field->{'name'} %>"
 msgstr ""
 
-#: share/html/Admin/Articles/Elements/Topics:107
+#: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
 msgstr ""
 
@@ -706,11 +706,11 @@ msgstr "Template kosong"
 msgid "A password was not set, so user won't be able to login."
 msgstr ""
 
-#: lib/RT/ACE.pm:171
+#: lib/RT/ACE.pm:169
 msgid "ACE not found"
 msgstr "ACE tidak ditemukan"
 
-#: lib/RT/ACE.pm:492
+#: lib/RT/ACE.pm:490
 msgid "ACEs can only be created and deleted."
 msgstr "ACE hanya dapat dibuat dan dihapus."
 
@@ -722,7 +722,7 @@ msgstr "DAN"
 msgid "Aborting to avoid unintended ticket modifications.\\n"
 msgstr "Dibatalkan untuk menghindari modifikasi tiket yang tidak diharapkan.\\n"
 
-#: share/html/Elements/Tabs:392
+#: share/html/Elements/Tabs:393
 msgid "About me"
 msgstr "Tentang Aku"
 
@@ -760,11 +760,11 @@ msgstr ""
 msgid "Action prepared..."
 msgstr "Aksi disiapkan..."
 
-#: share/html/Elements/Tabs:436
+#: share/html/Elements/Tabs:437
 msgid "Actions"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowRequestor:163
+#: share/html/Ticket/Elements/ShowRequestor:164
 msgid "Active Tickets"
 msgstr ""
 
@@ -833,7 +833,7 @@ msgstr "Tambah Anggota"
 msgid "Add new watchers"
 msgstr "Tambah Pengamat Baru"
 
-#: share/html/Admin/Elements/EditRights:161
+#: share/html/Admin/Elements/EditRights:168
 #. (loc($AddPrincipal))
 msgid "Add rights for this %1"
 msgstr ""
@@ -871,7 +871,7 @@ msgstr ""
 msgid "Added principal as a %1 for this queue"
 msgstr "Tambahkan prinsipal sebagai %1 untuk antrian ini"
 
-#: lib/RT/Ticket.pm:1164
+#: lib/RT/Ticket.pm:1157
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tambahkan prinsipal sebagai %1 untuk Tiket ini"
@@ -916,7 +916,7 @@ msgstr "Konfigurasi Admin/Global"
 msgid "AdminCCGroup"
 msgstr ""
 
-#: lib/RT/ACE.pm:104 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:297
+#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
 msgid "AdminCc"
 msgstr "AdminCc"
 
@@ -924,7 +924,7 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr ""
 
-#: lib/RT/Class.pm:93
+#: lib/RT/Class.pm:94
 msgid "AdminClass"
 msgstr ""
 
@@ -952,7 +952,7 @@ msgstr "Milik Grup Pribadi Admin"
 msgid "AdminQueue"
 msgstr "Antrian Admin"
 
-#: lib/RT/Class.pm:94
+#: lib/RT/Class.pm:95
 msgid "AdminTopics"
 msgstr ""
 
@@ -968,11 +968,11 @@ msgstr "Cc Administrasi"
 msgid "Administrative password"
 msgstr ""
 
-#: share/html/Elements/Tabs:604
+#: share/html/Elements/Tabs:607
 msgid "Advanced"
 msgstr "Lanjutan"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:48 share/html/Articles/Article/Elements/ShowSearchCriteria:50
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
 msgstr ""
 
@@ -984,11 +984,11 @@ msgstr "Kumpulan"
 msgid "All Approvals Passed"
 msgstr "Semua Izin terlewati"
 
-#: share/html/Admin/Articles/Classes/Modify.html:74
+#: share/html/Admin/Articles/Classes/Modify.html:75
 msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/index.html:75
+#: share/html/Admin/Articles/Classes/index.html:76
 msgid "All Classes"
 msgstr ""
 
@@ -1000,7 +1000,7 @@ msgstr ""
 msgid "All Queues"
 msgstr "Semua Antrian"
 
-#: share/html/Ticket/Elements/ShowRequestor:165
+#: share/html/Ticket/Elements/ShowRequestor:166
 msgid "All Tickets"
 msgstr ""
 
@@ -1008,11 +1008,11 @@ msgstr ""
 msgid "All queues matching search criteria"
 msgstr ""
 
-#: share/html/m/_elements/menu:83
+#: share/html/m/_elements/menu:82
 msgid "All tickets"
 msgstr ""
 
-#: share/html/Articles/Topics.html:51
+#: share/html/Articles/Topics.html:52
 msgid "All topics"
 msgstr ""
 
@@ -1036,7 +1036,7 @@ msgstr ""
 msgid "And/Or"
 msgstr "Dan/Atau"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:73
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr ""
 
@@ -1044,7 +1044,7 @@ msgstr ""
 msgid "Applied"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:322 share/html/Elements/Tabs:362
+#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:323 share/html/Elements/Tabs:363
 msgid "Applies to"
 msgstr "Digunakan untuk"
 
@@ -1113,21 +1113,21 @@ msgstr ""
 msgid "Apr."
 msgstr "Apr."
 
-#: share/html/Articles/Article/Delete.html:57
+#: share/html/Articles/Article/Delete.html:58
 msgid "Are you sure you want to delete this article?"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:98
+#: share/html/Articles/Article/Delete.html:99
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:83 share/html/SelfService/Article/Display.html:65
+#: share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
 msgid "Article #%1: %2"
 msgstr ""
 
-#: lib/RT/URI/fsck_com_article.pm:206
+#: lib/RT/URI/fsck_com_article.pm:207
 #. ($self->Object->id)
 msgid "Article %1"
 msgstr ""
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "Article %1 created"
 msgstr ""
 
-#: share/html/Admin/Articles/index.html:47
+#: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
 msgstr ""
 
@@ -1145,29 +1145,29 @@ msgstr ""
 msgid "Article Deleted"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:75 share/html/Articles/Article/Elements/ShowHistory:63 share/html/SelfService/Article/Display.html:59
+#: share/html/Articles/Article/Display.html:76 share/html/Articles/Article/Elements/ShowHistory:64 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
 msgstr ""
 
-#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:47 share/html/Elements/Tabs:173 share/html/Elements/Tabs:179 share/html/Elements/Tabs:353 share/html/Elements/Tabs:96
+#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:173 share/html/Elements/Tabs:179 share/html/Elements/Tabs:96
 msgid "Articles"
 msgstr ""
 
-#: share/html/Articles/Topics.html:129
+#: share/html/Articles/Topics.html:130
 #. ($currtopic->Name)
 msgid "Articles in %1"
 msgstr ""
 
-#: share/html/SelfService/Article/Search.html:63
+#: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
 msgid "Articles matching %1"
 msgstr ""
 
-#: share/html/Articles/Topics.html:131
+#: share/html/Articles/Topics.html:132
 msgid "Articles with no topics"
 msgstr ""
 
-#: share/html/Search/Elements/EditSort:32
+#: share/html/Search/Elements/EditSort:79
 msgid "Asc"
 msgstr ""
 
@@ -1212,11 +1212,11 @@ msgstr "Lampiran '%1' tidak dapat dipanggil"
 msgid "Attachment created"
 msgstr "Lampiran dibuat"
 
-#: lib/RT/Tickets.pm:2322
+#: lib/RT/Tickets.pm:2335
 msgid "Attachment filename"
 msgstr "Nama File Lampiran"
 
-#: share/html/Ticket/Elements/ShowAttachments:49 share/html/m/ticket/show:304
+#: share/html/Ticket/Elements/ShowAttachments:49 share/html/m/ticket/show:305
 msgid "Attachments"
 msgstr "Lampiran-lampiran"
 
@@ -1239,6 +1239,11 @@ msgstr "Agst."
 #: NOT FOUND IN SOURCE
 msgid "AuthSystem"
 msgstr "Sistem Otorisasi"
+
+#: share/html/Admin/Tools/Theme.html:277
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
+msgstr ""
 
 #: etc/initialdata:196
 msgid "Autoreply"
@@ -1269,7 +1274,7 @@ msgstr "Data buruk di dalam %1"
 msgid "Bad privacy for attribute %1"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:49 share/html/Articles/Article/Edit.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:54 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:252 share/html/Elements/Tabs:286 share/html/Elements/Tabs:303 share/html/Elements/Tabs:318 share/html/Elements/Tabs:357 share/html/Elements/Tabs:419 share/html/Elements/Tabs:459 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
+#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:253 share/html/Elements/Tabs:287 share/html/Elements/Tabs:304 share/html/Elements/Tabs:319 share/html/Elements/Tabs:358 share/html/Elements/Tabs:420 share/html/Elements/Tabs:460 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Dasar-dasar"
 
@@ -1309,7 +1314,7 @@ msgstr ""
 msgid "Bookmarkable link"
 msgstr "Menyimpan penunjuk link"
 
-#: share/html/Articles/Article/Search.html:104
+#: share/html/Articles/Article/Search.html:105
 msgid "Bookmarkable link for this search"
 msgstr ""
 
@@ -1317,7 +1322,7 @@ msgstr ""
 msgid "Bookmarked Tickets"
 msgstr ""
 
-#: share/html/m/_elements/menu:74
+#: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
 msgstr ""
 
@@ -1325,7 +1330,7 @@ msgstr ""
 msgid "Brief headers"
 msgstr "Catatan Atas Singkat"
 
-#: share/html/Articles/Topics.html:47 share/html/Articles/Topics.html:60
+#: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:61
 msgid "Browse by topic"
 msgstr ""
 
@@ -1333,7 +1338,7 @@ msgstr ""
 msgid "Browse the SQL queries made in this process"
 msgstr ""
 
-#: share/html/Elements/Tabs:610
+#: share/html/Elements/Tabs:613
 msgid "Bulk Update"
 msgstr ""
 
@@ -1354,7 +1359,7 @@ msgstr ""
 msgid "Can not load saved search \"%1\""
 msgstr ""
 
-#: lib/RT/User.pm:1388
+#: lib/RT/User.pm:1406
 msgid "Can not modify system users"
 msgstr "Tidak dapat mengubah sistem pengguna"
 
@@ -1415,7 +1420,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: lib/RT/ACE.pm:103 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:67 share/html/m/ticket/create:314 share/html/m/ticket/show:293
+#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:67 share/html/m/ticket/create:314 share/html/m/ticket/show:294
 msgid "Cc"
 msgstr "Cc"
 
@@ -1435,7 +1440,7 @@ msgstr ""
 msgid "Change password"
 msgstr "Ubah Sandi"
 
-#: share/html/Elements/Tabs:611
+#: share/html/Elements/Tabs:614
 msgid "Chart"
 msgstr ""
 
@@ -1463,7 +1468,7 @@ msgstr "Klik kotak ini untuk hapus"
 msgid "Check box to revoke right"
 msgstr "Klik kotak ini untuk menghilangkan hak-hak"
 
-#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:103 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:433 share/html/m/ticket/show:455
+#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:103 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:433 share/html/m/ticket/show:456
 msgid "Children"
 msgstr "Anak"
 
@@ -1471,7 +1476,7 @@ msgstr "Anak"
 msgid "Choose Database Engine"
 msgstr ""
 
-#: share/html/Articles/Elements/BeforeMessageBox:96
+#: share/html/Articles/Elements/BeforeMessageBox:97
 #. ($QueueObj->Name)
 msgid "Choose from Topics for %1"
 msgstr ""
@@ -1480,11 +1485,11 @@ msgstr ""
 msgid "City"
 msgstr "Kota"
 
-#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Elements/EditBasics:56 share/html/Articles/Article/Elements/ShowSearchCriteria:57 share/html/Elements/RT__Article/ColumnMap:75
+#: share/html/Articles/Article/Display.html:51 share/html/Articles/Article/Elements/EditBasics:57 share/html/Articles/Article/Elements/ShowSearchCriteria:58 share/html/Elements/RT__Article/ColumnMap:75
 msgid "Class"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/Modify.html:61
+#: share/html/Admin/Articles/Classes/Modify.html:62
 msgid "Class Name"
 msgstr ""
 
@@ -1492,16 +1497,16 @@ msgstr ""
 msgid "Class id"
 msgstr ""
 
-#: lib/RT/Class.pm:405
+#: lib/RT/Class.pm:406
 msgid "Class is already applied Globally"
 msgstr ""
 
-#: lib/RT/Class.pm:400
+#: lib/RT/Class.pm:401
 #. ($queue->Name)
 msgid "Class is already applied to %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:180
+#: share/html/Elements/Tabs:180 share/html/Elements/Tabs:354
 msgid "Classes"
 msgstr ""
 
@@ -1521,11 +1526,11 @@ msgstr ""
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:397
+#: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:398
 msgid "Closed"
 msgstr "Ditutup"
 
-#: share/html/Elements/Tabs:717 share/html/SelfService/Closed.html:48
+#: share/html/Elements/Tabs:720 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "Tiket sudah ditutup"
 
@@ -1541,7 +1546,7 @@ msgstr ""
 msgid "Combobox: Select or enter up to %1 values"
 msgstr ""
 
-#: share/html/Elements/Tabs:485 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:195
+#: share/html/Elements/Tabs:486 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:195
 msgid "Comment"
 msgstr "Komentar"
 
@@ -1641,7 +1646,7 @@ msgstr ""
 msgid "ContactInfoSystem"
 msgstr "Hubungi Sistem Info"
 
-#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:52 share/html/Articles/Article/Edit.html:67 share/html/Articles/Article/Elements/ShowSearchCriteria:70 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:420 share/html/Ticket/ModifyAll.html:113
+#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:421 share/html/Ticket/ModifyAll.html:113
 msgid "Content"
 msgstr "Isi"
 
@@ -1699,7 +1704,7 @@ msgstr ""
 msgid "Could not change owner. "
 msgstr "Tidak dapat mengubah pemilik tiket. "
 
-#: lib/RT/Ticket.pm:2937 lib/RT/Ticket.pm:2945 lib/RT/Ticket.pm:2962
+#: lib/RT/Ticket.pm:2930 lib/RT/Ticket.pm:2938 lib/RT/Ticket.pm:2955
 #. ($del_msg)
 #. ($add_msg)
 #. ($msg)
@@ -1720,7 +1725,7 @@ msgstr "Tidak dapat membuat Kolom Kustom:%1"
 msgid "Could not create group"
 msgstr "Tidak dapat membuat grup"
 
-#: share/html/Articles/Article/Search.html:194
+#: share/html/Articles/Article/Search.html:195
 #. ($msg)
 msgid "Could not create search: %1"
 msgstr ""
@@ -1730,24 +1735,24 @@ msgstr ""
 msgid "Could not create template: %1"
 msgstr "Tidak dapat membuat template: %1"
 
-#: lib/RT/Ticket.pm:286 lib/RT/Ticket.pm:836
+#: lib/RT/Ticket.pm:279 lib/RT/Ticket.pm:829
 msgid "Could not create ticket. Queue not set"
 msgstr "Tidak dapat membuat tiket. Antrian tidak dapat diatur"
 
-#: lib/RT/User.pm:193 lib/RT/User.pm:207 lib/RT/User.pm:216 lib/RT/User.pm:225 lib/RT/User.pm:234 lib/RT/User.pm:248 lib/RT/User.pm:258 lib/RT/User.pm:427
+#: lib/RT/User.pm:194 lib/RT/User.pm:208 lib/RT/User.pm:217 lib/RT/User.pm:226 lib/RT/User.pm:235 lib/RT/User.pm:249 lib/RT/User.pm:259 lib/RT/User.pm:428
 msgid "Could not create user"
 msgstr "Tidak dapat membuat pengguna"
 
-#: share/html/Articles/Article/Search.html:234
+#: share/html/Articles/Article/Search.html:235
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
 msgstr ""
 
-#: lib/RT/Queue.pm:927 lib/RT/Ticket.pm:1132
+#: lib/RT/Queue.pm:927 lib/RT/Ticket.pm:1125
 msgid "Could not find or create that user"
 msgstr "Tidak dapat menemukan atau membuat pengguna tersebut"
 
-#: lib/RT/Queue.pm:1000 lib/RT/Ticket.pm:1211
+#: lib/RT/Queue.pm:1000 lib/RT/Ticket.pm:1204
 msgid "Could not find that principal"
 msgstr "Tidak dapat menemukan prinsipal tersebut"
 
@@ -1783,7 +1788,7 @@ msgstr "Tidak dapat memanggil attribut pencarian"
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk antrian ini"
 
-#: lib/RT/Ticket.pm:1153
+#: lib/RT/Ticket.pm:1146
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk Tiket ini"
@@ -1793,12 +1798,12 @@ msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk Tiket ini"
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Tidak dapat menghapus prinsipal tersebut sebagai  %1 untuk antrian ini"
 
-#: lib/RT/Ticket.pm:1278
+#: lib/RT/Ticket.pm:1271
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
 msgstr ""
 
-#: lib/RT/User.pm:137
+#: lib/RT/User.pm:138
 msgid "Could not set user info"
 msgstr "Tidak dapat mengatur informasi pengguna"
 
@@ -1806,7 +1811,7 @@ msgstr "Tidak dapat mengatur informasi pengguna"
 msgid "Couldn't add attachment"
 msgstr ""
 
-#: lib/RT/Group.pm:949
+#: lib/RT/Group.pm:945
 msgid "Couldn't add member to group"
 msgstr "Tidak dapat menambah anggota ke grup"
 
@@ -1819,7 +1824,7 @@ msgstr ""
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr ""
 
-#: lib/RT/Template.pm:695
+#: lib/RT/Template.pm:696
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr ""
@@ -1848,7 +1853,7 @@ msgstr "Tidak dapat menemukan baris"
 msgid "Couldn't find suitable transaction, skipping"
 msgstr ""
 
-#: lib/RT/Group.pm:923
+#: lib/RT/Group.pm:919
 msgid "Couldn't find that principal"
 msgstr "Tidak dapat menemukan prinsipal tersebut"
 
@@ -1860,12 +1865,12 @@ msgstr "Tidak dapat menemukan nilai tersebut"
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Tidak dapat memanggil %1 dari database pengguna.\\n"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:65 share/html/Admin/Articles/Classes/UserRights.html:64 share/html/Admin/CustomFields/UserRights.html:66
+#: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
 msgid "Couldn't load Class %1"
 msgstr "Tidak dapat memanggil Kelas %1"
 
-#: lib/RT/CustomFieldValue.pm:144 lib/RT/CustomFieldValue.pm:87
+#: lib/RT/CustomFieldValue.pm:143 lib/RT/CustomFieldValue.pm:86
 #. ($cf_id)
 msgid "Couldn't load Custom Field #%1"
 msgstr ""
@@ -1880,7 +1885,7 @@ msgstr ""
 msgid "Couldn't load CustomField %1"
 msgstr "Tidak dapat memanggil Kolom Kustom %1"
 
-#: lib/RT/Ticket.pm:1728 lib/RT/Ticket.pm:1738
+#: lib/RT/Ticket.pm:1721 lib/RT/Ticket.pm:1771
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
@@ -1909,12 +1914,12 @@ msgstr "Tidak dapat memanggil grup %1"
 msgid "Couldn't load link"
 msgstr "Tidak dapat memanggil link"
 
-#: share/html/Admin/Articles/Classes/CustomFields.html:53 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
+#: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
 msgid "Couldn't load object %1"
 msgstr "Tidak dapat memanggil objek %1"
 
-#: lib/RT/Ticket.pm:460
+#: lib/RT/Ticket.pm:453
 #. ($msg)
 msgid "Couldn't load or create user: %1"
 msgstr ""
@@ -1953,7 +1958,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Tidak dapat memanggil pengguna tersebut (%1)"
 
-#: lib/RT/Interface/Web.pm:1693
+#: lib/RT/Interface/Web.pm:1708
 msgid "Couldn't load the specified principal"
 msgstr ""
 
@@ -1991,7 +1996,7 @@ msgstr ""
 msgid "Couldn't load user '%1'"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1059
+#: lib/RT/Ticket.pm:1052
 #. ($args{'Email'})
 msgid "Couldn't parse address from '%1' string"
 msgstr ""
@@ -2011,7 +2016,7 @@ msgstr ""
 msgid "Couldn't resolve '%1' into a Link."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2521
+#: lib/RT/Ticket.pm:2514
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
 msgstr ""
@@ -2030,16 +2035,16 @@ msgstr ""
 msgid "Couldn't send email"
 msgstr ""
 
-#: lib/RT/Ticket.pm:565
+#: lib/RT/Ticket.pm:558
 #. ($type, $msg)
 msgid "Couldn't set %1 watcher: %2"
 msgstr ""
 
-#: lib/RT/User.pm:1551
+#: lib/RT/User.pm:1569
 msgid "Couldn't set private key"
 msgstr ""
 
-#: lib/RT/User.pm:1535
+#: lib/RT/User.pm:1553
 msgid "Couldn't unset private key"
 msgstr ""
 
@@ -2047,7 +2052,7 @@ msgstr ""
 msgid "Country"
 msgstr "Negara"
 
-#: share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:101 share/html/Articles/Article/ExtractFromTicket.html:82 share/html/Articles/Article/ExtractIntoClass.html:67 share/html/Articles/Article/ExtractIntoTopic.html:59 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:105 share/html/Elements/ShowLinks:113 share/html/Elements/ShowLinks:127 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:83 share/html/Elements/ShowLinks:97 share/html/Elements/Tabs:128 share/html/Elements/Tabs:133 share/html/Elements/Tabs:137 share/html/Elements/Tabs:142 share/html/Elements/Tabs:149 share/html/Elements/Tabs:152 share/html/Elements/Tabs:183 share/html/Elements/Tabs:189 share/html/Elements/Tabs:238 share/html/Elements/Tabs:258 share/html/Elements/Tabs:263 share/html/Elements/Tabs:342 share/html/Elements/Tabs:355 share/html/Elements/Tabs:365 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:442
+#: share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:105 share/html/Elements/ShowLinks:113 share/html/Elements/ShowLinks:127 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:83 share/html/Elements/ShowLinks:97 share/html/Elements/Tabs:128 share/html/Elements/Tabs:133 share/html/Elements/Tabs:137 share/html/Elements/Tabs:142 share/html/Elements/Tabs:149 share/html/Elements/Tabs:152 share/html/Elements/Tabs:183 share/html/Elements/Tabs:189 share/html/Elements/Tabs:239 share/html/Elements/Tabs:259 share/html/Elements/Tabs:264 share/html/Elements/Tabs:343 share/html/Elements/Tabs:356 share/html/Elements/Tabs:366 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:442
 msgid "Create"
 msgstr "Dibuat"
 
@@ -2055,7 +2060,7 @@ msgstr "Dibuat"
 msgid "Create Tickets"
 msgstr "Buat Tiket"
 
-#: share/html/Admin/Articles/Classes/Modify.html:101
+#: share/html/Admin/Articles/Classes/Modify.html:102
 msgid "Create a Class"
 msgstr ""
 
@@ -2068,11 +2073,11 @@ msgstr "Buat Kolom Kustom"
 msgid "Create a CustomField for queue %1"
 msgstr "Buat Kolom Kustom untuk antrian %1"
 
-#: share/html/Articles/Article/Edit.html:121 share/html/Articles/Article/Edit.html:230
+#: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:231
 msgid "Create a new article"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractIntoClass.html:51
+#: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
 msgstr ""
 
@@ -2118,15 +2123,15 @@ msgstr "Buat template"
 msgid "Create a ticket"
 msgstr "Buat Tiket"
 
-#: share/html/Articles/Elements/CreateArticle:47
+#: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
 msgstr ""
 
-#: share/html/Articles/Article/PreCreate.html:47 share/html/Articles/Article/PreCreate.html:48
+#: share/html/Articles/Article/PreCreate.html:48 share/html/Articles/Article/PreCreate.html:49
 msgid "Create an article in class..."
 msgstr ""
 
-#: lib/RT/Class.pm:88
+#: lib/RT/Class.pm:89
 msgid "Create articles in this class"
 msgstr ""
 
@@ -2202,7 +2207,7 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: lib/RT/Class.pm:88
+#: lib/RT/Class.pm:89
 msgid "CreateArticle"
 msgstr ""
 
@@ -2226,7 +2231,7 @@ msgstr "Buat Pencarian yang Disimpan"
 msgid "CreateTicket"
 msgstr "Buat Tiket"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:98 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:94 share/html/m/ticket/show:372
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:94 share/html/m/ticket/show:373
 msgid "Created"
 msgstr "sudah Dibuat"
 
@@ -2240,11 +2245,11 @@ msgstr ""
 msgid "Created CustomField %1"
 msgstr "Kolom Kustom sudah dibuat %1"
 
-#: share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52
+#: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:190
+#: share/html/Articles/Article/Search.html:191
 #. ($search->Name)
 msgid "Created search %1"
 msgstr ""
@@ -2277,7 +2282,7 @@ msgstr "Hubungan Sekarang"
 msgid "Current Scrips"
 msgstr "Scrips Sekarang"
 
-#: share/html/Elements/Tabs:596
+#: share/html/Elements/Tabs:599
 msgid "Current Search"
 msgstr ""
 
@@ -2301,7 +2306,7 @@ msgstr "Kriteria pencarian sekarang"
 msgid "Current watchers"
 msgstr "Pengamat sekarang"
 
-#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:140 share/html/Elements/Tabs:154 share/html/Elements/Tabs:187 share/html/Elements/Tabs:218 share/html/Elements/Tabs:359 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:250
+#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:140 share/html/Elements/Tabs:154 share/html/Elements/Tabs:187 share/html/Elements/Tabs:219 share/html/Elements/Tabs:360 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
 msgid "Custom Fields"
 msgstr "Kolom Kustom"
 
@@ -2333,7 +2338,7 @@ msgstr "Kondisi kustom"
 msgid "Custom field #%1 is not applied to this object"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2748
+#: lib/RT/Tickets.pm:2761
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "Kolom kustom %1 %2 %3"
@@ -2343,12 +2348,12 @@ msgstr "Kolom kustom %1 %2 %3"
 msgid "Custom field %1 does not apply to this object"
 msgstr "Kolom kustom %1 tidak dapat digunakan untuk objek ini"
 
-#: lib/RT/Tickets.pm:2742
+#: lib/RT/Tickets.pm:2755
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Kolom kustom %1 memiliki nilai."
 
-#: lib/RT/Tickets.pm:2738
+#: lib/RT/Tickets.pm:2751
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Kolom kustom %1 tidak memiliki nilai."
@@ -2413,7 +2418,7 @@ msgstr ""
 msgid "Customize Email Configuration"
 msgstr ""
 
-#: share/html/Elements/Tabs:198
+#: share/html/Elements/Tabs:202
 msgid "Customize the look of your RT"
 msgstr ""
 
@@ -2425,7 +2430,7 @@ msgstr ""
 msgid "DBA username"
 msgstr ""
 
-#: lib/RT/Config.pm:448
+#: lib/RT/Config.pm:457
 msgid "Daily digest"
 msgstr ""
 
@@ -2479,7 +2484,7 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:95 share/html/Elements/Tabs:468 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:411 share/html/m/ticket/show:366
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:469 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:411 share/html/m/ticket/show:367
 msgid "Dates"
 msgstr "Tanggal"
 
@@ -2558,7 +2563,7 @@ msgstr "Hak-hak Utusan"
 msgid "Delegation"
 msgstr "Delegasi"
 
-#: share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:664 share/html/Elements/Tabs:684 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
+#: share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:667 share/html/Elements/Tabs:687 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "Hapus"
 
@@ -2566,12 +2571,12 @@ msgstr "Hapus"
 msgid "Delete Template"
 msgstr "Hapus Template"
 
-#: share/html/Articles/Article/Delete.html:102
+#: share/html/Articles/Article/Delete.html:103
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
 msgstr "Hapus artikel #%1"
 
-#: lib/RT/Class.pm:97
+#: lib/RT/Class.pm:98
 msgid "Delete articles in this class"
 msgstr ""
 
@@ -2584,7 +2589,7 @@ msgstr "Gagal dihapus: %1"
 msgid "Delete group dashboards"
 msgstr ""
 
-#: lib/RT/Ticket.pm:3158
+#: lib/RT/Ticket.pm:3151
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr ""
 
@@ -2608,7 +2613,7 @@ msgstr "Hapus tiket"
 msgid "Delete values"
 msgstr ""
 
-#: lib/RT/Class.pm:97
+#: lib/RT/Class.pm:98
 msgid "DeleteArticle"
 msgstr ""
 
@@ -2645,7 +2650,7 @@ msgstr ""
 msgid "Deleted search"
 msgstr "Pencarian dihapus"
 
-#: share/html/Articles/Article/Search.html:223
+#: share/html/Articles/Article/Search.html:224
 #. ($searchname)
 msgid "Deleted search %1"
 msgstr ""
@@ -2658,7 +2663,7 @@ msgstr "Menghapuskan objek ini dapat memutuskan integrasi referensial"
 msgid "Deleting this object would break referential integrity"
 msgstr "Menghapuskan objek ini dapat memutuskan integrasi referensial"
 
-#: lib/RT/User.pm:438
+#: lib/RT/User.pm:439
 msgid "Deleting this object would violate referential integrity"
 msgstr "Menghapuskan objek ini dapat melanggar integrasi referensial"
 
@@ -2666,7 +2671,7 @@ msgstr "Menghapuskan objek ini dapat melanggar integrasi referensial"
 msgid "Deny"
 msgstr "Ditolak"
 
-#: share/html/Elements/EditLinks:142 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:81 share/html/Ticket/Create.html:255 share/html/Ticket/Elements/BulkLinks:135 share/html/Ticket/Elements/BulkLinks:64 share/html/Ticket/Elements/ShowDependencies:56 share/html/m/ticket/create:431 share/html/m/ticket/show:441
+#: share/html/Elements/EditLinks:142 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:81 share/html/Ticket/Create.html:255 share/html/Ticket/Elements/BulkLinks:135 share/html/Ticket/Elements/BulkLinks:64 share/html/Ticket/Elements/ShowDependencies:56 share/html/m/ticket/create:431 share/html/m/ticket/show:442
 msgid "Depended on by"
 msgstr "Bergantung oleh"
 
@@ -2698,7 +2703,7 @@ msgstr "Ketergantungan oleh %1 sudah dihapus"
 msgid "DependentOn"
 msgstr ""
 
-#: share/html/Elements/EditLinks:138 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:254 share/html/Ticket/Elements/BulkLinks:131 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48 share/html/m/ticket/create:430 share/html/m/ticket/show:411
+#: share/html/Elements/EditLinks:138 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:254 share/html/Ticket/Elements/BulkLinks:131 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48 share/html/m/ticket/create:430 share/html/m/ticket/show:412
 msgid "Depends on"
 msgstr "Bergantung pada"
 
@@ -2706,7 +2711,7 @@ msgstr "Bergantung pada"
 msgid "DependsOn"
 msgstr ""
 
-#: share/html/Search/Elements/EditSort:37
+#: share/html/Search/Elements/EditSort:84
 msgid "Desc"
 msgstr ""
 
@@ -2718,11 +2723,11 @@ msgstr "Turun"
 msgid "Describe the issue below"
 msgstr "Gambarkan persoalan dibawah ini"
 
-#: share/html/Admin/Articles/Classes/Modify.html:65 share/html/Admin/Articles/Elements/Topics:59 share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/EditScrip:57 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:63 share/html/Elements/RT__Class/ColumnMap:64 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Scrip/ColumnMap:92 share/html/Elements/RT__Template/ColumnMap:66 share/html/Search/Elements/EditSearches:56
+#: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/EditScrip:57 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:63 share/html/Elements/RT__Class/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Scrip/ColumnMap:92 share/html/Elements/RT__Template/ColumnMap:66 share/html/Search/Elements/EditSearches:56
 msgid "Description"
 msgstr "Deskripsi"
 
-#: share/html/Elements/Tabs:202
+#: share/html/Elements/Tabs:200
 msgid "Detailed information about your RT setup"
 msgstr ""
 
@@ -2738,15 +2743,15 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: share/html/Elements/Tabs:442 share/html/Elements/Tabs:661 share/html/Search/Elements/EditFormat:71
+#: share/html/Elements/Tabs:443 share/html/Elements/Tabs:664 share/html/Search/Elements/EditFormat:71
 msgid "Display"
 msgstr "Tampilkan"
 
-#: lib/RT/Class.pm:95 lib/RT/Queue.pm:94
+#: lib/RT/Class.pm:96 lib/RT/Queue.pm:94
 msgid "Display Access Control List"
 msgstr "Tampilkan Daftar Kontrol Akses"
 
-#: share/html/SelfService/Article/Display.html:47
+#: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
 msgstr ""
@@ -2832,7 +2837,7 @@ msgstr ""
 msgid "Dropdown"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:127 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:197 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:418 share/html/m/ticket/show:388
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:418 share/html/m/ticket/show:389
 msgid "Due"
 msgstr "Batas Waktu"
 
@@ -2857,7 +2862,7 @@ msgstr ""
 msgid "Easy viewing of your reminders"
 msgstr ""
 
-#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:691 share/html/Ticket/Elements/ShowRequestor:126
+#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:694 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
 msgstr "Ubah"
 
@@ -2865,7 +2870,7 @@ msgstr "Ubah"
 msgid "Edit Custom Fields"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/CustomFields.html:58 share/html/Admin/Users/CustomFields.html:61
+#: share/html/Admin/Articles/Classes/CustomFields.html:59 share/html/Admin/Users/CustomFields.html:61
 #. ($Object->Name)
 msgid "Edit Custom Fields for %1"
 msgstr "Ubah Kolom Kustom untuk %1"
@@ -2882,7 +2887,7 @@ msgstr ""
 msgid "Edit Custom Fields for all users"
 msgstr "Ubah Kolom Kustom untuk semua pengguna"
 
-#: share/html/Admin/Global/CustomFields/Class-Article.html:51
+#: share/html/Admin/Global/CustomFields/Class-Article.html:52
 msgid "Edit Custom Fields for articles in all classes"
 msgstr ""
 
@@ -2902,7 +2907,7 @@ msgstr "Ubah Query"
 msgid "Edit Relationships"
 msgstr "Ubah Hubungan"
 
-#: share/html/Elements/Tabs:602
+#: share/html/Elements/Tabs:605
 msgid "Edit Search"
 msgstr ""
 
@@ -2910,7 +2915,7 @@ msgstr ""
 msgid "Edit Templates for queue %1"
 msgstr "Ubah Templates untuk antrian %1"
 
-#: share/html/Admin/Global/Topics.html:55
+#: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
 msgstr ""
 
@@ -2922,7 +2927,7 @@ msgstr "Ubah pencarian yang disimpan untuk grup ini"
 msgid "Edit system templates"
 msgstr "Ubah template sistem"
 
-#: share/html/Admin/Articles/Classes/Topics.html:59
+#: share/html/Admin/Articles/Classes/Topics.html:60
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
@@ -2931,7 +2936,7 @@ msgstr ""
 msgid "EditSavedSearches"
 msgstr "Ubah Pencarian yang Disimpan"
 
-#: share/html/Admin/Articles/Classes/Modify.html:113
+#: share/html/Admin/Articles/Classes/Modify.html:114
 #. ($ClassObj->Name)
 msgid "Editing Configuration for Class %1"
 msgstr ""
@@ -2963,7 +2968,7 @@ msgstr "Mengubah keanggotaan untuk grup pribadi %1"
 msgid "EffectiveId"
 msgstr ""
 
-#: lib/RT/Record.pm:1298 lib/RT/Record.pm:1377 lib/RT/Ticket.pm:2393 lib/RT/Ticket.pm:2486
+#: lib/RT/Record.pm:1298 lib/RT/Record.pm:1377 lib/RT/Ticket.pm:2386 lib/RT/Ticket.pm:2479
 msgid "Either base or target must be specified"
 msgstr "Baik dasar ataupun sasaran harus ditentukan"
 
@@ -2984,11 +2989,11 @@ msgstr ""
 msgid "Email Digest"
 msgstr ""
 
-#: lib/RT/User.pm:567
+#: lib/RT/User.pm:568
 msgid "Email address in use"
 msgstr "Alamat Email yang digunakan"
 
-#: lib/RT/Config.pm:445
+#: lib/RT/Config.pm:454
 msgid "Email delivery"
 msgstr ""
 
@@ -3008,7 +3013,7 @@ msgstr "Set Karakter Email"
 msgid "Enabled"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/Modify.html:70
+#: share/html/Admin/Articles/Classes/Modify.html:71
 msgid "Enabled (Unchecking this box disables this class)"
 msgstr ""
 
@@ -3024,7 +3029,7 @@ msgstr "Mengaktifkan (Klik kotak ini untuk menon-aktifkan grup ini)"
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "Mengaktifkan (Klik kotak ini untuk menon-aktifkan antrian ini)"
 
-#: share/html/Admin/Articles/Classes/index.html:79
+#: share/html/Admin/Articles/Classes/index.html:80
 msgid "Enabled Classes"
 msgstr ""
 
@@ -3036,7 +3041,7 @@ msgstr "Mengaktifkan Antrian"
 msgid "Enabled queues matching search criteria"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/Modify.html:144 share/html/Admin/Elements/EditCustomField:138
+#: share/html/Admin/Articles/Classes/Modify.html:145 share/html/Admin/Elements/EditCustomField:138
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Mengaktifkan status %1"
@@ -3070,7 +3075,7 @@ msgstr ""
 msgid "Encrypting enabled"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/EditLinks:49
+#: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
 msgstr ""
 
@@ -3154,7 +3159,7 @@ msgstr "Kesalahan di dalam parameter Ke Antrian->Hapus Pengamat"
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr "Kesalahan di dalam parameter ke Antrian->Hapus Pengamat"
 
-#: lib/RT/Ticket.pm:1091
+#: lib/RT/Ticket.pm:1084
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Kesalahan di dalam parameter ke Tiket->Tambah Pengamat"
 
@@ -3162,7 +3167,7 @@ msgstr "Kesalahan di dalam parameter ke Tiket->Tambah Pengamat"
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Kesalahan di dalam parameter ke Tiket->Hapus Pengamat"
 
-#: lib/RT/Ticket.pm:1245
+#: lib/RT/Ticket.pm:1238
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Kesalahan di dalam parameter ke Ticket->Hapus Pengamat"
 
@@ -3178,11 +3183,11 @@ msgstr ""
 msgid "Error: bad GnuPG data"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:199
+#: share/html/Articles/Article/Search.html:200
 msgid "Error: cannot change privacy value of existing search"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:162
+#: share/html/Articles/Article/Search.html:163
 #. ($ARGS{'LoadSavedSearch'}, $msg)
 msgid "Error: could not load saved search %1: %2"
 msgstr ""
@@ -3195,7 +3200,7 @@ msgstr ""
 msgid "Error: public key"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:214
+#: share/html/Articles/Article/Search.html:215
 #. ($search->Name, $msg)
 msgid "Error: search %1 not updated: %2"
 msgstr ""
@@ -3208,11 +3213,11 @@ msgstr "Meningkatkan Prioritas Tiket"
 msgid "Estimate"
 msgstr "Perkiraan"
 
-#: share/html/Ticket/Elements/ShowBasics:59 share/html/m/ticket/show:223
+#: share/html/Ticket/Elements/ShowBasics:59 share/html/m/ticket/show:224
 msgid "Estimated"
 msgstr "Diperkirakan"
 
-#: lib/RT/Handle.pm:641
+#: lib/RT/Handle.pm:647
 msgid "Everyone"
 msgstr "Setiap Orang"
 
@@ -3232,7 +3237,7 @@ msgstr ""
 msgid "ExtendedStatus"
 msgstr ""
 
-#: lib/RT/User.pm:940
+#: lib/RT/User.pm:958
 msgid "External authentication enabled."
 msgstr ""
 
@@ -3248,7 +3253,7 @@ msgstr "Kontak Info ID Eksternal"
 msgid "Extra info"
 msgstr "Info Tambahan"
 
-#: share/html/Elements/Tabs:533
+#: share/html/Elements/Tabs:534
 msgid "Extract Article"
 msgstr ""
 
@@ -3256,12 +3261,12 @@ msgstr ""
 msgid "Extract Subject Tag"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractIntoClass.html:47 share/html/Articles/Article/ExtractIntoTopic.html:47
+#: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 #. ($Ticket)
 msgid "Extract a new article from ticket #%1"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:47
+#: share/html/Articles/Article/ExtractFromTicket.html:48
 #. ($Ticket, $ClassObj->Name)
 msgid "Extract article from ticket #%1 into class %2"
 msgstr ""
@@ -3284,11 +3289,11 @@ msgstr ""
 msgid "Failed to create search attribute"
 msgstr "Gagal untuk membuat atribut pencarian"
 
-#: lib/RT/User.pm:318
+#: lib/RT/User.pm:319
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Gagal untuk menemukan pengguna pseudogroup yang memiliki 'Hak-hak Istimewa'."
 
-#: lib/RT/User.pm:325
+#: lib/RT/User.pm:326
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Gagal untuk menemukan pengguna pseudogroup yang tidak memiliki  'Hak-Hak Istimewa.'"
 
@@ -3328,11 +3333,11 @@ msgstr ""
 msgid "Feb."
 msgstr "Feb."
 
-#: share/html/Elements/Tabs:614
+#: share/html/Elements/Tabs:617
 msgid "Feeds"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:61
+#: share/html/Articles/Article/ExtractFromTicket.html:62
 msgid "Field"
 msgstr ""
 
@@ -3384,11 +3389,11 @@ msgstr "Isilah sampai %1 area teks"
 msgid "Fill in up to %1 wikitext areas"
 msgstr "Isilah sampai %1 area wikiteks"
 
-#: lib/RT/Tickets.pm:2228 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:381
+#: lib/RT/Tickets.pm:2241 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:381
 msgid "Final Priority"
 msgstr "Prioritas Akhir"
 
-#: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:918 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:99
 msgid "FinalPriority"
 msgstr "Prioritas Akhir"
 
@@ -3404,7 +3409,7 @@ msgstr "Cari grup yang"
 msgid "Find people whose"
 msgstr "Cari orang yang"
 
-#: share/html/Search/Results.html:131
+#: share/html/Search/Results.html:133
 msgid "Find tickets"
 msgstr "Cari tiket"
 
@@ -3416,7 +3421,7 @@ msgstr ""
 msgid "Finish"
 msgstr ""
 
-#: share/html/Elements/Tabs:549
+#: share/html/Elements/Tabs:550
 msgid "First"
 msgstr "Pertama"
 
@@ -3436,7 +3441,7 @@ msgstr "Diubah dengan paksa"
 msgid "Format"
 msgstr "Format"
 
-#: etc/initialdata:380 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:489 share/html/Ticket/Elements/ShowTransaction:202
+#: etc/initialdata:380 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:490 share/html/Ticket/Elements/ShowTransaction:202
 msgid "Forward"
 msgstr ""
 
@@ -3480,7 +3485,7 @@ msgstr ""
 msgid "Forwarded Transaction #%1 to %2"
 msgstr ""
 
-#: share/html/Search/Results.html:129 share/html/m/_elements/ticket_list:80
+#: share/html/Search/Results.html:131 share/html/m/_elements/ticket_list:80
 #. ($ticketcount)
 #. ($collection->Count)
 msgid "Found %quant(%1,ticket)"
@@ -3518,11 +3523,15 @@ msgstr ""
 msgid "Full headers"
 msgstr "Catatan Atas Lengkap"
 
+#: share/html/Admin/Tools/Theme.html:67
+msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
+msgstr ""
+
 #: lib/RT/Config.pm:192 lib/RT/Config.pm:259
 msgid "General"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:44
+#: share/html/Admin/Elements/EditRightsCategoryTabs:91
 msgid "General rights"
 msgstr ""
 
@@ -3543,6 +3552,10 @@ msgstr "Berikan ke %1"
 msgid "Global"
 msgstr "Global"
 
+#: share/html/Admin/Tools/Configuration.html:193
+msgid "Global Attributes"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Global Custom Fields"
 msgstr "Kolom Kustom Global"
@@ -3561,7 +3574,7 @@ msgstr ""
 msgid "Global template: %1"
 msgstr "Template Global: %1"
 
-#: share/html/Elements/Tabs:291
+#: share/html/Elements/Tabs:292
 msgid "GnuPG"
 msgstr ""
 
@@ -3591,7 +3604,7 @@ msgstr ""
 msgid "GnuPG public key(s) for %1"
 msgstr ""
 
-#: share/html/m/_elements/menu:68
+#: share/html/m/_elements/menu:67
 msgid "Go"
 msgstr "Ambil"
 
@@ -3599,7 +3612,7 @@ msgstr "Ambil"
 msgid "Go to user"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/index.html:68 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:73 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:88 share/html/Admin/Users/index.html:82 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:88
+#: share/html/Admin/Articles/Classes/index.html:69 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:73 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:88 share/html/Admin/Users/index.html:82 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:88
 msgid "Go!"
 msgstr "Ambil!"
 
@@ -3623,15 +3636,15 @@ msgstr ""
 msgid "Graphical charts are not available."
 msgstr ""
 
-#: lib/RT/Record.pm:934 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
+#: lib/RT/Record.pm:933 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
 msgid "Group"
 msgstr "Grup"
 
-#: share/html/Elements/Tabs:191 share/html/Elements/Tabs:271 share/html/Elements/Tabs:305 share/html/Elements/Tabs:319 share/html/Elements/Tabs:360
+#: share/html/Elements/Tabs:191 share/html/Elements/Tabs:272 share/html/Elements/Tabs:306 share/html/Elements/Tabs:320 share/html/Elements/Tabs:361
 msgid "Group Rights"
 msgstr "Hak Grup"
 
-#: lib/RT/Group.pm:929
+#: lib/RT/Group.pm:925
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
 msgstr "Grup sudah memiliki anggota: %1"
@@ -3653,7 +3666,7 @@ msgstr ""
 msgid "Group enabled"
 msgstr ""
 
-#: lib/RT/Group.pm:1085
+#: lib/RT/Group.pm:1081
 msgid "Group has no such member"
 msgstr "Grup tidak memiliki anggota terseperti ini"
 
@@ -3662,15 +3675,15 @@ msgstr "Grup tidak memiliki anggota terseperti ini"
 msgid "Group name '%1' is already in use"
 msgstr ""
 
-#: lib/RT/Group.pm:909 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1139 lib/RT/Ticket.pm:1217
+#: lib/RT/Group.pm:905 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1132 lib/RT/Ticket.pm:1210
 msgid "Group not found"
 msgstr "Grup tidak ditemukan"
 
-#: lib/RT/CustomField.pm:1585 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:130 share/html/Elements/Tabs:161 share/html/Elements/Tabs:217
+#: lib/RT/CustomField.pm:1585 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:130 share/html/Elements/Tabs:161 share/html/Elements/Tabs:218
 msgid "Groups"
 msgstr "Grup"
 
-#: lib/RT/Group.pm:935
+#: lib/RT/Group.pm:931
 msgid "Groups can't be members of their members"
 msgstr "Grup tidak bisa menjadi anggota dari mereka"
 
@@ -3686,7 +3699,7 @@ msgstr ""
 msgid "Groups the user is not member of (check box to add)"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowRequestor:122
+#: share/html/Ticket/Elements/ShowRequestor:123
 msgid "Groups this user belongs to"
 msgstr "Pengguna ini milik grup"
 
@@ -3715,7 +3728,7 @@ msgstr "Halo, %1"
 msgid "Help us set up some useful defaults for RT."
 msgstr ""
 
-#: share/html/Ticket/Elements/FoldStanzaJS:3
+#: share/html/Ticket/Elements/FoldStanzaJS:50
 msgid "Hide quoted text"
 msgstr ""
 
@@ -3723,11 +3736,11 @@ msgstr ""
 msgid "Hide ticket history by default"
 msgstr ""
 
-#: share/html/Elements/Tabs:288 share/html/Elements/Tabs:307 share/html/Elements/Tabs:444 share/html/Elements/Tabs:662 share/html/Elements/Tabs:678 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/Tabs:289 share/html/Elements/Tabs:308 share/html/Elements/Tabs:445 share/html/Elements/Tabs:665 share/html/Elements/Tabs:681 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Historis"
 
-#: share/html/Articles/Article/History.html:51
+#: share/html/Articles/Article/History.html:52
 #. ($id)
 msgid "History for article #%1"
 msgstr ""
@@ -3784,7 +3797,7 @@ msgstr "Saya tersesat"
 msgid "ISO"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2159 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:214
+#: lib/RT/Tickets.pm:2172 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
 msgid "Id"
 msgstr "Id"
 
@@ -3837,15 +3850,15 @@ msgstr "Gambar"
 msgid "Immutable field"
 msgstr "Kolom yang tetap"
 
-#: share/html/Ticket/Elements/ShowRequestor:164
+#: share/html/Ticket/Elements/ShowRequestor:165
 msgid "Inactive Tickets"
 msgstr ""
 
-#: share/html/Articles/Elements/BeforeMessageBox:58
+#: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/index.html:67
+#: share/html/Admin/Articles/Classes/index.html:68
 msgid "Include disabled classes in listing."
 msgstr ""
 
@@ -3869,7 +3882,7 @@ msgstr "Termasuk menon-aktifkan pengguna di dalam pencarian."
 msgid "Include page"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:139
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:140
 msgid "Include subtopics"
 msgstr ""
 
@@ -3881,7 +3894,7 @@ msgstr "Query tidak lengkap"
 msgid "Incomplete query"
 msgstr "query tidak lengkap"
 
-#: lib/RT/Config.pm:447
+#: lib/RT/Config.pm:456
 msgid "Individual messages"
 msgstr ""
 
@@ -3909,11 +3922,11 @@ msgstr ""
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2205 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets.pm:2218 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "Prioritas Awal"
 
-#: lib/RT/Ticket.pm:924 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:917 lib/RT/Ticket.pm:919 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:99
 msgid "InitialPriority"
 msgstr "Prioritas Awal"
 
@@ -3939,7 +3952,7 @@ msgstr "Kesalahan Input"
 msgid "Input must match %1"
 msgstr ""
 
-#: lib/RT/Article.pm:281 lib/RT/Article.pm:290 lib/RT/Article.pm:299 lib/RT/Article.pm:308 lib/RT/Article.pm:317 lib/RT/Ticket.pm:3378
+#: lib/RT/Article.pm:281 lib/RT/Article.pm:290 lib/RT/Article.pm:299 lib/RT/Article.pm:308 lib/RT/Article.pm:317 lib/RT/Ticket.pm:3371
 msgid "Internal Error"
 msgstr "Kesalahan Internal"
 
@@ -3953,7 +3966,12 @@ msgstr "Kesalahan Internal: %1"
 msgid "Internal error: %1"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:165
+#: share/html/Admin/Elements/EditRights:125
+#. ($type)
+msgid "Invalid %1"
+msgstr ""
+
+#: share/html/Articles/Article/Search.html:166
 #. ('LoadSavedSearch')
 msgid "Invalid %1 argument"
 msgstr ""
@@ -3981,7 +3999,7 @@ msgstr ""
 msgid "Invalid Group Type"
 msgstr "Tipe Grup tidak valid"
 
-#: lib/RT/Class.pm:394
+#: lib/RT/Class.pm:395
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
 msgstr ""
@@ -4025,20 +4043,20 @@ msgstr "Antrian tidak valid"
 msgid "Invalid queue role group type %1"
 msgstr ""
 
-#: lib/RT/ACE.pm:277
+#: lib/RT/ACE.pm:275
 msgid "Invalid right"
 msgstr "Hak tidak valid"
 
-#: lib/RT/ACE.pm:142 lib/RT/ACE.pm:265
+#: lib/RT/ACE.pm:140 lib/RT/ACE.pm:263
 #. ($args{'RightName'})
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr ""
 
-#: lib/RT/User.pm:557
+#: lib/RT/User.pm:558
 msgid "Invalid syntax for email address"
 msgstr ""
 
-#: lib/RT/Record.pm:280 lib/RT/Ticket.pm:404
+#: lib/RT/Record.pm:280 lib/RT/Ticket.pm:397
 #. ($key)
 #. (loc('owner'))
 msgid "Invalid value for %1"
@@ -4096,7 +4114,7 @@ msgstr ""
 msgid "Jul."
 msgstr "Jul."
 
-#: share/html/Elements/Tabs:473
+#: share/html/Elements/Tabs:474
 msgid "Jumbo"
 msgstr "Jumbo"
 
@@ -4129,11 +4147,11 @@ msgstr "Bahasa"
 msgid "Large"
 msgstr "Besar"
 
-#: share/html/Elements/Tabs:558
+#: share/html/Elements/Tabs:559
 msgid "Last"
 msgstr "Akhir"
 
-#: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:62 share/html/m/ticket/show:384
+#: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:62 share/html/m/ticket/show:385
 msgid "Last Contact"
 msgstr "Kontak Terakhir"
 
@@ -4153,7 +4171,7 @@ msgstr "Pembaharuan Terakhir"
 msgid "Last Updated By"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:106
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
 msgstr ""
 
@@ -4186,7 +4204,7 @@ msgstr ""
 msgid "Leave this alone to use the default dba username for your database type"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowBasics:71 share/html/m/ticket/show:235
+#: share/html/Ticket/Elements/ShowBasics:71 share/html/m/ticket/show:236
 msgid "Left"
 msgstr "Kirim"
 
@@ -4259,11 +4277,11 @@ msgstr ""
 msgid "LinkedTo"
 msgstr ""
 
-#: lib/RT/Ticket.pm:632
+#: lib/RT/Ticket.pm:625
 msgid "Linking. Permission denied"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:55 share/html/Articles/Article/Edit.html:78 share/html/Articles/Article/Elements/ShowSearchCriteria:116 share/html/Elements/Tabs:469 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:424 share/html/m/ticket/show:408
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:470 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:424 share/html/m/ticket/show:409
 msgid "Links"
 msgstr "Link-link"
 
@@ -4271,11 +4289,11 @@ msgstr "Link-link"
 msgid "List"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:69 share/html/Articles/Article/Search.html:67 share/html/Search/Elements/EditSearches:80
+#: share/html/Articles/Article/Elements/ShowSavedSearches:70 share/html/Articles/Article/Search.html:68 share/html/Search/Elements/EditSearches:80
 msgid "Load"
 msgstr "Memanggil"
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:67
+#: share/html/Articles/Article/Elements/ShowSavedSearches:68
 msgid "Load a saved search"
 msgstr ""
 
@@ -4283,7 +4301,7 @@ msgstr ""
 msgid "Load saved search"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:65
+#: share/html/Articles/Article/Search.html:66
 msgid "Load saved search:"
 msgstr "Memanggil pencarian yang disimpan:"
 
@@ -4301,7 +4319,7 @@ msgstr ""
 msgid "Loaded original \"%1\" saved search"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:193
+#: share/html/Admin/Tools/Configuration.html:217
 msgid "Loaded perl modules"
 msgstr "Memanggil modul perl"
 
@@ -4334,7 +4352,7 @@ msgstr "Lokasi"
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Direktori Log %1 tidak ditemukan atau tidak dapat ditulis.\\n RT tidak dapat dijalankan."
 
-#: lib/RT/Interface/Web.pm:622
+#: lib/RT/Interface/Web.pm:633
 msgid "Logged in"
 msgstr ""
 
@@ -4342,7 +4360,7 @@ msgstr ""
 msgid "Logged in as %1"
 msgstr "Masuk sebagai %1"
 
-#: share/html/Elements/Tabs:382 share/html/Elements/Tabs:726
+#: share/html/Elements/Tabs:383 share/html/Elements/Tabs:729
 #. ($session{'CurrentUser'}->Name)
 msgid "Logged in as <span class=\"current-user\">%1</span>"
 msgstr ""
@@ -4360,7 +4378,7 @@ msgstr "Login"
 msgid "LogoAltText"
 msgstr ""
 
-#: share/html/Elements/Tabs:411 share/html/Elements/Tabs:738 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:108
+#: share/html/Elements/Tabs:412 share/html/Elements/Tabs:741 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Logout"
 
@@ -4368,7 +4386,7 @@ msgstr "Logout"
 msgid "Lookup type mismatch"
 msgstr "Mencari tipe yang tidak sesuai (mismatch)"
 
-#: lib/RT/Config.pm:440 lib/RT/Config.pm:455
+#: lib/RT/Config.pm:449 lib/RT/Config.pm:464
 msgid "Mail"
 msgstr ""
 
@@ -4444,7 +4462,7 @@ msgstr ""
 msgid "Manage users and passwords"
 msgstr "Mengatur pengguna dan sandi"
 
-#: lib/RT/Ticket.pm:1720
+#: lib/RT/Ticket.pm:1713
 msgid "Mapping between queues' lifecycles is incomplete. Contact your system administrator."
 msgstr ""
 
@@ -4456,7 +4474,7 @@ msgstr ""
 msgid "Mar."
 msgstr "Mar."
 
-#: share/html/Ticket/Display.html:181 share/html/m/ticket/show:124
+#: share/html/Ticket/Display.html:182 share/html/m/ticket/show:125
 msgid "Marked all messages as seen"
 msgstr ""
 
@@ -4498,16 +4516,16 @@ msgstr "Anggota %1 sudah ditambah"
 msgid "Member %1 deleted"
 msgstr "Anggota %1 sudah dihapus"
 
-#: lib/RT/Group.pm:946
+#: lib/RT/Group.pm:942
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
 msgstr "Anggota sudah ditambah: %1"
 
-#: lib/RT/Group.pm:1092
+#: lib/RT/Group.pm:1088
 msgid "Member deleted"
 msgstr "Anggota sudah dihapus"
 
-#: lib/RT/Group.pm:1096
+#: lib/RT/Group.pm:1092
 msgid "Member not deleted"
 msgstr "Anggota tidak dihapus"
 
@@ -4519,7 +4537,7 @@ msgstr "Anggota dari"
 msgid "MemberOf"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:304 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:305 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "Members"
 msgstr "Anggota-anggota"
 
@@ -4533,7 +4551,7 @@ msgstr "Keanggotaan di dalam %1 sudah ditambah"
 msgid "Membership in %1 deleted"
 msgstr "Keanggotaan di dalam %1 sudah dihapus"
 
-#: share/html/Elements/Tabs:287
+#: share/html/Elements/Tabs:288
 msgid "Memberships"
 msgstr "Keanggotaan"
 
@@ -4542,15 +4560,15 @@ msgstr "Keanggotaan"
 msgid "Memberships of the user %1"
 msgstr "Keanggotaan dari pengguna %1"
 
-#: lib/RT/Ticket.pm:2632
+#: lib/RT/Ticket.pm:2625
 msgid "Merge Successful"
 msgstr "Penggabungan Berhasil"
 
-#: lib/RT/Ticket.pm:2653
+#: lib/RT/Ticket.pm:2646
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Penggabungan gagal. Tidak dapat mengatur EffectiveId"
 
-#: lib/RT/Ticket.pm:2667
+#: lib/RT/Ticket.pm:2660
 msgid "Merge failed. Couldn't set Status"
 msgstr "Penggabungan gagal. Tidak dapat mengatur Status"
 
@@ -4591,7 +4609,7 @@ msgstr ""
 msgid "Message box wrapping"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2233
+#: lib/RT/Ticket.pm:2226
 msgid "Message could not be recorded"
 msgstr "Pesan tidak dapat dicatat"
 
@@ -4599,7 +4617,7 @@ msgstr "Pesan tidak dapat dicatat"
 msgid "Message for user"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2236
+#: lib/RT/Ticket.pm:2229
 msgid "Message recorded"
 msgstr "Pesan sudah dicatat"
 
@@ -4615,7 +4633,7 @@ msgstr ""
 msgid "Minutes"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:58
+#: share/html/Admin/Elements/EditRightsCategoryTabs:105
 msgid "Miscellaneous"
 msgstr ""
 
@@ -4639,11 +4657,11 @@ msgstr ""
 msgid "MobilePhone"
 msgstr "Handphone"
 
-#: share/html/Elements/Tabs:663 share/html/Elements/Tabs:681 share/html/m/_elements/ticket_menu:67
+#: share/html/Elements/Tabs:666 share/html/Elements/Tabs:684 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr ""
 
-#: lib/RT/Class.pm:96
+#: lib/RT/Class.pm:97
 msgid "Modify Access Control List"
 msgstr "Mengubah Daftar Kontrol Akses"
 
@@ -4705,7 +4723,7 @@ msgstr "Mengubah scrip untuk antrian %1"
 msgid "Modify a scrip that applies to all queues"
 msgstr "Mengubah scrip  yang dapat digunakan di seluruh antrian"
 
-#: share/html/Articles/Article/Edit.html:208 share/html/Articles/Article/Edit.html:316
+#: share/html/Articles/Article/Edit.html:209 share/html/Articles/Article/Edit.html:317
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
 msgstr ""
@@ -4742,7 +4760,7 @@ msgstr "Mengubah hak grup global"
 msgid "Modify global group rights."
 msgstr "Mengubah hak grup global."
 
-#: share/html/Admin/Global/Topics.html:54
+#: share/html/Admin/Global/Topics.html:55
 msgid "Modify global topics"
 msgstr ""
 
@@ -4766,7 +4784,7 @@ msgstr ""
 msgid "Modify group metadata or delete group"
 msgstr "Mengubah grup metadata atau menghapus grup"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:47
+#: share/html/Admin/Articles/Classes/GroupRights.html:48
 #. ($ClassObj->Name)
 msgid "Modify group rights for Class %1"
 msgstr ""
@@ -4790,7 +4808,7 @@ msgstr "Mengubah hak grup untuk antrian %1"
 msgid "Modify membership roster for this group"
 msgstr "Mengubah daftar nama keanggotaan untuk grup ini"
 
-#: lib/RT/Class.pm:93
+#: lib/RT/Class.pm:94
 msgid "Modify metadata and custom fields for this class"
 msgstr ""
 
@@ -4798,7 +4816,7 @@ msgstr ""
 msgid "Modify one's own RT account"
 msgstr "Mengubah pemilik account RT"
 
-#: lib/RT/Class.pm:91
+#: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
 msgstr ""
 
@@ -4880,7 +4898,7 @@ msgstr ""
 msgid "Modify the user %1"
 msgstr "Mengubah pengguna %1"
 
-#: share/html/Articles/Article/Search.html:77
+#: share/html/Articles/Article/Search.html:78
 msgid "Modify this search..."
 msgstr ""
 
@@ -4902,20 +4920,20 @@ msgstr ""
 msgid "Modify tickets"
 msgstr "Mengubah tiket-tiket"
 
-#: share/html/Admin/Articles/Classes/Topics.html:58
+#: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
 msgid "Modify topic for %1"
 msgstr ""
 
-#: lib/RT/Class.pm:94
+#: lib/RT/Class.pm:95
 msgid "Modify topic hierarchy associated with this class"
 msgstr ""
 
-#: lib/RT/Class.pm:92
+#: lib/RT/Class.pm:93
 msgid "Modify topics for articles in this class"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/UserRights.html:47
+#: share/html/Admin/Articles/Classes/UserRights.html:48
 #. ($ClassObj->Name)
 msgid "Modify user rights for class %1"
 msgstr ""
@@ -4940,15 +4958,15 @@ msgstr "Mengubah hak pengguna untuk antrian %1"
 msgid "Modify who receives mail for ticket #%1"
 msgstr ""
 
-#: lib/RT/Class.pm:96 lib/RT/Queue.pm:95
+#: lib/RT/Class.pm:97 lib/RT/Queue.pm:95
 msgid "ModifyACL"
 msgstr "Mengubah ACL"
 
-#: lib/RT/Class.pm:91
+#: lib/RT/Class.pm:92
 msgid "ModifyArticle"
 msgstr ""
 
-#: lib/RT/Class.pm:92
+#: lib/RT/Class.pm:93
 msgid "ModifyArticleTopics"
 msgstr ""
 
@@ -4996,7 +5014,7 @@ msgstr "Mengubah Tiket"
 msgid "ModifyTicketStatus"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:196
+#: share/html/Admin/Tools/Configuration.html:220
 msgid "Module"
 msgstr ""
 
@@ -5040,7 +5058,7 @@ msgstr "Pindah ke atas"
 msgid "Multiple"
 msgstr "Beberapa"
 
-#: lib/RT/User.pm:165
+#: lib/RT/User.pm:166
 msgid "Must specify 'Name' attribute"
 msgstr "Harus menentukan 'Nama' attribut"
 
@@ -5069,11 +5087,11 @@ msgstr "Izinku"
 msgid "My dashboards"
 msgstr ""
 
-#: share/html/Tools/MyReminders.html:48
+#: share/html/Elements/MyReminders:51 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/SelectSavedSearches:53 share/html/Elements/SavedSearches:54 share/html/Search/Elements/SearchPrivacy:55
+#: share/html/Articles/Article/Elements/SelectSavedSearches:54 share/html/Elements/SavedSearches:54 share/html/Search/Elements/SearchPrivacy:55
 msgid "My saved searches"
 msgstr "Pencarian yang kusimpan"
 
@@ -5085,19 +5103,19 @@ msgstr ""
 msgid "NEWLINE"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:58 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:48 share/html/Articles/Article/Elements/ShowSearchCriteria:62 share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Dashboards/Modify.html:63 share/html/Elements/RT__Article/ColumnMap:60 share/html/Elements/RT__Class/ColumnMap:59 share/html/Elements/RT__Dashboard/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:171
+#: share/html/Admin/CustomFields/Modify.html:58 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:196 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/RT__Article/ColumnMap:60 share/html/Elements/RT__Class/ColumnMap:60 share/html/Elements/RT__Dashboard/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:171
 msgid "Name"
 msgstr "Nama"
 
-#: lib/RT/Article.pm:115 lib/RT/User.pm:172
+#: lib/RT/Article.pm:115 lib/RT/User.pm:173
 msgid "Name in use"
 msgstr "Nama yang digunakan"
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:54
+#: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:402
+#: share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 msgid "Never"
 msgstr "Tidak pernah"
 
@@ -5105,7 +5123,7 @@ msgstr "Tidak pernah"
 msgid "New"
 msgstr "Baru"
 
-#: share/html/Elements/Tabs:671
+#: share/html/Elements/Tabs:674
 msgid "New Article"
 msgstr ""
 
@@ -5158,7 +5176,7 @@ msgstr ""
 msgid "New password"
 msgstr "Sandi Baru"
 
-#: lib/RT/User.pm:744
+#: lib/RT/User.pm:745
 msgid "New password notification sent"
 msgstr "Kirim Pemberitahuan Sandi Baru"
 
@@ -5166,7 +5184,7 @@ msgstr "Kirim Pemberitahuan Sandi Baru"
 msgid "New queue"
 msgstr "Antrian Baru"
 
-#: share/html/Ticket/Elements/Reminders:161
+#: share/html/Ticket/Elements/Reminders:114
 msgid "New reminder:"
 msgstr ""
 
@@ -5182,15 +5200,15 @@ msgstr "Scrip Baru"
 msgid "New template"
 msgstr "Template Baru"
 
-#: share/html/Elements/Tabs:719 share/html/Elements/Tabs:721 share/html/m/_elements/menu:71
+#: share/html/Elements/Tabs:722 share/html/Elements/Tabs:724 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "Tiket Baru"
 
-#: lib/RT/Ticket.pm:2613
+#: lib/RT/Ticket.pm:2606
 msgid "New ticket doesn't exist"
 msgstr "Tidak ada Tiket baru"
 
-#: lib/RT/Ticket.pm:318
+#: lib/RT/Ticket.pm:311
 #. ($self->loc($args{'Status'}))
 msgid "New tickets can not have status '%1' in this queue."
 msgstr ""
@@ -5211,7 +5229,7 @@ msgstr "Pengamat Baru"
 msgid "New window setting"
 msgstr "Setting Window Baru"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:556 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
+#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:557 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "Berikutnya"
 
@@ -5227,7 +5245,7 @@ msgstr "Nama Panggilan"
 msgid "Nickname"
 msgstr "Nama Panggilan"
 
-#: share/html/Articles/Article/Delete.html:63 share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Widgets/Form/Boolean:79
+#: share/html/Articles/Article/Delete.html:64 share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Widgets/Form/Boolean:79
 msgid "No"
 msgstr ""
 
@@ -5236,16 +5254,16 @@ msgstr ""
 msgid "No %1 loaded"
 msgstr ""
 
-#: share/html/SelfService/Article/Search.html:65
+#: share/html/SelfService/Article/Search.html:66
 #. ($Articles_Content)
 msgid "No Articles match %1"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:61 share/html/Admin/Articles/Classes/UserRights.html:60 share/html/Admin/CustomFields/UserRights.html:62
+#: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61 share/html/Admin/CustomFields/UserRights.html:62
 msgid "No Class defined"
 msgstr "Tidak ada Kelas yang didefinisikan"
 
-#: share/html/Admin/Articles/Classes/index.html:53
+#: share/html/Admin/Articles/Classes/index.html:54
 msgid "No Classes matching search criteria found."
 msgstr ""
 
@@ -5326,7 +5344,7 @@ msgstr ""
 msgid "No keys for this address"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2176
+#: lib/RT/Ticket.pm:2169
 msgid "No message attached"
 msgstr "Tidak ada pesan yang dilampirkan"
 
@@ -5338,7 +5356,7 @@ msgstr ""
 msgid "No need to encrypt"
 msgstr ""
 
-#: lib/RT/User.pm:813
+#: lib/RT/User.pm:814
 msgid "No password set"
 msgstr "Tidak ada pengaturan Sandi"
 
@@ -5346,7 +5364,7 @@ msgstr "Tidak ada pengaturan Sandi"
 msgid "No permission to create queues"
 msgstr "Tidak ada izin untuk membuat antrian"
 
-#: lib/RT/Ticket.pm:300 lib/RT/Ticket.pm:849
+#: lib/RT/Ticket.pm:293 lib/RT/Ticket.pm:842
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Tidak ada izin untuk membuat tiket ini di dalam antrian '%1'"
@@ -5359,19 +5377,27 @@ msgstr "Tidak ada izin untuk membuat pengguna"
 msgid "No permission to display that ticket"
 msgstr "Tidak ada izin untuk menampilkan tiket tersebut"
 
+#: share/html/Articles/Article/Delete.html:94
+msgid "No permission to modify article"
+msgstr ""
+
 #: share/html/Search/Elements/EditSearches:243
 msgid "No permission to save system-wide searches"
 msgstr ""
 
-#: lib/RT/User.pm:1292
+#: lib/RT/User.pm:1310
 msgid "No permission to set preferences"
+msgstr ""
+
+#: share/html/Articles/Article/Edit.html:324
+msgid "No permission to view Article"
 msgstr ""
 
 #: share/html/SelfService/Update.html:101
 msgid "No permission to view update ticket"
 msgstr "Tidak ada izin untuk menampilkan tiket yang sudah diperbaharui"
 
-#: lib/RT/Queue.pm:979 lib/RT/Ticket.pm:1196
+#: lib/RT/Queue.pm:979 lib/RT/Ticket.pm:1189
 msgid "No principal specified"
 msgstr "Tidak ada prinsipal yang ditentukan"
 
@@ -5387,11 +5413,11 @@ msgstr ""
 msgid "No queues matching search criteria found."
 msgstr "Antrian yang sesuai dengan kriteria pencarian tidak ditemukan."
 
-#: lib/RT/ACE.pm:219
+#: lib/RT/ACE.pm:217
 msgid "No right specified"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:18 share/html/Admin/Elements/SelectRights:110
+#: share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "No rights found"
 msgstr "Tidak ada hak-hak yang ditemukan"
 
@@ -5411,7 +5437,7 @@ msgstr "Tidak ada pencarian untuk dijalankan di."
 msgid "No subject"
 msgstr "Tidak ada subjek"
 
-#: lib/RT/User.pm:1543
+#: lib/RT/User.pm:1561
 msgid "No such key or it's not suitable for signing"
 msgstr ""
 
@@ -5463,7 +5489,7 @@ msgstr ""
 msgid "Not logged in."
 msgstr "Belum log in"
 
-#: lib/RT/Date.pm:399 share/html/Elements/ShowReminders:72 share/html/Ticket/Elements/Reminders:212
+#: lib/RT/Date.pm:399 share/html/Elements/ShowReminders:72 share/html/Ticket/Elements/Reminders:165
 msgid "Not set"
 msgstr "Belum diatur"
 
@@ -5479,7 +5505,7 @@ msgstr "Belum diimplementasikan."
 msgid "Notes"
 msgstr "Catatan"
 
-#: lib/RT/User.pm:746
+#: lib/RT/User.pm:747
 msgid "Notification could not be sent"
 msgstr "Pemberitahuan tidak dapat dikirimkan"
 
@@ -5700,7 +5726,7 @@ msgstr "Pada Perubahan Status"
 msgid "On Transaction"
 msgstr "Pada Transaksi"
 
-#: share/html/Ticket/Elements/UpdateCc:68 share/html/m/ticket/reply:97
+#: share/html/Ticket/Elements/UpdateCc:69 share/html/m/ticket/reply:97
 msgid "One-time Bcc"
 msgstr ""
 
@@ -5738,7 +5764,7 @@ msgstr ""
 msgid "Open it"
 msgstr "Buka ini"
 
-#: share/html/Elements/Tabs:716 share/html/SelfService/index.html:48
+#: share/html/Elements/Tabs:719 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "Buka tiket"
 
@@ -5758,7 +5784,7 @@ msgstr "Buka tiket pada korespondensi"
 msgid "Option"
 msgstr ""
 
-#: share/html/Elements/Tabs:391 share/html/Prefs/MyRT.html:67
+#: share/html/Elements/Tabs:392 share/html/Prefs/MyRT.html:67
 msgid "Options"
 msgstr ""
 
@@ -5766,7 +5792,7 @@ msgstr ""
 msgid "Oracle"
 msgstr ""
 
-#: share/html/Search/Elements/EditSort:8
+#: share/html/Search/Elements/EditSort:55
 msgid "Order by"
 msgstr "Diurutkan sesuai"
 
@@ -5791,7 +5817,7 @@ msgstr "Email yang keluar mengenai komentar yang dicatat"
 msgid "Outgoing email recorded"
 msgstr "Email keluar yang dicatat"
 
-#: lib/RT/Config.pm:460
+#: lib/RT/Config.pm:469
 msgid "Outgoing mail"
 msgstr ""
 
@@ -5811,21 +5837,21 @@ msgstr "Memiliki tiket-tiket"
 msgid "OwnTicket"
 msgstr "Memiliki tiket"
 
-#: lib/RT/ACE.pm:101 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2377 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Elements/Reminders:173 share/html/Ticket/Elements/Reminders:195 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:93 share/html/m/ticket/create:297 share/html/m/ticket/reply:63 share/html/m/ticket/show:284
+#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2390 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:93 share/html/m/ticket/create:297 share/html/m/ticket/reply:63 share/html/m/ticket/show:285
 msgid "Owner"
 msgstr "Pemilik"
 
-#: lib/RT/Ticket.pm:661
+#: lib/RT/Ticket.pm:654
 #. ($DeferOwner->Name)
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2975
+#: lib/RT/Ticket.pm:2968
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
 msgstr ""
 
-#: lib/RT/Ticket.pm:403 lib/RT/Ticket.pm:418
+#: lib/RT/Ticket.pm:396 lib/RT/Ticket.pm:411
 msgid "Owner could not be set."
 msgstr "Pemilik tidak dapat diatur."
 
@@ -5871,7 +5897,7 @@ msgstr ""
 msgid "PagerPhone"
 msgstr "Pager"
 
-#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:95 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:432 share/html/m/ticket/show:451
+#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:95 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:432 share/html/m/ticket/show:452
 msgid "Parents"
 msgstr "Induk"
 
@@ -5883,15 +5909,15 @@ msgstr "Sandi"
 msgid "Password Reminder"
 msgstr "Pengingat Sandi"
 
-#: lib/RT/Transaction.pm:884 lib/RT/User.pm:824
+#: lib/RT/Transaction.pm:884 lib/RT/User.pm:825
 msgid "Password changed"
 msgstr "Sandi sudah diubah"
 
-#: lib/RT/User.pm:790
+#: lib/RT/User.pm:791
 msgid "Password has not been set."
 msgstr ""
 
-#: lib/RT/User.pm:283
+#: lib/RT/User.pm:284
 #. (RT->Config->Get('MinimumPasswordLength'))
 msgid "Password needs to be at least %1 characters long"
 msgstr "Minimal sandi memerlukan paling sedikit %1 karakter"
@@ -5900,7 +5926,7 @@ msgstr "Minimal sandi memerlukan paling sedikit %1 karakter"
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:823
+#: lib/RT/User.pm:824
 msgid "Password set"
 msgstr ""
 
@@ -5913,7 +5939,7 @@ msgstr "Sandi terlalu singkat"
 msgid "Password: %1"
 msgstr "Sandi: %1"
 
-#: lib/RT/User.pm:809
+#: lib/RT/User.pm:810
 msgid "Password: Permission Denied"
 msgstr ""
 
@@ -5921,7 +5947,7 @@ msgstr ""
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:786
+#: lib/RT/User.pm:787
 msgid "Passwords do not match."
 msgstr "Sandi tidak sesuai."
 
@@ -5933,7 +5959,7 @@ msgstr "Sandi tidak sesuai. Sandi anda belum diganti"
 msgid "Path to sendmail"
 msgstr ""
 
-#: share/html/Elements/Tabs:464 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:280
+#: share/html/Elements/Tabs:465 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
 msgid "People"
 msgstr "Orang-Orang"
 
@@ -5950,7 +5976,7 @@ msgstr "Menampilkan aksi pengguna yang belum didefinisikan"
 msgid "Perl"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:228
+#: share/html/Admin/Tools/Configuration.html:252
 msgid "Perl configuration"
 msgstr "Konfigurasi Perl"
 
@@ -5962,7 +5988,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:251 lib/RT/ACE.pm:257 lib/RT/ACE.pm:333 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:649 lib/RT/Attachment.pm:650 lib/RT/Attachment.pm:711 lib/RT/Attachment.pm:712 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:201 lib/RT/Class.pm:236 lib/RT/Class.pm:387 lib/RT/Class.pm:439 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:148 lib/RT/CustomFieldValue.pm:90 lib/RT/Group.pm:1061 lib/RT/Group.pm:1113 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:886 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1201 lib/RT/Queue.pm:204 lib/RT/Queue.pm:222 lib/RT/Queue.pm:574 lib/RT/Queue.pm:600 lib/RT/Queue.pm:824 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1086 lib/RT/Ticket.pm:1229 lib/RT/Ticket.pm:1239 lib/RT/Ticket.pm:1253 lib/RT/Ticket.pm:1348 lib/RT/Ticket.pm:1695 lib/RT/Ticket.pm:1904 lib/RT/Ticket.pm:2073 lib/RT/Ticket.pm:2121 lib/RT/Ticket.pm:2400 lib/RT/Ticket.pm:2413 lib/RT/Ticket.pm:2492 lib/RT/Ticket.pm:2505 lib/RT/Ticket.pm:2604 lib/RT/Ticket.pm:2618 lib/RT/Ticket.pm:2877 lib/RT/Ticket.pm:2888 lib/RT/Ticket.pm:2894 lib/RT/Ticket.pm:3103 lib/RT/Ticket.pm:3177 lib/RT/Ticket.pm:3372 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:606 lib/RT/Transaction.pm:628 lib/RT/User.pm:1040 lib/RT/User.pm:132 lib/RT/User.pm:1391 lib/RT/User.pm:1528 lib/RT/User.pm:305 lib/RT/User.pm:692 lib/RT/User.pm:727 share/html/Articles/Article/Display.html:81 share/html/Articles/Article/Elements/ShowHistory:67 share/html/Articles/Article/PreCreate.html:60 share/html/SelfService/Article/Display.html:63 share/html/Ticket/Forward.html:82
+#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:649 lib/RT/Attachment.pm:650 lib/RT/Attachment.pm:711 lib/RT/Attachment.pm:712 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:388 lib/RT/Class.pm:440 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1057 lib/RT/Group.pm:1109 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:882 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1201 lib/RT/Queue.pm:204 lib/RT/Queue.pm:222 lib/RT/Queue.pm:574 lib/RT/Queue.pm:600 lib/RT/Queue.pm:824 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1066 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1222 lib/RT/Ticket.pm:1232 lib/RT/Ticket.pm:1246 lib/RT/Ticket.pm:1341 lib/RT/Ticket.pm:1688 lib/RT/Ticket.pm:1897 lib/RT/Ticket.pm:2066 lib/RT/Ticket.pm:2114 lib/RT/Ticket.pm:2393 lib/RT/Ticket.pm:2406 lib/RT/Ticket.pm:2485 lib/RT/Ticket.pm:2498 lib/RT/Ticket.pm:2597 lib/RT/Ticket.pm:2611 lib/RT/Ticket.pm:2870 lib/RT/Ticket.pm:2881 lib/RT/Ticket.pm:2887 lib/RT/Ticket.pm:3096 lib/RT/Ticket.pm:3170 lib/RT/Ticket.pm:3365 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:606 lib/RT/Transaction.pm:628 lib/RT/User.pm:1058 lib/RT/User.pm:133 lib/RT/User.pm:1409 lib/RT/User.pm:1546 lib/RT/User.pm:306 lib/RT/User.pm:693 lib/RT/User.pm:728 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:82
 msgid "Permission Denied"
 msgstr "Izin ditolak"
 
@@ -5990,11 +6016,11 @@ msgstr "Nomor Telepon"
 msgid "Please check the URL and try again."
 msgstr ""
 
-#: lib/RT/User.pm:781
+#: lib/RT/User.pm:782
 msgid "Please enter your current password correctly."
 msgstr ""
 
-#: lib/RT/User.pm:783
+#: lib/RT/User.pm:784
 msgid "Please enter your current password."
 msgstr ""
 
@@ -6011,7 +6037,7 @@ msgstr ""
 msgid "PostgreSQL"
 msgstr ""
 
-#: share/html/Elements/Tabs:732 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
+#: share/html/Elements/Tabs:735 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
 msgstr "Pilihan"
 
@@ -6048,7 +6074,7 @@ msgstr ""
 msgid "Prepare Stubbed"
 msgstr "Siapkan Potongan Tiket"
 
-#: share/html/Elements/Tabs:551
+#: share/html/Elements/Tabs:552
 msgid "Prev"
 msgstr "Sebelumnya"
 
@@ -6060,7 +6086,7 @@ msgstr ""
 msgid "Previous Page"
 msgstr "Halaman Sebelumnya"
 
-#: lib/RT/ACE.pm:154 lib/RT/ACE.pm:239
+#: lib/RT/ACE.pm:152 lib/RT/ACE.pm:237
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
 msgstr "Prinsipal %1 tidak ditemukan."
@@ -6073,7 +6099,7 @@ msgstr ""
 msgid "Print this message"
 msgstr ""
 
-#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2181 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:376 share/html/m/ticket/show:240
+#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2194 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:376 share/html/m/ticket/show:241
 msgid "Priority"
 msgstr "Prioritas"
 
@@ -6085,7 +6111,7 @@ msgstr "Prioritas dimulai pada"
 msgid "Privacy"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:55
+#: share/html/Articles/Article/Elements/ShowSavedSearches:56
 msgid "Privacy:"
 msgstr "Pribadi:"
 
@@ -6093,7 +6119,7 @@ msgstr "Pribadi:"
 msgid "Private Key"
 msgstr ""
 
-#: lib/RT/Handle.pm:642 share/html/Admin/Users/Modify.html:111
+#: lib/RT/Handle.pm:648 share/html/Admin/Users/Modify.html:111
 msgid "Privileged"
 msgstr "Hak-hak Istimewa"
 
@@ -6114,7 +6140,7 @@ msgstr ""
 msgid "Projects"
 msgstr "Proyek-Proyek"
 
-#: lib/RT/Handle.pm:656
+#: lib/RT/Handle.pm:662
 msgid "Pseudogroup for internal use"
 msgstr "Pseudogroup digunakan untuk internal"
 
@@ -6135,7 +6161,7 @@ msgstr "Query"
 msgid "Query Builder"
 msgstr "Pembuat Query"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:935 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2024 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:244
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:934 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2037 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
 msgid "Queue"
 msgstr "Antrian"
 
@@ -6201,7 +6227,7 @@ msgstr ""
 msgid "QueueWatcher"
 msgstr ""
 
-#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:135 share/html/Elements/Tabs:164 share/html/Elements/Tabs:215
+#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:135 share/html/Elements/Tabs:164 share/html/Elements/Tabs:216
 msgid "Queues"
 msgstr "Antrian-antrian"
 
@@ -6217,7 +6243,7 @@ msgstr ""
 msgid "Quick Create"
 msgstr ""
 
-#: share/html/Articles/Elements/QuickSearch:47 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:395 share/html/Prefs/Quicksearch.html:69
+#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:396 share/html/Prefs/Quicksearch.html:69
 msgid "Quick search"
 msgstr "Pencarian Cepat"
 
@@ -6233,7 +6259,7 @@ msgstr ""
 msgid "RFC2822"
 msgstr ""
 
-#: share/html/Elements/Tabs:632
+#: share/html/Elements/Tabs:635
 msgid "RSS"
 msgstr "RSS"
 
@@ -6270,7 +6296,7 @@ msgstr ""
 msgid "RT Variables"
 msgstr "Variable RT"
 
-#: lib/RT/Config.pm:280 lib/RT/Config.pm:289 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:195 share/html/Elements/Tabs:289 share/html/Elements/Tabs:394 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
+#: lib/RT/Config.pm:280 lib/RT/Config.pm:289 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:195 share/html/Elements/Tabs:290 share/html/Elements/Tabs:395 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "Sekilas RT"
 
@@ -6336,7 +6362,7 @@ msgstr ""
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
 msgstr ""
 
-#: share/html/Admin/Queues/Modify.html:223
+#: share/html/Admin/Queues/Modify.html:224
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
@@ -6353,7 +6379,7 @@ msgstr "Nama Asli"
 msgid "Recipient"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowSimplifiedRecipients:30
+#: share/html/Ticket/Elements/ShowSimplifiedRecipients:77
 msgid "Recipients"
 msgstr ""
 
@@ -6365,7 +6391,7 @@ msgstr ""
 msgid "Recursive member"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:123
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:124
 msgid "Refer to"
 msgstr ""
 
@@ -6389,7 +6415,7 @@ msgstr "Referensi ke %1 sudah ditambah"
 msgid "Reference to %1 deleted"
 msgstr "Referensi ke %1 sudah dihapus"
 
-#: share/html/Articles/Article/Elements/EditLinks:83 share/html/Articles/Article/Elements/ShowLinks:69 share/html/Articles/Article/Elements/ShowSearchCriteria:127 share/html/Elements/EditLinks:100 share/html/Elements/EditLinks:158 share/html/Elements/ShowLinks:125 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/BulkLinks:104 share/html/Ticket/Elements/BulkLinks:151 share/html/m/ticket/create:435 share/html/m/ticket/show:469
+#: share/html/Articles/Article/Elements/EditLinks:84 share/html/Articles/Article/Elements/ShowLinks:70 share/html/Articles/Article/Elements/ShowSearchCriteria:128 share/html/Elements/EditLinks:100 share/html/Elements/EditLinks:158 share/html/Elements/ShowLinks:125 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/BulkLinks:104 share/html/Ticket/Elements/BulkLinks:151 share/html/m/ticket/create:435 share/html/m/ticket/show:470
 msgid "Referred to by"
 msgstr "Diserahkan oleh"
 
@@ -6397,7 +6423,7 @@ msgstr "Diserahkan oleh"
 msgid "ReferredToBy"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/EditLinks:57 share/html/Articles/Article/Elements/ShowLinks:47 share/html/Elements/EditLinks:154 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:111 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94 share/html/m/ticket/create:434 share/html/m/ticket/show:459
+#: share/html/Articles/Article/Elements/EditLinks:58 share/html/Articles/Article/Elements/ShowLinks:48 share/html/Elements/EditLinks:154 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:111 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94 share/html/m/ticket/create:434 share/html/m/ticket/show:460
 msgid "Refers to"
 msgstr "Diserahkan ke"
 
@@ -6482,12 +6508,13 @@ msgstr "Hubungan"
 msgid "Remember default queue"
 msgstr ""
 
-#: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:126
+#: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:79
 msgid "Reminder"
 msgstr ""
 
-#: lib/RT/Transaction.pm:950
+#: lib/RT/Interface/Web.pm:2017 lib/RT/Transaction.pm:950
 #. ($ticket->Subject)
+#. ($args->{'NewReminder-Subject'})
 msgid "Reminder '%1' added"
 msgstr ""
 
@@ -6501,7 +6528,7 @@ msgstr ""
 msgid "Reminder '%1' reopened"
 msgstr ""
 
-#: share/html/Elements/MyReminders:51 share/html/Elements/Tabs:477 share/html/Ticket/Elements/Reminders:123 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:354
+#: share/html/Elements/Tabs:478 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
 msgid "Reminders"
 msgstr ""
 
@@ -6539,7 +6566,7 @@ msgstr ""
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr ""
 
-#: share/html/Elements/Tabs:481 share/html/Ticket/Elements/ShowTransaction:185 share/html/m/_elements/ticket_menu:69
+#: share/html/Elements/Tabs:482 share/html/Ticket/Elements/ShowTransaction:185 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
 msgstr "Balas"
 
@@ -6559,7 +6586,7 @@ msgstr "Balas ke tiket"
 msgid "ReplyToTicket"
 msgstr "Balas ke Tiket"
 
-#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:137
+#: lib/RT/ACE.pm:100 lib/RT/Tickets.pm:137
 msgid "Requestor"
 msgstr "Pemohon"
 
@@ -6567,7 +6594,7 @@ msgstr "Pemohon"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:91 share/html/m/ticket/create:307 share/html/m/ticket/show:289
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:91 share/html/m/ticket/create:307 share/html/m/ticket/show:290
 msgid "Requestors"
 msgstr "Pemohon"
 
@@ -6609,7 +6636,7 @@ msgstr "Penyelesaian"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Penyelesaian tiket #%1 (%2)"
 
-#: etc/initialdata:299 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:99
+#: etc/initialdata:299 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:99
 msgid "Resolved"
 msgstr "Sudah Diselesaikan"
 
@@ -6649,15 +6676,15 @@ msgstr "Kembali pada"
 msgid "Right Delegated"
 msgstr "Hak-hak Utusan"
 
-#: lib/RT/ACE.pm:304
+#: lib/RT/ACE.pm:302
 msgid "Right Granted"
 msgstr "Memberikan Hak-hak"
 
-#: lib/RT/ACE.pm:175
+#: lib/RT/ACE.pm:173
 msgid "Right Loaded"
 msgstr "Memanggil Hak-hak"
 
-#: lib/RT/ACE.pm:359
+#: lib/RT/ACE.pm:357
 msgid "Right could not be revoked"
 msgstr "Hak-hak tidak dapat dihilangkan"
 
@@ -6665,11 +6692,11 @@ msgstr "Hak-hak tidak dapat dihilangkan"
 msgid "Right not found"
 msgstr "Hak-hak tidak ditemukan"
 
-#: lib/RT/ACE.pm:327
+#: lib/RT/ACE.pm:325
 msgid "Right not loaded."
 msgstr "Hak-hak tidak dapat dipanggil."
 
-#: lib/RT/ACE.pm:355
+#: lib/RT/ACE.pm:353
 msgid "Right revoked"
 msgstr "Hak-hak tidak dapat dihilangkan"
 
@@ -6677,7 +6704,7 @@ msgstr "Hak-hak tidak dapat dihilangkan"
 msgid "Rights"
 msgstr "Hak-hak"
 
-#: lib/RT/Interface/Web.pm:1640 lib/RT/Interface/Web.pm:1739
+#: lib/RT/Interface/Web.pm:1655 lib/RT/Interface/Web.pm:1766
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Hak-hak tidak dapat diberikan untuk %1"
@@ -6686,11 +6713,11 @@ msgstr "Hak-hak tidak dapat diberikan untuk %1"
 msgid "Rights could not be revoked for %1"
 msgstr "Hak-hak tidak dapat dihilangkan untuk %1"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:46
+#: share/html/Admin/Elements/EditRightsCategoryTabs:93
 msgid "Rights for Administrators"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:45
+#: share/html/Admin/Elements/EditRightsCategoryTabs:92
 msgid "Rights for Staff"
 msgstr ""
 
@@ -6706,7 +6733,7 @@ msgstr ""
 msgid "Rows per box"
 msgstr ""
 
-#: share/html/Search/Elements/EditSort:44
+#: share/html/Search/Elements/EditSort:91
 msgid "Rows per page"
 msgstr "Baris per halaman"
 
@@ -6734,11 +6761,11 @@ msgstr "Sab."
 msgid "Saturday"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:62 share/html/Prefs/MyRT.html:71 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Search/Elements/EditSearches:73 share/html/Ticket/Elements/ShowSummary:80 share/html/Widgets/SelectionBox:233 share/html/m/ticket/show:360
+#: share/html/Articles/Article/Elements/ShowSavedSearches:63 share/html/Prefs/MyRT.html:71 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Search/Elements/EditSearches:73 share/html/Ticket/Elements/ShowSummary:80 share/html/Widgets/SelectionBox:233 share/html/m/ticket/show:361
 msgid "Save"
 msgstr "Simpan"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:56 share/html/Admin/Articles/Classes/UserRights.html:55 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Elements/EditScrip:145 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Users/GnuPG.html:73 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:101 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:183 share/html/Prefs/Other.html:75 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:61 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:127 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:62 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:61
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Elements/EditScrip:145 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Users/GnuPG.html:73 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:183 share/html/Prefs/Other.html:75 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:61 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:127 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:62 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:61
 msgid "Save Changes"
 msgstr "Simpan Perubahan"
 
@@ -6754,11 +6781,11 @@ msgstr ""
 msgid "Save changes"
 msgstr "Simpan perubahaan"
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:59
+#: share/html/Articles/Article/Elements/ShowSavedSearches:60
 msgid "Save new"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:53
+#: share/html/Articles/Article/Elements/ShowSavedSearches:54
 msgid "Save this search"
 msgstr ""
 
@@ -6784,7 +6811,7 @@ msgstr ""
 msgid "Saved search %1"
 msgstr "Simpan pencarian %1"
 
-#: share/html/Articles/Article/Elements/ShowSavedSearches:47 share/html/Articles/Article/Search.html:64 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:185
+#: share/html/Articles/Article/Elements/ShowSavedSearches:48 share/html/Articles/Article/Search.html:65 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:185
 msgid "Saved searches"
 msgstr "Simpan pencarian"
 
@@ -6805,7 +6832,7 @@ msgstr "Kolom Scrip"
 msgid "Scrip deleted"
 msgstr "Scrip sudah dihapus"
 
-#: share/html/Elements/Tabs:147 share/html/Elements/Tabs:260 share/html/Elements/Tabs:333
+#: share/html/Elements/Tabs:147 share/html/Elements/Tabs:261 share/html/Elements/Tabs:334
 msgid "Scrips"
 msgstr "Scrip"
 
@@ -6817,16 +6844,16 @@ msgstr ""
 msgid "Scrips which apply to all queues"
 msgstr "Scrip yang digunakan di seluruh antrian"
 
-#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:143 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:670 share/html/Elements/Tabs:98 share/html/Search/Simple.html:68 share/html/m/_elements/menu:65
+#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:673 share/html/Elements/Tabs:98 share/html/Search/Simple.html:68 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Pencarian"
 
-#: share/html/Articles/Article/Search.html:211
+#: share/html/Articles/Article/Search.html:212
 #. ($search->Name)
 msgid "Search %1 updated"
 msgstr ""
 
-#: share/html/Articles/Elements/GotoArticle:67 share/html/SelfService/Article/Search.html:47 share/html/SelfService/Elements/SearchArticle:48 share/html/SelfService/Elements/SearchArticle:48
+#: share/html/Articles/Elements/GotoArticle:68 share/html/SelfService/Article/Search.html:48 share/html/SelfService/Elements/SearchArticle:49 share/html/SelfService/Elements/SearchArticle:49
 msgid "Search Articles"
 msgstr ""
 
@@ -6838,11 +6865,11 @@ msgstr ""
 msgid "Search attribute load failure"
 msgstr "Gagal memanggil atribut pencarian"
 
-#: share/html/SelfService/Article/Search.html:52
+#: share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles articles matching"
 msgstr ""
 
-#: share/html/Articles/Elements/BeforeMessageBox:54
+#: share/html/Articles/Elements/BeforeMessageBox:55
 msgid "Search for Articles matching"
 msgstr ""
 
@@ -6850,7 +6877,7 @@ msgstr ""
 msgid "Search for approvals"
 msgstr "Pencarian untuk izin"
 
-#: share/html/Articles/Article/Search.html:47
+#: share/html/Articles/Article/Search.html:48
 msgid "Search for articles"
 msgstr ""
 
@@ -6862,11 +6889,11 @@ msgstr ""
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
 msgstr ""
 
-#: share/html/Elements/Tabs:393
+#: share/html/Elements/Tabs:394
 msgid "Search options"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:80
+#: share/html/Articles/Article/Search.html:81
 msgid "Search results"
 msgstr ""
 
@@ -6899,11 +6926,11 @@ msgstr ""
 msgid "Security:"
 msgstr "Keamanan:"
 
-#: share/html/Elements/ShowCustomFields:116 share/html/m/ticket/show:193
+#: share/html/Elements/ShowCustomFields:116 share/html/m/ticket/show:194
 msgid "See also:"
 msgstr ""
 
-#: lib/RT/Class.pm:89 lib/RT/Class.pm:90
+#: lib/RT/Class.pm:90 lib/RT/Class.pm:91
 msgid "See articles in this class"
 msgstr ""
 
@@ -6915,7 +6942,7 @@ msgstr "Lihat kolom kustom"
 msgid "See exact outgoing email messages and their recipeients"
 msgstr "Lihat pesan email yang keluar dan semua penerimanya dengan tepat"
 
-#: lib/RT/Class.pm:87
+#: lib/RT/Class.pm:88
 msgid "See that this class exists"
 msgstr ""
 
@@ -6927,7 +6954,7 @@ msgstr "Lihat Penjelasan Tiket Pribadi"
 msgid "See ticket summaries"
 msgstr "Lihat Ringkasan Tiket"
 
-#: lib/RT/Class.pm:87
+#: lib/RT/Class.pm:88
 msgid "SeeClass"
 msgstr ""
 
@@ -6955,7 +6982,7 @@ msgstr ""
 msgid "SeeQueue"
 msgstr "Lihat Antrian"
 
-#: share/html/Elements/Tabs:127 share/html/Elements/Tabs:132 share/html/Elements/Tabs:136 share/html/Elements/Tabs:141 share/html/Elements/Tabs:148 share/html/Elements/Tabs:151 share/html/Elements/Tabs:181 share/html/Elements/Tabs:188 share/html/Elements/Tabs:236 share/html/Elements/Tabs:257 share/html/Elements/Tabs:262 share/html/Elements/Tabs:340 share/html/Elements/Tabs:354 share/html/Elements/Tabs:364
+#: share/html/Elements/Tabs:127 share/html/Elements/Tabs:132 share/html/Elements/Tabs:136 share/html/Elements/Tabs:141 share/html/Elements/Tabs:148 share/html/Elements/Tabs:151 share/html/Elements/Tabs:181 share/html/Elements/Tabs:188 share/html/Elements/Tabs:237 share/html/Elements/Tabs:258 share/html/Elements/Tabs:263 share/html/Elements/Tabs:341 share/html/Elements/Tabs:355 share/html/Elements/Tabs:365
 msgid "Select"
 msgstr "Pilih"
 
@@ -6967,7 +6994,7 @@ msgstr ""
 msgid "Select Database Type"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/index.html:47 share/html/Admin/Articles/Classes/index.html:51
+#: share/html/Admin/Articles/Classes/index.html:48 share/html/Admin/Articles/Classes/index.html:52
 msgid "Select a Class"
 msgstr ""
 
@@ -6975,7 +7002,7 @@ msgstr ""
 msgid "Select a Custom Field"
 msgstr "Pilih Kolom Kustom"
 
-#: share/html/Admin/Global/Theme.html:79
+#: share/html/Admin/Tools/Theme.html:83
 msgid "Select a color for the section"
 msgstr ""
 
@@ -6991,7 +7018,7 @@ msgstr "Pilih antrian"
 msgid "Select a queue for your new ticket"
 msgstr "Pilih antrian untuk tiket baru anda"
 
-#: share/html/Admin/Global/Theme.html:75
+#: share/html/Admin/Tools/Theme.html:79
 msgid "Select a section"
 msgstr ""
 
@@ -6999,12 +7026,12 @@ msgstr ""
 msgid "Select a user"
 msgstr "Pilih Pengguna"
 
-#: share/html/Articles/Elements/BeforeMessageBox:113
+#: share/html/Articles/Elements/BeforeMessageBox:114
 #. ($included_topic->Name)
 msgid "Select an Article from %1"
 msgstr ""
 
-#: share/html/Articles/Elements/BeforeMessageBox:65
+#: share/html/Articles/Elements/BeforeMessageBox:66
 msgid "Select an Article to include"
 msgstr ""
 
@@ -7084,7 +7111,7 @@ msgstr "Pilih scrip"
 msgid "Select template"
 msgstr "Pilih template"
 
-#: share/html/Articles/Article/ExtractIntoClass.html:62 share/html/Articles/Article/ExtractIntoTopic.html:51
+#: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
 msgid "Select topics for this article"
 msgstr ""
@@ -7189,19 +7216,19 @@ msgstr ""
 msgid "Sep."
 msgstr "Sep."
 
-#: share/html/Articles/Article/Elements/LinkEntryInstructions:48
+#: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
 msgstr ""
 
-#: share/html/Elements/Tabs:390 share/html/Prefs/Other.html:79
+#: share/html/Elements/Tabs:391 share/html/Prefs/Other.html:79
 msgid "Settings"
 msgstr ""
 
-#: lib/RT/Config.pm:461
+#: lib/RT/Config.pm:470
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
-#: share/html/Elements/Tabs:424 share/html/Ticket/Elements/ShowTransaction:168
+#: share/html/Elements/Tabs:425 share/html/Ticket/Elements/ShowTransaction:168
 msgid "Show"
 msgstr "Tampilkan"
 
@@ -7221,7 +7248,7 @@ msgstr "Tampilkan Kolom"
 msgid "Show Configuration tab"
 msgstr ""
 
-#: share/html/Elements/Tabs:606
+#: share/html/Elements/Tabs:609
 msgid "Show Results"
 msgstr "Tampilkan Hasil"
 
@@ -7270,7 +7297,7 @@ msgstr ""
 msgid "Show pending requests"
 msgstr "Tampilkan permintaan yang ditunda"
 
-#: share/html/Ticket/Elements/FoldStanzaJS:3 share/html/Ticket/Elements/FoldStanzaJS:3
+#: share/html/Ticket/Elements/FoldStanzaJS:50 share/html/Ticket/Elements/FoldStanzaJS:50
 msgid "Show quoted text"
 msgstr ""
 
@@ -7290,7 +7317,7 @@ msgstr ""
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr ""
 
-#: lib/RT/Class.pm:95 lib/RT/Queue.pm:94
+#: lib/RT/Class.pm:96 lib/RT/Queue.pm:94
 msgid "ShowACL"
 msgstr "Tampilkan ACL"
 
@@ -7298,11 +7325,11 @@ msgstr "Tampilkan ACL"
 msgid "ShowApprovalsTab"
 msgstr ""
 
-#: lib/RT/Class.pm:89
+#: lib/RT/Class.pm:90
 msgid "ShowArticle"
 msgstr ""
 
-#: lib/RT/Class.pm:90
+#: lib/RT/Class.pm:91
 msgid "ShowArticleHistory"
 msgstr ""
 
@@ -7338,7 +7365,7 @@ msgstr "Tampilkan Tiket"
 msgid "ShowTicketComments"
 msgstr "Tampilkan Komentar Tiket"
 
-#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:208 share/html/Elements/Tabs:649
+#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:208 share/html/Elements/Tabs:652
 msgid "Shredder"
 msgstr ""
 
@@ -7431,7 +7458,7 @@ msgstr "Sortir hasil dengan"
 msgid "Sorting"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:198 share/html/Admin/Tools/Configuration.html:63
+#: share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Configuration.html:63
 msgid "Source"
 msgstr ""
 
@@ -7439,7 +7466,7 @@ msgstr ""
 msgid "Specify whether this is a daily or weekly run."
 msgstr ""
 
-#: share/html/Elements/Tabs:617
+#: share/html/Elements/Tabs:620
 msgid "Spreadsheet"
 msgstr ""
 
@@ -7447,7 +7474,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Tingkat"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:380
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
 msgid "Started"
 msgstr "Sudah dimulai"
 
@@ -7455,7 +7482,7 @@ msgstr "Sudah dimulai"
 msgid "StartedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:417 share/html/m/ticket/show:376
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:417 share/html/m/ticket/show:377
 msgid "Starts"
 msgstr "Mulai"
 
@@ -7467,11 +7494,11 @@ msgstr ""
 msgid "State"
 msgstr "Negara"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2056 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:92 share/html/m/ticket/create:287 share/html/m/ticket/reply:58 share/html/m/ticket/show:218
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:920 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2069 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:92 share/html/m/ticket/create:287 share/html/m/ticket/reply:58 share/html/m/ticket/show:219
 msgid "Status"
 msgstr "Status"
 
-#: lib/RT/Ticket.pm:3093 lib/RT/Ticket.pm:311
+#: lib/RT/Ticket.pm:304 lib/RT/Ticket.pm:3086
 #. ($self->loc($args{'Status'}))
 #. ($self->loc($new))
 msgid "Status '%1' isn't a valid status for tickets in this queue."
@@ -7486,11 +7513,11 @@ msgstr "Status Diubah"
 msgid "Status changed from %1 to %2"
 msgstr "Status diubah dari %1 ke %2"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:47
+#: share/html/Admin/Elements/EditRightsCategoryTabs:94
 msgid "Status changes"
 msgstr ""
 
-#: share/html/Elements/Tabs:528
+#: share/html/Elements/Tabs:529
 msgid "Steal"
 msgstr "Curi"
 
@@ -7526,7 +7553,7 @@ msgstr "Dicuri dari %1 "
 msgid "Style"
 msgstr "Gaya"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2130 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:169 share/html/Ticket/Elements/Reminders:190 share/html/Ticket/Forward.html:61 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:91
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:916 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2143 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:61 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:91
 msgid "Subject"
 msgstr "Subjek"
 
@@ -7569,7 +7596,7 @@ msgstr ""
 msgid "Subscribed to dashboard %1"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:421
+#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:422
 msgid "Subscription"
 msgstr ""
 
@@ -7590,7 +7617,7 @@ msgstr ""
 msgid "Successfuly encrypted data"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/EditBasics:52 share/html/Articles/Article/Elements/ShowSearchCriteria:66 share/html/Elements/RT__Article/ColumnMap:65
+#: share/html/Articles/Article/Elements/EditBasics:53 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Elements/RT__Article/ColumnMap:65
 msgid "Summary"
 msgstr ""
 
@@ -7610,7 +7637,7 @@ msgstr ""
 msgid "SuperUser"
 msgstr "PenggunaSuper"
 
-#: lib/RT/Config.pm:450
+#: lib/RT/Config.pm:459
 msgid "Suspended"
 msgstr ""
 
@@ -7618,7 +7645,7 @@ msgstr ""
 msgid "System"
 msgstr "Sistem"
 
-#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:201
+#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:199
 msgid "System Configuration"
 msgstr "Konfigurasi Sistem"
 
@@ -7626,7 +7653,7 @@ msgstr "Konfigurasi Sistem"
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1640 lib/RT/Interface/Web.pm:1739 share/html/Admin/Elements/EditRightsCategoryTabs:18 share/html/Admin/Elements/SelectRights:110
+#: lib/RT/Interface/Web.pm:1655 lib/RT/Interface/Web.pm:1766 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "System Error"
 msgstr "Kesalahan Sistem"
 
@@ -7647,7 +7674,7 @@ msgstr ""
 msgid "System error. Right not delegated."
 msgstr "Kesalahan sistem. Hak-hak tidak dapat diserahkan."
 
-#: lib/RT/ACE.pm:160 lib/RT/ACE.pm:228 lib/RT/ACE.pm:307
+#: lib/RT/ACE.pm:158 lib/RT/ACE.pm:226 lib/RT/ACE.pm:305
 msgid "System error. Right not granted."
 msgstr "Kesalahan sistem. Hak-hak tidak dapat diberikan."
 
@@ -7655,7 +7682,7 @@ msgstr "Kesalahan sistem. Hak-hak tidak dapat diberikan."
 msgid "System groups"
 msgstr "Grup Sistem"
 
-#: lib/RT/Handle.pm:708
+#: lib/RT/Handle.pm:714
 msgid "SystemRolegroup for internal use"
 msgstr "GrupAturanSistem yang digunakan untuk internal"
 
@@ -7663,7 +7690,7 @@ msgstr "GrupAturanSistem yang digunakan untuk internal"
 msgid "TEST_STRING"
 msgstr "TES_STRING"
 
-#: etc/initialdata:565 share/html/Elements/Tabs:522 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:565 share/html/Elements/Tabs:523 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "Ambil"
 
@@ -7706,7 +7733,7 @@ msgstr ""
 msgid "Template '%1' not found"
 msgstr ""
 
-#: lib/RT/Template.pm:698
+#: lib/RT/Template.pm:699
 msgid "Template compiles"
 msgstr ""
 
@@ -7734,11 +7761,16 @@ msgstr "Template tidak ditemukan"
 msgid "Template parsed"
 msgstr "Template parsed"
 
-#: lib/RT/Template.pm:455 lib/RT/Template.pm:475
+#: lib/RT/Template.pm:455
 msgid "Template parsing error"
 msgstr ""
 
-#: share/html/Elements/Tabs:150 share/html/Elements/Tabs:254 share/html/Elements/Tabs:334
+#: lib/RT/Template.pm:475 lib/RT/Template.pm:677
+#. ($Text::Template::ERROR)
+msgid "Template parsing error: %1"
+msgstr ""
+
+#: share/html/Elements/Tabs:150 share/html/Elements/Tabs:255 share/html/Elements/Tabs:335
 msgid "Templates"
 msgstr "Template-template"
 
@@ -7747,7 +7779,7 @@ msgstr "Template-template"
 msgid "Templates for queue %1"
 msgstr ""
 
-#: share/html/Admin/Global/Theme.html:86
+#: share/html/Admin/Tools/Theme.html:90
 msgid "Text"
 msgstr "Teks"
 
@@ -7763,11 +7795,11 @@ msgstr "Ini adalah nilai yang sekarang"
 msgid "That is not a value for this custom field"
 msgstr "Ini bukan nilai untuk kolom kustom ini"
 
-#: lib/RT/Ticket.pm:1706
+#: lib/RT/Ticket.pm:1699
 msgid "That is the same value"
 msgstr "Ini adalah nilai yang sama"
 
-#: lib/RT/ACE.pm:290
+#: lib/RT/ACE.pm:288
 msgid "That principal already has that right"
 msgstr "Prinsipal ini sudah memiliki hak-hak tersebut"
 
@@ -7776,7 +7808,7 @@ msgstr "Prinsipal ini sudah memiliki hak-hak tersebut"
 msgid "That principal is already a %1 for this queue"
 msgstr "Prinsipal ini sudah %1 untuk antrian ini"
 
-#: lib/RT/Ticket.pm:1144
+#: lib/RT/Ticket.pm:1137
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Prinsipal ini sudah %1 untuk tiket ini"
@@ -7786,44 +7818,44 @@ msgstr "Prinsipal ini sudah %1 untuk tiket ini"
 msgid "That principal is not a %1 for this queue"
 msgstr "Prinsipal ini bukan %1 untuk antrian ini"
 
-#: lib/RT/Ticket.pm:1264
+#: lib/RT/Ticket.pm:1257
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1702
+#: lib/RT/Ticket.pm:1695
 msgid "That queue does not exist"
 msgstr "Antrian ini tidak ada"
 
-#: lib/RT/Ticket.pm:3107
+#: lib/RT/Ticket.pm:3100
 msgid "That ticket has unresolved dependencies"
 msgstr "Tiket ini mempunyai ketergantungan yang belum dapat diselesaikan"
 
-#: lib/RT/Action/CreateTickets.pm:477 lib/RT/Ticket.pm:2923
+#: lib/RT/Action/CreateTickets.pm:477 lib/RT/Ticket.pm:2916
 msgid "That user already owns that ticket"
 msgstr "Pengguna ini sudah memiliki tiket tersebut"
 
-#: lib/RT/Ticket.pm:2866
+#: lib/RT/Ticket.pm:2859
 msgid "That user does not exist"
 msgstr "Pengguna ini tidak ada"
 
-#: lib/RT/User.pm:332
+#: lib/RT/User.pm:333
 msgid "That user is already privileged"
 msgstr "Pengguna ini sudah memiliki hak-hak istimewa"
 
-#: lib/RT/User.pm:352
+#: lib/RT/User.pm:353
 msgid "That user is already unprivileged"
 msgstr "Pengguna ini sudah tidak memiliki hak-hak istimewa"
 
-#: lib/RT/User.pm:345
+#: lib/RT/User.pm:346
 msgid "That user is now privileged"
 msgstr "Pengguna tersebut sekarang memiliki hak-hak istimewa"
 
-#: lib/RT/User.pm:365
+#: lib/RT/User.pm:366
 msgid "That user is now unprivileged"
 msgstr "Pengguna tersebut sekarang tidak memiliki hak-hak istimewa"
 
-#: lib/RT/Ticket.pm:2916
+#: lib/RT/Ticket.pm:2909
 msgid "That user may not own tickets in that queue"
 msgstr "Pengguna tersebut mungkin tidak memiliki tiket di dalam antrian tersebut"
 
@@ -7831,11 +7863,11 @@ msgstr "Pengguna tersebut mungkin tidak memiliki tiket di dalam antrian tersebut
 msgid "That's not a numerical id"
 msgstr "Ini bukan menurut angka ID"
 
-#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:371 share/html/m/ticket/show:208
+#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:371 share/html/m/ticket/show:209
 msgid "The Basics"
 msgstr "Dasar-dasar"
 
-#: lib/RT/ACE.pm:103
+#: lib/RT/ACE.pm:101
 msgid "The CC of a ticket"
 msgstr "CC tiket"
 
@@ -7848,7 +7880,7 @@ msgstr ""
 msgid "The DBA's database password"
 msgstr ""
 
-#: lib/RT/ACE.pm:104
+#: lib/RT/ACE.pm:102
 msgid "The administrative CC of a ticket"
 msgstr "CC tiket administrasi"
 
@@ -7900,7 +7932,7 @@ msgstr ""
 msgid "The new value has been set."
 msgstr "Nilai baru sudah diatur."
 
-#: lib/RT/ACE.pm:101
+#: lib/RT/ACE.pm:99
 msgid "The owner of a ticket"
 msgstr "Pemilik tiket"
 
@@ -7908,7 +7940,7 @@ msgstr "Pemilik tiket"
 msgid "The page you requested could not be found"
 msgstr ""
 
-#: lib/RT/ACE.pm:102
+#: lib/RT/ACE.pm:100
 msgid "The requestor of a ticket"
 msgstr "Pemohon tiket"
 
@@ -7921,7 +7953,7 @@ msgstr ""
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr ""
 
-#: lib/RT/Config.pm:197 share/html/Admin/Global/Theme.html:49 share/html/Elements/Tabs:197
+#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:201
 msgid "Theme"
 msgstr ""
 
@@ -7946,7 +7978,7 @@ msgstr ""
 msgid "There is no key suitable for encryption."
 msgstr ""
 
-#: lib/RT/Ticket.pm:1717
+#: lib/RT/Ticket.pm:1710
 msgid "There is no mapping for statuses between these queues. Contact your system administrator."
 msgstr ""
 
@@ -7966,7 +7998,7 @@ msgstr ""
 msgid "This Custom Field can not have list of values"
 msgstr ""
 
-#: lib/RT/Class.pm:444 lib/RT/CustomField.pm:1335
+#: lib/RT/Class.pm:445 lib/RT/CustomField.pm:1335
 msgid "This custom field does not apply to that object"
 msgstr "Kolom kustom ini tidak dapat digunakan pada objek tersebut"
 
@@ -7978,7 +8010,7 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr "Fitur ini hanya tersedia untuk sistem administrator"
 
-#: share/html/Admin/Global/Theme.html:187 share/html/Admin/Tools/Queries.html:51
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:191
 msgid "This feature is only available to system administrators."
 msgstr ""
 
@@ -8024,7 +8056,7 @@ msgstr "Kms."
 msgid "Thursday"
 msgstr ""
 
-#: lib/RT/Record.pm:932 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:931 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr ""
 
@@ -8055,7 +8087,7 @@ msgstr "Tiket #%1: %2"
 msgid "Ticket %1"
 msgstr "Tiket %1"
 
-#: lib/RT/Ticket.pm:689 lib/RT/Ticket.pm:713
+#: lib/RT/Ticket.pm:682 lib/RT/Ticket.pm:706
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Tiket %1 sudah dibuat di dalam antrian '%2'"
@@ -8070,7 +8102,7 @@ msgstr "Tiket %1 sudah dipanggil\\n"
 msgid "Ticket %1: %2"
 msgstr "Tiket %1: %2"
 
-#: share/html/Elements/Tabs:265
+#: share/html/Elements/Tabs:266
 msgid "Ticket Custom Fields"
 msgstr "Tiket Kolom Kustom"
 
@@ -8103,15 +8135,15 @@ msgstr "Lampiran Tiket"
 msgid "Ticket composition"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2299
+#: lib/RT/Tickets.pm:2312
 msgid "Ticket content"
 msgstr "Isi Tiket"
 
-#: lib/RT/Tickets.pm:2344
+#: lib/RT/Tickets.pm:2357
 msgid "Ticket content type"
 msgstr "Tipe isi Tiket"
 
-#: lib/RT/Ticket.pm:510 lib/RT/Ticket.pm:523 lib/RT/Ticket.pm:534 lib/RT/Ticket.pm:697
+#: lib/RT/Ticket.pm:503 lib/RT/Ticket.pm:516 lib/RT/Ticket.pm:527 lib/RT/Ticket.pm:690
 msgid "Ticket could not be created due to an internal error"
 msgstr "Tiket tidak dapat dibuat karena ada kesalahan internal"
 
@@ -8131,7 +8163,7 @@ msgstr "Metadata Tiket"
 msgid "Ticket status changed"
 msgstr "Status tiket sudah diubah"
 
-#: share/html/Articles/Article/ExtractFromTicket.html:62
+#: share/html/Articles/Article/ExtractFromTicket.html:63
 msgid "Ticket update"
 msgstr ""
 
@@ -8140,21 +8172,21 @@ msgstr ""
 msgid "TicketSQL search module"
 msgstr "Pencarian modul Tiket SQL"
 
-#: lib/RT/CustomField.pm:1582 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:167 share/html/Elements/Tabs:715 share/html/Elements/Tabs:89 share/html/Search/Chart:152 share/html/Search/Elements/Chart:106
+#: lib/RT/CustomField.pm:1582 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:167 share/html/Elements/Tabs:718 share/html/Elements/Tabs:89 share/html/Search/Chart:152 share/html/Search/Elements/Chart:106
 msgid "Tickets"
 msgstr "Tiket-tiket"
 
-#: lib/RT/Tickets.pm:2501
+#: lib/RT/Tickets.pm:2514
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr "Tiket %1 %2"
 
-#: lib/RT/Tickets.pm:2458
+#: lib/RT/Tickets.pm:2471
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "Tiket %1 oleh %2"
 
-#: share/html/m/_elements/menu:77
+#: share/html/m/_elements/menu:76
 msgid "Tickets I own"
 msgstr ""
 
@@ -8170,11 +8202,11 @@ msgstr "Tiket yang bergantung dengan izin ini:"
 msgid "Time Estimated"
 msgstr "Perkiraan Waktu"
 
-#: lib/RT/Tickets.pm:2274 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:401
+#: lib/RT/Tickets.pm:2287 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:401
 msgid "Time Left"
 msgstr "Sisa Waktu"
 
-#: lib/RT/Tickets.pm:2251 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:394
+#: lib/RT/Tickets.pm:2264 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:394
 msgid "Time Worked"
 msgstr "Waktu Kerja"
 
@@ -8198,7 +8230,7 @@ msgstr ""
 msgid "TimeLeft"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:928 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:921 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:99
 msgid "TimeWorked"
 msgstr "Waktu Kerja"
 
@@ -8237,7 +8269,7 @@ msgstr ""
 msgid "Toggle stack trace"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:931 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:924 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:99
 msgid "Told"
 msgstr "Memberitahukan"
 
@@ -8245,11 +8277,11 @@ msgstr "Memberitahukan"
 msgid "ToldRelative"
 msgstr ""
 
-#: share/html/Elements/Tabs:200 share/html/Elements/Tabs:93 share/html/Tools/index.html:48
+#: share/html/Elements/Tabs:198 share/html/Elements/Tabs:93 share/html/Tools/index.html:48
 msgid "Tools"
 msgstr "alat-alat"
 
-#: share/html/Admin/Articles/Elements/Topics:55
+#: share/html/Admin/Articles/Elements/Topics:56
 msgid "Topic Name"
 msgstr ""
 
@@ -8261,11 +8293,11 @@ msgstr ""
 msgid "Topic membership removed"
 msgstr ""
 
-#: share/html/Admin/Articles/Elements/Topics:134 share/html/Admin/Articles/Elements/Topics:146 share/html/Admin/Articles/Elements/Topics:168
+#: share/html/Admin/Articles/Elements/Topics:135 share/html/Admin/Articles/Elements/Topics:147 share/html/Admin/Articles/Elements/Topics:169
 msgid "Topic not found"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:58 share/html/Articles/Article/Edit.html:86 share/html/Articles/Article/Edit.html:90 share/html/Articles/Article/Elements/ShowSearchCriteria:131 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:358 share/html/Elements/Tabs:99
+#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:359 share/html/Elements/Tabs:99
 msgid "Topics"
 msgstr ""
 
@@ -8286,7 +8318,7 @@ msgstr "Transaksi %1 sudah dibersihkan"
 msgid "Transaction Created"
 msgstr "Transaksi sudah dibuat"
 
-#: share/html/Elements/Tabs:268
+#: share/html/Elements/Tabs:269
 msgid "Transaction Custom Fields"
 msgstr "Kolom Kustom Transaksi"
 
@@ -8318,11 +8350,11 @@ msgstr "Sel."
 msgid "Tuesday"
 msgstr ""
 
-#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2106 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket.pm:922 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2119 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Tipe"
 
-#: share/html/Articles/Article/Elements/LinkEntryInstructions:47
+#: share/html/Articles/Article/Elements/LinkEntryInstructions:48
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
 msgstr ""
 
@@ -8344,21 +8376,16 @@ msgstr ""
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:88 share/html/Articles/Article/Edit.html:238
+#: share/html/Articles/Article/Delete.html:89 share/html/Articles/Article/Edit.html:239
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Global/Theme.html:209 share/html/Admin/Global/Theme.html:222
-#. ($img->errstr)
-msgid "Unable to read image: %1"
-msgstr ""
-
-#: share/html/Admin/Global/Theme.html:241
+#: share/html/Admin/Tools/Theme.html:237
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Global/Theme.html:205
+#: share/html/Admin/Tools/Theme.html:209
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -8408,7 +8435,7 @@ msgstr ""
 msgid "Unknown (this value is new to the system)"
 msgstr ""
 
-#: lib/RT/Attachment.pm:316 lib/RT/Record.pm:805
+#: lib/RT/Attachment.pm:316 lib/RT/Record.pm:804
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -8435,15 +8462,15 @@ msgstr "Tidak terbatas"
 msgid "Unnamed dashboard"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/SelectSavedSearches:59 share/html/Elements/RT__SavedSearch/ColumnMap:63 share/html/Search/Elements/SelectSearchesForObjects:63
+#: share/html/Articles/Article/Elements/SelectSavedSearches:60 share/html/Elements/RT__SavedSearch/ColumnMap:63 share/html/Search/Elements/SelectSearchesForObjects:63
 msgid "Unnamed search"
 msgstr "Pencarian tidak dikenal"
 
-#: share/html/m/_elements/menu:80
+#: share/html/m/_elements/menu:79
 msgid "Unowned tickets"
 msgstr ""
 
-#: lib/RT/Handle.pm:643
+#: lib/RT/Handle.pm:649
 msgid "Unprivileged"
 msgstr "Tidak memiliki hak-hak istimewa"
 
@@ -8459,7 +8486,7 @@ msgstr ""
 msgid "Unselected objects"
 msgstr "Objek tidak dipilih"
 
-#: lib/RT/User.pm:1537 lib/RT/User.pm:1553
+#: lib/RT/User.pm:1555 lib/RT/User.pm:1571
 msgid "Unset private key"
 msgstr ""
 
@@ -8471,7 +8498,7 @@ msgstr "Belum diambil"
 msgid "Untitled search"
 msgstr "Pencarian yang tidak memiliki judul"
 
-#: share/html/Admin/Users/Memberships.html:84 share/html/Articles/Article/Elements/ShowSavedSearches:58 share/html/Articles/Elements/NewestArticles:61 share/html/Articles/Elements/UpdatedArticles:62 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:213 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:224
+#: share/html/Admin/Users/Memberships.html:84 share/html/Articles/Article/Elements/ShowSavedSearches:59 share/html/Articles/Elements/NewestArticles:62 share/html/Articles/Elements/UpdatedArticles:63 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:213 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:224
 msgid "Update"
 msgstr "Perbaharui"
 
@@ -8519,7 +8546,7 @@ msgstr "Perbaharui beberapa tiket"
 msgid "Update name"
 msgstr "Perbaharui nama"
 
-#: lib/RT/Action/CreateTickets.pm:517 lib/RT/Interface/Web.pm:1449
+#: lib/RT/Action/CreateTickets.pm:517 lib/RT/Interface/Web.pm:1464
 msgid "Update not recorded."
 msgstr "Perbaharui tidak dicatat."
 
@@ -8542,12 +8569,12 @@ msgid "Update ticket #%1"
 msgstr "Perbaharui tiket #%1"
 
 #: share/html/Ticket/Update.html:217 share/html/m/ticket/reply:140
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Perbaharui tiket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:515 lib/RT/Interface/Web.pm:1449
+#: lib/RT/Action/CreateTickets.pm:515 lib/RT/Interface/Web.pm:1464
 msgid "Update type was neither correspondence nor comment."
 msgstr "Memperbarui tipe baik korespondensi ataupun  penjelasan."
 
@@ -8555,7 +8582,7 @@ msgstr "Memperbarui tipe baik korespondensi ataupun  penjelasan."
 msgid "UpdateStatus"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1658 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:401
+#: lib/RT/CustomField.pm:1658 lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
 msgid "Updated"
 msgstr "Sudah diperbaharui"
 
@@ -8568,7 +8595,7 @@ msgstr ""
 msgid "Upload"
 msgstr "Upload"
 
-#: share/html/Admin/Global/Theme.html:64
+#: share/html/Admin/Tools/Theme.html:61
 msgid "Upload a new logo"
 msgstr ""
 
@@ -8625,7 +8652,7 @@ msgstr ""
 msgid "Use default (%1)"
 msgstr ""
 
-#: share/html/Elements/Tabs:200
+#: share/html/Elements/Tabs:198
 msgid "Use other RT administrative tools"
 msgstr "Gunakan alat administrative RT yang lain"
 
@@ -8634,7 +8661,7 @@ msgstr "Gunakan alat administrative RT yang lain"
 msgid "Use system default (%1)"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:57
+#: share/html/Articles/Article/ExtractFromTicket.html:58
 msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
 msgstr ""
 
@@ -8642,11 +8669,11 @@ msgstr ""
 msgid "Use this to protect the format of plain text"
 msgstr ""
 
-#: lib/RT/Record.pm:933 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:932 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr ""
 
-#: lib/RT/Ticket.pm:419
+#: lib/RT/Ticket.pm:412
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
 msgstr "Pengguna '%1' tidak dapat ditemukan."
@@ -8667,11 +8694,11 @@ msgstr "Pengguna mendefinisikan kondisi dan aksi"
 msgid "User ID"
 msgstr "ID Pengguna"
 
-#: share/html/Elements/Tabs:193 share/html/Elements/Tabs:272 share/html/Elements/Tabs:306 share/html/Elements/Tabs:320 share/html/Elements/Tabs:361
+#: share/html/Elements/Tabs:193 share/html/Elements/Tabs:273 share/html/Elements/Tabs:307 share/html/Elements/Tabs:321 share/html/Elements/Tabs:362
 msgid "User Rights"
 msgstr "Hak Pengguna"
 
-#: lib/RT/Interface/Web.pm:2144
+#: lib/RT/Interface/Web.pm:2229
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Pengguna akan ditanya mengenai tipe pembaharuan yang tidak dikenal untuk kolom kustom %1 untuk %2 objek #%3"
@@ -8681,7 +8708,7 @@ msgstr "Pengguna akan ditanya mengenai tipe pembaharuan yang tidak dikenal untuk
 msgid "User could not be created: %1"
 msgstr "Pengguna tidak dapat dibuat: %1"
 
-#: lib/RT/User.pm:268
+#: lib/RT/User.pm:269
 msgid "User created"
 msgstr "Pengguna sudah dibuat"
 
@@ -8689,11 +8716,11 @@ msgstr "Pengguna sudah dibuat"
 msgid "User defined groups"
 msgstr "Pengguna mendefinisikan grup"
 
-#: lib/RT/User.pm:1055
+#: lib/RT/User.pm:1073
 msgid "User disabled"
 msgstr ""
 
-#: lib/RT/User.pm:1057
+#: lib/RT/User.pm:1075
 msgid "User enabled"
 msgstr ""
 
@@ -8701,7 +8728,7 @@ msgstr ""
 msgid "User has empty email address"
 msgstr ""
 
-#: lib/RT/User.pm:510 lib/RT/User.pm:530
+#: lib/RT/User.pm:511 lib/RT/User.pm:531
 msgid "User loaded"
 msgstr "Pengguna sudah dipanggil"
 
@@ -8721,7 +8748,7 @@ msgstr "Nama Pengguna"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1584 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:126 share/html/Elements/Tabs:158 share/html/Elements/Tabs:216
+#: lib/RT/CustomField.pm:1584 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:126 share/html/Elements/Tabs:158 share/html/Elements/Tabs:217
 msgid "Users"
 msgstr "Pengguna"
 
@@ -8742,7 +8769,7 @@ msgstr "Query yang valid"
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:62
+#: share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:197 share/html/Admin/Tools/Configuration.html:62
 msgid "Value"
 msgstr ""
 
@@ -8754,7 +8781,7 @@ msgstr "Nilai-nilai"
 msgid "Variable"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:197
+#: share/html/Admin/Tools/Configuration.html:221
 msgid "Version"
 msgstr ""
 
@@ -8814,7 +8841,7 @@ msgstr ""
 msgid "W3CDTF"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:180
+#: share/html/Articles/Article/Search.html:181
 msgid "WARNING: Saving search to user-level privacy"
 msgstr ""
 
@@ -8850,7 +8877,7 @@ msgstr ""
 msgid "WatcherGroup"
 msgstr ""
 
-#: share/html/Elements/Tabs:253
+#: share/html/Elements/Tabs:254
 msgid "Watchers"
 msgstr "Pengamat"
 
@@ -8886,7 +8913,7 @@ msgstr "Rabu."
 msgid "Wednesday"
 msgstr ""
 
-#: lib/RT/Config.pm:449
+#: lib/RT/Config.pm:458
 msgid "Weekly digest"
 msgstr ""
 
@@ -9006,11 +9033,11 @@ msgstr "Bekerja offline"
 msgid "WorkPhone"
 msgstr "Telepon Kantor"
 
-#: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:73 share/html/m/ticket/show:229
+#: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:73 share/html/m/ticket/show:230
 msgid "Worked"
 msgstr "Sedang Bekerja"
 
-#: share/html/Articles/Article/Delete.html:71 share/html/Widgets/Form/Boolean:77
+#: share/html/Articles/Article/Delete.html:72 share/html/Widgets/Form/Boolean:77
 msgid "Yes"
 msgstr ""
 
@@ -9019,7 +9046,7 @@ msgstr ""
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr ""
 
-#: lib/RT/Ticket.pm:3026
+#: lib/RT/Ticket.pm:3019
 msgid "You already own this ticket"
 msgstr "Anda sudah memiliki tiket ini"
 
@@ -9044,23 +9071,23 @@ msgstr ""
 msgid "You can also edit the predefined search itself"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:58
+#: share/html/Articles/Article/ExtractFromTicket.html:59
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:775
+#: lib/RT/User.pm:776
 msgid "You can not set password."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2909
+#: lib/RT/Ticket.pm:2902
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Anda hanya bisa menugaskan kembali tiket yang anda miliki atau yang belum anda miliki"
 
-#: lib/RT/Ticket.pm:2905
+#: lib/RT/Ticket.pm:2898
 msgid "You can only take tickets that are unowned"
 msgstr ""
 
-#: lib/RT/Ticket.pm:3098
+#: lib/RT/Ticket.pm:3091
 #. ($self->loc($old), $self->loc($new))
 msgid "You can't change status from '%1' to '%2'."
 msgstr ""
@@ -9094,7 +9121,7 @@ msgstr "Anda tidak memiliki izin untuk membuat tiket di dalam antrian tersebut."
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
 msgstr ""
 
-#: lib/RT/Ticket.pm:1709
+#: lib/RT/Ticket.pm:1702
 msgid "You may not create requests in that queue."
 msgstr "Anda mungkin tidak akan membuat permintaan di dalam antrian ini."
 
@@ -9130,7 +9157,7 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr "Anda dapat login kembali"
 
-#: lib/RT/User.pm:947
+#: lib/RT/User.pm:965
 msgid "Your password is not set."
 msgstr ""
 
@@ -9146,7 +9173,12 @@ msgstr "Permintaan anda sudah disetujui."
 msgid "Your request was rejected."
 msgstr "Permintaan anda sudah ditolak."
 
-#: lib/RT/Interface/Web.pm:597
+#: share/html/Admin/Tools/Theme.html:65
+#. ($valid_image_types)
+msgid "Your system supports automatic color suggestions for: %1"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:608
 msgid "Your username or password is incorrect"
 msgstr "Nama pengguna dan sandi anda tidak sama"
 
@@ -9162,7 +9194,7 @@ msgstr ""
 msgid "[Up]"
 msgstr ""
 
-#: share/html/Search/Elements/EditSort:14
+#: share/html/Search/Elements/EditSort:61
 msgid "[none]"
 msgstr ""
 
@@ -9178,7 +9210,7 @@ msgstr ""
 msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:107 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/SelectDateRelation:59
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:100 share/html/Articles/Article/Elements/ShowSearchCriteria:108 share/html/Elements/SelectDateRelation:59
 msgid "after"
 msgstr "Setelah"
 
@@ -9190,11 +9222,11 @@ msgstr "mengijinkan pembuatan pencarian yang disimpan"
 msgid "allow loading of saved searches"
 msgstr "mengijinkan memanggil pencarian yang disimpan"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:101 share/html/Articles/Article/Elements/ShowSearchCriteria:110
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:58 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Articles/Article/Elements/ShowSearchCriteria:73 share/html/Articles/Article/Elements/ShowSearchCriteria:85
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:59 share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:86
 msgid "and not"
 msgstr ""
 
@@ -9238,7 +9270,7 @@ msgstr ""
 msgid "check this box to remove this Custom Field from all objects and be able to choose specific objects."
 msgstr ""
 
-#: share/html/Ticket/Elements/UpdateCc:55 share/html/Ticket/Elements/UpdateCc:70
+#: share/html/Ticket/Elements/UpdateCc:55 share/html/Ticket/Elements/UpdateCc:71
 msgid "check to add"
 msgstr ""
 
@@ -9378,7 +9410,7 @@ msgstr ""
 msgid "hours"
 msgstr "jam"
 
-#: lib/RT/Date.pm:121 share/html/Elements/Tabs:637
+#: lib/RT/Date.pm:121 share/html/Elements/Tabs:640
 msgid "iCal"
 msgstr ""
 
@@ -9386,7 +9418,7 @@ msgstr ""
 msgid "id"
 msgstr "id"
 
-#: share/html/Articles/Article/PreCreate.html:56 share/html/Articles/Article/Search.html:58
+#: share/html/Articles/Article/PreCreate.html:57 share/html/Articles/Article/Search.html:59
 #. ($Class->Name)
 #. ($class->Name)
 msgid "in class %1"
@@ -9396,7 +9428,7 @@ msgstr ""
 msgid "inactive"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRights:146
+#: share/html/Admin/Elements/EditRights:153
 #. ($inc)
 msgid "includes %1"
 msgstr ""
@@ -9437,7 +9469,7 @@ msgstr "kurang dari"
 msgid "marginal"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Articles/Article/Elements/ShowSearchCriteria:73 share/html/Articles/Article/Elements/ShowSearchCriteria:78 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:79 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
 msgstr "sama"
 
@@ -9655,6 +9687,10 @@ msgstr ""
 #. ($user->Object->Name)
 msgid "user %1"
 msgstr "pengguna %1"
+
+#: share/html/Admin/Elements/EditRights:124
+msgid "username"
+msgstr ""
 
 #: lib/RT/Config.pm:177
 msgid "verbose"

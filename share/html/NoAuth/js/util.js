@@ -294,7 +294,7 @@ function ReplaceAllTextareas(encoded) {
     }
 };
 
-function toggle_addprincipal_validity(input, good) {
+function toggle_addprincipal_validity(input, good, title) {
     if (good) {
         jQuery(input).nextAll(".warning").hide();
         jQuery("#acl-AddPrincipal input[type=checkbox]").removeAttr("disabled");
@@ -302,17 +302,23 @@ function toggle_addprincipal_validity(input, good) {
         jQuery(input).nextAll(".warning").css("display", "block");
         jQuery("#acl-AddPrincipal input[type=checkbox]").attr("disabled", "disabled");
     }
-    update_addprincipal_title(input);
+
+    if (title == null)
+        title = jQuery(input).val();
+
+    update_addprincipal_title( title );
 }
 
-function update_addprincipal_title(input) {
+function update_addprincipal_title(title) {
     var h3 = jQuery("#acl-AddPrincipal h3");
-    h3.html( h3.text().replace(/: .*$/,'') + ": " + jQuery(input).val() );
+    h3.html( h3.text().replace(/: .*$/,'') + ": " + title );
 }
 
 // when a value is selected from the autocompleter
-function addprincipal_onselect() {
-    toggle_addprincipal_validity(this, true);
+function addprincipal_onselect(ev, ui) {
+    // pass the item's value along as the title since the input's value
+    // isn't actually updated yet
+    toggle_addprincipal_validity(this, true, ui.item.value);
 }
 
 // when the input is actually changed, through typing or autocomplete

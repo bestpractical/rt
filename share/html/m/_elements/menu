@@ -98,7 +98,7 @@ if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $
         foreach my $object (@Objects) {
             my @searches = $object->Attributes->Named('SavedSearch');
             foreach my $search (@searches) {
-                next unless $search->SubValue("SearchType") eq 'Ticket';
+                next if $search->SubValue("SearchType") && $search->SubValue("SearchType") ne 'Ticket';
                 push @menu, { label => $search->Description, url => '/m/tickets/search?query=' . $search->SubValue("Query").'&order='.$search->SubValue("Order").'&order_by='.$search->SubValue("OrderBy") };
 
             }

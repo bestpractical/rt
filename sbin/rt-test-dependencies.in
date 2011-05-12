@@ -344,10 +344,6 @@ GD::Text
 .
 
 $deps{'USERLOGO'} = [ text_to_hash( << '.') ];
-Imager
-Imager::File::GIF
-Imager::File::JPEG
-Imager::File::PNG
 Convert::Color
 .
 
@@ -454,7 +450,7 @@ sub resolve_dep {
 
     print "\nInstall module $module\n";
 
-    my $ext = $ENV{'RT_FIX_DEPS_CMD'};
+    my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
     unless( $ext ) {
         my $configured = 1;
         {

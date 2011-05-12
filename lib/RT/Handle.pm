@@ -103,6 +103,7 @@ Takes nothing.
 
 sub Connect {
     my $self = shift;
+    my %args = (@_);
 
     my $db_type = RT->Config->Get('DatabaseType');
     if ( $db_type eq 'Oracle' ) {
@@ -113,6 +114,7 @@ sub Connect {
     $self->SUPER::Connect(
         User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
+        %args,
     );
 
     if ( $db_type eq 'mysql' ) {
@@ -337,10 +339,7 @@ sub CreateDatabase {
         return (1, "Created user $db_user. All RT's objects should be in his schema.");
     }
     elsif ( $db_type eq 'Pg' ) {
-        # XXX: as we get external DBH we don't know if RaiseError or PrintError
-        # are enabled, so we have to setup it here and restore them back
-        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0")
-            || $dbh->do("CREATE DATABASE $db_name TEMPLATE template0");
+        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
@@ -348,15 +347,15 @@ sub CreateDatabase {
     return ($status, $DBI::errstr);
 }
 
-=head3 DropDatabase $DBH [Force => 0]
+=head3 DropDatabase $DBH
 
 Drops RT's database. This method can be used as class method.
 
 Takes DBI handle as first argument. Many database systems require
-special handle to allow you to create a new database, so you have
-to use L<SystemDSN> method during connection.
+a special handle to allow you to drop a database, so you may have
+to use L<SystemDSN> when acquiring the DBI handle.
 
-Fetches type and name of the DB from the config.
+Fetches the type and name of the database from the config.
 
 =cut
 
@@ -1006,7 +1005,7 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
     if ( @Attributes ) {
-        $RT::Logger->debug("Creating predefined searches...");
+        $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {

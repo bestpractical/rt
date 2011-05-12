@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$title => undef
+$title => loc('RT for [_1]', RT->Config->Get('rtname'))
 $show_home_button => 1
 </%args>
 <%init>
@@ -55,6 +55,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 </%init>
 <html>
 <head>
+<& /Elements/Framekiller &>
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')|n%>/m/style.css"/>
 <title><%$title%></title>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>

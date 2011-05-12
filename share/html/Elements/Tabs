@@ -194,12 +194,14 @@ my $build_admin_menu = sub {
                               description => loc('Modify global user rights') );
         $admin_global->child( 'my-rt' => title => loc('RT at a glance'), path => '/Admin/Global/MyRT.html',
                               description => loc('Modify the default "RT at a glance" view') );
-        $admin_global->child( theme => title => loc('Theme'), path => '/Admin/Global/Theme.html',
-                              description => loc('Customize the look of your RT') );
+        $admin_global->child( 'topics' => title => loc('Topics'), path => '/Admin/Global/Topics.html',
+                              description => loc('Modify global article topics') );
 
         my $admin_tools = $admin->child( tools => title => loc('Tools'), path => '/Admin/Tools/', description => loc('Use other RT administrative tools') );
         $admin_tools->child( configuration => title => loc('System Configuration'), path => '/Admin/Tools/Configuration.html',
                              description => loc('Detailed information about your RT setup') );
+        $admin_tools->child( theme => title => loc('Theme'), path => '/Admin/Tools/Theme.html',
+                              description => loc('Customize the look of your RT') );
         if (RT->Config->Get('StatementLog')
             && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
            $admin_tools->child( 'sql-queries' => title => loc('SQL Queries'), path => '/Admin/Tools/Queries.html',
@@ -207,6 +209,7 @@ my $build_admin_menu = sub {
         }
         $admin_tools->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder',
                              description => loc('Permanently wipeout data from RT'));
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
         my $type = $1;
         my $tabs = PageMenu();
@@ -350,7 +353,7 @@ my $build_admin_menu = sub {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            my $section = $tabs->child( select => title => loc("Articles"), path => "/Admin/Articles/Classes/" );
+            my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
             $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
 
@@ -590,7 +593,7 @@ my $build_admin_menu = sub {
             }
         }
 
-        $args = "?" . $query_string->(%query_args);
+        $args = "?" . ($QueryString || $query_string->(%query_args));
 
 
         my $current_search_menu;
@@ -649,7 +652,7 @@ my $build_admin_menu = sub {
                 );
 
                 $more->child( 'shredder' => title => loc('Shredder'),
-                                path => 'Admin/Tools/Shredder/?' . $shred_args);
+                                path => '/Admin/Tools/Shredder/?' . $shred_args);
             }
 
         }
@@ -763,4 +766,5 @@ if ( $request_path !~ m{^/SelfService/} ) {
 </%INIT>
 <%ARGS>
 $show_menu => 1
+$QueryString => ''
 </%ARGS>

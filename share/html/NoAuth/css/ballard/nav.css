@@ -178,19 +178,6 @@
 
 }
 
-#topactions form {
- display: block;
-
-}
-
-#topactions #GotoTicket, #topactions #CreateTicketInQueue {
- text-align: right;
-
-}
-#topactions #simple-search {
- float: right;
-}
-
 #topactions #simple-search .field{
  margin-left: 1em;
  color: #787;
@@ -199,13 +186,4 @@
 #topactions #simple-search .field:focus {
  color: #000;
  }
-
-#topactions #GotoTicket {
- text-align: right;
-
-}
-#topactions #ArticleSearch {
-    float: right;
-    margin-left: 1em;
-}
 

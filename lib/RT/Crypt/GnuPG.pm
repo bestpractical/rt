@@ -2287,7 +2287,6 @@ sub DeleteKey {
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
         my $pid = safe_run_child { $gnupg->wrap_call(
             handles => $handles,
             commands => ['--delete-secret-and-public-key'],
@@ -2335,7 +2334,6 @@ sub ImportKey {
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
         my $pid = safe_run_child { $gnupg->wrap_call(
             handles => $handles,
             commands => ['--import'],

@@ -51,14 +51,14 @@
 <form action="Create.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="new" />
 
-<table>
+<table width="100%">
 <tr>
 <td class="label">
 <&|/l&>Queue</&>:
 </td>
 <td class="value">
     <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id || ''%>" />
-    <strong><%$queue_obj->Name || ''%></strong> (<%$queue_obj->Description || ''%>)
+    <strong><%$queue_obj->Name || ''%></strong> <% $queue_obj->Description ? '('.$queue_obj->Description.')' : '' %>
 </td>
 </tr>
 <% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>

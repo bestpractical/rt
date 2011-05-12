@@ -180,11 +180,17 @@ sub get_warnings {
     my $self = shift;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    return unless $self->get_ok('/__test_warnings');
+    # We clone here so that when we fetch warnings, we don't disrupt the state
+    # of the test's mech. If we reuse the original mech then you can't
+    # test warnings immediately after fetching page XYZ, then fill out
+    # forms on XYZ. This is because the most recently fetched page has changed
+    # from XYZ to /__test_warnings, which has no form.
+    my $clone = $self->clone;
+    return unless $clone->get_ok('/__test_warnings');
 
     use Storable 'thaw';
 
-    my @warnings = @{ thaw $self->content };
+    my @warnings = @{ thaw $clone->content };
     return @warnings;
 }
 

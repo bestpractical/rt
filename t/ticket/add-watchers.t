@@ -49,7 +49,6 @@ use RT::Test nodata => 1, tests => 32;
 
 use strict;
 use warnings;
-no warnings 'once';
 
 use RT::Queue;
 use RT::User;
@@ -61,7 +60,7 @@ use RT::CurrentUser;
 # clear all global right
 my $acl = RT::ACL->new(RT->SystemUser);
 $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
-$acl->LimitToObject( $RT::System );
+$acl->LimitToObject( RT->System );
 while( my $ace = $acl->Next ) {
 	$ace->Delete;
 }
