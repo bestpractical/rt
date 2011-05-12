@@ -739,12 +739,8 @@ sub SendForward {
     $mail->head->set( $_ => EncodeToMIME( String => $args{$_} ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
 
-    $mail->attach(
-        Type => 'message/rfc822',
-        Disposition => 'attachment',
-        Description => 'forwarded message',
-        Data => $entity->as_string,
-    );
+    $mail->make_multipart unless $mail->is_multipart;
+    $mail->add_part( $entity );
 
     my $from;
     my $subject = '';
