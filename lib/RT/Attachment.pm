@@ -419,14 +419,21 @@ sub Quote {
     return (\$body, $max);
 }
 
-=head2 ContentAsMIME
+=head2 ContentAsMIME [Children => 1]
 
 Returns MIME entity built from this attachment.
+
+If the optional parameter C<Children> is set to a true value, the children are
+recursively added to the entity.
 
 =cut
 
 sub ContentAsMIME {
     my $self = shift;
+    my %opts = (
+        Children => 0,
+        @_
+    );
 
     my $entity = MIME::Entity->new();
     foreach my $header ($self->SplitHeaders) {
@@ -443,6 +450,14 @@ sub ContentAsMIME {
     $entity->bodyhandle(
         MIME::Body::Scalar->new( $self->OriginalContent )
     );
+
+    if ($opts{'Children'}) {
+        my $children = $self->Children;
+        while (my $child = $children->Next) {
+            $entity->make_multipart unless $entity->is_multipart;
+            $entity->add_part( $child->ContentAsMIME(%opts) );
+        }
+    }
 
     return $entity;
 }

@@ -549,44 +549,21 @@ sub _Attach {
 sub ContentAsMIME {
     my $self = shift;
 
-    my $main_content = $self->ContentObj;
-    return unless $main_content;
+    return unless $self->CurrentUserCanSee;
 
-    my $entity = $main_content->ContentAsMIME;
-
-    if ( $main_content->Parent ) {
-        # main content is not top most entity, we shouldn't loose
-        # From/To/Cc headers that are on a top part
-        my $attachments = RT::Attachments->new( $self->CurrentUser );
-        $attachments->Columns(qw(id Parent TransactionId Headers));
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $self->id );
-        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-        my $tmp = $attachments->First;
-        if ( $tmp && $tmp->id ne $main_content->id ) {
-            $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
-            $entity->make_singlepart;
-        }
-    }
+    my $entity = MIME::Entity->build(
+        Type        => 'multipart/mixed',
+        Description => 'transaction ' . $self->Id,
+    );
 
     my $attachments = RT::Attachments->new( $self->CurrentUser );
+    $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
     $attachments->Limit( FIELD => 'TransactionId', VALUE => $self->id );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => $main_content->id,
-    );
-    $attachments->Limit(
-        FIELD => 'ContentType',
-        OPERATOR => 'NOT STARTSWITH',
-        VALUE => 'multipart/',
-    );
-    $attachments->LimitNotEmpty;
+    $attachments->Limit( FIELD => 'Parent',        VALUE => 0 );
+
     while ( my $a = $attachments->Next ) {
         $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME );
+        $entity->add_part( $a->ContentAsMIME(Children => 1) );
     }
     return $entity;
 }

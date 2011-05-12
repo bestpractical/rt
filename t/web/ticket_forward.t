@@ -175,7 +175,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
 
     my $ticket = RT::Test->create_ticket(
         Queue   => 1,
-        Subject => 'test foward, attachments but no "content"',
+        Subject => 'test forward, attachments but no "content"',
         MIMEObj => $mime,
     );
 
@@ -186,6 +186,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     $m->content_like( qr/image\/png/,       'uploaded image file content type' );
     RT::Test->clean_caught_mails;
 
+    # Forward txn
     $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
@@ -196,15 +197,34 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     );
     $m->content_contains( 'Send email successfully', 'sent mail msg' );
     $m->content_like( qr/Forwarded Transaction #\d+ to rt-test\@example\.com/, 'txn msg' );
-    my ($mail) = RT::Test->fetch_caught_mails;
-    like( $mail, qr/Subject: test foward, attachments but no "content"/, 'Subject field' );
-    like( $mail, qr/To: rt-test\@example.com/,         'To field' );
-    like( $mail, qr/This is a forward of transaction/, 'content' );
-    like( $mail, qr/awesome\.patch/,                   'att file name' );
-    like( $mail, qr/this is an attachment/,            'att content' );
-    like( $mail, qr/text\/x-diff/,                     'att content type' );
-    like( $mail, qr/bpslogo\.png/,                     'att image file name' );
-    like( $mail, qr/image\/png/,                       'att image content type' );
+    
+    # Forward ticket
+    $m->follow_link_ok( { text => 'Forward', n => 1 }, 'follow 1st Forward' );
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => {
+            To  => 'rt-test@example.com',
+        },
+        button => 'ForwardAndReturn'
+    );
+    $m->content_contains( 'Send email successfully', 'sent mail msg' );
+    $m->content_like( qr/Forwarded Ticket to rt-test\@example\.com/, 'txn msg' );
+
+    my ($forward_txn, $forward_ticket) = RT::Test->fetch_caught_mails;
+    my $tag = qr/Fwd: \[example\.com #\d+\]/;
+    like( $forward_txn, qr/Subject: $tag attachments for everyone/, 'Subject field is from txn' );
+    like( $forward_txn, qr/This is a forward of transaction/, 'forward description' );
+    like( $forward_ticket, qr/Subject: $tag test forward, attachments but no "content"/, 'Subject field is from ticket' );
+    like( $forward_ticket, qr/This is a forward of ticket/, 'forward description' );
+
+    for my $mail ($forward_txn, $forward_ticket) {
+        like( $mail, qr/To: rt-test\@example.com/,         'To field' );
+        like( $mail, qr/awesome\.patch/,                   'att file name' );
+        like( $mail, qr/this is an attachment/,            'att content' );
+        like( $mail, qr/text\/x-diff/,                     'att content type' );
+        like( $mail, qr/bpslogo\.png/,                     'att image file name' );
+        like( $mail, qr/image\/png/,                       'att image content type' );
+    }
 }
 
 undef $m;
