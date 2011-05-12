@@ -549,6 +549,9 @@ sub _Attach {
 sub ContentAsMIME {
     my $self = shift;
 
+    # RT::Attachments doesn't limit ACLs as strictly as RT::Transaction does
+    # since it has less information available without looking to it's parent
+    # transaction.  Check ACLs here before we go any further.
     return unless $self->CurrentUserCanSee;
 
     my $entity = MIME::Entity->build(
