@@ -77,13 +77,6 @@ if ($ShowDisplayModes or $ShowTitle) {
     }
 </%perl>
 <div class="history">
-<script type="text/javascript">
-var _rt_dict = {};
-_rt_dict = { 'hide quoted text': '<% loc('hide quoted text') %>',
-             'show quoted text': '<% loc('show quoted text') %>'
-           };
-</script>
-
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 <div id="ticket-history">
