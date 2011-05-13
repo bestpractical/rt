@@ -51,8 +51,6 @@ use RT::Util;
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init', CallbackPage => '/autohandler' );
 
 RT::Interface::Web::HandleRequest(\%ARGS);
-
-$m->comp( '/Elements/Footer', %ARGS );
 </%INIT>
 <%ARGS>
 $user => undef
