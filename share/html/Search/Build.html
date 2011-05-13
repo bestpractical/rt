@@ -227,10 +227,6 @@ foreach my $arg ( keys %ARGS ) {
             elsif ( $op eq '!=' ) {
                 $op = "IS NOT";
             }
-
-            # This isn't "right", but...
-            # It has to be this way until #5182 is fixed
-            $value = "'NULL'";
         }
         else {
             $value =~ s/'/\\'/g;
