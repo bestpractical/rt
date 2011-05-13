@@ -144,7 +144,6 @@ my $render_attachment = sub {
 
     # if it has a content-disposition: attachment, don't show inline
     my $disposition = $message->GetHeader('Content-Disposition');
-    my $has_name = $disposition && $disposition =~ /filename=.+/ ? 1 : 0;
 
     if ( $disposition && $disposition =~ /^\s*attachment/i ) {
         $disposition = 'attachment';
@@ -215,7 +214,8 @@ my $render_attachment = sub {
                 );
 
                 require HTML::Quoted;
-                $content = HTML::Quoted->extract( $content ) unless $has_name;
+                $content = HTML::Quoted->extract($content)
+                  unless $message->Filename;
 
                 $m->comp(
                     'ShowMessageStanza',
@@ -233,7 +233,7 @@ my $render_attachment = sub {
             # if it's a text/plain show the body
             elsif ( $message->ContentType =~ m{^(text|message)}i ) {
 
-                unless ( $has_name ) {
+                unless ( $message->Filename ) {
                     eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
                     if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
                 }
