@@ -108,3 +108,7 @@ fieldset.cfedit {
     font-family: arial,helvetica,sans-serif !important;
 }
 
+.overdue {
+    color: red;
+}
+
