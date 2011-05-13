@@ -1483,7 +1483,7 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => Encode::encode_utf8(
+    $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
         RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
     ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
