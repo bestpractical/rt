@@ -1658,6 +1658,9 @@ sub MakeMIMEEntity {
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
                 $Message->head->set( 'Subject' => $filename );
             }
+
+            # Attachment parts really shouldn't get a Message-ID
+            $Message->head->delete('Message-ID');
         }
     }
 
