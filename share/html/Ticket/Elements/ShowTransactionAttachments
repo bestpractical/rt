@@ -146,7 +146,7 @@ my $render_attachment = sub {
     my $disposition = $message->GetHeader('Content-Disposition');
     my $has_name = $disposition && $disposition =~ /filename=.+/ ? 1 : 0;
 
-    if ( $disposition && $disposition =~ /attachment/i && $disposition !~ /^\s*inline/ ) {
+    if ( $disposition && $disposition =~ /^\s*attachment/i ) {
         $disposition = 'attachment';
     } else {
         $disposition = 'inline';
