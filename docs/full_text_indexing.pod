@@ -2,6 +2,17 @@
 
 Full text indexing in RT
 
+=head1 LIMITATIONS
+
+While all of the below solutions can search for Unicode characters, they
+are not otherwise Unicode aware, and do no case folding, normalization,
+or the like.  That is, a string that contains C<U+0065 LATIN SMALL
+LETTER E> followed by C<U+0301 COMBINING ACUTE ACCENT> will not match a
+search for C<U+00E9 LATIN SMALL LETTER E WITH ACUTE>.  They also only
+know how to tokenize C<latin-1>-ish languages where words are separated
+by whitespace or similar characters; as such, support for searching for
+Japanese and Chinese content is extremely limited.
+
 =head1 POSTGRES
 
 =head2 Creating and configuring the index
