@@ -66,7 +66,7 @@
     <td class="label"><&|/l&>Due</&>:</td>\
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
-    <td class="value"><% $due->AsString  %></span></td>
+    <td class="value"><span class="overdue"><% $due->AsString  %></span></td>
 % } else {
     <td class="value"><% $due->AsString  %></td>
 % }
