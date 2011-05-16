@@ -63,11 +63,13 @@ use vars qw($BasePath
  $SbinPath
  $VarPath
  $LexiconPath
+ $StaticPath
  $PluginPath
  $LocalPath
  $LocalEtcPath
  $LocalLibPath
  $LocalLexiconPath
+ $LocalStaticPath
  $LocalPluginPath
  $MasonComponentRoot
  $MasonLocalComponentRoot
@@ -731,9 +733,9 @@ sub CanonicalizeGeneratedPaths {
         $BasePath = Cwd::realpath($BasePath);
 
         for my $path (
-                    qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
+                    qw/EtcPath BinPath SbinPath VarPath LocalPath StaticPath LocalEtcPath
                     LocalLibPath LexiconPath LocalLexiconPath PluginPath
-                    LocalPluginPath MasonComponentRoot MasonLocalComponentRoot
+                    LocalPluginPath LocalStaticPath MasonComponentRoot MasonLocalComponentRoot
                     MasonDataDir MasonSessionDir/
                      )
         {

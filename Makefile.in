@@ -108,11 +108,13 @@ RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
 RT_FONT_PATH		=	@RT_FONT_PATH_R@
 RT_LEXICON_PATH		=	@RT_LEXICON_PATH_R@
+RT_STATIC_PATH		=	@RT_STATIC_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
 LOCAL_PLUGIN_PATH	=	@RT_LOCAL_PATH_R@/plugins
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH_R@
 LOCAL_LIB_PATH		=	@LOCAL_LIB_PATH_R@
 LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH_R@
+LOCAL_STATIC_PATH	=	@LOCAL_STATIC_PATH_R@
 MASON_HTML_PATH		=	@MASON_HTML_PATH_R@
 MASON_LOCAL_HTML_PATH	=	@MASON_LOCAL_HTML_PATH_R@
 MASON_DATA_PATH		=	@MASON_DATA_PATH_R@
@@ -303,15 +305,21 @@ fixperms:
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(MASON_HTML_PATH) \
 					$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 					$(DESTDIR)$(RT_LEXICON_PATH) \
-					$(DESTDIR)$(LOCAL_LEXICON_PATH)
+					$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+					$(DESTDIR)$(RT_STATIC_PATH) \
+					$(DESTDIR)$(LOCAL_STATIC_PATH)
 	chown -R $(LIBS_OWNER) 	$(DESTDIR)$(MASON_HTML_PATH) \
 				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 				$(DESTDIR)$(RT_LEXICON_PATH) \
-				$(DESTDIR)$(LOCAL_LEXICON_PATH)
+				$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+				$(DESTDIR)$(RT_STATIC_PATH) \
+				$(DESTDIR)$(LOCAL_STATIC_PATH)
 	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)$(MASON_HTML_PATH) \
 				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 				$(DESTDIR)$(RT_LEXICON_PATH) \
-				$(DESTDIR)$(LOCAL_LEXICON_PATH)
+				$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+				$(DESTDIR)$(RT_STATIC_PATH) \
+				$(DESTDIR)$(LOCAL_STATIC_PATH)
 
 	# Make the web ui's data dir writable
 	chmod 0770  	$(DESTDIR)$(MASON_DATA_PATH) \
@@ -325,6 +333,7 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_STATIC_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/cache
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/etc
@@ -336,10 +345,11 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LIB_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_PLUGIN_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_STATIC_PATH)
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install static-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
@@ -406,6 +416,14 @@ po-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/po/$$file" "$(DESTDIR)$(RT_LEXICON_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
+static-install:
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_STATIC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_STATIC_PATH)
+@COMMENT_INPLACE_LAYOUT@	-( cd share/static && find . -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_STATIC_PATH)/$$dir" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	-( cd share/static && find . -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/static/$$file" "$(DESTDIR)$(RT_STATIC_PATH)/$$file" ; \
+@COMMENT_INPLACE_LAYOUT@	done
 
 
 doc-install:
@@ -454,6 +472,12 @@ local-install:
 	done
 	-( cd local/po && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "local/po/$$file" "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$file" ; \
+	done
+	-( cd local/static && find . -type d -print ) | while read dir ; do \
+	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_STATIC_PATH)/$$dir" ; \
+	done
+	-( cd local/static && find . -type f -print ) | while read file ; do \
+	    $(INSTALL) -m 0644 "local/static/$$file" "$(DESTDIR)$(LOCAL_STATIC_PATH)/$$file" ; \
 	done
 	-( cd local/etc && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_ETC_PATH)/$$dir" ; \
