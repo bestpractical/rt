@@ -92,6 +92,7 @@ my %OPT = (
     help        => 0,
     ask         => 1,
     dryrun      => 0,
+    attachments => 1,
 );
 
 my %DEFAULT;
@@ -118,6 +119,7 @@ GetOptions(
     'ask!'           => \$OPT{'ask'},
     'dry-run!'       => \$OPT{'dryrun'},
     'binary!'        => \$OPT{'binary'},
+    'attachments!'   => \$OPT{'attachments'},
 
     'table=s'        => \$OPT{'table'},
     'column=s'       => \$OPT{'column'},
@@ -132,7 +134,6 @@ GetOptions(
 if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
     show_help( !$OPT{'help'} );
 }
-
 
 my $dbh = $RT::Handle->dbh;
 $dbh->{'RaiseError'} = 1;
@@ -495,7 +496,7 @@ sub ora_create_format_column {
         BEGIN
             format := CASE
     };
-    if ( $RT::DontSearchFileAttachments ) {
+    unless ( $OPT{'attachments'} ) {
         $detect_format .= qq{
                 WHEN fname IS NOT NULL THEN 'ignore'
         };
@@ -711,7 +712,9 @@ flag.
 The Oracle index determines which content-types it will index, at
 creation time.  By default, unknown content-types are ignored; to
 instead index unknown content-types as binary data, pass the C<--binary>
-flag when the index is created.
+flag when the index is created.  By default, uploaded attachments
+(attachments with filenames) are indexed; to ignore these instead, pass
+the C<--no-attachments> flag when the index is create.
 
 =head1 AUTHOR
 

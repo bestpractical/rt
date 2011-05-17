@@ -1189,17 +1189,6 @@ Set(%FullTextSearch,
 );
 
 
-=item C<$DontSearchFileAttachments>
-
-This refers to F<sbin/rt-setup-fulltext-index>.
-
-If C<$DontSearchFileAttachments> is set to 1, then uploaded files
-(attachments with file names) are not indexed.
-
-=cut
-
-Set($DontSearchFileAttachments, undef);
-
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 
 When query in simple search doesn't have status info, use this to only
