@@ -20,7 +20,7 @@ diag $url if $ENV{TEST_VERBOSE};
 # Stop server and set MasonLocalComponentRoot
 RT::Test->stop_server;
 
-$RT::MasonLocalComponentRoot = RT::Test::get_abs_relocatable_dir('html');
+RT->Config->Set(MasonLocalComponentRoot => RT::Test::get_abs_relocatable_dir('html'));
 
 ($baseurl, $agent) = RT::Test->started_ok;
 
