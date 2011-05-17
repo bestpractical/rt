@@ -78,6 +78,7 @@ use warnings;
 use RT::Transaction;
 use MIME::Base64;
 use MIME::QuotedPrint;
+use MIME::Body;
 
 sub _OverlayAccessible {
   {
@@ -294,13 +295,26 @@ sub Content {
 =head2 OriginalContent
 
 Returns the attachment's content as octets before RT's mangling.
-Currently, this just means restoring text content back to its
+Generally this just means restoring text content back to its
 original encoding.
+
+If the attachment has a C<message/*> Content-Type, its children attachments
+are reconstructed and returned as a string.
 
 =cut
 
 sub OriginalContent {
     my $self = shift;
+
+    # message/* content types represent raw messages.  Since we break them
+    # apart when they come in, we'll reconstruct their child attachments when
+    # you ask for the OriginalContent of the message/ part.
+    if ($self->IsMessageContentType) {
+        # There shouldn't be more than one "subpart" to a message/* attachment
+        my $child = $self->Children->First;
+        return $self->Content unless $child and $child->id;
+        return $child->ContentAsMIME(Children => 1)->as_string;
+    }
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
     my $enc = $self->OriginalEncoding;
@@ -446,12 +460,11 @@ sub ContentAsMIME {
         "Content-Type.charset" => $self->OriginalEncoding )
       if $self->OriginalEncoding;
 
-    use MIME::Body;
     $entity->bodyhandle(
         MIME::Body::Scalar->new( $self->OriginalContent )
     );
 
-    if ($opts{'Children'}) {
+    if ($opts{'Children'} and not $self->IsMessageContentType) {
         my $children = $self->Children;
         while (my $child = $children->Next) {
             $entity->make_multipart unless $entity->is_multipart;
@@ -462,6 +475,17 @@ sub ContentAsMIME {
     return $entity;
 }
 
+=head2 IsMessageContentType
+
+Returns a boolean indicating if the Content-Type of this attachment is a
+C<message/> subtype.
+
+=cut
+
+sub IsMessageContentType {
+    my $self = shift;
+    return $self->ContentType =~ m{^\s*message/}i ? 1 : 0;
+}
 
 =head2 Addresses
 
