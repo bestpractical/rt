@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 29;
+use RT::Test tests => 30;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $att_fh, $att_file ) =
@@ -87,7 +87,7 @@ diag "Foward Ticket without content" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Test->create_ticket(
         Subject => 'test forward without content',
-        Queue   => 'General',
+        Queue   => 1,
     );
     $m->get_ok( $baseurl . '/Ticket/Forward.html?id=' . $ticket->id );
     $m->submit_form(

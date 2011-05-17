@@ -1,11 +1,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test tests => 12;
 
 my $ticket = RT::Test->create_ticket(
     Subject => 'test bulk update',
-    Queue   => 'General',
+    Queue   => 1,
 );
 
 my ( $url, $m ) = RT::Test->started_ok;

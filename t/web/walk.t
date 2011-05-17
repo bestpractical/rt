@@ -39,13 +39,13 @@ ok( $class->id, 'created class_foo' );
 # to make search have results
 my $open_ticket = RT::Test->create_ticket(
     Subject => 'ticket_foo',
-    Queue   => 'General'
+    Queue   => 1,
 );
 
 my $resolved_ticket = RT::Test->create_ticket(
     Subject => 'ticket_bar',
     Status  => 'resolved',
-    Queue   => 'General'
+    Queue   => 1,
 );
 
 my @links = (

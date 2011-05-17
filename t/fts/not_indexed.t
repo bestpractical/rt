@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => 11;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 0 );
 

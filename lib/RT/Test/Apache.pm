@@ -50,13 +50,20 @@ package RT::Test::Apache;
 use strict;
 use warnings;
 
-my $apache_module_prefix;
+my %MODULES = (
+    '2.2' => {
+        "mod_perl" => [qw(authz_host env alias perl)],
+        "fastcgi"  => [qw(authz_host env alias mime fastcgi)],
+    },
+);
+
+my $apache_module_prefix = $ENV{RT_TEST_APACHE_MODULES};
 my $apxs =
      $ENV{RT_TEST_APXS}
   || RT::Test->find_executable('apxs')
   || RT::Test->find_executable('apxs2');
 
-if ($apxs) {
+if ($apxs and not $apache_module_prefix) {
     $apache_module_prefix = `$apxs -q LIBEXECDIR`;
     chomp $apache_module_prefix;
 }
@@ -87,16 +94,14 @@ sub start_server {
         rt_bin_path    => $RT::BinPath,
         rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
+        load_modules   => $info{load_modules},
     );
     foreach (qw(log pid lock)) {
         $opt{$_ .'_file'} = File::Spec->catfile(
             "$tmp{'directory'}", "apache.$_"
         );
     }
-    {
-        my $method = 'apache_'.$variant.'_server_options';
-        $self->$method( \%info, \%opt );
-    }
+
     $tmp{'config'}{'apache'} = File::Spec->catfile(
         "$tmp{'directory'}", "apache.conf"
     );
@@ -108,16 +113,24 @@ sub start_server {
 
     $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
-        my $tries = 10;
-        while ( !-e $opt{'pid_file'} ) {
+        my $tries = 15;
+        while ( !-s $opt{'pid_file'} ) {
             $tries--;
             last unless $tries;
             sleep 1;
         }
-        Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
-            unless -e $opt{'pid_file'};
-        open( my $pid_fh, '<', $opt{'pid_file'} )
-            or Test::More::BAIL_OUT("Couldn't open pid file: $!");
+        my $pid_fh;
+        unless (-e $opt{'pid_file'} and open($pid_fh, '<', $opt{'pid_file'})) {
+            Test::More::BAIL_OUT("Couldn't start apache server, no pid file (unknown error)")
+                  unless -e $opt{log_file};
+
+            open my $log, "<", $opt{log_file};
+            my $error = do {local $/; <$log>};
+            close $log;
+            $RT::Logger->error($error) if $error;
+            Test::More::BAIL_OUT("Couldn't start apache server!");
+        }
+
         my $pid = <$pid_fh>;
         chomp $pid;
         $pid;
@@ -134,6 +147,11 @@ sub apache_server_info {
     my $bin = $res{'executable'} = $ENV{'RT_TEST_APACHE'}
         || $self->find_apache_server
         || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
+
+    Test::More::BAIL_OUT(
+        "Couldn't find apache modules directory (set APXS= or RT_TEST_APACHE_MODULES=)"
+    ) unless -d $apache_module_prefix;
+
 
     RT::Test::diag("Using '$bin' apache executable for testing");
 
@@ -152,47 +170,27 @@ sub apache_server_info {
         split /\r*\n/, `$bin -l`
     ];
 
+    Test::More::BAIL_OUT(
+        "Unsupported apache version $res{version}"
+    ) unless exists $MODULES{$res{version}};
+
+    Test::More::BAIL_OUT(
+        "Unsupported apache variant $res{variant}"
+    ) unless exists $MODULES{$res{version}}{$res{variant}};
+
+    my @mlist = @{$MODULES{$res{version}}{$res{variant}}};
+
+    $res{'load_modules'} = '';
+    foreach my $mod ( @mlist ) {
+        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $res{'modules'} };
+
+        my $so_file = $apache_module_prefix."/mod_".$mod.".so";
+        Test::More::BAIL_OUT( "Couldn't load $mod module (expected in $so_file)" )
+              unless -f $so_file;
+        $res{'load_modules'} .=
+            "LoadModule ${mod}_module $so_file\n";
+    }
     return %res;
-}
-
-sub apache_mod_perl_server_options {
-    my $self = shift;
-    my %info = %{ shift() };
-    my $current = shift;
-
-    my %required_modules = (
-        '2.2' => [qw(authz_host env alias perl)],
-    );
-    my @mlist = @{ $required_modules{ $info{'version'} } };
-
-    $current->{'load_modules'} = '';
-    foreach my $mod ( @mlist ) {
-        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
-
-        $current->{'load_modules'} .=
-            "LoadModule ${mod}_module $apache_module_prefix/mod_${mod}.so\n";
-    }
-    return;
-}
-
-sub apache_fastcgi_server_options {
-    my $self = shift;
-    my %info = %{ shift() };
-    my $current = shift;
-
-    my %required_modules = (
-        '2.2' => [qw(authz_host env alias mime fastcgi)],
-    );
-    my @mlist = @{ $required_modules{ $info{'version'} } };
-
-    $current->{'load_modules'} = '';
-    foreach my $mod ( @mlist ) {
-        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
-
-        $current->{'load_modules'} .=
-            "LoadModule ${mod}_module $apache_module_prefix/mod_${mod}.so\n";
-    }
-    return;
 }
 
 sub find_apache_server {
