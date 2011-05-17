@@ -32,8 +32,7 @@ diag "simple rfc822 attachment";
     my $parsed = content_as_mime($top);
 
     for my $mime ($top, $parsed) {
-        diag $mime->head->get('X-RT-Original-Encoding') ? "reconstructed mail" : "original mail";
-
+        diag "testing mail";
         is $mime->parts, 2, 'two mime parts';
 
         like $mime->head->get('Subject'), qr/this is top/, 'top subject';
@@ -86,8 +85,7 @@ diag "multipart rfc822 attachment";
     my $parsed = content_as_mime($top);
 
     for my $mime ($top, $parsed) {
-        diag $mime->head->get('X-RT-Original-Encoding') ? "reconstructed mail" : "original mail";
-
+        diag "testing mail";
         is $mime->parts, 2, 'two mime parts';
 
         like $mime->head->get('Subject'), qr/this is top/, 'top subject';
@@ -117,7 +115,9 @@ sub content_as_mime {
     my ( $status, $id ) = RT::Test->send_via_mailgate($entity);
     is( $status >> 8, 0, "The mail gateway exited normally" );
     ok( $id, "created ticket" );
-    return RT::Test->last_ticket->Transactions->First->ContentAsMIME;
+    # We can't simply use Txn->ContentAsMIME since that is wrapped in a
+    # message/rfc822 entity
+    return RT::Test->last_ticket->Transactions->First->Attachments->First->ContentAsMIME(Children => 1);
 }
 
 sub headers_like {
