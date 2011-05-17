@@ -387,10 +387,6 @@ sub CreateByTemplate {
         }
 
         $RT::Logger->debug("Assigned $template_id with $id");
-        $T::Tickets{$template_id}->SetOriginObj( $self->TicketObj )
-            if $self->TicketObj
-            && $T::Tickets{$template_id}->can('SetOriginObj');
-
     }
 
     $self->PostProcess( \@links, \@postponed );
