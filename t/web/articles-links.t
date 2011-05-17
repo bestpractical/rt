@@ -3,7 +3,7 @@ use warnings;
 
 use RT::Test tests => 17;
 
-$RT::MasonLocalComponentRoot = RT::Test::get_abs_relocatable_dir('html');
+RT->Config->Set( MasonLocalComponentRoot => RT::Test::get_abs_relocatable_dir('html') );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
