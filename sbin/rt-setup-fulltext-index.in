@@ -271,7 +271,7 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             ."$column tsvector )";
     }
 
-    my $index_type = lc $OPT{'index-type'} || '';
+    my $index_type = lc($OPT{'index-type'} || '');
     while ( $index_type ne 'gist' and $index_type ne 'gin' ) {
         $index_type = lc prompt(
             message => "You may choose between GiST or GIN indexes; the former is several times\n"
