@@ -78,3 +78,5 @@ run_tests(
     "Content LIKE 'bar'" => { book => 0, bar => 1 },
 );
 
+@tickets = ();
+

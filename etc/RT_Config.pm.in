@@ -1169,49 +1169,24 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
 
 =item C<%FullTextSearch>
 
-Full text search (FTS) without indexes is a very slow operation and by
-default is disabled at all. To enable FTS set key 'Enable' to 1.
+Full text search (FTS) without database indexing is a very slow
+operation, and is thus disabled by default.
 
-Setup of indexes and filling them with data requires additional steps
-that vary from DB to DB. Use F<sbin/rt-setup-fulltext-index> helper
-for quick start. This script creates required structures in the DB and
-gives some ideas on next steps. Use F<sbin/rt-fulltext-indexer> to
-keep the index in sync.
+Before setting C<Indexed> to 1, read F<docs/full_text_indexing.pod> for
+the full details of FTS on your particular database.
+
+It is possible to enable FTS without database indexing support, simply
+by setting the C<Enable> key to 1, while leaving C<Indexed> set to 0.
+This is not generally suggested, as unindexed full-text searching can
+cause severe performance problems.
 
 =cut
 
 Set(%FullTextSearch,
     Enable  => 0,
     Indexed => 0,
-#    Table   => 'AttachmentsIndex',
-#    Column  => 'ftsindex',
 );
 
-
-=item C<$DontSearchFileAttachments>
-
-This refers to F<sbin/rt-setup-fulltext-index>.
-
-If C<$DontSearchFileAttachments> is set to 1, then uploaded files
-(attachments with file names) are not indexed.
-
-=cut
-
-Set($DontSearchFileAttachments, undef);
-
-=item C<$DontSearchBinaryAttachments>
-
-This refers to F<sbin/rt-setup-fulltext-index>.
-
-By default, text attachments are always indexed, and a known set of
-binary attachments are always skipped.
-
-If C<$DontSearchBinaryAttachments> is set to 1, then unrecognized binary
-data types will not be indexed.
-
-=cut
-
-Set($DontSearchBinaryAttachments, undef);
 
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 

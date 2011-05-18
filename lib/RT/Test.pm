@@ -1360,6 +1360,10 @@ sub stop_server {
     @SERVERS = ();
 }
 
+sub temp_directory {
+    return $tmp{'directory'};
+}
+
 sub file_content {
     my $self = shift;
     my $path = shift;
