@@ -709,7 +709,7 @@ explicitly:
 To test what will happen without running any DDL, pass the C<--dryrun>
 flag.
 
-The Oracle index determines which content-types it will index, at
+The Oracle index determines which content-types it will index at
 creation time.  By default, unknown content-types are ignored; to
 instead index unknown content-types as binary data, pass the C<--binary>
 flag when the index is created.  By default, uploaded attachments

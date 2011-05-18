@@ -18,7 +18,7 @@ Japanese and Chinese content is extremely limited.
 =head2 Creating and configuring the index
 
 Postgres 8.3 and above support full-text searching natively; to set up
-an the C<ts_vector> column, and creates either a C<GiN> or C<GiST> index
+on the C<ts_vector> column, and creates either a C<GiN> or C<GiST> index
 on it, run:
 
     sbin/rt-setup-fulltext-index
@@ -46,12 +46,10 @@ To keep the index up-to-date, you will need to run:
     sbin/rt-fulltext-indexer
 
 ...at regular intervals.  By default, this will only tokenize up to 100
-tickets at a time; you can adjust this batch upwards by passing
-C<--limit 500>, for instance.  Larger batch sizes will take longer and
+tickets at a time; you can adjust this upwards by passing
+C<--limit 500>.  Larger batch sizes will take longer and
 consume more memory.  Care should be taken to ensure that multiple
-instances of C<rt-fulltext-indexer> are not run at the same time, should
-it be run at too close intervals for the given batch size.
-
+instances of C<rt-fulltext-indexer> are not run at the same time.
 
 =head1 MYSQL
 
@@ -96,7 +94,7 @@ provided by Sphinx:
 
     indexer rt
 
-This command should also be run at regular intervals in order to pick
+This command should also be run at regular intervals in order to pick up
 new and updated attachments from RT's database.  Failure to do so will
 result in stale data.
 
