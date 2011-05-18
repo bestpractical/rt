@@ -211,7 +211,7 @@ sub db_requires_no_dba {
 sub bootstrap_tempdir {
     my $self = shift;
     my $test_file = (
-        File::Spec->rel2abs((caller)[1])
+        File::Spec->rel2abs((caller(1))[1])
             =~ m{(?:^|[\\/])t[/\\](.*)}
     );
     my $dir_name = File::Spec->rel2abs('t/tmp/'. $test_file);
