@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 8;
+use RT::Test tests => 9;
 
 my ($url, $m) = RT::Test->started_ok;
 

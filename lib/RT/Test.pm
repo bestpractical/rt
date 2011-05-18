@@ -687,6 +687,15 @@ sub create_ticket {
     my $self = shift;
     my %args = @_;
 
+    if ($args{Queue} && $args{Queue} =~ /\D/) {
+        my $queue = RT::Queue->new(RT->SystemUser);
+        if (my $id = $queue->Load($args{Queue}) ) {
+            $args{Queue} = $id;
+        } else {
+            die ("Error: Invalid queue $args{Queue}");
+        }
+    }
+
     if ( my $content = delete $args{'Content'} ) {
         $args{'MIMEObj'} = MIME::Entity->build(
             From    => $args{'Requestor'},
