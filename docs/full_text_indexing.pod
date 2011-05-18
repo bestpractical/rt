@@ -18,8 +18,8 @@ Japanese and Chinese content is extremely limited.
 =head2 Creating and configuring the index
 
 Postgres 8.3 and above support full-text searching natively; to set up
-on the C<ts_vector> column, and creates either a C<GiN> or C<GiST> index
-on it, run:
+the required C<ts_vector> column, and create either a C<GiN> or C<GiST>
+index on it, run:
 
     sbin/rt-setup-fulltext-index
 
