@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 20;
+use RT::Test tests => 22;
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 my $group_foo = RT::Group->new($RT::SystemUser);
@@ -42,6 +42,7 @@ ok(
     ),
     'no link to modify user'
 );
+$m->content_contains('Enoch Root', 'still has the user name' );
 
 ok(
     !$m->find_link(
@@ -50,6 +51,8 @@ ok(
     ),
     'no link to modify group'
 );
+
+$m->content_contains('group_foo', 'still has the group name' );
 
 ok( RT::Test->add_rights( { Principal => $user, Right => ['AdminUsers'] }, ),
     'added AdminUsers right' );
