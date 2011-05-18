@@ -43,7 +43,7 @@ diag "Foward Ticket" if $ENV{TEST_VERBOSE};
         },
         button => 'ForwardAndReturn'
     );
-    $m->content_contains( 'Send email successfully', 'sent mail msg' );
+    $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_contains(
         'Forwarded Ticket to rt-test, rt-to@example.com, rt-cc@example.com',
         'txn msg' );
@@ -68,7 +68,7 @@ diag "Foward Transaction" if $ENV{TEST_VERBOSE};
         },
         button => 'ForwardAndReturn'
     );
-    $m->content_contains( 'Send email successfully', 'sent mail msg' );
+    $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_like(
 qr/Forwarded Transaction #\d+ to rt-test, rt-to\@example.com, rt-cc\@example.com, rt-bcc\@example.com/,
         'txn msg'
@@ -95,6 +95,6 @@ diag "Foward Ticket without content" if $ENV{TEST_VERBOSE};
         fields    => { To => 'rt-test@example.com', },
         button    => 'ForwardAndReturn'
     );
-    $m->content_contains( 'Send email successfully', 'sent mail msg' );
+    $m->content_contains( 'Sent email successfully', 'sent mail msg' );
 }
 

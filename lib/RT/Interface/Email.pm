@@ -766,7 +766,7 @@ sub SendForward {
         ? SendEmail( %args, Entity => $mail, Sign => 0 )
         : SendEmail( %args, Entity => $mail );
     return (0, $ticket->loc("Couldn't send email")) unless $status;
-    return (1, $ticket->loc("Send email successfully"));
+    return (1, $ticket->loc("Sent email successfully"));
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
