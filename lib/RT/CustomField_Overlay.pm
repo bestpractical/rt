@@ -1417,7 +1417,7 @@ sub SetBasedOn {
     return (0, "Permission denied")
         unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
 
-    return $self->AddAttribute(
+    return $self->SetAttribute(
         Name => "BasedOn",
         Description => "Custom field whose CF we depend on",
         Content => $cf->Id,
