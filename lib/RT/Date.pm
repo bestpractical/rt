@@ -883,7 +883,7 @@ sub iCal {
     my $res;
     if ( $args{'Date'} && !$args{'Time'} ) {
         my (undef, undef, undef, $mday, $mon, $year) =
-            $self->Localtime( 'utc' );
+            $self->Localtime( 'user' );
         $res = sprintf( '%04d%02d%02d', $year, $mon+1, $mday );
     } elsif ( !$args{'Date'} && $args{'Time'} ) {
         my ($sec, $min, $hour) =
