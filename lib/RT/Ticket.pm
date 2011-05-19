@@ -1929,17 +1929,15 @@ sub SetStarted {
         $time_obj->SetToNow();
     }
 
-    #Now that we're starting, open this ticket
-    #TODO do we really want to force this as policy? it should be a scrip
-
-    #We need $TicketAsSystem, in case the current user doesn't have
-    #ShowTicket
-    #
+    # We need $TicketAsSystem, in case the current user doesn't have
+    # ShowTicket
     my $TicketAsSystem = RT::Ticket->new(RT->SystemUser);
     $TicketAsSystem->Load( $self->Id );
-    if ( $TicketAsSystem->Status eq 'new' ) {
-        $TicketAsSystem->Open();
-    }
+    # Now that we're starting, open this ticket
+    # TODO: do we really want to force this as policy? it should be a scrip
+    my $next = $TicketAsSystem->FirstActiveStatus;
+
+    $self->SetStatus( $next ) if defined $next;
 
     return ( $self->_Set( Field => 'Started', Value => $time_obj->ISO ) );
 
