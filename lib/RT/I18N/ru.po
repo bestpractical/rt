@@ -251,7 +251,7 @@ msgstr "%1 изменено с '%2' на '%3'"
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 #. ($m->scomp('SelectChartType', Name => 'ChartStyle'), $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "%1 chart by %2"
-msgstr "график %1 группированный по"
+msgstr "график %1 группированный по %2"
 
 #: share/html/Search/Elements/EditSearches:200
 #. ($SavedSearch->{'Object'}->Description)
