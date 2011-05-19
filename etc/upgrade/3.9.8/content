@@ -1,12 +1,14 @@
 @Initial = sub {
     my $dbh = $RT::Handle->dbh;
     my $sth = $dbh->table_info( '', undef, undef, "'TABLE'");
-    my $found_fm_tables;
+    my $found_fm_tables = {};
     while ( my $table = $sth->fetchrow_hashref ) {
-        my $name = $table->{TABLE_NAME};
+        my $name = $table->{TABLE_NAME} || $table->{table_name};
         next unless $name =~ /^fm_/i;
         $found_fm_tables->{lc $name}++;
     }
+
+    return unless %$found_fm_tables;
 
     unless ( $found_fm_tables->{fm_topics} && $found_fm_tables->{fm_objecttopics} ) {
         $RT::Logger->error("You appear to be upgrading from RTFM 2.0 - We don't support upgrading this old of an RTFM yet");
