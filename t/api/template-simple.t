@@ -167,10 +167,10 @@ TemplateTest(
 
 is($ticket->Status, 'new', "test setup");
 SimpleTemplateTest(
-    Content => "\ntest { \$Ticket->Resolve }",
-    Output  => "test { \$Ticket->Resolve }",
+    Content => "\ntest { \$Ticket->SetStatus('resolved') }",
+    Output  => "test { \$Ticket->SetStatus('resolved') }",
 );
-is($ticket->Status, 'new', "simple templates can't call ->Resolve");
+is($ticket->Status, 'new', "simple templates can't call ->SetStatus");
 
 # Make sure changing the template's type works
 my $template = RT::Template->new(RT->SystemUser);
