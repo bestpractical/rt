@@ -1879,6 +1879,29 @@ sub ResolvedObj {
 }
 
 
+=head2 FirstActiveStatus
+
+Returns the first active status that the ticket could transition to,
+according to its current Queue's lifecycle.  This is used in
+L<RT::Action::AutoOpen>, for instance.
+
+=cut
+
+sub FirstActiveStatus {
+    my $self = shift;
+
+    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $status = $self->Status;
+    my @active = $lifecycle->Active;
+    # no change if no active statuses in the lifecycle
+    return undef unless @active;
+
+    # no change if the ticket is already has first status from the list of active
+    return undef if lc $status eq lc $active[0];
+
+    my ($next) = grep $lifecycle->IsActive($_), $lifecycle->Transitions($status);
+    return $next;
+}
 
 =head2 SetStarted
 

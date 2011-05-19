@@ -82,25 +82,17 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $lifecycle = $ticket->QueueObj->Lifecycle;
-    my $status = $ticket->Status;
-
-    my @active = $lifecycle->Active;
-    # no change if no active statuses in the lifecycle
-    return 1 unless @active;
-
-    # no change if the ticket is already has first status from the list of active
-    return 1 if lc $status eq lc $active[0];
+    my $next = $ticket->FirstActiveStatus;
+    return 1 unless defined $next;
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $lifecycle->IsInitial($status) && $self->TransactionObj->IsInbound;
+    return 1 if $ticket->QueueObj->Lifecycle->IsInitial($ticket->Status)
+        && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
         return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
-
-    my ($next) = grep $lifecycle->IsActive($_), $lifecycle->Transitions($status);
 
     $self->{'set_status_to'} = $next;
 
