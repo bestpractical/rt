@@ -879,21 +879,20 @@ sub iCal {
         Date => 1, Time => 1,
         @_,
     );
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-        $self->Localtime( 'utc' );
-
-    #the month needs incrementing, as gmtime returns 0-11
-    $mon++;
 
     my $res;
     if ( $args{'Date'} && !$args{'Time'} ) {
-        $res = sprintf( '%04d%02d%02d', $year, $mon, $mday );
-    }
-    elsif ( !$args{'Date'} && $args{'Time'} ) {
+        my (undef, undef, undef, $mday, $mon, $year) =
+            $self->Localtime( 'utc' );
+        $res = sprintf( '%04d%02d%02d', $year, $mon+1, $mday );
+    } elsif ( !$args{'Date'} && $args{'Time'} ) {
+        my ($sec, $min, $hour) =
+            $self->Localtime( 'utc' );
         $res = sprintf( 'T%02d%02d%02dZ', $hour, $min, $sec );
-    }
-    else {
-        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon, $mday, $hour, $min, $sec );
+    } else {
+        my ($sec, $min, $hour, $mday, $mon, $year) =
+            $self->Localtime( 'utc' );
+        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon+1, $mday, $hour, $min, $sec );
     }
     return $res;
 }
