@@ -32,7 +32,7 @@
                       );
         while ( my $group = $groups->Next ) {
             my $members = $group->MembersObj();
-            while ( my $member = $membersObj->Next ) {
+            while ( my $member = $members->Next ) {
                 my ( $ok, $msg ) = $group->DeleteMember( $member->MemberId );
                 if ( !$ok ) {
                     $RT::Logger->warn(   "Unable to remove group member "
