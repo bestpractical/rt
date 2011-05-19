@@ -30,6 +30,11 @@ my $move_attributes = sub {
         $cfs->UnLimit;
         $cfs->FindAllRows;
         while ( my $cf = $cfs->Next ) {
+            # Explicitly remove 'ORDER BY id asc' to emulate the
+            # previous functionality, where Pg might return the the
+            # rows in arbitrary order
+            $cf->Attributes->OrderByCols();
+
             my $attr = $cf->FirstAttribute('BasedOn');
             next unless $attr;
             $cf->SetBasedOn($attr->Content);
