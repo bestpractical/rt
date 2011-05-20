@@ -204,53 +204,23 @@ sub _FieldToFunction {
 
     my $field = $args{'FIELD'};
 
-    if ($field =~ /^(.*)(Hourly|Daily|Monthly|Annually)$/) {
-        my ($field, $grouping) = ($1, $2);
-        my $alias = $args{'ALIAS'} || 'main';
+    my ($key, $subkey) = split /\./, $field, 2;
 
-        my $func = "$alias.$field";
-
-        my $db_type = RT->Config->Get('DatabaseType');
+    if ( $subkey && grep $_ eq $subkey, @{ $GROUPINGS{'Date'} } ) {
+        my $tz;
         if ( RT->Config->Get('ChartsTimezonesInDB') ) {
-            my $tz = $self->CurrentUser->UserObj->Timezone
-                || RT->Config->Get('Timezone')
-                || 'UTC';
-            if ( lc $tz eq 'utc' ) {
-                # do nothing
-            }
-            elsif ( $db_type eq 'Pg' ) {
-                $func = "timezone('UTC', $func)";
-                $func = "timezone(". $self->_Handle->dbh->quote($tz) .", $func)";
-            }
-            elsif ( $db_type eq 'mysql' ) {
-                $func = "CONVERT_TZ($func, 'UTC', "
-                    . $self->_Handle->dbh->quote($tz)
-                    .")";
-            }
-            else {
-                $RT::Logger->warning(
-                    "ChartsTimezonesInDB config option"
-                    ." is not supported on $db_type."
-                );
-            }
+            my $to = $self->CurrentUser->UserObj->Timezone
+                || RT->Config->Get('Timezone');
+            $tz = { From => 'UTC', To => $to }
+                if $to && lc $to ne 'utc';
         }
 
-        # Pg 8.3 requires explicit casting
-        $func .= '::text' if $db_type eq 'Pg';
-
-        if ( $grouping eq 'Hourly' ) {
-            $func = "SUBSTR($func,1,13)";
-        }
-        if ( $grouping eq 'Daily' ) {
-            $func = "SUBSTR($func,1,10)";
-        }
-        elsif ( $grouping eq 'Monthly' ) {
-            $func = "SUBSTR($func,1,7)";
-        }
-        elsif ( $grouping eq 'Annually' ) {
-            $func = "SUBSTR($func,1,4)";
-        }
-        $args{'FUNCTION'} = $func;
+        $args{'FUNCTION'} = $RT::Handle->DateTimeFunction(
+            Type => $subkey,
+            Field => "?",
+            Timezone => $tz,
+        );
+        $args{'FIELD'} = $key;
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf = RT::CustomField->new( $self->CurrentUser );
