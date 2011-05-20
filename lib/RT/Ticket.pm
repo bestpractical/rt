@@ -1882,8 +1882,9 @@ sub ResolvedObj {
 =head2 FirstActiveStatus
 
 Returns the first active status that the ticket could transition to,
-according to its current Queue's lifecycle.  This is used in
-L<RT::Action::AutoOpen>, for instance.
+according to its current Queue's lifecycle.  May return undef if there
+is no such possible status to transition to, or we are already in it.
+This is used in L<RT::Action::AutoOpen>, for instance.
 
 =cut
 
