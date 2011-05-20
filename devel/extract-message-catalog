@@ -320,18 +320,8 @@ sub update {
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
 
-        # skip empty messages
-        next if $msgstr eq '';
-
-        # we uniq because a string can use a placeholder more than once
-        # (eg %1 %quant(%1, ...) like in our czech localization
-        my @expected_variables = uniq($msgid =~ /%\d+/g);
-        my @got_variables = uniq($msgstr =~ /%\d+/g);
-
-        next if @expected_variables == @got_variables;
-        warn "$lang string does not have the expected number of placeholders\n";
-        warn "expected " . scalar(@expected_variables) . " in msgid:  $msgid\n";
-        warn "     got " . scalar(@got_variables)      . " in msgstr: $msgstr\n\n";
+        complain_about_placeholder_mismatch($lang, $msgid, $msgstr)
+            unless $msgstr eq '';
     }
 
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
@@ -376,6 +366,25 @@ sub update {
     open PO, '>', $file or die "Couldn't open '$file' for writing: $!";
     print PO $out;
     close PO;
+
+    return 1;
+}
+
+sub complain_about_placeholder_mismatch {
+    my $lang   = shift;
+    my $msgid  = shift;
+    my $msgstr = shift;
+
+    # we uniq because a string can use a placeholder more than once
+    # (eg %1 %quant(%1, ...) like in our czech localization
+    my @expected_variables = uniq($msgid =~ /%\d+/g);
+    my @got_variables = uniq($msgstr =~ /%\d+/g);
+
+    return 0 if @expected_variables == @got_variables;
+
+    warn "$lang string does not have the expected number of placeholders\n";
+    warn "expected " . scalar(@expected_variables) . " in msgid:  $msgid\n";
+    warn "     got " . scalar(@got_variables)      . " in msgstr: $msgstr\n\n";
 
     return 1;
 }
