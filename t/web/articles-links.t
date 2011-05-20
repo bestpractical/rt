@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 17;
+use RT::Test tests => 18;
 
 RT->Config->Set( MasonLocalComponentRoot => RT::Test::get_abs_relocatable_dir('html') );
 
