@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 22;
+use RT::Test tests => 23;
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 my $group_foo = RT::Group->new($RT::SystemUser);
