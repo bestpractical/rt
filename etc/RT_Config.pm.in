@@ -1693,15 +1693,15 @@ be allowed to run arbitrary Perl code on the server via scrips.
 
 Set($DisallowExecuteCode, 0);
 
-=item C<$DisableFramebusting>
+=item C<$Framebusting>
 
-If set to a true value, framekiller javascript will be disabled and the
+If set to a false value, framekiller javascript will be disabled and the
 X-Frame-Options: DENY header will be suppressed from all responses.
 This disables RT's clickjacking protection.
 
 =cut
 
-Set($DisableFramebusting, 0);
+Set($Framebusting, 1);
 
 =back
 

@@ -8,7 +8,7 @@ my ($url, $m);
 
 # Enabled by default
 {
-    ok(!RT->Config->Get('DisableFramebusting'), "Framebusting enabled by default");
+    ok(RT->Config->Get('Framebusting'), "Framebusting enabled by default");
 
     ($url, $m) = RT::Test->started_ok;
     $m->get_ok($url);
@@ -20,7 +20,7 @@ my ($url, $m);
 
 # Disabled
 {
-    RT->Config->Set('DisableFramebusting', 1);
+    RT->Config->Set('Framebusting', 0);
 
     ($url, $m) = RT::Test->started_ok;
     $m->get_ok($url);
