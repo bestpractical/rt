@@ -779,7 +779,7 @@ sub RemoveInappropriateRecipients {
                     foreach my $addr ( @{ $self->{$type} } ) {
                         my $user = RT::User->new(RT->SystemUser);
                         $user->LoadByEmail($addr);
-                        push @blacklist, $addr if ( !$user->Privileged );
+                        push @blacklist, $addr unless $user->id && $user->Privileged;
                     }
                 }
                 $RT::Logger->info( $msgid
