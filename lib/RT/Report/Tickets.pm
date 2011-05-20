@@ -85,11 +85,11 @@ sub Groupings {
 
 
     for my $field (qw(Due Resolved Created LastUpdated Started Starts Told)) { # loc_qw
-        for my $frequency (qw(Hourly Daily Monthly Annually)) { # loc_qw
+        for my $frequency (@{ $GROUPINGS{'Date'} }) {
             push @fields,
               $self->CurrentUser->loc($field)
-              . $self->CurrentUser->loc($frequency),
-              $field . $frequency;
+              .' '. $self->CurrentUser->loc($frequency),
+              "$field.$frequency";
         }
     }
 
