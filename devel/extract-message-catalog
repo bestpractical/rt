@@ -247,6 +247,11 @@ sub extract_strings_from_code {
     close (_);
 }
 
+sub uniq {
+    my %seen;
+    return grep { !$seen{$_}++ } @_;
+}
+
 sub update {
     my $lang = shift;
     my $file = shift;
@@ -314,6 +319,19 @@ sub update {
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
+
+        # skip empty messages
+        next if $msgstr eq '';
+
+        # we uniq because a string can use a placeholder more than once
+        # (eg %1 %quant(%1, ...) like in our czech localization
+        my @expected_variables = uniq($msgid =~ /%\d+/g);
+        my @got_variables = uniq($msgstr =~ /%\d+/g);
+
+        next if @expected_variables == @got_variables;
+        warn "$lang string does not have the expected number of placeholders\n";
+        warn "expected " . scalar(@expected_variables) . " in msgid:  $msgid\n";
+        warn "     got " . scalar(@got_variables)      . " in msgstr: $msgstr\n\n";
     }
 
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
