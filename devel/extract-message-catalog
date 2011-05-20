@@ -320,8 +320,7 @@ sub update {
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
 
-        complain_about_placeholder_mismatch($lang, $msgid, $msgstr)
-            unless $msgstr eq '';
+        validate_msgstr($lang, $msgid, $msgstr);
     }
 
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
@@ -370,10 +369,13 @@ sub update {
     return 1;
 }
 
-sub complain_about_placeholder_mismatch {
+sub validate_msgstr {
     my $lang   = shift;
     my $msgid  = shift;
     my $msgstr = shift;
+
+    return if $msgstr eq ''; # no translation for this string
+    return if $msgid eq '';  # special case: po file metadata
 
     # we uniq because a string can use a placeholder more than once
     # (eg %1 %quant(%1, ...) like in our czech localization
