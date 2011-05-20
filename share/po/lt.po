@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-03-09 02:04+0000\n"
-"Last-Translator: Vitolis Bendinskas <Unknown>\n"
+"PO-Revision-Date: 2011-05-20 16:45+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -105,7 +105,7 @@ msgstr "%1 %2 pervadintas į %3."
 #: share/html/Widgets/SavedSearch:129
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
-msgstr "1 %2 išsaugotas."
+msgstr "%1 %2 išsaugotas."
 
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -5879,7 +5879,7 @@ msgstr "Nustatymai %1 išsaugoti."
 #: share/html/Admin/Users/MyRT.html:77
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr "Nustatymai naudotojui %2 išsaugoti."
+msgstr "Nustatymai naudotojui %1 išsaugoti."
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:101 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."

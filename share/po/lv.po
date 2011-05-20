@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-03-15 16:08+0000\n"
+"PO-Revision-Date: 2011-05-20 16:28+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 "X-Language: lv_LV\n"
 
 #: NOT FOUND IN SOURCE
@@ -3186,7 +3186,7 @@ msgstr "Neizdevās atrast 'UnPriveleged' lietotāju pseidogrupu"
 #: lib/RT/SharedSetting.pm:122
 #. ($self->ObjectName, $id)
 msgid "Failed to load %1 %2"
-msgstr "Neizdevās ielādēt %! %2"
+msgstr "Neizdevās ielādēt %1 %2"
 
 #: lib/RT/SharedSetting.pm:146
 #. ($self->ObjectName, $id, $msg)
@@ -3636,7 +3636,7 @@ msgstr "Pieprasījumu vēsture %1"
 #: share/html/Admin/Users/History.html:59
 #. ($UserObj->Name)
 msgid "History of the user %1"
-msgstr "Lietotāja vēsture %!"
+msgstr "Lietotāja vēsture %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Home"
@@ -4048,7 +4048,7 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:174
 #. ($session{'CurrentUser'}->UserObj->EmailAddress)
 msgid "Leave blank to send to your current email address (%1)"
-msgstr "Atstāj tukšu lai nosūtītu un tekošo e-pasta adresi"
+msgstr "Atstāj tukšu lai nosūtītu un tekošo e-pasta adresi (%1)"
 
 #: lib/RT/Installer.pm:90
 msgid "Leave empty to use the default value for your database"

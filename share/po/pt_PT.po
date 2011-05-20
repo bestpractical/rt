@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-03-28 18:13+0000\n"
-"Last-Translator: Ari Constâncio <Unknown>\n"
+"PO-Revision-Date: 2011-05-20 16:32+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Portuguese (Portugal) <pt_PT@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -1901,12 +1901,12 @@ msgstr "Não foi possivel fazer o parse do endereço da string '%1'"
 #: lib/RT/Attachment.pm:737
 #. ($msg)
 msgid "Couldn't replace content with decrypted data: %1"
-msgstr "Não foi substituído o conteúdo com dados desencriptados"
+msgstr "Não foi substituído o conteúdo com dados desencriptados: %1"
 
 #: lib/RT/Attachment.pm:702
 #. ($msg)
 msgid "Couldn't replace content with encrypted data: %1"
-msgstr "O conteúdo não foi substituído com dados encriptados"
+msgstr "O conteúdo não foi substituído com dados encriptados: %1"
 
 #: lib/RT/Article.pm:404
 #. ($args{'Target'})

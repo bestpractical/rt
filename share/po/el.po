@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2010-12-28 22:39+0000\n"
-"Last-Translator: Kevin Falcone <Unknown>\n"
+"PO-Revision-Date: 2011-05-20 16:06+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -2331,7 +2331,7 @@ msgstr "Δεν ήταν δυνατή η δημιουργία του Dashboard: %
 #: share/html/Dashboards/Modify.html:143 share/html/Dashboards/Queries.html:260
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
-msgstr "Δεν ήταν δυνατή η ενημέρωση της Πινακίδας"
+msgstr "Δεν ήταν δυνατή η ενημέρωση της Πινακίδας: %1"
 
 #: share/html/Dashboards/Modify.html:140 share/html/Dashboards/Queries.html:257
 msgid "Dashboard updated"
@@ -7270,7 +7270,7 @@ msgstr "SubscribeDashboard"
 #: share/html/Dashboards/Subscription.html:272
 #. ($Dashboard->Name)
 msgid "Subscribed to dashboard %1"
-msgstr "Έγινε εγγραφή στη πινακίδα 51"
+msgstr "Έγινε εγγραφή στη πινακίδα %1"
 
 #: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:424
 msgid "Subscription"

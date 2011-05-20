@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-03-30 12:43+0000\n"
+"PO-Revision-Date: 2011-05-20 16:19+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 "X-Poedit-Country: JAPAN\n"
 "X-Poedit-SearchPath-0: \n"
 "X-Poedit-Basepath: /usr/local/share/request-tracker3.8/\n"
@@ -6410,7 +6410,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:213
 #. ($self->ObjectName, $name)
 msgid "Saved %1 %2"
-msgstr "%1 を保存しました"
+msgstr "%1の%2 を保存しました"
 
 #: share/html/Elements/ShowSearch:72
 #. ($SavedSearch)

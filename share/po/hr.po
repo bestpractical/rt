@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-01-26 16:30+0000\n"
-"Last-Translator: Valentin Vidic <vvidic@irb.hr>\n"
+"PO-Revision-Date: 2011-05-20 16:11+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -8696,7 +8696,7 @@ msgstr "Zahtjevi %1 %2"
 #: lib/RT/Tickets.pm:2512
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
-msgstr "Zahtjevi %2 od %2"
+msgstr "Zahtjevi %1 od %2"
 
 #: share/html/m/_elements/menu:76
 msgid "Tickets I own"

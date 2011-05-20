@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-02-21 08:41+0000\n"
-"Last-Translator: Dragan Avramovski <Unknown>\n"
+"PO-Revision-Date: 2011-05-20 16:29+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Macedonian <mk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:04+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
@@ -153,7 +153,7 @@ msgstr "%1 - Наведи дали сакате да користите или �
 #: bin/rt-crontool:351
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr "1% - Наведи име или id на темплејтот"
+msgstr "%1 - Наведи име или id на темплејтот"
 
 #: bin/rt-crontool:345
 #. ("--action")
@@ -205,7 +205,7 @@ msgstr "%1 се чини дека е локален објект, но не мо
 #: share/html/Install/DatabaseDetails.html:166
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
-msgstr "1% се чини дека е потполно иницијализиран. Нема потреба од креирање на нови табели или инсетирање на мета податоци. Може да продолжите со прилагодување на RT со кликање на ’Основно Прилагодување’"
+msgstr "%1 се чини дека е потполно иницијализиран. Нема потреба од креирање на нови табели или инсетирање на мета податоци. Може да продолжите со прилагодување на RT со кликање на ’Основно Прилагодување’"
 
 #: lib/RT/Transaction.pm:613 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
@@ -1807,7 +1807,7 @@ msgstr "Не може да се испрати маилот/поракта"
 #: lib/RT/Ticket.pm:558
 #. ($type, $msg)
 msgid "Couldn't set %1 watcher: %2"
-msgstr "Не може да се намести 51 набљудувач: %2"
+msgstr "Не може да се намести %1 набљудувач: %2"
 
 #: lib/RT/User.pm:1570
 msgid "Couldn't set private key"
@@ -2093,7 +2093,7 @@ msgstr "Посебно поле %1 има вредност."
 #: lib/RT/Tickets.pm:2792
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
-msgstr "Посебно поле 51 нема вредност."
+msgstr "Посебно поле %1 нема вредност."
 
 #: lib/RT/Record.pm:1586 lib/RT/Record.pm:1786
 #. ($args{'Field'})
