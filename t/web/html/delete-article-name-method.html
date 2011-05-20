@@ -1,0 +1,15 @@
+<%INIT>
+# This is used by t/web/articles-links.t. Since we fork off a server
+# under most test configurations, and we need a way to run code in the
+# middle of the test script, we have to play at shenanigans to delete
+# RT::Article's Name method. Other options were a Plack::Middleware that
+# eval'd code given by paths like /__perl/(.+) (is scary), a signal
+# handler (fails under apache), and only running articles-links.t for
+# inline tests (fails under apache and standalone)
+
+delete $RT::Article::{Name};
+
+</%INIT>
+
+<% RT::Article->can('Name') ? '{exists}' : '{deleted}' %>
+
