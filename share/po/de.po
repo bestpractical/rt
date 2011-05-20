@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-04-15 20:36+0000\n"
-"Last-Translator: Bernhard <Unknown>\n"
+"PO-Revision-Date: 2011-05-20 18:16+0000\n"
+"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Launchpad-Export-Date: 2011-05-20 18:41+0000\n"
 "X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
@@ -6356,7 +6356,7 @@ msgstr "Bereich"
 #. ($Queue)
 #. ($id)
 msgid "Queue %1 not found"
-msgstr "Bereich %2 nicht gefunden"
+msgstr "Bereich %1 nicht gefunden"
 
 #: share/html/Admin/Queues/Modify.html:59
 msgid "Queue Name"

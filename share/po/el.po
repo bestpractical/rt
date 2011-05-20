@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:06+0000\n"
+"PO-Revision-Date: 2011-05-20 18:18+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Launchpad-Export-Date: 2011-05-20 18:41+0000\n"
 "X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
@@ -316,7 +316,7 @@ msgstr "Το %1 είναι ένα εργαλείο , για να τρέχει α
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr "Η %1 είναι η διεύθυνση στην οποία το RT λαμβάνει email. Η προσθήκη της σαν '2' θα δημιουργήσει ένα ανεπιθύμητο βρόγχο email"
+msgstr "Η %1 είναι η διεύθυνση στην οποία το RT λαμβάνει email. Η προσθήκη της σαν '%2' θα δημιουργήσει ένα ανεπιθύμητο βρόγχο email"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 is no longer a %2 for this queue."
@@ -3873,7 +3873,7 @@ msgstr "Άκυρος ιδιοκτήτης αντικειμένου"
 #: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:763
 #. ($msg)
 msgid "Invalid pattern: %1"
-msgstr "Άκυρο μοτίβο"
+msgstr "Άκυρο μοτίβο: %1"
 
 #: lib/RT/Scrip.pm:138 lib/RT/Template.pm:227
 msgid "Invalid queue"
