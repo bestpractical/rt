@@ -4,24 +4,23 @@
         $RT::Logger->debug('Removing all delegated rights');
 
         my $acl = RT::ACL->new(RT->SystemUser);
-        $acl->Limit( CLAUSE   => 'search',
-                     FIELD    => 'DelegatedBy',
-                     OPERATOR => '>',
-                     VALUE    => '0'
-                   );
-        $acl->Limit( CLAUSE          => 'search',
-                     FIELD           => 'DelegatedFrom',
-                     OPERATOR        => '>',
-                     VALUE           => '0',
-                     ENTRYAGGREGATOR => 'OR',
-                   );
+        my $groupjoin = $acl->NewAlias('Groups');
+        $acl->Join( ALIAS1 => 'main',
+                    FIELD1 => 'PrincipalId',
+                    ALIAS2 => $groupjoin,
+                    FIELD2 => 'id'
+                  );
+        $acl->Limit( ALIAS           => $groupjoin,
+                     FIELD           => 'Domain',
+                     OPERATOR        => '=',
+                     VALUE           => 'Personal',
+                    );
 
         while ( my $ace = $acl->Next ) {
             my ( $ok, $msg ) = $ace->Delete();
 
             if ( !$ok ) {
-                $RT::Logger->warn(
-                           "Unable to delete ACE " . $ace->id . ": " . $msg );
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
             }
         }
 
