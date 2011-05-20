@@ -25,8 +25,8 @@ sub acl {
         : "SELECT, UPDATE";
 
     foreach my $table (@tables) {
-        # table like objectcustomfields_id_s
-        if ( $table =~ /^[a-z]/ && $table ne 'sessions' ) {
+        # Tables are upper-case, sequences are lowercase
+        if ( $table =~ /^[a-z]/ ) {
             push @acls, "GRANT $sequence_right ON $table TO \"$db_user\";"
         }
         else {
