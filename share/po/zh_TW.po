@@ -1721,7 +1721,7 @@ msgstr "自動完成表單處理"
 #: share/html/Admin/Tools/Theme.html:277
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "你的圖片無法被自動建議主題顏色支援，這也許您安裝的 GD 版本不支援上傳的圖檔類型，支援的檔案類型：%1 你可以重新編譯 libgd 與 GD.pm 來包涵其他圖檔類型的支援。"
 
 #: etc/initialdata:197
 msgid "Autoreply"
@@ -4922,7 +4922,7 @@ msgstr "完整標頭檔"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
-msgstr ""
+msgstr "GD 是停用或是尚未安裝，您可以上傳一個圖片，但您不會有自動顏色建議。"
 
 #: NOT FOUND IN SOURCE
 msgid "Gecos"
@@ -4967,7 +4967,7 @@ msgstr "全域簽核"
 
 #: share/html/Admin/Tools/Configuration.html:193
 msgid "Global Attributes"
-msgstr ""
+msgstr "全域屬性"
 
 #: NOT FOUND IN SOURCE
 msgid "Global Custom Fields"
@@ -12136,7 +12136,7 @@ msgstr "您的申請單已被駁回。"
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
-msgstr ""
+msgstr "您的系統支援自動顏色建議於: %1"
 
 #: lib/RT/Interface/Web.pm:657
 msgid "Your username or password is incorrect"
@@ -12693,7 +12693,7 @@ msgstr "樣式：%1"
 
 #: share/html/Admin/Global/MyRT.html:89
 msgid "summary"
-msgstr ""
+msgstr "合計"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"

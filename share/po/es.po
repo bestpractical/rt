@@ -375,7 +375,7 @@ msgstr "%1 ya no es un valor para el campo personalizado %2"
 #: lib/RT/Queue.pm:273
 #. ($value)
 msgid "%1 is not valid lifecycle"
-msgstr ""
+msgstr "%1 no es valido el ciclo de vida"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 isn't a valid Queue id."
@@ -389,7 +389,7 @@ msgstr "%1 min"
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
-msgstr ""
+msgstr "%1 articulos mas actualizados"
 
 #: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
@@ -459,12 +459,12 @@ msgstr "%1's %2's %3 objetos"
 #: share/html/Admin/Users/GnuPG.html:107
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
-msgstr ""
+msgstr "%1's GnuPG llave"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
 msgid "%1's current password"
-msgstr ""
+msgstr "%1's contraseña actual"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 #. ($m->interp->apply_escapes($object->Name, 'h'))
@@ -542,23 +542,23 @@ msgstr "'%1' no es una acción reconocida. "
 
 #: lib/RT/Interface/Web.pm:2679
 msgid "'Roles'"
-msgstr ""
+msgstr "'Roles'"
 
 #: lib/RT/Interface/Web.pm:2642
 msgid "'System'"
-msgstr ""
+msgstr "'Sistema'"
 
 #: lib/RT/Interface/Web.pm:2660
 msgid "'User Groups'"
-msgstr ""
+msgstr "'Grupo de Usuarios'"
 
 #: lib/RT/Interface/Web.pm:2711
 msgid "'Users'"
-msgstr ""
+msgstr "'Usuarios'"
 
 #: share/html/Ticket/Elements/Reminders:101
 msgid "(Check box to complete)"
-msgstr ""
+msgstr "(Marque la casilla para completar"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -879,7 +879,7 @@ msgstr "Acciones"
 
 #: share/html/Ticket/Elements/ShowRequestor:164
 msgid "Active Tickets"
-msgstr ""
+msgstr "Tickets Activos"
 
 #: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
@@ -994,7 +994,7 @@ msgstr "Añadir, borrar y modificar los valores de campo personalizado para obje
 
 #: lib/RT/CustomField.pm:208
 msgid "Add, modify and delete custom field values for objects"
-msgstr ""
+msgstr "Añadir, modificar y borrar los valores campos modificados para los objetos"
 
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
@@ -1003,7 +1003,7 @@ msgstr "AddNextState"
 #: lib/RT/Queue.pm:948
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Added %1 to members of %2 for this queue."
-msgstr ""
+msgstr "Añadido %1 a miembros de %2 para este queue"
 
 #: NOT FOUND IN SOURCE
 msgid "Added principal as a %1 for this queue"
@@ -1120,7 +1120,7 @@ msgstr "AdminQueue"
 
 #: lib/RT/Class.pm:95
 msgid "AdminTopics"
-msgstr ""
+msgstr "Tema Admin"
 
 #: lib/RT/System.pm:81
 msgid "AdminUsers"
@@ -1160,7 +1160,7 @@ msgstr "Todas las Aprobaciones Superadas"
 
 #: share/html/Admin/Articles/Classes/Modify.html:75
 msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
-msgstr ""
+msgstr "Todos los articulos en esta clase deberian estar listados en un dropdown (menu hacia abajo) del la pagian de respuesta al ticket"
 
 #: share/html/Admin/Articles/Classes/index.html:76
 msgid "All Classes"
@@ -1172,7 +1172,7 @@ msgstr "Todos los Campos Personalizados"
 
 #: share/html/Elements/Tabs:82
 msgid "All Dashboards"
-msgstr ""
+msgstr "todos los dashboards"
 
 #: share/html/Admin/Queues/index.html:110
 msgid "All Queues"
@@ -1180,7 +1180,7 @@ msgstr "Todas las colas"
 
 #: share/html/Ticket/Elements/ShowRequestor:166
 msgid "All Tickets"
-msgstr ""
+msgstr "Todos los tickets"
 
 #: share/html/Admin/Queues/index.html:98
 msgid "All queues matching search criteria"
@@ -1188,7 +1188,7 @@ msgstr "Todas las colas coincidentes con el critero de busqueda"
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
-msgstr ""
+msgstr "Todos los tickets"
 
 #: share/html/Articles/Topics.html:52
 msgid "All topics"
@@ -1333,7 +1333,7 @@ msgstr "Artículo %1 creado"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
-msgstr ""
+msgstr "Administracion de Articulos"
 
 #: lib/RT/Article.pm:323
 msgid "Article Deleted"

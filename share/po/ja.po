@@ -334,7 +334,7 @@ msgstr "%1はcronなどの外部スケジューリングツールからチケッ
 #: sbin/rt-email-digest:92
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
-msgstr ""
+msgstr "%1はRTからのお知らせをユーザごとにまとめて後から一括送信するためのcron用ユーティリティです。"
 
 #: lib/RT/Queue.pm:888 lib/RT/Queue.pm:894 lib/RT/Ticket.pm:1106 lib/RT/Ticket.pm:1115 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:198
 #. ($args{'Email'}, $self->loc($args{'Type'}))
@@ -384,7 +384,7 @@ msgstr "担当者なしチケット%1件"
 
 #: lib/RT/CustomField.pm:1093
 msgid "%1 objects"
-msgstr ""
+msgstr "%1 件"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 rights"
@@ -475,7 +475,7 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:131
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1m"
 
 #: share/html/Admin/Tools/Queries.html:110
 #. (sprintf('%.4f', $duration))
@@ -500,23 +500,23 @@ msgstr "%1'は無効なステータスです"
 #: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
-msgstr ""
+msgstr "「%1」は無効なクラス名です"
 
 #: lib/RT/Interface/Web.pm:2679
 msgid "'Roles'"
-msgstr ""
+msgstr "役割"
 
 #: lib/RT/Interface/Web.pm:2642
 msgid "'System'"
-msgstr ""
+msgstr "システム"
 
 #: lib/RT/Interface/Web.pm:2660
 msgid "'User Groups'"
-msgstr ""
+msgstr "ユーザグループ"
 
 #: lib/RT/Interface/Web.pm:2711
 msgid "'Users'"
-msgstr ""
+msgstr "ユーザ"
 
 #: share/html/Ticket/Elements/Reminders:101
 msgid "(Check box to complete)"
@@ -578,7 +578,7 @@ msgstr "(コンマで区切ったメールアドレスにこの更新情報のCc
 
 #: share/html/Admin/Elements/EditScrip:100
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
-msgstr ""
+msgstr "(状態や操作に'ユーザ定義値'を選択する場合はこのフィールドを使います)"
 
 #: share/html/Ticket/Elements/ShowUserEntry:50
 msgid "(Will not be sent email)"
@@ -733,7 +733,7 @@ msgstr ""
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:628
 msgid "Action is mandatory argument"
-msgstr ""
+msgstr "操作は省略できない引数です"
 
 #: bin/rt-crontool:227
 msgid "Action prepared..."
@@ -755,7 +755,7 @@ msgstr ""
 #: share/html/Admin/Elements/EditRights:105
 #. (loc($AddPrincipal))
 msgid "Add %1"
-msgstr ""
+msgstr "%1 を追加"
 
 #: share/html/Search/Bulk.html:93
 msgid "Add AdminCc"

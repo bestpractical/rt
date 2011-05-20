@@ -26,7 +26,7 @@ msgstr " (nepatikimas!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
-msgstr "№"
+msgstr "Nr."
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:187 share/html/m/ticket/history:56 share/html/m/ticket/show:205
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -36,12 +36,12 @@ msgstr "№"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "№%1: %2"
+msgstr "Nr. %1: %2"
 
 #: lib/RT/URI/fsck_com_rt.pm:219
 #. ($self->ObjectType, $self->Object->Id)
 msgid "%1 #%2"
-msgstr "%1 №%2"
+msgstr "%1 Nr. %2"
 
 #: lib/RT/Date.pm:369
 #. ($s, $time_unit)
@@ -1181,7 +1181,7 @@ msgstr "Rugpjūtis"
 #: share/html/Admin/Tools/Theme.html:277
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "Jūsų įkeltam paveikslėliui negalima automatiškai pasiūlyti spalvinių temų. Taip gali būti todėl, kad jūsų GD bibliotekos nepalaiko paveikslėlio failo formato. Palaikomi formatai yra: %1. Galite pabandyti perkompiliuoti libgd ir GD.pm įtraukę papildomus paveikslėlių failų formatus."
 
 #: etc/initialdata:197
 msgid "Autoreply"
@@ -3414,7 +3414,7 @@ msgstr "Pilnos antraštės"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
-msgstr ""
+msgstr "GD išjungtas arba neinstaliuotas. Galite padėti paveikslėlį, bet negausite automatinio spalvų pasiūlymo."
 
 #: lib/RT/Config.pm:192 lib/RT/Config.pm:259
 msgid "General"
@@ -3443,7 +3443,7 @@ msgstr "Globalūs"
 
 #: share/html/Admin/Tools/Configuration.html:193
 msgid "Global Attributes"
-msgstr ""
+msgstr "Globalūs požymiai"
 
 #: NOT FOUND IN SOURCE
 msgid "Global Custom Fields"
@@ -3862,7 +3862,7 @@ msgstr "Vidinė klaida: %1"
 #: share/html/Admin/Elements/EditRights:125
 #. ($type)
 msgid "Invalid %1"
-msgstr ""
+msgstr "Neteisingas %1"
 
 #: share/html/Articles/Article/Search.html:166
 #. ('LoadSavedSearch')
@@ -5235,7 +5235,7 @@ msgstr "Nėra prašymo peržiūros teisių"
 
 #: share/html/Articles/Article/Delete.html:94
 msgid "No permission to modify article"
-msgstr ""
+msgstr "Neužtenka teisių taisyti straipsnį"
 
 #: share/html/Search/Elements/EditSearches:243
 msgid "No permission to save system-wide searches"
@@ -5247,7 +5247,7 @@ msgstr "Nėra teisių keisti nustatymus"
 
 #: share/html/Articles/Article/Edit.html:324
 msgid "No permission to view Article"
-msgstr ""
+msgstr "Neužtenka teisių pamatyti straipsnį"
 
 #: share/html/SelfService/Update.html:101
 msgid "No permission to view update ticket"
@@ -7568,7 +7568,7 @@ msgstr "Šablono apdorojimo klaida"
 #: lib/RT/Template.pm:475 lib/RT/Template.pm:677
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
-msgstr ""
+msgstr "Šablono apdorojimo klaida: %1"
 
 #: share/html/Elements/Tabs:150 share/html/Elements/Tabs:257 share/html/Elements/Tabs:337
 msgid "Templates"
@@ -8908,7 +8908,7 @@ msgstr "Jūsų slaptažodis nenustatyas."
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
-msgstr ""
+msgstr "Jūsų sistema palaiko automatinį spalvų pasiūlymą, skirtą %1"
 
 #: lib/RT/Interface/Web.pm:657
 msgid "Your username or password is incorrect"
@@ -9390,7 +9390,7 @@ msgstr "naudotojas %1"
 
 #: share/html/Admin/Elements/EditRights:124
 msgid "username"
-msgstr ""
+msgstr "naudotojo vardas"
 
 #: lib/RT/Config.pm:177
 msgid "verbose"

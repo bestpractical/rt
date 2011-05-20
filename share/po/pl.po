@@ -5,14 +5,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2010-04-27 02:49+0000\n"
-"Last-Translator: ruz <ruz@bestpractical.com>\n"
+"PO-Revision-Date: 2011-04-13 08:49+0000\n"
+"Last-Translator: Paweł Kowalski <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -34,7 +34,7 @@ msgstr "Nr"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr "nr %1: %2"
 
 #: lib/RT/URI/fsck_com_rt.pm:219
 #. ($self->ObjectType, $self->Object->Id)
@@ -112,7 +112,7 @@ msgstr "%1 %2 zapisano."
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr ""
+msgstr "%1 %2 zaktualizowano"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:14
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
@@ -143,7 +143,7 @@ msgstr "%1 (Niezmienione)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (z %2)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 - %2 shown"
@@ -152,7 +152,7 @@ msgstr "wyświetlone %1 - %2"
 #: bin/rt-crontool:360
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Ustaw \"Zaloguj się do\" w opcjach konfiguracji"
 
 #: bin/rt-crontool:335 bin/rt-crontool:342 bin/rt-crontool:348
 #. ("--action-arg", "--action")
@@ -178,7 +178,7 @@ msgstr ""
 #: bin/rt-crontool:351
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 - Określ nazwę lub ID szablonu(ów) który chcesz użyć."
 
 #: bin/rt-crontool:345
 #. ("--action")

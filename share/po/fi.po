@@ -139,7 +139,7 @@ msgstr "%1 (Ei muutoksia)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (lähtöisin paneelista %2)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 - %2 shown"
@@ -148,7 +148,7 @@ msgstr "näkyvillä %1 - %2"
 #: bin/rt-crontool:360
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Mukauta LogToScreen konfiguraatioparametria"
 
 #: bin/rt-crontool:335 bin/rt-crontool:342 bin/rt-crontool:348
 #. ("--action-arg", "--action")
@@ -349,7 +349,7 @@ msgstr "%1 on apuohjelma joka on tarkoitettu ajettavaksi cron-palvelusta, joka l
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr ""
+msgstr "RT lähettää sähköpostia osoitteesta %1. Lisäämällä sen '%2' luodaan sähköpostisilmukka (jota et halua)."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 is no longer a %2 for this queue."
@@ -494,12 +494,12 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:131
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1m"
 
 #: share/html/Admin/Tools/Queries.html:110
 #. (sprintf('%.4f', $duration))
 msgid "%1s"
-msgstr ""
+msgstr "%1s"
 
 #: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
@@ -661,7 +661,7 @@ msgstr "(ei nimiä listattuna)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:59 share/html/Articles/Article/Elements/EditTopics:76 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:136 share/html/Articles/Topics.html:238 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(ei nimeä)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264 share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
@@ -890,7 +890,7 @@ msgstr "Lisää kommentteja tai vastauksia valituille tiketeille"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:64
 msgid "Add group"
-msgstr ""
+msgstr "Lisää ryhmä"
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
@@ -915,7 +915,7 @@ msgstr "Lisää nämä ehdot ja hae"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:49
 msgid "Add user"
-msgstr ""
+msgstr "Lisää käytttäjä"
 
 #: share/html/Search/Bulk.html:172
 msgid "Add values"
@@ -1057,7 +1057,7 @@ msgstr "Tarkennettu haku"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
-msgstr ""
+msgstr "Tarkennettu haku"
 
 #: NOT FOUND IN SOURCE
 msgid "Age"
@@ -1109,11 +1109,11 @@ msgstr ""
 
 #: lib/RT/System.pm:87
 msgid "Allow creation of saved searches"
-msgstr ""
+msgstr "Salli hakujen tallentaminen"
 
 #: lib/RT/System.pm:86
 msgid "Allow loading of saved searches"
-msgstr ""
+msgstr "Salli tallennettujen hakujen lataaminen"
 
 #: lib/RT/System.pm:88
 msgid "Allow writing Perl code in templates, scrips, etc"
@@ -1614,11 +1614,11 @@ msgstr "Kaupunki"
 
 #: share/html/Articles/Article/Display.html:51 share/html/Articles/Article/Elements/EditBasics:57 share/html/Articles/Article/Elements/ShowSearchCriteria:58 share/html/Elements/RT__Article/ColumnMap:75
 msgid "Class"
-msgstr ""
+msgstr "Luokka"
 
 #: share/html/Admin/Articles/Classes/Modify.html:62
 msgid "Class Name"
-msgstr ""
+msgstr "Luokan nimi"
 
 #: share/html/Elements/RT__Article/ColumnMap:70
 msgid "Class id"
@@ -1635,7 +1635,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:180 share/html/Elements/Tabs:356
 msgid "Classes"
-msgstr ""
+msgstr "Luokat"
 
 #: share/html/Tools/MyDay.html:73 share/html/Widgets/SelectionBox:221
 msgid "Clear"
@@ -2185,7 +2185,7 @@ msgstr "Ei voitu ladata toimintoa #%1"
 
 #: share/html/User/Prefs.html:206
 msgid "Couldn't load user"
-msgstr ""
+msgstr "Ei voitu ladata käyttäjää"
 
 #: share/html/Admin/Users/GnuPG.html:89 share/html/User/Prefs.html:202
 #. ($id)
@@ -2501,7 +2501,7 @@ msgstr "Luotu kenttä %1"
 
 #: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
-msgstr ""
+msgstr "Luonut"
 
 #: NOT FOUND IN SOURCE
 msgid "Created in a date range"
@@ -3301,7 +3301,7 @@ msgstr "Sähköposti"
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "Email Address"
-msgstr ""
+msgstr "Sähköpostiosoite"
 
 #: NOT FOUND IN SOURCE
 msgid "Email Configuration"
@@ -3525,7 +3525,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:59 share/html/m/ticket/show:224
 msgid "Estimated"
-msgstr ""
+msgstr "Arvioitu"
 
 #: lib/RT/Handle.pm:661
 msgid "Everyone"
@@ -3600,7 +3600,7 @@ msgstr ""
 #: share/html/Install/DatabaseDetails.html:187
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
-msgstr ""
+msgstr "Tietokantaan yhdistäminen ei onnistunut: %1"
 
 #: lib/RT/SharedSetting.pm:217
 #. ($self->ObjectName)
@@ -3645,7 +3645,7 @@ msgstr "Ei voitu muodostaa mallia"
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
-msgstr ""
+msgstr "helmi"
 
 #: NOT FOUND IN SOURCE
 msgid "Feb."
@@ -3749,7 +3749,7 @@ msgstr "Hae tikettejä"
 
 #: share/html/Admin/Elements/ShowKeyInfo:58
 msgid "Fingerprint"
-msgstr ""
+msgstr "Sormenjälki"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
 msgid "Finish"
@@ -3851,7 +3851,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:111
 msgid "Fri"
-msgstr ""
+msgstr "pe"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri."
@@ -3948,7 +3948,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
-msgstr ""
+msgstr "Siirry"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -3956,7 +3956,7 @@ msgstr ""
 
 #: share/html/Admin/Users/index.html:60
 msgid "Go to user"
-msgstr ""
+msgstr "Siirry käyttäjään"
 
 #: share/html/Admin/Articles/Classes/index.html:69 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:72 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:88 share/html/Admin/Users/index.html:83 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:88
 msgid "Go!"
@@ -4035,7 +4035,7 @@ msgstr "Ryhmässä ei ole sellaista jäsentä"
 #: lib/RT/Group.pm:529
 #. ($value)
 msgid "Group name '%1' is already in use"
-msgstr ""
+msgstr "Ryhmän nimi '%1' on jo käytössä"
 
 #: lib/RT/Group.pm:905 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1132 lib/RT/Ticket.pm:1210
 msgid "Group not found"
@@ -4136,7 +4136,7 @@ msgstr "Käyttäjän %1 historia"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "Home Phone"
-msgstr ""
+msgstr "Kotipuhelin"
 
 #: lib/RT/Config.pm:294
 msgid "Home page refresh interval"
@@ -4347,7 +4347,7 @@ msgstr ""
 #: share/html/Install/Basics.html:81
 #. ('WebPort')
 msgid "Invalid %1: it should be a number"
-msgstr ""
+msgstr "Virheellinen %1: sen täytyy olla numero"
 
 #: lib/RT/Article.pm:108
 msgid "Invalid Class"
@@ -4458,11 +4458,11 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:97
 msgid "Italic"
-msgstr ""
+msgstr "Kursiivi"
 
 #: lib/RT/Date.pm:91
 msgid "Jan"
-msgstr ""
+msgstr "tammi"
 
 #: NOT FOUND IN SOURCE
 msgid "Jan."
@@ -4482,7 +4482,7 @@ msgstr "Liity tai jätä ryhmä"
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
-msgstr ""
+msgstr "heinä"
 
 #: NOT FOUND IN SOURCE
 msgid "Jul."
@@ -4498,7 +4498,7 @@ msgstr "Muokkaa"
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
-msgstr ""
+msgstr "kesä"
 
 #: NOT FOUND IN SOURCE
 msgid "Jun."
@@ -4535,7 +4535,7 @@ msgstr "Kieli."
 
 #: share/html/Search/Elements/EditFormat:88
 msgid "Large"
-msgstr ""
+msgstr "Suuri"
 
 #: share/html/Elements/Tabs:561
 msgid "Last"
@@ -4563,11 +4563,11 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
-msgstr ""
+msgstr "Viimeksi päivitetty"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
-msgstr ""
+msgstr "Päivittänyt viimeksi"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:130 share/html/Elements/RT__Article/ColumnMap:85 share/html/Search/Elements/BuildFormatString:99
 msgid "LastUpdated"
@@ -4732,7 +4732,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestor:112
 msgid "Loading..."
-msgstr ""
+msgstr "Ladataan..."
 
 #: lib/RT/Config.pm:405
 msgid "Locale"
@@ -4752,7 +4752,7 @@ msgstr "Lokihakemistoa %1 ei löytynyt tai kirjoittaminen ei onnistunut.\\n RT e
 
 #: lib/RT/Interface/Web.pm:682
 msgid "Logged in"
-msgstr ""
+msgstr "Kirjautunut"
 
 #: NOT FOUND IN SOURCE
 msgid "Logged in as %1"
@@ -4862,7 +4862,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
-msgstr ""
+msgstr "maalis"
 
 #: NOT FOUND IN SOURCE
 msgid "Mar."
@@ -4898,7 +4898,7 @@ msgstr "Touko"
 
 #: share/html/Elements/QuickCreate:64
 msgid "Me"
-msgstr ""
+msgstr "Minä"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
@@ -5045,7 +5045,7 @@ msgstr "Kännykkä"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Matkapuhelin"
 
 #: NOT FOUND IN SOURCE
 msgid "MobilePhone"
@@ -5422,11 +5422,11 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:220
 msgid "Module"
-msgstr ""
+msgstr "Moduuli"
 
 #: lib/RT/Date.pm:107
 msgid "Mon"
-msgstr ""
+msgstr "ma"
 
 #: NOT FOUND IN SOURCE
 msgid "Mon."
@@ -5434,7 +5434,7 @@ msgstr "Ma"
 
 #: share/html/Dashboards/Subscription.html:106
 msgid "Monday"
-msgstr ""
+msgstr "maanantai"
 
 #: share/html/Dashboards/Subscription.html:100
 msgid "Monday through Friday"
@@ -5515,7 +5515,7 @@ msgstr "Nimi on käytössä"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
-msgstr ""
+msgstr "Nimi:"
 
 #: NOT FOUND IN SOURCE
 msgid "Need approval from system administrator"
@@ -5892,7 +5892,7 @@ msgstr "Tuntematon"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:76
 msgid "None"
-msgstr ""
+msgstr "Ei mitään"
 
 #: lib/RT/Record.pm:946
 msgid "Nonexistant field?"
@@ -6016,7 +6016,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:101
 msgid "Nov"
-msgstr ""
+msgstr "marras"
 
 #: NOT FOUND IN SOURCE
 msgid "Nov."
@@ -6064,7 +6064,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:100
 msgid "Oct"
-msgstr ""
+msgstr "loka"
 
 #: NOT FOUND IN SOURCE
 msgid "Oct."
@@ -6387,7 +6387,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/ModifyTemplate:60
 msgid "Perl"
-msgstr ""
+msgstr "Perl"
 
 #: share/html/Admin/Tools/Configuration.html:252
 msgid "Perl configuration"
@@ -6546,7 +6546,7 @@ msgstr "Yksityisyys:"
 
 #: share/html/Admin/Users/GnuPG.html:66
 msgid "Private Key"
-msgstr ""
+msgstr "Salainen avain"
 
 #: lib/RT/Handle.pm:662 share/html/Admin/Users/Modify.html:111
 msgid "Privileged"
@@ -6576,7 +6576,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:69
 msgid "Queries"
-msgstr ""
+msgstr "Kyselyt"
 
 #: share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:152
 msgid "Query"
@@ -6882,7 +6882,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowSimplifiedRecipients:77
 msgid "Recipients"
-msgstr ""
+msgstr "Vastaanottajat"
 
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
@@ -7171,7 +7171,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:73
 msgid "Respond"
-msgstr ""
+msgstr "Vastaa"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -7195,7 +7195,7 @@ msgstr "Vahvista salasana"
 
 #: share/html/Search/Elements/EditSearches:62
 msgid "Revert"
-msgstr ""
+msgstr "Palauta"
 
 #: NOT FOUND IN SOURCE
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
@@ -7272,7 +7272,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr ""
+msgstr "SQLite"
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -7280,7 +7280,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:112
 msgid "Sat"
-msgstr ""
+msgstr "la"
 
 #: NOT FOUND IN SOURCE
 msgid "Sat."
@@ -7300,7 +7300,7 @@ msgstr "Tallenna muutokset"
 
 #: share/html/User/Prefs.html:190
 msgid "Save Preferences"
-msgstr ""
+msgstr "Tallenna asetukset"
 
 #: share/html/Search/Elements/EditSearches:66
 msgid "Save as New"
@@ -7330,7 +7330,7 @@ msgstr "Tallennettua hakua %1 ei löydy"
 
 #: share/html/Elements/SavedSearches:48
 msgid "Saved Searches"
-msgstr ""
+msgstr "Tallennetut haut"
 
 #: share/html/Search/Chart.html:98
 msgid "Saved charts"
@@ -7424,7 +7424,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Search.html:81
 msgid "Search results"
-msgstr ""
+msgstr "Haun tulokset"
 
 #: share/html/Search/Chart.html:71
 #. ($PrimaryGroupByLabel)
@@ -10004,7 +10004,7 @@ msgstr "lataa"
 
 #: share/html/Admin/Tools/Queries.html:87
 msgid "duration"
-msgstr ""
+msgstr "kesto"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "equal to"
@@ -10036,7 +10036,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:114
 msgid "every"
-msgstr ""
+msgstr "joka"
 
 #: share/html/Admin/Tools/Shredder/index.html:169
 msgid "executed plugin successfuly"
@@ -10048,7 +10048,7 @@ msgstr "tiedostonimi"
 
 #: lib/RT/Crypt/GnuPG.pm:2241
 msgid "full"
-msgstr ""
+msgstr "täysi"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61 share/html/Elements/SelectIPRelation:61
 msgid "greater than"
@@ -10056,7 +10056,7 @@ msgstr "on suurempi kuin"
 
 #: share/html/Admin/Elements/EditRights:63
 msgid "group"
-msgstr ""
+msgstr "ryhmä"
 
 #: lib/RT/Group.pm:197
 #. ($self->Name)
@@ -10073,7 +10073,7 @@ msgstr "tuntia"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:642
 msgid "iCal"
-msgstr ""
+msgstr "iCal"
 
 #: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:56
 msgid "id"
@@ -10120,7 +10120,7 @@ msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:52
 msgid "left to right"
-msgstr ""
+msgstr "vasemmalta oikealle"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61 share/html/Elements/SelectIPRelation:61
 msgid "less than"
@@ -10152,7 +10152,7 @@ msgstr "muokkaukset\\n\\n"
 
 #: share/html/Dashboards/Subscription.html:124
 msgid "monthly"
-msgstr ""
+msgstr "kuukausittain"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:98
 #. ($Subscription->SubValue('Dom'), $hour)
@@ -10205,7 +10205,7 @@ msgstr "päivänä"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "one"
-msgstr ""
+msgstr "yksi"
 
 #: lib/RT/Queue.pm:84 share/html/SelfService/Elements/MyRequests:76
 msgid "open"
@@ -10286,7 +10286,7 @@ msgstr ""
 
 #: share/html/Admin/Global/MyRT.html:89
 msgid "summary"
-msgstr ""
+msgstr "yhteenveto"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
@@ -10342,11 +10342,11 @@ msgstr "kuvailematon ryhmä %1"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "rajoittamaton"
 
 #: share/html/Admin/Elements/EditRights:66
 msgid "user"
-msgstr ""
+msgstr "käyttäjä"
 
 #: lib/RT/Group.pm:194
 #. ($user->Object->Name)
@@ -10355,7 +10355,7 @@ msgstr "käyttäjä %1"
 
 #: share/html/Admin/Elements/EditRights:124
 msgid "username"
-msgstr ""
+msgstr "käyttäjänimi"
 
 #: lib/RT/Config.pm:177
 msgid "verbose"

@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-04-11 00:57+0000\n"
+"PO-Revision-Date: 2011-04-16 03:29+0000\n"
 "Last-Translator: Pedro Lucas <Unknown>\n"
 "Language-Team: Portugues Brasileiro <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-11 20:05+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
+"X-Generator: Launchpad (build 13085)\n"
 "X-Poedit-Country: BRAZIL\n"
 
 #: NOT FOUND IN SOURCE
@@ -1974,11 +1974,11 @@ msgstr "Conteúdo"
 
 #: lib/RT/ObjectCustomFieldValue.pm:99
 msgid "Content is an invalid IP address"
-msgstr ""
+msgstr "Conteúdo é um endereço IP inválido"
 
 #: lib/RT/ObjectCustomFieldValue.pm:113
 msgid "Content is an invalid IP address range"
-msgstr ""
+msgstr "Conteúdo é um intervalo de endereço IP inválido"
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -2070,7 +2070,7 @@ msgstr "Não foi possível criar o grupo"
 #: share/html/Articles/Article/Search.html:195
 #. ($msg)
 msgid "Could not create search: %1"
-msgstr ""
+msgstr "Não foi possível criar a pesquisa: %1"
 
 #: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
@@ -2096,7 +2096,7 @@ msgstr "Não foi possível criar um observador para o requisitante"
 #: share/html/Articles/Article/Search.html:235
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
-msgstr ""
+msgstr "Não foi possível remover a pesquisa %1: %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find a ticket with id %1"
@@ -2125,7 +2125,7 @@ msgstr "Não foi possível carregar atributo %1"
 
 #: share/html/Admin/Articles/Classes/Objects.html:105
 msgid "Could not load Class %1"
-msgstr ""
+msgstr "Não possível carregar a Classe %1"
 
 #: share/html/Admin/CustomFields/Objects.html:109
 #. ($id)
@@ -2179,17 +2179,17 @@ msgstr "Não foi possível adicionar o membro ao grupo"
 
 #: lib/RT/CustomField.pm:1293
 msgid "Couldn't apply custom field to an object as it's global already"
-msgstr ""
+msgstr "Não foi possível aplicar o campo personalizado a um objeto, já que ele já é global"
 
 #: lib/RT/Scrip.pm:615
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
-msgstr ""
+msgstr "Não foi possível compilar %1 bloco de código '%2': %3"
 
 #: lib/RT/Template.pm:696
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
-msgstr ""
+msgstr "Não foi possível compilar o modelo de bloco de código '%1': %2"
 
 #: lib/RT/Record.pm:1755 lib/RT/Record.pm:1805
 #. ($Msg)
@@ -2204,7 +2204,7 @@ msgstr "Não foi possível criar o registro"
 #: lib/RT/CustomField.pm:1423
 #. ($msg)
 msgid "Couldn't create record: %1"
-msgstr ""
+msgstr "Não foi possível criar o registro: %1"
 
 #: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
@@ -2260,7 +2260,7 @@ msgstr "Não foi possível carregar Campo Personalizado #%1"
 #: share/html/Admin/Elements/EditCustomFields:136 share/html/Admin/Elements/EditCustomFields:146
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr ""
+msgstr "Não foi possível carregar o Campo Personalizado #%1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:66
 #. ($id)
@@ -2361,7 +2361,7 @@ msgstr "Não foi possível carregar este usuário (%1)"
 
 #: lib/RT/Interface/Web.pm:1798
 msgid "Couldn't load the specified principal"
-msgstr ""
+msgstr "Não foi possível carregar o principal especificado"
 
 #: lib/RT/Action/CreateTickets.pm:447 share/html/SelfService/Display.html:154
 #. ($id)
@@ -2370,7 +2370,7 @@ msgstr "Não foi possível carregar tíquete '%1'"
 
 #: lib/RT/Article.pm:521
 msgid "Couldn't load topic membership while trying to delete it"
-msgstr ""
+msgstr "Não foi possível carregar o tópico filiação ao tentar removelo"
 
 #: share/html/Ticket/Forward.html:89 share/html/Ticket/GnuPG.html:71
 #. ($QuoteTransaction)
@@ -2380,7 +2380,7 @@ msgstr "Não foi possível carregar transação #%1"
 
 #: share/html/User/Prefs.html:206
 msgid "Couldn't load user"
-msgstr ""
+msgstr "Não foi possível carregar o usuário"
 
 #: share/html/Admin/Users/GnuPG.html:89 share/html/User/Prefs.html:202
 #. ($id)
@@ -2390,12 +2390,12 @@ msgstr "Não foi possível carregar usuário #%1"
 #: share/html/User/Prefs.html:200
 #. ($id, $Name)
 msgid "Couldn't load user #%1 or user '%2'"
-msgstr ""
+msgstr "Não foi possível carregar o usuário #%1 ou o usuário '%2'"
 
 #: share/html/User/Prefs.html:204
 #. ($Name)
 msgid "Couldn't load user '%1'"
-msgstr ""
+msgstr "Não foi possível carregar o usuário '%1'"
 
 #: lib/RT/Ticket.pm:1052
 #. ($args{'Email'})
@@ -2415,7 +2415,7 @@ msgstr "Não foi possível substituir o conteúdo com dado encriptado: %1"
 #: lib/RT/Article.pm:404
 #. ($args{'Target'})
 msgid "Couldn't resolve '%1' into a Link."
-msgstr ""
+msgstr "Não foi possível resolver '%1' em um link."
 
 #: lib/RT/Ticket.pm:2514
 #. ($args{'URI'})
@@ -2463,7 +2463,7 @@ msgstr "Criar Tíquetes"
 
 #: share/html/Admin/Articles/Classes/Modify.html:102
 msgid "Create a Class"
-msgstr ""
+msgstr "Criar a Classe"
 
 #: share/html/Admin/CustomFields/Modify.html:162 share/html/Admin/Elements/EditCustomField:98
 msgid "Create a CustomField"
@@ -2488,7 +2488,7 @@ msgstr ""
 
 #: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
-msgstr ""
+msgstr "Criar um artigo novo em"
 
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
@@ -2525,7 +2525,7 @@ msgstr "Criar um novo modelo"
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
 msgid "Create a new template for queue %1"
-msgstr ""
+msgstr "Criar um modelo novo para a fila %1"
 
 #: share/html/Ticket/Create.html:358
 msgid "Create a new ticket"
@@ -2562,15 +2562,15 @@ msgstr "Criar um tíquete"
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
-msgstr ""
+msgstr "Criar um artigo"
 
 #: share/html/Articles/Article/PreCreate.html:48 share/html/Articles/Article/PreCreate.html:49
 msgid "Create an article in class..."
-msgstr ""
+msgstr "Criar um artigo na classe..."
 
 #: lib/RT/Class.pm:89
 msgid "Create articles in this class"
-msgstr ""
+msgstr "Criar artigos nesta classe"
 
 #: NOT FOUND IN SOURCE
 msgid "Create dashboards for this group"
@@ -2586,7 +2586,7 @@ msgstr "Criação falhou: %1/%2/%3"
 
 #: lib/RT/Group.pm:101
 msgid "Create group dashboards"
-msgstr ""
+msgstr "Criar dashboards de grupo"
 
 #: etc/initialdata:93
 msgid "Create new tickets based on this scrip's template"
@@ -2606,7 +2606,7 @@ msgstr "Criar tíquete"
 
 #: lib/RT/Queue.pm:112
 msgid "Create tickets"
-msgstr ""
+msgstr "Criar tíquetes"
 
 #: NOT FOUND IN SOURCE
 msgid "Create tickets in this queue"
@@ -2638,31 +2638,31 @@ msgstr "Criar, remover e modificar usuários"
 
 #: lib/RT/Queue.pm:95
 msgid "Create, modify and delete Access Control List entries"
-msgstr ""
+msgstr "Criar, modificar e remover entradas na Lista de Controle de Acesso"
 
 #: lib/RT/CustomField.pm:206
 msgid "Create, modify and delete custom fields"
-msgstr ""
+msgstr "Criar, modificar e remover campos personalizados"
 
 #: lib/RT/CustomField.pm:207
 msgid "Create, modify and delete custom fields values"
-msgstr ""
+msgstr "Criar, modificar e remover valores de campos personalizados"
 
 #: lib/RT/Queue.pm:93
 msgid "Create, modify and delete queue"
-msgstr ""
+msgstr "Criar, modificar e remover fila"
 
 #: lib/RT/Group.pm:97
 msgid "Create, modify and delete saved searches"
-msgstr ""
+msgstr "Criar, modificar e remover pesquisas salvas"
 
 #: lib/RT/System.pm:81
 msgid "Create, modify and delete users"
-msgstr ""
+msgstr "Criar, modificar e remover usuários"
 
 #: lib/RT/Class.pm:89
 msgid "CreateArticle"
-msgstr ""
+msgstr "CriarArtigo"
 
 #: lib/RT/Dashboard.pm:82
 msgid "CreateDashboard"
@@ -2700,7 +2700,7 @@ msgstr "CampoPersonalizado %1 criado"
 
 #: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
-msgstr ""
+msgstr "Criado por"
 
 #: NOT FOUND IN SOURCE
 msgid "Created in a date range"
@@ -2709,7 +2709,7 @@ msgstr "Criados em um intervalo de datas"
 #: share/html/Articles/Article/Search.html:191
 #. ($search->Name)
 msgid "Created search %1"
-msgstr ""
+msgstr "Pesquisa criada %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -2745,7 +2745,7 @@ msgstr "Scrips Atuais"
 
 #: share/html/Elements/Tabs:601
 msgid "Current Search"
-msgstr ""
+msgstr "Pesquisa atual"
 
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
@@ -2783,7 +2783,7 @@ msgstr "Campos Personalizados para %1"
 #: share/html/Admin/Queues/CustomFields.html:61
 #. ($Object->Name)
 msgid "Custom Fields for queue %1"
-msgstr ""
+msgstr "Campos personalizados para a fila %1"
 
 #: share/html/Admin/Elements/EditScrip:117
 msgid "Custom action cleanup code"

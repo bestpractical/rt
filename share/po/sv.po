@@ -368,12 +368,12 @@ msgstr "%1 min"
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
-msgstr ""
+msgstr "%1 senast uppdaterade artiklarna"
 
 #: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
 msgid "%1 newest articles"
-msgstr ""
+msgstr "%i nyaste artiklarna"
 
 #: etc/initialdata:564
 msgid "%1 newest unowned tickets"
@@ -505,19 +505,19 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:2642
 msgid "'System'"
-msgstr ""
+msgstr "System"
 
 #: lib/RT/Interface/Web.pm:2660
 msgid "'User Groups'"
-msgstr ""
+msgstr "Användargrupper"
 
 #: lib/RT/Interface/Web.pm:2711
 msgid "'Users'"
-msgstr ""
+msgstr "Användare"
 
 #: share/html/Ticket/Elements/Reminders:101
 msgid "(Check box to complete)"
-msgstr ""
+msgstr "(Markera rutan för att slutföra)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:67 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:107 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/BulkLinks:117 share/html/Ticket/Elements/EditPeople:79
 msgid "(Check box to delete)"
@@ -525,7 +525,7 @@ msgstr "(Markera box för radering)"
 
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
-msgstr ""
+msgstr "Markera rutor för att radera"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check boxes to disable notifications to the listed recipients)"
@@ -599,7 +599,7 @@ msgstr "(tom)"
 
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
-msgstr ""
+msgstr "(ingen sammanfattning)"
 
 #: NOT FOUND IN SOURCE
 msgid "(no name listed)"
@@ -607,7 +607,7 @@ msgstr "(inga namn registrerade)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:59 share/html/Articles/Article/Elements/EditTopics:76 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:136 share/html/Articles/Topics.html:238 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(namnlös)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264 share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
@@ -782,7 +782,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestor:164
 msgid "Active Tickets"
-msgstr ""
+msgstr "Aktiva ärenden"
 
 #: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
@@ -796,7 +796,7 @@ msgstr "Lägg till"
 #: share/html/Admin/Elements/EditRights:105
 #. (loc($AddPrincipal))
 msgid "Add %1"
-msgstr ""
+msgstr "Lägg till %1"
 
 #: share/html/Search/Bulk.html:93
 msgid "Add AdminCc"
@@ -844,7 +844,7 @@ msgstr "Lägg till kommentarer eller svar på utvalda ärenden"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:64
 msgid "Add group"
-msgstr ""
+msgstr "Lägg till grupp"
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
@@ -873,7 +873,7 @@ msgstr "Lägg till dessa termer till din sökning"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:49
 msgid "Add user"
-msgstr ""
+msgstr "Lägg till användare"
 
 #: share/html/Search/Bulk.html:172
 msgid "Add values"
@@ -907,7 +907,7 @@ msgstr "Adress"
 
 #: share/html/Elements/RT__User/ColumnMap:111
 msgid "Address 2"
-msgstr ""
+msgstr "Adress 2"
 
 #: share/html/Admin/Users/Modify.html:130 share/html/User/Prefs.html:123
 msgid "Address1"
@@ -999,7 +999,7 @@ msgstr "Avancerad"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
-msgstr ""
+msgstr "Avancerad sökning"
 
 #: share/html/Search/Elements/PickCriteria:59
 msgid "Aggregator"
@@ -1027,7 +1027,7 @@ msgstr "Alla köer"
 
 #: share/html/Ticket/Elements/ShowRequestor:166
 msgid "All Tickets"
-msgstr ""
+msgstr "Alla ärenden"
 
 #: share/html/Admin/Queues/index.html:98
 msgid "All queues matching search criteria"
@@ -1035,7 +1035,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
-msgstr ""
+msgstr "Alla ärenden"
 
 #: share/html/Articles/Topics.html:52
 msgid "All topics"
@@ -1345,7 +1345,7 @@ msgstr "Bokmärkta ärenden"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "Bokmärkta ärenden"
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
@@ -1406,7 +1406,7 @@ msgstr "Kan inte hitta en sparad sökning att arbeta med"
 
 #: lib/RT/Link.pm:153
 msgid "Can't link a ticket to itself"
-msgstr "Kan inte länka ett ärende till sig själv"
+msgstr "Det går inte att länka ett ärende till sig själv"
 
 #: share/html/Widgets/SavedSearch:132
 #. (loc($self->{SearchType}))
@@ -3490,7 +3490,7 @@ msgstr ""
 #: lib/RT/Transaction.pm:684
 #. ($self->Data)
 msgid "Forwarded Ticket to %1"
-msgstr ""
+msgstr "Vidarebefordra ärende till %1"
 
 #: lib/RT/Transaction.pm:681
 #. ($self->Field, $self->Data)
@@ -3626,7 +3626,7 @@ msgstr "Kör!"
 
 #: share/html/SelfService/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto Ticket"
-msgstr ""
+msgstr "Gå till ärende"
 
 #: share/html/Elements/GotoTicket:49
 msgid "Goto ticket"
@@ -3746,7 +3746,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:335
 msgid "Hide ticket history by default"
-msgstr ""
+msgstr "Dölj ärendehistoriken som standard"
 
 #: share/html/Elements/Tabs:291 share/html/Elements/Tabs:310 share/html/Elements/Tabs:447 share/html/Elements/Tabs:667 share/html/Elements/Tabs:683 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
@@ -3864,7 +3864,7 @@ msgstr "Oföränderligt fält"
 
 #: share/html/Ticket/Elements/ShowRequestor:165
 msgid "Inactive Tickets"
-msgstr ""
+msgstr "Inaktiva ärenden"
 
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
@@ -4922,7 +4922,7 @@ msgstr "Ändra ärende #%1"
 
 #: lib/RT/Queue.pm:117
 msgid "Modify ticket status"
-msgstr ""
+msgstr "Ändra ärendets status"
 
 #: lib/RT/Queue.pm:116
 msgid "Modify tickets"
@@ -4964,7 +4964,7 @@ msgstr "Modifiera användarrättigheter för kö %1"
 #: share/html/Ticket/ModifyPeople.html:60
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
-msgstr ""
+msgstr "Ändra vem som får e-post för ärende #%1"
 
 #: lib/RT/Class.pm:97 lib/RT/Queue.pm:95
 msgid "ModifyACL"
@@ -5202,7 +5202,7 @@ msgstr "Nytt ärende finns ej"
 #: lib/RT/Ticket.pm:311
 #. ($self->loc($args{'Status'}))
 msgid "New tickets can not have status '%1' in this queue."
-msgstr ""
+msgstr "Nya ärenden kan inte ha status '%1' i den här kön."
 
 #: NOT FOUND IN SOURCE
 msgid "New user"
@@ -5422,7 +5422,7 @@ msgstr ""
 
 #: share/html/Search/Chart:140
 msgid "No tickets found."
-msgstr ""
+msgstr "Inga ärenden funna."
 
 #: lib/RT/Transaction.pm:610 lib/RT/Transaction.pm:634
 msgid "No transaction type specified"
@@ -7922,7 +7922,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:50
 msgid "There are unread messages on this ticket."
-msgstr ""
+msgstr "Det finns olästa kommentarer till det här ärendet."
 
 #: lib/RT/Crypt/GnuPG.pm:2235
 msgid "There is marginal trust in this key"
@@ -8017,7 +8017,7 @@ msgstr "torsdag"
 
 #: lib/RT/Record.pm:928 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
-msgstr ""
+msgstr "Ärende"
 
 #: share/html/Ticket/ModifyAll.html:48
 #. ($Ticket->Id, $Ticket->Subject)
