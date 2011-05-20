@@ -54,6 +54,18 @@ use RT::Report::Tickets::Entry;
 use strict;
 use warnings;
 
+our %GROUPINGS = (
+    Date => [qw(
+        Time
+        Hourly Hour
+        Date Daily
+        DayOfWeek Day DayOfMonth DayOfYear
+        Month Monthly
+        Year Annually
+        WeekOfYear
+    )],
+);
+
 sub Groupings {
     my $self = shift;
     my %args = (@_);
