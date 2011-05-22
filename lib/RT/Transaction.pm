@@ -775,13 +775,13 @@ sub BriefDescription {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->Name);
+        return $self->loc( "[_1] [_2] added", $self->loc($self->Field), $principal->Object->Name);
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->Name);
+        return $self->loc( "[_1] [_2] deleted", $self->loc($self->Field), $principal->Object->Name);
     },
     Subject => sub {
         my $self = shift;
