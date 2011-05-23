@@ -71,14 +71,14 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %     for my $request (@$history) {
 %         ++$r;
 
-%         my ($total, $count) = (0, 0);
+%         my ($seconds, $count) = (0, 0);
 %         for my $statement (@{ $request->{Queries} }) {
-%             $total += $statement->[3];
+%             $seconds += $statement->[3];
 %             $count++;
 %         }
 
           <li>
-              <&|/l, $request->{Path}, sprintf('%.4f', $total) &><tt>[_1]</tt> - <i>[_2]s</i></&>
+              <tt><% $request->{Path} %></tt> - <i><&|/l, sprintf('%.4f', $seconds) &>[_1]s</&></i>
               <a href="#" onclick="return hideshow('queries-<%$r%>');"><&|/l, $count &>Toggle [quant,_1,query,queries]</&></a>
               <table id="queries-<%$r%>" class="tablesorter hidden">
                   <thead>
