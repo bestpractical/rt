@@ -80,8 +80,6 @@ sub get_ok {
     if ( $url =~ s!^/!! ) {
         $url = $self->rt_base_url . $url;
     }
-
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $rv = $self->SUPER::get_ok($url, @_);
     Test::More::diag( "Couldn't get $url" ) unless $rv;
     return $rv;
