@@ -68,7 +68,9 @@
 <p><&|/l&>RT will look for anything else you enter in ticket subjects.</&></p>
 
 % my $status_str = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
-<p><&|/l, $status_str&>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the <a href="<%RT->Config->Get('WebPath')%>/Search/Build.html">search builder interface</a>.</&></p>
+% my $link_start = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html">';
+% my $link_end = '</a>';
+<p><&|/l, $status_str, $link_start, $link_end &>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the [_2]search builder interface[_3].</&></p>
 
 <br />
 <br />
