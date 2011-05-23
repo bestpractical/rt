@@ -57,11 +57,12 @@
 <p><&|/l&>Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.</&></p>
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
+% my $fulltext_keyword = 'fulltext:';
 % if ( $config->{'Enable'} ) {
 % if ( $config->{'Indexed'} ) {
-<p><&|/l&>You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
+<p><&|/l, $fulltext_keyword &>You can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % } else {
-<p><&|/l&>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
+<p><&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % }
 % }
 
