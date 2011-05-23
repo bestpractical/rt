@@ -354,7 +354,10 @@ my $build_admin_menu = sub {
             $tabs->child( 'group-rights' => title => loc('Group Rights') => path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
             $tabs->child( 'user-rights' => title => loc('User Rights') => path => "/Admin/CustomFields/UserRights.html?id=" . $id );
 
-            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/CustomFields/Objects.html?id=" . $id );
+            
+            unless ( $obj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+                $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/CustomFields/Objects.html?id=" . $id );
+            }
 
         }
 
