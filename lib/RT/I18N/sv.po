@@ -269,7 +269,7 @@ msgstr "%1 ändrat från %2 till %3"
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 #. ($m->scomp('SelectChartType', Name => 'ChartStyle'), $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "%1 chart by %2"
-msgstr "%1diagram enligt %2"
+msgstr "%1 diagram enligt %2"
 
 #: share/html/Search/Elements/EditSearches:200
 #. ($SavedSearch->{'Object'}->Description)
