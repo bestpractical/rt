@@ -71,7 +71,7 @@
 
 <hr />
 
-<& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket\d+$/', CheckAll => 1, ClearAll => 1 &>
 <br />
 <&|/Widgets/TitleBox, title => $title &>
 <table>
