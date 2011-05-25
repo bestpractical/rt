@@ -173,6 +173,7 @@ else {
             LinkValueTo   => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
             BasedOn       => $BasedOn,
+            Disabled      => !$Enabled,
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
