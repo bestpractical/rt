@@ -1058,7 +1058,7 @@ sub AddWatcher {
         return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
             unless $addr;
 
-        if ( lc $self->CurrentUser->UserObj->EmailAddress
+        if ( lc $self->CurrentUser->EmailAddress
             eq lc RT::User->CanonicalizeEmailAddress( $addr->address ) )
         {
             $args{'PrincipalId'} = $self->CurrentUser->id;

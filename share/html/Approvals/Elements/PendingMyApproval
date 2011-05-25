@@ -74,7 +74,7 @@ $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
 
 # also consider AdminCcs as potential approvers.
 my $group_tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$group_tickets->LimitWatcher( VALUE => $session{'CurrentUser'}->UserObj->EmailAddress, TYPE => 'AdminCc' );
+$group_tickets->LimitWatcher( VALUE => $session{'CurrentUser'}->EmailAddress, TYPE => 'AdminCc' );
 
 my $created_before = RT::Date->new( $session{'CurrentUser'} );
 my $created_after = RT::Date->new( $session{'CurrentUser'} );

@@ -787,7 +787,7 @@ sub GetForwardFrom {
     my $ticket = $args{Ticket} || $txn->Object;
 
     if ( RT->Config->Get('ForwardFromUser') ) {
-        return ( $txn || $ticket )->CurrentUser->UserObj->EmailAddress;
+        return ( $txn || $ticket )->CurrentUser->EmailAddress;
     }
     else {
         return $ticket->QueueObj->CorrespondAddress
