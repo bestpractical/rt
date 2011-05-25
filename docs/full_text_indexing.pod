@@ -87,16 +87,23 @@ restart your webserver after making these changes.  It will also print a
 sample Sphinx configuration, which should be placed in
 F</etc/sphinx.conf>, or equivalent.
 
-=head2 Updating the index
-
 To fill the index, you will need to run the C<indexer> command-line tool
 provided by Sphinx:
 
     indexer rt
 
-This command should also be run at regular intervals in order to pick up
-new and updated attachments from RT's database.  Failure to do so will
-result in stale data.
+Finally, start the Sphinx search daemon:
+
+    searchd
+
+=head2 Updating the index
+
+To keep the index up-to-date, you will need to run:
+
+    indexer rt --rotate
+
+...at regular intervals in order to pick up new and updated attachments
+from RT's database.  Failure to do so will result in stale data.
 
 =head2 Caveats
 
