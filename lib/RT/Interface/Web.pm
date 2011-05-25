@@ -261,7 +261,15 @@ sub HandleRequest {
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
-    $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
+
+    if ( _UserLoggedIn() ) {
+        # make user info up to date
+        $HTML::Mason::Commands::session{'CurrentUser'}
+          ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+    }
+    else {
+        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+    }
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
