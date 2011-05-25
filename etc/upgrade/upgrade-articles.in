@@ -227,11 +227,18 @@ sub copy_tables {
 { # update Transactions
   # we only keep article transactions at this point
     use RT::Transactions;
+    # Next calls Type to check readability and Type calls _Accessible
+    # which called CurrentUserCanSee which calls Object which tries to instantiate
+    # an RT::FM::Article.  Rather than a shim RT::FM::Article class, I'm just avoiding
+    # the ACL check since we're running around as the superuser.
+    {
+    local *RT::Transaction::Type = sub { shift->__Value('Type') };
     my $transactions = RT::Transactions->new(RT->SystemUser);
     $transactions->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
     while ( my $t = $transactions->Next ) {
         my ($ret, $msg) = $t->__Set( Field => 'ObjectType', Value => 'RT::Article' );
         warn "Updated Transaction ".$t->Id." to point to RT::Article";
+    }
     }
 
     # we also need to change links that point to articles
