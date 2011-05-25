@@ -152,7 +152,7 @@
 
 </form>
 <%INIT>
-my ($title, @results, $Disabled);
+my ($title, @results);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 
@@ -186,7 +186,7 @@ else {
 if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     #we're asking about enabled on the web page but really care about disabled.
-    $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
+    $ARGS{'Disabled'} = $Enabled? 0 : 1;
 
     my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
     push @results, UpdateRecordObject(
