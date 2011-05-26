@@ -383,10 +383,10 @@ sub check_sphinx {
 
     print STDERR <<EOT;
 
-Your Mysql server has not been compiled with the Sphinx storage engine
-(sphinxse).  Either install your system's sphinxse package, the binaries
-from http://sphinxsearch.org/, or recompile mysql according to the
-instructions in Sphinx's documentation.
+Your MySQL server has not been compiled with the Sphinx storage engine
+(sphinxse).  You will need to recompile MySQL according to the
+instructions in Sphinx's documentation at
+http://sphinxsearch.com/docs/current.html#sphinxse-installing
 
 EOT
     exit 1;
