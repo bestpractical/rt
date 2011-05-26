@@ -226,6 +226,7 @@ sub copy_tables {
 
 { # update Transactions
   # we only keep article transactions at this point
+    no warnings 'once';
     use RT::Transactions;
     # Next calls Type to check readability and Type calls _Accessible
     # which called CurrentUserCanSee which calls Object which tries to instantiate
