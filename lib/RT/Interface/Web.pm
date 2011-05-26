@@ -1291,7 +1291,7 @@ sub CreateTicket {
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add(
+        $MIMEObj->head->replace(
             "X-RT-$argument" => Encode::encode_utf8( $ARGS{$argument} )
         ) if defined $ARGS{$argument};
     }

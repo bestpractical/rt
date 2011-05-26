@@ -88,7 +88,7 @@ sub GetCurrentUser {
         Entity => $args{'Message'}, AddStatus => 1,
     );
     if ( $status && !@res ) {
-        $args{'Message'}->head->add(
+        $args{'Message'}->head->replace(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
         );
 
@@ -112,7 +112,7 @@ sub GetCurrentUser {
         Data        => ${ $args{'RawMessageRef'} },
     );
 
-    $args{'Message'}->head->add( 'X-RT-Privacy' => 'PGP' );
+    $args{'Message'}->head->replace( 'X-RT-Privacy' => 'PGP' );
 
     foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
@@ -124,14 +124,14 @@ sub GetCurrentUser {
                     $decrypted = 1;
                 }
                 if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
-                    $part->head->add(
+                    $part->head->replace(
                         'X-RT-Incoming-Signature' => $_->{UserString}
                     );
                 }
             }
         }
 
-        $part->head->add(
+        $part->head->replace(
             'X-RT-Incoming-Encryption' => 
                 $decrypted ? 'Success' : 'Not encrypted'
         );
