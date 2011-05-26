@@ -484,12 +484,13 @@ sub _Set {
     # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
     if ($status) {
+        my $new_val = $self->__Value($args{'Field'});
         $msg =
           $self->loc(
             "[_1] changed from [_2] to [_3]",
             $self->loc( $args{'Field'} ),
             ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
-            '"' . $self->__Value( $args{'Field'}) . '"' 
+            ( $new_val ? "'$new_val'" : $self->loc("(no value)") ),
           );
       } else {
 
