@@ -25,10 +25,7 @@ my $queue = RT::Test->load_or_create_queue(
 ok $queue && $queue->id, 'loaded or created queue';
 
 diag "make sure queue has no subject tag";
-{
-    my ($status, $msg) = $queue->SetSubjectTag( undef );
-    ok $status, "set subject tag for the queue" or diag "error: $msg";
-}
+is( $queue->SubjectTag, undef, "queue has no subject tag" );
 
 diag "set intial simple autoreply template";
 {
