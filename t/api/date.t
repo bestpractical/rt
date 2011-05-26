@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+BEGIN { $ENV{'LANG'} = 'C'; $ENV{'LC_ALL'} = ''; }
+
 use Test::MockTime qw(set_fixed_time restore_time);
 use DateTime;
 
