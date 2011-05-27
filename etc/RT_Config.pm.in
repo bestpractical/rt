@@ -1802,7 +1802,7 @@ Set($LogoutRefresh, 1);
 
 =item C<$WebSecureCookies>
 
-By default, RT's session cookie isn't marked as "secure" Some web
+By default, RT's session cookie isn't marked as "secure". Some web
 browsers will treat secure cookies more carefully than non-secure
 ones, being careful not to write them to disk, only sending them over
 an SSL secured connection, and so on. To enable this behavior, set
