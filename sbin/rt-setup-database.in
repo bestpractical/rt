@@ -105,7 +105,8 @@ RT->InitClasses();
 # Force warnings to be output to STDERR if we're not already logging
 # them at a higher level
 RT->Config->Set( LogToScreen => 'warning')
-    unless RT->Config->Get( 'LogToScreen' ) =~ /^(debug|info|notice)$/;
+    unless ( RT->Config->Get( 'LogToScreen' )
+             && RT->Config->Get( 'LogToScreen' ) =~ /^(debug|info|notice)$/ );
 
 # get customized root password
 my $root_password;
