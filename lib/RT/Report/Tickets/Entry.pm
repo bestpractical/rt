@@ -66,21 +66,7 @@ and ensuring that dates are in local not DB timezones.
 
 sub LabelValue {
     my $self  = shift;
-    my $field = shift;
-    my $value = $self->__Value( $field );
-
-    if ( $field =~ /(Daily|Monthly|Annually|Hourly)$/ ) {
-        my $re;
-        # it's not just 1970-01-01 00:00:00 because of timezone shifts
-        # and conversion from UTC to user's TZ
-        $re = qr{19(?:70-01-01|69-12-31) [0-9]{2}} if $field =~ /Hourly$/;
-        $re = qr{19(?:70-01-01|69-12-31)} if $field =~ /Daily$/;
-        $re = qr{19(?:70-01|69-12)} if $field =~ /Monthly$/;
-        $re = qr{19(?:70|69)} if $field =~ /Annually$/;
-        $value =~ s/^$re/Not Set/;
-    }
-
-    return $value;
+    return $self->__Value( @_ );
 }
 
 sub ObjectType {

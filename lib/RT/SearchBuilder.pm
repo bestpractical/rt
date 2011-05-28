@@ -908,6 +908,17 @@ sub ColumnMapClassName {
     return $Class;
 }
 
+sub NotSetDateToNullFunction {
+    my $self = shift;
+    my %args = ( FIELD => undef, @_ );
+
+    my $res = "CASE WHEN ? BETWEEN '1969-12-31 11:59:59' AND '1970-01-01 12:00:01' THEN NULL ELSE ? END";
+    if ( $args{FIELD} ) {
+        $res = $self->CombineFunctionWithField( %args, FUNCTION => $res );
+    }
+    return $res;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

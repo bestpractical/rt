@@ -217,7 +217,7 @@ sub _FieldToFunction {
 
         $args{'FUNCTION'} = $RT::Handle->DateTimeFunction(
             Type => $subkey,
-            Field => "?",
+            Field => $self->NotSetDateToNullFunction,
             Timezone => $tz,
         );
         $args{'FIELD'} = $key;
