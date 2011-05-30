@@ -55,6 +55,12 @@ use strict;
 use warnings;
 
 our %GROUPINGS = (
+    User => [qw(
+        Name RealName NickName
+        EmailAddress
+        Organization
+        Lang City Country Timezone
+    )],
     Date => [qw(
         Time
         Hourly Hour
@@ -73,13 +79,10 @@ sub Groupings {
       map { $self->CurrentUser->loc($_), $_ } qw( Status Queue );    # loc_qw
 
     foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) { # loc_qw
-        for my $field (
-            qw( Name EmailAddress RealName NickName Organization Lang City Country Timezone ) # loc_qw
-          )
-        {
+        for my $field ( @{ $GROUPINGS{'User'} } ) {
             push @fields,
               $self->CurrentUser->loc($type) . ' '
-              . $self->CurrentUser->loc($field), $type . '.' . $field;
+              . $self->CurrentUser->loc($field), "$type.$field";
         }
     }
 
