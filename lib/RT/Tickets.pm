@@ -543,6 +543,25 @@ sub _DateLimit {
         unless ( defined $meta->[1] );
 
     if ( my $subkey = $rest{SUBKEY} ) {
+        if ( $subkey eq 'DayOfWeek' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
+            for ( my $i = 0; $i < @RT::Date::DAYS_OF_WEEK; $i++ ) {
+                next unless lc $RT::Date::DAYS_OF_WEEK[ $i ] eq lc $value;
+
+                $value = $i; last;
+            }
+            return $sb->Limit( FIELD => 'id', VALUE => 0, %rest )
+                if $value =~ /[^0-9]/;
+        }
+        elsif ( $subkey eq 'Month' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
+            for ( my $i = 0; $i < @RT::Date::MONTHS; $i++ ) {
+                next unless lc $RT::Date::MONTHS[ $i ] eq lc $value;
+
+                $value = $i + 1; last;
+            }
+            return $sb->Limit( FIELD => 'id', VALUE => 0, %rest )
+                if $value =~ /[^0-9]/;
+        }
+
         my $tz;
         if ( RT->Config->Get('ChartsTimezonesInDB') ) {
             my $to = $sb->CurrentUser->UserObj->Timezone
@@ -550,6 +569,7 @@ sub _DateLimit {
             $tz = { From => 'UTC', To => $to }
                 if $to && lc $to ne 'utc';
         }
+
         my $function = $RT::Handle->DateTimeFunction(
             Type     => $subkey,
             Field    => $sb->NotSetDateToNullFunction,
