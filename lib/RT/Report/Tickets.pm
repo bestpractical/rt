@@ -138,7 +138,12 @@ sub Label {
 
 sub SetupGroupings {
     my $self = shift;
-    my %args = (Query => undef, GroupBy => undef, @_);
+    my %args = (
+        Query => undef,
+        GroupBy => undef,
+        Function => undef,
+        @_
+    );
 
     $self->FromSQL( $args{'Query'} );
 
@@ -148,12 +153,15 @@ sub SetupGroupings {
     # UseSQLForACLChecks may add late joins
     my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
 
-    my %column_type;
+    my (@res, %column_type);
 
-    my @res;
-
-    push @res, $self->Column( FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' );
-    $column_type{ $res[-1] } = { FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' };
+    my @function = ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
+    foreach my $e ( @function ) {
+        my ($function, $field) = split /\s+/, $e, 2;
+        $function = 'DISTINCT COUNT' if $joined && lc($function) eq 'count';
+        push @res, $self->Column( FUNCTION => $function, FIELD => $field );
+        $column_type{ $res[-1] } = { FUNCTION => $function, FIELD => $field };
+    }
 
     foreach my $group_by ( @group_by ) {
         my $alias = $self->Column( FIELD => $group_by );
