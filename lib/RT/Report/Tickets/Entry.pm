@@ -56,6 +56,14 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 sub CurrentUserHasRight {1}
 
+sub ColumnType {
+    my $self = shift;
+    my $column = shift;
+
+    return $self->{'column_types'}{$column};
+}
+
+
 =head2 LabelValue
 
 If you're pulling a value out of this collection and using it as a label,
@@ -66,7 +74,32 @@ and ensuring that dates are in local not DB timezones.
 
 sub LabelValue {
     my $self  = shift;
-    return $self->__Value( @_ );
+    my $name = shift;
+
+    my $raw = $self->RawValue( $name, @_ );
+
+    my $type = $self->ColumnType( $name );
+    return $raw unless $type;
+
+    my $field = $type->{'FIELD'};
+    return $raw unless $field;
+
+    my ($key, $subkey) = split /\./, $field, 2;
+    if ( $subkey && grep $_ eq $subkey, @{ $RT::Report::Tickets::GROUPINGS{'Date'} } ) {
+        return $raw unless defined $raw;
+        if ( $subkey eq 'DayOfWeek' ) {
+            return $RT::Date::DAYS_OF_WEEK[ int $raw ];
+        }
+        elsif ( $subkey eq 'Month' ) {
+            return $RT::Date::MONTHS[ int($raw) - 1 ];
+        }
+    }
+
+    return $raw;
+}
+
+sub RawValue {
+    return (shift)->__Value( @_ );
 }
 
 sub ObjectType {
