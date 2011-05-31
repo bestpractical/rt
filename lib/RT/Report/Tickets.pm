@@ -141,15 +141,28 @@ sub SetupGroupings {
     my %args = (Query => undef, GroupBy => undef, @_);
 
     $self->FromSQL( $args{'Query'} );
+
     my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     $self->GroupBy( map { {FIELD => $_} } @group_by );
 
     # UseSQLForACLChecks may add late joins
     my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
 
+    my %column_type;
+
     my @res;
+
     push @res, $self->Column( FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' );
-    push @res, map $self->Column( FIELD => $_ ), @group_by;
+    $column_type{ $res[-1] } = { FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' };
+
+    foreach my $group_by ( @group_by ) {
+        my $alias = $self->Column( FIELD => $group_by );
+        $column_type{ $alias } = { FIELD => $group_by };
+        push @res, $alias;
+    }
+
+    $self->{'column_types'} = \%column_type;
+
     return @res;
 }
 
