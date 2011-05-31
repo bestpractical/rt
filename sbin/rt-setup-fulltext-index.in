@@ -142,7 +142,7 @@ $dbh->{'PrintError'} = 1;
 if ( $DB{'type'} eq 'mysql' ) {
     check_sphinx();
     my $table = $OPT{'table'} || prompt(
-        message => "Enter name of a new Mysql table that will be used to connect to the\n"
+        message => "Enter name of a new MySQL table that will be used to connect to the\n"
                  . "Sphinx server:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
@@ -370,8 +370,9 @@ EOQ
     unless ($fts) {
         print STDERR <<EOT;
 
-Your Postgres server does not include full-text support.  You will need
-to upgrade to Postgres version 8.3 or higher to use full-text indexing.
+Your PostgreSQL server does not include full-text support.  You will
+need to upgrade to PostgreSQL version 8.3 or higher to use full-text
+indexing.
 
 EOT
         exit 1;
