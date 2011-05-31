@@ -49,6 +49,7 @@
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
 $ChartStyle => 'bars'
+$ChartFunction => 'COUNT id'
 </%args>
 <%init>
 my $chart_class;
@@ -68,7 +69,9 @@ my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 my %AllowedGroupings = reverse $tix->Groupings( Query => $Query );
 $PrimaryGroupBy = 'Queue' unless exists $AllowedGroupings{$PrimaryGroupBy};
 my ($count_name, $value_name) = $tix->SetupGroupings(
-    Query => $Query, GroupBy => $PrimaryGroupBy,
+    Query => $Query,
+    GroupBy => $PrimaryGroupBy,
+    Function => $ChartFunction,
 );
 
 my %class = (
