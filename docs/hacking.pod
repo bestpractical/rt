@@ -66,7 +66,93 @@ used for indentation.
 
 =back
 
+=head1 Internationalization
 
+RT has been translated into several dozen languages. We use Launchpad
+( https://translations.launchpad.net/rt ) to crowdsource our
+translations into C<po> files. RT uses L<Locale::Maketext> to
+localize its user interface.
+
+Your first stop on this magical journey of internationalization
+is L<Locale::Maketext::TPJ13>, which explains the whys of
+L<Locale::Maketext>. RT uses most of the features developed in that
+article.
+
+Strings that are displayed to users should be passed through the
+C<loc("...")> function or the C<< <&|/l&>...</&> >> Mason template.
+C<loc> and C</l> both take parameters, which are used in place of
+string interpolation (much like C<sprintf>). It's acceptable to use
+HTML in C</l> calls, especially for bold and emphasis. However, you
+should limit the amount of HTML that translators must keep exactly
+correct, which means avoid including tags that wrap the entire
+translatable string, especially C<< <p> >>.
+
+    <p><&|/l, $button &>Do <em>not</em> click [_1]</&></p> # ok
+
+    <&|/l, $button &><p>Do <em>not</em> click [_1]</p></&> # not ok
+
+In a few places in RT we also pass HTML as parameters to C<loc()>
+so that translators do not have to reproduce it exactly, and we can
+also change it more freely. For example:
+
+    <&|/l,
+        '<a href="http://www.gnu.org/licenses/gpl-2.0.html">',
+        '</a>',
+    &>Distributed under [_1]version 2 of the GNU GPL[_2].</&>
+
+F<devel/tools/extract-message-catalog> looks for C<loc("...")> and
+C<< <&|/l&>...</&> >> in our source code to pick out translatable
+strings, clean them up, and put them into F<share/po> files. We use
+our C<.po> files not only to populate L<Locale::Maketext>'s lexicons,
+but also to sync new translatable strings and translations with
+Launchpad. This Launchpad sync is typically done early during the
+freeze of RC releases to give our volunteer translators time to
+translate all the new strings which, because of the RC freeze, won't
+continue changing.
+
+Because C<loc()> and C</l> are used to generate strings for human
+eyes, they generally must be used "close to the browser". These are
+directly in Mason templates, or in functions that return text that
+will be passed through Mason. However, in many places in RT we have
+hardcoded strings which need translations. For example, the C<$RIGHTS>
+hash in F<lib/RT/Queue.pm> maps rights' names (which must be
+translatable) to their descriptions (which also must be translatable).
+However, when we're declaring such structures, we do not want to
+translate them straight away. RT uses English internally, including
+in its web forms, so we do not want to localize rights' names except
+for display, otherwise things might break weirdly when you check
+if a user has the "Superusuario" right. Furthermore, when we're
+declaring such data structures at compile time, there is no current
+user to select which language to use for localization. Thus, we
+cannot call C<loc()> when declaring C<$RIGHTS> and other similar
+places.
+
+For this reason, F<devel/tools/extract-message-catalog> lets you
+denote translatable strings with comments. That's what the C<#loc_pair>
+comments in the C<$RIGHTS> hash in F<lib/RT/Queue.pm> indicate.
+Since we have those comments, our toolchain will put the rights'
+names and descriptions into F<share/po> files, which enables
+translation by our lovely volunteers. Later on, when RT displays
+information about rights in the web UI, we'll pass the right's name
+through C<loc>, and L<Locale::Maketext> will then be able to find
+our "Superusuario". So although we never used a literal
+C<loc("SuperUser")>, we still get its effects thanks to the
+C<#loc_pair> comments and using C<loc($RightName)>.
+
+C<#loc_pair> is used for declaring that the both the key and value
+of a particular C<< key => value >> pair are translatable. There
+are other markers that you can use.
+
+C<#loc> is used for declaring that a particular string is translatable.
+Its parsing is pretty strict so you can use it to declare that only
+the value of a particular C<< key => value >> pair is translatable.
+
+C<#loc_left_pair> is used for declaring that the I<key> of a
+particular C<< key => value >> pair is translatable. This is of
+very limited usefulness.
+
+C<#loc_right_pair> does NOT exist. C<#loc> works in such cases since
+its parser does not extend beyond the string at the end of a line.
 
 =head1 Development tips
 
