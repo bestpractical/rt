@@ -1269,6 +1269,16 @@ sub test_app {
     require Plack::Middleware::Test::StashWarnings;
     $app = Plack::Middleware::Test::StashWarnings->wrap($app);
 
+    if ($server_opt{basic_auth}) {
+        require Plack::Middleware::Auth::Basic;
+        $app = Plack::Middleware::Auth::Basic->wrap(
+            $app,
+            authenticator => sub {
+                my ($username, $password) = @_;
+                return $username eq 'root' && $password eq 'password';
+            }
+        );
+    }
     return $app;
 }
 
