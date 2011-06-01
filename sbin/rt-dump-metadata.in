@@ -53,7 +53,7 @@ use strict;
 binmode( STDOUT, ":utf8" );
 
 # fix lib paths, some may be relative
-BEGIN {
+BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
     my @libs = ( "@RT_LIB_PATH@", "@LOCAL_LIB_PATH@" );
     my $bin_path;

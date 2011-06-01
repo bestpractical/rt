@@ -50,7 +50,7 @@ use warnings;
 use strict;
 
 # fix lib paths, some may be relative
-BEGIN {
+BEGIN { # BEGIN RT CMD BOILERPLATE
     die <<EOT if ${^TAINT};
 RT does not run under Perl's "taint mode".  Remove -T from the command
 line, or remove the PerlTaintCheck parameter from your mod_perl
