@@ -1256,11 +1256,12 @@ sub started_ok {
     unless ( $self->can($function) ) {
         die "Don't know how to start server '$server'";
     }
-    return $self->$function( $variant, @_ );
+    return $self->$function( variant => $variant, @_ );
 }
 
 sub test_app {
     my $self = shift;
+    my %server_opt = @_;
 
     require RT::Interface::Web::Handler;
     my $app = RT::Interface::Web::Handler->PSGIApp;
@@ -1298,7 +1299,7 @@ sub start_plack_server {
             unless $handled;
         push @SERVERS, $pid;
         my $Tester = Test::Builder->new;
-        $Tester->ok(1, @_);
+        $Tester->ok(1, "started plack server ok");
 
         __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
@@ -1313,7 +1314,7 @@ sub start_plack_server {
     # stick this in a scope so that when $app is garbage collected,
     # StashWarnings can complain about unhandled warnings
     do {
-        $plack_server->run($self->test_app);
+        $plack_server->run($self->test_app(@_));
     };
 
     exit;
@@ -1331,17 +1332,22 @@ sub start_inline_server {
     RT::Interface::Web->ClearSquished;
 
     Test::More::ok(1, "psgi test server ok");
-    $TEST_APP = $self->test_app;
+    $TEST_APP = $self->test_app(@_);
     return ("http://localhost:$port", RT::Test::Web->new);
 }
 
 sub start_apache_server {
     my $self = shift;
-    my $variant = shift || 'mod_perl';
-    $ENV{RT_TEST_WEB_HANDLER} = "apache+$variant";
+    my %server_opt = @_;
+    $server_opt{variant} ||= 'mod_perl';
+    $ENV{RT_TEST_WEB_HANDLER} = "apache+$server_opt{variant}";
 
     require RT::Test::Apache;
-    my $pid = RT::Test::Apache->start_server($variant || 'mod_perl', $port, \%tmp);
+    my $pid = RT::Test::Apache->start_server(
+        %server_opt,
+        port => $port,
+        tmp => \%tmp
+    );
     push @SERVERS, $pid;
 
     my $url = RT->Config->Get('WebURL');

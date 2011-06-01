@@ -71,9 +71,9 @@ if ($apxs and not $apache_module_prefix) {
 $apache_module_prefix ||= 'modules';
 
 sub start_server {
-    my ($self, $variant, $port, $tmp) = @_;
-    my %tmp = %$tmp;
-    my %info = $self->apache_server_info( variant => $variant );
+    my ($self, %config) = @_;
+    my %tmp = %{$config{tmp}};
+    my %info = $self->apache_server_info( %config );
 
     RT::Test::diag(do {
         open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
@@ -83,10 +83,10 @@ sub start_server {
 
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
-        'apache'. $info{'version'} .'+'. $variant .'.conf'
+        'apache'. $info{'version'} .'+'. $config{variant} .'.conf'
     ) );
     my %opt = (
-        listen         => $port,
+        listen         => $config{port},
         server_root    => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
         document_root  => $RT::MasonComponentRoot,
