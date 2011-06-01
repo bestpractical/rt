@@ -395,9 +395,9 @@ my $build_admin_menu = sub {
         $settings->child( about_me => title => loc('About me'), path     => '/User/Prefs.html', );
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html', );
         $settings->child( myrt => title => loc('RT at a glance'), path => '/Prefs/MyRT.html', );
-        $settings->child( quicksearch => title => 'Quick search' => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
+        $settings->child( quicksearch => title => loc('Quick search'), path => '/Prefs/Quicksearch.html');
 
-        my $search_menu = $settings->child( 'saved-searches' => title => 'Saved Searches' );
+        my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",
                           Object => RT::System->new( $session{'CurrentUser'} )) ];
         my $i = 0;
@@ -679,7 +679,7 @@ my $build_admin_menu = sub {
             my $obj = RT::Article->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
-            $tabs->child( display => title => "Display", path => "/Articles/Article/Display.html?id=" . $id );
+            $tabs->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
             $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
 
             if ( $obj->CurrentUserHasRight('ModifyArticle') ) {

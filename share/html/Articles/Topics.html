@@ -73,7 +73,7 @@ if (defined $class) {
         .'">'.$c->Name."</a></h2>\n");
         $m->print("\n</li>\n");
     }
-    $m->print(qq|<li><h2><a href="|.RT->Config->Get('WebPath').qq|/Articles/Topics.html?class=0">Global Topics</a></h2></li>\n|);
+    $m->print(qq|<li><h2><a href="|.RT->Config->Get('WebPath').qq|/Articles/Topics.html?class=0">|.loc('Global Topics').qq|</a></h2></li>\n|);
     $m->print("</ul>\n");
 }
 </%perl>
