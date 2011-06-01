@@ -1259,6 +1259,18 @@ sub started_ok {
     return $self->$function( $variant, @_ );
 }
 
+sub test_app {
+    my $self = shift;
+
+    require RT::Interface::Web::Handler;
+    my $app = RT::Interface::Web::Handler->PSGIApp;
+
+    require Plack::Middleware::Test::StashWarnings;
+    $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+    return $app;
+}
+
 sub start_plack_server {
     my $self = shift;
 
@@ -1301,18 +1313,13 @@ sub start_plack_server {
     # stick this in a scope so that when $app is garbage collected,
     # StashWarnings can complain about unhandled warnings
     do {
-        require RT::Interface::Web::Handler;
-        my $app = RT::Interface::Web::Handler->PSGIApp;
-
-        require Plack::Middleware::Test::StashWarnings;
-        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
-
-        $plack_server->run($app);
+        $plack_server->run($self->test_app);
     };
 
     exit;
 }
 
+our $TEST_APP;
 sub start_inline_server {
     my $self = shift;
 
@@ -1324,6 +1331,7 @@ sub start_inline_server {
     RT::Interface::Web->ClearSquished;
 
     Test::More::ok(1, "psgi test server ok");
+    $TEST_APP = $self->test_app;
     return ("http://localhost:$port", RT::Test::Web->new);
 }
 
