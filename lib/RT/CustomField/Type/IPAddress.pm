@@ -5,6 +5,8 @@ use warnings;
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
 
+$IPv6_re = qr/(?:$IPv6_re|::)/;
+
 sub CanonicalizeForCreate {
     my ($self, $cf, $args) = @_;
 

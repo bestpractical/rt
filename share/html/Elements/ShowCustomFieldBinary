@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content %>"><% $Object->Content %></a>
+<a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |u %>"><% $Object->Content %></a>
 <%ARGS>
 $Object => undef
 </%ARGS>

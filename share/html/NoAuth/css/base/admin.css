@@ -50,7 +50,7 @@ ul.list-menu .menu-item {
 }
 ul.list-menu {
  list-style: none;
-    width: 45%;
+    width: 35%;
 }
 ul.list-menu > li {
     margin-bottom: 1em;
@@ -81,12 +81,13 @@ ul.list-menu ul li {
     top: 1em;
     right: 1em;
     bottom: 3em;
-    width: 45%;
+    width: 55%;
     padding-bottom: 1em;
 }
 
 #rt-portal .titlebox-content {
     height: 100%;
+    padding: 0;
 }
 
 #rt-portal .titlebox.rolled-up {

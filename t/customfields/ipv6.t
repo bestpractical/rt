@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 98;
+use RT::Test tests => 102;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -51,6 +51,7 @@ my %valid = (
     'abcd::034'          => 'abcd:' . '0000:' x 6 . '0034',
     'abcd::192.168.1.1'  => 'abcd:' . '0000:' x 5 . 'c0a8:0101',
     '::192.168.1.1'      => '0000:' x 6 . 'c0a8:0101',
+    '::'                 => '0000:' x 7 . '0000',
 );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
@@ -138,7 +139,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
 
     my $cf_field = "Object-RT::Ticket--CustomField-$cf_id-Values";
     my @invalid =
-      ( '::', 'abcd:', 'efgh', 'abcd:' x 8 . 'abcd', 'abcd::abcd::abcd' );
+      ( 'abcd:', 'efgh', 'abcd:' x 8 . 'abcd', 'abcd::abcd::abcd' );
     for my $invalid (@invalid) {
         ok $agent->goto_create_ticket($q), "go to create ticket";
         $agent->submit_form(

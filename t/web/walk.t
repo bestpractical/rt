@@ -3,173 +3,90 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 92;
+use RT::Test;
+use HTML::TreeBuilder;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
 ok( $m->login( 'root' => 'password' ), 'login as root' );
 
-diag 'walk into /Search/Simple.html' if $ENV{TEST_VERBOSE};
-{
-    $m->get_ok( $baseurl, 'homepage' );
-    $m->follow_link_ok( { text => 'Simple Search' }, '-> Simple Search' );
-    for my $tab ( 'New Search', 'Edit Search', 'Advanced', ) {
-        $m->follow_link_ok( { text => $tab }, "-> $tab" );
+my %viewed = ( '/NoAuth/Logout.html' => 1 );    # in case logout
+
+my $user = RT::User->new($RT::SystemUser);
+$user->Load('root');
+ok( $user->id, 'loaded root' );
+
+my $queue = RT::Queue->new($RT::SystemUser);
+$queue->Load('General');
+ok( $queue->id, 'loaded General queue' );
+
+my $group = RT::Group->new($RT::SystemUser);
+ok( $group->CreateUserDefinedGroup( Name => 'group_foo' ) );
+my $cf = RT::CustomField->new($RT::SystemUser);
+ok(
+    $cf->Create(
+        Name       => 'cf_foo',
+        Type       => 'Freeform',
+        LookupType => 'RT::Queue-RT::Ticket',
+    )
+);
+ok( $cf->id, 'created cf_foo' );
+
+my $class = RT::Class->new($RT::SystemUser);
+ok( $class->Create( Name => 'class_foo' ) );
+ok( $class->id, 'created class_foo' );
+
+# to make search have results
+my $open_ticket = RT::Test->create_ticket(
+    Subject => 'ticket_foo',
+    Queue   => 1,
+);
+
+my $resolved_ticket = RT::Test->create_ticket(
+    Subject => 'ticket_bar',
+    Status  => 'resolved',
+    Queue   => 1,
+);
+
+my @links = (
+    '/',
+    '/Admin/Users/Modify.html?id=' . $user->id,
+    '/Admin/Groups/Modify.html?id=' . $group->id,
+    '/Admin/Queues/Modify.html?id=' . $queue->id,
+    '/Admin/CustomFields/Modify.html?id=' . $cf->id,
+    '/Admin/Global/Scrip.html?id=1',
+    '/Admin/Global/Template.html?Template=1',
+    '/Admin/Articles/Classes/Modify.html?id=' . $class->id,
+    '/Search/Build.html?Query=id<10',
+    '/Ticket/Display.html?id=' . $open_ticket->id,
+    '/Ticket/Display.html?id=' . $resolved_ticket->id,
+);
+
+for my $link (@links) {
+    test_page($m, $link);
+}
+
+$m->get_ok('/NoAuth/Logout.html');
+
+sub test_page {
+    my $m = shift;
+    my $link = shift;
+    $m->get_ok( $link, $link );
+    $m->no_warnings_ok($link);
+
+    my $tree = HTML::TreeBuilder->new();
+    $tree->parse( $m->content );
+    $tree->elementify;
+    my ($top_menu)  = $tree->look_down( id => 'main-navigation' );
+    my ($page_menu) = $tree->look_down( id => 'page-navigation' );
+
+    my (@links) =
+      grep { !$viewed{$_}++ && /^[^#]/ }
+      map { $_->attr('href') || () } ( $top_menu ? $top_menu->find('a') : () ),
+      ( $page_menu ? $page_menu->find('a') : () );
+
+    for my $link (@links) {
+        test_page($m, $link);
     }
 }
 
-diag 'walk into /Search' if $ENV{TEST_VERBOSE};
-{
-    $m->get_ok( $baseurl, 'homepage' );
-    $m->follow_link_ok( { text => 'Tickets' }, '-> Tickets' );
-
-    for my $tab ( 'New Search', 'Edit Search', 'Advanced', ) {
-        $m->follow_link_ok( { text => $tab }, "-> $tab" );
-    }
-}
-
-diag 'walk into /Tools' if $ENV{TEST_VERBOSE};
-{
-    $m->get_ok( $baseurl, 'homepage' );
-    $m->follow_link_ok( { text => 'Tools' }, '-> Tools' );
-
-    for my $tab ( 'Offline', 'My Day' )
-    {
-
-        $m->follow_link_ok( { text => $tab }, "-> $tab" );
-    }
-}
-
-diag 'walk into /Admin' if $ENV{TEST_VERBOSE};
-{
-    diag 'walk into /Admin/Users' if $ENV{TEST_VERBOSE};
-    {
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Users' },         '-> Users' );
-        $m->follow_link_ok( { text => 'Create' },        '-> Create' );
-        $m->back;
-
-        $m->follow_link_ok( { text => 'root' }, '-> root' );
-        for my $id ( 'my-rt', 'memberships', 'history', 'basics' ) {
-            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
-        }
-    }
-
-    diag 'walk into /Admin/Groups' if $ENV{TEST_VERBOSE};
-    {
-        my $group = RT::Group->new($RT::SystemUser);
-        ok( $group->CreateUserDefinedGroup( Name => 'group_foo' ) );
-
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Groups' },        '-> Groups' );
-        $m->follow_link_ok( { text => 'Create' },        '-> Create' );
-        $m->back;
-
-        $m->follow_link_ok( { text => 'group_foo' }, '-> group_foo' );
-        for my $id ( 'history', 'members', 'group-rights', 'user-rights',
-            'basics' )
-        {
-            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
-        }
-    }
-
-    diag 'walk into /Admin/Queues' if $ENV{TEST_VERBOSE};
-    {
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Queues' },        '-> Queues' );
-        $m->follow_link_ok( { text => 'Create' },        '-> Create' );
-        $m->back;
-
-        $m->follow_link_ok( { text => 'General' }, '-> General' );
-        for my $id (
-            'people',                    'scrips',
-            'templates',                 'ticket-custom-fields',
-            'transaction-custom-fields', 'group-rights',
-            'user-rights',               'basics',
-          )
-        {
-            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
-        }
-    }
-
-    diag 'walk into /Admin/CustomFields' if $ENV{TEST_VERBOSE};
-    {
-        my $cf = RT::CustomField->new($RT::SystemUser);
-        ok(
-            $cf->Create(
-                Name       => 'cf_foo',
-                Type       => 'Freeform',
-                LookupType => 'RT::Queue-RT::Ticket',
-            )
-        );
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Custom Fields' }, '-> Custom Fields' );
-        $m->follow_link_ok( { text => 'Create' },        '-> Create' );
-        $m->back;
-
-        $m->follow_link_ok( { text => 'cf_foo' }, '-> cf_foo' );
-
-        for my $id ( 'applies-to', 'group-rights', 'user-rights', 'basics' ) {
-            $m->follow_link_ok( { id => 'page-' . $id }, "-> $id" );
-        }
-    }
-
-    diag 'walk into /Admin/Tools' if $ENV{TEST_VERBOSE};
-    {
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Tools' },         '-> Tools' );
-
-        for my $tab ( 'Configuration.html', 'Shredder' ) {
-            $m->follow_link_ok( { url_regex => qr!/Admin/Tools/$tab! },
-                "-> /Admin/Tools/$tab" );
-        }
-    }
-
-    diag 'walk into /Admin/Global' if $ENV{TEST_VERBOSE};
-    {
-        $m->get_ok( $baseurl, 'homepage' );
-        $m->follow_link_ok( { text => 'Configuration' }, '-> Configuration' );
-        $m->follow_link_ok( { text => 'Global' },        '-> Global' );
-
-        for my $id ( 'group-rights', 'user-rights', 'my-rt', 'theme' )
-        {
-            $m->follow_link_ok( { id => 'tools-config-global-' . $id }, "-> $id" );
-        }
-
-        for my $tab ( 'scrips', 'templates' ) {
-            $m->follow_link_ok( { id => "tools-config-global-" . $tab }, "-> $tab" );
-            for my $id (qw/create select/) {
-                $m->follow_link_ok( { id => "tools-config-global-" . $tab . "-$id" },
-                    "-> $id" );
-            }
-            $m->follow_link_ok( { text => '1' }, '-> 1' );
-        }
-    }
-
-}
-
-diag 'walk into /Approvals' if $ENV{TEST_VERBOSE};
-{
-    $m->get_ok( $baseurl, 'homepage' );
-
-    #    $m->follow_link_ok( { text => 'Approvals' }, '-> Approvals' );
-    $m->follow_link( text => 'Approvals' );
-    is( $m->status, 200, '-> Approvals' );
-}
-
-diag 'walk into /Prefs' if $ENV{TEST_VERBOSE};
-{
-    for my $id (
-        'settings',    'settings-about_me', 'settings-search_options', 'settings-myrt',
-        'settings-quicksearch', 'settings-saved-searches-search-0', 'settings-saved-searches-search-1',       'settings-saved-searches-search-2',
-        'logout'
-      )
-    {
-        $m->follow_link_ok( { id => 'preferences-' . $id }, "-> $id" );
-    }
-}

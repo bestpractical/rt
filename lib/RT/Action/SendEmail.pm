@@ -801,7 +801,8 @@ sub RemoveInappropriateRecipients {
     # system blacklist
 
     # Trim leading and trailing spaces. 
-    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) } Email::Address->parse(join(', ', grep {defined} @blacklist));
+    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) }
+        Email::Address->parse( join ', ', grep defined, @blacklist );
 
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         my @addrs;
@@ -813,8 +814,16 @@ sub RemoveInappropriateRecipients {
                 $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
                 next;
             }
-            if ( grep /^\Q$addr\E$/, @blacklist ) {
+            if ( grep $addr eq $_, @blacklist ) {
                 $RT::Logger->info( $msgid . "$addr was blacklisted for outbound mail on this transaction. Skipping");
+                next;
+            }
+            push @addrs, $addr;
+        }
+        foreach my $addr ( @{ $self->{'NoSquelch'}{$type} || [] } ) {
+            # never send email to itself
+            if ( !RT::EmailParser->CullRTAddresses($addr) ) {
+                $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
                 next;
             }
             push @addrs, $addr;
@@ -949,8 +958,14 @@ sub SetSubject {
         return ();
     }
 
-    my $message = $self->TransactionObj->Attachments;
+    # don't use Transaction->Attachments because it caches
+    # and anything which later calls ->Attachments will be hurt
+    # by our RowsPerPage() call.  caching is hard.
+    my $message = RT::Attachments->new( $self->CurrentUser );
+    $message->Limit( FIELD => 'TransactionId', VALUE => $self->TransactionObj->id);
+    $message->OrderBy( FIELD => 'id', ORDER => 'ASC' );
     $message->RowsPerPage(1);
+
     if ( $self->{'Subject'} ) {
         $subject = $self->{'Subject'};
     } elsif ( my $first = $message->First ) {

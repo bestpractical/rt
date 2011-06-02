@@ -48,7 +48,7 @@
 div#ticket-history div.ticket-transaction {
  border-top: 1px solid #ccc;
  padding-bottom: 0.25em;
-
+    position: relative; /* gives us a container for position: absolute */
 }
 
 div#ticket-history div.odd {
@@ -67,7 +67,8 @@ div#ticket-history {
 
 .ticket-transaction div.metadata span.actions {
  position: absolute;
- right: 2.3em;
+ top: 0;
+ right: 0;
  padding: 0em;
  background: #ccc;
  text-align: right;
@@ -279,10 +280,10 @@ div.requestor-ticket-links {
 }
 
 
-/* textareas get to be bigger */
-.edit-custom-field.cftype-Text textarea,
-.edit-custom-field.cftype-Freeform input,
-.edit-custom-field.cftype-Wikitext textarea
+/* textareas get to be bigger when we're in a table */
+tr.edit-custom-field.cftype-Text textarea,
+tr.edit-custom-field.cftype-Freeform input,
+tr.edit-custom-field.cftype-Wikitext textarea
 {
     width: 100%;
 }

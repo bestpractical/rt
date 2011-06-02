@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 110;
+use RT::Test tests => 122;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -117,7 +117,6 @@ my ($my_tickets) =
   map { ( $_->possible_values )[1] }
   grep { ( $_->value_names )[1] =~ /Saved Search: My Tickets/ } @input;
 $form->value('Searches-body-Available' => $my_tickets );
-$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -257,4 +256,13 @@ $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
 $omech->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
+
+# make sure that navigating to dashboard pages with bad IDs throws an error
+my ($bad_id) = $personal =~ /^search-(\d+)/;
+
+for my $page (qw/Modify Queries Render Subscription/) {
+    $m->get("/Dashboards/$page.html?id=$bad_id");
+    $m->content_like(qr/Couldn.+t load dashboard $bad_id: Invalid object type/);
+    $m->warning_like(qr/Couldn't load dashboard $bad_id: Invalid object type/);
+}
 

@@ -66,7 +66,7 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs, QueryString => $QueryString &>
 
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
@@ -227,10 +227,6 @@ foreach my $arg ( keys %ARGS ) {
             elsif ( $op eq '!=' ) {
                 $op = "IS NOT";
             }
-
-            # This isn't "right", but...
-            # It has to be this way until #5182 is fixed
-            $value = "'NULL'";
         }
         else {
             $value =~ s/'/\\'/g;
@@ -308,7 +304,6 @@ if ($NewQuery) {
 elsif ( $query{'Query'} ) {
     $QueryString = $m->comp('/Elements/QueryString', %query );
 }
-
 
 </%INIT>
 

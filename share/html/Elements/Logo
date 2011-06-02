@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="logo">
-% if ($use_user_logo) {
+<div id="<% $id %>">
+% if ($user_logo) {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
-    src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo"
+    src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_logo->Content->{'hash'} %>"
     alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
 % } else {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
@@ -68,10 +68,26 @@ if ( exists $ARGS{'show_name'} ) {
 }
 
 use Scalar::Util qw(blessed);
-my $use_user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : 0;
+my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
 
+# If we have the attribute, but no content, we don't really have a user logo
+if ($user_logo) {
+    my $content = $user_logo->Content;
+    undef $user_logo
+        unless ref $content eq 'HASH'
+           and defined $content->{'data'};
+}
+
+if ($OnlyCustom
+    and not $user_logo
+    and ($ARGS{LogoURL}||RT->Config->Get('LogoURL')) =~ /bpslogo\.png$/)
+{
+    return;
+}
 </%INIT>
 <%ARGS>
 $ShowName => 1
+$OnlyCustom => 0
 $Name => undef
+$id => 'logo'
 </%ARGS>

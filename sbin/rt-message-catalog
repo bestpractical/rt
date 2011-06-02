@@ -209,7 +209,7 @@ sub rosetta {
         die "Is not URL or directory: '$url'";
     }
 
-    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    my @files = ( <$dir/rt/*.po>, <$dir/*.po> );
     unless ( @files ) {
         print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
         exit;
@@ -265,6 +265,6 @@ sub rosetta {
 
 sub extract {
     shift;
-    system($^X, 'devel/extract-message-catalog', @_);
+    system($^X, 'devel/tools/extract-message-catalog', @_);
 }
 

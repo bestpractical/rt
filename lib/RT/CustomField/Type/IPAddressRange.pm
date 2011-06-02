@@ -9,6 +9,8 @@ use Regexp::IPv6 qw($IPv6_re);
 use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
+$IPv6_re = qr/(?:$IPv6_re|::)/;
+
 sub CanonicalizeForCreate {
     my ($self, $cf, $args) = @_;
 

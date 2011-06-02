@@ -47,12 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $PrimaryGroupBy => 'Queue'
-$SecondaryGroupBy => ''
 $ChartStyle => 'bars'
 $Description => undef
 </%args>
 <%init>
-$ARGS{SecondaryGroupBy} ||= '';
 $ARGS{Query} ||= 'id > 0';
 
 # FIXME: should be factored with RT::Report::Tickets::Label :(
@@ -74,7 +72,7 @@ my $title = loc( "Search results grouped by [_1]", $PrimaryGroupByLabel );
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
+    SearchFields => [qw(Query PrimaryGroupBy ChartStyle)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 

@@ -1062,7 +1062,7 @@ sub DefaultRenderType {
     my $composite    = @_ ? shift : $self->TypeComposite;
     my ($type, $max) = split /-/, $composite, 2;
     return unless $type and $self->HasRenderTypes($composite);
-    return defined $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
+    return $FieldTypes{$type}->{render_types}->{ $max == 1 ? 'single' : 'multiple' }[0];
 }
 
 =head2 HasRenderTypes [TYPE_COMPOSITE]

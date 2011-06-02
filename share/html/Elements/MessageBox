@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" <% $cols |n %> rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
+<textarea autocomplete="off" class="messagebox" <% $cols |n %> rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS);
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>

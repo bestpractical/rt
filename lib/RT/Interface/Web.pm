@@ -69,6 +69,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
+use List::MoreUtils qw();
 
 =head2 SquishedCSS $style
 
@@ -96,6 +97,18 @@ sub SquishedJS {
     my $js = RT::Squish::JS->new();
     $SQUISHED_JS = $js;
     return $js;
+}
+
+=head2 ClearSquished
+
+Removes the cached CSS and JS entries, forcing them to be regenerated
+on next use.
+
+=cut
+
+sub ClearSquished {
+    undef $SQUISHED_JS;
+    %SQUISHED_CSS = ();
 }
 
 =head2 EscapeUTF8 SCALARREF
@@ -222,6 +235,8 @@ sub HandleRequest {
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
 
+    MaybeRejectPrivateComponentRequest();
+
     MaybeShowNoAuthPage($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
@@ -274,6 +289,8 @@ sub HandleRequest {
 
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
+
+    $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
 }
 
 sub _ForceLogout {
@@ -439,6 +456,37 @@ sub MaybeShowNoAuthPage {
     SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 MaybeRejectPrivateComponentRequest
+
+This function will reject calls to private components, like those under
+C</Elements>. If the requested path is a private component then we will
+abort with a C<403> error.
+
+=cut
+
+sub MaybeRejectPrivateComponentRequest {
+    my $m = $HTML::Mason::Commands::m;
+    my $path = $m->request_comp->path;
+
+    # We do not check for dhandler here, because requesting our dhandlers
+    # directly is okay. Mason will invoke the dhandler with a dhandler_arg of
+    # 'dhandler'.
+
+    if ($path =~ m{
+            / # leading slash
+            ( Elements    |
+              _elements   | # mobile UI
+              Widgets     |
+              autohandler | # requesting this directly is suspicious
+              l           ) # loc component
+            ( $ | / ) # trailing slash or end of path
+        }xi) {
+            $m->abort(403);
+    }
+
+    return;
 }
 
 sub InitializeMenu {
@@ -710,7 +758,7 @@ sub Redirect {
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
-    # don't do this if $RT::CanoniaclRedirectURLs is true
+    # don't do this if $RT::CanonicalizeRedirectURLs is true
     if (   !RT->Config->Get('CanonicalizeRedirectURLs')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
@@ -1475,7 +1523,7 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => Encode::encode_utf8(
+    $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
         RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
     ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
@@ -1650,6 +1698,9 @@ sub MakeMIMEEntity {
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
                 $Message->head->set( 'Subject' => $filename );
             }
+
+            # Attachment parts really shouldn't get a Message-ID
+            $Message->head->delete('Message-ID');
         }
     }
 
@@ -1764,7 +1815,7 @@ sub ProcessACLs {
         my $principal;
         if ( $type eq 'user' ) {
             $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->Load( $ARGSref->{$key} );
+            $principal->LoadByCol( Name => $ARGSref->{$key} );
         }
         else {
             $principal = RT::Group->new( $session{'CurrentUser'} );
@@ -1781,8 +1832,20 @@ sub ProcessACLs {
         # Turn our addprincipal rights spec into a real one
         for my $arg (keys %$ARGSref) {
             next unless $arg =~ /^SetRights-addprincipal-(.+?-\d+)$/;
-            $ARGSref->{"SetRights-$principal_id-$1"} = $ARGSref->{$arg};
-            push @check, "$principal_id-$1";
+
+            my $tuple = "$principal_id-$1";
+            my $key   = "SetRights-$tuple";
+
+            # If we have it already, that's odd, but merge them
+            if (grep { $_ eq $tuple } @check) {
+                $ARGSref->{$key} = [
+                    (ref $ARGSref->{$key} eq 'ARRAY' ? @{$ARGSref->{$key}} : $ARGSref->{$key}),
+                    (ref $ARGSref->{$arg} eq 'ARRAY' ? @{$ARGSref->{$arg}} : $ARGSref->{$arg}),
+                ];
+            } else {
+                $ARGSref->{$key} = $ARGSref->{$arg};
+                push @check, $tuple;
+            }
         }
     }
 
@@ -1798,7 +1861,7 @@ sub ProcessACLs {
         $state{$tuple} = { map { $_ => 1 } @rights };
     }
 
-    foreach my $tuple (@check) {
+    foreach my $tuple (List::MoreUtils::uniq @check) {
         next unless $tuple =~ /^(\d+)-(.+?)-(\d+)$/;
 
         my ( $principal_id, $object_type, $object_id ) = ( $1, $2, $3 );
@@ -2778,13 +2841,14 @@ sub _NewScrubber {
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
+        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE]
     );
     $scrubber->comment(0);
 
     return $scrubber;
 }
 
+package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
 1;

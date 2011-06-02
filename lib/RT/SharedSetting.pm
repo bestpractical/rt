@@ -112,6 +112,9 @@ sub Load {
             return (0, $self->loc("Permission denied"))
                 unless $self->CurrentUserCanSee;
 
+            my ($ok, $msg) = $self->PostLoadValidate;
+            return ($ok, $msg) if !$ok;
+
             return (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name));
         } else {
             $RT::Logger->error("Could not load attribute " . $id
@@ -152,11 +155,23 @@ sub LoadById {
 
 =head2 PostLoad
 
-Called after after successful L</Load>.
+Called after a successful L</Load>.
 
 =cut
 
 sub PostLoad { }
+
+=head2 PostLoadValidate
+
+Called just before returning success from L</Load>; may be used to validate
+that the record is correct. This method is expected to return a (ok, msg)
+pair.
+
+=cut
+
+sub PostLoadValidate {
+    return 1;
+}
 
 =head2 Save
 

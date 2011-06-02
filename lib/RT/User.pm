@@ -579,8 +579,9 @@ so that a better email address can be returned
 =cut
 
 sub SetEmailAddress {
-    my $self = shift;
+    my $self  = shift;
     my $Value = shift;
+    $Value = '' unless defined $Value;
 
     my ($val, $message) = $self->ValidateEmailAddress( $Value );
     if ( $val ) {

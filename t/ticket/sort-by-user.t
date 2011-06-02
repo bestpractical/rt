@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use RT::Test nodata => 1, tests => 34;
+use RT::Test nodata => 1, tests => 52;
 
 use strict;
 use warnings;

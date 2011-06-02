@@ -1,1 +1,0 @@
-This topic is described better in `perldoc lib/RT/Crypt/GnuPG.pm`.

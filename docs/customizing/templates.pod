@@ -1,0 +1,132 @@
+=head1 Templates
+
+Each template is split into two sections. A block of headers and a body. These
+sections are separated by a blank line.
+
+Templates are processed by the L<Text::Template> module. This module
+allows you to embed arbitrary Perl code into your templates. Text wrapped
+in curly braces, C<{...}> is interpreted as Perl. See L<Text::Template>
+for more information.
+
+=head2 Headers
+
+Your template may specify arbitrary email headers. Each header is a name, a
+colon, then a value. So, for example, to specify a subject, you can use:
+
+    Subject: Thanks for your bug report.
+
+=head3 Special Headers
+
+=over
+
+=item Content-Type: text/html
+
+The special header "Content-Type: text/html" tells RT that the template should
+be parsed as HTML. RT will automatically make the outgoing message multipart.
+That way, recipients who can read only plaintext email will receive something
+readable, while users with clients which can display HTML will receive the full
+experience. Please be aware that HTML support in mail clients varies greatly,
+much more so than different web browsers.
+
+We welcome contributions of HTML-ization of builtin templates.
+
+=back
+
+=head2 Template Types
+
+Templates have a Type which dictates which level of code execution is
+allowed.
+
+Templates of type C<Perl> are evaluated using L<Text::Template>
+which allows arbitrary code execution. Only users which have the global
+C<ExecuteCode> privilege may write templates of type C<Perl>. Prior to
+RT 4.0, this was the only type of Template available.
+
+Templates of type C<Simple> permit only simple variable interpolation.
+No special privilege beyond C<ModifyTemplate> is needed to write C<Simple>
+templates.
+
+For both types of templates, text between curly braces C<{ ... }> is
+interpolated. For C<Perl> templates, this text can be any code (see
+L<Text::Template/Details>). For C<Simple> templates, only simple variables
+are permitted; for example C<{ $TicketSubject }>.
+
+=head2 Variables
+
+=head3 Perl templates
+
+The variables that your templates may use include:
+
+=over 4
+
+=item C<$Transaction>
+
+The transaction object.
+
+=item C<$rtname>
+
+The value of the "rtname" config variable.
+
+=item C<$Ticket>
+
+The ticket object. This is only set during a ticket transaction.
+
+=item C<$Requestor>
+
+This is not an object, but the name of the first requestor on the ticket.
+If this is not what you need, inspect C<< $Ticket->Requestors >>.
+
+=item C<loc("text")>
+
+A localization function. See L<Locale::Maketext>.
+
+=back
+
+=head3 Selected Simple template variables
+
+Since method calls are not allowed in simple templates, many common
+method results have been placed into scalar variables for the template's
+use.  Among them:
+
+=over 4
+
+=item $TicketId
+
+=item $TicketSubject
+
+=item $TicketStatus
+
+=item $TicketQueueName
+
+=item $TicketOwnerName
+
+=item $TicketOwnerEmailAddress
+
+=item $TicketCF(Name)
+
+For example, C<$TicketCFDepartment>.
+
+=item $TransactionType
+
+=item $TransactionField
+
+=item $TransactionOldValue
+
+=item $TransactionNewValue
+
+=item $TransactionData
+
+=item $TransactionContent
+
+=item $TransactionDescription
+
+=item $TransactionBriefDescription
+
+=item $TransactionCF(Name)
+
+For example, C<$TransactionCFLocation>.
+
+=back
+
+=cut
+

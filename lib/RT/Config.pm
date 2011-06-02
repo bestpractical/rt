@@ -424,15 +424,24 @@ our %META = (
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('RTAddressRegexp');
-            return if $value;
-
-            $RT::Logger->debug(
-                'The RTAddressRegexp option is not set in the config.'
-                .' Not setting this option results in additional SQL queries to'
-                .' check whether each address belongs to RT or not.'
-                .' It is especially important to set this option if RT recieves'
-                .' emails on addresses that are not in the database or config.'
-            );
+            if (not $value) {
+                $RT::Logger->debug(
+                    'The RTAddressRegexp option is not set in the config.'
+                    .' Not setting this option results in additional SQL queries to'
+                    .' check whether each address belongs to RT or not.'
+                    .' It is especially important to set this option if RT recieves'
+                    .' emails on addresses that are not in the database or config.'
+                );
+            } elsif (ref $value and ref $value eq "Regexp") {
+                # Ensure that the regex is case-insensitive; while the
+                # local part of email addresses is _technically_
+                # case-sensitive, most MTAs don't treat it as such.
+                $RT::Logger->warning(
+                    'RTAddressRegexp is set to a case-sensitive regular expression.'
+                    .' This may lead to mail loops with MTAs which treat the'
+                    .' local part as case-insensitive -- which is most of them.'
+                ) if "$value" =~ /^\(\?[a-z]*-([a-z]*):/ and "$1" =~ /i/;
+            }
         },
     },
     # User overridable mail options
@@ -473,6 +482,45 @@ our %META = (
     },
 
     # Internal config options
+    FullTextSearch => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $v = $self->Get('FullTextSearch');
+            return unless $v->{Enable} and $v->{Indexed};
+            my $dbtype = $self->Get('DatabaseType');
+            if ($dbtype eq 'Oracle') {
+                if (not $v->{IndexName}) {
+                    $RT::Logger->error("No IndexName set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'Pg') {
+                my $bad = 0;
+                if (not $v->{'Column'}) {
+                    $RT::Logger->error("No Column set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Column'} eq "Content"
+                             and (not $v->{'Table'} or $v->{'Table'} eq "Attachments")) {
+                    $RT::Logger->error("Column for full-text index is set to Content, not tsvector column; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'mysql') {
+                if (not $v->{'Table'}) {
+                    $RT::Logger->error("No Table set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Table'} eq "Attachments") {
+                    $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif (not $v->{'MaxMatches'}) {
+                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                    $v->{MaxMatches} = 10_000;
+                }
+            } else {
+                $RT::Logger->error("Indexed full-text-search not supported for $dbtype");
+                $v->{Indexed} = 0;
+            }
+        },
+    },
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
@@ -1249,20 +1297,6 @@ sub UpdateOption {
         $META{$name}{$type} = $args{$type};
     }
     return 1;
-}
-
-=head2 ExtraSecurity NAME
-
-Returns true if NAME is included in the C<@ExtraSecurity> list, false if not.
-
-This is currently a convenience method for C<< grep { lc $_ eq lc $name } RT->Config->Get('ExtraSecurity') >>.
-
-=cut
-
-sub ExtraSecurity {
-    my $self = shift;
-    my $name = lc shift;
-    return scalar grep { lc $_ eq $name } $self->Get('ExtraSecurity');
 }
 
 RT::Base->_ImportOverlays();

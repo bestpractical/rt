@@ -294,6 +294,21 @@ sub CheckCompatibility {
     return (1)
 }
 
+sub CheckSphinxSE {
+    my $self = shift;
+
+    my $dbh = $RT::Handle->dbh;
+    local $dbh->{'RaiseError'} = 0;
+    local $dbh->{'PrintError'} = 0;
+    my $has = ($dbh->selectrow_array("show variables like 'have_sphinx'"))[1];
+    $has ||= ($dbh->selectrow_array(
+        "select 'yes' from INFORMATION_SCHEMA.PLUGINS where PLUGIN_NAME = 'sphinx' AND PLUGIN_STATUS='active'"
+    ))[0];
+
+    return 0 unless lc($has||'') eq "yes";
+    return 1;
+}
+
 =head2 Database maintanance
 
 =head3 CreateDatabase $DBH
@@ -1005,7 +1020,7 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
     if ( @Attributes ) {
-        $RT::Logger->debug("Creating predefined searches...");
+        $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {

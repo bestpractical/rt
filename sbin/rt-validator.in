@@ -359,6 +359,15 @@ push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
     );
 };
 
+push @CHECKS, 'System internal group uniqueness' => sub {
+    check_uniqueness(
+        'Groups',
+        columns     => ['Instance', 'Type'],
+        condition   => '.Domain = ?',
+        bind_values => [ 'SystemInternal' ],
+    );
+};
+
 # CHECK that user defined group names are unique
 push @CHECKS, 'User Defined Group Name uniqueness' => sub {
     check_uniqueness(

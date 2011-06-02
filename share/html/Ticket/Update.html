@@ -178,6 +178,7 @@
 % $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
 </td></tr>
 
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
