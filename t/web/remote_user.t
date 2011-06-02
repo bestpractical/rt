@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 8;
+use RT::Test tests => 9;
 
 RT->Config->Set( DevelMode => 0 );
 RT->Config->Set( WebExternalAuth => 1 );
@@ -33,3 +33,19 @@ $m->content_like(
     "Has user on the page"
 );
 $m->content_unlike(qr/Logout/i, "Has no logout button, no WebFallbackToInternalAuth");
+
+$m->credentials(
+    $authority,
+    "restricted area",
+    undef, undef
+);
+$m->get($url);
+is($m->status, 401, "Subsequent requests without credentials aren't still logged in");
+
+
+# Put the credentials back for the warnings check at the end
+$m->credentials(
+    $authority,
+    "restricted area",
+    root => "password",
+);
