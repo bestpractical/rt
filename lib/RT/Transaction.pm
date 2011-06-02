@@ -561,6 +561,16 @@ sub _FindPreferredContentObj {
             if ( my $first = $plain_parts->First ) {
                 return $first;
             }
+        } else {
+            my $parts = $Attachment->Children;
+            $parts->LimitNotEmpty;
+
+            # If we actully found a part, return its content
+            while (my $part = $parts->Next) {
+                next unless _IsDisplayableTextualContentType($part->ContentType);
+                return $part;
+            }
+
         }
     }
 
