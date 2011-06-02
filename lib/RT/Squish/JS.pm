@@ -92,6 +92,16 @@ sub Filter {
         my $input = $content;
         my ( $output, $error );
 
+        # If we're running under fastcgi, STDOUT and STDERR are tied
+        # filehandles, which cause IPC::Run3 to flip out.  Construct
+        # temporary, not-tied replacements for it to see instead.
+        my $stdout = IO::Handle->new;
+        $stdout->fdopen( 1, 'w' );
+        local *STDOUT = $stdout;
+        my $stderr = IO::Handle->new;
+        $stderr->fdopen( 2, 'w' );
+        local *STDERR = $stderr;
+
         local $SIG{'CHLD'} = 'DEFAULT';
         require IPC::Run3;
         IPC::Run3::run3( [$jsmin], \$input, \$output, \$error );
