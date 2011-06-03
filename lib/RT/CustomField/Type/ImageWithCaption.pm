@@ -19,7 +19,8 @@ sub CreateArgsFromWebArgs {
     my ($self, $cf, $web_args) = @_;
 
     my $args = HTML::Mason::Commands::_UploadedFileArgs($web_args->{Upload});
-    $args->{Value} = $web_args->{Value}; # override value over filename from upload
+    # override value over filename from upload, if caption is provided
+    $args->{Value} = $web_args->{Value} if length $web_args->{Value};
     return $args;
 }
 
