@@ -3,12 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
-
-plan skip_all => 'test with apache+mod_perl has a bug with timezones'
-    if ($ENV{RT_TEST_WEB_HANDLER}||'') =~ /^apache(\+mod_perl)?$/;
-
-plan tests => 51;
+use RT::Test tests => 51;
 
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -17,6 +12,15 @@ my $root = RT::User->new( RT->SystemUser );
 ok( $root->Load('root'), 'load root user' );
 
 my $cf_name = 'test cf datetime';
+
+my $why;
+
+if ( ( $ENV{RT_TEST_WEB_HANDLER} || '' ) =~ /^apache(\+mod_perl)?$/
+    && RT::Test::Apache->apache_mpm_type =~ /^(?:worker|event)$/ )
+{
+    $why =
+'localizing $ENV{TZ} does *not* work with mod_perl+mpm_event or mod_perl+mpm_worker';
+}
 
 my $cfid;
 diag "Create a CF";
@@ -77,11 +81,14 @@ diag 'check valid inputs with various timezones in ticket create page';
 
     $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load($id);
-    is(
-        $ticket->CustomFieldValues($cfid)->First->Content,
-        '2010-05-04 17:00:01',
-        'date in db is in UTC'
-    );
+    TODO: {
+        local $TODO = $why;
+        is(
+            $ticket->CustomFieldValues($cfid)->First->Content,
+            '2010-05-04 17:00:01',
+            'date in db is in UTC'
+        );
+    }
 
     $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
     $m->content_contains('Tue May 04 13:00:01 2010', 'has cf datetime value on the page');
@@ -89,7 +96,12 @@ diag 'check valid inputs with various timezones in ticket create page';
     $root->SetTimezone( 'Asia/Shanghai' );
     # interesting that $m->reload doesn't work
     $m->get_ok( $m->uri );
-    $m->content_contains('Wed May 05 01:00:01 2010', 'cf datetime value respects user timezone');
+
+    TODO: {
+        local $TODO = $why;
+        $m->content_contains( 'Wed May 05 01:00:01 2010',
+            'cf datetime value respects user timezone' );
+    }
 
     $m->submit_form(
         form_name => "CreateTicketInQueue",
@@ -107,17 +119,29 @@ diag 'check valid inputs with various timezones in ticket create page';
         "created ticket $id" );
     $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load($id);
-    is(
-        $ticket->CustomFieldValues($cfid)->First->Content,
-        '2010-05-05 23:00:01',
-        'date in db is in UTC'
-    );
+    TODO: {
+        local $TODO = $why;
+        is(
+            $ticket->CustomFieldValues($cfid)->First->Content,
+            '2010-05-05 23:00:01',
+            'date in db is in UTC'
+        );
+    }
 
     $m->content_contains('test cf datetime:', 'has no cf datetime field on the page');
-    $m->content_contains('Thu May 06 07:00:01 2010', 'cf datetime input respects user timezone');
+    TODO: {
+        local $TODO = $why;
+        $m->content_contains( 'Thu May 06 07:00:01 2010',
+            'cf datetime input respects user timezone' );
+    }
     $root->SetTimezone( 'EST5EDT' ); # back to -04:00
     $m->get_ok( $m->uri );
-    $m->content_contains('Wed May 05 19:00:01 2010', 'cf datetime value respects user timezone');
+
+    TODO: {
+        local $TODO = $why;
+        $m->content_contains( 'Wed May 05 19:00:01 2010',
+            'cf datetime value respects user timezone' );
+    }
 }
 
 
@@ -154,9 +178,13 @@ diag 'check search build page';
 
     is_results_number( { $cf_op->name => '<', $cf_field->name => '2010-05-07', }, 2 );
     is_results_number( { $cf_op->name => '>', $cf_field->name => '2010-05-04', }, 2 );
+
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05', }, 1 );
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 01:00:01', }, 1 );
-    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 02:00:01', }, 0 );
+
+    is_results_number(
+        { $cf_op->name => '=', $cf_field->name => '2010-05-05 02:00:01', }, 0 );
+
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06', }, 1 );
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06 07:00:01', }, 1 );
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-06 08:00:01', }, 0 );
@@ -184,7 +212,7 @@ diag 'check invalid inputs';
     $m->content_lacks('foodate', 'invalid dates not set');
 }
 
-sub is_results_number { 
+sub is_results_number {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $fields = shift;
     my $number = shift;
@@ -196,7 +224,10 @@ sub is_results_number {
         fields => $fields,
         button => 'DoSearch',
     );
-    $m->content_contains( "Found $number ticket", "Found $number ticket" );
+    TODO: {
+        local $TODO = $why;
+        $m->content_contains( "Found $number ticket", "Found $number ticket" );
+    }
 }
 
 # to make $m->DESTROY happy
