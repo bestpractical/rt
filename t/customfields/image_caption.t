@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 26;
+use RT::Test tests => 33;
 
 my ($baseurl, $agent) =RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -91,7 +91,7 @@ diag "create a ticket via web and set image with catpion" if $ENV{'TEST_VERBOSE'
 
 
 
-
+my $last_id;
 diag "create a ticket via web and leave the image empty" if $ENV{'TEST_VERBOSE'};
 {
     ok $agent->goto_create_ticket($q), "go to create ticket";
@@ -109,6 +109,33 @@ diag "create a ticket via web and leave the image empty" if $ENV{'TEST_VERBOSE'}
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
+    $last_id = $id;
 }
 
 
+
+diag "go to last ticket and create the image with caption cf" if $ENV{'TEST_VERBOSE'};
+{
+    my $id = $last_id;
+    diag $id;
+    ok $agent->goto_ticket($id), "go to last ticket";
+    $agent->follow_link_ok( { text => 'Basics' });
+    $agent->content_like( qr/test without img/, "found ticket" );
+
+    my $cf_field = "Object-RT::Ticket-$id-CustomField-$cf_id";
+    $agent->submit_form_ok( {
+        form_name => 'TicketModify',
+        fields    => {
+            id => $id, # XXX: why is this needed? shouldn't mechanize keeps the value of the hidden fields?
+            "$cf_field-Upload" => 'share/html/NoAuth/images/bpslogo.png',
+            "$cf_field-Value" => 'Foo image',
+        } });
+
+    $agent->content_like( qr/Foo image/, "image caption on the page" );
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($id);
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->FirstCustomFieldValue('ImgOne'), 'Foo image',
+        'correct value' );
+
+}

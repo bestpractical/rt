@@ -2257,6 +2257,21 @@ sub _ProcessObjectCustomFieldUpdates {
         }
     }
 
+    my $class = $cf->GetTypeClass;
+
+    if ($class && $class->can('CreateArgsFromWebArgs')) {
+        my $args = $class->CreateArgsFromWebArgs($cf, $args{'ARGS'});
+        if ($args) {
+            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+                Field => $cf->id,
+                %$args,
+            );
+            push( @results, $msg );
+        }
+        return @results;
+    }
+
+
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
         # skip category argument
