@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test test => 17;
+use RT::Test tests => 26;
 
 my ($baseurl, $agent) =RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -87,6 +87,28 @@ diag "create a ticket via web and set image with catpion" if $ENV{'TEST_VERBOSE'
     ok( $ticket->id, 'loaded ticket' );
     is( $ticket->FirstCustomFieldValue('ImgOne'), 'bpslogo.png',
         'correct value' );
+}
+
+
+
+
+diag "create a ticket via web and leave the image empty" if $ENV{'TEST_VERBOSE'};
+{
+    ok $agent->goto_create_ticket($q), "go to create ticket";
+    $agent->submit_form(
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject   => 'test without img',
+        }
+    );
+
+    $agent->content_like( qr/test without img/, "created" );
+    my ($id) = $agent->content =~ /Ticket (\d+) created/;
+    ok( $id, "created ticket $id" );
+
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($id);
+    ok( $ticket->id, 'loaded ticket' );
 }
 
 
