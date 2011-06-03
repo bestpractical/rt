@@ -2218,6 +2218,24 @@ sub _ProcessObjectCustomFieldUpdates {
         delete $args{'ARGS'}->{'Values'};
     }
 
+    my $_arg_values = sub {
+        my @values = ();
+        my $args = shift;
+        if ( ref $args eq 'ARRAY' ) {
+            @values = @$args;
+        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
+            @values = $args;
+        } else {
+            @values = split /\r*\n/, $args if defined $args;
+        }
+        return grep length, map {
+            s/\r+\n/\n/g;
+            s/^\s+//;
+            s/\s+$//;
+            $_;
+        } grep defined, @values;
+    };
+
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
@@ -2239,23 +2257,7 @@ sub _ProcessObjectCustomFieldUpdates {
             $args{'ARGS'}->{'Values'} = undef;
         }
 
-        my @values = ();
-        if ( ref $args{'ARGS'}->{$arg} eq 'ARRAY' ) {
-            @values = @{ $args{'ARGS'}->{$arg} };
-        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
-            @values = ( $args{'ARGS'}->{$arg} );
-        } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{$arg}
-                if defined $args{'ARGS'}->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-            }
-            grep defined, @values;
-
+        my @values = $_arg_values->($args{'ARGS'}->{$arg});
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
