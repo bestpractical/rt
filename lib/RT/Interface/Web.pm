@@ -2237,6 +2237,26 @@ sub _ProcessObjectCustomFieldUpdates {
     };
 
     my @results;
+
+    if (my $arg = delete $args{'ARGS'}{'DeleteValues'}) {
+        foreach my $value ($_arg_values->($arg)) {
+            my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+                Field => $cf,
+                Value => $value,
+            );
+            push( @results, $msg );
+        }
+    }
+    if (my $arg = delete $args{'ARGS'}{'DeleteValueIds'}) {
+        foreach my $value ($_arg_values->($arg)) {
+            my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+                Field   => $cf,
+                ValueId => $value,
+            );
+            push( @results, $msg );
+        }
+    }
+
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
         # skip category argument
@@ -2270,22 +2290,6 @@ sub _ProcessObjectCustomFieldUpdates {
             my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
             my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
             push( @results, $msg );
-        } elsif ( $arg eq 'DeleteValues' ) {
-            foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
-                    Field => $cf,
-                    Value => $value,
-                );
-                push( @results, $msg );
-            }
-        } elsif ( $arg eq 'DeleteValueIds' ) {
-            foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
-                    Field   => $cf,
-                    ValueId => $value,
-                );
-                push( @results, $msg );
-            }
         } elsif ( $arg eq 'Values' && !$cf->Repeated ) {
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
