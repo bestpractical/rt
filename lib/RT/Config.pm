@@ -727,6 +727,7 @@ our %META = (
         PostLoadCheck => sub {
             my $self  = shift;
             return unless shift;
+            # XXX Remove in RT 4.2
             warn <<EOT;
 The ActiveStatus configuration has been replaced by the new Lifecycles
 for functionality.  You should set the 'active' property of the
@@ -739,6 +740,7 @@ EOT
         PostLoadCheck => sub {
             my $self  = shift;
             return unless shift;
+            # XXX Remove in RT 4.2
             warn <<EOT;
 The InactiveStatus configuration has been replaced by the new Lifecycles
 for functionality.  You should set the 'inactive' property of the
