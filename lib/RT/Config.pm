@@ -548,7 +548,16 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => { Type => 'ARRAY' },
+    Plugins      => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('Plugins');
+            # XXX Remove in RT 4.2
+            return unless $value and grep {$_ eq "RT::FM"} @{$value};
+            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
