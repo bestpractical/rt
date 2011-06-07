@@ -2,6 +2,8 @@ package RT::CustomField::Type::IPAddress;
 use strict;
 use warnings;
 
+use base qw(RT::CustomField::Type);
+
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
 
