@@ -1362,7 +1362,9 @@ sub CreateTicket {
                       : ()
                   } keys %ARGS;
 
-        _FillCreateArgsFromWebArgs($cf, \%web_args, \%create_args);
+        my $key = "CustomField-".$cf->Id;
+        my $class = $cf->GetTypeClass;
+        $create_args{$key} = $class->CreateArgsFromWebArgs($cf, \%web_args);
     }
 
     # turn new link lists into arrays, and pass in the proper arguments
@@ -1391,49 +1393,6 @@ sub CreateTicket {
     }
     return ( $Ticket, @Actions );
 
-}
-
-
-sub _FillCreateArgsFromWebArgs {
-    my ($cf, $web_args, $create_args) = @_;
-
-    my $key = "CustomField-".$cf->Id;
-
-    my $class = $cf->GetTypeClass;
-
-    if ($class && $class->can('CreateArgsFromWebArgs')) {
-        $create_args->{$key} = $class->CreateArgsFromWebArgs($cf, $web_args);
-        return;
-    }
-
-    for my $arg (keys %$web_args) {
-        next if $arg =~ /^(?:Magic|Category)$/;
-        if ( $arg eq 'Upload' ) {
-            $create_args->{$key} = _UploadedFileArgs($web_args->{$arg})
-                if $web_args->{$arg};
-            next;
-        }
-
-        my $type = $cf->Type;
-
-        my @values = ();
-        if ( ref $web_args->{$arg} eq 'ARRAY' ) {
-            @values = @{ $web_args->{$arg} };
-        } elsif ( $type =~ /text/i ) {
-            @values = ( $web_args->{$arg} );
-        } else {
-            no warnings 'uninitialized';
-            @values = split /\r*\n/, $web_args->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-        } grep defined, @values;
-
-        $create_args->{$key} = \@values;
-    }
 }
 
 
