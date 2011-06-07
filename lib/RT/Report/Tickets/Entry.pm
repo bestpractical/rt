@@ -78,8 +78,9 @@ sub LabelValue {
 
     my $raw = $self->RawValue( $name, @_ );
 
-    my $type = $self->ColumnType( $name );
-    my $meta = $self->FieldMeta( $type->{'KEY'} );
+    my $info = $self->ColumnType( $name );
+
+    my $meta = $info->{'META'};
     return $raw unless $meta && $meta->{'Display'};
 
     my $code;
@@ -97,7 +98,7 @@ sub LabelValue {
         return $raw;
     }
 
-    return $code->( $self, %$type, VALUE => $raw );
+    return $code->( $self, %$info, VALUE => $raw );
 }
 
 sub RawValue {
@@ -106,19 +107,6 @@ sub RawValue {
 
 sub ObjectType {
     return 'RT::Ticket';
-}
-
-sub FieldMeta {
-    my $self = shift;
-    my $field = shift or return undef;
-
-    %RT::Report::Tickets::GROUPINGS
-        = @RT::Report::Tickets::GROUPINGS
-        unless keys %RT::Report::Tickets::GROUPINGS;
-
-    return $RT::Report::Tickets::GROUPINGS_META{
-        $RT::Report::Tickets::GROUPINGS{ $field }
-    };
 }
 
 RT::Base->_ImportOverlays();

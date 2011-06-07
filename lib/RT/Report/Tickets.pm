@@ -217,10 +217,14 @@ sub SetupGroupings {
 
     $self->FromSQL( $args{'Query'} );
 
+    %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
+
     my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     foreach my $e ( @group_by ) {
         my ($key, $subkey) = split /\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
+        $e->{'TYPE'} = $GROUPINGS{ $key };
+        $e->{'META'} = $GROUPINGS_META{ $e->{'TYPE'} };
     }
     $self->GroupBy( @group_by );
 
@@ -280,8 +284,6 @@ sub _FieldToFunction {
     my %args = (@_);
 
     $args{'FIELD'} ||= $args{'KEY'};
-
-    %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
     my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'KEY'} } };
     return ('FUNCTION' => 'NULL') unless $meta;
