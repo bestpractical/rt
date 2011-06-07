@@ -63,14 +63,10 @@ sub Table {'ObjectCustomFieldValues'}
 
 sub _CanonicalizeForCreate {
     my ($self, $cf_as_sys, $args) = @_;
-
-    my $class = $cf_as_sys->GetTypeClass;
-
-    if ($class) {
-        my ($ret, $msg) = $class->CanonicalizeForCreate( $cf_as_sys, $self, $args );
-        unless ($ret) {
-            return (0, $self->loc($msg));
-        }
+    my $class = $cf_as_sys->GetTypeClass;# or return;
+    my ($ret, $msg) = $class->CanonicalizeForCreate( $cf_as_sys, $self, $args );
+    unless ($ret) {
+        return (0, $self->loc($msg));
     }
 
     return wantarray ? (1) : 1;
@@ -83,9 +79,7 @@ sub _CanonicalizeForSearch {
 
     my $class = $cf->GetTypeClass;
 
-    if ($class) {
-        $value = $class->CanonicalizeForSearch( $cf, $value, $op );
-    }
+    $value = $class->CanonicalizeForSearch( $cf, $value, $op );
 
     return $value;
 }
@@ -254,16 +248,7 @@ sub Content {
 
     my $class = $self->CustomFieldObj->GetTypeClass;
 
-    if ($class) {
-        return $class->Stringify( $self );
-    }
-
-    my $content = $self->_Value('Content');
-    if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
-        return $self->LargeContent;
-    } else {
-        return $content;
-    }
+    return $class->Stringify( $self );
 }
 
 =head2 Object

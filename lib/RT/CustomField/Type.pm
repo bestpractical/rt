@@ -11,7 +11,11 @@ sub Stringify {
     my ($self, $ocfv) = @_;
     my $content = $ocfv->_Value('Content');
 
-    return $content
+    if ( !(defined $content && length $content) && $ocfv->ContentType && $ocfv->ContentType eq 'text/plain' ) {
+        return $ocfv->LargeContent;
+    } else {
+        return $content;
+    }
 }
 
 sub CanonicalizeForSearch {
