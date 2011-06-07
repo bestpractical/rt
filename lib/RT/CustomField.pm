@@ -151,27 +151,7 @@ our %FieldTypes = (
                     'Enter up to [_1] values with autocompletion',    # loc
                   ]
     },
-
-    Date => {
-        sort_order => 90,
-        selection_type => 0,
-        labels         => [
-                    'Select multiple dates',                          # loc
-                    'Select date',                                    # loc
-                    'Select up to [_1] dates',                        # loc
-                  ]
-            },
-    DateTime => {
-        sort_order => 100,
-        selection_type => 0,
-        labels         => [
-                    'Select multiple datetimes',                      # loc
-                    'Select datetime',                                # loc
-                    'Select up to [_1] datetimes',                    # loc
-                  ]
-                },
 );
-
 
 our %FRIENDLY_OBJECT_TYPES =  ();
 
@@ -215,6 +195,30 @@ sub GetTypeClass {
     my $type = $FieldTypes{$self->Type};
     $type ? $type->{class} : undef;
 }
+
+__PACKAGE__->RegisterType(
+    Date => {
+        class => 'RT::CustomField::Type::Date',
+        sort_order => 90,
+        selection_type => 0,
+        labels         => [
+                    'Select multiple dates',                          # loc
+                    'Select date',                                    # loc
+                    'Select up to [_1] dates',                        # loc
+                  ]
+            });
+
+__PACKAGE__->RegisterType(
+    DateTime => {
+        class => 'RT::CustomField::Type::DateTime',
+        sort_order => 100,
+        selection_type => 0,
+        labels         => [
+                    'Select multiple datetimes',                      # loc
+                    'Select datetime',                                # loc
+                    'Select up to [_1] datetimes',                    # loc
+                  ]
+    });
 
 __PACKAGE__->RegisterType(
     IPAddress => {
@@ -1440,12 +1444,6 @@ sub AddValueForObject {
         }
     }
 
-    if (my $canonicalizer = $self->can('_CanonicalizeValue'.$self->Type)) {
-         $canonicalizer->($self, \%args);
-    }
-
-
-
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
@@ -1466,31 +1464,6 @@ sub AddValueForObject {
 
 }
 
-
-
-sub _CanonicalizeValueDateTime {
-    my $self    = shift;
-    my $args    = shift;
-    my $DateObj = RT::Date->new( $self->CurrentUser );
-    $DateObj->Set( Format => 'unknown',
-                   Value  => $args->{'Content'} );
-    $args->{'Content'} = $DateObj->ISO;
-}
-
-# For date, we need to store Content as ISO date
-sub _CanonicalizeValueDate {
-    my $self = shift;
-    my $args = shift;
-
-    # in case user input date with time, let's omit it by setting timezone
-    # to utc so "hour" won't affect "day"
-    my $DateObj = RT::Date->new( $self->CurrentUser );
-    $DateObj->Set( Format   => 'unknown',
-                   Value    => $args->{'Content'},
-                   Timezone => 'UTC',
-                 );
-    $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
-}
 
 =head2 MatchPattern STRING
 
