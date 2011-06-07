@@ -119,11 +119,10 @@ our %GROUPINGS_META = (
             my $raw = $args{'VALUE'};
             return $raw unless defined $raw;
 
-            my ($field, $subkey) = split /\./, $args{'FIELD'}, 2;
-            if ( $subkey eq 'DayOfWeek' ) {
+            if ( $args{'SUBKEY'} eq 'DayOfWeek' ) {
                 return $RT::Date::DAYS_OF_WEEK[ int $raw ];
             }
-            elsif ( $subkey eq 'Month' ) {
+            elsif ( $args{'SUBKEY'} eq 'Month' ) {
                 return $RT::Date::MONTHS[ int($raw) - 1 ];
             }
             return $raw;
@@ -219,7 +218,11 @@ sub SetupGroupings {
     $self->FromSQL( $args{'Query'} );
 
     my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
-    $self->GroupBy( map { {FIELD => $_} } @group_by );
+    foreach my $e ( @group_by ) {
+        my ($key, $subkey) = split /\./, $e, 2;
+        $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
+    }
+    $self->GroupBy( @group_by );
 
     # UseSQLForACLChecks may add late joins
     my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
@@ -235,35 +238,14 @@ sub SetupGroupings {
     }
 
     foreach my $group_by ( @group_by ) {
-        my $alias = $self->Column( FIELD => $group_by );
-        $column_type{ $alias } = { FIELD => $group_by };
+        my $alias = $self->Column( %$group_by );
+        $column_type{ $alias } = $group_by;
         push @res, $alias;
     }
 
     $self->{'column_types'} = \%column_type;
 
     return @res;
-}
-
-sub GroupBy {
-    my $self = shift;
-    my @args = ref $_[0]? @_ : { @_ };
-
-    @{ $self->{'_group_by_field'} ||= [] } = map $_->{'FIELD'}, @args;
-    $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
-
-    $self->SUPER::GroupBy( @args );
-}
-
-sub Column {
-    my $self = shift;
-    my %args = (@_);
-
-    if ( $args{'FIELD'} && !$args{'FUNCTION'} ) {
-        %args = $self->_FieldToFunction( %args );
-    }
-
-    return $self->SUPER::Column( %args );
 }
 
 =head2 _DoSearch
@@ -297,11 +279,11 @@ sub _FieldToFunction {
     my $self = shift;
     my %args = (@_);
 
-    @args{'FIELD', 'SUBKEY'} = split /\./, $args{'FIELD'}, 2;
+    $args{'FIELD'} ||= $args{'KEY'};
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
-    my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'FIELD'} } };
+    my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'KEY'} } };
     return ('FUNCTION' => 'NULL') unless $meta;
 
     return %args unless $meta->{'Function'};
@@ -386,7 +368,7 @@ sub GenerateDateFunction {
     }
 
     $args{'FUNCTION'} = $RT::Handle->DateTimeFunction(
-        Type     => delete $args{'SUBKEY'},
+        Type     => $args{'SUBKEY'},
         Field    => $self->NotSetDateToNullFunction,
         Timezone => $tz,
     );
@@ -397,7 +379,7 @@ sub GenerateCustomFieldFunction {
     my $self = shift;
     my %args = @_;
 
-    my ($name) = ( (delete $args{'SUBKEY'}) =~ /^\.{(.*)}$/ );
+    my ($name) = ( $args{'SUBKEY'} =~ /^\.{(.*)}$/ );
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load($name);
     unless ( $cf->id ) {
@@ -414,7 +396,7 @@ sub GenerateUserFunction {
     my $self = shift;
     my %args = @_;
 
-    my $column = delete $args{'SUBKEY'} || 'Name';
+    my $column = $args{'SUBKEY'} || 'Name';
     my $u_alias = $self->{"_sql_report_$args{FIELD}_users_$column"}
         ||= $self->Join(
             TYPE   => 'LEFT',
@@ -434,7 +416,7 @@ sub GenerateWatcherFunction {
     my $type = $args{'FIELD'};
     $type = '' if $type eq 'Watcher';
 
-    my $column = delete $args{'SUBKEY'} || 'Name';
+    my $column = $args{'SUBKEY'} || 'Name';
 
     my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
     unless ( $u_alias ) {
