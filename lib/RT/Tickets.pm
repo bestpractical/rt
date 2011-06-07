@@ -1431,116 +1431,12 @@ Meta Data:
 
 =cut
 
-use Regexp::Common qw(RE_net_IPv4);
-use Regexp::Common::net::CIDR;
-
-sub _CustomFieldLimit_IPAddressRange {
-    my ($self, $field, $value, $op, %rest) = @_;
-
-    return if $op =~ /^[<>]=?$/;
-
-    my ($start_ip, $end_ip) = split /-/, $value;
-
-    $self->_OpenParen;
-
-    if ( $op !~ /NOT|!=|<>/i ) { # positive equation
-        $self->_CustomFieldLimit(
-            'CF', '<=', $end_ip, %rest,
-            SUBKEY => $rest{'SUBKEY'}. '.Content',
-        );
-        $self->_CustomFieldLimit(
-            'CF', '>=', $start_ip, %rest,
-            SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
-            ENTRYAGGREGATOR => 'AND',
-        );
-        # as well limit borders so DB optimizers can use better
-        # estimations and scan less rows
-        # have to disable this tweak because of ipv6
-        #            $self->_CustomFieldLimit(
-        #                $field, '>=', '000.000.000.000', %rest,
-        #                SUBKEY          => $rest{'SUBKEY'}. '.Content',
-        #                ENTRYAGGREGATOR => 'AND',
-        #            );
-        #            $self->_CustomFieldLimit(
-        #                $field, '<=', '255.255.255.255', %rest,
-        #                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
-        #                ENTRYAGGREGATOR => 'AND',
-        #            );
-    }
-    else { # negative equation
-        $self->_CustomFieldLimit($field, '>', $end_ip, %rest);
-        $self->_CustomFieldLimit(
-            $field, '<', $start_ip, %rest,
-            SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
-            ENTRYAGGREGATOR => 'OR',
-        );
-        # TODO: as well limit borders so DB optimizers can use better
-        # estimations and scan less rows, but it's harder to do
-        # as we have OR aggregator
-    }
-    $self->_CloseParen;
-
-    return 1;
-}
-
-
-sub _CustomFieldLimit_Date {
-    my ($self, $field, $value, $op, %rest) = @_;
-
-    return unless $op eq '=';
-    if ( $value =~ /:/ ) {
-        # there is time speccified.
-        my $date = RT::Date->new( $self->CurrentUser );
-        $date->Set( Format => 'unknown', Value => $value );
-
-        $self->_CustomFieldLimit(
-            'CF', '=', $date->ISO, %rest,
-            SUBKEY => $rest{'SUBKEY'}. '.Content',
-        );
-    }
-    else {
-        # no time specified, that means we want everything on a
-        # particular day.  in the database, we need to check for >
-        # and < the edges of that day.
-        my $date = RT::Date->new( $self->CurrentUser );
-        $date->Set( Format => 'unknown', Value => $value );
-        $date->SetToMidnight( Timezone => 'server' );
-        my $daystart = $date->ISO;
-        $date->AddDay;
-        my $dayend = $date->ISO;
-
-        $self->_OpenParen;
-
-
-        $self->_CustomFieldLimit(
-            'CF', '>=', $daystart, %rest,
-            SUBKEY => $rest{'SUBKEY'}. '.Content',
-        );
-
-        $self->_CustomFieldLimit(
-            'CF', '<=', $dayend, %rest,
-            SUBKEY => $rest{'SUBKEY'}. '.Content',
-            ENTRYAGGREGATOR => 'AND',
-        );
-
-        $self->_CloseParen;
-    }
-    return 1;
-}
-
 # returns true if the custom field type expansion has handled the rest of the query
 sub _CustomFieldLimit_TypeExpansion {
     my ($self, $field, $cf, $value, $op, %rest) = @_;
 
-    if ($cf->Type eq 'IPAddressRange') {
-        return $self->_CustomFieldLimit_IPAddressRange($field, $value, $op, %rest);
-    }
-
-    if ( $cf->Type eq 'DateTime' ) {
-        return $self->_CustomFieldLimit_Date($field, $value, $op, %rest);
-    }
-
-    return;
+    my $class = $cf->GetTypeClass;
+    return $class->Limit($self, $field, $value, $op, %rest);
 }
 
 sub _CustomFieldLimit {

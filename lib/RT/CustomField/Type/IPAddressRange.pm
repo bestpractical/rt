@@ -135,5 +135,54 @@ sub ParseIPRange {
     return $sIP, $eIP;
 }
 
+sub Limit {
+    my ($self, $tickets, $field, $value, $op, %rest) = @_;
+
+    return if $op =~ /^[<>]=?$/;
+
+    my ($start_ip, $end_ip) = split /-/, $value;
+
+    $tickets->_OpenParen;
+
+    if ( $op !~ /NOT|!=|<>/i ) { # positive equation
+        $tickets->_CustomFieldLimit(
+            'CF', '<=', $end_ip, %rest,
+            SUBKEY => $rest{'SUBKEY'}. '.Content',
+        );
+        $tickets->_CustomFieldLimit(
+            'CF', '>=', $start_ip, %rest,
+            SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+            ENTRYAGGREGATOR => 'AND',
+        );
+        # as well limit borders so DB optimizers can use better
+        # estimations and scan less rows
+        # have to disable this tweak because of ipv6
+        #            $tickets->_CustomFieldLimit(
+        #                $field, '>=', '000.000.000.000', %rest,
+        #                SUBKEY          => $rest{'SUBKEY'}. '.Content',
+        #                ENTRYAGGREGATOR => 'AND',
+        #            );
+        #            $tickets->_CustomFieldLimit(
+        #                $field, '<=', '255.255.255.255', %rest,
+        #                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+        #                ENTRYAGGREGATOR => 'AND',
+        #            );
+    }
+    else { # negative equation
+        $tickets->_CustomFieldLimit($field, '>', $end_ip, %rest);
+        $tickets->_CustomFieldLimit(
+            $field, '<', $start_ip, %rest,
+            SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+            ENTRYAGGREGATOR => 'OR',
+        );
+        # TODO: as well limit borders so DB optimizers can use better
+        # estimations and scan less rows, but it's harder to do
+        # as we have OR aggregator
+    }
+    $tickets->_CloseParen;
+
+    return 1;
+}
+
 
 1;

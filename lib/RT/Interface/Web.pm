@@ -2252,7 +2252,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
 
         my @values = $_arg_values->($args{'ARGS'}->{$arg});
-        if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
+        if ( $arg eq 'AddValue' || $arg eq 'Value' ) { # tested by t/web/cf_onqueue.t 
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf->id,
@@ -2260,11 +2260,11 @@ sub _ProcessObjectCustomFieldUpdates {
                 );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Upload' ) {
+        } elsif ( $arg eq 'Upload' ) { # untested
             my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
             my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
             push( @results, $msg );
-        } elsif ( $arg eq 'Values' && !$cf->Repeated ) {
+        } elsif ( $arg eq 'Values' && !$cf->Repeated ) { # tested by t/web/cf_select_one.t
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             my %values_hash;
@@ -2295,7 +2295,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' ) {
+        } elsif ( $arg eq 'Values' ) { # untested
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             # keep everything up to the point of difference, delete the rest

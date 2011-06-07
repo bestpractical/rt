@@ -55,4 +55,8 @@ sub CreateArgsFromWebArgs {
     }
 }
 
+sub Limit {
+    return;
+}
+
 1;
