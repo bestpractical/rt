@@ -54,70 +54,125 @@ use RT::Report::Tickets::Entry;
 use strict;
 use warnings;
 
-our %GROUPINGS = (
-    User => [qw(
-        Name RealName NickName
-        EmailAddress
-        Organization
-        Lang City Country Timezone
-    )],
-    Date => [qw(
-        Time
-        Hourly Hour
-        Date Daily
-        DayOfWeek Day DayOfMonth DayOfYear
-        Month Monthly
-        Year Annually
-        WeekOfYear
-    )],
+our @GROUPINGS = (
+    Status => 'Enum',
+
+    Queue  => 'Queue',
+
+    Owner         => 'User',
+    Creator       => 'User',
+    LastUpdatedBy => 'User',
+
+    Requestor     => 'Watcher',
+    Cc            => 'Watcher',
+    AdminCc       => 'Watcher',
+    Watcher       => 'Watcher',
+
+    Created       => 'Date',
+    Starts        => 'Date',
+    Started       => 'Date',
+    Resolved      => 'Date',
+    Due           => 'Date',
+    Told          => 'Date',
+    LastUpdated   => 'Date',
+
+    CF            => 'CustomField',
+);
+our %GROUPINGS;
+
+our %GROUPINGS_META = (
+    Queue => {
+    },
+    User => {
+        SubFields => [qw(
+            Name RealName NickName
+            EmailAddress
+            Organization
+            Lang City Country Timezone
+        )],
+        Function => 'GenerateUserFunction',
+    },
+    Watcher => {
+        SubFields => [qw(
+            Name RealName NickName
+            EmailAddress
+            Organization
+            Lang City Country Timezone
+        )],
+        Function => 'GenerateWatcherFunction',
+    },
+    Date => {
+        SubFields => [qw(
+            Time
+            Hourly Hour
+            Date Daily
+            DayOfWeek Day DayOfMonth DayOfYear
+            Month Monthly
+            Year Annually
+            WeekOfYear
+        )],
+        Function => 'GenerateDateFunction',
+    },
+    CustomField => {
+        SubFields => sub {
+            my $self = shift;
+            my $args = shift;
+
+
+            my $queues = $args->{'Queues'};
+            if ( !$queues && $args->{'Query'} ) {
+                require RT::Interface::Web::QueryBuilder::Tree;
+                my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+                $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
+                $queues = $args->{'Queues'} = $tree->GetReferencedQueues;
+            }
+            return () unless $queues;
+
+            my @res;
+
+            my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
+            foreach my $id (keys %$queues) {
+                my $queue = RT::Queue->new( $self->CurrentUser );
+                $queue->Load($id);
+                next unless $queue->id;
+
+                $CustomFields->LimitToQueue($queue->id);
+            }
+            $CustomFields->LimitToGlobal;
+            while ( my $CustomField = $CustomFields->Next ) {
+                push @res, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
+            }
+            return @res;
+        },
+        Function => 'GenerateCustomFieldFunction',
+    },
+    Enum => {
+    },
 );
 
 sub Groupings {
     my $self = shift;
     my %args = (@_);
-    my @fields =
-      map { $self->CurrentUser->loc($_), $_ } qw( Status Queue );    # loc_qw
 
-    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) { # loc_qw
-        for my $field ( @{ $GROUPINGS{'User'} } ) {
-            push @fields,
-              $self->CurrentUser->loc($type) . ' '
-              . $self->CurrentUser->loc($field), "$type.$field";
+    my @fields;
+
+    my @tmp = @GROUPINGS;
+    while ( my ($field, $type) = splice @tmp, 0, 2 ) {
+        my $meta = $GROUPINGS_META{ $type } || {};
+        unless ( $meta->{'SubFields'} ) {
+            push @fields, $field, $field;
         }
-    }
-
-
-    for my $field (qw(Due Resolved Created LastUpdated Started Starts Told)) { # loc_qw
-        for my $frequency (@{ $GROUPINGS{'Date'} }) {
-            push @fields,
-              $self->CurrentUser->loc($field)
-              .' '. $self->CurrentUser->loc($frequency),
-              "$field.$frequency";
+        elsif ( ref( $meta->{'SubFields'} ) eq 'ARRAY' ) {
+            push @fields, map { ("$field $_", "$field.$_") } @{ $meta->{'SubFields'} };
         }
-    }
-
-    my $queues = $args{'Queues'};
-    if ( !$queues && $args{'Query'} ) {
-        require RT::Interface::Web::QueryBuilder::Tree;
-        my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser );
-        $queues = $tree->GetReferencedQueues;
-    }
-
-    if ( $queues ) {
-        my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
-        foreach my $id (keys %$queues) {
-            my $queue = RT::Queue->new( $self->CurrentUser );
-            $queue->Load($id);
-            $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
+        elsif ( ref( $meta->{'SubFields'} ) eq 'CODE' ) {
+            push @fields, $meta->{'SubFields'}->(
+                $self,
+                \%args,
+            );
         }
-        $CustomFields->LimitToGlobal;
-        while ( my $CustomField = $CustomFields->Next ) {
-            push @fields, $self->CurrentUser->loc(
-                "Custom field '[_1]'",
-                $CustomField->Name
-              ),
-              "CF.{" . $CustomField->id . "}";
+        else {
+            $RT::Logger->error("%GROUPINGS_META for $type has unsupported SubFields");
         }
     }
     return @fields;
@@ -226,59 +281,32 @@ sub _FieldToFunction {
     my $self = shift;
     my %args = (@_);
 
-    my $field = $args{'FIELD'};
+    @args{'FIELD', 'SUBKEY'} = split /\./, $args{'FIELD'}, 2;
 
-    my ($key, $subkey) = split /\./, $field, 2;
+    %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
-    if ( $subkey && grep $_ eq $subkey, @{ $GROUPINGS{'Date'} } ) {
-        my $tz;
-        if ( RT->Config->Get('ChartsTimezonesInDB') ) {
-            my $to = $self->CurrentUser->UserObj->Timezone
-                || RT->Config->Get('Timezone');
-            $tz = { From => 'UTC', To => $to }
-                if $to && lc $to ne 'utc';
-        }
+    my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'FIELD'} } };
+    return ('FUNCTION' => 'NULL') unless $meta;
 
-        $args{'FUNCTION'} = $RT::Handle->DateTimeFunction(
-            Type => $subkey,
-            Field => $self->NotSetDateToNullFunction,
-            Timezone => $tz,
-        );
-        $args{'FIELD'} = $key;
-    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
-        my $cf_name = $1;
-        my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->Load($cf_name);
-        unless ( $cf->id ) {
-            $RT::Logger->error("Couldn't load CustomField #$cf_name");
-        } else {
-            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf);
-            @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
+    return %args unless $meta->{'Function'};
+
+    my $code;
+    unless ( ref $meta->{'Function'} ) {
+        $code = $self->can( $meta->{'Function'} );
+        unless ( $code ) {
+            $RT::Logger->error("No method ". $meta->{'Function'} );
+            return ('FUNCTION' => 'NULL');
         }
-    } elsif ( $field =~ /^(?:(Owner|Creator|LastUpdatedBy))(?:\.(.*))?$/ ) {
-        my $type = $1 || '';
-        my $column = $2 || 'Name';
-        my $u_alias = $self->{"_sql_report_${type}_users_${column}"}
-            ||= $self->Join(
-                TYPE   => 'LEFT',
-                ALIAS1 => 'main',
-                FIELD1 => $type,
-                TABLE2 => 'Users',
-                FIELD2 => 'id',
-            );
-        @args{qw(ALIAS FIELD)} = ($u_alias, $column);
-    } elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))(?:\.(.*))?$/ ) {
-        my $type = $1 || '';
-        my $column = $2 || 'Name';
-        my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
-        unless ( $u_alias ) {
-            my ($g_alias, $gm_alias);
-            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Name => $type );
-            $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
-        }
-        @args{qw(ALIAS FIELD)} = ($u_alias, $column);
     }
-    return %args;
+    elsif ( ref( $meta->{'Function'} ) eq 'CODE' ) {
+        $code = $meta->{'Function'};
+    }
+    else {
+        $RT::Logger->error("%GROUPINGS_META for $args{FIELD} has unsupported Function");
+        return ('FUNCTION' => 'NULL');
+    }
+
+    return $code->( $self, %args );
 }
 
 1;
@@ -327,6 +355,80 @@ sub AddEmptyRows {
             $self->AddRecord($record);
         }
     }
+}
+
+sub GenerateDateFunction {
+    my $self = shift;
+    my %args = @_;
+
+    my $tz;
+    if ( RT->Config->Get('ChartsTimezonesInDB') ) {
+        my $to = $self->CurrentUser->UserObj->Timezone
+            || RT->Config->Get('Timezone');
+        $tz = { From => 'UTC', To => $to }
+            if $to && lc $to ne 'utc';
+    }
+
+    $args{'FUNCTION'} = $RT::Handle->DateTimeFunction(
+        Type     => delete $args{'SUBKEY'},
+        Field    => $self->NotSetDateToNullFunction,
+        Timezone => $tz,
+    );
+    return %args;
+}
+
+sub GenerateCustomFieldFunction {
+    my $self = shift;
+    my %args = @_;
+
+    my ($name) = ( (delete $args{'SUBKEY'}) =~ /^\.{(.*)}$/ );
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->Load($name);
+    unless ( $cf->id ) {
+        $RT::Logger->error("Couldn't load CustomField #$name");
+        @args{qw(FUNCTION FIELD)} = ('NULL', undef);
+    } else {
+        my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf);
+        @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
+    }
+    return %args;
+}
+
+sub GenerateUserFunction {
+    my $self = shift;
+    my %args = @_;
+
+    my $column = delete $args{'SUBKEY'} || 'Name';
+    my $u_alias = $self->{"_sql_report_$args{FIELD}_users_$column"}
+        ||= $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => $args{'FIELD'},
+            TABLE2 => 'Users',
+            FIELD2 => 'id',
+        );
+    @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+    return %args;
+}
+
+sub GenerateWatcherFunction {
+    my $self = shift;
+    my %args = @_;
+
+    my $type = $args{'FIELD'};
+    $type = '' if $type eq 'Watcher';
+
+    my $column = delete $args{'SUBKEY'} || 'Name';
+
+    my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
+    unless ( $u_alias ) {
+        my ($g_alias, $gm_alias);
+        ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Name => $type );
+        $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
+    }
+    @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+
+    return %args;
 }
 
 RT::Base->_ImportOverlays();
