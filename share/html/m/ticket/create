@@ -362,7 +362,7 @@ $showrows->(
 
 
 % if ( $gnupg_widget ) {
-%$m->scomp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 
 

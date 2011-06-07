@@ -136,7 +136,7 @@
 </div>
 
 % if ( $gnupg_widget ) {
-%$m->scomp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $t->QueueObj )
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $t->QueueObj &>
 % }
 
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
