@@ -67,7 +67,7 @@ sub _CanonicalizeForCreate {
     my $class = $cf_as_sys->GetTypeClass;
 
     if ($class) {
-        my ($ret, $msg) = $class->CanonicalizeForCreate( $cf_as_sys, $args );
+        my ($ret, $msg) = $class->CanonicalizeForCreate( $cf_as_sys, $self, $args );
         unless ($ret) {
             return (0, $self->loc($msg));
         }

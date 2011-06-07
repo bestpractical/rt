@@ -8,7 +8,7 @@ use Regexp::IPv6 qw($IPv6_re);
 $IPv6_re = qr/(?:$IPv6_re|::)/;
 
 sub CanonicalizeForCreate {
-    my ($self, $cf, $args) = @_;
+    my ($self, $cf, $ocfv, $args) = @_;
 
     if ( $args->{'Content'} ) {
         $args->{'Content'} = $self->ParseIP( $args->{'Content'} );

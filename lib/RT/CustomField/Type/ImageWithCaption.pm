@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 sub CanonicalizeForCreate {
-    my ($self, $cf, $args) = @_;
+    my ($self, $cf, $ocfv, $args) = @_;
 
     return wantarray ? (1) : 1;
 }
