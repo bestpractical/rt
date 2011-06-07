@@ -114,7 +114,6 @@
 % }
 </div></div>
 
-</%perl>
 % if (exists $session{'Attachments'}) {
 
 <%loc("Attached file") %>
