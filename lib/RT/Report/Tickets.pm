@@ -112,6 +112,22 @@ our %GROUPINGS_META = (
             WeekOfYear
         )],
         Function => 'GenerateDateFunction',
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my $raw = $args{'VALUE'};
+            return $raw unless defined $raw;
+
+            my ($field, $subkey) = split /\./, $args{'FIELD'}, 2;
+            if ( $subkey eq 'DayOfWeek' ) {
+                return $RT::Date::DAYS_OF_WEEK[ int $raw ];
+            }
+            elsif ( $subkey eq 'Month' ) {
+                return $RT::Date::MONTHS[ int($raw) - 1 ];
+            }
+            return $raw;
+        },
     },
     CustomField => {
         SubFields => sub {
