@@ -109,6 +109,28 @@
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 </div></div>
+
+</%perl>
+% if (exists $session{'Attachments'}) {
+
+<%loc("Attached file") %>
+
+<%loc("Check box to delete")%><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+
+
+% } # end of if
+
+<div class="entry">
+<span class="label"><&|/l&>Attach file</&>:</span>
+<div class="value">
+<input type="file" name="Attach" />
+<input type="submit" class="button" name="AddMoreAttach" value="<% loc("Add More Files") %>" />
+</div>
+</div>
+
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
 </form>
 </&>
@@ -183,7 +205,9 @@ if ($ARGS{'Attach'}) {            # attachment?
 }
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+unless ( keys %{ $session{'Attachments'} }
+    && ( exists $ARGS{'AddMoreAttach'} || exists $ARGS{'SubmitTicket'} ) )
+{
     delete $session{'Attachments'};
 }
 
