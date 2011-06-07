@@ -60,8 +60,6 @@ use File::Path qw(mkpath);
 use File::Spec;
 
 our @EXPORT = qw(is_empty diag parse_mail works fails);
-our ($port, $dbname);
-our @SERVERS;
 
 my %tmp = (
     directory => undef,
@@ -93,26 +91,8 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 
 =cut
 
-sub generate_port {
-    my $self = shift;
-    my $port = 1024 + int rand(10000) + $$ % 1024;
-
-    my $paddr = sockaddr_in( $port, inet_aton('localhost') );
-    socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
-      or die "socket: $!";
-    if ( connect( SOCK, $paddr ) ) {
-        close(SOCK);
-        return generate_port();
-    }
-    close(SOCK);
-
-    return $port;
-}
-
-BEGIN {
-    $port   = generate_port();
-    $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
-};
+our $port;
+our @SERVERS;
 
 sub import {
     my $class = shift;
@@ -136,6 +116,8 @@ sub import {
         if $args{'testing'};
 
     $class->bootstrap_tempdir;
+
+    $class->bootstrap_port;
 
     $class->bootstrap_plugins_paths( %args );
 
@@ -208,6 +190,49 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
+sub bootstrap_port {
+    my $class = shift;
+
+    my %ports;
+
+    # Determine which ports are in use
+    use Fcntl qw(:DEFAULT :flock);
+    sysopen(PORTS, "t/tmp/ports", O_RDWR|O_CREAT)
+        or die "Can't write to ports file: $!";
+    flock(PORTS, LOCK_EX)
+        or die "Can't write-lock ports file: $!";
+    $ports{$_}++ for split ' ', join("",<PORTS>);
+
+    # Pick a random port, checking that the port isn't in our in-use
+    # list, and that something isn't already listening there.
+    {
+        $port = 1024 + int rand(10_000) + $$ % 1024;
+        redo if $ports{$port};
+
+        # There is a race condition in here, where some non-RT::Test
+        # process claims the port after we check here but before our
+        # server binds.  However, since we mostly care about race
+        # conditions with ourselves under high concurrency, this is
+        # generally good enough.
+        my $paddr = sockaddr_in( $port, inet_aton('localhost') );
+        socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
+            or die "socket: $!";
+        if ( connect( SOCK, $paddr ) ) {
+            close(SOCK);
+            redo;
+        }
+        close(SOCK);
+    }
+
+    $ports{$port}++;
+
+    # Write back out the in-use ports
+    seek(PORTS, 0, 0);
+    truncate(PORTS, 0);
+    print PORTS "$_\n" for sort {$a <=> $b} keys %ports;
+    close(PORTS) or die "Can't close ports file: $!";
+}
+
 sub bootstrap_tempdir {
     my $self = shift;
     my $test_file = (
@@ -231,6 +256,7 @@ sub bootstrap_config {
     open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
+    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
     print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
@@ -1445,6 +1471,22 @@ END {
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
         __drop_database();
+    }
+
+    # Drop our port from t/tmp/ports; do this after dropping the
+    # database, as our port lock is also a lock on the database name.
+    if ($port) {
+        my %ports;
+        sysopen(PORTS, "t/tmp/ports", O_RDWR|O_CREAT)
+            or die "Can't write to ports file: $!";
+        flock(PORTS, LOCK_EX)
+            or die "Can't write-lock ports file: $!";
+        $ports{$_}++ for split ' ', join("",<PORTS>);
+        delete $ports{$port};
+        seek(PORTS, 0, 0);
+        truncate(PORTS, 0);
+        print PORTS "$_\n" for sort {$a <=> $b} keys %ports;
+        close(PORTS) or die "Can't close ports file: $!";
     }
 }
 
