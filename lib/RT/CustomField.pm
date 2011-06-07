@@ -61,6 +61,7 @@ sub Table {'CustomFields'}
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
+use RT::CustomField::Type;
 
 our %FieldTypes = (
     Select => {
@@ -179,7 +180,6 @@ our $RIGHT_CATEGORIES = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
-
 sub RegisterType {
     my ($class, $name, $param) = @_;
     $FieldTypes{$name} = $param;
@@ -191,9 +191,11 @@ sub RegisterType {
 
 sub GetTypeClass {
     my ($self) = @_;
-    return unless $self->Type;
-    my $type = $FieldTypes{$self->Type};
-    $type ? $type->{class} : undef;
+    if ($self->Type) {
+        my $type = $FieldTypes{$self->Type};
+        return $type->{class} if $type && $type->{class};
+    }
+    return 'RT::CustomField::Type';
 }
 
 __PACKAGE__->RegisterType(
