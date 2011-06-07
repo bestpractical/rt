@@ -323,7 +323,7 @@ $showrows->(
     loc("Admin Cc") =>
 
         $m->scomp( "/Elements/EmailInput", Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} )
-        . '<span class="comment" colspan="2"><i><font size="-2">'
+        . '<span class="comment"><i><font size="-2">'
         . loc(
         "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
         )
@@ -355,8 +355,7 @@ $m->scomp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $Qu
 $showrows->(
     loc("Attach file") =>
 
-        '<div class="value" colspan="5">
-<input type="file" name="Attach" />
+        '<input type="file" name="Attach" />
 <input type="submit" class="button" name="AddMoreAttach" value="' . loc("Add More Files") . '" />'
 );
 </%perl>
