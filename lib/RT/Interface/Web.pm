@@ -2259,8 +2259,8 @@ sub _ProcessObjectCustomFieldUpdates {
 
     my $class = $cf->GetTypeClass;
 
-    if ($class && $class->can('CreateArgsFromWebArgs')) {
-        my $args = $class->CreateArgsFromWebArgs($cf, $args{'ARGS'});
+    if ($class && $class->can('UpdateArgsFromWebArgs')) {
+        my $args = $class->UpdateArgsFromWebArgs($cf, $args{'ARGS'});
         if ($args) {
             my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                 Field => $cf->id,

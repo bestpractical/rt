@@ -15,4 +15,9 @@ sub CreateArgsFromWebArgs {
     return $args;
 }
 
+sub UpdateArgsFromWebArgs {
+    my ($self, $cf, $web_args) = @_;
+    $self->CreateArgsFromWebArgs($cf, $web_args);
+}
+
 1;
