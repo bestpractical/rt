@@ -730,8 +730,8 @@ our %META = (
             # XXX Remove in RT 4.2
             warn <<EOT;
 The ActiveStatus configuration has been replaced by the new Lifecycles
-for functionality.  You should set the 'active' property of the
-'default' lifecycle; see RT_Config.pm for documentation.
+functionality. You should set the 'active' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
 EOT
         },
     },
@@ -743,8 +743,8 @@ EOT
             # XXX Remove in RT 4.2
             warn <<EOT;
 The InactiveStatus configuration has been replaced by the new Lifecycles
-for functionality.  You should set the 'inactive' property of the
-'default' lifecycle; see RT_Config.pm for documentation.
+functionality. You should set the 'inactive' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
 EOT
         },
     },
