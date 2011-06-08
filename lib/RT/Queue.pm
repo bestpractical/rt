@@ -146,7 +146,6 @@ our $RIGHT_CATEGORIES = {
     CommentOnTicket     => 'General',
     OwnTicket           => 'Staff',
     ModifyTicket        => 'Staff',
-    ModifyTicketStatus  => 'Staff',
     DeleteTicket        => 'Staff',
     RejectTicket        => 'Staff',
     TakeTicket          => 'Staff',

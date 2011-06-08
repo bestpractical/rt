@@ -2137,7 +2137,7 @@ For example:
         rights => {
             '* -> deleted'  => 'DeleteTicket',
             '* -> rejected' => 'RejectTicket',
-            '* -> *'        => 'ModifyTicketStatus',
+            '* -> *'        => 'ModifyTicket',
         },
         ...
     },
