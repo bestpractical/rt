@@ -66,25 +66,10 @@ my ($count_name, $value_name) = $tix->SetupGroupings(
     Function => $ChartFunction,
 );
 
-my %class = (
-    Queue => 'RT::Queue',
-    Owner => 'RT::User',
-    Creator => 'RT::User',
-    LastUpdatedBy => 'RT::User',
-);
-my $class = $class{ $PrimaryGroupBy };
-
 my (@keys, @values);
 while ( my $entry = $tix->Next ) {
-    if ($class) {
-        my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->LabelValue( $value_name ) );
-        push @keys, $q->Name;
-    }
-    else {
-        push @keys, $entry->LabelValue( $value_name );
-    }
-    $keys[-1] ||= loc('(no value)');
+    push @keys, $entry->LabelValue( $value_name )
+        || loc('(no value)');
     push @values, $entry->__Value( $count_name );
 }
 
