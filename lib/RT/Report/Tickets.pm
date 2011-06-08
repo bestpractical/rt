@@ -82,6 +82,14 @@ our %GROUPINGS;
 
 our %GROUPINGS_META = (
     Queue => {
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my $queue = RT::Queue->new( $self->CurrentUser );
+            $queue->Load( $args{'VALUE'} );
+            return $queue->Name;
+        },
     },
     User => {
         SubFields => [qw(
