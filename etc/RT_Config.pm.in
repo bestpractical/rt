@@ -2136,7 +2136,6 @@ For example:
         ...
         rights => {
             '* -> deleted'  => 'DeleteTicket',
-            '* -> rejected' => 'RejectTicket',
             '* -> *'        => 'ModifyTicket',
         },
         ...
@@ -2253,7 +2252,6 @@ Set(%Lifecycles,
         },
         rights => {
             '* -> deleted'  => 'DeleteTicket',
-            '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
         },
         actions => [

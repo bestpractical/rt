@@ -116,7 +116,6 @@ our $RIGHTS = {
     ModifyTicket        => 'Modify tickets',                                            # loc_pair
     ModifyTicketStatus  => 'Modify ticket status',                                      # loc_pair
     DeleteTicket        => 'Delete tickets',                                            # loc_pair
-    RejectTicket        => 'Reject tickets',                                            # loc_pair
     TakeTicket          => 'Take tickets',                                              # loc_pair
     StealTicket         => 'Steal tickets',                                             # loc_pair
 
@@ -147,7 +146,6 @@ our $RIGHT_CATEGORIES = {
     OwnTicket           => 'Staff',
     ModifyTicket        => 'Staff',
     DeleteTicket        => 'Staff',
-    RejectTicket        => 'Staff',
     TakeTicket          => 'Staff',
     StealTicket         => 'Staff',
     ForwardMessage      => 'Staff',
