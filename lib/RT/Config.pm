@@ -721,6 +721,33 @@ our %META = (
             }
         },
     },
+
+    ActiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The ActiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'active' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
+        },
+    },
+    InactiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The InactiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'inactive' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
+        },
+    },
 );
 my %OPTIONS = ();
 
