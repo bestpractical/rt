@@ -1077,12 +1077,12 @@ sub ValidateWebConfig {
 
     if ($ENV{'rt.explicit_port'}) {
         if ($ENV{SERVER_PORT} != $ENV{'rt.explicit_port'}) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
     else {
         if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
 
@@ -1091,12 +1091,12 @@ sub ValidateWebConfig {
         my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
 
         if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
     else {
         if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
 
