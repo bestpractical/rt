@@ -2176,7 +2176,6 @@ Use the following format to define labels and actions of transitions:
 
     default => {
         ...
-        actions => {
         actions => [
             'new -> open'     => { label => 'Open it', update => 'Respond' },
             'new -> resolved' => { label => 'Resolve', update => 'Comment' },
