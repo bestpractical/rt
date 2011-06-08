@@ -129,11 +129,8 @@ diag 'check valid inputs with various timezones in ticket create page';
     }
 
     $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
-    TODO: {
-        local $TODO = $why;
-        $m->content_contains( 'Thu May 06 07:00:01 2010',
-            'cf datetime input respects user timezone' );
-    }
+    $m->content_contains( 'Thu May 06 07:00:01 2010',
+        'cf datetime input respects user timezone' );
     $root->SetTimezone( 'EST5EDT' ); # back to -04:00
     $m->get_ok( $m->uri );
 
@@ -179,8 +176,11 @@ diag 'check search build page';
     is_results_number( { $cf_op->name => '<', $cf_field->name => '2010-05-07', }, 2 );
     is_results_number( { $cf_op->name => '>', $cf_field->name => '2010-05-04', }, 2 );
 
-    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05', }, 1 );
-    is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 01:00:01', }, 1 );
+    TODO: {
+        local $TODO = $why;
+        is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05', }, 1 );
+        is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-05 01:00:01', }, 1 );
+    }
 
     is_results_number(
         { $cf_op->name => '=', $cf_field->name => '2010-05-05 02:00:01', }, 0 );
@@ -218,16 +218,16 @@ sub is_results_number {
     my $number = shift;
     my $operator = shift;
     my $value = shift;
-    $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    {
+        local $TODO;
+        $m->get_ok( $baseurl . '/Search/Build.html?Query=Queue=1' );
+    }
     $m->form_name('BuildQuery');
     $m->submit_form(
         fields => $fields,
         button => 'DoSearch',
     );
-    TODO: {
-        local $TODO = $why;
-        $m->content_contains( "Found $number ticket", "Found $number ticket" );
-    }
+    $m->content_contains( "Found $number ticket", "Found $number ticket" );
 }
 
 # to make $m->DESTROY happy
