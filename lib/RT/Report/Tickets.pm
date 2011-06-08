@@ -201,6 +201,34 @@ sub Groupings {
     return @fields;
 }
 
+sub IsValidGrouping {
+    my $self = shift;
+    my %args = (@_);
+    return 0 unless $args{'GroupBy'};
+
+    my ($key, $subkey) = split /\./, $args{'GroupBy'}, 2;
+
+    %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
+    my $type = $GROUPINGS{$key};
+    return 0 unless $type;
+    return 1 unless $subkey;
+
+    my $meta = $GROUPINGS_META{ $type } || {};
+    unless ( $meta->{'SubFields'} ) {
+        return 0;
+    }
+    elsif ( ref( $meta->{'SubFields'} ) eq 'ARRAY' ) {
+        return 1 if grep $_ eq $subkey, @{ $meta->{'SubFields'} };
+    }
+    elsif ( ref( $meta->{'SubFields'} ) eq 'CODE' ) {
+        return 1 if grep $_ eq "$key.$subkey", $meta->{'SubFields'}->(
+            $self,
+            \%args,
+        );
+    }
+    return 0;
+}
+
 sub Label {
     my $self = shift;
     my $field = shift;

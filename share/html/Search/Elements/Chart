@@ -57,8 +57,8 @@ $PrimaryGroupBy ||= 'Queue'; # make sure PrimaryGroupBy is not undef
 
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-my %AllowedGroupings = reverse $tix->Groupings( Query => $Query );
-$PrimaryGroupBy = 'Queue' unless exists $AllowedGroupings{$PrimaryGroupBy};
+$PrimaryGroupBy = 'Queue'
+    unless $tix->IsValidGrouping( Query => $Query, GroupBy => $PrimaryGroupBy );
 
 my ($count_name, $value_name) = $tix->SetupGroupings(
     Query => $Query,
