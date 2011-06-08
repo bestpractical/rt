@@ -1101,7 +1101,7 @@ sub ValidateWebConfig {
     }
 
     if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
-        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCIRPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 }
 
