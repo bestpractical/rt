@@ -1286,7 +1286,7 @@ sub start_plack_server {
             unless $handled;
         push @SERVERS, $pid;
         my $Tester = Test::Builder->new;
-        $Tester->ok(1, @_);
+        $Tester->ok(1, 'plack test server ok');
 
         __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
