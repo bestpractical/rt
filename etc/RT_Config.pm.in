@@ -2128,18 +2128,23 @@ above.
 =head3 Protecting status changes with rights
 
 A transition or group of transitions can be protected by a specific
-right.
-
-For example:
+right.  Additionally, you can name new right names, which will be added
+to the system to control that transition.  For example, if you wished to
+create a lesser right than ModifyTicket for rejecting tickets, you could
+write:
 
     default => {
         ...
         rights => {
             '* -> deleted'  => 'DeleteTicket',
+            '* -> rejected' => 'RejectTicket',
             '* -> *'        => 'ModifyTicket',
         },
         ...
     },
+
+This would create a new C<RejectTicket> right in the system which you
+could assign to whatever groups you choose.
 
 On the left hand side you can have the following variants:
 
