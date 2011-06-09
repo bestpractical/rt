@@ -260,8 +260,9 @@ sub ParseSQL {
 
         my $class;
         if ( exists $lcfield{ lc $main_key } ) {
-            $class = $field{ $main_key }->[0];
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
+            ($main_key) = split /[.]/, $key;  # make the case right
+            $class = $field{ $main_key }->[0];
         }
         unless( $class ) {
             push @results, [ $args{'CurrentUser'}->loc("Unknown field: [_1]", $key), -1 ]
