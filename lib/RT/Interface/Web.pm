@@ -1075,15 +1075,8 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
-    if ($ENV{'rt.explicit_port'}) {
-        if ($ENV{SERVER_PORT} != $ENV{'rt.explicit_port'}) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
-    }
-    else {
-        if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
+    if (!$ENV{'rt.explicit_port'} && $ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
+        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 
     if ($ENV{HTTP_HOST}) {
@@ -1100,8 +1093,8 @@ sub ValidateWebConfig {
         }
     }
 
-    if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
-        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath). You should fix your Set(\$WebPath, ...) setting in RT_SiteConfig.pm otherwise your internal links may be broken.");
+    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
+        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 }
 
