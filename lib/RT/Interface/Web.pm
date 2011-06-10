@@ -2180,10 +2180,6 @@ sub _ProcessObjectCustomFieldUpdates {
 
     my $class = $cf->GetTypeClass;
 
-    my $_arg_values = sub {
-        return $class->ValuesFromWeb( $cf, @_ );
-    };
-
     my @results;
     my $_add_ocfv = sub {
         my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
@@ -2204,12 +2200,12 @@ sub _ProcessObjectCustomFieldUpdates {
     };
 
     if (my $arg = delete $_args->{'DeleteValues'}) {
-        foreach my $value ($_arg_values->($arg)) {
+        foreach my $value ($class->ValuesFromWeb( $cf, $arg )) {
             $_del_ocfv->(Value => $value);
         }
     }
     if (my $arg = delete $_args->{'DeleteValueIds'}) {
-        foreach my $value ($_arg_values->($arg)) {
+        foreach my $value ($class->ValuesFromWeb( $cf, $arg )) {
             $_del_ocfv->(Value => $value);
         }
     }
@@ -2238,14 +2234,12 @@ sub _ProcessObjectCustomFieldUpdates {
     }
 
     if ( exists $_args->{'AddValue'} ) { # tested by t/web/cf_onqueue.t
-        my @values = $_arg_values->($_args->{'AddValue'});
-        foreach my $value (@values) {
+        foreach my $value ($class->ValuesFromWeb( $cf, $_args->{'AddValue'} )) {
             $_add_ocfv->(Value => $value);
         }
     }
     elsif ( exists $_args->{'Value'} ) { # tested by t/web/cf_onqueue.t
-        my @values = $_arg_values->($_args->{'Value'});
-        foreach my $value (@values) {
+        foreach my $value ($class->ValuesFromWeb( $cf, $_args->{'Value'} )) {
             $_add_ocfv->(Value => $value);
         }
     }
@@ -2255,7 +2249,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
     }
     elsif ( exists $_args->{'Values'} ) {
-        my @values = $_arg_values->($_args->{'Values'});
+        my @values = $class->ValuesFromWeb( $cf, $_args->{'Values'} );
         if (!$cf->Repeated) { # tested by t/web/cf_select_one.t
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
