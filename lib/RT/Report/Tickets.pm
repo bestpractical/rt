@@ -345,17 +345,13 @@ sub SetupGroupings {
     }
     $self->GroupBy( @group_by );
 
-    # UseSQLForACLChecks may add late joins
-    my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
-
     my (@res, %column_type);
 
     my @function = ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
     foreach my $e ( @function ) {
-        my ($function, $field) = split /\s+/, $e, 2;
-        $function = 'DISTINCT COUNT' if $joined && lc($function) eq 'count';
-        push @res, $self->Column( FUNCTION => $function, FIELD => $field );
-        $column_type{ $res[-1] } = { FUNCTION => $function, FIELD => $field };
+        my %args = $self->_StatsToFunction( $e );
+        push @res, $self->Column( %args );
+        $column_type{ $res[-1] } = \%args;
     }
 
     foreach my $group_by ( @group_by ) {
