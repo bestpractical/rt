@@ -46,8 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<% $Name %>">
-% my @tmp = @functions;
-% while ( my ($display, $value) = splice @tmp, 0, 2 ) {
+% while ( my ($value, $display) = splice @functions, 0, 2 ) {
 <option value="<% $value %>"<% $value eq $Default ? qq[ selected="selected"] : '' |n %>><% loc( $display ) %></option>
 % }
 </select>
@@ -55,14 +54,6 @@
 $Name => 'ChartFunction'
 $Default => 'COUNT'
 </%ARGS>
-<%ONCE>
-my @functions = (
-    'Count of tickets'  => 'COUNT id',
-);
-foreach my $field (qw(Worked Estimated Left)) {
-    push @functions, "Total time \L$field" => "SUM Time$field",
-        "Average time \L$field" => "AVG Time$field",
-        "Minimum time \L$field" => "MIN Time$field",
-        "Maximum time \L$field" => "MAX Time$field";
-}
-</%ONCE>
+<%INIT>
+my @functions = RT::Report::Tickets->Statistics;
+</%INIT>
