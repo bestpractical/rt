@@ -173,6 +173,82 @@ our %GROUPINGS_META = (
     },
 );
 
+our @STATISTICS = (
+    COUNT             => ['Tickets', 'Count', 'id'],
+
+    'SUM(TimeWorked)' => ['Total time worked',   'Simple', 'SUM', 'TimeWorked' ],
+    'AVG(TimeWorked)' => ['Average time worked', 'Simple', 'AVG', 'TimeWorked' ],
+    'MIN(TimeWorked)' => ['Minimum time worked', 'Simple', 'MIN', 'TimeWorked' ],
+    'MAX(TimeWorked)' => ['Maximum time worked', 'Simple', 'MAX', 'TimeWorked' ],
+
+    'SUM(TimeEstimated)' => ['Total time estimated',   'Simple', 'SUM', 'TimeEstimated' ],
+    'AVG(TimeEstimated)' => ['Average time estimated', 'Simple', 'AVG', 'TimeEstimated' ],
+    'MIN(TimeEstimated)' => ['Minimum time estimated', 'Simple', 'MIN', 'TimeEstimated' ],
+    'MAX(TimeEstimated)' => ['Maximum time estimated', 'Simple', 'MAX', 'TimeEstimated' ],
+
+    'SUM(TimeLeft)' => ['Total time left',   'Simple', 'SUM', 'TimeLeft' ],
+    'AVG(TimeLeft)' => ['Average time left', 'Simple', 'AVG', 'TimeLeft' ],
+    'MIN(TimeLeft)' => ['Minimum time left', 'Simple', 'MIN', 'TimeLeft' ],
+    'MAX(TimeLeft)' => ['Maximum time left', 'Simple', 'MAX', 'TimeLeft' ],
+
+    'SUM(Created-Resolved)'
+        => ['Summary of Created-Resolved', 'DateTimeInterval', 'SUM', 'Created', 'Resolved' ],
+    'AVG(Created-Resolved)'
+        => ['Average Created-Resolved', 'DateTimeInterval', 'AVG', 'Created', 'Resolved' ],
+    'MIN(Created-Resolved)'
+        => ['Minimum Created-Resolved', 'DateTimeInterval', 'MIN', 'Created', 'Resolved' ],
+    'MAX(Created-Resolved)'
+        => ['Maximum Created-Resolved', 'DateTimeInterval', 'MAX', 'Created', 'Resolved' ],
+
+    'SUM(Created-LastUpdated)'
+        => ['Summary of Created-LastUpdated', 'DateTimeInterval', 'SUM', 'Created', 'LastUpdated' ],
+    'AVG(Created-LastUpdated)'
+        => ['Average Created-LastUpdated', 'DateTimeInterval', 'AVG', 'Created', 'LastUpdated' ],
+    'MIN(Created-LastUpdated)'
+        => ['Minimum Created-LastUpdated', 'DateTimeInterval', 'MIN', 'Created', 'LastUpdated' ],
+    'MAX(Created-LastUpdated)'
+        => ['Maximum Created-LastUpdated', 'DateTimeInterval', 'MAX', 'Created', 'LastUpdated' ],
+);
+our %STATISTICS;
+
+our %STATISTICS_META = (
+    Count => {
+        Function => sub {
+            my $self = shift;
+            my $field = shift || 'id';
+
+            # UseSQLForACLChecks may add late joins
+            my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
+            return (
+                FUNCTION => ($joined ? 'DISTINCT COUNT' : 'COUNT'),
+                FIELD    => 'id'
+            );
+        },
+
+    },
+    Simple => {
+        Function => sub {
+            my $self = shift;
+            my ($function, $field) = @_;
+            return (FUNCTION => $function, FIELD => $field);
+        },
+    },
+    DateTimeInterval => {
+        Function => sub {
+            my $self = shift;
+            my ($function, $from, $to) = @_;
+
+            my $interval = $self->_Handle->DateTimeIntervalFunction(
+                From => { FUNCTION => $self->NotSetDateToNullFunction( FIELD => $from ) },
+                To   => { FUNCTION => $self->NotSetDateToNullFunction( FIELD => $to ) },
+            );
+
+            return (FUNCTION => "$function($interval)");
+        },
+    },
+
+);
+
 sub Groupings {
     my $self = shift;
     my %args = (@_);
@@ -227,6 +303,11 @@ sub IsValidGrouping {
         );
     }
     return 0;
+}
+
+sub Statistics {
+    my $self = shift;
+    return map { ref($_)? $_->[0] : $_ } @STATISTICS;
 }
 
 sub Label {
