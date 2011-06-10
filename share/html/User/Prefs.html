@@ -209,6 +209,11 @@ $id = $UserObj->id;
 
 my @results;
 
+if ( $ARGS{'ResetAuthToken'} ) {
+    my ($status, $msg) = $UserObj->GenerateAuthToken;
+    push @results, $msg;
+}
+else {
 my @fields = qw(
     Name Comments Signature EmailAddress FreeformContactInfo 
     Organization RealName NickName Lang EmailEncoding WebEncoding 
@@ -253,10 +258,6 @@ if (defined $Pass1 && length $Pass1 ) {
     );
     push @results, loc("Password: [_1]", $msg);
 }
-
-if ( $ARGS{'ResetAuthToken'} ) {
-    my ($status, $msg) = $UserObj->GenerateAuthToken;
-    push @results, $msg;
 }
 
 </%INIT>
