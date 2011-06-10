@@ -340,27 +340,31 @@ sub SetupGroupings {
     foreach my $e ( @group_by ) {
         my ($key, $subkey) = split /\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
-        $e->{'TYPE'} = $GROUPINGS{ $key };
-        $e->{'META'} = $GROUPINGS_META{ $e->{'TYPE'} };
+        $e->{'TYPE'} = 'grouping';
+        $e->{'INFO'} = $GROUPINGS{ $key };
+        $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
     }
     $self->GroupBy( @group_by );
 
-    my (@res, %column_type);
+    my (@res, %column_info);
 
     my @function = ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
     foreach my $e ( @function ) {
         my %args = $self->_StatsToFunction( $e );
+        $args{'TYPE'} = 'statistic';
+        $args{'INFO'} = $STATISTICS{ $e };
+        $args{'META'} = $STATISTICS_META{ $args{'INFO'}[1] };
         push @res, $self->Column( %args );
-        $column_type{ $res[-1] } = \%args;
+        $column_info{ $res[-1] } = \%args;
     }
 
     foreach my $group_by ( @group_by ) {
         my $alias = $self->Column( %$group_by );
-        $column_type{ $alias } = $group_by;
+        $column_info{ $alias } = $group_by;
         push @res, $alias;
     }
 
-    $self->{'column_types'} = \%column_type;
+    $self->{'column_info'} = \%column_info;
 
     return @res;
 }
@@ -452,7 +456,7 @@ sub Next {
 sub NewItem {
     my $self = shift;
     my $res = RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
-    $res->{'column_types'} = $self->{'column_types'};
+    $res->{'column_info'} = $self->{'column_info'};
     return $res;
 }
 
