@@ -2167,14 +2167,15 @@ sub _ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $cf      = $args{'CustomField'};
     my $cf_type = $cf->Type || '';
+    my $_args   = $args{'ARGS'};
 
     # Remove blank Values since the magic field will take care of this. Sometimes
     # the browser gives you a blank value which causes CFs to be processed twice
-    if (   defined $args{'ARGS'}->{'Values'}
-        && !length $args{'ARGS'}->{'Values'}
-        && $args{'ARGS'}->{'Values-Magic'} )
+    if (   defined $_args->{'Values'}
+        && !length $_args->{'Values'}
+        && $_args->{'Values-Magic'} )
     {
-        delete $args{'ARGS'}->{'Values'};
+        delete $_args->{'Values'};
     }
 
     my $_arg_values = sub {
@@ -2196,75 +2197,80 @@ sub _ProcessObjectCustomFieldUpdates {
     };
 
     my @results;
+    my $_add_ocfv = sub {
+        my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+            Field => $cf->id,
+            @_
+        );
+        push @results, $msg;
+        return $val;
+    };
 
-    if (my $arg = delete $args{'ARGS'}{'DeleteValues'}) {
+    my $_del_ocfv = sub {
+        my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
+            Field => $cf->id,
+            @_
+        );
+        push @results, $msg;
+        return $val;
+    };
+
+    if (my $arg = delete $_args->{'DeleteValues'}) {
         foreach my $value ($_arg_values->($arg)) {
-            my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
-                Field => $cf,
-                Value => $value,
-            );
-            push( @results, $msg );
+            $_del_ocfv->(Value => $value);
         }
     }
-    if (my $arg = delete $args{'ARGS'}{'DeleteValueIds'}) {
+    if (my $arg = delete $_args->{'DeleteValueIds'}) {
         foreach my $value ($_arg_values->($arg)) {
-            my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
-                Field   => $cf,
-                ValueId => $value,
-            );
-            push( @results, $msg );
+            $_del_ocfv->(Value => $value);
         }
     }
 
     my $class = $cf->GetTypeClass;
 
     if ($class && $class->can('UpdateArgsFromWebArgs')) {
-        my $args = $class->UpdateArgsFromWebArgs($cf, $args{'ARGS'});
+        my $args = $class->UpdateArgsFromWebArgs($cf, $_args);
         if ($args) {
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                Field => $cf->id,
-                %$args,
-            );
-            push( @results, $msg );
+            $_add_ocfv->(%$args);
         }
         return @results;
     }
 
 
-    foreach my $arg ( keys %{ $args{'ARGS'} } ) {
-
-        # skip category argument
-        next if $arg eq 'Category';
-
-        # since http won't pass in a form element with a null value, we need
-        # to fake it
-        if ( $arg eq 'Values-Magic' ) {
-
-            # We don't care about the magic, if there's really a values element;
-            next if defined $args{'ARGS'}->{'Value'}  && length $args{'ARGS'}->{'Value'};
-            next if defined $args{'ARGS'}->{'Values'} && length $args{'ARGS'}->{'Values'};
-
-            # "Empty" values does not mean anything for Image and Binary fields
-            next if $cf_type =~ /^(?:Image|Binary)$/;
-
-            $arg = 'Values';
-            $args{'ARGS'}->{'Values'} = undef;
+    # since http won't pass in a form element with a null value, we need
+    # to fake it
+    if ( $_args->{'Values-Magic'} ) {
+        # We don't care about the magic, if there's really a values element;
+        if ((defined $_args->{'Value'}  && length $_args->{'Value'})  ||
+            (defined $_args->{'Values'} && length $_args->{'Values'}) ||
+        # "Empty" values does not mean anything for Image and Binary fields
+            $cf_type =~ /^(?:Image|Binary)$/) {
         }
+        else {
+            $_args->{'Values'} = undef;
+        }
+    }
 
-        my @values = $_arg_values->($args{'ARGS'}->{$arg});
-        if ( $arg eq 'AddValue' || $arg eq 'Value' ) { # tested by t/web/cf_onqueue.t 
-            foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                    Field => $cf->id,
-                    Value => $value
-                );
-                push( @results, $msg );
-            }
-        } elsif ( $arg eq 'Upload' ) { # untested
-            my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
-            push( @results, $msg );
-        } elsif ( $arg eq 'Values' && !$cf->Repeated ) { # tested by t/web/cf_select_one.t
+    if ( exists $_args->{'AddValue'} ) { # tested by t/web/cf_onqueue.t
+        my @values = $_arg_values->($_args->{'AddValue'});
+        foreach my $value (@values) {
+            $_add_ocfv->(Value => $value);
+        }
+    }
+    elsif ( exists $_args->{'Value'} ) { # tested by t/web/cf_onqueue.t
+        my @values = $_arg_values->($_args->{'Value'});
+        foreach my $value (@values) {
+            $_add_ocfv->(Value => $value);
+        }
+    }
+    elsif ( exists $_args->{Upload} ) {
+        if ( my $value_hash = _UploadedFile( $args{'Prefix'} . 'Upload' ) ) {
+            $_add_ocfv->( %$value_hash);
+        }
+    }
+    elsif ( exists $_args->{'Values'} ) {
+        my @values = $_arg_values->($_args->{'Values'});
+        if (!$cf->Repeated) { # tested by t/web/cf_select_one.t
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             my %values_hash;
@@ -2274,28 +2280,21 @@ sub _ProcessObjectCustomFieldUpdates {
                     next;
                 }
 
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                    Field => $cf,
-                    Value => $value
-                );
-                push( @results, $msg );
+                my $val = $_add_ocfv->( Value => $value );
                 $values_hash{$val} = 1 if $val;
             }
 
             # For Date Cfs, @values is empty when there is no changes (no datas in form input)
-            return @results if ( $cf->Type =~ /^Date(?:Time)?$/ && ! @values );
+            unless ( $cf->Type =~ /^Date(?:Time)?$/ && ! @values ) {
+                $cf_values->RedoSearch;
+                while ( my $cf_value = $cf_values->Next ) {
+                    next if $values_hash{ $cf_value->id };
 
-            $cf_values->RedoSearch;
-            while ( my $cf_value = $cf_values->Next ) {
-                next if $values_hash{ $cf_value->id };
-
-                my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
-                    Field   => $cf,
-                    ValueId => $cf_value->id
-                );
-                push( @results, $msg );
+                    $_del_ocfv->(ValueId => $cf_value->id);
+                }
             }
-        } elsif ( $arg eq 'Values' ) { # untested
+        }
+        else { # not repeated.  untested
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             # keep everything up to the point of difference, delete the rest
@@ -2312,21 +2311,18 @@ sub _ProcessObjectCustomFieldUpdates {
 
             # now add/replace extra things, if any
             foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                    Field => $cf,
-                    Value => $value
-                );
-                push( @results, $msg );
+                $_add_ocfv->( Value => $value );
             }
-        } else {
-            push(
-                @results,
-                loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]",
-                    $cf->Name, ref $args{'Object'},
-                    $args{'Object'}->id
-                )
-            );
         }
+    } else {
+
+        push(
+            @results,
+            loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]",
+                $cf->Name, ref $args{'Object'},
+                $args{'Object'}->id
+            )
+        );
     }
     return @results;
 }
