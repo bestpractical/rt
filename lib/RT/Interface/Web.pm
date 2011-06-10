@@ -2178,22 +2178,10 @@ sub _ProcessObjectCustomFieldUpdates {
         delete $_args->{'Values'};
     }
 
+    my $class = $cf->GetTypeClass;
+
     my $_arg_values = sub {
-        my @values = ();
-        my $args = shift;
-        if ( ref $args eq 'ARRAY' ) {
-            @values = @$args;
-        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
-            @values = $args;
-        } else {
-            @values = split /\r*\n/, $args if defined $args;
-        }
-        return grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-        } grep defined, @values;
+        return $class->ValuesFromWeb( $cf, @_ );
     };
 
     my @results;
@@ -2225,8 +2213,6 @@ sub _ProcessObjectCustomFieldUpdates {
             $_del_ocfv->(Value => $value);
         }
     }
-
-    my $class = $cf->GetTypeClass;
 
     if ($class && $class->can('UpdateArgsFromWebArgs')) {
         my $args = $class->UpdateArgsFromWebArgs($cf, $_args);

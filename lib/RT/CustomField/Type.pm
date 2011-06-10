@@ -33,27 +33,38 @@ sub CreateArgsFromWebArgs {
             return HTML::Mason::Commands::_UploadedFileArgs($web_args->{Upload});
         }
 
-        my $type = $cf->Type;
-
-        my @values = ();
-        if ( ref $web_args->{$arg} eq 'ARRAY' ) {
-            @values = @{ $web_args->{$arg} };
-        } elsif ( $type =~ /text/i ) {
-            @values = ( $web_args->{$arg} );
-        } else {
-            no warnings 'uninitialized';
-            @values = split /\r*\n/, $web_args->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-        } grep defined, @values;
-
-        return \@values;
+        return [$self->ValuesFromWeb($cf, $web_args->{$arg})];
     }
 }
+
+
+=head2 ValuesFromWeb C<$args>
+
+Parse the args passed in from web
+
+=cut
+
+sub ValuesFromWeb {
+    my ($self, $cf, $args) = @_;
+
+    my $type = $cf->Type || '';
+
+    my @values = ();
+    if ( ref $args eq 'ARRAY' ) {
+        @values = @$args;
+    } elsif ( $type =~ /text/i ) {    # Both Text and Wikitext
+        @values = $args;
+    } else {
+        @values = split /\r*\n/, $args if defined $args;
+    }
+    return grep length, map {
+        s/\r+\n/\n/g;
+        s/^\s+//;
+        s/\s+$//;
+        $_;
+    } grep defined, @values;
+}
+
 
 sub Limit {
     return;
