@@ -426,8 +426,23 @@ sub _FieldToFunction {
     return $code->( $self, %args );
 }
 
-1;
+sub _StatsToFunction {
+    my $self = shift;
+    my ($stat) = (@_);
 
+    %STATISTICS = @STATISTICS unless keys %STATISTICS;
+
+    my ($display, $type, @args) = @{ $STATISTICS{ $stat } || [] };
+    unless ( $type ) {
+        $RT::Logger->error("'$stat' is not valid statistics for report");
+        return ('FUNCTION' => 'NULL');
+    }
+
+    my $meta = $STATISTICS_META{ $type };
+    return ('FUNCTION' => 'NULL') unless $meta;
+    return ('FUNCTION' => 'NULL') unless $meta->{'Function'};
+    return $meta->{'Function'}->( $self, @args );
+}
 
 
 # Gotta skip over RT::Tickets->Next, since it does all sorts of crazy magic we 
