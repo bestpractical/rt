@@ -168,6 +168,19 @@ our %GROUPINGS_META = (
             return @res;
         },
         Function => 'GenerateCustomFieldFunction',
+        Label => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my ($cf) = ( $args{'SUBKEY'} =~ /^{(.*)}$/ );
+            if ( $cf =~ /^\d+$/ ) {
+                my $obj = RT::CustomField->new( $self->CurrentUser );
+                $obj->Load( $cf );
+                $cf = $obj->Name;
+            }
+
+            return 'Custom field [_1]', $self->CurrentUser->loc( $cf );
+        },
     },
     Enum => {
     },
@@ -224,7 +237,6 @@ our %STATISTICS_META = (
                 FIELD    => 'id'
             );
         },
-
     },
     Simple => {
         Function => sub {
@@ -246,7 +258,6 @@ our %STATISTICS_META = (
             return (FUNCTION => "$function($interval)");
         },
     },
-
 );
 
 sub Groupings {
@@ -312,15 +323,48 @@ sub Statistics {
 
 sub Label {
     my $self = shift;
-    my $field = shift;
-    if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
-        my $cf = $1;
-        return $self->CurrentUser->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::CustomField->new( $self->CurrentUser );
-        $obj->Load( $cf );
-        return $self->CurrentUser->loc( "Custom field '[_1]'", $obj->Name );
+    my $column = shift;
+
+    my $info = $self->ColumnInfo( $column );
+    unless ( $info ) {
+        $RT::Logger->error("Unknown column '$column'");
+        return $self->CurrentUser->loc('(Incorrect data)');
     }
-    return $self->CurrentUser->loc($field);
+
+    my $label = $info->{'META'}{'Label'};
+    unless ( $label ) {
+        my $res = '';
+        if ( $info->{'TYPE'} eq 'statistic' ) {
+            $res = $info->{'INFO'}[0];
+        }
+        else {
+            $res = join ' ', grep defined && length, @{ $info }{'KEY', 'SUBKEY'};
+        }
+        return $self->CurrentUser->loc( $res );
+    }
+
+    my $code;
+    unless ( ref $label ) {
+        $code = $self->can( $label );
+        unless ( $code ) {
+            $RT::Logger->error("No method ". $label );
+            return $self->CurrentUser->loc('(Incorrect data)');
+        }
+    }
+    elsif ( ref( $label ) eq 'CODE' ) {
+        $code = $label;
+    }
+    else {
+        return $self->CurrentUser->loc('(Incorrect data)');
+    }
+    return $self->CurrentUser->loc( $code->( $self, %$info ) );
+}
+
+sub ColumnInfo {
+    my $self = shift;
+    my $column = shift;
+
+    return $self->{'column_info'}{$column};
 }
 
 sub SetupGroupings {

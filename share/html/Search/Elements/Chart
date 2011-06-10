@@ -92,10 +92,8 @@ my ($i,$total);
 </span>
 <table class="collection-as-table chart">
 <tr>
-<th class="collection-as-table"><% loc($tix->Label($PrimaryGroupBy)) %>
-</th>
-<th class="collection-as-table"><&|/l&>Tickets</&>
-</th>
+<th class="collection-as-table"><% $tix->Label( $value_name ) %></th>
+<th class="collection-as-table"><% $tix->Label( $count_name ) %></th>
 </tr>
 <%perl>
  while (my $key = shift @sorted_keys) {

@@ -137,8 +137,8 @@ if ($tix->Count == 0) {
 if ($chart_class eq "GD::Graph::bars") {
     my $count = keys %data;
     $chart->set(
-        x_label => $tix->Label( $PrimaryGroupBy ),
-        y_label => loc('Tickets'),
+        x_label => $tix->Label( $value_name ),
+        y_label => $tix->Label( $count_name ),
         show_values => 1,
         x_label_position => 0.6,
         y_label_position => 0.6,
