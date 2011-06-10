@@ -2083,19 +2083,19 @@ ticket creation>.
 
 =item on_merge
 
-When tickets are merged status of the ticket that merged is changed by
-force to this. It should be one of inactive statuses; 'resolved' or
-its equivalent is most probably the best candidate.
+When tickets are merged, the status of the ticket that was merged
+away is forced to this value.  It should be one of inactive statuses;
+'resolved' or its equivalent is most probably the best candidate.
 
 =item approved
 
-When an approval accepted status of depending tickets changed
-to this value.
+When an approval is accepted, the status of depending tickets will
+be changed to this value.
 
 =item denied
 
-When an approval denied status of depending tickets changed
-to this value.
+When an approval is denied, the status of depending tickets will
+be changed to this value.
 
 =back
 
