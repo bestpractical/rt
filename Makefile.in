@@ -494,7 +494,7 @@ build-snapshot:
 	rm -fr "$(SNAPSHOT)/"
 
 clearsign-snapshot:
-	gpg --detach-sign "$(SNAPSHOT).tar.gz"
+	gpg --no-armor --detach-sign "$(SNAPSHOT).tar.gz"
 
 build-third-party:
 	git archive --prefix "$(SNAPSHOT)/$(THIRD_PARTY)" HEAD:$(THIRD_PARTY) \
@@ -502,7 +502,7 @@ build-third-party:
 	rm -rf "$(SNAPSHOT)/$(THIRD_PARTY)"
 
 clearsign-third-party:
-	gpg --detach-sign "$(SNAPSHOT)-third-party-source.tar.gz"
+	gpg --no-armor --detach-sign "$(SNAPSHOT)-third-party-source.tar.gz"
 
 snapshot-shasums:
 	sha1sum $(SNAPSHOT)*.tar.gz*
