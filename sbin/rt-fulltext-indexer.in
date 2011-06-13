@@ -394,7 +394,7 @@ sub attachments_html {
 
 sub filter_html {
     my $attachment = shift;
-    if ( my $parent = $attachment->Parent ) {
+    if ( my $parent = $attachment->ParentObj ) {
 # skip html parts that are alternatives
         return 1 if $parent->id
             && $parent->ContentType eq 'mulitpart/alternative';
