@@ -2083,19 +2083,19 @@ ticket creation>.
 
 =item on_merge
 
-When tickets are merged status of the ticket that merged is changed by
-force to this. It should be one of inactive statuses; 'resolved' or
-its equivalent is most probably the best candidate.
+When tickets are merged, the status of the ticket that was merged
+away is forced to this value.  It should be one of inactive statuses;
+'resolved' or its equivalent is most probably the best candidate.
 
 =item approved
 
-When an approval accepted status of depending tickets changed
-to this value.
+When an approval is accepted, the status of depending tickets will
+be changed to this value.
 
 =item denied
 
-When an approval denied status of depending tickets changed
-to this value.
+When an approval is denied, the status of depending tickets will
+be changed to this value.
 
 =back
 
@@ -2128,19 +2128,23 @@ above.
 =head3 Protecting status changes with rights
 
 A transition or group of transitions can be protected by a specific
-right.
-
-For example:
+right.  Additionally, you can name new right names, which will be added
+to the system to control that transition.  For example, if you wished to
+create a lesser right than ModifyTicket for rejecting tickets, you could
+write:
 
     default => {
         ...
         rights => {
             '* -> deleted'  => 'DeleteTicket',
             '* -> rejected' => 'RejectTicket',
-            '* -> *'        => 'ModifyTicketStatus',
+            '* -> *'        => 'ModifyTicket',
         },
         ...
     },
+
+This would create a new C<RejectTicket> right in the system which you
+could assign to whatever groups you choose.
 
 On the left hand side you can have the following variants:
 
@@ -2176,7 +2180,6 @@ Use the following format to define labels and actions of transitions:
 
     default => {
         ...
-        actions => {
         actions => [
             'new -> open'     => { label => 'Open it', update => 'Respond' },
             'new -> resolved' => { label => 'Resolve', update => 'Comment' },
@@ -2254,7 +2257,6 @@ Set(%Lifecycles,
         },
         rights => {
             '* -> deleted'  => 'DeleteTicket',
-            '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
