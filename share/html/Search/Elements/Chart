@@ -66,21 +66,7 @@ my ($count_name, $value_name) = $tix->SetupGroupings(
     Function => $ChartFunction,
 );
 
-my (@keys, @values);
-while ( my $entry = $tix->Next ) {
-    push @keys, $entry->LabelValue( $value_name )
-        || loc('(no value)');
-    push @values, $entry->__Value( $count_name );
-}
-
-my %data;
-my %loc_keys;
-foreach my $key (@keys) { $data{$key} = shift @values; $loc_keys{$key} = loc($key); }
-my @sorted_keys = map { $loc_keys{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
-my @sorted_values = map { $data{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
-
-my ($i,$total);
 </%init>
 <div class="chart-wrapper">
 <span class="chart image">
@@ -91,49 +77,45 @@ my ($i,$total);
 % }
 </span>
 <table class="collection-as-table chart">
+
 <tr>
 <th class="collection-as-table"><% $tix->Label( $value_name ) %></th>
 <th class="collection-as-table"><% $tix->Label( $count_name ) %></th>
 </tr>
-<%perl>
- while (my $key = shift @sorted_keys) {
- $i++;
- my $value = shift @sorted_values;
- $total += $value;
-</%perl>
-<tr class="<% $i%2 ? 'evenline' : 'oddline' %>">
-<%perl>
-# TODO sadly we don't have "creator.city is null" or alike support yet
-# so no link if the key is undef for now
- if ( $PrimaryGroupBy !~ /(Hourly|Daily|Monthly|Annually)$/
-        && $key ne loc('(no value)') ) {
- my $group = $PrimaryGroupBy; $group =~ s! !.!;
- my %orig_keys = reverse %loc_keys;
- my $QueryString = $m->comp('/Elements/QueryString',
-           Query => "$Query and $group = '$orig_keys{$key}'",
-                           Format  => $ARGS{Format},
-                           Rows    => $ARGS{Rows},
-                           OrderBy => $ARGS{OrderBy},
-                           Order   => $ARGS{Order},
-                         );
-</%perl>
+
+% my $base_query = $m->comp('/Elements/QueryString',
+%     Format  => $ARGS{Format},
+%     Rows    => $ARGS{Rows},
+%     OrderBy => $ARGS{OrderBy},
+%     Order   => $ARGS{Order},
+% );
+
+% $tix->SortEntries;
+
+% my ($i,$total) = (0, 0);
+% while ( my $entry = $tix->Next ) {
+<tr class="<% ++$i%2 ? 'evenline' : 'oddline' %>">
+
 <td class="label collection-as-table">
-<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$key%></a>
-</td>
-<td class="value collection-as-table">
-<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$value%></a>
-</td>
+% my $key = $entry->LabelValue( $value_name ) || loc('(no value)');
+% my $entry_query = $entry->Query;
+% if ( $entry_query ) {
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |u %>&<% $base_query |hn %>"><% $key %></a>
 % } else {
-<td class="label collection-as-table"><% $key %></td>
-<td class="value collection-as-table"><% $value %></td>
+<% $key %>
 % }
+</td>
+
+% $total += my $value = $entry->RawValue( $count_name );
+<td class="value collection-as-table"><%$value%></td>
+
 </tr>
 % }
 
-%$i++;
-<tr class="<%$i%2 ? 'evenline' : 'oddline' %> total">
-<td class="label collection-as-table"><%loc('Total')%></td>
-<td class="value collection-as-table"><%$total||'0'%></td>
+% $i++;
+<tr class="<% $i%2 ? 'evenline' : 'oddline' %> total">
+<td class="label collection-as-table"><% loc('Total') %></td>
+<td class="value collection-as-table"><% $total || '' %></td>
 </tr>
 
 </table>
