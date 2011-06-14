@@ -101,7 +101,6 @@ which can be used with any queue.
 
 sub LimitToGlobal {
     my $self = shift;
-    my $queue_id = shift;
     $self->Limit(FIELD => 'Queue',
                  VALUE => "0",
                  OPERATOR => '='

@@ -66,13 +66,12 @@ $PrimaryTemplates->OrderBy(FIELD => 'Name');
 }
 
 my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
-$OtherTemplates->LimitToGlobal($DefaultQueue);
+$OtherTemplates->LimitToGlobal;
 $OtherTemplates->OrderBy(FIELD => 'Name');
 
 </%INIT>
 <%ARGS>
 $Queue => undef
 $Default => 'none'
-$DefaultQueue => undef
 $Name => 'Template'
 </%ARGS>
