@@ -102,6 +102,37 @@ sub ObjectType {
     return 'RT::Ticket';
 }
 
+sub Query {
+    my $self = shift;
+
+    my @parts;
+    foreach my $column ( $self->ColumnsList ) {
+        my $info = $self->ColumnInfo( $column );
+        next unless $info->{'TYPE'} eq 'grouping';
+
+        my $custom = $info->{'META'}{'Query'};
+        if ( $custom and my $code = $self->FindImplementationCode( $custom ) ) {
+            push @parts, $code->( $self, COLUMN => $column, %$info );
+        }
+        else {
+            my $field = join '.', grep $_, $info->{KEY}, $info->{SUBKEY};
+            my $value = $self->RawValue( $column );
+            my $op = '=';
+            if ( defined $value ) {
+                unless ( $value =~ /^\d+$/ ) {
+                    $value =~ s/(['\\])/\\$1/g;
+                    $value = "'$value'";
+                }
+            }
+            else {
+                ($op, $value) = ('IS', 'NULL');
+            }
+            push @parts, "$field $op $value";
+        }
+    }
+    return join ' AND ', grep defined && length, @parts;
+}
+
 sub FindImplementationCode {
     return RT::Report::Tickets->can('FindImplementationCode')->(@_);
 }
