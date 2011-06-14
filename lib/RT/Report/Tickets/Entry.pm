@@ -88,20 +88,8 @@ sub LabelValue {
     my $meta = $info->{'META'};
     return $raw unless $meta && $meta->{'Display'};
 
-    my $code;
-    unless ( ref $meta->{'Display'} ) {
-        $code = $self->can( $meta->{'Display'} );
-        unless ( $code ) {
-            $RT::Logger->error("No method ". $meta->{'Display'} );
-            return $raw;
-        }
-    }
-    elsif ( ref( $meta->{'Display'} ) eq 'CODE' ) {
-        $code = $meta->{'Display'};
-    }
-    else {
-        return $raw;
-    }
+    my $code = $self->FindImplementationCode( $meta->{'Display'} );
+    return $raw unless $code;
 
     return $code->( $self, %$info, VALUE => $raw );
 }
@@ -112,6 +100,10 @@ sub RawValue {
 
 sub ObjectType {
     return 'RT::Ticket';
+}
+
+sub FindImplementationCode {
+    return RT::Report::Tickets->can('FindImplementationCode')->(@_);
 }
 
 RT::Base->_ImportOverlays();

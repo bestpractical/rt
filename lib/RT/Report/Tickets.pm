@@ -275,14 +275,14 @@ sub Groupings {
         elsif ( ref( $meta->{'SubFields'} ) eq 'ARRAY' ) {
             push @fields, map { ("$field $_", "$field.$_") } @{ $meta->{'SubFields'} };
         }
-        elsif ( ref( $meta->{'SubFields'} ) eq 'CODE' ) {
-            push @fields, $meta->{'SubFields'}->(
-                $self,
-                \%args,
-            );
+        elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'} ) ) {
+            push @fields, $code->( $self, \%args );
         }
         else {
-            $RT::Logger->error("%GROUPINGS_META for $type has unsupported SubFields");
+            $RT::Logger->error(
+                "$type has unsupported SubFields."
+                ." Not an array, a method name or a code reference"
+            );
         }
     }
     return @fields;
@@ -307,11 +307,8 @@ sub IsValidGrouping {
     elsif ( ref( $meta->{'SubFields'} ) eq 'ARRAY' ) {
         return 1 if grep $_ eq $subkey, @{ $meta->{'SubFields'} };
     }
-    elsif ( ref( $meta->{'SubFields'} ) eq 'CODE' ) {
-        return 1 if grep $_ eq "$key.$subkey", $meta->{'SubFields'}->(
-            $self,
-            \%args,
-        );
+    elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'}, 'silent' ) ) {
+        return 1 if grep $_ eq "$key.$subkey", $code->( $self, \%args );
     }
     return 0;
 }
@@ -331,33 +328,20 @@ sub Label {
         return $self->CurrentUser->loc('(Incorrect data)');
     }
 
-    my $label = $info->{'META'}{'Label'};
-    unless ( $label ) {
-        my $res = '';
-        if ( $info->{'TYPE'} eq 'statistic' ) {
-            $res = $info->{'INFO'}[0];
-        }
-        else {
-            $res = join ' ', grep defined && length, @{ $info }{'KEY', 'SUBKEY'};
-        }
-        return $self->CurrentUser->loc( $res );
+    if ( $info->{'META'}{'Label'} ) {
+        my $code = $self->FindImplementationCode( $info->{'META'}{'Label'} );
+        return $self->CurrentUser->loc( $code->( $self, %$info ) )
+            if $code;
     }
 
-    my $code;
-    unless ( ref $label ) {
-        $code = $self->can( $label );
-        unless ( $code ) {
-            $RT::Logger->error("No method ". $label );
-            return $self->CurrentUser->loc('(Incorrect data)');
-        }
-    }
-    elsif ( ref( $label ) eq 'CODE' ) {
-        $code = $label;
+    my $res = '';
+    if ( $info->{'TYPE'} eq 'statistic' ) {
+        $res = $info->{'INFO'}[0];
     }
     else {
-        return $self->CurrentUser->loc('(Incorrect data)');
+        $res = join ' ', grep defined && length, @{ $info }{'KEY', 'SUBKEY'};
     }
-    return $self->CurrentUser->loc( $code->( $self, %$info ) );
+    return $self->CurrentUser->loc( $res );
 }
 
 sub ColumnInfo {
@@ -456,21 +440,8 @@ sub _FieldToFunction {
 
     return %args unless $meta->{'Function'};
 
-    my $code;
-    unless ( ref $meta->{'Function'} ) {
-        $code = $self->can( $meta->{'Function'} );
-        unless ( $code ) {
-            $RT::Logger->error("No method ". $meta->{'Function'} );
-            return ('FUNCTION' => 'NULL');
-        }
-    }
-    elsif ( ref( $meta->{'Function'} ) eq 'CODE' ) {
-        $code = $meta->{'Function'};
-    }
-    else {
-        $RT::Logger->error("%GROUPINGS_META for $args{FIELD} has unsupported Function");
-        return ('FUNCTION' => 'NULL');
-    }
+    my $code = $self->FindImplementationCode( $meta->{'Function'} );
+    return ('FUNCTION' => 'NULL') unless $code;
 
     return $code->( $self, %args );
 }
@@ -612,6 +583,35 @@ sub GenerateWatcherFunction {
     return %args;
 }
 
+sub FindImplementationCode {
+    my $self = shift;
+    my $value = shift;
+    my $silent = shift;
+
+    my $code;
+    unless ( $value ) {
+        $RT::Logger->error("Value is not defined. Should be method name or code reference")
+            unless $silent;
+        return undef;
+    }
+    elsif ( !ref $value ) {
+        $code = $self->can( $value );
+        unless ( $code ) {
+            $RT::Logger->error("No method $value in ". (ref $self || $self) ." class" )
+                unless $silent;
+            return undef;
+        }
+    }
+    elsif ( ref( $value ) eq 'CODE' ) {
+        $code = $value;
+    }
+    else {
+        $RT::Logger->error("$value is not method name or code reference")
+            unless $silent;
+        return undef;
+    }
+    return $code;
+}
 RT::Base->_ImportOverlays();
 
 1;
