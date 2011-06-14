@@ -135,6 +135,7 @@ our %GROUPINGS_META = (
             }
             return $raw;
         },
+        Sort => 'raw',
     },
     CustomField => {
         SubFields => sub {
@@ -388,12 +389,14 @@ sub SetupGroupings {
         $args{'INFO'} = $STATISTICS{ $e };
         $args{'META'} = $STATISTICS_META{ $args{'INFO'}[1] };
         push @res, $self->Column( %args );
-        $column_info{ $res[-1] } = \%args;
+        $args{'NAME'} = $res[-1];
+        $column_info{ $args{'NAME'} } = \%args;
     }
 
     foreach my $group_by ( @group_by ) {
         my $alias = $self->Column( %$group_by );
         $column_info{ $alias } = $group_by;
+        $group_by->{'NAME'} = $alias;
         push @res, $alias;
     }
 
@@ -506,6 +509,53 @@ sub AddEmptyRows {
             } );
             $self->AddRecord($record);
         }
+    }
+}
+
+sub SortEntries {
+    my $self = shift;
+
+    # XXX: at the begining let's support only grouping by one column
+    my ($group_by) =
+        grep $_->{'TYPE'} eq 'grouping',
+        map $self->ColumnInfo($_),
+        $self->ColumnsList;
+    return unless $group_by;
+
+    my $order = $group_by->{'META'}{Sort} || 'label';
+    if ( $order eq 'label' ) {
+        $self->{'items'} = [
+            map $_->[0],
+            sort { $a->[1] cmp $b->[1] }
+            map [ $_, $_->LabelValue( $group_by->{'NAME'} ) ],
+            @{ $self->{'items'} || [] }
+        ];
+    }
+    elsif ( $order eq 'numeric label' ) {
+        $self->{'items'} = [
+            map $_->[0],
+            sort { $a->[1] <=> $b->[1] }
+            map [ $_, $_->LabelValue( $group_by->{'NAME'} ) ],
+            @{ $self->{'items'} || [] }
+        ];
+    }
+    elsif ( $order eq 'raw' ) {
+        $self->{'items'} = [
+            map $_->[0],
+            sort { $a->[1] cmp $b->[1] }
+            map [ $_, $_->RawValue( $group_by->{'NAME'} ) ],
+            @{ $self->{'items'} || [] }
+        ];
+    }
+    elsif ( $order eq 'numeric raw' ) {
+        $self->{'items'} = [
+            map $_->[0],
+            sort { $a->[1] <=> $b->[1] }
+            map [ $_, $_->RawValue( $group_by->{'NAME'} ) ],
+            @{ $self->{'items'} || [] }
+        ];
+    } else {
+        $RT::Logger->error("Unknown sorting function '$order'");
     }
 }
 
