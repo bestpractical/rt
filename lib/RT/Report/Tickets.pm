@@ -367,6 +367,11 @@ sub ColumnInfo {
     return $self->{'column_info'}{$column};
 }
 
+sub ColumnsList {
+    my $self = shift;
+    return keys %{ $self->{'column_info'} || {} };
+}
+
 sub SetupGroupings {
     my $self = shift;
     my %args = (

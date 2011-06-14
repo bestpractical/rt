@@ -63,6 +63,11 @@ sub ColumnInfo {
     return $self->{'column_info'}{$column};
 }
 
+sub ColumnsList {
+    my $self = shift;
+    return keys %{ $self->{'column_info'} || {} };
+}
+
 
 =head2 LabelValue
 
