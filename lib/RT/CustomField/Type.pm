@@ -74,14 +74,7 @@ sub SearchBuilderUIArguments {
     my ($self, $cf) = @_;
     my %line;
 
-    if ($cf->Type =~ /^Date(Time)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectDateRelation',
-            Arguments => {},
-        };
-    }
-    elsif ($cf->Type =~ /^IPAddress(Range)?$/ ) {
+    if ($cf->Type =~ /^IPAddress(Range)?$/ ) {
         $line{'Op'} = {
             Type => 'component',
             Path => '/Elements/SelectIPRelation',
@@ -99,21 +92,11 @@ sub SearchBuilderUIArguments {
         };
     }
 
-    # Value
-    if ($cf->Type =~ /^Date(Time)?$/) {
-        my $is_datetime = $1 ? 1 : 0;
-        $line{'Value'} = {
-            Type => 'component',
-            Path => '/Elements/SelectDate',
-            Arguments => { $is_datetime ? (ShowTime => 1) : (ShowTime => 0), },
-        };
-    } else {
-        $line{'Value'} = {
-            Type => 'component',
-            Path => '/Elements/SelectCustomFieldValue',
-            Arguments => { CustomField => $cf },
-        };
-    }
+    $line{'Value'} = {
+        Type => 'component',
+        Path => '/Elements/SelectCustomFieldValue',
+        Arguments => { CustomField => $cf },
+    };
 
     return %line;
 }

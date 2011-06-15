@@ -59,4 +59,20 @@ sub Limit {
 
 }
 
+sub SearchBuilderUIArguments {
+    my ($self, $cf) = @_;
+
+    return (
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectDateRelation',
+            Arguments => {},
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectDate',
+            Arguments => { ShowTime => 1 },
+        });
+}
+
 1;
