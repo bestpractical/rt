@@ -70,4 +70,52 @@ sub Limit {
     return;
 }
 
+sub SearchBuilderUIArguments {
+    my ($self, $cf) = @_;
+    my %line;
+
+    if ($cf->Type =~ /^Date(Time)?$/ ) {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectDateRelation',
+            Arguments => {},
+        };
+    }
+    elsif ($cf->Type =~ /^IPAddress(Range)?$/ ) {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectIPRelation',
+            Arguments => {},
+        };
+    } else {
+        $line{'Op'} = {
+            Type => 'component',
+            Path => '/Elements/SelectCustomFieldOperator',
+            Arguments => { True => $cf->loc("is"),
+                           False => $cf->loc("isn't"),
+                           TrueVal=> '=',
+                           FalseVal => '!=',
+                         },
+        };
+    }
+
+    # Value
+    if ($cf->Type =~ /^Date(Time)?$/) {
+        my $is_datetime = $1 ? 1 : 0;
+        $line{'Value'} = {
+            Type => 'component',
+            Path => '/Elements/SelectDate',
+            Arguments => { $is_datetime ? (ShowTime => 1) : (ShowTime => 0), },
+        };
+    } else {
+        $line{'Value'} = {
+            Type => 'component',
+            Path => '/Elements/SelectCustomFieldValue',
+            Arguments => { CustomField => $cf },
+        };
+    }
+
+    return %line;
+}
+
 1;
