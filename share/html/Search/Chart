@@ -76,17 +76,21 @@ my ($count_name, $value_name) = $tix->SetupGroupings(
     Function => $ChartFunction,
 );
 
-my %data;
+$tix->SortEntries;
+
+my @data = ([],[]);
 my $max_value = 0;
 my $max_key_length = 0;
 while ( my $entry = $tix->Next ) {
     my $key = $entry->LabelValue($value_name);
-    
     my $value = $entry->RawValue( $count_name );
     if ($chart_class eq 'GD::Graph::pie') {
         $key .= ' - '. $value;
     }
-    $data{ $key } = $value;
+
+    push @{ $data[0] }, $key;
+    push @{ $data[1] }, $value;
+
     $max_value = $value if $max_value < $value;
     $max_key_length = length $key if $max_key_length < length $key;
 }
@@ -128,7 +132,7 @@ $chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
 $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 
 if ($chart_class eq "GD::Graph::bars") {
-    my $count = keys %data;
+    my $count = @{ $data[0] };
     $chart->set(
         x_label => $tix->Label( $value_name ),
         y_label => $tix->Label( $count_name ),
@@ -164,7 +168,7 @@ $chart->{dclrs} = [
     };
 }
 
-my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
+my $plot = $chart->plot( \@data ) or die $chart->error;
 $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 </%init>
 
