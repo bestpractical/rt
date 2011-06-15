@@ -72,33 +72,22 @@ sub Limit {
 
 sub SearchBuilderUIArguments {
     my ($self, $cf) = @_;
-    my %line;
 
-    if ($cf->Type =~ /^IPAddress(Range)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectIPRelation',
-            Arguments => {},
-        };
-    } else {
-        $line{'Op'} = {
+    return (
+        Op => {
             Type => 'component',
             Path => '/Elements/SelectCustomFieldOperator',
             Arguments => { True => $cf->loc("is"),
                            False => $cf->loc("isn't"),
                            TrueVal=> '=',
                            FalseVal => '!=',
-                         },
-        };
-    }
-
-    $line{'Value'} = {
-        Type => 'component',
-        Path => '/Elements/SelectCustomFieldValue',
-        Arguments => { CustomField => $cf },
-    };
-
-    return %line;
+                       },
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectCustomFieldValue',
+            Arguments => { CustomField => $cf },
+        });
 }
 
 1;

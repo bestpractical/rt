@@ -101,4 +101,14 @@ sub ParseIP {
     return;
 }
 
+sub SearchBuilderUIArguments {
+    my ($self, $cf) = @_;
+    return (
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectIPRelation',
+            Arguments => {},
+        });
+}
+
 1;
