@@ -82,16 +82,19 @@ sub LabelValue {
     my $name = shift;
 
     my $raw = $self->RawValue( $name, @_ );
-
     my $info = $self->ColumnInfo( $name );
-
     my $meta = $info->{'META'};
-    return $raw unless $meta && $meta->{'Display'};
 
-    my $code = $self->FindImplementationCode( $meta->{'Display'} );
-    return $raw unless $code;
+    if (
+        $meta and $meta->{'Display'}
+        and my $code = $self->FindImplementationCode( $meta->{'Display'} )
+    ) {
+        return $code->( $self, %$info, VALUE => $raw );
+    }
 
-    return $code->( $self, %$info, VALUE => $raw );
+    return $self->loc('(no value)') unless defined $raw && length $raw;
+    return $self->loc($raw) if $info->{'META'}{'Localize'};
+    return $raw;
 }
 
 sub RawValue {

@@ -80,14 +80,11 @@ my %data;
 my $max_value = 0;
 my $max_key_length = 0;
 while ( my $entry = $tix->Next ) {
-    my $key = $entry->LabelValue($value_name)
-        || '(no value)';
+    my $key = $entry->LabelValue($value_name);
     
-    my $value = $entry->__Value( $count_name );
+    my $value = $entry->RawValue( $count_name );
     if ($chart_class eq 'GD::Graph::pie') {
-        $key = loc($key) ." - ". $value;
-    } else {
-        $key = loc($key);
+        $key .= ' - '. $value;
     }
     $data{ $key } = $value;
     $max_value = $value if $max_value < $value;

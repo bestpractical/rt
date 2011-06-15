@@ -97,7 +97,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 <tr class="<% ++$i%2 ? 'evenline' : 'oddline' %>">
 
 <td class="label collection-as-table">
-% my $key = $entry->LabelValue( $value_name ) || loc('(no value)');
+% my $key = $entry->LabelValue( $value_name );
 % my $entry_query = $entry->Query;
 % if ( $entry_query ) {
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |u %>&<% $base_query |hn %>"><% $key %></a>

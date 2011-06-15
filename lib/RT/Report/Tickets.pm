@@ -90,6 +90,7 @@ our %GROUPINGS_META = (
             $queue->Load( $args{'VALUE'} );
             return $queue->Name;
         },
+        Localize => 1,
     },
     User => {
         SubFields => [qw(
@@ -128,10 +129,10 @@ our %GROUPINGS_META = (
             return $raw unless defined $raw;
 
             if ( $args{'SUBKEY'} eq 'DayOfWeek' ) {
-                return $RT::Date::DAYS_OF_WEEK[ int $raw ];
+                return $self->loc($RT::Date::DAYS_OF_WEEK[ int $raw ]);
             }
             elsif ( $args{'SUBKEY'} eq 'Month' ) {
-                return $RT::Date::MONTHS[ int($raw) - 1 ];
+                return $self->loc($RT::Date::MONTHS[ int($raw) - 1 ]);
             }
             return $raw;
         },
@@ -184,6 +185,7 @@ our %GROUPINGS_META = (
         },
     },
     Enum => {
+        Localize => 1,
     },
 );
 
@@ -478,7 +480,7 @@ sub Next {
 
 sub NewItem {
     my $self = shift;
-    my $res = RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
+    my $res = RT::Report::Tickets::Entry->new($self->CurrentUser);
     $res->{'column_info'} = $self->{'column_info'};
     return $res;
 }
