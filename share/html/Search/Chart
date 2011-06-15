@@ -91,31 +91,15 @@ while ( my $entry = $tix->Next ) {
     $max_key_length = length $key if $max_key_length < length $key;
 }
 
-unless (keys %data) {
-    $data{''} = 0;
-}
-
-
-my $chart = $chart_class->new( 600 => 400 );
-$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
 my %font_config = RT->Config->Get('ChartFont');
 my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
-  || $font_config{'others'};
-$chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
-$chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
-$chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
-$chart->set_y_label_font( $font, 14 ) if $chart->can('set_y_label_font');
-$chart->set_label_font( $font, 14 ) if $chart->can('set_label_font');
-$chart->set_x_axis_font( $font, 12 ) if $chart->can('set_x_axis_font');
-$chart->set_y_axis_font( $font, 12 ) if $chart->can('set_y_axis_font');
-$chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
-$chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
+    || $font_config{'others'};
 
 # Pie charts don't like having no input, so we show a special image
 # that indicates an error message. Because this is used in an <img>
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
-if ($tix->Count == 0) {
+unless ( $tix->Count ) {
     my $plot = GD::Image->new(600 => 400);
     $plot->colorAllocate(255, 255, 255); # background
     my $black = $plot->colorAllocate(0, 0, 0);
@@ -130,6 +114,18 @@ if ($tix->Count == 0) {
 
     $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 }
+
+my $chart = $chart_class->new( 600 => 400 );
+$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
+$chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
+$chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
+$chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
+$chart->set_y_label_font( $font, 14 ) if $chart->can('set_y_label_font');
+$chart->set_label_font( $font, 14 ) if $chart->can('set_label_font');
+$chart->set_x_axis_font( $font, 12 ) if $chart->can('set_x_axis_font');
+$chart->set_y_axis_font( $font, 12 ) if $chart->can('set_y_axis_font');
+$chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
+$chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 
 if ($chart_class eq "GD::Graph::bars") {
     my $count = keys %data;
