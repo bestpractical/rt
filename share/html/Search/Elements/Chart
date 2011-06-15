@@ -49,7 +49,7 @@
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
 $ChartStyle => 'bars'
-$ChartFunction => 'COUNT id'
+@ChartFunction => 'COUNT'
 </%args>
 <%init>
 use RT::Report::Tickets;
@@ -60,10 +60,10 @@ my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 $PrimaryGroupBy = 'Queue'
     unless $tix->IsValidGrouping( Query => $Query, GroupBy => $PrimaryGroupBy );
 
-my ($count_name, $value_name) = $tix->SetupGroupings(
+my %columns = $tix->SetupGroupings(
     Query => $Query,
     GroupBy => $PrimaryGroupBy,
-    Function => $ChartFunction,
+    Function => \@ChartFunction,
 );
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
@@ -79,8 +79,9 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 <table class="collection-as-table chart">
 
 <tr>
-<th class="collection-as-table"><% $tix->Label( $value_name ) %></th>
-<th class="collection-as-table"><% $tix->Label( $count_name ) %></th>
+% foreach my $column ( @{ $columns{'Groups'} }, @{ $columns{'Functions'} } ) {
+<th class="collection-as-table"><% $tix->Label( $column ) %></th>
+% }
 </tr>
 
 % my $base_query = $m->comp('/Elements/QueryString',
@@ -92,30 +93,37 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 
 % $tix->SortEntries;
 
-% my ($i,$total) = (0, 0);
+% my $i = 0;
+% my %total = map { $_ => 0 } @{ $columns{Functions} };
 % while ( my $entry = $tix->Next ) {
 <tr class="<% ++$i%2 ? 'evenline' : 'oddline' %>">
 
-<td class="label collection-as-table">
-% my $key = $entry->LabelValue( $value_name );
+% foreach my $column ( @{ $columns{'Groups'} } ) {
+<td class="label collection-as-table"><% $entry->LabelValue( $column ) %></td>
+% }
+
 % my $entry_query = $entry->Query;
+
+% foreach my $column ( @{ $columns{'Functions'} } ) {
+<td class="value collection-as-table">
+% $total{ $column } += my $value = $entry->RawValue( $column );
 % if ( $entry_query ) {
-<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |u %>&<% $base_query |hn %>"><% $key %></a>
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |un %>&<% $base_query %>"><% $value %></a>
 % } else {
-<% $key %>
+<% $value %>
 % }
 </td>
-
-% $total += my $value = $entry->RawValue( $count_name );
-<td class="value collection-as-table"><%$value%></td>
+% }
 
 </tr>
 % }
 
 % $i++;
 <tr class="<% $i%2 ? 'evenline' : 'oddline' %> total">
-<td class="label collection-as-table"><% loc('Total') %></td>
-<td class="value collection-as-table"><% $total || '' %></td>
+<td class="label collection-as-table" colspan="<% scalar @{ $columns{'Groups'} } %>"><% loc('Total') %></td>
+% foreach my $column ( @{ $columns{'Functions'} } ) {
+<td class="value collection-as-table"><% $total{ $column } %></td>
+% }
 </tr>
 
 </table>

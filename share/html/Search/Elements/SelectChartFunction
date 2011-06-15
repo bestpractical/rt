@@ -46,6 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<% $Name %>">
+% if ( $ShowEmpty ) {
+<option value="">&nbsp;</option>
+% }
 % while ( my ($value, $display) = splice @functions, 0, 2 ) {
 <option value="<% $value %>"<% $value eq $Default ? qq[ selected="selected"] : '' |n %>><% loc( $display ) %></option>
 % }
@@ -53,7 +56,9 @@
 <%ARGS>
 $Name => 'ChartFunction'
 $Default => 'COUNT'
+$ShowEmpty => 0
 </%ARGS>
 <%INIT>
 my @functions = RT::Report::Tickets->Statistics;
+$Default = '' unless defined $Default;
 </%INIT>

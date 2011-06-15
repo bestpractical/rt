@@ -49,7 +49,7 @@
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
 $ChartStyle => 'bars'
-$ChartFunction => 'COUNT id'
+@ChartFunction => 'COUNT'
 </%args>
 <%init>
 my $chart_class;
@@ -70,10 +70,10 @@ my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 $PrimaryGroupBy = 'Queue'
     unless $tix->IsValidGrouping( Query => $Query, GroupBy => $PrimaryGroupBy );
 
-my ($count_name, $value_name) = $tix->SetupGroupings(
+my %columns = $tix->SetupGroupings(
     Query => $Query,
     GroupBy => $PrimaryGroupBy,
-    Function => $ChartFunction,
+    Function => (grep defined && length, @ChartFunction)[0],
 );
 
 $tix->SortEntries;
@@ -82,8 +82,8 @@ my @data = ([],[]);
 my $max_value = 0;
 my $max_key_length = 0;
 while ( my $entry = $tix->Next ) {
-    my $key = $entry->LabelValue($value_name);
-    my $value = $entry->RawValue( $count_name );
+    my $key = join ' - ', map $entry->LabelValue( $_ ), @{ $columns{'Groups'} };
+    my $value = $entry->RawValue( $columns{'Functions'}[0] );
     if ($chart_class eq 'GD::Graph::pie') {
         $key .= ' - '. $value;
     }
@@ -134,8 +134,8 @@ $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 if ($chart_class eq "GD::Graph::bars") {
     my $count = @{ $data[0] };
     $chart->set(
-        x_label => $tix->Label( $value_name ),
-        y_label => $tix->Label( $count_name ),
+        x_label => join( ' - ', map $tix->Label( $_ ), @{ $columns{'Groups'} } ),
+        y_label => $tix->Label( $columns{'Functions'}[0] ),
         show_values => 1,
         x_label_position => 0.6,
         y_label_position => 0.6,

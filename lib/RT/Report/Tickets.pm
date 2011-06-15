@@ -372,7 +372,8 @@ sub SetupGroupings {
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
-    my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
+    my @group_by = grep defined && length,
+        ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     foreach my $e ( @group_by ) {
         my ($key, $subkey) = split /\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
@@ -382,29 +383,30 @@ sub SetupGroupings {
     }
     $self->GroupBy( @group_by );
 
-    my (@res, %column_info);
+    my %res = (Groups => [], Functions => []);
+    my %column_info;
 
-    my @function = ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
+    foreach my $group_by ( @group_by ) {
+        $group_by->{'NAME'} = $self->Column( %$group_by );
+        $column_info{ $group_by->{'NAME'} } = $group_by;
+        push @{ $res{'Groups'} }, $group_by->{'NAME'};
+    }
+
+    my @function = grep defined && length,
+        ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
     foreach my $e ( @function ) {
         my %args = $self->_StatsToFunction( $e );
         $args{'TYPE'} = 'statistic';
         $args{'INFO'} = $STATISTICS{ $e };
         $args{'META'} = $STATISTICS_META{ $args{'INFO'}[1] };
-        push @res, $self->Column( %args );
-        $args{'NAME'} = $res[-1];
+        $args{'NAME'} = $self->Column( %args );
+        push @{ $res{'Functions'} }, $args{'NAME'};
         $column_info{ $args{'NAME'} } = \%args;
-    }
-
-    foreach my $group_by ( @group_by ) {
-        my $alias = $self->Column( %$group_by );
-        $column_info{ $alias } = $group_by;
-        $group_by->{'NAME'} = $alias;
-        push @res, $alias;
     }
 
     $self->{'column_info'} = \%column_info;
 
-    return @res;
+    return %res;
 }
 
 =head2 _DoSearch
