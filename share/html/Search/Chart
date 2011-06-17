@@ -73,6 +73,7 @@ $PrimaryGroupBy = 'Queue'
 my %columns = $tix->SetupGroupings(
     Query => $Query,
     GroupBy => $PrimaryGroupBy,
+    # TODO: We don't picture more than one function at the moment
     Function => (grep defined && length, @ChartFunction)[0],
 );
 
