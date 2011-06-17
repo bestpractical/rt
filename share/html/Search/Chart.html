@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$PrimaryGroupBy => 'Queue'
+@GroupBy => 'Queue'
 $ChartStyle => 'bars'
 @ChartFunction => ('COUNT')
 $Description => undef
@@ -54,26 +54,11 @@ $Description => undef
 <%init>
 $ARGS{Query} ||= 'id > 0';
 
-# FIXME: should be factored with RT::Report::Tickets::Label :(
-my $PrimaryGroupByLabel;
-if ( $PrimaryGroupBy =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
-    my $cf = $1;
-    if ( $cf =~ /\D/ ) {
-        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $cf );
-    } else {
-        my $obj = RT::CustomField->new( $session{'CurrentUser'} );
-        $obj->Load( $cf );
-        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $obj->Name );
-    }
-} else {
-    $PrimaryGroupByLabel = loc( $PrimaryGroupBy );
-}
-
-my $title = loc( "Search results grouped by [_1]", $PrimaryGroupByLabel );
+my $title = loc( "Grouped search results");
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query PrimaryGroupBy ChartStyle)] );
+    SearchFields => [qw(Query GroupBy ChartStyle ChartFunction)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
@@ -127,9 +112,21 @@ my %query;
 
 <&| /Widgets/TitleBox, title => loc('Properties') &>
 <% loc('Group by') %> <& Elements/SelectGroupBy,
-    Name => 'PrimaryGroupBy',
+    Name => 'GroupBy',
     Query => $ARGS{Query},
-    Default => $PrimaryGroupBy
+    Default => $GroupBy[0],
+&>
+<& Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[1],
+    ShowEmpty => 1,
+&>
+<& Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[2],
+    ShowEmpty => 1,
 &><br />
 
 <% loc('Count') %> <& Elements/SelectChartFunction, Default => $ChartFunction[0] &>

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Query => "id > 0"
-$PrimaryGroupBy => 'Queue'
+@GroupBy => 'Queue'
 $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
 </%args>
@@ -67,12 +67,15 @@ if ($ChartStyle eq 'pie') {
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-$PrimaryGroupBy = 'Queue'
-    unless $tix->IsValidGrouping( Query => $Query, GroupBy => $PrimaryGroupBy );
+foreach my $e ( splice @GroupBy ) {
+    next unless defined $e && length $e;
+    next unless $tix->IsValidGrouping( Query => $Query, GroupBy => $e );
+    push @GroupBy, $e;
+}
 
 my %columns = $tix->SetupGroupings(
     Query => $Query,
-    GroupBy => $PrimaryGroupBy,
+    GroupBy => \@GroupBy,
     # TODO: We don't picture more than one function at the moment
     Function => (grep defined && length, @ChartFunction)[0],
 );

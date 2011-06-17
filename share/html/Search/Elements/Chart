@@ -47,26 +47,28 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Query => "id > 0"
-$PrimaryGroupBy => 'Queue'
+@GroupBy => 'Queue'
 $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
 </%args>
 <%init>
 use RT::Report::Tickets;
-$PrimaryGroupBy ||= 'Queue'; # make sure PrimaryGroupBy is not undef
 
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-$PrimaryGroupBy = 'Queue'
-    unless $tix->IsValidGrouping( Query => $Query, GroupBy => $PrimaryGroupBy );
+foreach my $e ( splice @GroupBy ) {
+    next unless defined $e && length $e;
+    next unless $tix->IsValidGrouping( Query => $Query, GroupBy => $e );
+    push @GroupBy, $e;
+}
 
 my %columns = $tix->SetupGroupings(
     Query => $Query,
-    GroupBy => $PrimaryGroupBy,
+    GroupBy => \@GroupBy,
     Function => \@ChartFunction,
 );
 
-my $query_string = $m->comp('/Elements/QueryString', %ARGS);
+my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
 <div class="chart-wrapper">
 <span class="chart image">

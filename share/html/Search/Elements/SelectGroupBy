@@ -49,11 +49,14 @@
 $Name => 'GroupBy'
 $Default => 'Status'
 $Query   => ''
+$ShowEmpty => 0
 </%args>
-<select id="<% $Name %>" name="<% $Name %>">
-% while (@options) {
-% my ($text, $value) = (shift @options, shift @options);
-<option value="<% $value %>" <% $value eq $Default ? 'selected="selected"' : '' |n%>><% $text %></option>
+<select name="<% $Name %>">
+% if ( $ShowEmpty ) {
+<option value="">&nbsp;</option>
+% }
+% while ( my ($text, $value) = splice @options, 0, 2 ) {
+<option value="<% $value %>" <% $value eq ($Default||'') ? 'selected="selected"' : '' |n %>><% $text %></option>
 % }
 </select>
 <%init>
