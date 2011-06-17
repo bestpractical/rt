@@ -60,5 +60,5 @@ for my $key (sort keys %ARGS) {
     }
 }
 
-return join '&', sort(@params);
+return join '&', @params;
 </%INIT>
