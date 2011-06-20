@@ -2259,47 +2259,47 @@ Set(%Lifecycles,
         },
         actions => [
             'new -> open'      => {
-                label  => 'Open It', # loc_pair
+                label  => 'Open It', # loc
                 update => 'Respond',
             },
             'new -> resolved'  => {
-                label  => 'Resolve', # loc_pair
+                label  => 'Resolve', # loc
                 update => 'Comment',
             },
             'new -> rejected'  => {
-                label  => 'Reject', # loc_pair
+                label  => 'Reject', # loc
                 update => 'Respond',
             },
             'new -> deleted'   => {
-                label  => 'Delete', # loc_pair
+                label  => 'Delete', # loc
             },
 
             'open -> stalled'  => {
-                label  => 'Stall', # loc_pair
+                label  => 'Stall', # loc
                 update => 'Comment',
             },
             'open -> resolved' => {
-                label  => 'Resolve', # loc_pair
+                label  => 'Resolve', # loc
                 update => 'Comment',
             },
             'open -> rejected' => {
-                label  => 'Reject', # loc_pair
+                label  => 'Reject', # loc
                 update => 'Respond',
             },
 
             'stalled -> open'  => {
-                label  => 'Open It', # loc_pair
+                label  => 'Open It', # loc
             },
             'resolved -> open' => {
-                label  => 'Re-open', # loc_pair
+                label  => 'Re-open', # loc
                 update => 'Comment',
             },
             'rejected -> open' => {
-                label  => 'Re-open', # loc_pair
+                label  => 'Re-open', # loc
                 update => 'Comment',
             },
             'deleted -> open'  => {
-                label  => 'Undelete', # loc_pair
+                label  => 'Undelete', # loc
             },
         ],
     },
@@ -2333,47 +2333,47 @@ Set(%Lifecycles,
         },
         actions => [
             'new -> open'      => {
-                label  => 'Open It', # loc_pair
+                label  => 'Open It', # loc
                 update => 'Respond',
             },
             'new -> resolved'  => {
-                label  => 'Resolve', # loc_pair
+                label  => 'Resolve', # loc
                 update => 'Comment',
             },
             'new -> rejected'  => {
-                label  => 'Reject', # loc_pair
+                label  => 'Reject', # loc
                 update => 'Respond',
             },
             'new -> deleted'   => {
-                label  => 'Delete', # loc_pair
+                label  => 'Delete', # loc
             },
 
             'open -> stalled'  => {
-                label  => 'Stall', # loc_pair
+                label  => 'Stall', # loc
                 update => 'Comment',
             },
             'open -> resolved' => {
-                label  => 'Resolve', # loc_pair
+                label  => 'Resolve', # loc
                 update => 'Comment',
             },
             'open -> rejected' => {
-                label  => 'Reject', # loc_pair
+                label  => 'Reject', # loc
                 update => 'Respond',
             },
 
             'stalled -> open'  => {
-                label  => 'Open It', # loc_pair
+                label  => 'Open It', # loc
             },
             'resolved -> open' => {
-                label  => 'Re-open', # loc_pair
+                label  => 'Re-open', # loc
                 update => 'Comment',
             },
             'rejected -> open' => {
-                label  => 'Re-open', # loc_pair
+                label  => 'Re-open', # loc
                 update => 'Comment',
             },
             'deleted -> open'  => {
-                label  => 'Undelete', # loc_pair
+                label  => 'Undelete', # loc
             },
         ],
     },
