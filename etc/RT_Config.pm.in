@@ -835,7 +835,7 @@ Set(@CustomFieldValuesSources, ());
 
 =item C<$CanonicalizeRedirectURLs>
 
-Set C<$CanonicalizeRedirectURLs> to 1 to use $C<WebURL> when
+Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
 redirecting rather than the one we get from C<%ENV>.
 
 If you use RT behind a reverse proxy, you almost certainly want to
@@ -1802,7 +1802,7 @@ Set($LogoutRefresh, 1);
 
 =item C<$WebSecureCookies>
 
-By default, RT's session cookie isn't marked as "secure" Some web
+By default, RT's session cookie isn't marked as "secure". Some web
 browsers will treat secure cookies more carefully than non-secure
 ones, being careful not to write them to disk, only sending them over
 an SSL secured connection, and so on. To enable this behavior, set
