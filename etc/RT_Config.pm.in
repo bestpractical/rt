@@ -2260,19 +2260,49 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => { label => 'Open It',  update => 'Respond' },
-            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
-            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
-            'new -> deleted'   => { label => 'Delete'                        },
+            'new -> open'      => {
+                label  => 'Open It', # loc
+                update => 'Respond',
+            },
+            'new -> resolved'  => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'new -> rejected'  => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
+            'new -> deleted'   => {
+                label  => 'Delete', # loc
+            },
 
-            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
-            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
-            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
+            'open -> stalled'  => {
+                label  => 'Stall', # loc
+                update => 'Comment',
+            },
+            'open -> resolved' => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'open -> rejected' => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
 
-            'stalled -> open'  => { label => 'Open It'                       },
-            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
-            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
-            'deleted -> open'  => { label => 'Undelete'                      },
+            'stalled -> open'  => {
+                label  => 'Open It', # loc
+            },
+            'resolved -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'rejected -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'deleted -> open'  => {
+                label  => 'Undelete', # loc
+            },
         ],
     },
 # don't change lifecyle of the approvals, they are not capable to deal with
@@ -2304,19 +2334,49 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => { label => 'Open It',  update => 'Respond' },
-            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
-            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
-            'new -> deleted'   => { label => 'Delete'                        },
+            'new -> open'      => {
+                label  => 'Open It', # loc
+                update => 'Respond',
+            },
+            'new -> resolved'  => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'new -> rejected'  => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
+            'new -> deleted'   => {
+                label  => 'Delete', # loc
+            },
 
-            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
-            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
-            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
+            'open -> stalled'  => {
+                label  => 'Stall', # loc
+                update => 'Comment',
+            },
+            'open -> resolved' => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'open -> rejected' => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
 
-            'stalled -> open'  => { label => 'Open It'                       },
-            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
-            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
-            'deleted -> open'  => { label => 'Undelete'                      },
+            'stalled -> open'  => {
+                label  => 'Open It', # loc
+            },
+            'resolved -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'rejected -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'deleted -> open'  => {
+                label  => 'Undelete', # loc
+            },
         ],
     },
 );
