@@ -277,7 +277,16 @@ function ReplaceAllTextareas(encoded) {
         if (jQuery(textArea).hasClass("messagebox")) {
             // Turn the original plain text content into HTML
             if (encoded == 0) {
-                textArea.value = textToHTML(textArea.value);
+                // Chrome has a weird back/forward problem:
+                // it does the convertion on the already converted value
+                // the nonstandard .html() helps avoiding this
+                // see also #17707
+                if ( sAgent.match(/chrome/i) ) {
+                    jQuery(textArea).html(textToHTML(textArea.value));
+                }
+                else {
+                    textArea.value = textToHTML(textArea.value);
+                }
             }
             // For this javascript
             var CKeditorEncoded = document.createElement('input');
