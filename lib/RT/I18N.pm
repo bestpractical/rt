@@ -245,21 +245,11 @@ sub SetMIMEEntityToEncoding {
         my $string = $body->as_string or return;
 
         # {{{ Convert the body
-        eval {
-            $RT::Logger->debug( "Converting '$charset' to '$enc' for " . $head->mime_type . " - " . ( $head->get('subject') || 'Subjectless message' ) );
+        $RT::Logger->debug( "Converting '$charset' to '$enc' for " . $head->mime_type . " - " . ( $head->get('subject') || 'Subjectless message' ) );
 
-            # NOTE:: see the comments at the end of the sub.
-            Encode::_utf8_off( $string);
-            Encode::from_to( $string, $charset => $enc );
-        };
-
-        if ($@) {
-            $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-            eval { Encode::from_to( $string, 'iso-8859-1' => $enc ) };
-            if ($@) {
-                $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-            }
-        }
+        # NOTE:: see the comments at the end of the sub.
+        Encode::_utf8_off( $string);
+        Encode::from_to( $string, $charset => $enc );
 
         # }}}
 
@@ -341,13 +331,7 @@ sub DecodeMIMEWordsToEncoding {
 
         # now we have got a decoded subject, try to convert into the encoding
         unless ( $charset eq $to_charset ) {
-            my $orig_str = $enc_str;
-            eval { Encode::from_to( $enc_str, $charset, $to_charset ) };
-            if ($@) {
-                $enc_str = $orig_str;
-                $charset = _GuessCharset( $enc_str );
-                Encode::from_to( $enc_str, $charset, $to_charset );
-            }
+            Encode::from_to( $enc_str, $charset, $to_charset );
         }
 
         # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
@@ -496,18 +480,8 @@ sub SetMIMEHeadToEncoding {
         foreach my $value (@values) {
             if ( $charset ne $enc ) {
 
-                eval {
-                    Encode::_utf8_off($value);
-                    Encode::from_to( $value, $charset => $enc );
-                };
-                if ($@) {
-                    $RT::Logger->error( "Encoding error: " . $@
-                                       . " defaulting to ISO-8859-1 -> UTF-8" );
-                    eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
-                    if ($@) {
-                        $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-                    }
-                }
+                Encode::_utf8_off($value);
+                Encode::from_to( $value, $charset => $enc );
             }
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
                 unless $preserve_words;
