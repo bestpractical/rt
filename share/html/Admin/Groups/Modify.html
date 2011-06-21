@@ -105,11 +105,12 @@ if ($Create) {
 } else {
     if ($id eq 'new' ) {
 	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
-        unless ($create_id) {
-            Abort (loc("Group could not be created: [_1]", $create_msg));
+        if ($create_id) {
+            $id = $Group->Id;
+            push @results, $create_msg;
+        } else {
+            push @results, loc("Group could not be created: [_1]", $create_msg);
         }
-	$id = $Group->Id;
-        push @results, $create_msg;
     } else {
 	$Group->Load($id) || Abort('Could not load group');
     }
