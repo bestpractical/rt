@@ -63,11 +63,11 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name||''%>" /></td>
+<td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
 </tr>
 <tr>
 <td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||''%>" size="60" /></td>
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
 </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
@@ -149,7 +149,7 @@ if (defined $Enabled && $Enabled == 1) {
 } else {
     $Disabled = 1;
 }
-if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
+if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
     push @results, $msg;
 }
