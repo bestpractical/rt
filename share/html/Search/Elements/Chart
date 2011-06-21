@@ -54,15 +54,15 @@ $ChartStyle => 'bars'
 <%init>
 use RT::Report::Tickets;
 
-my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
 foreach my $e ( splice @GroupBy ) {
     next unless defined $e && length $e;
-    next unless $tix->IsValidGrouping( Query => $Query, GroupBy => $e );
+    next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
     push @GroupBy, $e;
 }
 
-my %columns = $tix->SetupGroupings(
+my %columns = $report->SetupGroupings(
     Query => $Query,
     GroupBy => \@GroupBy,
     Function => \@ChartFunction,
@@ -82,7 +82,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 
 <tr>
 % foreach my $column ( @{ $columns{'Groups'} }, @{ $columns{'Functions'} } ) {
-<th class="collection-as-table"><% $tix->Label( $column ) %></th>
+<th class="collection-as-table"><% $report->Label( $column ) %></th>
 % }
 </tr>
 
@@ -93,11 +93,11 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 %     Order   => $ARGS{Order},
 % );
 
-% $tix->SortEntries;
+% $report->SortEntries;
 
 % my $i = 0;
 % my %total = map { $_ => 0 } @{ $columns{Functions} };
-% while ( my $entry = $tix->Next ) {
+% while ( my $entry = $report->Next ) {
 <tr class="<% ++$i%2 ? 'evenline' : 'oddline' %>">
 
 % foreach my $column ( @{ $columns{'Groups'} } ) {

@@ -65,27 +65,27 @@ if ($ChartStyle eq 'pie') {
 }
 
 use RT::Report::Tickets;
-my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
 foreach my $e ( splice @GroupBy ) {
     next unless defined $e && length $e;
-    next unless $tix->IsValidGrouping( Query => $Query, GroupBy => $e );
+    next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
     push @GroupBy, $e;
 }
 
-my %columns = $tix->SetupGroupings(
+my %columns = $report->SetupGroupings(
     Query => $Query,
     GroupBy => \@GroupBy,
     # TODO: We don't picture more than one function at the moment
     Function => (grep defined && length, @ChartFunction)[0],
 );
 
-$tix->SortEntries;
+$report->SortEntries;
 
 my @data = ([],[]);
 my $max_value = 0;
 my $max_key_length = 0;
-while ( my $entry = $tix->Next ) {
+while ( my $entry = $report->Next ) {
     my $key = join ' - ', map $entry->LabelValue( $_ ), @{ $columns{'Groups'} };
     my $value = $entry->RawValue( $columns{'Functions'}[0] );
     if ($chart_class eq 'GD::Graph::pie') {
@@ -107,7 +107,7 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
 # that indicates an error message. Because this is used in an <img>
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
-unless ( $tix->Count ) {
+unless ( $report->Count ) {
     my $plot = GD::Image->new(600 => 400);
     $plot->colorAllocate(255, 255, 255); # background
     my $black = $plot->colorAllocate(0, 0, 0);
@@ -138,8 +138,8 @@ $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 if ($chart_class eq "GD::Graph::bars") {
     my $count = @{ $data[0] };
     $chart->set(
-        x_label => join( ' - ', map $tix->Label( $_ ), @{ $columns{'Groups'} } ),
-        y_label => $tix->Label( $columns{'Functions'}[0] ),
+        x_label => join( ' - ', map $report->Label( $_ ), @{ $columns{'Groups'} } ),
+        y_label => $report->Label( $columns{'Functions'}[0] ),
         show_values => 1,
         x_label_position => 0.6,
         y_label_position => 0.6,
