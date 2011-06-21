@@ -516,52 +516,60 @@ sub AddEmptyRows {
     }
 }
 
+{ our @SORT_OPS;
+sub __sort_function_we_need_named($$) {
+    for my $f ( @SORT_OPS ) {
+        my $r = $f->($_[0], $_[1]);
+        return $r if $r;
+    }
+}
 sub SortEntries {
     my $self = shift;
 
-    # XXX: at the begining let's support only grouping by one column
-    my ($group_by) =
+    $self->_DoSearch if $self->{'must_redo_search'};
+    return unless $self->{'items'} && @{ $self->{'items'} };
+
+    my @groups =
         grep $_->{'TYPE'} eq 'grouping',
         map $self->ColumnInfo($_),
         $self->ColumnsList;
-    return unless $group_by;
+    return unless @groups;
 
-    my $order = $group_by->{'META'}{Sort} || 'label';
-    if ( $order eq 'label' ) {
-        $self->{'items'} = [
-            map $_->[0],
-            sort { $a->[1] cmp $b->[1] }
-            map [ $_, $_->LabelValue( $group_by->{'NAME'} ) ],
-            @{ $self->{'items'} || [] }
-        ];
+    local @SORT_OPS;
+    my @data = map [$_], @{ $self->{'items'} };
+
+    for ( my $i = 0; $i < @groups; $i++ ) {
+        my $group_by = $groups[$i];
+        my $idx = $i+1;
+        my $method;
+
+        my $order = $group_by->{'META'}{Sort} || 'label';
+        if ( $order eq 'label' ) {
+            push @SORT_OPS, sub { $_[0][$idx] cmp $_[1][$idx] };
+            $method = 'LabelValue';
+        }
+        elsif ( $order eq 'numeric label' ) {
+            push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
+            $method = 'LabelValue';
+        }
+        elsif ( $order eq 'raw' ) {
+            push @SORT_OPS, sub { $_[0][$idx] cmp $_[1][$idx] };
+            $method = 'RawValue';
+        }
+        elsif ( $order eq 'numeric raw' ) {
+            push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
+            $method = 'RawValue';
+        } else {
+            $RT::Logger->error("Unknown sorting function '$order'");
+            next;
+        }
+        $_->[$idx] = $_->[0]->$method( $group_by->{'NAME'} ) for @data;
     }
-    elsif ( $order eq 'numeric label' ) {
-        $self->{'items'} = [
-            map $_->[0],
-            sort { $a->[1] <=> $b->[1] }
-            map [ $_, $_->LabelValue( $group_by->{'NAME'} ) ],
-            @{ $self->{'items'} || [] }
-        ];
-    }
-    elsif ( $order eq 'raw' ) {
-        $self->{'items'} = [
-            map $_->[0],
-            sort { $a->[1] cmp $b->[1] }
-            map [ $_, $_->RawValue( $group_by->{'NAME'} ) ],
-            @{ $self->{'items'} || [] }
-        ];
-    }
-    elsif ( $order eq 'numeric raw' ) {
-        $self->{'items'} = [
-            map $_->[0],
-            sort { $a->[1] <=> $b->[1] }
-            map [ $_, $_->RawValue( $group_by->{'NAME'} ) ],
-            @{ $self->{'items'} || [] }
-        ];
-    } else {
-        $RT::Logger->error("Unknown sorting function '$order'");
-    }
-}
+    $self->{'items'} = [
+        map $_->[0],
+        sort __sort_function_we_need_named @data
+    ];
+} }
 
 sub GenerateDateFunction {
     my $self = shift;
