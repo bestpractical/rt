@@ -52,10 +52,13 @@ $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
 </%args>
 <%init>
-my $chart_class;
 use GD;
 use GD::Text;
 
+@ChartFunction = grep defined && length, @ChartFunction;
+$ChartStyle = 'bars' if @ChartFunction > 1;
+
+my $chart_class;
 if ($ChartStyle eq 'pie') {
     require GD::Graph::pie;
     $chart_class = "GD::Graph::pie";
@@ -76,8 +79,7 @@ foreach my $e ( splice @GroupBy ) {
 my %columns = $report->SetupGroupings(
     Query => $Query,
     GroupBy => \@GroupBy,
-    # TODO: We don't picture more than one function at the moment
-    Function => (grep defined && length, @ChartFunction)[0],
+    Function => \@ChartFunction,
 );
 
 $report->SortEntries;
@@ -87,15 +89,20 @@ my $max_value = 0;
 my $max_key_length = 0;
 while ( my $entry = $report->Next ) {
     my $key = join ' - ', map $entry->LabelValue( $_ ), @{ $columns{'Groups'} };
-    my $value = $entry->RawValue( $columns{'Functions'}[0] );
+
+    my @values = map $entry->RawValue($_), @{ $columns{'Functions'} };
     if ($chart_class eq 'GD::Graph::pie') {
-        $key .= ' - '. $value;
+        $key .= ' - '. $values[0];
     }
 
     push @{ $data[0] }, $key;
-    push @{ $data[1] }, $value;
 
-    $max_value = $value if $max_value < $value;
+    my $i = 0;
+    push @{ $data[++$i] }, $_ foreach @values;
+
+    foreach my $v ( @values ) {
+        $max_value = $v if $max_value < $v;
+    }
     $max_key_length = length $key if $max_key_length < length $key;
 }
 
