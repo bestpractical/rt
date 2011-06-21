@@ -371,7 +371,7 @@ if (!$Create && $UserObj->Privileged()) {
 MaybeRedirectForResults(
     Actions   => \@results,
     Arguments => { id => $UserObj->Id },
-);
+) if $UserObj->Id;
 
 </%INIT>
 

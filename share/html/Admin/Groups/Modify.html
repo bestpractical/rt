@@ -157,7 +157,7 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
 MaybeRedirectForResults(
     Actions     => \@results,
     Arguments   => { id => $Group->id },
-);
+) if $Group->Id;
 
 push @results, @warnings;
 
