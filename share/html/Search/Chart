@@ -144,6 +144,12 @@ $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 
 if ($chart_class eq "GD::Graph::bars") {
     my $count = @{ $data[0] };
+    my $bar_spacing =
+        $count > 30 ? 1
+        : $count > 20 ? 2
+        : $count > 10 ? 3
+        : 5
+    ;
     $chart->set(
         x_label => join( ' - ', map $report->Label( $_ ), @{ $columns{'Groups'} } ),
         y_label => $report->Label( $columns{'Functions'}[0] ),
@@ -157,9 +163,8 @@ if ($chart_class eq "GD::Graph::bars") {
         y_max_value => 5*(int($max_value/5) + 2),
 # if there're too many bars or at least one key is too long, use vertical
         x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
-        $count > 30 ? ( bar_spacing => 1 ) : ( $count > 20 ? ( bar_spacing => 2 ) : 
-            ( $count > 10 ? ( bar_spacing => 3 ) : ( bar_spacing => 5 ) )
-        ),
+        bar_spacing => $bar_spacing,
+        bargroup_spacing => $bar_spacing*5,
     );
 }
 
