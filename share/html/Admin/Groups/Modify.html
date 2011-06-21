@@ -115,7 +115,7 @@ if ($Create) {
 	$Group->Load($id) || Abort('Could not load group');
     }
 
-    if ($id) {
+    if ($Group->Id) {
 	$title = loc("Modify the group [_1]", $Group->Name);
     }
 
@@ -126,7 +126,7 @@ if ($Create) {
     }
 }
 
-if ($id) {
+if ($Group->Id) {
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $Group,
@@ -149,7 +149,7 @@ if (defined $Enabled && $Enabled == 1) {
 } else {
     $Disabled = 1;
 }
-if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
+if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
     push @results, $msg;
 }
