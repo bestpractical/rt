@@ -381,7 +381,11 @@ sub SetupGroupings {
         $e->{'INFO'} = $GROUPINGS{ $key };
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
     }
-    $self->GroupBy( @group_by );
+    $self->GroupBy( map { {
+        ALIAS    => $_->{'ALIAS'},
+        FIELD    => $_->{'FIELD'},
+        FUNCTION => $_->{'FUNCTION'},
+    } } @group_by );
 
     my %res = (Groups => [], Functions => []);
     my %column_info;
@@ -399,7 +403,11 @@ sub SetupGroupings {
         $args{'TYPE'} = 'statistic';
         $args{'INFO'} = $STATISTICS{ $e };
         $args{'META'} = $STATISTICS_META{ $args{'INFO'}[1] };
-        $args{'NAME'} = $self->Column( %args );
+        $args{'NAME'} = $self->Column(
+            ALIAS    => $args{'ALIAS'},
+            FIELD    => $args{'FIELD'},
+            FUNCTION => $args{'FUNCTION'},
+        );
         push @{ $res{'Functions'} }, $args{'NAME'};
         $column_info{ $args{'NAME'} } = \%args;
     }
