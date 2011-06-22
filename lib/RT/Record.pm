@@ -1643,9 +1643,9 @@ sub _AddCustomFieldValue {
             $values->RedoSearch if $i; # redo search if have deleted at least one value
         }
 
-        my ( $old_value, $old_content );
+        my ( $old_value );
         if ( $old_value = $values->First ) {
-            $old_content = $old_value->Content;
+            my $old_content = $old_value->Content;
             $old_content = undef if defined $old_content && !length $old_content;
 
             my $is_the_same = 1;
@@ -1698,35 +1698,16 @@ sub _AddCustomFieldValue {
               );
         }
 
-        my $new_content = $new_value->Content;
 
-        # For datetime, we need to display them in "human" format in result message
-        #XXX TODO how about date without time?
-        if ($cf->Type eq 'DateTime') {
-            my $DateObj = RT::Date->new( $self->CurrentUser );
-            $DateObj->Set(
-                Format => 'ISO',
-                Value  => $new_content,
-            );
-            $new_content = $DateObj->AsString;
+        my $new_content = $new_value ? $new_value->DisplayContent : undef;
+        my $old_content = $old_value ? $old_value->DisplayContent : undef;
 
-            if ( defined $old_content && length $old_content ) {
-                $DateObj->Set(
-                    Format => 'ISO',
-                    Value  => $old_content,
-                );
-                $old_content = $DateObj->AsString;
-            }
-        }
-
-        unless ( defined $old_content && length $old_content ) {
+        if ( !defined $old_content or !length $old_content ) {
             return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
-        }
-        elsif ( !defined $new_content || !length $new_content ) {
+        } elsif ( !defined $new_content or !length $new_content ) {
             return ( $new_value_id,
                 $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
-        }
-        else {
+        } else {
             return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
         }
 
@@ -1786,6 +1767,7 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
 
+    my $old_value = $cf->DisplayContent;
     my ( $val, $msg ) = $cf->DeleteValueForObject(
         Object  => $self,
         Id      => $args{'ValueId'},
@@ -1805,16 +1787,6 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
     }
 
-    my $old_value = $TransactionObj->OldValue;
-    # For datetime, we need to display them in "human" format in result message
-    if ( $cf->Type eq 'DateTime' ) {
-        my $DateObj = RT::Date->new( $self->CurrentUser );
-        $DateObj->Set(
-            Format => 'ISO',
-            Value  => $old_value,
-        );
-        $old_value = $DateObj->AsString;
-    }
     return (
         $TransactionId,
         $self->loc(

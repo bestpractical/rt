@@ -123,4 +123,16 @@ sub SearchBuilderUIArguments {
         });
 }
 
+sub StringifyForDisplay {
+    my ($self, $ocfv) = @_;
+    my $content = $ocfv->_Value('Content');
+    my $DateObj = RT::Date->new( $ocfv->CurrentUser );
+    $DateObj->Set(
+        Format => 'ISO',
+        Value  => $content,
+    );
+    return $DateObj->AsString;
+}
+
+
 1;

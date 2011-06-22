@@ -2233,12 +2233,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
     }
 
-    if ( exists $_args->{'AddValue'} ) { # tested by t/web/cf_onqueue.t
-        foreach my $value ($class->ValuesFromWeb( $cf, $_args->{'AddValue'} )) {
-            $_add_ocfv->(Value => $value);
-        }
-    }
-    elsif ( exists $_args->{'Value'} ) { # tested by t/web/cf_onqueue.t
+    if ( exists $_args->{'Value'} ) { # tested by t/web/cf_onqueue.t
         foreach my $value ($class->ValuesFromWeb( $cf, $_args->{'Value'} )) {
             $_add_ocfv->(Value => $value);
         }

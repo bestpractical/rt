@@ -251,6 +251,18 @@ sub Content {
     return $class->Stringify( $self );
 }
 
+=head2 DisplayContent
+
+Returns this custom field's content, formatted for display to the user.
+
+=cut
+
+sub DisplayContent {
+    my $self = shift;
+    my $class = $self->CustomFieldObj->GetTypeClass;
+    return $class->StringifyForDisplay( $self );
+}
+
 =head2 Object
 
 Returns the object this value applies to

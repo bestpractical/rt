@@ -118,6 +118,15 @@ sub Stringify {
     }
 }
 
+=head2 $class->StringifyForDisplay($ocfv)
+
+=cut
+
+sub StringifyForDisplay {
+    my ($self, $ocfv) = @_;
+    return $self->Stringify($ocfv);
+}
+
 =head1 methods for web interaction
 
 The mason component F<share/html/Elements/EditCustomField$TypeName>
