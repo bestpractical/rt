@@ -682,6 +682,40 @@ sub FindImplementationCode {
     }
     return $code;
 }
+
+sub Serialize {
+    my $self = shift;
+
+    my %clone = %$self;
+# current user, handle and column_info
+    delete @clone{'user', 'DBIxHandle', 'column_info'};
+    $clone{'items'} = [ map $_->{'values'}, @{ $clone{'items'} || [] } ];
+    $clone{'column_info'} = {};
+    while ( my ($k, $v) = each %{ $self->{'column_info'} } ) {
+        $clone{'column_info'}{$k} = { %$v };
+        delete $clone{'column_info'}{$k}{'META'};
+    }
+    return \%clone;
+}
+
+sub Deserialize {
+    my $self = shift;
+    my $data = shift;
+
+    $self->CleanSlate;
+    %$self = (%$self, %$data);
+
+    $self->{'items'} = [
+        map { my $r = $self->NewItem; $r->LoadFromHash( $_ ); $r }
+        @{ $self->{'items'} }
+    ];
+    foreach my $e ( values %{ $self->{column_info} } ) {
+        $e->{'META'} = $e->{'TYPE'} eq 'grouping'
+            ? $GROUPINGS_META{ $e->{'INFO'} }
+            : $STATISTICS_META{ $e->{'INFO'}[1] }
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;
