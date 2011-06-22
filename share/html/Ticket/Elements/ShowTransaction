@@ -181,7 +181,8 @@ else {
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->Ticket
               . "&QuoteTransaction=" . $Transaction->Id
-              . "&Action=Respond\">"
+              . "&Action=Respond\" "
+              . "class=\"reply-link\">"
               . loc('Reply')
               . "</a>]&nbsp;";
         }
@@ -191,15 +192,16 @@ else {
               . $Transaction->Ticket
               . "&QuoteTransaction="
               . $Transaction->Id
-              . "&Action=Comment\">"
+              . "&Action=Comment\" "
+              . "class=\"comment-link\">"
               . loc('Comment') . "</a>]";
         }
         if ( $ticket->CurrentUserHasRight('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket
-              . "&QuoteTransaction=". $Transaction->Id
-              . "\">". loc('Forward') . "</a>]";
+              . "&QuoteTransaction=". $Transaction->Id ."\" "
+              . "class=\"forward-link\">". loc('Forward') . "</a>]";
         }
         if ( $can_modify
             && RT->Config->Get('GnuPG')->{'Enable'}
@@ -208,8 +210,8 @@ else {
         ) {
             $titlebar_commands .=
                 "[<a href=\"". $EncryptionPath
-              . "?id=". $Transaction->Id
-              . "\">". loc('Encrypt/Decrypt') . "</a>]";
+              . "?id=". $Transaction->Id ."\" "
+              . "class=\"gpg-link\">". loc('Encrypt/Decrypt') . "</a>]";
         }
     }
 }
