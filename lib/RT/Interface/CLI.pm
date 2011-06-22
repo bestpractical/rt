@@ -45,26 +45,12 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-use strict;
-
-use RT;
 package RT::Interface::CLI;
+use strict;
+use RT;
 
-
-
-BEGIN {
-    use base 'Exporter';
-    use vars qw ($VERSION  @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    
-    # set the version for version checking
-    $VERSION = do { my @r = (q$Revision: 1.2.2.1 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r }; # must be all one line, for MakeMaker
-
-    # your exported package globals go here,
-    # as well as any optionally exported functions
-    @EXPORT_OK   = qw(&CleanEnv 
-		      &GetCurrentUser &GetMessageContent &debug &loc);
-}
+use base 'Exporter';
+our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
 =head1 NAME
 

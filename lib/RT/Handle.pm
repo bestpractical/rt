@@ -290,6 +290,21 @@ sub CheckCompatibility {
     return (1)
 }
 
+sub CheckSphinxSE {
+    my $self = shift;
+
+    my $dbh = $RT::Handle->dbh;
+    local $dbh->{'RaiseError'} = 0;
+    local $dbh->{'PrintError'} = 0;
+    my $has = ($dbh->selectrow_array("show variables like 'have_sphinx'"))[1];
+    $has ||= ($dbh->selectrow_array(
+        "select 'yes' from INFORMATION_SCHEMA.PLUGINS where PLUGIN_NAME = 'sphinx' AND PLUGIN_STATUS='active'"
+    ))[0];
+
+    return 0 unless lc($has||'') eq "yes";
+    return 1;
+}
+
 =head2 Database maintanance
 
 =head3 CreateDatabase $DBH
@@ -875,6 +890,22 @@ sub InsertData {
                 next;
             }
 
+            if ( $item->{'BasedOn'} ) {
+                my $basedon = RT::CustomField->new($RT::SystemUser);
+                my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
+                                                        LookupType => $new_entry->LookupType );
+                if ($ok) {
+                    ($ok, $msg) = $new_entry->SetBasedOn( $basedon );
+                    if ($ok) {
+                        $RT::Logger->debug("Added BasedOn $item->{BasedOn}: $msg");
+                    } else {
+                        $RT::Logger->error("Failed to add basedOn $item->{BasedOn}: $msg");
+                    }
+                } else {
+                    $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn");
+                }
+            }
+
             foreach my $value ( @{$values} ) {
                 my ( $return, $msg ) = $new_entry->AddValue(%$value);
                 $RT::Logger->error( $msg ) unless $return;
@@ -1033,7 +1064,7 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
     if ( @Attributes ) {
-        $RT::Logger->debug("Creating predefined searches...");
+        $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {

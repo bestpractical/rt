@@ -4,7 +4,7 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not Oracle' unless RT->Config->Get('DatabaseType') eq 'Oracle';
-plan tests => 11;
+plan tests => 13;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1 );
 
@@ -76,4 +76,6 @@ run_tests(
     "Content LIKE 'book'" => { book => 1, bar => 0 },
     "Content LIKE 'bar'" => { book => 0, bar => 1 },
 );
+
+@tickets = ();
 

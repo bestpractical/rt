@@ -1,0 +1,301 @@
+=head1 Development of RT
+
+RT's source code is stored in a C<git> repository.  If you are not
+familiar with git, see L</git quickstart>, below, for a short tutorial
+which will give you enough information to get started submitting patches
+to RT.
+
+The rest of this document details conventions and tips surrounding the
+organization of RT's version control, source code conventions, and how
+to submit patches.
+
+
+
+=head1 Organization of rt.git
+
+The RT source repository is available via git from GitHub; you can
+browse it at L<http://github.com/bestpractical/rt/> or obtain a local
+copy via:
+
+    git clone git://github.com/bestpractical/rt.git
+
+The bleeding-edge development happens in the C<master> branch.  When a
+major release is anticipated, a "trunk" branch will be branched from
+this -- for example, C<4.0-trunk>.  This will allow the trunk to
+stabilize while feature development continues on C<master>.
+Additionally, as a release is impending for a particular series, a
+release engineering branch will be created, named, for example
+C<4.0.0-releng>.
+
+New feature development should always be based off of the C<master>
+branch.  Branches to fix bugs should be based off of whichever trunk the
+bug was first found in.  If you found the bug in your RT 4.0.0 install,
+you'd branch from 4.0-trunk.
+
+Branches should be named based on the trunk they are branched
+from -- which is to say, the earliest branch they might be merged into.
+For example, a bugfix branched from C<4.0-trunk> might be named
+C<4.0/fail-taint-mode-early>.  A feature branched from C<master> when
+there exists a C<4.0-trunk> but no C<4.2-trunk> might be named
+C<4.2/rename-LogToScreen>.  For consistency, branches should use dashes,
+not underscores, to separate words.
+
+Branches should be reviewed by another developer before being merged.
+Reviewers should make sure that the branch accomplishes what it claims
+to, and does not introduce any unwanted behavior in doing so.  Commit
+messages explain the B<why> as much as the B<what> of each commit, and
+not include extranous changes.
+
+
+=head1 Code conventions
+
+The RT codebase is more than ten years old; as such, there are sections
+which do not (yet) conform to the guidelines below.  Please attempt to
+follow the guidelines, even if the code surrounding your changes does
+not yet.
+
+RT also includes a F<.perltidyrc> in its top-level which encodes many of
+the conventions.
+
+=over
+
+=item Indentation
+
+Each level of indentation should be four spaces; tabs should never be
+used for indentation.
+
+=back
+
+=head1 Internationalization
+
+RT has been translated into several dozen languages. We use Launchpad
+( https://translations.launchpad.net/rt ) to crowdsource our
+translations into C<po> files. RT uses L<Locale::Maketext> to
+localize its user interface.
+
+Your first stop on this magical journey of internationalization
+is L<Locale::Maketext::TPJ13>, which explains the whys of
+L<Locale::Maketext>. RT uses most of the features developed in that
+article.
+
+Strings that are displayed to users should be passed through the
+C<loc("...")> function or the C<< <&|/l&>...</&> >> Mason template.
+C<loc> and C</l> both take parameters, which are used in place of
+string interpolation (much like C<sprintf>). It's acceptable to use
+HTML in C</l> calls, especially for bold and emphasis. However, you
+should limit the amount of HTML that translators must keep exactly
+correct, which means avoid including tags that wrap the entire
+translatable string, especially C<< <p> >>.
+
+    <p><&|/l, $button &>Do <em>not</em> click [_1]</&></p> # ok
+
+    <&|/l, $button &><p>Do <em>not</em> click [_1]</p></&> # not ok
+
+In a few places in RT we also pass HTML as parameters to C<loc()>
+so that translators do not have to reproduce it exactly, and we can
+also change it more freely. For example:
+
+    <&|/l,
+        '<a href="http://www.gnu.org/licenses/gpl-2.0.html">',
+        '</a>',
+    &>Distributed under [_1]version 2 of the GNU GPL[_2].</&>
+
+F<devel/tools/extract-message-catalog> looks for C<loc("...")> and
+C<< <&|/l&>...</&> >> in our source code to pick out translatable
+strings, clean them up, and put them into F<share/po> files. We use
+our C<.po> files not only to populate L<Locale::Maketext>'s lexicons,
+but also to sync new translatable strings and translations with
+Launchpad. This Launchpad sync is typically done early during the
+freeze of RC releases to give our volunteer translators time to
+translate all the new strings which, because of the RC freeze, won't
+continue changing.
+
+Because C<loc()> and C</l> are used to generate strings for human
+eyes, they generally must be used "close to the browser". These are
+directly in Mason templates, or in functions that return text that
+will be passed through Mason. However, in many places in RT we have
+hardcoded strings which need translations. For example, the C<$RIGHTS>
+hash in F<lib/RT/Queue.pm> maps rights' names (which must be
+translatable) to their descriptions (which also must be translatable).
+However, when we're declaring such structures, we do not want to
+translate them straight away. RT uses English internally, including
+in its web forms, so we do not want to localize rights' names except
+for display, otherwise things might break weirdly when you check
+if a user has the "Superusuario" right. Furthermore, when we're
+declaring such data structures at compile time, there is no current
+user to select which language to use for localization. Thus, we
+cannot call C<loc()> when declaring C<$RIGHTS> and other similar
+places.
+
+For this reason, F<devel/tools/extract-message-catalog> lets you
+denote translatable strings with comments. That's what the C<#loc_pair>
+comments in the C<$RIGHTS> hash in F<lib/RT/Queue.pm> indicate.
+Since we have those comments, our toolchain will put the rights'
+names and descriptions into F<share/po> files, which enables
+translation by our lovely volunteers. Later on, when RT displays
+information about rights in the web UI, we'll pass the right's name
+through C<loc>, and L<Locale::Maketext> will then be able to find
+our "Superusuario". So although we never used a literal
+C<loc("SuperUser")>, we still get its effects thanks to the
+C<#loc_pair> comments and using C<loc($RightName)>.
+
+C<#loc_pair> is used for declaring that the both the key and value
+of a particular C<< key => value >> pair are translatable. There
+are other markers that you can use.
+
+C<#loc> is used for declaring that a particular string is translatable.
+Its parsing is pretty strict so you can use it to declare that only
+the value of a particular C<< key => value >> pair is translatable.
+
+C<#loc_left_pair> is used for declaring that the I<key> of a
+particular C<< key => value >> pair is translatable. This is of
+very limited usefulness.
+
+C<#loc_right_pair> does NOT exist. C<#loc> works in such cases since
+its parser does not extend beyond the string at the end of a line.
+
+=head1 Development tips
+
+=head2 Setting up a development environment
+
+=head2 Test suite
+
+RT also comes with a fairly complete test suite.  To run it, you will
+need to set environment variables to a database user and password which
+can create and drop databases:
+
+    export RT_DBA_USER=root
+    export RT_DBA_PASSWORD=
+
+You'll need to configure RT and make sure you have all the dependencies
+before running tests.  To do this in place without installing:
+
+    ./configure.ac --with-my-user-group --enable-layout=inplace --with-devel-mode
+    make testdeps
+    make fixdeps
+
+Adjust the relevant database options as necessary if you want to test on
+Postgres, Oracle, or SQLite.  The default is MySQL.
+
+To run the test suite:
+
+    make test
+
+If you have multiple processors, you can run the test suite in parallel,
+which will be significantly faster:
+
+    make test-parallel
+
+The C<*-trunk> and C<master> branches are expected to be passing always
+be passing all tests.  While it is acceptable to break tests in an
+intermediate commit, a branch which does not pass tests will not be
+merged.  Ideally, commits which fix a bug should also include a testcase
+which fails before the fix and succeeds after.
+
+
+
+=head1 git quickstart
+
+=over
+
+=item 1.
+
+You will first need to obtain a copy of git; this is accomplished via
+C<sudo yum install git> in RedHat and derivatives, or C<sudo apt-get
+install git> for Debian or Ubuntu.
+
+=item 2.
+
+Next, obtain a copy of the RT source from git:
+
+    git clone git://github.com/bestpractical/rt.git
+    cd rt
+
+=item 3.
+
+Configure git to know your name and email address; git uses these when
+it makes commits.
+
+    git config user.email your.email@example.com
+    git config user.name Examp L. Name
+
+=item 4.
+
+Switch to the appropriate point to base your work on; this is generally
+C<origin/> followed by the major version, followed by C<-trunk>.  For
+example, if your bug was observed in version 3.8.9, you would choose
+C<origin/3.8-trunk>; if it was in 4.0.0, you would choose
+C<origin/4.0-trunk>.  New features should be based on C<origin/master>.
+
+    git checkout --track origin/4.0-trunk
+
+=item 5.
+
+Give your branch a name based on what you are attempting to accomplish.
+We suggest that branch names be lower-case and separate words with
+dashes, but this branch name is purely for your own reference.
+
+    git branch -m gnupg-encryption
+
+=item 6.
+
+Edit the source tree to make your changes.  A few commands you may find
+useful in doing so are listed below.
+
+To see what files you have changed:
+
+    git status
+
+To see a line-by-line list of changes:
+
+    git diff
+
+To revert a file to the original version:
+
+    git checkout path/to/file
+
+To revert only individual parts of a file:
+
+    git checkout -p path/to/file
+
+See L</Development tips> for more tips for working with the RT codebase.
+
+=item 7.
+
+Check that you have no extraneous changes using C<git diff>, then commit
+your changes:
+
+    git commit -a
+
+You will be prompted to type your commit message.  The first line should
+be a short (E<lt> 80 character) summary of the changes, followed by a
+blank line, followed by a longer description, if necessary.  The commit
+message should not simply restate the diff of which lines were added and
+subtracted, but should rather explain B<what> those changes accomplish,
+and B<why> they are desired.
+
+If your changes are easily split into multiple components, you may wish
+to split your changes into more than one commit; simply return to step 6
+and repeat the with the next related change.  If your changes are B<not>
+related to each other, you should submit them separately; finish step 9,
+then start over from step 4.
+
+=item 8.
+
+Save your commits to patch files:
+
+    git format-patch @{u}
+
+This will print out the names of the files as it creates them.
+
+=item 9.
+
+Attach these files to an email using your standard email client, and
+send it to C<rt-devel@bestpractical.com>.
+
+=back
+
+If you have another bug or feature to implement, simply restart the
+process at step 4.
+
+=cut

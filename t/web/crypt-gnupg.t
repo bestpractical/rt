@@ -6,6 +6,7 @@ use RT::Test::GnuPG
     passphrase    => 'recipient',
     'trust-model' => 'always',
 };
+use Test::Warn;
 
 use RT::Action::SendEmail;
 
@@ -351,18 +352,16 @@ To: general\@example.com
 hello
 MAIL
  
-my ($warnings, $status);
-{
-    local $SIG{__WARN__} = sub {
-        $warnings .= "@_";
-    };
-
+my $status;
+warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
-}
+} [
+    qr/nokey\@example.com: skipped: public key not found/,
+    qr/Recipient 'nokey\@example.com' is unusable/,
+];
 
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
-like($warnings, qr/nokey\@example.com: skipped: public key not found/);
 
 $tick = RT::Ticket->new( RT->SystemUser );
 $tick->Load( $id );

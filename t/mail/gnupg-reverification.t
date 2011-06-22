@@ -34,6 +34,8 @@ foreach my $file ( @files ) {
     my ($status, $id);
 
     {
+        # We don't use Test::Warn here because we get multi-line
+        # warnings, which Test::Warn only records the first line of.
         local $SIG{__WARN__} = sub {
             $warnings .= "@_";
         };

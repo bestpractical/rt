@@ -10,7 +10,7 @@ RT::System->AddRights(
     no warnings qw(redefine once);
 
 ok(my $users = RT::Users->new(RT->SystemUser));
-$users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser');
+$users->WhoHaveRight(Object => RT->System, Right =>'SuperUser');
 is($users->Count , 1, "There is one privileged superuser - Found ". $users->Count );
 # TODO: this wants more testing
 

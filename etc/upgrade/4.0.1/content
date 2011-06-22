@@ -1,0 +1,83 @@
+@Initial = (
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing all delegated rights');
+
+        my $acl = RT::ACL->new(RT->SystemUser);
+        my $groupjoin = $acl->NewAlias('Groups');
+        $acl->Join( ALIAS1 => 'main',
+                    FIELD1 => 'PrincipalId',
+                    ALIAS2 => $groupjoin,
+                    FIELD2 => 'id'
+                  );
+        $acl->Limit( ALIAS           => $groupjoin,
+                     FIELD           => 'Domain',
+                     OPERATOR        => '=',
+                     VALUE           => 'Personal',
+                    );
+
+        while ( my $ace = $acl->Next ) {
+            my ( $ok, $msg ) = $ace->Delete();
+
+            if ( !$ok ) {
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
+            }
+        }
+
+        my $groups = RT::Groups->new(RT->SystemUser);
+        $groups->Limit( FIELD    => 'Domain',
+                        OPERATOR => '=',
+                        VALUE    => 'Personal'
+                      );
+        while ( my $group = $groups->Next ) {
+            my $members = $group->MembersObj();
+            while ( my $member = $members->Next ) {
+                my ( $ok, $msg ) = $group->DeleteMember( $member->MemberId );
+                if ( !$ok ) {
+                    $RT::Logger->warn(   "Unable to remove group member "
+                                       . $member->id . ": "
+                                       . $msg );
+                }
+            }
+            $group->PrincipalObj->Delete;
+            $group->RT::Record::Delete();
+        }
+    },
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing all Delegate and PersonalGroup rights');
+
+        my $acl = RT::ACL->new(RT->SystemUser);
+        for my $right (qw/AdminOwnPersonalGroups AdminAllPersonalGroups DelegateRights/) {
+            $acl->Limit( FIELD => 'RightName', VALUE => $right );
+        }
+
+        while ( my $ace = $acl->Next ) {
+            my ( $ok, $msg ) = $ace->Delete();
+            $RT::Logger->debug("Removing ACE ".$ace->id." for right ".$ace->__Value('RightName'));
+
+            if ( !$ok ) {
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
+            }
+        }
+    },
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing unimplemented RejectTicket and ModifyTicketStatus rights');
+
+        my $acl = RT::ACL->new(RT->SystemUser);
+        for my $right (qw/RejectTicket ModifyTicketStatus/) {
+            $acl->Limit( FIELD => 'RightName', VALUE => $right );
+        }
+
+        while ( my $ace = $acl->Next ) {
+            my ( $ok, $msg ) = $ace->Delete();
+            $RT::Logger->debug("Removing ACE ".$ace->id." for right ".$ace->__Value('RightName'));
+
+            if ( !$ok ) {
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
+            }
+        }
+    },
+);
+

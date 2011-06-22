@@ -83,23 +83,27 @@ use RT::Interface::CLI ();
 
 my %OPT = (
     help        => 0,
+    debug       => 0,
 );
-my @OPT_LIST = qw(help|h!);
+my @OPT_LIST = qw(help|h! debug!);
 
 my $db_type = RT->Config->Get('DatabaseType');
 if ( $db_type eq 'Pg' ) {
     %OPT = (
         %OPT,
         limit  => 0,
+        all    => 0,
     );
-    push @OPT_LIST, 'limit=i';
+    push @OPT_LIST, 'limit=i', 'all!';
 }
 elsif ( $db_type eq 'mysql' ) {
     %OPT = (
         %OPT,
-        limit  => 0,
+        limit    => 0,
+        all      => 0,
+        xmlpipe2 => 0,
     );
-    push @OPT_LIST, 'limit=i';
+    push @OPT_LIST, 'limit=i', 'all!', 'xmlpipe2!';
 }
 elsif ( $db_type eq 'Oracle' ) {
     %OPT = (
@@ -120,15 +124,22 @@ if ( $OPT{'help'} ) {
 
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
-    print STDERR "Full text search disabled in the RT config."
-        ." Read documentation for %FullTextSearch config option.";
+    print STDERR <<EOT;
+
+Full text search is disabled in your RT configuration.  Run
+@RT_SBIN_PATH_R@/rt-setup-fulltext-index to configure and enable it.
+
+EOT
     exit 1;
 }
 unless ( $fts_config->{'Indexed'} ) {
-    print STDERR "Full text search is enabled in the RT config,"
-        ." however full text search works without special index,"
-        ." so this tool is not required."
-        ." Read documentation for %FullTextSearch config option.";
+    print STDERR <<EOT;
+
+Full text search is enabled in your RT configuration, but not with any
+full-text database indexing -- hence this tool is not required.  Read
+the documentation for %FullTextSearch in your RT_Config for more details.
+
+EOT
     exit 1;
 }
 
@@ -139,44 +150,65 @@ if ( $db_type eq 'Oracle' ) {
         $index, $OPT{'memory'}
     );
     exit;
+} elsif ( $db_type eq 'mysql' ) {
+    unless ($OPT{'xmlpipe2'}) {
+        print STDERR <<EOT;
+
+Updates to the external Sphinx index are done via running the sphinx
+`indexer` tool:
+
+    indexer rt
+
+EOT
+        exit 1;
+    }
 }
 
 my @types = qw(text html);
 foreach my $type ( @types ) {
-    my $attaches = attachments($type);
-    $attaches->Limit(
+  REDO:
+    my $attachments = attachments($type);
+    $attachments->Limit(
         FIELD => 'id',
         OPERATOR => '>',
         VALUE => last_indexed($type)
     );
-    $attaches->OrderBy( FIELD => 'id', ORDER => 'asc' );
-    $attaches->RowsPerPage( $OPT{'limit'} || 100 );
+    $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
+    $attachments->RowsPerPage( $OPT{'limit'} || 100 );
 
     my $found = 0;
-    while ( my $a = $attaches->Next ) {
-        print "bla\n";
-        debug("Found attachment #". $a->id );
+    while ( my $a = $attachments->Next ) {
         next if filter( $type, $a );
-        debug("Attachment #". $a->id ." hasn't been filtered" );
+        debug("Found attachment #". $a->id );
         my $txt = extract($type, $a) or next;
-        debug("Extracted text from attachment #". $a->id );
         $found++;
         process( $type, $a, $txt );
         debug("Processed attachment #". $a->id );
     }
-    finalize( $type, $attaches ) if $found;
+    finalize( $type, $attachments ) if $found;
     clean( $type );
+    goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
 }
 
 sub attachments {
     my $type = shift;
     my $res = RT::Attachments->new( RT->SystemUser );
-
-    my $txn_alias = $res->JoinTransactions;
-    $res->Limit( ALIAS => $txn_alias, FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+    my $txn_alias = $res->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'TransactionId',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'id',
+    );
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Ticket',
+    );
     my $ticket_alias = $res->Join(
-        ALIAS1 => $txn_alias, FIELD1 => 'ObjectId',
-        TABLE2 => 'Tickets', FIELD2 => 'id'
+        ALIAS1 => $txn_alias,
+        FIELD1 => 'ObjectId',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'id',
     );
     $res->Limit(
         ALIAS => $ticket_alias,
@@ -235,7 +267,7 @@ sub finalize {
 
 sub clean {
     return goto_specific(
-        prefix    => $db_type,
+        suffix    => $db_type,
         arguments => \@_,
     );
 }
@@ -296,11 +328,11 @@ sub last_indexed_pg {
     my $type = shift;
     my $attachments = attachments( $type );
     my $alias = 'main';
-    if ( $fts_config->{'Table'} && lc $fts_config->{'Table'} ne 'Attachments' ) {
+    if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
         $alias = $attachments->Join(
             TYPE    => 'left',
             FIELD1 => 'id',
-            TABLE2  => $fts_config->{'table'},
+            TABLE2  => $fts_config->{'Table'},
             FIELD2 => 'id',
         );
     }
@@ -311,6 +343,7 @@ sub last_indexed_pg {
         VALUE => 'NULL',
     );
     $attachments->OrderBy( FIELD => 'id', ORDER => 'desc' );
+    $attachments->RowsPerPage( 1 );
     my $res = $attachments->First;
     return 0 unless $res;
     return $res->id;
@@ -342,7 +375,7 @@ sub process_pg {
 
 sub attachments_text {
     my $res = shift;
-    $res->Limit( FIELD => 'content_type', VALUE => 'text/plain' );
+    $res->Limit( FIELD => 'ContentType', VALUE => 'text/plain' );
     return $res;
 }
 
@@ -361,7 +394,7 @@ sub attachments_html {
 
 sub filter_html {
     my $attachment = shift;
-    if ( my $parent = $attachment->Parent ) {
+    if ( my $parent = $attachment->ParentObj ) {
 # skip html parts that are alternatives
         return 1 if $parent->id
             && $parent->ContentType eq 'mulitpart/alternative';
@@ -393,10 +426,9 @@ sub goto_specific {
 
 
 # helper functions
-sub verbose  { print _(@_), "\n" if $OPT{verbose} || $OPT{verbose}; 1 }
-sub debug    { print _(@_), "\n" if $OPT{debug}; 1 }
-sub error    { $RT::Logger->error(_(@_)); verbose(@_); 1 }
-sub warning  { $RT::Logger->warn(_(@_)); verbose(@_); 1 }
+sub debug    { print @_, "\n" if $OPT{debug}; 1 }
+sub error    { $RT::Logger->error(_(@_)); 1 }
+sub warning  { $RT::Logger->warn(_(@_)); 1 }
 
 =head1 NAME
 
@@ -404,62 +436,14 @@ rt-fulltext-indexer - Indexer for full text search
 
 =head1 DESCRIPTION
 
-This is a helper script to keep full text index in sync with data.
+This is a helper script to keep full text indexes in sync with data.
+Read F<docs/full_text_indexing.pod> for complete details on how and when
+to run it.
 
-Start from F<sbin/rt-setup-fulltext-index>, adjust config and run
-this script via cron.
+=head1 AUTHOR
 
-=head1 ORACLE
-
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --memory 10M
-
-=head2 DESCRIPTION
-
-Basicly this script runs the following query:
-
-    begin
-    ctx_ddl.sync_index('rt_fts_index', '2M');
-    end;
-
-Ammount of memory used for the sync can be controlled with --memory option.
-
-There is way to do all of this on Oracle side by setting up a DBMS_JOB. Read
-"Managing DML Operations for a CONTEXT Index" chapter from "Text Application
-Developer's Guide" for more info on the topic and how to keep index optimized,
-collect garbage and other stuff.
-
-=head1 PG
-
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --limit 100
-
-=head2 DESCRIPTION
-
-This script find attachments that should be indexed and process content if required
-and stores in the index. Use --limit option to specify how many attachments to process.
-
-=head1 MYSQL
-
-=head2 USAGE
-
-    rt-fulltext-indexer --help
-    rt-fulltext-indexer
-    rt-fulltext-indexer --limit 100
-
-=head2 DESCRIPTION
-
-This script find attachments that should be indexed and process content if required
-and generates xmlpipe2 document stream that can processed by sphinx. Read more in
-sphinx reference manual.
-
-Use --limit option to specify how many attachments to process.
+Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>,
+Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 

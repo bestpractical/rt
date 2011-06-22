@@ -152,13 +152,12 @@ Return this object's attributes as an RT::Attributes object
 
 sub Attributes {
     my $self = shift;
-    
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);     
-       $self->{'attributes'}->LimitToObject($self); 
+        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);
+        $self->{'attributes'}->LimitToObject($self);
+        $self->{'attributes'}->OrderByCols({FIELD => 'id'});
     }
-    return ($self->{'attributes'}); 
-
+    return ($self->{'attributes'});
 }
 
 
@@ -234,10 +233,8 @@ sub DeleteAttribute {
 
 Returns the first attribute with the matching name for this object (as an
 L<RT::Attribute> object), or C<undef> if no such attributes exist.
-
-Note that if there is more than one attribute with the matching name on the
-object, the choice of which one to return is basically arbitrary.  This may be
-made well-defined in the future.
+If there is more than one attribute with the matching name on the
+object, the first value that was set is returned.
 
 =cut
 
@@ -495,7 +492,7 @@ sub _Set {
           $self->loc(
             "[_1] changed from [_2] to [_3]",
             $self->loc( $args{'Field'} ),
-            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
             '"' . $self->__Value( $args{'Field'}) . '"' 
           );
       } else {
@@ -1192,7 +1189,7 @@ links of any type.
 
 =cut
 
-*Links = \&_Links;
+sub Links { shift->_Links(@_) }
 
 sub _Links {
     my $self = shift;

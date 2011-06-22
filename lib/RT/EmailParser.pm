@@ -426,8 +426,6 @@ sub LookupExternalUserInfo {
   $params{'EmailAddress'} = $EmailAddress;
   $params{'RealName'} = $RealName;
 
-  # See RT's contributed code for examples.
-  # http://www.fsck.com/pub/rt/contrib/
   return ($FoundInExternalDatabase, %params);
 }
 

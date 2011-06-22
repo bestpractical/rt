@@ -59,10 +59,7 @@
     Rows          => 0,
     Page          => 1,
     Format        => $format,
-    DisplayFormat =>
-        $id
-            ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")
-            : ("'__CheckBox.{RemoveCustomField}__',". $format .", '__MoveCF.{$id}__'"),
+    DisplayFormat => $display_format,
     AllowSorting  => 0,
     ShowEmpty     => 0,
     PassArguments => [
@@ -151,6 +148,8 @@ if ( $UpdateCFs ) {
     }
 }
 
+$m->callback(CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS);
+
 my $applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
 $applied_cfs->LimitToLookupType($lookup);
 $applied_cfs->LimitToGlobalOrObjectId($id);
@@ -161,6 +160,11 @@ $not_applied_cfs->LimitToLookupType($lookup);
 $not_applied_cfs->LimitToNotApplied( $id ? ($id, 0) : (0) );
 
 my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
+
+my $display_format = $id
+            ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")
+            : ("'__CheckBox.{RemoveCustomField}__',". $format .", '__MoveCF.{$id}__'");
+$m->callback(CallbackName => 'EditDisplayFormat', DisplayFormat => \$display_format, id => $id);
 
 </%INIT>
 <%ARGS>

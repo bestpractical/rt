@@ -1,4 +1,4 @@
-use RT::Test nodata => 1, tests => 7;
+use RT::Test nodata => 1, tests => 9;
 
 use strict;
 use warnings;

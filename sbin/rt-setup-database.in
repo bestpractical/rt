@@ -81,7 +81,9 @@ use Getopt::Long;
 
 $| = 1; # unbuffer all output.
 
-my %args;
+my %args = (
+    dba => '@DB_DBA@',
+);
 GetOptions(
     \%args,
     'action=s',
@@ -101,6 +103,11 @@ if ( $args{help} || ! $args{'action'} ) {
 require RT;
 RT->LoadConfig();
 RT->InitClasses();
+
+# Force warnings to be output to STDERR if we're not already logging
+# them at a higher level
+RT->Config->Set( LogToScreen => 'warning')
+    unless RT->Config->Get( 'LogToScreen' ) =~ /^(debug|info|notice)$/;
 
 # get customized root password
 my $root_password;
@@ -373,19 +380,23 @@ sub action_upgrade {
     print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
+    my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
         if ( -e "$base_dir/$v/schema.$db_type" ) {
-            action_schema( %tmp );
+            ( $ret, $msg ) = action_schema( %tmp );
+            return ( $ret, $msg ) unless $ret;
         }
         if ( -e "$base_dir/$v/acl.$db_type" ) {
-            action_acl( %tmp );
+            ( $ret, $msg ) = action_acl( %tmp );
+            return ( $ret, $msg ) unless $ret;
         }
         if ( -e "$base_dir/$v/content" ) {
-            action_insert( %tmp );
+            ( $ret, $msg ) = action_insert( %tmp );
+            return ( $ret, $msg ) unless $ret;
         }
     }
     return 1;

@@ -49,8 +49,10 @@
 <% JSON::to_json( \@suggestions ) |n %>
 % $m->abort;
 <%INIT>
-my ($CustomField, $Value);
-$Value = $ARGS{query};
+# Only autocomplete the last value
+my $term = (split /\n/, $ARGS{term} || '')[-1];
+
+my $CustomField;
 for my $k ( keys %ARGS ) {
     next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
     $CustomField = $1;
@@ -60,32 +62,25 @@ for my $k ( keys %ARGS ) {
 $m->abort unless $CustomField;
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 $CustomFieldObj->Load( $CustomField );
-my $values = $CustomFieldObj->Values;
 
+my $values = $CustomFieldObj->Values;
 $values->Limit(
     FIELD           => 'Name',
     OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
+    VALUE           => $term,
+    SUBCLAUSE       => 'autocomplete',
 );
-
 $values->Limit(
     ENTRYAGGREGATOR => 'OR',
     FIELD           => 'Description',
     OPERATOR        => 'LIKE',
-    VALUE           => $Value,
-    SUBCLAUSE       => 'autcomplete',
+    VALUE           => $term,
+    SUBCLAUSE       => 'autocomplete',
 );
 
 my @suggestions;
 
-# in case it accepts multiple values
-my $last_input = (split /\n/, $ARGS{term} || '')[-1];
-
 while( my $value = $values->Next ) {
-    # we need to filter by ourselves to use jqueryui's autocomplete
-    next unless $value->Name =~ /$last_input/i;
-
     push @suggestions,
       {
         value => $value->Name,

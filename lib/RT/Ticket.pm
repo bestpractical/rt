@@ -950,15 +950,14 @@ sub Import {
 
     $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
 
-    my $watcher;
-    foreach $watcher ( @{ $args{'Cc'} } ) {
+    foreach my $watcher ( @{ $args{'Cc'} } ) {
         $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'AdminCc'} } ) {
+    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
         $self->_AddWatcher( Type => 'AdminCc', Email => $watcher,
             Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'Requestor'} } ) {
+    foreach my $watcher ( @{ $args{'Requestor'} } ) {
         $self->_AddWatcher( Type => 'Requestor', Email => $watcher,
             Silent => 1 );
     }
@@ -1879,6 +1878,30 @@ sub ResolvedObj {
 }
 
 
+=head2 FirstActiveStatus
+
+Returns the first active status that the ticket could transition to,
+according to its current Queue's lifecycle.  May return undef if there
+is no such possible status to transition to, or we are already in it.
+This is used in L<RT::Action::AutoOpen>, for instance.
+
+=cut
+
+sub FirstActiveStatus {
+    my $self = shift;
+
+    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $status = $self->Status;
+    my @active = $lifecycle->Active;
+    # no change if no active statuses in the lifecycle
+    return undef unless @active;
+
+    # no change if the ticket is already has first status from the list of active
+    return undef if lc $status eq lc $active[0];
+
+    my ($next) = grep $lifecycle->IsActive($_), $lifecycle->Transitions($status);
+    return $next;
+}
 
 =head2 SetStarted
 
@@ -1906,17 +1929,15 @@ sub SetStarted {
         $time_obj->SetToNow();
     }
 
-    #Now that we're starting, open this ticket
-    #TODO do we really want to force this as policy? it should be a scrip
-
-    #We need $TicketAsSystem, in case the current user doesn't have
-    #ShowTicket
-    #
+    # We need $TicketAsSystem, in case the current user doesn't have
+    # ShowTicket
     my $TicketAsSystem = RT::Ticket->new(RT->SystemUser);
     $TicketAsSystem->Load( $self->Id );
-    if ( $TicketAsSystem->Status eq 'new' ) {
-        $TicketAsSystem->Open();
-    }
+    # Now that we're starting, open this ticket
+    # TODO: do we really want to force this as policy? it should be a scrip
+    my $next = $TicketAsSystem->FirstActiveStatus;
+
+    $self->SetStatus( $next ) if defined $next;
 
     return ( $self->_Set( Field => 'Started', Value => $time_obj->ISO ) );
 

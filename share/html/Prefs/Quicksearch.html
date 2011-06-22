@@ -57,7 +57,7 @@
 % unless ($unwanted->{$queue->Name}) {
 checked="checked"
 % }
-/><%$queue->Name%>: <%$queue->Description%></li>
+/><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></li>
 % }
 </ul>
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>

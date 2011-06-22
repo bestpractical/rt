@@ -487,6 +487,45 @@ our %META = (
     },
 
     # Internal config options
+    FullTextSearch => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $v = $self->Get('FullTextSearch');
+            return unless $v->{Enable} and $v->{Indexed};
+            my $dbtype = $self->Get('DatabaseType');
+            if ($dbtype eq 'Oracle') {
+                if (not $v->{IndexName}) {
+                    $RT::Logger->error("No IndexName set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'Pg') {
+                my $bad = 0;
+                if (not $v->{'Column'}) {
+                    $RT::Logger->error("No Column set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Column'} eq "Content"
+                             and (not $v->{'Table'} or $v->{'Table'} eq "Attachments")) {
+                    $RT::Logger->error("Column for full-text index is set to Content, not tsvector column; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                }
+            } elsif ($dbtype eq 'mysql') {
+                if (not $v->{'Table'}) {
+                    $RT::Logger->error("No Table set for full-text index; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif ($v->{'Table'} eq "Attachments") {
+                    $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
+                    $v->{Enable} = $v->{Indexed} = 0;
+                } elsif (not $v->{'MaxMatches'}) {
+                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                    $v->{MaxMatches} = 10_000;
+                }
+            } else {
+                $RT::Logger->error("Indexed full-text-search not supported for $dbtype");
+                $v->{Indexed} = 0;
+            }
+        },
+    },
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
@@ -514,7 +553,16 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => { Type => 'ARRAY' },
+    Plugins      => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('Plugins');
+            # XXX Remove in RT 4.2
+            return unless $value and grep {$_ eq "RT::FM"} @{$value};
+            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
@@ -701,6 +749,32 @@ our %META = (
             my $self = shift;
             $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
                 if $self->Meta('LogToScreen')->{'Source'}{'Package'};
+        },
+    },
+    ActiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The ActiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'active' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
+        },
+    },
+    InactiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The InactiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'inactive' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
         },
     },
 );
@@ -1224,20 +1298,6 @@ sub UpdateOption {
         $META{$name}{$type} = $args{$type};
     }
     return 1;
-}
-
-=head2 ExtraSecurity NAME
-
-Returns true if NAME is included in the C<@ExtraSecurity> list, false if not.
-
-This is currently a convenience method for C<< grep { lc $_ eq lc $name } RT->Config->Get('ExtraSecurity') >>.
-
-=cut
-
-sub ExtraSecurity {
-    my $self = shift;
-    my $name = lc shift;
-    return scalar grep { lc $_ eq $name } $self->Get('ExtraSecurity');
 }
 
 RT::Base->_ImportOverlays();

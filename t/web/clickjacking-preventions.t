@@ -2,14 +2,13 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => 11;
 
 my ($url, $m);
 
 # Enabled by default
 {
-    ok(RT->Config->ExtraSecurity('Clickjacking'), "RT->Config->ExtraSecurity reports Clickjacking enabled");
-    ok(RT->Config->ExtraSecurity('clickjacking'), "RT->Config->ExtraSecurity reports clickjacking enabled");
+    ok(RT->Config->Get('Framebusting'), "Framebusting enabled by default");
 
     ($url, $m) = RT::Test->started_ok;
     $m->get_ok($url);
@@ -21,9 +20,7 @@ my ($url, $m);
 
 # Disabled
 {
-    RT->Config->Set('ExtraSecurity' => grep { !/clickjacking/i } RT->Config->Get('ExtraSecurity'));
-    ok(!RT->Config->ExtraSecurity('Clickjacking'), "RT->Config->ExtraSecurity reports Clickjacking disabled");
-    ok(!RT->Config->ExtraSecurity('clickjacking'), "RT->Config->ExtraSecurity reports clickjacking disabled");
+    RT->Config->Set('Framebusting', 0);
 
     ($url, $m) = RT::Test->started_ok;
     $m->get_ok($url);

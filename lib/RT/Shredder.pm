@@ -138,28 +138,31 @@ shredding session when the file had been created.
 
 =head1 CONFIGURATION
 
-=head2 $RT::DependenciesLimit
+=head2 $DependenciesLimit
 
 Shredder stops with an error if the object has more than
-C<$RT::DependenciesLimit> dependencies. For example: a ticket has 1000
+C<$DependenciesLimit> dependencies. For example: a ticket has 1000
 transactions or a transaction has 1000 attachments. This is protection
 from bugs in shredder from wiping out your whole database, but
 sometimes when you have big mail loops you may hit it.
 
-Defaults to 1000.
+Defaults to 1000.  To change this (for example, to 10000) add the
+following to your F<RT_SiteConfig.pm>:
 
-You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
-$DependenciesLimit, new_limit );>
+    Set( $DependenciesLimit, 10_000 );>
 
 
 =head2 $ShredderStoragePath
 
-Directory containing Shredder backup dumps.
+Directory containing Shredder backup dumps; defaults to
+F</opt/rt4/var/data/RT-Shredder> (assuming an /opt/rt4 installation).
 
-Defaults to F</path-to-RT-var-dir/data/RT-Shredder>.
+To change this (for example, to /some/backup/path) add the following to
+your F<RT_SiteConfig.pm>:
 
-You can change the default value, in F<RT_SiteConfig.pm> add C<Set(
-$ShredderStoragePath, new_path );>  Be sure to use an absolute path.
+    Set( $ShredderStoragePath, "/some/backup/path" );>
+
+Be sure to specify an absolute path.
 
 
 =head1 INFORMATION FOR DEVELOPERS

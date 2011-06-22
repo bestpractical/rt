@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 39;
+use RT::Test tests => 40;
 
 my $user_a = RT::Test->load_or_create_user(
     Name     => 'user_a',

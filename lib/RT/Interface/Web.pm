@@ -99,6 +99,18 @@ sub SquishedJS {
     return $js;
 }
 
+=head2 ClearSquished
+
+Removes the cached CSS and JS entries, forcing them to be regenerated
+on next use.
+
+=cut
+
+sub ClearSquished {
+    undef $SQUISHED_JS;
+    %SQUISHED_CSS = ();
+}
+
 =head2 EscapeUTF8 SCALARREF
 
 does a css-busting but minimalist escaping of whatever html you're passing in.
@@ -223,6 +235,8 @@ sub HandleRequest {
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
 
+    MaybeRejectPrivateComponentRequest();
+
     MaybeShowNoAuthPage($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
@@ -279,6 +293,8 @@ sub HandleRequest {
 
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
+
+    $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
 }
 
 sub _ForceLogout {
@@ -444,6 +460,37 @@ sub MaybeShowNoAuthPage {
     SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 MaybeRejectPrivateComponentRequest
+
+This function will reject calls to private components, like those under
+C</Elements>. If the requested path is a private component then we will
+abort with a C<403> error.
+
+=cut
+
+sub MaybeRejectPrivateComponentRequest {
+    my $m = $HTML::Mason::Commands::m;
+    my $path = $m->request_comp->path;
+
+    # We do not check for dhandler here, because requesting our dhandlers
+    # directly is okay. Mason will invoke the dhandler with a dhandler_arg of
+    # 'dhandler'.
+
+    if ($path =~ m{
+            / # leading slash
+            ( Elements    |
+              _elements   | # mobile UI
+              Widgets     |
+              autohandler | # requesting this directly is suspicious
+              l           ) # loc component
+            ( $ | / ) # trailing slash or end of path
+        }xi) {
+            $m->abort(403);
+    }
+
+    return;
 }
 
 sub InitializeMenu {
@@ -711,7 +758,7 @@ sub Redirect {
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
-    # don't do this if $RT::CanoniaclRedirectURLs is true
+    # don't do this if $RT::CanonicalizeRedirectURLs is true
     if (   !RT->Config->Get('CanonicalizeRedirectURLs')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
@@ -1028,15 +1075,8 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
-    if ($ENV{'rt.explicit_port'}) {
-        if ($ENV{SERVER_PORT} != $ENV{'rt.explicit_port'}) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
-    }
-    else {
-        if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
+    if (!$ENV{'rt.explicit_port'} && $ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
+        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 
     if ($ENV{HTTP_HOST}) {
@@ -1044,17 +1084,17 @@ sub ValidateWebConfig {
         my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
 
         if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
     else {
         if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
 
-    if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
-        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath). You should fix your Set(\$WebPath, ...) setting in RT_SiteConfig.pm otherwise your internal links may be broken.");
+    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
+        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 }
 
@@ -1448,7 +1488,7 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => Encode::encode_utf8(
+    $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
         RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
     ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
@@ -1623,6 +1663,9 @@ sub MakeMIMEEntity {
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
                 $Message->head->set( 'Subject' => $filename );
             }
+
+            # Attachment parts really shouldn't get a Message-ID
+            $Message->head->delete('Message-ID');
         }
     }
 
@@ -2810,6 +2853,7 @@ sub _NewScrubber {
     return $scrubber;
 }
 
+package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
 1;

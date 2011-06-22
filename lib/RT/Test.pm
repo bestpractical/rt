@@ -236,7 +236,7 @@ sub bootstrap_config {
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
-Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr));
+Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
@@ -324,7 +324,9 @@ sub set_config_wrapper {
     *RT::Config::Set = sub {
         # Determine if the caller is either from a test script, or
         # from helper functions called by test script to alter
-        # configuration that should be written.
+        # configuration that should be written.  This is necessary
+        # because some extensions (RTIR, for example) temporarily swap
+        # configuration values out and back in Mason during requests.
         my @caller = caller(1); # preserve list context
         @caller = caller(0) unless @caller;
 
@@ -686,6 +688,15 @@ sub create_ticket {
     my $self = shift;
     my %args = @_;
 
+    if ($args{Queue} && $args{Queue} =~ /\D/) {
+        my $queue = RT::Queue->new(RT->SystemUser);
+        if (my $id = $queue->Load($args{Queue}) ) {
+            $args{Queue} = $id;
+        } else {
+            die ("Error: Invalid queue $args{Queue}");
+        }
+    }
+
     if ( my $content = delete $args{'Content'} ) {
         $args{'MIMEObj'} = MIME::Entity->build(
             From    => $args{'Requestor'},
@@ -718,7 +729,9 @@ sub create_ticket {
             Test::More::is( $got, $expected, 'correct CF values' );
         }
         else {
-            next if ref $args{$field} || !$ticket->can($field) || ref $ticket->$field();
+            next if ref $args{$field};
+            next unless $ticket->can($field) or $ticket->_Accessible($field,"read");
+            next if ref $ticket->$field();
             Test::More::is( $ticket->$field(), $args{$field}, "$field is correct" );
         }
     }
@@ -1236,7 +1249,8 @@ sub started_ok {
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
         if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
-    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'plack';
+    $ENV{'RT_TEST_WEB_HANDLER'} ||= 'plack';
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'};
     my ($server, $variant) = split /\+/, $which, 2;
 
     my $function = 'start_'. $server .'_server';
@@ -1273,7 +1287,7 @@ sub start_plack_server {
             unless $handled;
         push @SERVERS, $pid;
         my $Tester = Test::Builder->new;
-        $Tester->ok(1, @_);
+        $Tester->ok(1, 'plack test server ok');
 
         __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
@@ -1306,6 +1320,10 @@ sub start_inline_server {
     require Test::WWW::Mechanize::PSGI;
     unshift @RT::Test::Web::ISA, 'Test::WWW::Mechanize::PSGI';
 
+    # Clear out squished CSS and JS cache, since it's retained across
+    # servers, since it's in-process
+    RT::Interface::Web->ClearSquished;
+
     Test::More::ok(1, "psgi test server ok");
     return ("http://localhost:$port", RT::Test::Web->new);
 }
@@ -1313,6 +1331,7 @@ sub start_inline_server {
 sub start_apache_server {
     my $self = shift;
     my $variant = shift || 'mod_perl';
+    $ENV{RT_TEST_WEB_HANDLER} = "apache+$variant";
 
     require RT::Test::Apache;
     my $pid = RT::Test::Apache->start_server($variant || 'mod_perl', $port, \%tmp);
@@ -1326,19 +1345,24 @@ sub start_apache_server {
 sub stop_server {
     my $self = shift;
     my $in_end = shift;
+    return unless @SERVERS;
 
     my $sig = 'TERM';
-    $sig = 'INT' if !$ENV{'RT_TEST_WEB_HANDLER'}
-                    || $ENV{'RT_TEST_WEB_HANDLER'} =~/^standalone(?:\+|\z)/;
+    $sig = 'INT' if $ENV{'RT_TEST_WEB_HANDLER'} eq "plack";
     kill $sig, @SERVERS;
     foreach my $pid (@SERVERS) {
-        waitpid $pid, 0;
+        if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
+            sleep 1 while kill 0, $pid;
+        } else {
+            waitpid $pid, 0;
+        }
     }
 
-    sleep 2
-      if !$in_end && $ENV{'RT_TEST_WEB_HANDLER'} && $ENV{'RT_TEST_WEB_HANDLER'} =~ /apache/;
-
     @SERVERS = ();
+}
+
+sub temp_directory {
+    return $tmp{'directory'};
 }
 
 sub file_content {

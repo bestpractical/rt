@@ -1,6 +1,6 @@
 use strict;
 
-use RT::Test tests => 39;
+use RT::Test tests => 63;
 use File::Temp 'tempfile';
 use File::Spec;
 my ( $plain_fh, $plain_file ) =
@@ -24,6 +24,20 @@ ok( $qid, "Loaded General queue" );
 
 RT::Test->clean_caught_mails;
 
+sub follow_parent_with_headers_link {
+    my $m    = shift;
+    my $link = $m->find_link(@_)->url;
+    $link =~ s{/(\d+)$}{"/" . ($1-1)}e;  # get the parent attach
+    $m->get_ok($baseurl . $link);
+}
+
+sub follow_with_headers_link {
+    my $m    = shift;
+    my $link = $m->find_link(@_)->url;
+    $link =~ s{/\d+/(\d+)/.+$}{/WithHeaders/$1};   # frob into a with headers url
+    $m->get_ok($baseurl . $link);
+}
+
 for my $type ( 'text/plain', 'text/html' ) {
     $m->form_name('CreateTicketInQueue');
     $m->field( 'Queue', $qid );
@@ -42,6 +56,16 @@ for my $type ( 'text/plain', 'text/html' ) {
         'we have subject on the page' );
     $m->content_contains('this is main content', 'main content' );
     $m->content_contains("Download $plain_name", 'download plain file link' );
+
+    # Check for Message-IDs
+    follow_parent_with_headers_link($m, text => 'with headers', n => 1);
+    $m->content_like(qr/^Message-ID:/im, 'create content has one Message-ID');
+    $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
+    $m->back;
+
+    follow_with_headers_link($m, text => "Download $plain_name", n => 1);
+    $m->content_unlike(qr/^Message-ID:/im, 'attachment lacks a Message-ID');
+    $m->back;
 
     my ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main content/, 'email contains main content' );
@@ -67,6 +91,20 @@ for my $type ( 'text/plain', 'text/html' ) {
 
     $m->content_contains("this is main reply content", 'main reply content' );
     $m->content_contains("Download $html_name", 'download html file link' );
+
+    # Check for Message-IDs
+    follow_parent_with_headers_link($m, text => 'with headers', n => 2);
+    $m->content_like(qr/^Message-ID:/im, 'correspondence has one Message-ID');
+    $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
+    $m->back;
+
+    follow_with_headers_link($m, text => "Download $plain_name", n => 2);
+    $m->content_unlike(qr/^Message-ID:/im, 'text/plain attach lacks a Message-ID');
+    $m->back;
+
+    follow_with_headers_link($m, text => "Download $html_name", n => 1);
+    $m->content_unlike(qr/^Message-ID:/im, 'text/html attach lacks a Message-ID');
+    $m->back;
 
     ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main reply content/, 'email contains main reply content' );

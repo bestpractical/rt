@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 156;
+use RT::Test tests => 166;
 
 my ( $url, $m ) = RT::Test->started_ok;
 my $root = RT::Test->load_or_create_user( Name => 'root' );

@@ -1,16 +1,7 @@
-my %number_column = (
-    BasedOn => 1,
-);
 my $move_attributes = sub {
     my ($table, $type, $column) = @_;
-    my $query;
-    if ( $number_column{ $column } && RT->Config->Get('DatabaseType') eq 'Oracle' ) {
-        $query = "UPDATE $table SET $column = (SELECT TO_NUMBER(Content) FROM Attributes WHERE"
-            ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
-    } else {
-        $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
-            ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
-    }
+    my $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
+        ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
 
     my $res = $RT::Handle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {
@@ -32,10 +23,29 @@ my $move_attributes = sub {
         return $move_attributes->( 'Users', 'RT::User', 'AuthToken');
     },
     sub {
-        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'BasedOn');
+        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
     },
     sub {
-        return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
+        my $cfs = RT::CustomFields->new($RT::SystemUser);
+        $cfs->UnLimit;
+        $cfs->FindAllRows;
+        while ( my $cf = $cfs->Next ) {
+            # Explicitly remove 'ORDER BY id asc' to emulate the
+            # previous functionality, where Pg might return the the
+            # rows in arbitrary order
+            $cf->Attributes->OrderByCols();
+
+            my $attr = $cf->FirstAttribute('BasedOn');
+            next unless $attr;
+            $cf->SetBasedOn($attr->Content);
+        }
+        $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
+        $res = $RT::Handle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField' );
+        unless ( $res ) {
+            $RT::Logger->error("Failed to delete BasedOn CustomFields from Attributes");
+            return;
+        }
+        return 1;
     },
     sub {
         $move_attributes->( 'CustomFields', 'RT::CustomField', 'ValuesClass')

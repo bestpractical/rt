@@ -4,7 +4,7 @@ use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
-use RT::Test tests => 46;
+use RT::Test tests => 56;
 
 my $cookie_jar = HTTP::Cookies->new;
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -253,3 +253,44 @@ diag "send query with not quoted negative number";
         "query is the same"
     );
 }
+
+diag "click advanced, enter an invalid SQL IS restriction, apply and check that we corrected it";
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_name('BuildQueryAdvanced'), "found the form");
+    $agent->field("Query", "Requestor.EmailAddress IS 'FOOBAR'");
+    $agent->submit;
+    is( getQueryFromForm($agent),
+        "Requestor.EmailAddress IS NULL",
+        "foobar is replaced by NULL"
+    );
+}
+
+diag "click advanced, enter an invalid SQL IS NOT restriction, apply and check that we corrected it";
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_name('BuildQueryAdvanced'), "found the form");
+    $agent->field("Query", "Requestor.EmailAddress IS NOT 'FOOBAR'");
+    $agent->submit;
+    is( getQueryFromForm($agent),
+        "Requestor.EmailAddress IS NOT NULL",
+        "foobar is replaced by NULL"
+    );
+}
+
+diag "click advanced, enter a valid SQL, but the field is lower cased";
+{
+    my $response = $agent->get($url."Search/Edit.html");
+    ok( $response->is_success, "Fetched /Search/Edit.html" );
+    ok($agent->form_name('BuildQueryAdvanced'), "found the form");
+    $agent->field("Query", "status = 'new'");
+    $agent->submit;
+    $agent->content_lacks( 'Unknown field:', 'no "unknown field" warning' );
+    is( getQueryFromForm($agent),
+        "Status = 'new'",
+        "field's case is corrected"
+    );
+}
+

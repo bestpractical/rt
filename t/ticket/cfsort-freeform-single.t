@@ -1,5 +1,5 @@
 
-use RT::Test nodata => 1, tests => 61;
+use RT::Test nodata => 1, tests => 89;
 
 use strict;
 use warnings;

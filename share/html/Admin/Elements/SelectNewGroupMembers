@@ -49,6 +49,7 @@
 <label for="<% $Name %>Users"><&|/l&>Add user</&>:</label>
 <input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" /><br />
 <script type="text/javascript">
+jQuery(function(){
     jQuery("#<% $Name %>Users").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name;privileged=1;exclude=<% $user_ids |u %>",
         // Auto-submit once a user is chosen
@@ -57,6 +58,7 @@
             jQuery(event.target).closest("form").submit();
         }
     });
+});
 </script>
 % }
 
@@ -64,6 +66,7 @@
 <label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label>
 <input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" /><br />
 <script type="text/javascript">
+jQuery(function(){
     jQuery("#<% $Name %>Groups").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups?exclude=<% $group_ids |u %>",
         // Auto-submit once a user is chosen
@@ -72,6 +75,7 @@
             jQuery(event.target).closest("form").submit();
         }
     });
+});
 </script>
 % }
 <%INIT>
