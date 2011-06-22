@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
+$Cache => undef
 $Query => "id > 0"
 @GroupBy => 'Queue'
 $ChartStyle => 'bars'
@@ -70,19 +71,27 @@ if ($ChartStyle eq 'pie') {
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
-foreach my $e ( splice @GroupBy ) {
-    next unless defined $e && length $e;
-    next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
-    push @GroupBy, $e;
+my %columns;
+
+if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
+    %columns = %{ $data->{'columns'} };
+    $report->Deserialize( $data->{'report'} );
+    $session{'i'}++;
+} else {
+    foreach my $e ( splice @GroupBy ) {
+        next unless defined $e && length $e;
+        next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
+        push @GroupBy, $e;
+    }
+
+    %columns = $report->SetupGroupings(
+        Query => $Query,
+        GroupBy => \@GroupBy,
+        Function => \@ChartFunction,
+    );
+
+    $report->SortEntries;
 }
-
-my %columns = $report->SetupGroupings(
-    Query => $Query,
-    GroupBy => \@GroupBy,
-    Function => \@ChartFunction,
-);
-
-$report->SortEntries;
 
 my @data = ([],[]);
 my $max_value = 0;

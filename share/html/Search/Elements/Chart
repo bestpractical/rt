@@ -77,7 +77,10 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 % if (RT->Config->Get('DisableGD')) {
 <% loc('Graphical charts are not available.') %><br />
 % } else {
-<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" />
+% my $key = Digest::MD5::md5_hex( rand(1024) );
+% $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
+% $session{'i'}++;
+<img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
 </span>
 <table class="collection-as-table chart">
