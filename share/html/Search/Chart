@@ -96,6 +96,7 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
 
 my @data = ([],[]);
 my $max_value = 0;
+my $min_value;
 my $max_key_length = 0;
 while ( my $entry = $report->Next ) {
     my $key = join ' - ', map $entry->LabelValue( $_ ), @{ $columns{'Groups'} };
@@ -112,6 +113,7 @@ while ( my $entry = $report->Next ) {
 
     foreach my $v ( @values ) {
         $max_value = $v if $max_value < $v;
+        $min_value = $v if !defined $min_value || $min_value > $v;
     }
     $max_key_length = length $key if $max_key_length < length $key;
 }
@@ -180,7 +182,8 @@ if ($chart_class eq "GD::Graph::bars") {
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
-        y_max_value => 5*(int($max_value/5) + 2),
+        y_max_value => $max_value * 1.10,
+        y_min_value => $min_value * 0.9,
 # if there're too many bars or at least one key is too long, use vertical
         x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
         bargroup_spacing => $args{'bar_spacing'}*5,
