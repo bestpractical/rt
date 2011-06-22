@@ -68,6 +68,8 @@ my %columns = $report->SetupGroupings(
     Function => \@ChartFunction,
 );
 
+$report->SortEntries;
+
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
 <div class="chart-wrapper">
@@ -92,8 +94,6 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 %     OrderBy => $ARGS{OrderBy},
 %     Order   => $ARGS{Order},
 % );
-
-% $report->SortEntries;
 
 % my $i = 0;
 % my %total = map { $_ => 0 } @{ $columns{Functions} };
