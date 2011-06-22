@@ -653,6 +653,17 @@ sub GenerateWatcherFunction {
     return %args;
 }
 
+
+sub LabelValueCode {
+    my $self = shift;
+    my $name = shift;
+
+    my $display = $self->ColumnInfo( $name )->{'META'}{'Display'};
+    return undef unless $display;
+    return $self->FindImplementationCode( $display );
+}
+
+
 sub FindImplementationCode {
     my $self = shift;
     my $value = shift;

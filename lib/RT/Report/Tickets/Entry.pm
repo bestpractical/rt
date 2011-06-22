@@ -82,18 +82,13 @@ sub LabelValue {
     my $name = shift;
 
     my $raw = $self->RawValue( $name, @_ );
-    my $info = $self->ColumnInfo( $name );
-    my $meta = $info->{'META'};
 
-    if (
-        $meta and $meta->{'Display'}
-        and my $code = $self->FindImplementationCode( $meta->{'Display'} )
-    ) {
-        return $code->( $self, %$info, VALUE => $raw );
+    if ( my $code = $self->LabelCode( $name ) ) {
+        return $code->( $self, %{ $self->ColumnInfo( $name ) }, VALUE => $raw );
     }
 
     return $self->loc('(no value)') unless defined $raw && length $raw;
-    return $self->loc($raw) if $info->{'META'}{'Localize'};
+    return $self->loc($raw) if $self->ColumnInfo( $name )->{'META'}{'Localize'};
     return $raw;
 }
 
@@ -134,6 +129,10 @@ sub Query {
         }
     }
     return join ' AND ', grep defined && length, @parts;
+}
+
+sub LabelCode {
+    return RT::Report::Tickets->can('LabelValueCode')->(@_);
 }
 
 sub FindImplementationCode {
