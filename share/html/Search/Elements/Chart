@@ -61,6 +61,7 @@ foreach my $e ( splice @GroupBy ) {
     next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
     push @GroupBy, $e;
 }
+@GroupBy = ('Queue') unless @GroupBy;
 
 my %columns = $report->SetupGroupings(
     Query => $Query,

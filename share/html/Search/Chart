@@ -83,6 +83,7 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
         next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
         push @GroupBy, $e;
     }
+    @GroupBy = ('Queue') unless @GroupBy;
 
     %columns = $report->SetupGroupings(
         Query => $Query,
