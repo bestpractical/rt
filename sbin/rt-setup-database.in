@@ -81,7 +81,9 @@ use Getopt::Long;
 
 $| = 1; # unbuffer all output.
 
-my %args;
+my %args = (
+    dba => '@DB_DBA@',
+);
 GetOptions(
     \%args,
     'action=s',

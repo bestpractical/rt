@@ -548,7 +548,16 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => { Type => 'ARRAY' },
+    Plugins      => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('Plugins');
+            # XXX Remove in RT 4.2
+            return unless $value and grep {$_ eq "RT::FM"} @{$value};
+            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
@@ -719,6 +728,33 @@ our %META = (
                     push @$value, $canonic;
                 }
             }
+        },
+    },
+
+    ActiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The ActiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'active' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
+        },
+    },
+    InactiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The InactiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'inactive' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
         },
     },
 );

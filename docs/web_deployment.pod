@@ -26,6 +26,13 @@ to use L<Starman>, a high performance preforking server:
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
+B<WARNING>: Due to thread-safety limitations, all timestamps will be
+presented in the webserver's default time zone when using the C<worker>
+and C<event> MPMs; the C<$Timezone> setting and the user's timezone
+preference are ignored.  We suggest the C<prefork> MPM or FastCGI
+deployment if your privileged users are in a different timezone than the
+one the server is configured for.
+
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # ErrorLog /opt/rt4/var/log/apache2.error
@@ -39,7 +46,7 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
             Order allow,deny
             Allow from all
 
-            SetHandler perl-script
+            SetHandler modperl
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt4/sbin/rt-server
         </Location>

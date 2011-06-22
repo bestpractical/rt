@@ -55,6 +55,7 @@
 <&|/l&>Go to group</&>
 <input type="text" name="GroupString" value="" id="autocomplete-GroupString" />
 <script type="text/javascript">
+jQuery(function(){
     jQuery("#autocomplete-GroupString").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
         // Auto-submit once a group is chosen
@@ -63,6 +64,7 @@
             jQuery(event.target).closest("form").submit();
         }
     });
+});
 </script>
 </form>
 

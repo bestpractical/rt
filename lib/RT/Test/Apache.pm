@@ -201,6 +201,15 @@ sub find_apache_server {
     return undef;
 }
 
+sub apache_mpm_type {
+    my $self = shift;
+    my $apache = $self->find_apache_server;
+    my $out = `$apache -l`;
+    if ( $out =~ /^\s*(worker|prefork|event|itk)\.c\s*$/m ) {
+        return $1;
+    }
+}
+
 sub fork_exec {
     my $self = shift;
 

@@ -160,11 +160,15 @@ GENERAL INSTALLATION
 
           make upgrade
 
-      This will also display the appropriate rt-setup-database command to
-      upgrade your database.  You should back up your database before
-      running this command.  When you run it, you will be prompted for
-      your previous version of RT (such as 3.6.4) so that the appropriate
-      set of database upgrades can be applied.
+      This will also prompt you to upgrade your database by running:
+
+          /opt/rt4/sbin/rt-setup-database \
+              --prompt-for-dba-password --action upgrade
+
+      You should back up your database before running this command.
+      When you run it, you will be prompted for your previous version of
+      RT (such as 3.6.4) so that the appropriate set of database
+      upgrades can be applied.
 
       Finally, clear the Mason cache dir:
 
