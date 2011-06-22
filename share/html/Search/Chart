@@ -101,7 +101,7 @@ while ( my $entry = $report->Next ) {
 
     my @values = map $entry->RawValue($_), @{ $columns{'Functions'} };
     if ($chart_class eq 'GD::Graph::pie') {
-        $key .= ' - '. $values[0];
+        $key .= ' - '. $entry->LabelValue( $columns{'Functions'}[0] );
     }
 
     push @{ $data[0] }, $key;
@@ -152,19 +152,29 @@ $chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
 $chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
 
 if ($chart_class eq "GD::Graph::bars") {
+    my %args;
     my $count = @{ $data[0] };
-    my $bar_spacing =
+    $args{'bar_spacing'} =
         $count > 30 ? 1
         : $count > 20 ? 2
         : $count > 10 ? 3
         : 5
     ;
+    if ( my $code = $report->First->LabelCode( $columns{'Functions'}[0] ) ) {
+        my %info = %{ $report->ColumnInfo( $columns{'Functions'}[0] ) };
+        $args{'values_format'} = $args{'y_number_format'} = sub {
+            return $code->($report, %info, VALUE => shift );
+        };
+    }
+    $report->GotoFirstItem;
+
     $chart->set(
+        %args,
         x_label => join( ' - ', map $report->Label( $_ ), @{ $columns{'Groups'} } ),
-        y_label => $report->Label( $columns{'Functions'}[0] ),
-        show_values => 1,
         x_label_position => 0.6,
+        y_label => $report->Label( $columns{'Functions'}[0] ),
         y_label_position => 0.6,
+        show_values => 1,
         values_space => -1,
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
@@ -172,8 +182,7 @@ if ($chart_class eq "GD::Graph::bars") {
         y_max_value => 5*(int($max_value/5) + 2),
 # if there're too many bars or at least one key is too long, use vertical
         x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
-        bar_spacing => $bar_spacing,
-        bargroup_spacing => $bar_spacing*5,
+        bargroup_spacing => $args{'bar_spacing'}*5,
     );
 }
 

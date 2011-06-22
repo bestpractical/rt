@@ -111,7 +111,8 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 
 % foreach my $column ( @{ $columns{'Functions'} } ) {
 <td class="value collection-as-table">
-% $total{ $column } += my $value = $entry->RawValue( $column );
+% $total{ $column } += $entry->RawValue( $column );
+% my $value = $entry->LabelValue( $column );
 % if ( $entry_query ) {
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |un %>&<% $base_query %>"><% $value %></a>
 % } else {
@@ -127,7 +128,12 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 <tr class="<% $i%2 ? 'evenline' : 'oddline' %> total">
 <td class="label collection-as-table" colspan="<% scalar @{ $columns{'Groups'} } %>"><% loc('Total') %></td>
 % foreach my $column ( @{ $columns{'Functions'} } ) {
+% if ( my $code = $report->LabelValueCode( $column ) ) {
+% my $info = $report->ColumnInfo( $column );
+<td class="value collection-as-table"><% $code->( $report, %$info, VALUE => $total{ $column } ) %></td>
+% } else {
 <td class="value collection-as-table"><% $total{ $column } %></td>
+% }
 % }
 </tr>
 
