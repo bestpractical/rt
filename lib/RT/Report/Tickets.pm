@@ -260,6 +260,13 @@ our %STATISTICS_META = (
 
             return (FUNCTION => "$function($interval)");
         },
+        Display => sub {
+            my $self = shift;
+            my %args = @_;
+            my $v = $args{'VALUE'};
+            return $self->loc("(no value)") unless defined $v && length $v;
+            return RT::Date->new( $self->CurrentUser )->DurationAsString( $v );
+        },
     },
 );
 
