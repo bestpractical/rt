@@ -57,7 +57,7 @@ $fields => undef
 my $type = $m->dhandler_arg;
 my ( $status, $output );
 
-if ( $type =~ /^(queue|user|group)$/i ) {
+if ( $type =~ /^(ticket|queue|user|group)$/i ) {
     $status = "200 Ok";
     $output = '';
     my $type = lc $1;
@@ -90,35 +90,43 @@ if ( $type =~ /^(queue|user|group)$/i ) {
         goto OUTPUT;
     }
 
-    if ($orderby) {
-        my ( $order, $field ) = $orderby =~ /^([\+\-])?(.+)/;
-        $order = $order && $order eq '-' ? 'DESC' : 'ASC';
-        $objects->OrderBy( FIELD => $field, ORDER => $order );
-    }
-
     my ( $n, $s );
     $n = 0;
     my @output;
 
     if ( defined $query && length $query ) {
-        require Text::ParseWords;
-        my ( $field, $op, $value ) = Text::ParseWords::shellwords($query);
-        if ( $op !~ /^(?:[!<>]?=|(NOT )?LIKE|STARTSWITH|ENDSWITH|MATCHES)$/i ) {
-            $status = "400 Bad Request";
-            $output = "Invalid operator specification: $op";
-            goto OUTPUT;
-        }
-
-        if ( $field && $op && defined $value ) {
-            $objects->Limit(
-                FIELD    => $field,
-                OPERATOR => uc $op,
-                VALUE    => $value
-            );
+        if ( $type eq 'ticket' ) {
+            my ( $n, $s );
+            eval { ( $n, $s ) = $objects->FromSQL($query); };
+            if ( $@ || $n == 0 ) {
+                $s ||= $@;
+                $status = "400 Bad request";
+                $output = "Invalid query: '$s'.\n";
+                goto OUTPUT;
+            }
         }
         else {
-            $output = "Invalid query specification: $query";
-            goto OUTPUT;
+            require Text::ParseWords;
+            my ( $field, $op, $value ) = Text::ParseWords::shellwords($query);
+            if ( $op !~
+                /^(?:[!<>]?=|(NOT )?LIKE|STARTSWITH|ENDSWITH|MATCHES)$/i )
+            {
+                $status = "400 Bad Request";
+                $output = "Invalid operator specification: $op";
+                goto OUTPUT;
+            }
+
+            if ( $field && $op && defined $value ) {
+                $objects->Limit(
+                    FIELD    => $field,
+                    OPERATOR => uc $op,
+                    VALUE    => $value
+                );
+            }
+            else {
+                $output = "Invalid query specification: $query";
+                goto OUTPUT;
+            }
         }
     }
     else {
@@ -131,6 +139,12 @@ if ( $type =~ /^(queue|user|group)$/i ) {
         elsif ( $type eq 'user' ) {
             $objects->LimitToPrivileged;
         }
+    }
+
+    if ($orderby) {
+        my ( $order, $field ) = $orderby =~ /^([\+\-])?(.+)/;
+        $order = $order && $order eq '-' ? 'DESC' : 'ASC';
+        $objects->OrderBy( FIELD => $field, ORDER => $order );
     }
 
     while ( my $object = $objects->Next ) {
@@ -167,7 +181,12 @@ if ( $type =~ /^(queue|user|group)$/i ) {
                 ) . "\n";
             }
             else {
-                $output .= $object->Id . ": " . $object->Name . "\n";
+                if ( $type eq 'ticket' ) {
+                    $output .= $object->Id . ": " . $object->Subject . "\n";
+                }
+                else {
+                    $output .= $object->Id . ": " . $object->Name . "\n";
+                }
             }
         }
         else {
