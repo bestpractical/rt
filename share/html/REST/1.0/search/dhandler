@@ -61,6 +61,21 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
     $status = "200 Ok";
     $output = '';
     my $type = lc $1;
+
+    if (
+        $type eq 'user'
+        && !$session{CurrentUser}->HasRight(
+            Object => $RT::System,
+            Right  => 'AdminUsers',
+        )
+      )
+    {
+
+        $status = "403 Forbidden";
+        $output = "Permission denied";
+        goto OUTPUT;
+    }
+
     my $class = 'RT::' . ucfirst $type . 's';
     my $objects = $class->new( $session{CurrentUser} );
 
