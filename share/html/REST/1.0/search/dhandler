@@ -117,6 +117,12 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
             }
 
             if ( $field && $op && defined $value ) {
+                if ( $type eq 'user' && $field =~ /password/i ) {
+                    $status = "400 Bad Request";
+                    $output = "Invalid field specification: $field";
+                    goto OUTPUT;
+                }
+
                 $objects->Limit(
                     FIELD    => $field,
                     OPERATOR => uc $op,
