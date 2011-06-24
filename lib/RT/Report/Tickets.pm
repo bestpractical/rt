@@ -192,20 +192,20 @@ our %GROUPINGS_META = (
 our @STATISTICS = (
     COUNT             => ['Tickets', 'Count', 'id'],
 
-    'SUM(TimeWorked)' => ['Total time worked',   'Simple', 'SUM', 'TimeWorked' ],
-    'AVG(TimeWorked)' => ['Average time worked', 'Simple', 'AVG', 'TimeWorked' ],
-    'MIN(TimeWorked)' => ['Minimum time worked', 'Simple', 'MIN', 'TimeWorked' ],
-    'MAX(TimeWorked)' => ['Maximum time worked', 'Simple', 'MAX', 'TimeWorked' ],
+    'SUM(TimeWorked)' => ['Total time worked',   'Time', 'SUM', 'TimeWorked' ],
+    'AVG(TimeWorked)' => ['Average time worked', 'Time', 'AVG', 'TimeWorked' ],
+    'MIN(TimeWorked)' => ['Minimum time worked', 'Time', 'MIN', 'TimeWorked' ],
+    'MAX(TimeWorked)' => ['Maximum time worked', 'Time', 'MAX', 'TimeWorked' ],
 
-    'SUM(TimeEstimated)' => ['Total time estimated',   'Simple', 'SUM', 'TimeEstimated' ],
-    'AVG(TimeEstimated)' => ['Average time estimated', 'Simple', 'AVG', 'TimeEstimated' ],
-    'MIN(TimeEstimated)' => ['Minimum time estimated', 'Simple', 'MIN', 'TimeEstimated' ],
-    'MAX(TimeEstimated)' => ['Maximum time estimated', 'Simple', 'MAX', 'TimeEstimated' ],
+    'SUM(TimeEstimated)' => ['Total time estimated',   'Time', 'SUM', 'TimeEstimated' ],
+    'AVG(TimeEstimated)' => ['Average time estimated', 'Time', 'AVG', 'TimeEstimated' ],
+    'MIN(TimeEstimated)' => ['Minimum time estimated', 'Time', 'MIN', 'TimeEstimated' ],
+    'MAX(TimeEstimated)' => ['Maximum time estimated', 'Time', 'MAX', 'TimeEstimated' ],
 
-    'SUM(TimeLeft)' => ['Total time left',   'Simple', 'SUM', 'TimeLeft' ],
-    'AVG(TimeLeft)' => ['Average time left', 'Simple', 'AVG', 'TimeLeft' ],
-    'MIN(TimeLeft)' => ['Minimum time left', 'Simple', 'MIN', 'TimeLeft' ],
-    'MAX(TimeLeft)' => ['Maximum time left', 'Simple', 'MAX', 'TimeLeft' ],
+    'SUM(TimeLeft)' => ['Total time left',   'Time', 'SUM', 'TimeLeft' ],
+    'AVG(TimeLeft)' => ['Average time left', 'Time', 'AVG', 'TimeLeft' ],
+    'MIN(TimeLeft)' => ['Minimum time left', 'Time', 'MIN', 'TimeLeft' ],
+    'MAX(TimeLeft)' => ['Maximum time left', 'Time', 'MAX', 'TimeLeft' ],
 
     'SUM(Created-Resolved)'
         => ['Summary of Created-Resolved', 'DateTimeInterval', 'SUM', 'Created', 'Resolved' ],
@@ -246,6 +246,20 @@ our %STATISTICS_META = (
             my $self = shift;
             my ($function, $field) = @_;
             return (FUNCTION => $function, FIELD => $field);
+        },
+    },
+    Time => {
+        Function => sub {
+            my $self = shift;
+            my ($function, $field) = @_;
+            return (FUNCTION => $function, FIELD => $field);
+        },
+        Display => sub {
+            my $self = shift;
+            my %args = @_;
+            my $v = $args{'VALUE'};
+            return $self->loc("(no value)") unless defined $v && length $v;
+            return RT::Date->new( $self->CurrentUser )->DurationAsString( $v*60 );
         },
     },
     DateTimeInterval => {
