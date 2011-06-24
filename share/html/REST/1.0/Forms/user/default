@@ -59,23 +59,15 @@ my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $user = RT::User->new($session{CurrentUser});
 
-my @fields;
+my @fields =
+  qw(Name EmailAddress RealName NickName Gecos Organization Address1
+  Address2 City State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
+  FreeformContactInfo Comments Signature Lang EmailEncoding
+  WebEncoding ExternalContactInfoId ContactInfoSystem
+  ExternalAuthId AuthSystem Privileged Disabled);
+
 if ( $fields && %$fields ) {
-    @fields =
-      grep { exists $fields->{ lc $_ } }
-      qw(Name EmailAddress RealName NickName Gecos Organization Address1
-      Address2 City State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
-      FreeformContactInfo Comments Signature Lang EmailEncoding
-      WebEncoding ExternalContactInfoId ContactInfoSystem
-      ExternalAuthId AuthSystem Privileged Disabled);
-}
-else {
-    @fields =
-      qw(Name EmailAddress RealName NickName Gecos Organization Address1
-      Address2 City State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
-      FreeformContactInfo Comments Signature Lang EmailEncoding
-      WebEncoding ExternalContactInfoId ContactInfoSystem
-      ExternalAuthId AuthSystem Privileged Disabled);
+  @fields = grep { exists $fields->{ lc $_ } } @fields;
 }
 
 my %fields = map { lc $_ => $_ } @fields;
