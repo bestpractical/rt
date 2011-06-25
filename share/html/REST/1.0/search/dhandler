@@ -109,6 +109,11 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
     $n = 0;
     my @output;
 
+
+    if ( $type eq 'group' ) {
+        $objects->LimitToUserDefinedGroups;
+    }
+
     if ( defined $query && length $query ) {
         if ( $type eq 'ticket' ) {
             my ( $n, $s );
@@ -153,9 +158,6 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
     else {
         if ( $type eq 'queue' ) {
             $objects->UnLimit;
-        }
-        elsif ( $type eq 'group' ) {
-            $objects->LimitToUserDefinedGroups;
         }
         elsif ( $type eq 'user' ) {
             $objects->LimitToPrivileged;
