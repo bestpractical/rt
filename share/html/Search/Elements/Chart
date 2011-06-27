@@ -84,62 +84,6 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
 </span>
-<table class="collection-as-table chart">
-
-<tr>
-% foreach my $column ( @{ $columns{'Groups'} }, @{ $columns{'Functions'} } ) {
-<th class="collection-as-table"><% $report->Label( $column ) %></th>
-% }
-</tr>
-
-% my $base_query = $m->comp('/Elements/QueryString',
-%     Format  => $ARGS{Format},
-%     Rows    => $ARGS{Rows},
-%     OrderBy => $ARGS{OrderBy},
-%     Order   => $ARGS{Order},
-% );
-
-% my $i = 0;
-% my %total = map { $_ => 0 } @{ $columns{Functions} };
-% while ( my $entry = $report->Next ) {
-<tr class="<% ++$i%2 ? 'evenline' : 'oddline' %>">
-
-% foreach my $column ( @{ $columns{'Groups'} } ) {
-<td class="label collection-as-table"><% $entry->LabelValue( $column ) %></td>
-% }
-
-% my $entry_query = $entry->Query;
-
-% foreach my $column ( @{ $columns{'Functions'} } ) {
-<td class="value collection-as-table">
-% $total{ $column } += $entry->RawValue( $column );
-% my $value = $entry->LabelValue( $column );
-% if ( $entry_query ) {
-<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% "$Query AND $entry_query" |un %>&<% $base_query %>"><% $value %></a>
-% } else {
-<% $value %>
-% }
-</td>
-% }
-
-</tr>
-% }
-
-% $i++;
-<tr class="<% $i%2 ? 'evenline' : 'oddline' %> total">
-<td class="label collection-as-table" colspan="<% scalar @{ $columns{'Groups'} } %>"><% loc('Total') %></td>
-% foreach my $column ( @{ $columns{'Functions'} } ) {
-% if ( !$total{ $column } ) {
-<td class="value collection-as-table">&nbsp;</td>
-% } elsif ( my $code = $report->LabelValueCode( $column ) ) {
-% my $info = $report->ColumnInfo( $column );
-<td class="value collection-as-table"><% $code->( $report, %$info, VALUE => $total{ $column } ) %></td>
-% } else {
-<td class="value collection-as-table"><% $total{ $column } %></td>
-% }
-% }
-</tr>
-
-</table>
+<& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 </div>

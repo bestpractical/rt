@@ -726,6 +726,64 @@ sub Deserialize {
     }
 }
 
+
+sub FormatTable {
+    my $self = shift;
+    my %columns = @_;
+
+    my (@head, @body, @footer);
+
+    @head = ({ cells => []});
+    foreach my $column ( @{ $columns{'Groups'} }, @{ $columns{'Functions'} } ) {
+        push @{ $head[0]{'cells'} }, { type => 'head', value => $self->Label($column) };
+    }
+
+    my $i = 0;
+    while ( my $entry = $self->Next ) {
+        $body[ $i ] = { even => ($i+1)%2, cells => [] };
+        $i++;
+    }
+    @footer = ({ even => ++$i%2, cells => []});
+
+    foreach my $column ( @{ $columns{'Groups'} } ) {
+        $i = 0;
+        while ( my $entry = $self->Next ) {
+            push @{ $body[ $i++ ]{'cells'} }, {
+                type => 'label',
+                value => $entry->LabelValue( $column )
+            };
+        }
+    }
+    push @{ $footer[0]{'cells'} }, {
+        type => 'label',
+        value => $self->loc('Total'),
+        colspan => scalar @{ $columns{'Groups'} },
+    };
+
+    foreach my $column ( @{ $columns{'Functions'} } ) {
+        $i = 0;
+        my $total;
+        while ( my $entry = $self->Next ) {
+            my $raw = $entry->RawValue( $column );
+            $total += $raw if defined $raw && length $raw;
+
+            my $value = $entry->LabelValue( $column );
+            push @{ $body[ $i++ ]{'cells'} }, {
+                type => 'value',
+                value => $value,
+                query => $entry->Query,
+            };
+        }
+        if ( $total and my $code = $self->LabelValueCode( $column ) ) {
+            my $info = $self->ColumnInfo( $column );
+            $total = $code->( $self, %$info, VALUE => $total );
+        }
+        push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
+    }
+
+    return thead => \@head, tbody => \@body, tfoot => \@footer;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

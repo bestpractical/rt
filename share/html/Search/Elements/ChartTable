@@ -1,0 +1,67 @@
+<%ARGS>
+%Table => ()
+$Query => undef
+</%ARGS>
+<%INIT>
+
+my $base_query = $m->comp('/Elements/QueryString',
+    Format  => $ARGS{Format},
+    Rows    => $ARGS{Rows},
+    OrderBy => $ARGS{OrderBy},
+    Order   => $ARGS{Order},
+);
+
+my $interp = $m->interp;
+my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
+my $eu  = sub { $interp->apply_escapes( @_, 'u' ) };
+
+$m->out('<table class="collection-as-table chart">'. "\n");
+foreach my $section (qw(thead tbody tfoot)) {
+    next unless $Table{ $section } && @{ $Table{ $section } };
+
+    $m->out("<$section>\n");
+    foreach my $row ( @{ $Table{ $section } } ) {
+        $m->out('  <tr');
+        $m->out(' class="'. ($row->{'even'}? 'evenline' : 'oddline') .'"')
+            if defined $row->{'even'};
+        $m->out(">");
+
+        foreach my $cell ( @{ $row->{'cells'} } ) {
+            my $tag = $cell->{'type'} eq 'value'? 'td' : 'th';
+            $m->out("<$tag");
+
+            my @class = ('collection-as-table');
+            push @class, ($cell->{'type'}) unless $cell->{'type'} eq 'head';
+            $m->out(' class="'. $eh->( join ' ', @class ) .'"');
+
+            foreach my $dir ( grep $cell->{$_}, qw(rowspan colspan) ) {
+                my $value = int $cell->{ $dir };
+                $m->out(qq{ $dir="$value"});
+            }
+            $m->out('>');
+            if ( defined $cell->{'value'} ) {
+                if ( my $q = $cell->{'query'} ) {
+                    $m->out(
+                        '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html'
+                        .'?Query='. $eu->(join ' AND ', grep defined && length, $Query, $q)
+                        . $eh->('&') . $base_query
+                        . '">'
+                    );
+                    $m->out( $eh->( $cell->{'value'} ) );
+                    $m->out('</a>');
+                }
+                else {
+                    $m->out( $eh->( $cell->{'value'} ) );
+                }
+            }
+            else {
+                $m->out('&nbsp;');
+            }
+            $m->out("</$tag>");
+        }
+        $m->out("</tr>\n");
+    }
+    $m->out("</$section>\n\n");
+}
+$m->out("</table>");
+</%INIT>
