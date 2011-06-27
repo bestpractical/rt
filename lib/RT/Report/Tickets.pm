@@ -476,7 +476,6 @@ sub _DoSearch {
         );
     }
     else {
-        $self->AddEmptyRows;
     }
 }
 
@@ -523,31 +522,6 @@ sub NewItem {
 # This is necessary since normally NewItem (above) is used to intuit the
 # correct class.  However, since we're abusing a subclass, it's incorrect.
 sub _RoleGroupClass { "RT::Ticket" }
-
-
-=head2 AddEmptyRows
-
-If we're grouping on a criterion we know how to add zero-value rows
-for, do that.
-
-=cut
-
-sub AddEmptyRows {
-    my $self = shift;
-    if ( @{ $self->{'_group_by_field'} || [] } == 1 && $self->{'_group_by_field'}[0] eq 'Status' ) {
-        my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
-
-        foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {
-
-            my $record = $self->NewItem;
-            $record->LoadFromHash( {
-                id     => 0,
-                status => $status
-            } );
-            $self->AddRecord($record);
-        }
-    }
-}
 
 { our @SORT_OPS;
 sub __sort_function_we_need_named($$) {
