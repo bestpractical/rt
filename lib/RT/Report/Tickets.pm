@@ -417,20 +417,42 @@ sub SetupGroupings {
         push @{ $res{'Groups'} }, $group_by->{'NAME'};
     }
 
+    %STATISTICS = @STATISTICS unless keys %STATISTICS;
+
     my @function = grep defined && length,
         ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
     foreach my $e ( @function ) {
-        my %args = $self->_StatsToFunction( $e );
-        $args{'TYPE'} = 'statistic';
-        $args{'INFO'} = $STATISTICS{ $e };
-        $args{'META'} = $STATISTICS_META{ $args{'INFO'}[1] };
-        $args{'NAME'} = $self->Column(
-            ALIAS    => $args{'ALIAS'},
-            FIELD    => $args{'FIELD'},
-            FUNCTION => $args{'FUNCTION'},
-        );
-        push @{ $res{'Functions'} }, $args{'NAME'};
-        $column_info{ $args{'NAME'} } = \%args;
+        $e = {
+            TYPE => 'statistic',
+            KEY  => $e,
+            INFO => $STATISTICS{ $e },
+            META => $STATISTICS_META{ $STATISTICS{ $e }[1] },
+
+        };
+        unless ( $e->{'INFO'} && $e->{'META'} ) {
+            $RT::Logger->error("'". $e->{'KEY'} ."' is not valid statistic for report");
+            $e->{'FUNCTION'} = 'NULL';
+            $e->{'NAME'} = $self->Column( FUNCTION => 'NULL' );
+        }
+        elsif ( $e->{'META'}{'Function'} ) {
+            my $code = $self->FindImplementationCode( $e->{'META'}{'Function'} );
+            unless ( $code ) {
+                $e->{'FUNCTION'} = 'NULL';
+                $e->{'NAME'} = $self->Column( FUNCTION => 'NULL' );
+            }
+            else {
+                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. scalar @{ $e->{INFO} } -1 ] );
+                $e->{'NAME'} = $self->Column( %tmp );
+                @{ $e }{'FUNCTION', 'ALIAS', 'FIELD'} = @tmp{'FUNCTION', 'ALIAS', 'FIELD'};
+            }
+        }
+        elsif ( $e->{'META'}{'Calculate'} ) {
+            # ....
+        }
+        else {
+        }
+        push @{ $res{'Functions'} }, $e->{'NAME'};
+        $column_info{ $e->{'NAME'} } = $e;
     }
 
     $self->{'column_info'} = \%column_info;
@@ -480,24 +502,6 @@ sub _FieldToFunction {
     return ('FUNCTION' => 'NULL') unless $code;
 
     return $code->( $self, %args );
-}
-
-sub _StatsToFunction {
-    my $self = shift;
-    my ($stat) = (@_);
-
-    %STATISTICS = @STATISTICS unless keys %STATISTICS;
-
-    my ($display, $type, @args) = @{ $STATISTICS{ $stat } || [] };
-    unless ( $type ) {
-        $RT::Logger->error("'$stat' is not valid statistics for report");
-        return ('FUNCTION' => 'NULL');
-    }
-
-    my $meta = $STATISTICS_META{ $type };
-    return ('FUNCTION' => 'NULL') unless $meta;
-    return ('FUNCTION' => 'NULL') unless $meta->{'Function'};
-    return $meta->{'Function'}->( $self, @args );
 }
 
 
