@@ -447,9 +447,7 @@ sub SetupGroupings {
             }
         }
         elsif ( $e->{'META'}{'Calculate'} ) {
-            # ....
-        }
-        else {
+            $e->{'NAME'} = 'postfunction'. $self->{'postfunctions'}++;
         }
         push @{ $res{'Functions'} }, $e->{'NAME'};
         $column_info{ $e->{'NAME'} } = $e;
@@ -476,6 +474,7 @@ sub _DoSearch {
         );
     }
     else {
+        $self->PostProcessRecords;
     }
 }
 
@@ -577,6 +576,40 @@ sub SortEntries {
         sort __sort_function_we_need_named @data
     ];
 } }
+
+sub PostProcessRecords {
+    my $self = shift;
+
+    my $info = $self->{'column_info'};
+    foreach my $column ( values %$info ) {
+        next unless $column->{'TYPE'} eq 'statistic';
+        next unless $column->{'META'}{'Calculate'};
+
+        $self->CalculatePostFunction( $column );
+    }
+}
+
+sub CalculatePostFunction {
+    my $self = shift;
+    my $info = shift;
+
+    my $code = $self->FindImplementationCode( $info->{'META'}{'Calculate'} );
+    unless ( $code ) {
+        # TODO: fill in undefs
+        return;
+    }
+
+    my $column = $info->{'NAME'};
+
+    my $base_query = $self->{'_sql_query'};
+    foreach my $item ( @{ $self->{'items'} } ) {
+        $item->{'values'}{$column} = $code->(
+            $self,
+            Query => join( ' AND ', grep defined && length, $base_query, $item->Query ),
+        );
+        $item->{'fetched'}{$column} = 1;
+    }
+}
 
 sub GenerateDateFunction {
     my $self = shift;
