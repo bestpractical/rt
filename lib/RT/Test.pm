@@ -1140,7 +1140,7 @@ sub run_mailgate {
 
     $args{after_open} = sub {
         my $child_in = shift;
-        if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
+        if ( Scalar::Util::blessed( $message ) and $message->isa('MIME::Entity') ) {
             $message->print( $child_in );
         } else {
             print $child_in $message;
@@ -1218,7 +1218,7 @@ sub send_via_mailgate {
                  @_
                );
 
-    if ( UNIVERSAL::isa( $message, 'MIME::Entity' ) ) {
+    if ( Scalar::Util::blessed($message) and $message->isa( 'MIME::Entity' ) ) {
         $message = $message->as_string;
     }
 

@@ -476,7 +476,7 @@ sub Load {
 
     if ( $identifier !~ /\D/ ) {
         return $self->SUPER::LoadById( $identifier );
-    } elsif ( UNIVERSAL::isa( $identifier, 'RT::User' ) ) {
+    } elsif ( Scalar::Util::blessed( $identifier ) and $identifier->isa( 'RT::User' ) ) {
         return $self->SUPER::LoadById( $identifier->Id );
     } else {
         return $self->LoadByCol( "Name", $identifier );
@@ -520,7 +520,7 @@ sub LoadOrCreateByEmail {
     my $email = shift;
 
     my ($message, $name);
-    if ( UNIVERSAL::isa( $email => 'Email::Address' ) ) {
+    if ( Scalar::Util::blessed( $email ) and $email->isa( 'Email::Address' ) ) {
         ($email, $name) = ($email->address, $email->phrase);
     } else {
         ($email, $name) = RT::Interface::Email::ParseAddressFromHeader( $email );

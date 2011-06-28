@@ -160,14 +160,15 @@ sub IsValidLink {
     return unless $link && ref $link && $link->Target && $link->Base;
 
     # Skip links to local objects thast are deleted
-    return
-      if $link->TargetURI->IsLocal
-          && ( UNIVERSAL::isa( $link->TargetObj, "RT::Ticket" )
-              && $link->TargetObj->__Value('status') eq "deleted"
-              || UNIVERSAL::isa( $link->BaseObj, "RT::Ticket" )
-              && $link->BaseObj->__Value('status') eq "deleted" );
-
-    return 1;
+    if ( $link->TargetURI->IsLocal and $link->TargetObj->isa("RT::Ticket")
+             and $link->TargetObj->__Value('status') eq "deleted") {
+        return 0;
+    } elsif ($link->BaseURI->IsLocal   and $link->BaseObj->isa("RT::Ticket")
+             and $link->BaseObj->__Value('status') eq "deleted") {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 RT::Base->_ImportOverlays();

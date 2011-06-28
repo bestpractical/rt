@@ -274,7 +274,7 @@ sub LimitCustomField {
     if ( $args{'FIELD'} ) {
 
         my $field_id;
-        if (UNIVERSAL::isa($args{'FIELD'} ,'RT::CustomField')) {
+        if (Scalar::Util::blessed($args{'FIELD'}) and $args{'FIELD'}->isa('RT::CustomField')) {
             $field_id = $args{'FIELD'}->id;
         } elsif($args{'FIELD'} =~ /^\d+$/) {
             $field_id = $args{'FIELD'};
