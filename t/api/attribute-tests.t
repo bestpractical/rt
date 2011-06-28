@@ -12,7 +12,7 @@ my $attribute = "squelch-$runid";
 ok(require RT::Attributes);
 
 my $user = RT::User->new($RT::SystemUser);
-ok (UNIVERSAL::isa($user, 'RT::User'));
+isa_ok ($user, 'RT::User');
 my ($id,$msg)  = $user->Create(Name => 'attrtest-'.$runid);
 ok ($id, $msg);
 ok($user->id, "Created a test user");
@@ -25,7 +25,7 @@ $attr->OrderByCols({ FIELD => 'id' });
 ok(1, $attr->BuildSelectQuery);
 
 
-ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
+isa_ok ($attr,'RT::Attributes');
 
 ($id, $msg) =  $user->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content'); 
 ok ($id, $msg);
