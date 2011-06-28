@@ -334,7 +334,7 @@ sub _GetEquivObjects
     return () unless $args{'Object'};
 
     my @objects = ($args{'Object'});
-    if ( UNIVERSAL::isa( $args{'Object'}, 'RT::Ticket' ) ) {
+    if ( Scalar::Util::blessed( $args{'Object'} ) and $args{'Object'}->isa( 'RT::Ticket' ) ) {
         # If we're looking at ticket rights, we also want to look at the associated queue rights.
         # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
         # we load the queue object and ask all the rest of our questions about the queue.

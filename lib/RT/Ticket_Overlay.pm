@@ -2411,7 +2411,7 @@ sub __GetTicketFromURI {
         return( 0, $msg );
     }
     my $obj = $uri_obj->Resolver->Object;
-    unless ( UNIVERSAL::isa($obj, 'RT::Ticket') && $obj->id ) {
+    unless ( Scalar::Util::blessed($obj) and $obj->isa('RT::Ticket') and $obj->id ) {
         return (1, 'Found not a ticket', undef);
     }
     return (1, 'Found ticket', $obj);

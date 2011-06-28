@@ -335,12 +335,12 @@ sub CastObjectsToRecords
         RT::Shredder::Exception->throw( "Undefined Objects argument" );
     }
 
-    if( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
+    if( Scalar::Util::blessed($targets) and $targets->isa( 'RT::SearchBuilder' ) ) {
         #XXX: try to use ->_DoSearch + ->ItemsArrayRef in feature
         #     like we do in Record with links, but change only when
         #     more tests would be available
         while( my $tmp = $targets->Next ) { push @res, $tmp };
-    } elsif ( UNIVERSAL::isa( $targets, 'RT::Record' ) ) {
+    } elsif ( Scalar::Util::blessed($targets) and $targets->isa( 'RT::Record' ) ) {
         push @res, $targets;
     } elsif ( ref($targets) eq 'ARRAY' ) {
         foreach( @$targets ) {
@@ -409,7 +409,7 @@ sub PutObject
     my %args = ( Object => undef, @_ );
 
     my $obj = $args{'Object'};
-    unless( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
+    unless( Scalar::Util::blessed($obj) and $obj->isa( 'RT::Record' ) ) {
         RT::Shredder::Exception->throw( "Unsupported type '". (ref $obj || $obj || '(undef)')."'" );
     }
 

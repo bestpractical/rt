@@ -99,19 +99,22 @@ sub Create {
                  @_ );
 
     unless (    $args{'Member'}
-             && UNIVERSAL::isa( $args{'Member'}, 'RT::Principal' )
+             && Scalar::Util::blessed( $args{'Member'} )
+             && $args{'Member'}->isa( 'RT::Principal' )
              && $args{'Member'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Member argument");
     }
 
     unless (    $args{'Group'}
-             && UNIVERSAL::isa( $args{'Group'}, 'RT::Principal' )
+             && Scalar::Util::blessed( $args{'Group'} )
+             && $args{'Group'}->isa( 'RT::Principal' )
              && $args{'Group'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Group argument");
     }
 
     unless (    $args{'ImmediateParent'}
-             && UNIVERSAL::isa( $args{'ImmediateParent'}, 'RT::Principal' )
+             && Scalar::Util::blessed( $args{'ImmediateParent'} )
+             && $args{'ImmediateParent'}->isa( 'RT::Principal' )
              && $args{'ImmediateParent'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus ImmediateParent argument");
     }

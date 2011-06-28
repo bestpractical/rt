@@ -148,10 +148,10 @@ sub Next {
         return $self->Next;
     }
     # Skip links to local objects thast are deleted
-    if ( $Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
+    if ( $Link->TargetURI->IsLocal and $Link->TargetObj->isa("RT::Ticket")
              and $Link->TargetObj->__Value('status') eq "deleted") {
         return $self->Next;
-    } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
+    } elsif ($Link->BaseURI->IsLocal   and $Link->BaseObj->isa("RT::Ticket")
              and $Link->BaseObj->__Value('status') eq "deleted") {
         return $self->Next;
     } else {

@@ -134,7 +134,7 @@ sub Create {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
-        $base_id = $object->Id if UNIVERSAL::isa($object, 'RT::Ticket');
+        $base_id = $object->Id if Scalar::Util::blessed($object) and $object->isa('RT::Ticket');
     }
     if ( $target->IsLocal ) {
         my $object = $target->Object;
@@ -142,7 +142,7 @@ sub Create {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }
-        $target_id = $object->Id if UNIVERSAL::isa($object, 'RT::Ticket');
+        $target_id = $object->Id if Scalar::Util::blessed($object) and $object->isa('RT::Ticket');
     }
 
     # {{{ We don't want references to ourself

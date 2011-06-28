@@ -288,7 +288,7 @@ sub Diff {
     my $self = shift;
     my $other = shift;
     $other = time unless defined $other;
-    if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
+    if ( Scalar::Util::blessed( $other ) and $other->isa( 'RT::Date' ) ) {
         $other = $other->Unix;
     }
     return undef unless $other=~ /^\d+$/ && $other > 0;

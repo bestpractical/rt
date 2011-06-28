@@ -107,7 +107,7 @@ sub _Init {
 
     if ( defined $User ) {
 
-        if ( UNIVERSAL::isa( $User, 'RT::User' ) ) {
+        if ( Scalar::Util::blessed($User) and $User->isa( 'RT::User' ) ) {
             $self->LoadById( $User->id );
         }
         elsif ( ref $User ) {

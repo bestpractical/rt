@@ -109,7 +109,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     <td class="value">
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
-% next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
+% next if ($Link->BaseObj->isa( 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
 <li><& ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>

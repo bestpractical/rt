@@ -98,8 +98,9 @@ sub Create {
         @_
     );
 
-    unless ($args{'Group'} &&
-            UNIVERSAL::isa($args{'Group'}, 'RT::Principal') &&
+    unless ($args{'Group'} and
+            Scalar::Util::blessed( $args{'Group'} ) and
+            $args{'Group'}->isa( 'RT::Principal' ) and
             $args{'Group'}->Id ) {
 
         $RT::Logger->warning("GroupMember::Create called with a bogus Group arg");
@@ -111,8 +112,9 @@ sub Create {
         return (undef);
     }
 
-    unless ($args{'Member'} && 
-            UNIVERSAL::isa($args{'Member'}, 'RT::Principal') &&
+    unless ($args{'Member'} and
+            Scalar::Util::blessed( $args{'Member'} ) and
+            $args{'Member'}->isa( 'RT::Principal' ) and
             $args{'Member'}->Id) {
         $RT::Logger->warning("GroupMember::Create called with a bogus Principal arg");
         return (undef);

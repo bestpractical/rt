@@ -101,7 +101,7 @@
     <td class="value">
 % while (my $link = $Object->ReferredToBy->Next) {
 % # Skip reminders
-% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
+% next if ($link->BaseObj->isa('RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
       <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
         <& ShowLink, URI => $link->BaseURI &><br />
 % }

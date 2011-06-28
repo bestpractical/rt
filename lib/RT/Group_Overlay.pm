@@ -1039,7 +1039,7 @@ sub HasMember {
     my $principal = shift;
 
     my $id;
-    if ( UNIVERSAL::isa($principal,'RT::Principal') ) {
+    if ( Scalar::Util::blessed( $principal ) and $principal->isa('RT::Principal') ) {
         $id = $principal->id;
     } elsif ( $principal =~ /^\d+$/ ) {
         $id = $principal;
@@ -1083,7 +1083,7 @@ sub HasMemberRecursively {
     my $principal = shift;
 
     my $id;
-    if ( UNIVERSAL::isa($principal,'RT::Principal') ) {
+    if ( Scalar::Util::blessed( $principal ) and $principal->isa('RT::Principal') ) {
         $id = $principal->id;
     } elsif ( $principal =~ /^\d+$/ ) {
         $id = $principal;

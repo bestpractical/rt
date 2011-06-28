@@ -359,7 +359,7 @@ sub Object {
     my $object_type = $self->__Value('ObjectType');
     my $object;
     eval { $object = $object_type->new($self->CurrentUser) };
-    unless(UNIVERSAL::isa($object, $object_type)) {
+    unless( Scalar::Util::blessed($object) and $object->isa($object_type) ) {
         $RT::Logger->error("Attribute ".$self->Id." has a bogus object type - $object_type (".$@.")");
         return(undef);
      }

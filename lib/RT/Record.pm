@@ -287,7 +287,7 @@ sub Create {
       if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
     my $id = $self->SUPER::Create(%attribs);
-    if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
+    if ( Scalar::Util::blessed($id) and $id->isa( 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
             if (wantarray) {
                 return ( 0,
@@ -1899,7 +1899,7 @@ sub LoadCustomFieldByIdentifier {
     my $field = shift;
     
     my $cf;
-    if ( UNIVERSAL::isa( $field, "RT::CustomField" ) ) {
+    if ( Scalar::Util::blessed($field) and $field->isa( "RT::CustomField" ) ) {
         $cf = RT::CustomField->new($self->CurrentUser);
         $cf->SetContextObject( $self );
         $cf->LoadById( $field->id );
