@@ -815,12 +815,15 @@ sub FormatTable {
         }
 
         my %total;
-        while ( my $entry = $self->Next ) {
-            my $raw = $entry->RawValue( $column ) || {};
-            $raw = { '' => $raw } unless ref $raw;
-            $total{ $_ } += $raw->{ $_ } foreach grep $raw->{$_}, @subs;
+        unless ( $info->{'META'}{'NoTotals'} ) {
+            while ( my $entry = $self->Next ) {
+                my $raw = $entry->RawValue( $column ) || {};
+                $raw = { '' => $raw } unless ref $raw;
+                $total{ $_ } += $raw->{ $_ } foreach grep $raw->{$_}, @subs;
+            }
+            @subs = grep $total{$_}, @subs
+                unless $info->{'META'}{'NoHideEmpty'};
         }
-        @subs = grep $total{$_}, @subs;
 
         my $label = $self->Label( $column );
 
@@ -871,12 +874,19 @@ sub FormatTable {
             $i++;
         }
 
-        my $total_code = $self->LabelValueCode( $column );
-        foreach my $e ( @subs ) {
-            my $total = $total{ $e };
-            $total = $total_code->( $self, %$info, VALUE => $total )
-                if $total_code;
-            push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
+        unless ( $info->{'META'}{'NoTotals'} ) {
+            my $total_code = $self->LabelValueCode( $column );
+            foreach my $e ( @subs ) {
+                my $total = $total{ $e };
+                $total = $total_code->( $self, %$info, VALUE => $total )
+                    if $total_code;
+                push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
+            }
+        }
+        else {
+            foreach my $e ( @subs ) {
+                push @{ $footer[0]{'cells'} }, { type => 'value', value => undef };
+            }
         }
     }
 
