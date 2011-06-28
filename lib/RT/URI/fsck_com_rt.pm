@@ -130,7 +130,7 @@ sub ParseURI {
 
             # We can instantiate any RT::Record subtype. but not anything else
 
-            if ( UNIVERSAL::isa( $type, 'RT::Record' ) ) {
+            if ( $type->isa( 'RT::Record' ) ) {
                 my $record = $type->new( $self->CurrentUser );
                 $record->Load($id);
 
