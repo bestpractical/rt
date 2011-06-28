@@ -784,11 +784,16 @@ sub FormatTable {
 
     foreach my $column ( @{ $columns{'Groups'} } ) {
         $i = 0;
+        my $last;
         while ( my $entry = $self->Next ) {
-            push @{ $body[ $i++ ]{'cells'} }, {
-                type => 'label',
-                value => $entry->LabelValue( $column )
-            };
+            my $value = $entry->LabelValue( $column );
+            if ( !$last || $last->{'value'} ne $value ) {
+                push @{ $body[ $i++ ]{'cells'} }, $last = { type => 'label', value => $value, };
+            }
+            else {
+                $i++;
+                $last->{rowspan} = ($last->{rowspan}||1) + 1;
+            }
         }
     }
     push @{ $footer[0]{'cells'} }, {
