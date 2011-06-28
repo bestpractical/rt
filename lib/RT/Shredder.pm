@@ -342,11 +342,11 @@ sub CastObjectsToRecords
         while( my $tmp = $targets->Next ) { push @res, $tmp };
     } elsif ( UNIVERSAL::isa( $targets, 'RT::Record' ) ) {
         push @res, $targets;
-    } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
+    } elsif ( ref($targets) eq 'ARRAY' ) {
         foreach( @$targets ) {
             push @res, $self->CastObjectsToRecords( Objects => $_ );
         }
-    } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
+    } elsif ( ref($targets) eq 'SCALAR' or not ref($targets) ) {
         $targets = $$targets if ref $targets;
         my ($class, $id) = split /-/, $targets;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
@@ -472,7 +472,7 @@ sub PutResolver
         Code => undef,
         @_,
     );
-    unless( UNIVERSAL::isa( $args{'Code'} => 'CODE' ) ) {
+    unless( ref($args{'Code'}) eq 'CODE' ) {
         die "Resolver '$args{Code}' is not code reference";
     }
 

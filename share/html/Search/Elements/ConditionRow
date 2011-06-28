@@ -62,13 +62,13 @@ $handle_block = sub {
     return $box unless ref $box;
 
     my $name = shift;
-    if ( UNIVERSAL::isa($box, 'ARRAY') ) {
+    if ( ref($box) eq 'ARRAY' ) {
         my $res = '';
         $res .= $handle_block->( $_, $name ) foreach @$box;
         return $res;
     }
 
-    return undef unless UNIVERSAL::isa($box, 'HASH');
+    return undef unless ref($box) eq 'HASH';
     if ( $box->{'Type'} eq 'component' ) {
         $box->{'Arguments'} ||= {},
         return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, Name => $name );

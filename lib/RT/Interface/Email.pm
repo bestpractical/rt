@@ -400,7 +400,7 @@ sub SendEmail {
     }
 
     # if it is a sub routine, we just return it;
-    return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
+    return $mail_command->($args{'Entity'}) if ref( $mail_command ) eq 'CODE';
 
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');

@@ -216,7 +216,7 @@ sub LoadByString
             next;
         }
 
-        $args{$k} = [ $args{$k} ] unless UNIVERSAL::isa( $args{ $k }, 'ARRAY');
+        $args{$k} = [ $args{$k} ] unless ref( $args{ $k } ) eq 'ARRAY';
         push @{ $args{$k} }, $v;
     }
 

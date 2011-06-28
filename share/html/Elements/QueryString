@@ -51,7 +51,7 @@ for my $key (sort keys %ARGS) {
     my $value = $ARGS{$key};
     next unless defined $value;
     $key = $m->interp->apply_escapes( $key, 'u' );
-    if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
+    if( ref($value) eq 'ARRAY' ) {
         push @params,
             map $key ."=". $m->interp->apply_escapes( $_, 'u' ),
                 @$value;

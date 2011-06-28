@@ -1557,7 +1557,7 @@ sub ProcessACLChanges {
         my ( $method, $principal_id, $object_type, $object_id ) = ( $1, $2, $3, $4 );
 
         my @rights;
-        if ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
+        if ( ref($ARGSref->{$arg}) eq 'ARRAY' ) {
             @rights = @{ $ARGSref->{$arg} };
         } else {
             @rights = $ARGSref->{$arg};
@@ -2254,12 +2254,12 @@ sub ProcessColumnMapValue {
     my %args = ( Arguments => [], Escape => 1, @_ );
 
     if ( ref $value ) {
-        if ( UNIVERSAL::isa( $value, 'CODE' ) ) {
+        if ( ref($value) eq 'CODE' ) {
             my @tmp = $value->( @{ $args{'Arguments'} } );
             return ProcessColumnMapValue( ( @tmp > 1 ? \@tmp : $tmp[0] ), %args );
-        } elsif ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
+        } elsif ( ref($value) eq 'ARRAY' ) {
             return join '', map ProcessColumnMapValue( $_, %args ), @$value;
-        } elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
+        } elsif ( ref($value) eq 'SCALAR' ) {
             return $$value;
         }
     }
