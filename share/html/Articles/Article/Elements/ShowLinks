@@ -54,9 +54,9 @@
 <li>
 % if ($link->TargetURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
-% if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+% if ( eval { $member->Object->Name; 1 } ) {
 <%$member->Object->Name%>
-% } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
+% } elsif ( eval { $member->Object->Subject; 1 } ) {
 <%$member->Object->Subject%>
 % }
 </a>
@@ -75,9 +75,9 @@
 <li>
 % if ($member->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
-% if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+% if ( eval { $member->Object->Name; 1 } ) {
 <%$member->Object->Name%>
-% } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
+% } elsif ( eval { $member->Object->Subject; 1 } ) {
 <%$member->Object->Subject%>
 % }
 </a>

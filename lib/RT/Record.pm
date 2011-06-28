@@ -693,9 +693,9 @@ sub _BuildTableAttributes {
     my $class = ref($self) || $self;
 
     my $attributes;
-    if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
+    if ( $self->can( '_CoreAccessible' ) ) {
        $attributes = $self->_CoreAccessible();
-    } elsif ( UNIVERSAL::can( $self, '_ClassAccessible' ) ) {
+    } elsif ( $self->can( '_ClassAccessible' ) ) {
        $attributes = $self->_ClassAccessible();
 
     }
@@ -706,7 +706,7 @@ sub _BuildTableAttributes {
         }
     }
     foreach my $method ( qw(_OverlayAccessible _VendorAccessible _LocalAccessible) ) {
-        next unless UNIVERSAL::can( $self, $method );
+        next unless $self->can( $method );
         $attributes = $self->$method();
 
         foreach my $column ( keys %$attributes ) {
@@ -1013,7 +1013,7 @@ sub _UpdateAttributes {
 
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
-        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
+        $label = $self->Name if $self->can('Name');
         # this requires model names to be loc'ed.
 
 =for loc

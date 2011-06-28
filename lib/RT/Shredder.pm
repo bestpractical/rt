@@ -449,7 +449,7 @@ sub _ParseRefStrArgs
         Carp::croak( "both String and Object args passed" );
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->UID if UNIVERSAL::can($args{'Object'}, 'UID' );
+    return $args{'Object'}->UID if Scalar::Util::blessed($args{'Object'}) and $args{'Object'}->can('UID');
     return '';
 }
 

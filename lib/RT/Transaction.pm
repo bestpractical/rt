@@ -1525,7 +1525,7 @@ sub LoadCustomFieldByIdentifier {
         if ref $field or $field =~ /^\d+$/;
 
     return $self->SUPER::LoadCustomFieldByIdentifier($field)
-        unless UNIVERSAL::can( $self->Object, 'QueueObj' );
+        unless Scalar::Util::blessed($self->Object) and $self->Object->can('QueueObj');
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->Object );

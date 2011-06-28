@@ -458,7 +458,6 @@ sub _RoleClauses {
     my @groups_clauses;
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
-
         my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
 
         if ( my $id = eval { $obj->id } ) {
@@ -510,7 +509,7 @@ sub WhoHaveGroupRight
         foreach my $obj ( @objects ) {
             my $type = ref($obj)? ref($obj): $obj;
             my $id = 0;
-            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+            $id = $obj->id if Scalar::Util::blessed($obj) && $obj->can('id') && $obj->id;
             next if $seen{"$type-$id"}++;
 
             my $object_clause = "$acl.ObjectType = '$type'";
