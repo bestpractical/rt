@@ -771,8 +771,8 @@ sub FormatTable {
     my (@head, @body, @footer);
 
     @head = ({ cells => []});
-    foreach my $column ( @{ $columns{'Groups'} }, @{ $columns{'Functions'} } ) {
-        push @{ $head[0]{'cells'} }, { type => 'head', value => $self->Label($column) };
+    foreach my $column ( @{ $columns{'Groups'} } ) {
+        push @{ $head[0]{'cells'} }, { type => 'head', value => $self->Label( $column ) };
     }
 
     my $i = 0;
@@ -799,23 +799,80 @@ sub FormatTable {
 
     foreach my $column ( @{ $columns{'Functions'} } ) {
         $i = 0;
-        my $total;
-        while ( my $entry = $self->Next ) {
-            my $raw = $entry->RawValue( $column );
-            $total += $raw if defined $raw && length $raw;
 
-            my $value = $entry->LabelValue( $column );
-            push @{ $body[ $i++ ]{'cells'} }, {
-                type => 'value',
-                value => $value,
-                query => $entry->Query,
+        my $info = $self->ColumnInfo( $column );
+
+        my @subs = ('');
+        if ( $info->{'META'}{'SubValues'} ) {
+            @subs = $self->FindImplementationCode( $info->{'META'}{'SubValues'} )->(
+                $self
+            );
+        }
+
+        my %total;
+        while ( my $entry = $self->Next ) {
+            my $raw = $entry->RawValue( $column ) || {};
+            $raw = { '' => $raw } unless ref $raw;
+            $total{ $_ } += $raw->{ $_ } foreach grep $raw->{$_}, @subs;
+        }
+        @subs = grep $total{$_}, @subs;
+
+        my $label = $self->Label( $column );
+
+        unless (@subs) {
+            while ( my $entry = $self->Next ) {
+                push @{ $body[ $i++ ]{'cells'} }, {
+                    type => 'value',
+                    value => undef,
+                    query => $entry->Query,
+                };
+            }
+            push @{ $head[0]{'cells'} }, {
+                type => 'head',
+                value => $label,
+                rowspan => scalar @head,
             };
+            push @{ $footer[0]{'cells'} }, { type => 'value', value => undef };
+            next;
         }
-        if ( $total and my $code = $self->LabelValueCode( $column ) ) {
-            my $info = $self->ColumnInfo( $column );
-            $total = $code->( $self, %$info, VALUE => $total );
+
+        if ( @subs > 1 && @head == 1 ) {
+            $_->{rowspan} = 2 foreach @{ $head[0]{'cells'} };
         }
-        push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
+
+        if ( @subs == 1 ) {
+            push @{ $head[0]{'cells'} }, {
+                type => 'head',
+                value => $label,
+                rowspan => scalar @head,
+            };
+        } else {
+            push @{ $head[0]{'cells'} }, { type => 'head', value => $label, colspan => scalar @subs };
+            push @{ $head[1]{'cells'} }, { type => 'head', value => $_ }
+                foreach @subs;
+        }
+
+        while ( my $entry = $self->Next ) {
+            my $query = $entry->Query;
+            my $value = $entry->LabelValue( $column ) || {};
+            $value = { '' => $value } unless ref $value;
+            foreach my $e ( @subs ) {
+                push @{ $body[ $i ]{'cells'} }, {
+                    type => 'value',
+                    value => $value->{ $e },
+                    query => $query,
+                };
+            }
+            $i++;
+        }
+
+        my $total_code = $self->LabelValueCode( $column );
+        foreach my $e ( @subs ) {
+            my $total = $total{ $e };
+            $total = $total_code->( $self, %$info, VALUE => $total )
+                if $total_code;
+            push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
+        }
     }
 
     return thead => \@head, tbody => \@body, tfoot => \@footer;
