@@ -245,8 +245,7 @@ sub CleanupRequest {
     RT::Principal->InvalidateACLCache();
     DBIx::SearchBuilder::Record::Cachable->FlushCache
       if ( RT->Config->Get('WebFlushDbCacheEveryRequest')
-        and UNIVERSAL::can(
-            'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache' ) );
+        and DBIx::SearchBuilder::Record::Cachable->can( 'FlushCache' ) );
 
     # cleanup global squelching of the mails
     require RT::Action::SendEmail;

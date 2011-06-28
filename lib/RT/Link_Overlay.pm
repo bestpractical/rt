@@ -130,7 +130,7 @@ sub Create {
 
     if ( $base->IsLocal ) {
         my $object = $base->Object;
-        unless (UNIVERSAL::can($object, 'Id')) {
+        unless (Scalar::Util::blessed($object) and $object->can("Id") ) {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
@@ -138,7 +138,7 @@ sub Create {
     }
     if ( $target->IsLocal ) {
         my $object = $target->Object;
-        unless (UNIVERSAL::can($object, 'Id')) {
+        unless (Scalar::Util::blessed($object) and $object->can("Id") ) {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }

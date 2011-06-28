@@ -909,11 +909,11 @@ sub CollectionClassFromLookupType {
     return undef unless $record_class;
 
     my $collection_class;
-    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
+    if ( ($record_class.'Collection')->can('new') ) {
         $collection_class = $record_class.'Collection';
-    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
+    } elsif ( ($record_class.'es')->can('new') ) {
         $collection_class = $record_class.'es';
-    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
+    } elsif ( ($record_class.'s')->can('new') ) {
         $collection_class = $record_class.'s';
     } else {
         $RT::Logger->error("Can not find a collection class for record class '$record_class'");

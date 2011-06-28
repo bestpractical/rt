@@ -213,7 +213,7 @@ specification. but currently doesn't
 sub LanguageHandle {
     my $self = shift;
     if (   !defined $self->{'LangHandle'}
-        || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
+        || !$self->{'LangHandle'}->can( 'maketext' )
         || @_ )
     {
         if ( my $lang = $self->Lang ) {

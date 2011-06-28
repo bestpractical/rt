@@ -442,7 +442,7 @@ sub _ParseRefStrArgs
         Carp::croak( "both String and Object args passed" );
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->_AsString if UNIVERSAL::can($args{'Object'}, '_AsString' );
+    return $args{'Object'}->_AsString if Scalar::Util::blessed($args{'Object'}) and $args{'Object'}->can('_AsString');
     return '';
 }
 

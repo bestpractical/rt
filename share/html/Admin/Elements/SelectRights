@@ -103,7 +103,7 @@ while ( my $ace = $ACLObj->Next ) {
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
     $ACLObj->OrderBy(FIELD=>'RightName'); 
 
-    if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
+    if (Scalar::Util::blessed($Object) && $Object->can('AvailableRights')) {
         %Rights = %{$Object->AvailableRights};
     } 
 

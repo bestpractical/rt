@@ -316,9 +316,7 @@ sub HasRight {
         return (undef);
     }
 
-    if (   defined( $args{'Object'} )
-        && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id ) {
+    if ( eval { $args{'Object'}->id } ) {
 
         push @{ $args{'EquivObjects'} }, $args{'Object'};
     }
@@ -426,7 +424,7 @@ sub _HasGroupRight
         my $type = ref( $obj ) || $obj;
         my $clause = "ACL.ObjectType = '$type'";
 
-        if ( ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id ) {
+        if ( Scalar::Util::blessed($obj) && $obj->can('id') && $obj->id ) {
             $clause .= " AND ACL.ObjectId = ". $obj->id;
         }
 
@@ -484,7 +482,7 @@ sub _HasRoleRight
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = $obj->id if Scalar::Util::blessed($obj) && $obj->can('id') && $obj->id;
 
         my $clause = "Groups.Domain = '$type-Role'";
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
@@ -548,7 +546,7 @@ sub RolesWithRight {
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = $obj->id if Scalar::Util::blessed($obj) && $obj->can('id') && $obj->id;
 
         my $object_clause = "ObjectType = '$type'";
         $object_clause   .= " AND ObjectId = $id" if $id;
@@ -633,7 +631,8 @@ sub _ReferenceId {
     my $scalar = shift;
 
     # just return the value for non-objects
-    return $scalar unless UNIVERSAL::can($scalar, 'id');
+    return $scalar unless Scalar::Util::blessed($scalar);
+    return $scalar unless $scalar->can("id");
 
     return ref($scalar) unless $scalar->id;
 

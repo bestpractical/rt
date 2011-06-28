@@ -1191,7 +1191,7 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
+    if ( Scalar::Util::blessed($self->Object) and $self->Object->can( 'QueueObj' ) ) {
 
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?

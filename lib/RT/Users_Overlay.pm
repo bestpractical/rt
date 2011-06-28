@@ -444,7 +444,7 @@ sub _RoleClauses {
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+        $id = $obj->id if Scalar::Util::blessed($obj) and $obj->can('id') && $obj->id;
 
         my $role_clause = "$groups.Domain = '$type-Role'";
         # XXX: Groups.Instance is VARCHAR in DB, we should quote value
@@ -495,7 +495,7 @@ sub WhoHaveGroupRight
         foreach my $obj ( @objects ) {
             my $type = ref($obj)? ref($obj): $obj;
             my $id;
-            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+            $id = $obj->id if Scalar::Util::blessed($obj) && $obj->can('id') && $obj->id;
 
             my $object_clause = "$acl.ObjectType = '$type'";
             $object_clause   .= " AND $acl.ObjectId   = $id" if $id;

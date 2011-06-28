@@ -88,9 +88,8 @@ Limit the ACL to rights for the object $object. It needs to be an RT::Record cla
 sub LimitToObject {
     my $self = shift;
     my $obj  = shift;
-    unless ( defined($obj)
-        && ref($obj)
-        && UNIVERSAL::can( $obj, 'id' )
+    unless ( Scalar::Util::blessed($obj)
+        && $obj->can('id')
         && $obj->id )
     {
         return undef;
@@ -125,9 +124,8 @@ an RT::Record class.
 sub LimitNotObject {
     my $self = shift;
     my $obj  = shift;
-    unless ( defined($obj)
-        && ref($obj)
-        && UNIVERSAL::can( $obj, 'id' )
+    unless ( Scalar::Util::blessed($obj)
+        && $obj->can('id')
         && $obj->id )
     {
         return undef;

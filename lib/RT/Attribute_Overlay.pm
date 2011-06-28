@@ -142,7 +142,7 @@ sub Create {
                 Object => undef,
 		  @_);
 
-    if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
+    if (Scalar::Util::blessed($args{Object}) and $args{Object}->can('Id')) {
 	    $args{ObjectType} = ref($args{Object});
 	    $args{ObjectId} = $args{Object}->Id;
     } else {

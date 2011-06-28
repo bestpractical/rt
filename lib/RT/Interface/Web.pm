@@ -1003,7 +1003,7 @@ through
 sub loc {
 
     if ( $session{'CurrentUser'}
-        && UNIVERSAL::can( $session{'CurrentUser'}, 'loc' ) )
+        && $session{'CurrentUser'}->can( 'loc' ) )
     {
         return ( $session{'CurrentUser'}->loc(@_) );
     } elsif (
@@ -1038,7 +1038,7 @@ sub loc_fuzzy {
     my $msg = shift;
 
     if ( $session{'CurrentUser'}
-        && UNIVERSAL::can( $session{'CurrentUser'}, 'loc' ) )
+        && $session{'CurrentUser'}->can( 'loc' ) )
     {
         return ( $session{'CurrentUser'}->loc_fuzzy($msg) );
     } else {
