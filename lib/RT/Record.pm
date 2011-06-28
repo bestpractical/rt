@@ -649,6 +649,7 @@ sub __Value {
     }
 
     my $value = $self->SUPER::__Value($field);
+    return $value if ref $value;
 
     return undef if (!defined $value);
 
