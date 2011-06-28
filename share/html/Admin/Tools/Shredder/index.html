@@ -80,16 +80,17 @@ my %messages = ( Errors => [], Success => [] );
 my ($plugin_obj, @objs);
 
 my $catch_non_fatals = sub {
+    my $error = $@;
     require RT::Shredder::Exceptions;
     if ( my $e = RT::Shredder::Exception::Info->caught ) {
         push @{ $messages{Errors} }, "$e";
         $Search = ''; @objs = ();
         return 1;
     }
-    if ( UNIVERSAL::isa( $@, 'Class::Exception' ) ) {
-        $@->rethrow;
+    if ( Scalar::Util::blessed($error) and $error->isa( 'Class::Exception' ) ) {
+        $error->rethrow;
     } else {
-        die $@;
+        die $error;
     }
 };
 
