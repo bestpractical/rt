@@ -475,13 +475,13 @@ sub Create {
         next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
 
         foreach my $value (
-            UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+            ( ref($args{$arg}) eq 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
         {
             next unless defined $value && length $value;
 
             # Allow passing in uploaded LargeContent etc by hash reference
             my ($status, $msg) = $self->_AddCustomFieldValue(
-                (UNIVERSAL::isa( $value => 'HASH' )
+                ((ref($value) eq 'HASH')
                     ? %$value
                     : (Value => $value)
                 ),

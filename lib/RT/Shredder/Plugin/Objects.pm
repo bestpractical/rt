@@ -84,7 +84,7 @@ sub TestArgs
         next unless $args{$name};
 
         my $list = $args{$name};
-        $list = [$list] unless UNIVERSAL::isa( $list, 'ARRAY' );
+        $list = [$list] unless ref($list) eq 'ARRAY';
         push @strings, map "RT::$name\-$_", @$list;
     }
 
