@@ -377,7 +377,8 @@ sub ColumnInfo {
 
 sub ColumnsList {
     my $self = shift;
-    return keys %{ $self->{'column_info'} || {} };
+    return sort { $self->{'column_info'}{$a}{'POSITION'} <=> $self->{'column_info'}{$b}{'POSITION'} }
+        keys %{ $self->{'column_info'} || {} };
 }
 
 sub SetupGroupings {
@@ -393,6 +394,8 @@ sub SetupGroupings {
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
+    my $i = 0;
+
     my @group_by = grep defined && length,
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     foreach my $e ( @group_by ) {
@@ -401,6 +404,7 @@ sub SetupGroupings {
         $e->{'TYPE'} = 'grouping';
         $e->{'INFO'} = $GROUPINGS{ $key };
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
+        $e->{'POSITION'} = $i++;
     }
     $self->GroupBy( map { {
         ALIAS    => $_->{'ALIAS'},
@@ -427,7 +431,7 @@ sub SetupGroupings {
             KEY  => $e,
             INFO => $STATISTICS{ $e },
             META => $STATISTICS_META{ $STATISTICS{ $e }[1] },
-
+            POSITION => $i++,
         };
         unless ( $e->{'INFO'} && $e->{'META'} ) {
             $RT::Logger->error("'". $e->{'KEY'} ."' is not valid statistic for report");
