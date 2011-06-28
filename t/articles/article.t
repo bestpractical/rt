@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 67;
+use RT::Test tests => 66;
 
 use_ok 'RT::Articles';
 use_ok 'RT::Classes';
@@ -21,10 +21,9 @@ ok ($id, $msg);
 
 
 my $article = RT::Article->new($user);
-ok (UNIVERSAL::isa($article, 'RT::Article'));
-ok (UNIVERSAL::isa($article, 'RT::Record'));
-ok (UNIVERSAL::isa($article, 'RT::Record'));
-ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
+isa_ok($article, 'RT::Article');
+isa_ok($article, 'RT::Record');
+isa_ok($article, 'DBIx::SearchBuilder::Record' , "It's a searchbuilder record!");
 
 
 ($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS);

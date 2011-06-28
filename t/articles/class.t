@@ -11,7 +11,7 @@ use_ok 'RT::Class';
 my $root = RT::CurrentUser->new('root');
 ok ($root->Id, "Loaded root");
 my $cl = RT::Class->new($root);
-ok (UNIVERSAL::isa($cl, 'RT::Class'), "the new class is a class");
+isa_ok($cl, 'RT::Class', "the new class is a class");
 
 my ($id, $msg) = $cl->Create(Name => 'Test-'.$$, Description => 'A test class');
 
@@ -50,7 +50,7 @@ ok ($u->Id, "Created a new user");
 
 # Make sure you can't create a group with no acls
 $cl = RT::Class->new($u);
-ok (UNIVERSAL::isa($cl, 'RT::Class'), "the new class is a class");
+isa_ok($cl, 'RT::Class', "the new class is a class");
 
 ($id, $msg) = $cl->Create(Name => 'Test-nobody'.$$, Description => 'A test class');
 
