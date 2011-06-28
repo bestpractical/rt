@@ -87,9 +87,20 @@ sub LabelValue {
         return $code->( $self, %{ $self->ColumnInfo( $name ) }, VALUE => $raw );
     }
 
-    return $self->loc('(no value)') unless defined $raw && length $raw;
-    return $self->loc($raw) if $self->ColumnInfo( $name )->{'META'}{'Localize'};
-    return $raw;
+    unless ( ref $raw ) {
+        return $self->loc('(no value)') unless defined $raw && length $raw;
+        return $self->loc($raw) if $self->ColumnInfo( $name )->{'META'}{'Localize'};
+        return $raw;
+    } else {
+        my $loc = $self->ColumnInfo( $name )->{'META'}{'Localize'};
+        my %res = %$raw;
+        if ( $loc ) {
+            $res{ $self->loc($_) } = delete $res{ $_ } foreach keys %res;
+            $_ = $self->loc($_) foreach values %res;
+        }
+        $_ = $self->loc('(no value)') foreach grep !defined || !length, values %res;
+        return \%res;
+    }
 }
 
 sub RawValue {
