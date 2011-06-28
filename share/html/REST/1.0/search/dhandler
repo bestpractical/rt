@@ -136,12 +136,14 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
                 goto OUTPUT;
             }
 
+            if ( ! $search_whitelist{$type}{lc $field} ) {
+                $status = "400 Bad Request";
+                $output = "Invalid field specification: $field";
+                goto OUTPUT;
+            }
+
+
             if ( $field && $op && defined $value ) {
-                if ( $type eq 'user' && $field =~ /password/i ) {
-                    $status = "400 Bad Request";
-                    $output = "Invalid field specification: $field";
-                    goto OUTPUT;
-                }
 
                 $objects->Limit(
                     FIELD    => $field,
@@ -239,3 +241,25 @@ OUTPUT:
 $m->out("RT/". $RT::VERSION . " " . $status ."\n\n");
 $m->out($output );
 </%INIT>
+
+<%ONCE>
+my %search_whitelist = (
+    queue => {
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::Queue'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::Queue'} }
+    },
+    user => {
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::User'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::User'} }
+    },
+    group => {
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::Group'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::Group'} }
+    }
+);
+
+</%ONCE>
+
