@@ -313,7 +313,7 @@ sub Create {
 
    }
 
-    if  (UNIVERSAL::isa('errno',$id)) {
+    if (Scalar::Util::blessed($id) and $id->isa('errno')) {
         return(undef);
     }
 
