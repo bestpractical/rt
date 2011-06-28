@@ -56,23 +56,10 @@ $ChartStyle => 'bars'
 use GD;
 use GD::Text;
 
-@ChartFunction = grep defined && length, @ChartFunction;
-$ChartStyle = 'bars' if @ChartFunction > 1;
-
-my $chart_class;
-if ($ChartStyle eq 'pie') {
-    require GD::Graph::pie;
-    $chart_class = "GD::Graph::pie";
-} else {
-    require GD::Graph::bars;
-    $chart_class = "GD::Graph::bars";
-}
-
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
 my %columns;
-
 if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
     %columns = %{ $data->{'columns'} };
     $report->Deserialize( $data->{'report'} );
@@ -100,13 +87,21 @@ my $min_value;
 my $max_key_length = 0;
 while ( my $entry = $report->Next ) {
     my $key = join ' - ', map $entry->LabelValue( $_ ), @{ $columns{'Groups'} };
-
-    my @values = map $entry->RawValue($_), @{ $columns{'Functions'} };
-    if ($chart_class eq 'GD::Graph::pie') {
-        $key .= ' - '. $entry->LabelValue( $columns{'Functions'}[0] );
-    }
-
     push @{ $data[0] }, $key;
+
+    my @values;
+    foreach my $column ( @{ $columns{'Functions'} } ) {
+        my $v = $entry->RawValue( $column );
+        unless ( ref $v ) {
+            push @values, $v;
+            next;
+        }
+
+        my @subs = $report->FindImplementationCode(
+            $report->ColumnInfo( $column )->{'META'}{'SubValues'}
+        )->( $report );
+        push @values, map $v->{$_}, @subs;
+    }
 
     my $i = 0;
     push @{ $data[++$i] }, $_ foreach @values;
@@ -116,6 +111,23 @@ while ( my $entry = $report->Next ) {
         $min_value = $v if !defined $min_value || $min_value > $v;
     }
     $max_key_length = length $key if $max_key_length < length $key;
+}
+
+$ChartStyle = 'bars' if @data > 2;
+if ( $ChartStyle eq 'pie' ) {
+    my $i = 0;
+    while ( my $entry = $report->Next ) {
+        $data[0][$i++] .= ' - '. $entry->LabelValue( $columns{'Functions'}[0] );
+    }
+}
+
+my $chart_class;
+if ($ChartStyle eq 'pie') {
+    require GD::Graph::pie;
+    $chart_class = "GD::Graph::pie";
+} else {
+    require GD::Graph::bars;
+    $chart_class = "GD::Graph::bars";
 }
 
 my %font_config = RT->Config->Get('ChartFont');
