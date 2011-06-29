@@ -61,7 +61,11 @@ use Locale::PO;
 $| = 1;
 
 # po dir is for extensions
-@ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
+@ARGV = (glob("share/po/*.po"),
+         glob("share/po/*.pot"),
+         glob("po/*.po"),
+         glob("po/*.pot"),
+     ) unless @ARGV;
 
 our %FILECAT;
 

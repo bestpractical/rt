@@ -87,7 +87,7 @@ if (($opts{source} || '') =~ /\.tar\.gz$/ and -f $opts{source}) {
     $tmpdir = File::Temp->newdir();
 
     system("tar", "xzpf", $opts{source}, "-C", $tmpdir);
-    $opts{source} = first { -d $_ } <$tmpdir/*>;
+    $opts{source} = first { -d $_ } glob("$tmpdir/*");
 
     die "Can't find directory to chdir into after unpacking tarball"
         unless $opts{source};
@@ -142,7 +142,7 @@ else {
 
 # Manually "convert" README* and 3.8-era UPGRADING* to HTML and push them into
 # the known contents.
-for my $file (<README* UPGRADING*>) {
+for my $file (glob("README*"), glob("UPGRADING*")) {
     (my $name = $file) =~ s{^.+/}{};
     my $dest = "$opts{to}/$name.html";
 

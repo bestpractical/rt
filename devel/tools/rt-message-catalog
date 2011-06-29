@@ -98,7 +98,7 @@ sub stats {
     my $max = 0;
     my %res = ();
 
-    foreach my $po_file (<$dir/*.po>) {
+    foreach my $po_file (glob("$dir/*.po")) {
         my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
 
         $res{$po_file} = 0;
@@ -125,7 +125,7 @@ sub stats {
 sub clean {
     my $dir = shift || PO_DIR;
 
-    foreach my $po_file (<$dir/*.po>) {
+    foreach my $po_file (glob("$dir/*.po")) {
         my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
         foreach my $entry ( splice @$array, 1 ) {
             # Replace identical translations with the empty string
@@ -165,7 +165,7 @@ sub rosetta {
         die "Is not URL or directory: '$url'";
     }
 
-    my @files = ( <$dir/*/*/*.po>, <$dir/*/*.po>, <$dir/*.po> );
+    my @files = ( glob("$dir/*/*/*.po"), glob("$dir/*/*.po"), glob("$dir/*.po") );
     unless ( @files ) {
         print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
         exit;

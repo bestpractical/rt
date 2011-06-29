@@ -59,10 +59,10 @@ my $msgid_regex   = qr#$msgid_pattern#o;
 my $code_str  = shift;
 
 @ARGV = (
-    <share/po/*.po>,
-    <share/po/*.pot>,
-    <po/*.po>,
-    <po/*.pot>
+    glob("share/po/*.po"),
+    glob("share/po/*.pot"),
+    glob("po/*.po"),
+    glob("po/*.pot"),
 ) unless @ARGV;
 
 my @files = @ARGV;
