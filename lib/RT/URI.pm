@@ -188,22 +188,10 @@ sub _GetResolver {
     my $scheme = shift;
 
     $scheme =~ s/(\.|-)/_/g;
-    my $resolver;
+    my $class = "RT::URI::$scheme";
 
-    
-    eval " 
-        require RT::URI::$scheme;
-        \$resolver = RT::URI::$scheme->new(\$self->CurrentUser);
-    ";
-     
-    if ($resolver) {
-        $self->{'resolver'} = $resolver;
-    } else {
-        RT->Logger->warning("Failed to create new resolver object for scheme '$scheme': $@")
-            if $@ !~ m{Can't locate RT/URI/\Q$scheme\E};
-        $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
-    }
-
+    $class = "RT::URI::base" unless $class->require;
+    $self->{'resolver'} = $class->new($self->CurrentUser);
 }
 
 
