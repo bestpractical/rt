@@ -123,7 +123,7 @@ sub IsApplicable {
         return 0 unless grep lc($new) eq lc($_),
             map {m/^(initial|active|inactive)$/i? $lifecycle->Valid(lc $_): $_ }
             grep defined && length,
-            map { s/^\s+//; s/\s+$//; $_ }
+            map { my $v = $_; $v =~ s/^\s+//; $v =~ s/\s+$//; $v }
             split /,/, $new_must_be;
     }
     if ( $old_must_be ) {
@@ -131,7 +131,7 @@ sub IsApplicable {
         return 0 unless grep $old eq lc($_),
             map {m/^(initial|active|inactive)$/i? $lifecycle->Valid(lc $_): $_ }
             grep defined && length,
-            map { s/^\s+//; s/\s+$//; $_ }
+            map { my $v = $_; $v =~ s/^\s+//; $v =~ s/\s+$//; $v }
             split /,/, $old_must_be;
     }
     return 1;

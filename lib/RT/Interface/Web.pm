@@ -3298,10 +3298,11 @@ sub _NormalizeObjectCustomFieldValue {
             if defined $args{'Value'};
     }
     @values = grep length, map {
-        s/\r+\n/\n/g;
-        s/^\s+//;
-        s/\s+$//;
-        $_;
+        my $value = $_;
+        $value =~ s/\r+\n/\n/g;
+        $value =~ s/^\s+//;
+        $value =~ s/\s+$//;
+        $value;
         }
         grep defined, @values;
 

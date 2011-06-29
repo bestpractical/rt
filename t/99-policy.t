@@ -117,7 +117,7 @@ check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no
     for grep {m{^s?bin/}} @files;
 
 check( $_, compile_perl => 1, exec => 1 )
-    for grep { -f $_ } map { s/\.in$//; $_ } grep {m{^s?bin/}} @files;
+    for grep { -f $_ } map { my $v = $_; $v =~ s/\.in$//; $v } grep {m{^s?bin/}} @files;
 
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
@@ -147,7 +147,7 @@ check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no
     for grep {m{^etc/upgrade/[^/]+$}} @files;
 
 check( $_, compile_perl => 1, exec => 1 )
-    for grep{ -f $_} map {s/\.in$//; $_} grep {m{^etc/upgrade/[^/]+$}} @files;
+    for grep{ -f $_} map {my $v = $_; $v =~ s/\.in$//; $v} grep {m{^etc/upgrade/[^/]+$}} @files;
 
 check( $_, exec => -1 )
     for grep {m{^(devel/)?docs/}} @files;

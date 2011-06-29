@@ -1119,7 +1119,7 @@ sub _LoadConfig {
         };
         local *Plugin = sub {
             my (@new_plugins) = @_;
-            @new_plugins = map {s/-/::/g if not /:/; $_} @new_plugins;
+            s/-/::/g for grep {not /:/} @new_plugins;
             my ( $pack, $file, $line ) = caller;
             return $self->SetFromConfig(
                 Option     => \@RT::Plugins,
@@ -1216,7 +1216,7 @@ sub Configs {
         my @files = glob $mask;
         @files = grep !/^RT_Config\.pm$/,
             grep $_ && /^\w+_Config\.pm$/,
-            map { s/^.*[\\\/]//; $_ } @files;
+            map { m/^.*[\\\/](.*)/ ? $1 : $_ } @files;
         push @configs, sort @files;
     }
 

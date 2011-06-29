@@ -822,13 +822,18 @@ sub BriefDescriptionAsHTML {
 
 sub _ProcessReturnValues {
     my $self   = shift;
-    my @values = @_;
-    return map {
-        if    (ref eq 'ARRAY')  { $_ = join "", $self->_ProcessReturnValues(@$_) }
-        elsif (ref eq 'SCALAR') { $_ = $$_ }
-        else                    { RT::Interface::Web::EscapeHTML(\$_) }
-        $_
-    } @values;
+    my @values;
+    for my $v (@_) {
+        if      (ref($v) eq 'ARRAY')  {
+            push @values, join("", $self->_ProcessReturnValues(@$v));
+        } elsif (ref($v) eq 'SCALAR') {
+            push @values, $$v;
+        } else {
+            RT::Interface::Web::EscapeHTML(\$v);
+            push @values, $v;
+        }
+    }
+    return @values;
 }
 
 sub _FormatPrincipal {
