@@ -233,7 +233,7 @@ sub AddTicket {
     my @fields = $self->_PropertiesToFields( %args );
     if ( @fields ) {
         unshift @fields, $args{'Ticket'}->id;
-        my $label = join ' | ', map { s/(?=[{}|><])/\\/g; $_ } @fields;
+        my $label = join ' | ', map { my $f = $_; $f =~ s/(?=[{}|><])/\\/g; $f } @fields;
         $label = "{ $label }" if ($args{'Direction'} || 'TB') =~ /^(?:TB|BT)$/;
         $node_style{'label'} = gv_escape( $label );
         $node_style{'shape'} = 'record';

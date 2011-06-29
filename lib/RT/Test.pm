@@ -1150,7 +1150,7 @@ sub apache_server_info {
     %res = (%res, %opts);
 
     $res{'modules'} = [
-        map {s/^\s+//; s/\s+$//; $_}
+        map {my $mod = $_; $mod =~ s/^\s+//; $mod =~ s/\s+$//; $mod}
         grep $_ !~ /Compiled in modules/i,
         split /\r*\n/, `$bin -l`
     ];

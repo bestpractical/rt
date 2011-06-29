@@ -1215,10 +1215,11 @@ sub CreateTicket {
                 @values = split /\r*\n/, $ARGS{$arg};
             }
             @values = grep length, map {
-                s/\r+\n/\n/g;
-                s/^\s+//;
-                s/\s+$//;
-                $_;
+                my $value = $_;
+                $value =~ s/\r+\n/\n/g;
+                $value =~ s/^\s+//;
+                $value =~ s/\s+$//;
+                $value;
                 }
                 grep defined, @values;
 
@@ -1863,10 +1864,11 @@ sub _ProcessObjectCustomFieldUpdates {
                 if defined $args{'ARGS'}->{$arg};
         }
         @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
+            my $value = $_;
+            $value =~ s/\r+\n/\n/g;
+            $value =~ s/^\s+//;
+            $value =~ s/\s+$//;
+            $value;
             }
             grep defined, @values;
 

@@ -655,7 +655,7 @@ sub Configs {
         my @files = glob $mask;
         @files = grep !/^RT_Config\.pm$/,
             grep $_ && /^\w+_Config\.pm$/,
-            map { s/^.*[\\\/]//; $_ } @files;
+            map { m/^.*[\\\/](.*)/ ? $1 : $_ } @files;
         push @configs, sort @files;
     }
 

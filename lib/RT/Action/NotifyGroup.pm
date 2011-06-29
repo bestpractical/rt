@@ -182,7 +182,12 @@ sub __HandleGroupArgument {
 }
 
 sub __SplitArg {
-    return grep length, map {s/^\s+//; s/\s+$//; $_} split /,/, $_[1];
+    return grep length, map {
+        my $arg = $_;
+        $arg =~ s/^\s+//;
+        $arg =~ s/\s+$//;
+        $arg;
+    } split /,/, $_[1];
 }
 
 sub __PushUserAddress {

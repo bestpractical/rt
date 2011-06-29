@@ -95,7 +95,7 @@ sub QueryToSQL {
     my $self     = shift;
     my $query    = shift || $self->Argument;
 
-    my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
+    my @keywords = grep length, map { my $word = $_; $word =~ s/^\s+//; $word =~ s/\s+$//; $word }
         split /((?:fulltext:)?$re_delim|\s+)/o, $query;
 
     my (
@@ -185,7 +185,7 @@ sub QueryToSQL {
     }
     push @tql_clauses, join( " OR ", sort @user_clauses );
     push @tql_clauses, join( " OR ", sort @queue_clauses );
-    @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
+    @tql_clauses = map {"( $_ )"} grep { $_ } @tql_clauses;
     return join " AND ", sort @tql_clauses;
 }
 # }}}

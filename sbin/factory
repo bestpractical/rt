@@ -129,7 +129,7 @@ my $dsn = "DBI:$driver:database=$database;host=$hostname";
 my $dbh = DBI->connect( $dsn, $user, $password );
 
 #get all tables out of database
-my @tables = map { s/^\`\Q$database\E\`\.//; $_ } $dbh->tables();
+my @tables = map { m/^\`\Q$database\E\`\.(.*)/ ? $1 : $_ } $dbh->tables();
 
 my ( %tablemap, $typemap, %modulemap );
 

@@ -882,7 +882,7 @@ sub FriendlyLookupType {
     return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
                      if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
 
-    my @types = map { s/^RT::// ? $self->loc($_) : $_ }
+    my @types = map { m/^RT::(.*)/ ? $self->loc($1) : $_ }
       grep { defined and length }
       split( /-/, $lookup )
       or return;
