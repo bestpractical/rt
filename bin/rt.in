@@ -1165,7 +1165,8 @@ sub submit {
         my ($self, $file) = @_;
         $file ||= $self->{file};
 
-        open(my $f, '<', $file) && do {
+        my $f;
+        open($f, '<', $file) && do {
             $self->{file} = $file;
             my $sids = $self->{sids} = {};
             while (<$f>) {
@@ -1185,7 +1186,8 @@ sub submit {
         my ($self, $file) = shift;
         $file ||= $self->{file};
 
-        open(my $f, '>', $file) && do {
+        my $f;
+        open($f, '>', $file) && do {
             my $sids = $self->{sids};
             foreach my $server (keys %$sids) {
                 foreach my $user (keys %{ $sids->{$server} }) {
@@ -1427,7 +1429,8 @@ sub parse_config_file {
     my ($file) = @_;
     local $_; # $_ may be aliased to a constant, from line 1163
 
-    open(my $cfg, '<', $file) && do {
+    my $cfg;
+    open($cfg, '<', $file) && do {
         while (<$cfg>) {
             chomp;
             next if (/^#/ || /^\s*$/);
