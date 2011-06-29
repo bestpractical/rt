@@ -193,7 +193,7 @@ sub usage {
 parse_args();
 
 {
-    eval "main::$cmd()";
+    main->can($cmd)->();
     if ( $@ ) {
         print STDERR $@ ."\n";
     }
