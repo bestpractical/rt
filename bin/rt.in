@@ -213,10 +213,10 @@ sub help {
     if (!%help) {
         local $/ = undef;
         foreach my $item (@{ Form::parse(<DATA>) }) {
-            my $title = $item->[2]{Title};
-            my @titles = ref $title eq 'ARRAY' ? @$title : $title;
+            my $titleref = $item->[2]{Title};
+            my @titles = ref $titleref eq 'ARRAY' ? @$titleref : $titleref;
 
-            foreach $title (grep $_, @titles) {
+            foreach my $title (grep $_, @titles) {
                 $help{$title} = $item->[2]{Text};
             }
         }
@@ -588,7 +588,6 @@ sub edit {
 
             foreach my $form (@$forms) {
                 my ($c, $o, $k, $e) = @$form;
-                my ($key, $val);
 
                 next if ($e || !@$o);
 
@@ -597,14 +596,14 @@ sub edit {
                 local %set = %set;
 
                 # Make changes to existing fields.
-                foreach $key (@$o) {
+                foreach my $key (@$o) {
                     if (exists $add{lc $key}) {
-                        $val = delete $add{lc $key};
+                        my $val = delete $add{lc $key};
                         vpush($k, $key, $val);
                         $k->{$key} = vsplit($k->{$key}) if $val =~ /[,\n]/;
                     }
                     if (exists $del{lc $key}) {
-                        $val = delete $del{lc $key};
+                        my $val = delete $del{lc $key};
                         my %val = map {$_=>1} @{ vsplit($val) };
                         $k->{$key} = vsplit($k->{$key});
                         @{$k->{$key}} = grep {!exists $val{$_}} @{$k->{$key}};
@@ -615,8 +614,8 @@ sub edit {
                 }
                 
                 # Then update the others.
-                foreach $key (keys %set) { vpush($k, $key, $set{$key}) }
-                foreach $key (keys %add) {
+                foreach my $key (keys %set) { vpush($k, $key, $set{$key}) }
+                foreach my $key (keys %add) {
                     vpush($k, $key, $add{$key});
                     $k->{$key} = vsplit($k->{$key});
                 }
@@ -1321,13 +1320,13 @@ sub Form::compose {
 
             foreach my $key (@$o) {
                 my ($line, $sp);
-                my $v = $k->{$key};
-                my @values = ref $v eq 'ARRAY' ? @$v : $v;
+                my $vref = $k->{$key};
+                my @values = ref $vref eq 'ARRAY' ? @$vref : $vref;
 
                 $sp = " "x(length("$key: "));
                 $sp = " "x4 if length($sp) > 16;
 
-                foreach $v (@values) {
+                foreach my $v (@values) {
                     if ($v =~ /\n/) {
                         $v =~ s/^/$sp/gm;
                         $v =~ s/^$sp//;

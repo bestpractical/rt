@@ -61,8 +61,8 @@
 </form>
 <%INIT>
 
-my (@results, $arg);
-foreach $arg (keys %ARGS) {
+my (@results);
+foreach my $arg (keys %ARGS) {
     next unless ($arg =~ /^Delegate-Existing-ACE-(\d+)-to-(\d+)-as-(\d+)$/);
        my $parent = $1;
        my $principal = $2;
@@ -75,7 +75,7 @@ foreach $arg (keys %ARGS) {
        }
 }
 
-foreach $arg (keys %ARGS) { 
+foreach my $arg (keys %ARGS) {
     next unless ($arg =~ /^Delegate-ACE-(\d+)-to-(\d+)$/);
     my $parent = $1;
     my $principal = $2;
