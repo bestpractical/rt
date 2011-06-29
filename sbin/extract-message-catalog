@@ -60,7 +60,11 @@ use vars qw($DEBUG $FILECAT);
 $DEBUG = 1;
 
 # po dir is for extensions
-@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
+@ARGV = (glob "lib/RT/I18N/*.po",
+         glob "lib/RT/I18N/*.pot",
+         glob "po/*.po",
+         glob "po/*.pot"
+     ) unless @ARGV;
 
 $FILECAT = {};
 
