@@ -156,10 +156,10 @@ $template =~ s/\$TOOLS/$FindBin::Bin/g;
 $template =~ s/\$PROCESSES/$opt{single} ? 1 : 3/ge;
 
 my $conf = "$opt{root}/var/apache.conf";
-open(CONF, ">", $conf)
+open( my $apache_conf_fh, ">", $conf)
     or die "Can't write $conf: $!";
-print CONF $template;
-close CONF;
+print $apache_conf_fh $template;
+close $apache_conf_fh;
 
 my @opts = ("-f", $conf, "-D" . uc($mod) );
 push @opts, "-DSSL" if $opt{ssl};
@@ -169,10 +169,10 @@ push @opts, "-DREDIRECT" if $path;
 push @opts, "-DAUTH" if $opt{auth};
 
 # Wait for a previous run to terminate
-if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
-    my $pid = <PIDFILE>;
+if ( open( $pidfh, "<", "$opt{root}/var/apache2.pid") ) {
+    my $pid = <$pidfh>;
     chomp $pid;
-    close PIDFILE;
+    close $pidfh;
     if ($pid and kill 0, $pid) {
         warn "Waiting for previous run (pid $pid) to finish...\n";
         sleep 1 while kill 0, $pid;
@@ -199,13 +199,13 @@ sub parseconf {
     my ($optname) = @_;
     # We're going to be evil, and try to parse the config
     unless (defined $RTCONF) {
-        unless ( open(CONF, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
+        unless ( open( $conffh, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
             warn "Can't open $opt{root}/etc/RT_SiteConfig.pm: $!\n";
             $RTCONF = "";
             return;
         }
-        $RTCONF = join("", <CONF>);
-        close CONF;
+        $RTCONF = join("", <$conffh>);
+        close $conffh;
     }
 
     return unless $RTCONF =~ /^\s*Set\(\s*\$$optname\s*(?:,|=>)\s*['"]?(.*?)['"]?\s*\)/m;

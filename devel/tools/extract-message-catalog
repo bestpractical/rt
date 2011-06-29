@@ -120,7 +120,6 @@ foreach my $dict (@ARGV) {
 sub extract_strings_from_code {
     my $file = $_;
 
-    local $/;
     return if ( -d $_ || !-e _ );
     return
       if ( $File::Find::dir =~
@@ -136,10 +135,14 @@ sub extract_strings_from_code {
     $filename =~ s'^\./'';
     $filename =~ s'\.in$'';
 
-    unless (open _, '<', $file) {
+    my $fh;
+    unless (open $fh, '<', $file) {
         print "\n  Cannot open $file for reading ($!), skipping.\n\n";
         return;
     }
+    local $/;
+    $_ = <$fh>;
+    close $fh;
 
     my $errors = 0;
 
@@ -151,7 +154,6 @@ sub extract_strings_from_code {
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
-    $_ = <_>;
 
     # Mason filter: <&|/l>...</&> and <&|/l_unsafe>...</&>
     my $line = 1;
@@ -317,7 +319,6 @@ sub extract_strings_from_code {
         print "\r", " " x 100, "\r";
     }
 
-    close (_);
 }
 
 sub uniq {

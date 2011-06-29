@@ -627,13 +627,13 @@ ok( $id, 'new ticket created' );
 is( $tick->Owner, RT->Nobody->Id, 'owner of the new ticket is nobody' );
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open(my $mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
 
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ($? >> 8, 0, "The mail gateway exited normally");
 
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
@@ -655,14 +655,14 @@ $m->no_warnings_ok;
 
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
+print $mailgate <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] correspondence
 
 test
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ($? >> 8, 0, "The mail gateway exited normally");
 
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
@@ -682,13 +682,13 @@ $m->no_warnings_ok;
 
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
 
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ($? >> 8, 0, "The mail gateway exited normally");
 
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
@@ -719,13 +719,13 @@ my $rtname = RT->Config->Get('rtname');
 $m->no_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ( $? >> 8, 0, "mailgate exited normally" );
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
@@ -741,14 +741,14 @@ $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ( $? >> 8, 0, "mailgate exited normally" );
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
@@ -760,14 +760,14 @@ $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ( $? >> 8, 0, "mailgate exited normally" );
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
@@ -805,14 +805,14 @@ ok( $status, "successfuly granted right: $msg" );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;
-ok(open(MAIL, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+ok(open($mailgate, '|-', "$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
+print $mailgate <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 take-correspond with reply right granted to owner role
 EOF
-close (MAIL);
+close ($mailgate) or die "Failed to write to mailgate: $!";
 is ( $? >> 8, 0, "mailgate exited normally" );
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
 

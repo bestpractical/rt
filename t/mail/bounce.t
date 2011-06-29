@@ -30,12 +30,12 @@ EOM
 }
 
 
-open(LOG, "<", $ENV{RT_MAILLOGFILE}) or die "Can't open log file: $!";
+open(my $log, "<", $ENV{RT_MAILLOGFILE}) or die "Can't open log file: $!";
 my $fcount;
-while (my $line = <LOG>) {
+while (my $line = <$log>) {
     $fcount++ if $line =~ /^-f/;
 }
-close(LOG);
+close($log) or die "Failed to read log file: $!";
 # RT_MAILLOGFILE will contain all the command line flags if you need them
 is($fcount,1,"Only one -f specified to sendmail command");
 

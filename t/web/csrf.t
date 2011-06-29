@@ -135,10 +135,10 @@ $m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 
 my $logofile = "$RT::StaticPath/images/bpslogo.png";
-open LOGO, "<", $logofile or die "Can't open logo file: $!";
-binmode LOGO;
-my $logo_contents = do {local $/; <LOGO>};
-close LOGO;
+open my $fh, "<", $logofile or die "Can't open logo file: $!";
+binmode $fh;
+my $logo_contents = do {local $/; <$fh>};
+close $fh or die "Failed to read logo: $!";
 $m->field('Attach',  $logofile);
 
 # Lose the referer before the POST

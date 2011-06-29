@@ -5,19 +5,19 @@ use warnings;
 
 die "No \$RT_MAILLOGFILE set in environment"
     unless $ENV{RT_MAILLOGFILE};
-open LOG, ">", $ENV{RT_MAILLOGFILE}
+open my $log, ">", $ENV{RT_MAILLOGFILE}
     or die "Can't write to $ENV{RT_MAILLOGFILE}: $!";
 
 my $needs_newline;
 for (@ARGV) {
     if (/^-/) {
-        print LOG "\n" if $needs_newline++;
-        print LOG $_;
+        print $log "\n" if $needs_newline++;
+        print $log $_;
     } else {
-        print LOG " $_";
+        print $log " $_";
     }
 }
-print LOG "\n";
+print $log "\n";
 
 1 while $_ = <STDIN>;
 

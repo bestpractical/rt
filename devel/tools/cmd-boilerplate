@@ -58,9 +58,9 @@ sub tag_it {
         my $file = $_;
         return unless (-f $file);
         return if $file !~ /.in$/;
-        open( FILE, '<', $file ) or die "Failed to open $file";
-        my $content = (join "", <FILE>);
-        close (FILE);
+        open( my $fh, '<', $file ) or die "Failed to open $file";
+        my $content = (join "", <fh>);
+        close ($fh);
         my $new = q'BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
     require Cwd;
@@ -82,8 +82,8 @@ sub tag_it {
 
         warn $file;
  
-        open( FILE, '>', $file ) or die "couldn't write new file";
-        print FILE $content;
-        close FILE;
+        open( $fh, '>', $file ) or die "couldn't write new file";
+        print $fh $content;
+        close $fh;
 
 }
