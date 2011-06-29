@@ -105,7 +105,6 @@ foreach my $dict (@ARGV) {
 sub extract_strings_from_code {
     my $file = $_;
 
-    local $/;
     return if ( -d $_ );
     return
       if ( $File::Find::dir =~
@@ -120,10 +119,14 @@ sub extract_strings_from_code {
     $filename =~ s'^\./'';
     $filename =~ s'\.in$'';
 
-    unless (open _, '<', $file) {
+    my $fh;
+    unless (open $fh, '<', $file) {
         print "Cannot open $file for reading ($!), skipping.\n";
         return;
     }
+    local $/;
+    $_ = <$fh>;
+    close $fh;
 
     my $re_space_wo_nl = qr{(?!\n)\s};
     my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
@@ -132,7 +135,6 @@ sub extract_strings_from_code {
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
-    $_ = <_>;
 
     # Mason filter: <&|/l>...</&>
     my $line = 1;
@@ -231,7 +233,6 @@ sub extract_strings_from_code {
 	push @{ $FILECAT->{$val} }, [ $filename, $line, '' ];
     }
 
-    close (_);
 }
 # }}} extract from strings
 
@@ -249,7 +250,8 @@ sub update {
     print "Updating $lang...\n";
 
     my @lines;
-    @lines = (<LEXICON>) if open LEXICON, '<', $file;
+    my $lexicon_fh;
+    @lines = (<$lexicon_fh>) if open $lexicon_fh, '<', $file;
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
@@ -343,9 +345,9 @@ sub update {
         $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
     }
 
-    open( PO, '>', $file ) or die "Couldn't open '$file' for writing: $!";
-    print PO $out;
-    close PO;
+    open( my $po, '>', $file ) or die "Couldn't open '$file' for writing: $!";
+    print $po $out;
+    close $po;
 
     return 1;
 }
