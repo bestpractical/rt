@@ -172,14 +172,11 @@ sub _GetResolver {
     my $scheme = shift;
 
     $scheme =~ s/(\.|-)/_/g;
-    my $resolver;
 
-    
-    eval " 
-        require RT::URI::$scheme;
-        \$resolver = RT::URI::$scheme->new(\$self->CurrentUser);
-    ";
-     
+    my $class = "RT::URI::$scheme";
+    eval "require $class";
+    my $resolver = eval { $class->new($self->CurrentUser); };
+
     if ($resolver) {
         $self->{'resolver'} = $resolver;
     } else {
