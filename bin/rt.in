@@ -170,8 +170,6 @@ sub handler {
     }
 }
 
-exit handler();
-
 # Handler functions.
 # ------------------
 #
@@ -1744,6 +1742,8 @@ sub prettylist {
     printf "========== %2d unowned tickets ==========\n", scalar @open if @open;
     print @open if @open;
 }
+
+exit handler();
 
 __DATA__
 
