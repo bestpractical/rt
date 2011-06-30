@@ -256,6 +256,7 @@ my %max_type_length = (
 );
 
 my @sql_commands;
+my %alter_aggregator;
 
 my ($db_datasource, $db_user, $db_pass) = (shift, shift, shift);
 my $dbh = DBI->connect("dbi:mysql:$db_datasource", $db_user, $db_pass, { RaiseError => 1 });
@@ -278,7 +279,6 @@ print STDERR <<ENDREMINDER;
 ENDREMINDER
 exit 0;
 
-my %alter_aggregator;
 sub convert_table {
     my $table = shift;
     @alter_aggregator{'char_to_binary','binary_to_char'} = (['DEFAULT CHARACTER SET utf8'],[]);
