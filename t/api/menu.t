@@ -4,7 +4,7 @@ use warnings;
 use RT::Test tests => undef;
 use RT::Interface::Web::Menu;
 
-sub child_path_is($$$) {
+sub child_path_is {
     my ($menu, $child, $expected) = @_;
     my $c = $menu->child($child->[0], path => $child->[1]);
     is $c->path, $expected, "'$child->[1]' normalizes to '$expected'";
@@ -48,7 +48,7 @@ my $home =
 
 
 
-sub order_ok($$;$) {
+sub order_ok {
     my ($menu, $expected, $name) = @_;
     my @children = $menu->children;
 
