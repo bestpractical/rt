@@ -181,7 +181,7 @@ sub import {
     __PACKAGE__->export_to_level($level);
 }
 
-sub is_empty($;$) {
+sub is_empty {
     my ($v, $d) = shift;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     return Test::More::ok(1, $d) unless defined $v;

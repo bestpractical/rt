@@ -102,7 +102,7 @@ our @fill_colors = split ' ',<<EOT;
     #008080 #D8BFD8 #FF6347 #40E0D0 #EE82EE #F5DEB3 #FFFF00 #9ACD32
 EOT
 
-sub gv_escape($) {
+sub gv_escape {
     my $value = shift;
     $value =~ s{(?=")}{\\}g;
     return $value;
@@ -337,7 +337,7 @@ sub TicketLinks {
                     ? ($target->id => $base->id, dir => 'back')
                     : ($base->id => $target->id),
                 %{ $link_style{ $link->Type } || {} },
-                $desc? (label => gv_escape $desc): (),
+                $desc? (label => gv_escape($desc)): (),
             );
         }
     }

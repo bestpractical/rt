@@ -214,7 +214,7 @@ my %describe_cb;
 );
 
 { my %cache = ();
-sub m2t($) {
+sub m2t {
     my $model = shift;
     return $cache{$model} if $cache{$model};
     my $class = "RT::$model";

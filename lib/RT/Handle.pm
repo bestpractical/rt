@@ -547,7 +547,7 @@ sub GetVersionFile {
 
     my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
     my $version;
-    foreach ( reverse sort cmp_version keys %version ) {
+    foreach ( reverse sort {cmp_version($a,$b)} keys %version ) {
         if ( cmp_version( $db_version, $_ ) >= 0 ) {
             $version = $_;
             last;
@@ -557,7 +557,7 @@ sub GetVersionFile {
     return defined $version? $version{ $version } : undef;
 }
 
-sub cmp_version($$) {
+sub cmp_version {
     my ($a, $b) = (@_);
     $b =~ s/HEAD$/9999/;
     my @a = split /[^0-9]+/, $a;
