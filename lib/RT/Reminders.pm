@@ -47,6 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Reminders;
+use strict;
+use warnings;
 
 use base qw/RT::Base/;
 

@@ -1,4 +1,8 @@
 #!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -46,4 +50,5 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 exec('sbin/rt-message-catalog', 'rosetta', @ARGV);

@@ -47,7 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::Menu;
-
+use strict;
+use warnings;
 
 sub new {
     my $class = shift;

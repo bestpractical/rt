@@ -47,6 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::I18N::cs;
+use strict;
+use warnings;
 
 # # CZECH TRANSLATORS COMMENTS see Locale::Maketext::TPJ13
 # Obecne parametry musi byt docela slozite (v pripade Slavistickych jazyku)

@@ -47,6 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::I18N::ru;
+use strict;
+use warnings;
 
 sub quant {
     my($handle, $num, @forms) = @_;
