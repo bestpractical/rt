@@ -1222,7 +1222,7 @@ sub submit {
 sub Form::parse {
     my $state = 0;
     my @forms = ();
-    my @lines = split /\n/, $_[0] if $_[0];
+    my @lines = $_[0] ? (split /\n/, $_[0]) : ();
     my ($c, $o, $k, $e) = ("", [], {}, "");
 
     LINE:

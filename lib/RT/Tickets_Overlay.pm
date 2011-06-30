@@ -589,8 +589,7 @@ sub _StringLimit {
         && lc($op) ne 'is' && lc($op) ne 'is not'
         && RT->Config->Get('DatabaseType') eq 'Oracle'
     ) {
-        my $negative = 1 if $op eq '!=' || $op =~ /^NOT\s/;
-        $op = $negative? 'IS NOT': 'IS';
+        $op = ($op eq '!=' || $op =~ /^NOT\s/) ? 'IS NOT': 'IS';
         $value = 'NULL';
     }
 
