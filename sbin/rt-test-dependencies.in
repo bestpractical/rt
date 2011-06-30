@@ -244,7 +244,7 @@ Devel::StackTrace 1.19
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-HTML::Mason 1.36
+HTML::Mason 1.40
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20
@@ -332,7 +332,6 @@ Apache::DBI 0.92
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
 CGI 3.38
 Apache::DBI
-HTML::Mason 1.36
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
