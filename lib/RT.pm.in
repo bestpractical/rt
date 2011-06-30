@@ -149,7 +149,7 @@ have not been set already.
 
 sub LoadConfig {
     require RT::Config;
-    $Config = new RT::Config;
+    $Config = RT::Config->new;
     $Config->LoadConfigs;
     require RT::I18N;
 
@@ -202,7 +202,7 @@ Get a database connection. See also </Handle>.
 
 sub ConnectToDatabase {
     require RT::Handle;
-    $Handle = new RT::Handle unless $Handle;
+    $Handle = RT::Handle->new unless $Handle;
     $Handle->Connect;
     return $Handle;
 }
@@ -502,11 +502,11 @@ sub InitSystemObjects {
 
     #RT's system user is a genuine database user. its id lives here
     require RT::CurrentUser;
-    $SystemUser = new RT::CurrentUser;
+    $SystemUser = RT::CurrentUser->new;
     $SystemUser->LoadByName('RT_System');
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
-    $Nobody = new RT::CurrentUser;
+    $Nobody = RT::CurrentUser->new;
     $Nobody->LoadByName('Nobody');
 
     require RT::System;

@@ -218,7 +218,7 @@ sub action_acl {
 
 sub action_coredata {
     my %args = @_;
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
     RT::InitLogging();
@@ -231,7 +231,7 @@ sub action_coredata {
 
 sub action_insert {
     my %args = @_;
-    $RT::Handle = new RT::Handle;
+    $RT::Handle = RT::Handle->new;
     RT::Init();
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;

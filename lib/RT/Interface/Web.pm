@@ -1082,9 +1082,9 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+    my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -1095,12 +1095,12 @@ sub CreateTicket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( $session{'CurrentUser'} );
+        $due = RT::Date->new( $session{'CurrentUser'} );
         $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( $session{'CurrentUser'} );
+        $starts = RT::Date->new( $session{'CurrentUser'} );
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 

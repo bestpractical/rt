@@ -324,7 +324,7 @@ sub WithRight {
 
     #XXX: DIRTY HACK
     use DBIx::SearchBuilder::Union;
-    my $union = new DBIx::SearchBuilder::Union;
+    my $union = DBIx::SearchBuilder::Union->new;
     $union->add($from_role);
     $union->add($from_group);
     %$self = %$union;

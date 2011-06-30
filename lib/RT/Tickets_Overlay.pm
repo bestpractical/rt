@@ -65,7 +65,7 @@
 =head1 SYNOPSIS
 
   use RT::Tickets;
-  my $tickets = new RT::Tickets($CurrentUser);
+  my $tickets = RT::Tickets->new($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -1897,7 +1897,7 @@ sub LimitQueue {
 
     #TODO  VALUE should also take queue objects
     if ( defined $args{'VALUE'} && $args{'VALUE'} !~ /^\d+$/ ) {
-        my $queue = new RT::Queue( $self->CurrentUser );
+        my $queue = RT::Queue->new( $self->CurrentUser );
         $queue->Load( $args{'VALUE'} );
         $args{'VALUE'} = $queue->Id;
     }
@@ -2292,7 +2292,7 @@ sub LimitOwner {
         @_
     );
 
-    my $owner = new RT::User( $self->CurrentUser );
+    my $owner = RT::User->new( $self->CurrentUser );
     $owner->Load( $args{'VALUE'} );
 
     # FIXME: check for a valid $owner

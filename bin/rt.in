@@ -98,7 +98,7 @@ my %config = (
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
 );
-my $session = new Session("$HOME/.rt_sessions");
+my $session = Session->new("$HOME/.rt_sessions");
 my $REST = "$config{server}/REST/1.0";
 $no_strong_auth = 'switched off by externalauth=0'
     if defined $config{externalauth};
@@ -177,7 +177,7 @@ sub handler {
 
 sub shell {
     $|=1;
-    my $term = new Term::ReadLine 'RT CLI';
+    my $term = Term::ReadLine->new('RT CLI');
     while ( defined ($_ = $term->readline($prompt)) ) {
         next if /^#/ || /^\s*$/;
 
@@ -981,7 +981,7 @@ sub grant {
 sub submit {
     my ($uri, $content) = @_;
     my ($req, $data);
-    my $ua = new LWP::UserAgent(agent => "RT/3.0b", env_proxy => 1);
+    my $ua = LWP::UserAgent->new(agent => "RT/3.0b", env_proxy => 1);
     my $h = HTTP::Headers->new;
 
     # Did the caller specify any data to send with the request?

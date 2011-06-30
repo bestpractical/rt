@@ -118,7 +118,7 @@ our @FORMATTERS = (
     'iCal',          # loc
 );
 if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' && 
-     DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
+     "DateTime"->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
     push @FORMATTERS, 'LocalizedDateTime'; # loc
 }
 
@@ -655,7 +655,7 @@ sub LocalizedDateTime
     return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
     return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
     return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
-        unless can DateTime::('format_cldr');
+        unless "DateTime"->can('format_cldr');
 
 
     my $date_format = $args{'DateFormat'};
@@ -681,18 +681,19 @@ sub LocalizedDateTime
     $mon++;
     my $tz = $self->Timezone($args{'Timezone'});
 
-    # FIXME : another way to call this module without conflict with local
-    # DateTime method?
-    my $dt = new DateTime::( locale => $lang,
-                            time_zone => $tz,
-                            year => $year,
-                            month => $mon,
-                            day => $mday,
-                            hour => $hour,
-                            minute => $min,
-                            second => $sec,
-                            nanosecond => 0,
-                          );
+    # The quotes are necessary to get the DateTime package, and not the
+    # call the local DateTime subroutine.
+    my $dt = "DateTime"->new(
+        locale => $lang,
+        time_zone => $tz,
+        year => $year,
+        month => $mon,
+        day => $mday,
+        hour => $hour,
+        minute => $min,
+        second => $sec,
+        nanosecond => 0,
+    );
 
     if ( $args{'Date'} && !$args{'Time'} ) {
         return $dt->format_cldr($date_format);

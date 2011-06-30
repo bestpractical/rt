@@ -144,7 +144,7 @@ sub GetCurrentUser  {
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
 
-    $CurrentUser = new RT::CurrentUser();
+    $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByGecos($Gecos);
 
     unless ($CurrentUser->Id) {

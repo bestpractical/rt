@@ -78,7 +78,7 @@ unless ( $opts{'url'} ) {
     exit 1;
 }
 
-my $ua = new LWP::UserAgent;
+my $ua = LWP::UserAgent->new;
 $ua->cookie_jar( { file => $opts{'jar'} } ) if $opts{'jar'};
 
 my %args = (

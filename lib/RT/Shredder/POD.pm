@@ -55,7 +55,7 @@ use Pod::Select;
 sub plugin_html
 {
     my ($file, $out_fh) = @_;
-    my $parser = new RT::Shredder::POD::HTML;
+    my $parser = RT::Shredder::POD::HTML->new;
     $parser->select('ARGUMENTS', 'USAGE');
     $parser->parse_from_file( $file, $out_fh );
 }
@@ -65,7 +65,7 @@ sub plugin_cli
     my ($file, $out_fh, $no_name) = @_;
     use Pod::PlainText;
     local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = new Pod::PlainText;
+    my $parser = Pod::PlainText->new;
     $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
     $parser->add_selection('NAME') unless $no_name;
     $parser->parse_from_file( $file, $out_fh );
@@ -76,7 +76,7 @@ sub shredder_cli
     my ($file, $out_fh) = @_;
     use Pod::PlainText;
     local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = new Pod::PlainText;
+    my $parser = Pod::PlainText->new;
     $parser->select('NAME', 'SYNOPSIS', 'USAGE', 'OPTIONS');
     $parser->parse_from_file( $file, $out_fh );
 }

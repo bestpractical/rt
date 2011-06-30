@@ -65,7 +65,7 @@ sub IsApplicable {
     }
     my $elapse = $e{'d'} * 24*60*60 + $e{'h'} * 60*60 + $e{'m'} * 60 + $e{'s'};
 
-    my $cur = new RT::Date( $RT::SystemUser );
+    my $cur = RT::Date->new( $RT::SystemUser );
     $cur->SetToNow();
     my $due = $self->TicketObj->DueObj;
     return (undef) if $due->Unix <= 0;

@@ -61,7 +61,7 @@ use File::Spec ();
 
     # get config object
     use RT::Config;
-    my $config = new RT::Config;
+    my $config = RT::Config->new;
     $config->LoadConfigs;
 
     # get or set option
@@ -140,7 +140,7 @@ our %META = (
             Description => 'Default queue',    #loc
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {}};
-                my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
+                my $q = RT::Queues->new($HTML::Mason::Commands::session{'CurrentUser'});
                 $q->UnLimit;
                 while (my $queue = $q->Next) {
                     next unless $queue->CurrentUserHasRight("CreateTicket");
@@ -345,7 +345,7 @@ our %META = (
         WidgetArguments => {
             Description => 'Date format',                            #loc
             Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
-                              my $date = new RT::Date($HTML::Mason::Commands::session{'CurrentUser'});
+                              my $date = RT::Date->new($HTML::Mason::Commands::session{'CurrentUser'});
                               $date->Set;
                               foreach my $value ($date->Formatters) {
                                  push @{$ret->{Values}}, $value;

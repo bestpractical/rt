@@ -473,7 +473,7 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = new RT::Queue($RT::SystemUser);
+    my $tempqueue = RT::Queue->new($RT::SystemUser);
     $tempqueue->Load($name);
 
     #If this queue exists, return undef

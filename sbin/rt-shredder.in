@@ -147,7 +147,7 @@ our %opt;
 parse_args();
 
 RT::Shredder::Init( %opt );
-my $shredder = new RT::Shredder;
+my $shredder =  RT::Shredder->new;
 
 {
     my $plugin = eval { $shredder->AddDumpPlugin( Arguments => {
@@ -257,7 +257,7 @@ sub process_plugins
 
 	my @res;
 	foreach my $str( @{ $opt{'plugin'} } ) {
-		my $plugin = new RT::Shredder::Plugin;
+		my $plugin = RT::Shredder::Plugin->new;
 		my( $status, $msg ) = $plugin->LoadByString( $str );
 		unless( $status ) {
 			print STDERR "Couldn't load plugin\n";

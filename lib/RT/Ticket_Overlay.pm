@@ -51,7 +51,7 @@
 =head1 SYNOPSIS
 
   use RT::Ticket;
-  my $ticket = new RT::Ticket($CurrentUser);
+  my $new RT->new::Ticket($CurrentUser);
   $ticket->Load($ticket_id);
 
 =head1 DESCRIPTION
@@ -332,7 +332,7 @@ sub Create {
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $Due = new RT::Date( $self->CurrentUser );
+    my $Due = RT::Date->new( $self->CurrentUser );
     if ( defined $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
@@ -341,12 +341,12 @@ sub Create {
         $Due->AddDays( $due_in );
     }
 
-    my $Starts = new RT::Date( $self->CurrentUser );
+    my $Starts = RT::Date->new( $self->CurrentUser );
     if ( defined $args{'Starts'} ) {
         $Starts->Set( Format => 'ISO', Value => $args{'Starts'} );
     }
 
-    my $Started = new RT::Date( $self->CurrentUser );
+    my $Started = RT::Date->new( $self->CurrentUser );
     if ( defined $args{'Started'} ) {
         $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
@@ -354,7 +354,7 @@ sub Create {
         $Started->SetToNow;
     }
 
-    my $Resolved = new RT::Date( $self->CurrentUser );
+    my $Resolved = RT::Date->new( $self->CurrentUser );
     if ( defined $args{'Resolved'} ) {
         $Resolved->Set( Format => 'ISO', Value => $args{'Resolved'} );
     }
@@ -420,7 +420,7 @@ sub Create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) && $Owner->Id ) {
-        $Owner = new RT::User( $self->CurrentUser );
+        $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $RT::Nobody->Id );
     }
 
@@ -845,7 +845,7 @@ sub Import {
             $Owner = $args{'Owner'};
         }
         else {
-            $Owner = new RT::User( $self->CurrentUser );
+            $Owner = RT::User->new( $self->CurrentUser );
             $Owner->Load( $args{'Owner'} );
             if ( !defined( $Owner->id ) ) {
                 $Owner->Load( $RT::Nobody->id );
@@ -880,7 +880,7 @@ sub Import {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) ) {
-        $Owner = new RT::User( $self->CurrentUser );
+        $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $RT::Nobody->UserObj->Id );
     }
 
@@ -1789,7 +1789,7 @@ sub QueueObj {
 sub DueObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = RT::Date->new( $self->CurrentUser );
 
     # -1 is RT::Date slang for never
     if ( my $due = $self->Due ) {
@@ -1830,7 +1830,7 @@ sub DueAsString {
 sub ResolvedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = RT::Date->new( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Resolved );
     return $time;
 }
@@ -1857,7 +1857,7 @@ sub SetStarted {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = new RT::Date( $self->CurrentUser() );
+    my $time_obj = RT::Date->new( $self->CurrentUser() );
     if ( $time ) {
         $time_obj->Set( Format => 'ISO', Value => $time );
     }
@@ -1871,7 +1871,7 @@ sub SetStarted {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
+    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
     $TicketAsSystem->Load( $self->Id );
     if ( $TicketAsSystem->Status eq 'new' ) {
         $TicketAsSystem->Open();
@@ -1895,7 +1895,7 @@ sub SetStarted {
 sub StartedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = RT::Date->new( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Started );
     return $time;
 }
@@ -1914,7 +1914,7 @@ sub StartedObj {
 sub StartsObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = RT::Date->new( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Starts );
     return $time;
 }
@@ -1933,7 +1933,7 @@ sub StartsObj {
 sub ToldObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = RT::Date->new( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Told );
     return $time;
 }
@@ -2629,7 +2629,7 @@ sub MergeInto {
     }
 
     #find all of the tickets that were merged into this ticket. 
-    my $old_mergees = new RT::Tickets( $self->CurrentUser );
+    my $old_mergees = RT::Tickets->new( $self->CurrentUser );
     $old_mergees->Limit(
         FIELD    => 'EffectiveId',
         OPERATOR => '=',
@@ -2702,7 +2702,7 @@ sub OwnerObj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = new RT::User( $self->CurrentUser );
+    my $owner = RT::User->new( $self->CurrentUser );
     $owner->Load( $self->__Value('Owner') );
 
     #Return the owner object
@@ -3130,7 +3130,7 @@ sub SetTold {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $datetold = new RT::Date( $self->CurrentUser );
+    my $datetold = RT::Date->new( $self->CurrentUser );
     if ($told) {
         $datetold->Set( Format => 'iso',
                         Value  => $told );
@@ -3154,7 +3154,7 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 sub _SetTold {
     my $self = shift;
 
-    my $now = new RT::Date( $self->CurrentUser );
+    my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     #use __Set to get no ACLs ;)

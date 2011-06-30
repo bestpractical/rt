@@ -380,7 +380,7 @@ sub WhoHaveRight {
 
     #XXX: DIRTY HACK
     use DBIx::SearchBuilder::Union;
-    my $union = new DBIx::SearchBuilder::Union;
+    my $union = DBIx::SearchBuilder::Union->new;
     $union->add( $from_group );
     $union->add( $from_role );
     %$self = %$union;

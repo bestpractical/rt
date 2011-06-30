@@ -1293,7 +1293,7 @@ sub ValuesForObject {
     my $self = shift;
     my $object = shift;
 
-    my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
+    my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
     unless ($self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);

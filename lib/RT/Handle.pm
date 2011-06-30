@@ -243,13 +243,13 @@ sub CheckIntegrity {
     RT::InitLogging();
 
     require RT::CurrentUser;
-    my $test_user = new RT::CurrentUser;
+    my $test_user = RT::CurrentUser->new;
     $test_user->Load('RT_System');
     unless ( $test_user->id ) {
         return (0, 'no system user', "Couldn't find RT_System user in the DB '$dsn'");
     }
 
-    $test_user = new RT::CurrentUser;
+    $test_user = RT::CurrentUser->new;
     $test_user->Load('Nobody');
     unless ( $test_user->id ) {
         return (0, 'no nobody user', "Couldn't find Nobody user in the DB '$dsn'");
@@ -593,13 +593,13 @@ sub InsertInitialData {
     {
         require RT::CurrentUser;
 
-        my $test_user = RT::User->new( new RT::CurrentUser );
+        my $test_user = RT::User->new( RT::CurrentUser->new );
         $test_user->Load('RT_System');
         if ( $test_user->id ) {
             push @warns, "Found system user in the DB.";
         }
         else {
-            my $user = RT::User->new( new RT::CurrentUser );
+            my $user = RT::User->new( RT::CurrentUser->new );
             my ( $val, $msg ) = $user->_BootstrapCreate(
                 Name     => 'RT_System',
                 RealName => 'The RT System itself',
@@ -804,7 +804,7 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
-            my $new_entry = new RT::User( $RT::SystemUser );
+            my $new_entry = RT::User->new( $RT::SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -817,7 +817,7 @@ sub InsertData {
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
-            my $new_entry = new RT::Queue($RT::SystemUser);
+            my $new_entry = RT::Queue->new( $RT::SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -830,7 +830,7 @@ sub InsertData {
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
-            my $new_entry = new RT::CustomField( $RT::SystemUser );
+            my $new_entry = RT::CustomField->new( $RT::SystemUser );
             my $values    = delete $item->{'Values'};
 
             my @queues;
@@ -987,7 +987,7 @@ sub InsertData {
         $RT::Logger->debug("Creating templates...");
 
         for my $item (@Templates) {
-            my $new_entry = new RT::Template($RT::SystemUser);
+            my $new_entry = RT::Template->new( $RT::SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -1002,7 +1002,7 @@ sub InsertData {
         $RT::Logger->debug("Creating scrips...");
 
         for my $item (@Scrips) {
-            my $new_entry = new RT::Scrip($RT::SystemUser);
+            my $new_entry = RT::Scrip->new( $RT::SystemUser );
 
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
@@ -1070,7 +1070,7 @@ sub ACLEquivGroupId {
     my $cu = $RT::SystemUser;
     unless ( $cu ) {
         require RT::CurrentUser;
-        $cu = new RT::CurrentUser;
+        $cu = RT::CurrentUser->new;
         $cu->LoadByName('RT_System');
         warn "Couldn't load RT_System user" unless $cu->id;
     }

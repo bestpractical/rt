@@ -235,7 +235,7 @@ sub _DecodeBody {
 
     require MIME::Decoder;
     my $encoding = $entity->head->mime_encoding;
-    my $decoder = new MIME::Decoder $encoding;
+    my $decoder = MIME::Decoder->new( $encoding );
     unless ( $decoder ) {
         $RT::Logger->error("Couldn't find decoder for '$encoding', switching to binary");
         $old->is_encoded(0);
@@ -244,7 +244,7 @@ sub _DecodeBody {
 
     require MIME::Body;
     # XXX: use InCore for now, but later must switch to files
-    my $new = new MIME::Body::InCore;
+    my $new = MIME::Body::InCore->new;
     $new->binmode(1);
     $new->is_encoded(0);
 

@@ -155,7 +155,7 @@ sub NewItem  {
   my $self = shift;
 
   use RT::Template;
-  my $item = new RT::Template($self->CurrentUser);
+  my $item = RT::Template->new($self->CurrentUser);
   return($item);
 }
 # }}}

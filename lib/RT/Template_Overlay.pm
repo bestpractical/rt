@@ -217,7 +217,7 @@ sub Create {
         $args{'Queue'} = 0;
     }
     else {
-        my $QueueObj = new RT::Queue( $self->CurrentUser );
+        my $QueueObj = RT::Queue->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
     
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
