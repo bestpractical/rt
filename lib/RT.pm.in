@@ -290,17 +290,6 @@ sub InitLogging {
             require Devel::StackTrace;
             my $trace = Devel::StackTrace->new( ignore_class => [ 'Log::Dispatch', 'Log::Dispatch::Base' ] );
             return $p{'message'} . $trace->as_string;
-
-            # skip calling of the Log::* subroutins
-            my $frame = 0;
-            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-            $frame++ while caller($frame) && (caller($frame))[3] =~ /^Log::/;
-
-            $p{'message'} .= "\nStack trace:\n";
-            while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
-                $p{'message'} .= "\t$sub(...) called at $filename:$line\n";
-            }
-            return $p{'message'};
         };
 
         if ( $Config->Get('LogToFile') ) {

@@ -78,20 +78,6 @@ sub Commit {
     $self->RunScripAction('Notify Owner', 'New Pending Approval', @_);
 
     return;
-
-    # this generates more correct content of the message, but not sure
-    # if ccmessageto is the right way to do this.
-    my $template = $self->GetTemplate('New Pending Approval',
-                                      TicketObj => $top,
-                                      TransactionObj => $to)
-        or return;
-
-    my ( $result, $msg ) = $template->Parse(
-        TicketObj => $top,
-    );
-    $self->TicketObj->Comment( CcMessageTo => $self->TicketObj->OwnerObj->EmailAddress,
-                               MIMEObj => $template->MIMEObj );
-
 }
 
 1;
