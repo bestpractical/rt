@@ -3246,6 +3246,9 @@ sub _ApplyTransactionBatch {
     RT::Ruleset->CommitRules($rules);
 }
 
+my $have_global_destruction;
+$have_global_destruction = 1 if eval "require Devel::GlobalDestruction";
+
 sub DESTROY {
     my $self = shift;
 
@@ -3258,6 +3261,18 @@ sub DESTROY {
     # It protects against the fact that perl doesn't deal gracefully
     # when an object's refcount is changed in its destructor.
     return if $self->{_Destroyed}++;
+
+    if ($have_global_destruction
+            and Devel::GlobalDestruction::in_global_destruction()) {
+        unless ($ENV{'HARNESS_ACTIVE'}) {
+            warn "Too late to safely run transaction-batch scrips!"
+                ." This is typically caused by using ticket objects"
+                ." at the top-level of a script which uses the RT API."
+                ." Be sure to explicitly undef such ticket objects,"
+                ." or put them inside of a lexical scope.";
+        }
+        return;
+    }
 
     my $batch = $self->TransactionBatch;
     return unless $batch && @$batch;
