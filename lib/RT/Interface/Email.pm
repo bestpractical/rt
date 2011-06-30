@@ -1230,8 +1230,7 @@ sub _LoadPlugins {
             $Class->require or
                 do { $RT::Logger->error("Couldn't load $Class: $@"); next };
 
-            no strict 'refs';
-            unless ( defined *{ $Class . "::GetCurrentUser" }{CODE} ) {
+            unless ( $Class->can("GetCurrentUser") ) {
                 $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
                 next;
             }
@@ -1300,10 +1299,7 @@ sub Gateway {
     my %skip_plugin;
     foreach my $class( grep !ref, @mail_plugins ) {
         # check if we should apply filter before decoding
-        my $check_cb = do {
-            no strict 'refs';
-            *{ $class . "::ApplyBeforeDecode" }{CODE};
-        };
+        my $check_cb = $class->can("ApplyBeforeDecode");
         next unless defined $check_cb;
         next unless $check_cb->(
             Message       => $Message,
@@ -1314,10 +1310,7 @@ sub Gateway {
 
         $skip_plugin{ $class }++;
 
-        my $Code = do {
-            no strict 'refs';
-            *{ $class . "::GetCurrentUser" }{CODE};
-        };
+        my $Code = $class->can("GetCurrentUser");
         my ($status, $msg) = $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
@@ -1567,8 +1560,7 @@ sub GetAuthenticationLevel {
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         } else {
-            no strict 'refs';
-            $Code = *{ $_ . "::GetCurrentUser" }{CODE};
+            $Code = $_->can("GetCurrentUser");
         }
 
         foreach my $action (@{ $args{Actions} }) {
