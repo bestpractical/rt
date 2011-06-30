@@ -81,7 +81,7 @@ $m->submit_form(
 
 $m->content_like(qr/Article \d+ created/, "an article was created succesfully");
 
-my $id = $1 if $m->content =~ /Article (\d+) created/;
+my ($id) = $m->content =~ /Article (\d+) created/;
 
 $m->title_like(qr/Modify article #$id/, "Editing article $id");
 
