@@ -75,7 +75,7 @@ if ( $opt && keys %$opt ) {
     GetOptions( \%opt, keys %$opt );
 }
 
-{ no strict 'refs'; &$command( \%opt, @ARGV ); }
+main->can($command)->( \%opt, @ARGV );
 
 exit;
 

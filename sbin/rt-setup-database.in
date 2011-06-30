@@ -162,8 +162,7 @@ print "Working with:\n"
     ."User:\t$db_user\nDBA:\t$dba_user\n";
 
 foreach my $action ( @actions ) {
-    no strict 'refs';
-    my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
+    my ($status, $msg) = main->can( 'action_' . $action )->( %args );
     error($action, $msg) unless $status;
     print $msg ."\n" if $msg;
     print "Done.\n";
