@@ -61,9 +61,7 @@ my %commands = (
 );
 
 my $command = shift;
-usage() unless $command;
-usage("Unknown command '$command'")
-    unless $commands{ $command };
+usage() unless $command and $commands{ $command };
 
 my $opt = $commands{ $command };
 my %opt = ();
@@ -267,3 +265,36 @@ sub extract {
     system($^X, 'sbin/extract-message-catalog', @_);
 }
 
+sub usage {
+    print STDERR <<END;
+Usage:
+  rt-message-catalog stats
+       Show po file string translation coverage.
+
+  rt-message-catalog shrink [--update] [--keep=not-translated]
+                       [--keep=not-referenced]
+                       [--keep=equal]
+       Removes unreferenced, untranslated, or no-op translations from po
+       files.  Without --update, simply prints the results for each
+       class and PO file; --update causes it to write out the updates to
+       the files.  The three --keep options, which can be combined,
+       state classes of translations to keep.
+
+  rt-message-catalog clean [--update]
+       A short form for `shrink --keep=equal --keep=not-translated`
+
+  rt-message-catalog rosetta [--boundry=x] http://some.host/path/to/file.tgz
+  rt-message-catalog rosetta [--boundry=x] path/to/directory/
+       Import updated translations from rosetta, either from a web path
+       to a tarball, or a directory of .po files.  If --boundry is
+       supplied, files with translations less complete than that
+       percentage are removed.
+
+  rt-message-catalog extract
+       Simply runs `extract-message-catalog` with whater arguments were
+       provided.
+
+END
+
+    exit 1;
+}
