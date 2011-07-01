@@ -446,6 +446,15 @@ sub SetupGroupings {
                 $e->{'FUNCTION'} = 'NULL';
                 $e->{'NAME'} = $self->Column( FUNCTION => 'NULL' );
             }
+            elsif ( $e->{'META'}{'SubValues'} ) {
+                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. scalar @{ $e->{INFO} } -1 ] );
+                $e->{'NAME'} = 'postfunction'. $self->{'postfunctions'}++;
+                while ( my ($k, $v) = each %tmp ) {
+                    $e->{'MAP'}{ $k }{'NAME'} = $self->Column( %$v );
+                    @{ $e->{'MAP'}{ $k } }{'FUNCTION', 'ALIAS', 'FIELD'} =
+                        @{ $v }{'FUNCTION', 'ALIAS', 'FIELD'};
+                }
+            }
             else {
                 my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. scalar @{ $e->{INFO} } -1 ] );
                 $e->{'NAME'} = $self->Column( %tmp );
@@ -589,9 +598,12 @@ sub PostProcessRecords {
     my $info = $self->{'column_info'};
     foreach my $column ( values %$info ) {
         next unless $column->{'TYPE'} eq 'statistic';
-        next unless $column->{'META'}{'Calculate'};
-
-        $self->CalculatePostFunction( $column );
+        if ( $column->{'META'}{'Calculate'} ) {
+            $self->CalculatePostFunction( $column );
+        }
+        elsif ( $column->{'META'}{'SubValues'} ) {
+            $self->MapSubValues( $column );
+        }
     }
 }
 
@@ -614,6 +626,23 @@ sub CalculatePostFunction {
             Query => join( ' AND ', grep defined && length, $base_query, $item->Query ),
         );
         $item->{'fetched'}{$column} = 1;
+    }
+}
+
+sub MapSubValues {
+    my $self = shift;
+    my $info = shift;
+
+    my $to = $info->{'NAME'};
+    my $map = $info->{'MAP'};
+
+    foreach my $item ( @{ $self->{'items'} } ) {
+        my $dst = $item->{'values'}{ $to } = { };
+        while (my ($k, $v) = each %{ $map } ) {
+            $dst->{ $k } = delete $item->{'values'}{ $v->{'NAME'} };
+            delete $item->{'fetched'}{ $v->{'NAME'} };
+        }
+        $item->{'fetched'}{ $to } = 1;
     }
 }
 
