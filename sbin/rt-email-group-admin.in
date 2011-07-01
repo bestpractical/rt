@@ -161,7 +161,7 @@ sub parse_args {
         $opts->{'name'} = $tmp;
     }
     elsif ( GetOptions( 'rename=s' => \$tmp ) && $tmp ) {
-        $cmd = 'rename';
+        $cmd = 'rename_action';
         $opts->{'name'} = $tmp;
         GetOptions( 'newname=s' => \$opts->{'newname'} );
         unless ( $opts->{'newname'} ) {
@@ -170,7 +170,7 @@ sub parse_args {
         }
     }
     elsif ( GetOptions( 'delete=s' => \$tmp ) && $tmp) {
-        $cmd = 'delete';
+        $cmd = 'delete_action';
         $opts->{'name'} = $tmp;
     } else {
         $cmd = 'usage';
@@ -370,7 +370,7 @@ Deletes action NAME if scrips doesn't use it.
 
 =cut
 
-sub delete {
+sub delete_action {
     my $action = _get_action_by_name( $opts->{'name'} );
     unless ( $action ) {
         print STDERR "ScripAction '". $opts->{'name'} ."' doesn't exist\n";
@@ -444,7 +444,7 @@ Renames action NAME to NEWNAME.
 
 =cut
 
-sub rename {
+sub rename_action {
     my $action = _get_action_by_name( $opts->{'name'} );
     unless ( $action ) {
         print STDERR "ScripAction '". $opts->{'name'} ."' doesn't exist\n";
