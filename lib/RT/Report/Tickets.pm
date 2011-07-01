@@ -196,6 +196,7 @@ our @STATISTICS = (
 foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
     my $friendly = lc join ' ', split /(?<=[a-z])(?=[A-Z])/, $field;
     push @STATISTICS, (
+        "ALL($field)" => [ucfirst $friendly,   'TimeAll',     $field ],
         "SUM($field)" => ["Total $friendly",   'Time', 'SUM', $field ],
         "AVG($field)" => ["Average $friendly", 'Time', 'AVG', $field ],
         "MIN($field)" => ["Minimum $friendly", 'Time', 'MIN', $field ],
@@ -214,6 +215,7 @@ foreach my $pair (qw(
 )) {
     my ($from, $to) = split /-/, $pair;
     push @STATISTICS, (
+        "ALL($pair)" => [$pair, 'DateTimeIntervalAll', $from, $to ],
         "SUM($pair)" => ["Summary of $pair", 'DateTimeInterval', 'SUM', $from, $to ],
         "AVG($pair)" => ["Average $pair", 'DateTimeInterval', 'AVG', $from, $to ],
         "MIN($pair)" => ["Minimum $pair", 'DateTimeInterval', 'MIN', $from, $to ],
@@ -270,6 +272,20 @@ our %STATISTICS_META = (
         },
         Display => $duration_to_string_cb,
     },
+    TimeAll => {
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
+        Function => sub {
+            my $self = shift;
+            my $field = shift;
+            return (
+                Minimum => { FUNCTION => "MIN(?)*60", FIELD => $field },
+                Average => { FUNCTION => "AVG(?)*60", FIELD => $field },
+                Maximum => { FUNCTION => "MAX(?)*60", FIELD => $field },
+                Summary => { FUNCTION => "SUM(?)*60", FIELD => $field },
+            );
+        },
+        Display => $duration_to_string_cb,
+    },
     DateTimeInterval => {
         Function => sub {
             my $self = shift;
@@ -281,6 +297,26 @@ our %STATISTICS_META = (
             );
 
             return (FUNCTION => "$function($interval)");
+        },
+        Display => $duration_to_string_cb,
+    },
+    DateTimeIntervalAll => {
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
+        Function => sub {
+            my $self = shift;
+            my ($from, $to) = @_;
+
+            my $interval = $self->_Handle->DateTimeIntervalFunction(
+                From => { FUNCTION => $self->NotSetDateToNullFunction( FIELD => $from ) },
+                To   => { FUNCTION => $self->NotSetDateToNullFunction( FIELD => $to ) },
+            );
+
+            return (
+                Minimum => { FUNCTION => "MIN($interval)" },
+                Average => { FUNCTION => "AVG($interval)" },
+                Maximum => { FUNCTION => "MAX($interval)" },
+                Summary => { FUNCTION => "SUM($interval)" },
+            );
         },
         Display => $duration_to_string_cb,
     },
