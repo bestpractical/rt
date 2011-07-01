@@ -191,40 +191,36 @@ our %GROUPINGS_META = (
 
 our @STATISTICS = (
     COUNT             => ['Tickets', 'Count', 'id'],
-
-    'SUM(TimeWorked)' => ['Total time worked',   'Time', 'SUM', 'TimeWorked' ],
-    'AVG(TimeWorked)' => ['Average time worked', 'Time', 'AVG', 'TimeWorked' ],
-    'MIN(TimeWorked)' => ['Minimum time worked', 'Time', 'MIN', 'TimeWorked' ],
-    'MAX(TimeWorked)' => ['Maximum time worked', 'Time', 'MAX', 'TimeWorked' ],
-
-    'SUM(TimeEstimated)' => ['Total time estimated',   'Time', 'SUM', 'TimeEstimated' ],
-    'AVG(TimeEstimated)' => ['Average time estimated', 'Time', 'AVG', 'TimeEstimated' ],
-    'MIN(TimeEstimated)' => ['Minimum time estimated', 'Time', 'MIN', 'TimeEstimated' ],
-    'MAX(TimeEstimated)' => ['Maximum time estimated', 'Time', 'MAX', 'TimeEstimated' ],
-
-    'SUM(TimeLeft)' => ['Total time left',   'Time', 'SUM', 'TimeLeft' ],
-    'AVG(TimeLeft)' => ['Average time left', 'Time', 'AVG', 'TimeLeft' ],
-    'MIN(TimeLeft)' => ['Minimum time left', 'Time', 'MIN', 'TimeLeft' ],
-    'MAX(TimeLeft)' => ['Maximum time left', 'Time', 'MAX', 'TimeLeft' ],
-
-    'SUM(Created-Resolved)'
-        => ['Summary of Created-Resolved', 'DateTimeInterval', 'SUM', 'Created', 'Resolved' ],
-    'AVG(Created-Resolved)'
-        => ['Average Created-Resolved', 'DateTimeInterval', 'AVG', 'Created', 'Resolved' ],
-    'MIN(Created-Resolved)'
-        => ['Minimum Created-Resolved', 'DateTimeInterval', 'MIN', 'Created', 'Resolved' ],
-    'MAX(Created-Resolved)'
-        => ['Maximum Created-Resolved', 'DateTimeInterval', 'MAX', 'Created', 'Resolved' ],
-
-    'SUM(Created-LastUpdated)'
-        => ['Summary of Created-LastUpdated', 'DateTimeInterval', 'SUM', 'Created', 'LastUpdated' ],
-    'AVG(Created-LastUpdated)'
-        => ['Average Created-LastUpdated', 'DateTimeInterval', 'AVG', 'Created', 'LastUpdated' ],
-    'MIN(Created-LastUpdated)'
-        => ['Minimum Created-LastUpdated', 'DateTimeInterval', 'MIN', 'Created', 'LastUpdated' ],
-    'MAX(Created-LastUpdated)'
-        => ['Maximum Created-LastUpdated', 'DateTimeInterval', 'MAX', 'Created', 'LastUpdated' ],
 );
+
+foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
+    my $friendly = lc join ' ', split /(?<=[a-z])(?=[A-Z])/, $field;
+    push @STATISTICS, (
+        "SUM($field)" => ["Total $friendly",   'Time', 'SUM', $field ],
+        "AVG($field)" => ["Average $friendly", 'Time', 'AVG', $field ],
+        "MIN($field)" => ["Minimum $friendly", 'Time', 'MIN', $field ],
+        "MAX($field)" => ["Maximum $friendly", 'Time', 'MAX', $field ],
+    );
+}
+
+
+foreach my $pair (qw(
+    Created-Started
+    Created-Resolved
+    Created-LastUpdated
+    Starts-Started
+    Due-Resolved
+    Started-Resolved
+)) {
+    my ($from, $to) = split /-/, $pair;
+    push @STATISTICS, (
+        "SUM($pair)" => ["Summary of $pair", 'DateTimeInterval', 'SUM', $from, $to ],
+        "AVG($pair)" => ["Average $pair", 'DateTimeInterval', 'AVG', $from, $to ],
+        "MIN($pair)" => ["Minimum $pair", 'DateTimeInterval', 'MIN', $from, $to ],
+        "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
+    );
+}
+
 our %STATISTICS;
 
 our %STATISTICS_META = (
