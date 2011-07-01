@@ -54,7 +54,7 @@ $args => undef
 <%INIT>
 my @data;
 my ($c, $o, $k, $e) = ("", [], {}, "");
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new($session{CurrentUser} );
 
 $ticket->Load($id);
 unless ($ticket->Id) {
@@ -76,7 +76,7 @@ if ($aid) {
     unless ($aid =~ /^\d+$/) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
-    my $attachment = new RT::Attachment $session{CurrentUser};
+    my $attachment = RT::Attachment->new( $session{CurrentUser} );
     $attachment->Load($aid);
     unless ($attachment->Id eq $aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];

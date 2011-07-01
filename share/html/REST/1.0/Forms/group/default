@@ -57,7 +57,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $group = new RT::Group $session{CurrentUser};
+my $group = RT::Group->new($session{CurrentUser} );
 my @fields = qw(Name Description);
 my %fields = map { lc $_ => $_ } @fields;
 

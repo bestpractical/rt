@@ -56,7 +56,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $user = new RT::User $session{CurrentUser};
+my $user = RT::User->new( $session{CurrentUser} );
 my @fields = qw(RealName NickName Gecos Organization Address1 Address2 City
                 State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
                 FreeformContactInfo Comments Signature Lang EmailEncoding

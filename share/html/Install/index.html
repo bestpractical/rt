@@ -124,7 +124,7 @@ elsif ( $Run ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Install/DatabaseType.html');
 } elsif ( $ChangeLang && $Lang ) {
     # hackish, but works
-    $session{'CurrentUser'} = new RT::CurrentUser;
+    $session{'CurrentUser'} = RT::CurrentUser->new;
     $session{'CurrentUser'}->LanguageHandle( $Lang );
 }
 my $lang_handle = do { local $@;

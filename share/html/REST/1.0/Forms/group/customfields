@@ -55,7 +55,7 @@ $changes => {}
 <%perl>
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
-my $group = new RT::Group $session{CurrentUser};
+my $group = RT::Group->new($session{CurrentUser} );
 
 $group->Load($id);
 if (!$group->Id) {

@@ -508,7 +508,7 @@ An example:
 	# this is my function!
 	sub foo {
                 my $val = shift;
-		my $obj = new Constructor;
+		my $obj = Constructor->new;
 		my($var1, $var2);
 
 		$obj->SetFoo($val);

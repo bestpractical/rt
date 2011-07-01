@@ -53,7 +53,7 @@
 =head1 SYNOPSIS
 
   use RT::ACL;
-my $ACL = new RT::ACL($CurrentUser);
+my $ACL = RT::ACL->new($CurrentUser);
 
 =head1 DESCRIPTION
 

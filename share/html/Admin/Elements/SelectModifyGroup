@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($Group);
-my $Groups = new RT::Groups($session{'CurrentUser'});
+my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->UnLimit;
 </%INIT>
 <%ARGS>

@@ -113,7 +113,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 
 <%INIT>
 
-my $Group = new RT::Group($session{'CurrentUser'});
+my $Group = RT::Group->new($session{'CurrentUser'});
 $Group->Load($id) || Abort(loc('Could not load group'));
 
 my (%UsersSeen, %GroupsSeen);

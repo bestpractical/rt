@@ -55,7 +55,7 @@
     use RT::CurrentUser;
 
     # laod
-    my $current_user = new RT::CurrentUser;
+    my $current_user = RT::CurrentUser->new;
     $current_user->Load(...);
     # or
     my $current_user = RT::CurrentUser->new( $user_obj );

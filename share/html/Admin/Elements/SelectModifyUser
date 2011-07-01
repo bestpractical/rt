@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($user);
-my $users = new RT::Users($session{'CurrentUser'});
+my $users = RT::Users->new($session{'CurrentUser'});
 $users->Limit(FIELD => 'id',
               VALUE => $RT::SystemUser->id,
               OPERATOR => '!=' );

@@ -56,6 +56,6 @@
 %   }
 
 <%init>
-my $CustomFields = new RT::CustomFields ($session{'CurrentUser'});
+my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->LimitToGlobal();
 </%INIT>

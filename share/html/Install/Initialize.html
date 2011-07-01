@@ -110,14 +110,14 @@ if ( $Run ) {
                 ($status, $msg) = RT::Handle->InsertACL( $dbh );
             }
             elsif ( $action eq 'coredata' ) {
-                $RT::Handle = new RT::Handle;
+                $RT::Handle = RT::Handle->new;
                 $RT::Handle->dbh( undef );
                 RT::ConnectToDatabase();
                 RT::InitLogging();
                 ($status, $msg) = $RT::Handle->InsertInitialData;
             }
             elsif ( $action eq 'insert' ) {
-                $RT::Handle = new RT::Handle;
+                $RT::Handle = RT::Handle->new;
                 RT::Init();
                 my $file = $RT::EtcPath . "/initialdata";
                 ($status, $msg) = $RT::Handle->InsertData( $file );

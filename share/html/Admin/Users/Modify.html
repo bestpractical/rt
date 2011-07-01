@@ -235,7 +235,7 @@
 <%INIT>
 
 my $current_tab;
-my $UserObj = new RT::User($session{'CurrentUser'});
+my $UserObj = RT::User->new($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
 my ($val, $msg);

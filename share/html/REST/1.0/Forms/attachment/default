@@ -54,7 +54,7 @@ $args => undef
 <%INIT>
 my @data;
 my ($c, $o, $k, $e) = ("", [], {}, "");
-my $attachment = new RT::Attachment $session{CurrentUser};
+my $attachment = RT::Attachment->new( $session{CurrentUser} );
 
 $attachment->Load($id);
 unless ( $attachment->Id ) {

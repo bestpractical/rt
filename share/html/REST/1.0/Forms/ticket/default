@@ -62,7 +62,7 @@ my $cf_spec = RT::Interface::REST->custom_field_spec(1);
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new($session{CurrentUser} );
 my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
@@ -92,9 +92,9 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = new RT::Date $session{CurrentUser};
-        my $queue = new RT::Queue $session{CurrentUser};
-        my $starts = new RT::Date $session{CurrentUser};
+        my $due = RT::Date->new( $session{CurrentUser} );
+        my $queue = RT::Queue->new( $session{CurrentUser} );
+        my $starts = RT::Date->new( $session{CurrentUser} );
         $queue->Load(1);
         $due->SetToNow;
         $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
@@ -132,7 +132,7 @@ else {
         foreach my $k (keys %data) {
             # flexibly parse any dates
             if ($dates{lc $k}) {
-                my $time = new RT::Date $session{CurrentUser};
+                my $time = RT::Date->new( $session{CurrentUser} );
                 $time->Set(Format => 'unknown', Value => $data{$k});
                 $data{$k} = $time->ISO;
             }
@@ -205,14 +205,14 @@ if (!keys(%data)) {
         push @data, [ $key => [ $ticket->$key->MemberEmailAddresses ] ];
     }
 
-    $time = new RT::Date ($session{CurrentUser});
+    $time = RT::Date->new( ($session{CurrentUser}) );
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->Set(Format => 'sql', Value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
-    $time = new RT::Date ($session{CurrentUser});
+    $time = RT::Date->new( ($session{CurrentUser}) );
     foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
@@ -295,7 +295,7 @@ else {
 
             $set = "Set$key";
 
-            my $time = new RT::Date $session{CurrentUser};
+            my $time = RT::Date->new( $session{CurrentUser} );
             $time->Set(Format => 'sql', Value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->AsString);
 

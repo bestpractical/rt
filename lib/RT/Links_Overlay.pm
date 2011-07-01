@@ -53,7 +53,7 @@
 =head1 SYNOPSIS
 
   use RT::Links;
-  my $links = new RT::Links($CurrentUser);
+  my $links = RT::Links->new($CurrentUser);
 
 =head1 DESCRIPTION
 

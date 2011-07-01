@@ -106,7 +106,7 @@
 
 <%INIT>
 
-my $Group = new RT::Group($session{'CurrentUser'});
+my $Group = RT::Group->new($session{'CurrentUser'});
 $Group->Load($id) ;
 
 unless ($Group->id) {

@@ -91,7 +91,7 @@
 </form>
 
 <%INIT>
-my $queues = new RT::Queues($session{'CurrentUser'});
+my $queues = RT::Queues->new($session{'CurrentUser'});
 $queues->FindAllRows if $FindDisabledQueues;
 
 my ($caption);

@@ -33,7 +33,7 @@ sub compile_file {
 
     my $text = decode_utf8(RT::Test->file_content($file));
 
-    my $compiler = new HTML::Mason::Compiler::ToObject;
+    my $compiler = HTML::Mason::Compiler::ToObject->new;
     $compiler->compile(
         comp_source => $text,
         name => 'my',

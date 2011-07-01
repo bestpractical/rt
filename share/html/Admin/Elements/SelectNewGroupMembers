@@ -75,7 +75,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 % }
 
 <%INIT>
-my $users = new RT::Users($session{'CurrentUser'});
+my $users = RT::Users->new($session{'CurrentUser'});
 
 $users->Limit(
     FIELD           => 'id',
@@ -91,7 +91,7 @@ $users->Limit(
 );
 $users->LimitToPrivileged();
 
-my $groups = new RT::Groups($session{'CurrentUser'});
+my $groups = RT::Groups->new($session{'CurrentUser'});
 
 # self-recursive group membership considered harmful!
 $groups->Limit(FIELD => 'id', VALUE => $Group->id, OPERATOR => '!=' );

@@ -64,7 +64,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
   my %plugins = RT::Shredder::Plugin->List;
 
   # load plugin by name
-  my $plugin = new RT::Shredder::Plugin;
+  my $plugin = RT::Shredder::Plugin->new;
   my( $status, $msg ) = $plugin->LoadByName( 'Tickets' );
   unless( $status ) {
       print STDERR "Couldn't load plugin 'Tickets': $msg\n";
@@ -72,7 +72,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
   }
 
   # load plugin by preformatted string
-  my $plugin = new RT::Shredder::Plugin;
+  my $plugin = RT::Shredder::Plugin->new;
   my( $status, $msg ) = $plugin->LoadByString( 'Tickets=status,deleted' );
   unless( $status ) {
       print STDERR "Couldn't load plugin: $msg\n";

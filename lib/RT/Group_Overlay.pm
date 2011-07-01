@@ -55,8 +55,8 @@
 
 =head1 SYNOPSIS
 
-use RT::Group;
-my $group = new RT::Group($CurrentUser);
+  use RT::Group;
+  my $group = RT::Group->new($CurrentUser);
 
 =head1 DESCRIPTION
 

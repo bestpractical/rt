@@ -55,7 +55,7 @@
 % }
 </select>
 <%ONCE>
-my $queue = new RT::Queue($session{'CurrentUser'});
+my $queue = RT::Queue->new($session{'CurrentUser'});
 my @status = $queue->StatusArray();
 </%ONCE>
 <%ARGS>

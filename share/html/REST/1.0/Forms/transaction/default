@@ -54,7 +54,7 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $trans = new RT::Transactions $session{CurrentUser};
+my $trans = RT::Transactions->new($session{CurrentUser} );
 my ($c, $o, $k, $e) = ("", [], {} , "");
 
 chomp $args;
@@ -65,7 +65,7 @@ $trans->Limit(FIELD => 'Id', OPERATOR => '=', VALUE => $tid);
 
 if ($tid) {
     my @data;
-    my $t = new RT::Transaction $session{CurrentUser};
+    my $t = RT::Transaction->new( $session{CurrentUser} );
     $t->Load($tid);
     if ($format eq "l") {
       push @data, [ id    => $t->Id   ];
@@ -89,7 +89,7 @@ if ($tid) {
        	if (!%$fields || exists $fields->{lc 'Content'});
       
       if (!%$fields || exists $fields->{lc 'Content'}) {    
-  	    my $creator = new RT::User $session{CurrentUser};
+  	    my $creator = RT::User->new( $session{CurrentUser} );
   	    $creator->Load($t->Creator);
   	    push @data, [ Creator    => $creator->Name   ];
       }

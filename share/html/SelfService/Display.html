@@ -100,7 +100,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 # to deal
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
-my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
 # store the uploaded attachment in session
 if ( $ARGS{'Attach'} ) {    # attachment?
@@ -121,7 +121,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         $m->comp( 'Error.html', Why => loc('Queue not found') );
         $m->abort;

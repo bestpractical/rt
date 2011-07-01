@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
-my $scrubber = new HTML::Scrubber;
+my $scrubber = HTML::Scrubber->new;
 $scrubber->default(
     0,
     {

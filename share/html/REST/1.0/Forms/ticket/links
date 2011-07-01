@@ -54,7 +54,7 @@ $changes => undef
 </%ARGS>
 <%INIT>
 my @data;
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new($session{CurrentUser} );
 
 $ticket->Load($id);
 if (!$ticket->Id) {
@@ -96,8 +96,8 @@ if ($changes) {
             my %new;
             foreach my $nkey (@{vsplit($val)}) {
                 if ($nkey =~ /^\d+$/) {
-                    my $uri = new RT::URI $session{CurrentUser};
-                    my $tick = new RT::Ticket $session{CurrentUser};
+                    my $uri = RT::URI->new( $session{CurrentUser} );
+                    my $tick = RT::Ticket->new( $session{CurrentUser} );
                     $tick->Load($nkey);
                     if ($tick->Id) {
                         $nkey = $uri->FromObject($tick);

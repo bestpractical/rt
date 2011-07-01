@@ -60,7 +60,7 @@
 % }
 <& /Admin/Elements/EditScrips, title => $title, %ARGS &>
 <%init>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id);
 
 my $title;

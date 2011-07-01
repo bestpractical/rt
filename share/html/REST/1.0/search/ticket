@@ -57,7 +57,7 @@ $fields => undef
 use RT::Interface::REST;
 my $output = "";
 my $status = "200 Ok";
-my $tickets = new RT::Tickets $session{CurrentUser};
+my $tickets = RT::Tickets->new( $session{CurrentUser} );
 
 # Parse and validate any field specifications.
 my $field  = RT::Interface::REST->field_spec;

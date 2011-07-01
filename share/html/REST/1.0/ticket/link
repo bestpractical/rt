@@ -58,7 +58,7 @@ use RT::Interface::REST;
 
 my $output;
 my $status = "200 Ok";
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new( $session{CurrentUser} );
 my $object = $r->path_info;
 
 my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy HasMember MemberOf);

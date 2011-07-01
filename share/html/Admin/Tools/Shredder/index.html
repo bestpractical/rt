@@ -97,7 +97,7 @@ my $catch_non_fatals = sub {
 
 if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
     use RT::Shredder::Plugin;
-    $plugin_obj = new RT::Shredder::Plugin;
+    $plugin_obj = RT::Shredder::Plugin->new;
     my( $status, $msg ) = $plugin_obj->LoadByName( $Plugin );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
@@ -129,8 +129,8 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
 my $dump_file = '';
 
 if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
-    my $shredder = new RT::Shredder( force => 1 );
-    my $backup_plugin = new RT::Shredder::Plugin;
+    my $shredder = RT::Shredder->new( force => 1 );
+    my $backup_plugin = RT::Shredder::Plugin->new;
     my ($status, $msg) = $backup_plugin->LoadByName('SQLDump');
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
@@ -173,7 +173,7 @@ if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effec
     }
     push @{ $messages{Success} }, loc('executed plugin successfuly');
 
-    my $shredder = new RT::Shredder;
+    my $shredder = RT::Shredder->new;
     foreach my $o( grep defined, splice @objs ) {
         eval { push @objs, $shredder->CastObjectsToRecords( Objects => $o ) };
         $catch_non_fatals->() && last if $@;

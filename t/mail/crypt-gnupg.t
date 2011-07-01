@@ -286,7 +286,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
 diag 'verify inline and in attachment signatures' if $ENV{'TEST_VERBOSE'};
 {
     open( my $fh, '<', "$homedir/signed_old_style_with_attachment.eml" ) or die $!;
-    my $parser = new MIME::Parser;
+    my $parser = MIME::Parser->new;
     my $entity = $parser->parse( $fh );
 
     my @parts = RT::Crypt::GnuPG::FindProtectedParts( Entity => $entity );

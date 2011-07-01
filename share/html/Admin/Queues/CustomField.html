@@ -56,7 +56,7 @@
 <& /Admin/Elements/EditCustomField, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
 my ($title, $current_subtab);

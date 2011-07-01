@@ -78,7 +78,7 @@ my $title = loc("Search for tickets");
 use RT::Search::Googleish;
 
 if ($q) {
-    my $tickets = new RT::Tickets( $session{'CurrentUser'} );
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
     $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
 
     if ($q =~ /^#?(\d+)$/) {

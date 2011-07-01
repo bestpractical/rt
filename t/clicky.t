@@ -26,7 +26,7 @@ use_ok('MIME::Entity');
 
 my $CurrentUser = $RT::SystemUser;
 
-my $queue = new RT::Queue($CurrentUser);
+my $queue = RT::Queue->new($CurrentUser);
 $queue->Load('General') || Abort(loc("Queue could not be loaded."));
 
 my $message = MIME::Entity->build(
@@ -41,7 +41,7 @@ Best regards. BestPractical Team.
 END
 );
 
-my $ticket = new RT::Ticket( $CurrentUser );
+my $ticket = RT::Ticket->new( $CurrentUser );
 my ($id) = $ticket->Create(
     Subject => 'test',
     Queue => $queue->Id,
@@ -87,7 +87,7 @@ Best regards. BestPractical Team.
 END
 );
 
-my $ticket = new RT::Ticket($CurrentUser);
+my $ticket = RT::Ticket->new($CurrentUser);
 my ($id) = $ticket->Create(
     Subject => 'test',
     Queue   => $queue->Id,

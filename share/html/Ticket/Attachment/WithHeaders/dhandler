@@ -53,7 +53,7 @@
         Abort("Corrupted attachment URL");
     }
 
-    my $AttachmentObj = new RT::Attachment( $session{'CurrentUser'} );
+    my $AttachmentObj = RT::Attachment->new( $session{'CurrentUser'} );
     $AttachmentObj->Load( $id );
     unless ( $AttachmentObj->id ) {
         Abort("Couldn't load attachment #$id");

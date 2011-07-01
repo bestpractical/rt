@@ -54,7 +54,7 @@ $id
 <%INIT>
 use RT::Interface::REST;
 
-my $ticket = new RT::Ticket $session{CurrentUser};
+my $ticket = RT::Ticket->new( $session{CurrentUser} );
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/take
