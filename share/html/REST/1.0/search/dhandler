@@ -129,7 +129,7 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
             require Text::ParseWords;
             my ( $field, $op, $value ) = Text::ParseWords::shellwords($query);
             if ( $op !~
-                /^(?:[!<>]?=|(NOT )?LIKE|STARTSWITH|ENDSWITH|MATCHES)$/i )
+                /^(?:[!<>]?=|[<>]|(NOT )?LIKE|STARTSWITH|ENDSWITH|MATCHES)$/i )
             {
                 $status = "400 Bad Request";
                 $output = "Invalid operator specification: $op";
