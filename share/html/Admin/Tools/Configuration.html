@@ -123,11 +123,12 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <th class="collection-as-table"><&|/l&>Value</&></th>
 </tr>
 <%PERL>
-{ no strict qw/refs/;
 my %config_opt = map { $_ => 1 } RT->Config->Options( Overridable => undef );
 my $index_var;
-foreach my $key ( sort keys %{*RT::} ) {
-    next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
+my %package = do {no strict 'refs'; %{*RT::} };
+foreach my $key ( sort keys %package ) {
+    my $val = do {no strict 'refs'; ${'RT::'.$key} };
+    next if !$val || ref $val || $config_opt{ $key };
     $index_var++;
 </%PERL>
 <tr class="collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
@@ -136,11 +137,10 @@ foreach my $key ( sort keys %{*RT::} ) {
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em>Password not printed</em>
 % } else {
-<% ${'RT::'.$key} %>
+<% $val %>
 % }
 </td>
 </tr>
-% }
 % }
 </table>
 </&>

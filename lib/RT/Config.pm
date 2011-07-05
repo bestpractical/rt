@@ -844,11 +844,11 @@ sub SetFromConfig {
             HASH   => '%',
             CODE   => '&',
         );
-        no strict 'refs';
         my $name = undef;
 
         # scan $pack's nametable(hash)
-        foreach my $k ( keys %{$pack} ) {
+        my %package = do { no strict 'refs'; %{$pack} };
+        foreach my $k ( keys %package ) {
 
             # hash for main:: has reference on itself
             next if $k eq 'main::';
@@ -863,7 +863,7 @@ sub SetFromConfig {
             # entry of the table with references to
             # SCALAR, ARRAY... and other types with
             # the same name
-            my $entry = ${$pack}{$k};
+            my $entry = $package{$k};
             next unless $entry;
 
             # get entry for type we are looking for
@@ -871,7 +871,7 @@ sub SetFromConfig {
             # Otherwie 5.10 goes boom. maybe we should skip any
             # reference
             next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
+            my $entry_ref = do {no strict 'refs'; *{$entry}{ ref($ref) } };
             next unless $entry_ref;
 
             # if references are equal then we've found

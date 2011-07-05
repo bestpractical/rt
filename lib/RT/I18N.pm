@@ -130,13 +130,14 @@ sub Init {
 
 sub LoadLexicons {
 
-    no strict 'refs';
-    foreach my $k (keys %{RT::I18N::} ) {
+    my %package = do {no strict 'refs'; %{RT::I18N::} };
+    foreach my $k (keys %package) {
         next if $k eq 'main::';
         next unless index($k, '::', -2) >= 0;
-        next unless exists ${ 'RT::I18N::'. $k }{'Lexicon'};
+        my %lang_package = do {no strict 'refs'; %{'RT::I18N::'. $k} };
+        next unless exists $lang_package{'Lexicon'};
 
-        my $lex = *{ ${'RT::I18N::'. $k }{'Lexicon'} }{HASH};
+        my $lex = *{ $lang_package{'Lexicon'} }{HASH};
         # run fetch to force load
         my $tmp = $lex->{'foo'};
         # XXX: untie may fail with "untie attempted
