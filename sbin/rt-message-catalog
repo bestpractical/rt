@@ -49,16 +49,20 @@
 use strict;
 use warnings;
 
-use Locale::PO;
+use File::Find;
 use Getopt::Long;
+use Locale::PO;
+use Regexp::Common;
 
 my %commands = (
     stats   => { },
-    shrink  => { 'update!' => 1, 'keep=s@' => [] },
+    shrink  => { 'update!' => 1, 'keep=s@' => [], 'exclude-from=s@' => [] },
     clean   => { 'update!' => 1 },
     rosetta => { 'boundary=i' => 20 },
-    extract => { },
+    extract => { 'local!' => 0 },
 );
+
+unshift @ARGV, 'extract' if $0 =~ m/\bextract-message-catalog$/;
 
 my $command = shift;
 usage() unless $command;
@@ -78,6 +82,14 @@ if ( $opt && keys %$opt ) {
 { no strict 'refs'; &$command( \%opt, @ARGV ); }
 
 exit;
+
+sub usage {
+    require Pod::Usage;
+    import Pod::Usage;
+    my @args = ( -verbose => 1 );
+    push @args, ( -message => "@_\n" ) if @_;
+    pod2usage(@args);
+}
 
 sub stats {
     my %opt = %{ shift() };
@@ -134,7 +146,20 @@ sub shrink {
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
         $stats{ $po_file } = { };
+        my @exclude = ( );
+        if ( $opt{'exclude-from'} ) {
+            my $fname = $po_file;
+            $fname =~ s{^.*/}{};
+            foreach my $edir ( @{$opt{'exclude-from'}} ) {
+                $_ = "$edir/$fname";
+                push @exclude, Locale::PO->load_file_ashash($_) if -f $_;
+            }
+        }
         foreach my $entry ( splice @$array, 1 ) {
+            if ( grep(exists ${$_}{$entry->msgid}, @exclude) ) {
+                $stats{ $po_file }{'excluded'}++;
+                next;
+            }
             if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
                 $stats{ $po_file }{'not-referenced'}++;
                 next;
@@ -159,7 +184,7 @@ sub shrink {
     foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
         my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
         my @tmp;
-        foreach ( qw(not-referenced not-translated equal) ) {
+        foreach ( qw(excluded not-referenced not-translated equal) ) {
             next unless my $v = $stats{ $po_file }{ $_ };
             push @tmp, "$_: $v";
         }
@@ -184,6 +209,7 @@ sub clean {
 sub rosetta {
     my %opt = %{ shift() };
     my $url = shift or die 'must provide rosseta download url or directory with new po files';
+    my $i18ndir = shift || 'lib/RT/I18N';
 
     my $dir;
     if ( $url =~ m/^[a-z]+:\/\// ) {
@@ -207,7 +233,7 @@ sub rosetta {
         die "Is not URL or directory: '$url'";
     }
 
-    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    my @files = ( <$dir/rt/*.po>, <$dir/*.po> );
     unless ( @files ) {
         print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
         exit;
@@ -221,7 +247,7 @@ sub rosetta {
 
     for ( @files ) {
         my ($lang) = m/([\w_]+)\.po/;
-        my $fn_orig = "lib/RT/I18N/$lang.po";
+        my $fn_orig = "$i18ndir/$lang.po";
 
         print "$_ -> $fn_orig\n";
 
@@ -241,6 +267,13 @@ sub rosetta {
             $ext->set_msgstr($msgid, $msgstr)
                 if $ext->msgstr($msgid) eq '' && $msgstr;
         }
+	# don't want translated local strings to forget
+	foreach my $qmsgid ( keys %$po_orig ) {
+	    my $msgid = Locale::PO->dequote($qmsgid);
+	    next if $msgid eq '';
+	    $ext->set_msgstr($msgid, Locale::PO->dequote($po_orig->{$qmsgid}{msgstr}))
+		unless $ext->has_msgid($msgid);
+	}
         if ( $opt{'boundary'} && $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
             my @ids = $ext->msgids;
             my $translated = 0;
@@ -259,11 +292,522 @@ sub rosetta {
         }
         $ext->write_po($fn_orig);
     }
-    extract({});
+    extract({}, <$i18ndir/*.po>);
 }
 
 sub extract {
-    shift;
-    system($^X, 'sbin/extract-message-catalog', @_);
+    my %opt = %{ shift() };
+
+    unless ( @_ ) {
+        @_ = $opt{'local'} ? (<local/po/*.po>)
+            : (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>);
+    }
+
+    my @path = qw(bin sbin lib share html etc);
+    my $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts!;
+    if ( $opt{'local'} ) {
+        @path = qw(local);
+        $re_dirname_exclude = qr!lib/blib|lib/t/autogen|var|m4|share/fonts|local/plugins!;
+    }
+
+    my $FILECAT = {};
+
+    # extract all strings and stuff them into $FILECAT
+    # scan html dir for extensions
+    File::Find::find(
+            {   wanted => sub {
+                    return if -d $_;
+                    return if $File::Find::dir =~ $re_dirname_exclude;
+                    return if /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/;
+                    return if /~|,D|,B$|extract-message-catalog$|rt-message-catalog$|tweak-template-locstring$/;
+                    return if /^[\.#]/;
+                    return if -f "$_.in";
+                    extract_strings_from_code($FILECAT);
+                },
+                follow => 1 },
+            @path );
+
+    # remove msgid with $ in it.  XXX: perhaps give some warnings here
+    $FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
+
+    # ensure proper escaping and [_1] => %1 transformation
+    foreach my $str ( sort keys %{$FILECAT} ) {
+        my $entry = $FILECAT->{$str};
+        my $oldstr = $str;
+
+        $str =~ s/\\/\\\\/g;
+        $str =~ s/\"/\\"/g;
+        $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
+        $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
+        $str =~ s/~([\[\]])/$1/g;
+
+        delete $FILECAT->{$oldstr};
+        $FILECAT->{$str} = $entry;
+    }
+
+    # update all language dictionaries
+    foreach my $dict (@_) {
+        $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
+        $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
+
+        my $lang = $dict;
+        $lang =~ s|.*/||;
+        $lang =~ s|\.po$||;
+        $lang =~ s|\.pot$||;
+
+        update($lang, $dict, $FILECAT);
+    }
+
+    if ( $opt{'local'} ) {
+        shrink({ 'keep'         => [ qw(not-referenced not-translated equal) ],
+                 'exclude-from' => [ qw(lib/RT/I18N), <local/plugins/*/po> ] },
+            'local/po');
+    }
 }
 
+
+# {{{ pull strings out of the code.
+
+sub extract_strings_from_code {
+    my ($FILECAT) = @_;
+    my $file = $_;
+
+    local $/;
+
+    print "Looking at $File::Find::name\n";
+    my $filename = $File::Find::name;
+    $filename =~ s'^\./'';
+    $filename =~ s'\.in$'';
+
+    unless (open _, '<', $file) {
+        print "Cannot open $file for reading ($!), skipping.\n";
+        return;
+    }
+
+    my $re_space_wo_nl = qr{(?!\n)\s};
+    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
+    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
+    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
+    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
+    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
+
+    $_ = <_>;
+
+    # Mason filter: <&|/l>...</&>
+    my $line = 1;
+    while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
+        my ( $vars, $str ) = ( $1, $2 );
+        $vars =~ s/[\n\r]//g;
+        $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        $str =~ s/\\'/\'/g;
+        #print "STR IS $str\n";
+        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+    }
+
+    # Localization function: loc(...)
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {
+        my $match = $1;
+        $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+
+        my ( $vars, $str );
+        if ( $match =~
+                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+
+            $str = substr( $1, 1, -1 );       # $str comes before $vars now
+            $vars = $9;
+        }
+        else {
+            next;
+        }
+
+        $vars =~ s/[\n\r]//g;
+        $str  =~ s/\\'/\'/g;
+
+        push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+    }
+
+    # Comment-based mark: "..." # loc
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?($re_delim)[\}\)\],;]*$re_loc_suffix/smgo) {
+	my $str = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $str ) {
+            warn "Couldn't process loc at $filename:$line";
+            next;
+        }
+        $str = substr($str, 1, -1);
+	$str =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$str} }, [ $filename, $line, '' ];
+    }
+
+    # Comment-based qw mark: "qw(...)" # loc_qw
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(qw\([^)]+\))[\}\)\],;]*)?$re_loc_qw_suffix/smgo) {
+        my $str = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $str ) {
+            warn "Couldn't process loc_qw at $filename:$line";
+            next;
+        }
+        foreach my $value (eval($str)) {
+            push @{ $FILECAT->{$value} }, [ $filename, $line, '' ];
+        }
+    }
+
+    # Comment-based left pair mark: "..." => ... # loc_left_pair
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(\w+)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smgo) {
+	my $key = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $key ) {
+            warn "Couldn't process loc_left_pair at $filename:$line";
+            next;
+        }
+	$key  =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+    }
+
+    # Comment-based pair mark: "..." => "..." # loc_pair
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(?:(\w+)\s*=>\s*($re_delim)[\}\)\],;]*)?$re_loc_pair_suffix/smgo) {
+	my $key = $1;
+	my $val = $2;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+        unless ( defined $key && defined $val ) {
+            warn "Couldn't process loc_pair at $filename:$line";
+            next;
+        }
+	$val = substr($val, 1, -1);
+	$key  =~ s/\\'/\'/g;
+	$val  =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+	push @{ $FILECAT->{$val} }, [ $filename, $line, '' ];
+    }
+
+    close (_);
+}
+# }}} extract from strings
+
+sub update {
+    my ($lang, $file, $FILECAT) = @_;
+    my ( %Lexicon, %Header);
+    my $out = '';
+
+    unless (!-e $file or -w $file) {
+	warn "Can't write to $lang, skipping...\n";
+	return;
+    }
+
+    print "Updating $lang...\n";
+
+    my @lines;
+    @lines = (<LEXICON>) if open LEXICON, '<', $file;
+    @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
+    while (@lines) {
+        my $msghdr = "";
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
+        
+        my $msgid  = "";
+
+# '#~ ' is the prefix of launchpad for msg that's not found the the source
+# we'll remove the prefix later so we can still show them with our own mark
+
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
+        my $msgstr = "";
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
+
+        last unless $msgid;
+
+        chomp $msgid;
+        chomp $msgstr;
+
+        $msgid  =~ s/^#~ //mg;
+        $msgstr =~ s/^#~ //mg;
+
+        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
+
+        if ( $msgid eq '' ) {
+            # null msgid, msgstr will have head info
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        }
+        else {
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
+        }
+
+        if ( $msgid ne ''  ) {
+            for my $msg ( \$msgid, \$msgstr ) {
+                if ( $$msg =~ /\n/ ) {
+                    my @lines = split /\n/, $$msg;
+                    $$msg =
+                      shift @lines;   # first line don't need to handle any more
+                    for (@lines) {
+                        if (/^"(.*)"\s*$/) {
+                            $$msg .= $1;
+                        }
+                    }
+                }
+
+                # convert \\n back to \n
+                $$msg =~ s/(?!\\)\\n/\n/g;
+            }
+        }
+
+        $Lexicon{$msgid} = $msgstr;
+        $Header{$msgid}  = $msghdr;
+    }
+
+    my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
+
+    foreach my $str ( sort keys %{$FILECAT} ) {
+        $Lexicon{$str} ||= '';
+    }
+    foreach ( sort keys %Lexicon ) {
+        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
+        my $nospace = $_;
+        $nospace =~ s/ +$//;
+
+        if ( !$Lexicon{$_} and $Lexicon{$nospace} ) {
+            $Lexicon{$_} =
+              $Lexicon{$nospace} . ( ' ' x ( length($_) - length($nospace) ) );
+        }
+
+        next if !length( $Lexicon{$_} ) and $is_english;
+
+        my %seen;
+        $out .= $Header{$_} if exists $Header{$_};
+
+
+
+        next if (!$f && $_ && !$Lexicon{$_});
+        if ( $f && $f !~ /^\s+$/ ) {
+
+            $out .= "#: $f\n";
+        }
+        elsif ($_) {
+            $out .= "#: NOT FOUND IN SOURCE\n";
+        }
+        foreach my $entry ( grep { $_->[2] } @{ $FILECAT->{$_} } ) {
+            my ( $file, $line, $var ) = @{$entry};
+            $var =~ s/^\s*,\s*//;
+            $var =~ s/\s*$//;
+            $out .= "#. ($var)\n" unless $seen{$var}++;
+        }
+        $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
+    }
+
+    open( PO, '>', $file ) or die "Couldn't open '$file' for writing: $!";
+    print PO $out;
+    close PO;
+
+    return 1;
+}
+
+sub escape {
+    my $text = shift;
+    $text =~ s/\b_(\d+)/%$1/;
+    return $text;
+}
+
+sub fmt {
+    my $str = shift;
+    return "\"$str\"\n" unless $str =~ /\n/;
+
+    my $multi_line = ($str =~ /\n(?!\z)/);
+    $str =~ s/\n/\\n"\n"/g;
+
+    if ($str =~ /\n"$/) {
+        chop $str;
+    }
+    else {
+        $str .= "\"\n";
+    }
+    return $multi_line ? qq(""\n"$str) : qq("$str);
+}
+
+__END__
+
+=head1 NAME
+
+rt-message-catalog - the message catalog maintenance tool
+
+=head1 SYNOPSIS
+
+rt-message-catalog command [options] [args]
+
+command:
+
+  stats [I18N-directory]
+    calculates translation statistics
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+
+  shrink [options] [I18N-directory]
+    shrinks lexicon
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+      --update
+	    defaults to true
+      --keep {not-referenced|not-translated|equal}
+	    self-documenting...
+      --exclude ex-I18N-directory
+            exclude messages from catalog under ex-I18N-directory
+
+  clean [options] [I18N-directory]
+    the same as 'shrink --keep not-translated --keep equal'
+
+  rosetta [options] url-or-dir [I18N-directory]
+    merges rosetta translations and then do command extract
+      <url-or-dir>
+	    either a Rosetta download URL or a directory with already
+	    downloaded and extracted lexicons from Rosetta
+      <I18N-directory>
+	    defaults to lib/RT/I18N
+      --boundary num
+	    num defaults to 20. Lexicon is deleted if less than num%
+	    messages are translated.
+
+  extract [options] [lexicons-to-update]
+    extracts messages from sources and updates lexicons
+      <lexicons-to-update>
+	    defaults to lib/RT/I18N/*.po lib/RT/I18N/*.pot po/*.po po/*.pot
+            without --local option or to local/po/*.po with --local option
+      --local
+            extracts messages from local/ tree instead from base directory
+
+
+=head1 COMMANDS
+
+=over 4
+
+
+=item B<stats>
+
+This command calculates percents of translated messages per lexicon.
+
+C<stats [I18N-directory]>
+
+=over 4
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=back
+
+
+=item B<shrink>
+
+This command shrinks the lexicons by redundant information.
+The redundacy wanted can be specified with option C<--keep>
+
+C<shrink [options] [I18N-directory]>
+
+=over 4
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=item C<--update>
+
+It defaults to true, that is update lexicons.
+
+=item C<--keep key>
+
+One or more of following values can be passed.
+
+=over 4
+
+=item C<not-referenced>
+
+Keep messages not referenced in source code.
+
+=item C<not-translated>
+
+Keep messages without translation.
+
+=item C<equal>
+
+Keep messages translated into the equal string.
+
+=back
+
+=item C<--exclude ex-I18N-directory>
+
+Exclude all messages found in a catalog under C<ex-I18N-directory>.
+
+=back
+
+
+=item B<clean>
+
+This command does the same as C<shrink --keep not-translated --keep equal>.
+
+
+=item B<rosetta>
+
+This command merges Rosetta translations with a content of lexicons. Rosetta
+translations are given by direcotry with already extracted lexicons from
+Rosetta or download URL from Rosetta. The command C<extract> is called to
+comments with source code references are back again at the end.
+
+C<rosetta [options] url-or-dir [I18N-directory]>
+
+=over 4
+
+=item C<url-or-dir>
+
+Either a Rosetta download URL or a directory with already
+downloaded and extracted lexicons from Rosetta.
+
+=item C<I18N-directory>
+
+This is the directory with lexicons. It defaults to C<lib/RT/I18N>.
+
+=item C<--boundary num>
+
+Num defaults to 20. A lexicon is deleted if less than num%
+messages are translated.
+
+=back
+
+
+=item B<extract>
+
+This command extracts messages from sources and updates lexicons.
+
+C<extracts [lexicon-to-update..]>
+
+=over 4
+
+=item C<lexicon-to-update>
+
+This is the message catalog (lexicon) to update with all messages found in the source code.
+It defaults to a list of globs C<lib/RT/I18N/*.po> C<lib/RT/I18N/*.pot> C<po/*.po> C<po/*.pot>
+when no option C<--local> is present. If option C<--local> is present it defaults to glob
+C<local/po/*.po>.
+
+=item C<--local>
+
+Extracts messages from C<local> tree instead from base directory if this option is present.
+Command C<shrink> is called to exclude messages from C<lib/RT/I18N> and <local/plugins/*/po>
+after extracting messages from C<local> tree.
+
+=back
+
+=back
+
+=cut
+
+# Local variables:
+# c-indentation-style: bsd
+# c-basic-offset: 4
+# indent-tabs-mode: nil
+# End:
+# vim: expandtab shiftwidth=4:
