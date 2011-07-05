@@ -92,6 +92,7 @@ sub _Init {
     my $self = shift;
     $self->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
     $self->CurrentUser(@_);
+    return;
 }
 
 # }}}

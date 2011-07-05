@@ -73,7 +73,7 @@ use MIME::Base64;
 use MIME::QuotedPrint;
 
 sub _OverlayAccessible {
-  {
+  return {
     TransactionId   => { 'read'=>1, 'public'=>1, 'write' => 0 },
     MessageId       => { 'read'=>1, 'write' => 0 },
     Parent          => { 'read'=>1, 'write' => 0 },

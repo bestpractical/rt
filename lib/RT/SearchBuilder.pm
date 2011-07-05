@@ -82,7 +82,7 @@ sub _Init  {
 	$RT::Logger->err("$self was created without a CurrentUser");
 	return(0);
     }
-    $self->SUPER::_Init( 'Handle' => $RT::Handle);
+    return $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
 sub OrderByCols {

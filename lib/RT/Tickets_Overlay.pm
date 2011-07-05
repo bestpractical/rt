@@ -2772,7 +2772,7 @@ sub _Init {
     $self->SUPER::_Init(@_);
 
     $self->_InitSQL;
-
+    return;
 }
 
 # }}}

@@ -103,6 +103,7 @@ sub _Init
     my $self = shift;
     my %args = ( @_ );
     $self->{'opt'} = \%args;
+    return;
 }
 
 =head2 List

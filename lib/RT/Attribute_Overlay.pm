@@ -177,7 +177,7 @@ sub Create {
     }
 
     
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Name => $args{'Name'},
                          Content => $args{'Content'},
                          ContentType => $args{'ContentType'},

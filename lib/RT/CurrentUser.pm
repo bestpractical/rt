@@ -120,7 +120,7 @@ sub _Init {
     }
 
     $self->_BuildTableAttributes;
-
+    return;
 }
 
 =head2 Create, Delete and Set*
@@ -168,7 +168,7 @@ sub UserObj {
 }
 
 sub _CoreAccessible  {
-     {
+     return {
          Name           => { 'read' => 1 },
            Gecos        => { 'read' => 1 },
            RealName     => { 'read' => 1 },

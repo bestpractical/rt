@@ -79,7 +79,7 @@ sub _Init {
     my %args = @_;
 
     $self->{'Queues'} = delete($args{'Queues'}) || [];
-    $self->SUPER::_Init(%args);
+    return $self->SUPER::_Init(%args);
 }
 # }}}
 

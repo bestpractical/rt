@@ -78,7 +78,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('Links');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -110,7 +110,7 @@ sub Create {
                 LocalBase => '0',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Base => $args{'Base'},
                          Target => $args{'Target'},
                          Type => $args{'Type'},
@@ -259,7 +259,7 @@ Returns the current value of Created.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

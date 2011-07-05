@@ -97,6 +97,7 @@ sub _Init  {
   
   $self->{'TicketsObj'} = $args{'TicketsObj'}; 
   $self->{'Argument'} = $args{'Argument'};
+  return;
 }
 # }}}
 

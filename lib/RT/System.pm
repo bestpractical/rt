@@ -149,7 +149,14 @@ sub AddRights {
 
 sub _Init {
     my $self = shift;
-    $self->SUPER::_Init (@_) if @_ && $_[0];
+
+    # XXX: This should potentially just always call SUPER::_Init and return it
+    # instead of doing so conditionally.
+    if (@_ && $_[0]) {
+        return $self->SUPER::_Init(@_);
+    } else {
+        return;
+    }
 }
 
 =head2 id

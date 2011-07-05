@@ -82,7 +82,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('Scrips');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -126,7 +126,7 @@ sub Create {
                 Template => '0',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Description => $args{'Description'},
                          ScripCondition => $args{'ScripCondition'},
                          ScripAction => $args{'ScripAction'},
@@ -445,7 +445,7 @@ Returns the current value of LastUpdated.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

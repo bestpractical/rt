@@ -78,7 +78,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('Transactions');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -122,7 +122,7 @@ sub Create {
                 Data => '',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
                          TimeTaken => $args{'TimeTaken'},
@@ -367,7 +367,7 @@ Returns the current value of Created.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

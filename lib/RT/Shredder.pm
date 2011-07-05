@@ -299,6 +299,7 @@ sub _Init
     $self->{'cache'}        = {};
     $self->{'resolver'}     = {};
     $self->{'dump_plugins'} = [];
+    return;
 }
 
 =head4 CastObjectsToRecords( Objects => undef )
