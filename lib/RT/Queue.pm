@@ -77,9 +77,6 @@ use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
 
-our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
-our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
-
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
 # $self->loc('stalled'); # For the string extractor to get a string to localize
