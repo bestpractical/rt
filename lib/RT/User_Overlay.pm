@@ -906,13 +906,12 @@ sub GenerateRandomPassword {
 sub _GenerateRandomNextChar {
     my $self = shift;
     my ( $all, $freq ) = @_;
-    my ( $pos, $i );
 
-    for ( $pos = int( rand($all) ), $i = 0 ;
-        $pos >= $freq->[$i] ;
-        $pos -= $freq->[$i], $i++ )
-    {
-    }
+    my $pos = int( rand($all) );
+    my $i = 0;
+
+    $pos -= $freq->[$i++]
+        while $pos >= $freq->[$i];
 
     return ($i);
 }

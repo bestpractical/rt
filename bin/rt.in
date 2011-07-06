@@ -274,10 +274,16 @@ sub list {
         $_ = shift @ARGV;
 
         if (/^-t$/) {
-            $bad = 1, last unless defined($type = get_type_argument());
+            unless (defined($type = get_type_argument())) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-S$/) {
-            $bad = 1, last unless get_var_argument(\%data);
+            unless (get_var_argument(\%data)) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-o$/) {
             $data{'orderby'} = shift @ARGV;
@@ -372,10 +378,16 @@ sub show {
         $_ = shift @ARGV;
         s/^#// if /^#\d+/; # get rid of leading hash
         if (/^-t$/) {
-            $bad = 1, last unless defined($type = get_type_argument());
+            unless (defined($type = get_type_argument())) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-S$/) {
-            $bad = 1, last unless get_var_argument(\%data);
+            unless (get_var_argument(\%data)) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
@@ -477,10 +489,16 @@ sub edit {
         elsif (/^-i$/) { $input = 1 }
         elsif (/^-o$/) { $output = 1 }
         elsif (/^-t$/) {
-            $bad = 1, last unless defined($type = get_type_argument());
+            unless (defined($type = get_type_argument())) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-S$/) {
-            $bad = 1, last unless get_var_argument(\%data);
+            unless (get_var_argument(\%data)) {
+                $bad = 1;
+                last;
+            }
         }
         elsif (/^-$/ && !($slurped || $input)) {
             chomp(my @lines = <STDIN>);
@@ -884,7 +902,10 @@ sub link_ticket {
             $del = 1;
         }
         elsif (/^-t$/) {
-            $bad = 1, last unless defined($type = get_type_argument());
+            unless (defined($type = get_type_argument())) {
+                $bad = 1;
+                last;
+            }
         }
         else {
             whine "Unrecognised option: '$_'.";
