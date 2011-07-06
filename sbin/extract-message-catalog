@@ -246,7 +246,7 @@ sub update {
     my ( %Lexicon, %Header);
     my $out = '';
 
-    unless (!-e $file or -w $file) {
+    if (-e $file and not -w $file) {
 	warn "Can't write to $lang, skipping...\n";
 	return;
     }
@@ -320,12 +320,12 @@ sub update {
         my $nospace = $_;
         $nospace =~ s/ +$//;
 
-        if ( !$Lexicon{$_} and $Lexicon{$nospace} ) {
+        if ( not $Lexicon{$_} and $Lexicon{$nospace} ) {
             $Lexicon{$_} =
               $Lexicon{$nospace} . ( ' ' x ( length($_) - length($nospace) ) );
         }
 
-        next if !length( $Lexicon{$_} ) and $is_english;
+        next if not length( $Lexicon{$_} ) and $is_english;
 
         my %seen;
         $out .= $Header{$_} if exists $Header{$_};

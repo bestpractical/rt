@@ -141,8 +141,8 @@ sub WebExternalAutoInfo {
 
     # default to making Privileged users, even if they specify
     # some other default Attributes
-    if ( !$RT::AutoCreate
-        || ( ref($RT::AutoCreate) && not exists $RT::AutoCreate->{Privileged} ) )
+    if ( not $RT::AutoCreate
+        or ( ref($RT::AutoCreate) and not exists $RT::AutoCreate->{Privileged} ) )
     {
         $user_info{'Privileged'} = 1;
     }
@@ -1933,7 +1933,7 @@ sub _ProcessObjectCustomFieldUpdates {
             # keep everything up to the point of difference, delete the rest
             my $delete_flag;
             foreach my $old_cf ( @{ $cf_values->ItemsArrayRef } ) {
-                if ( !$delete_flag and @values and $old_cf->Content eq $values[0] ) {
+                if ( not $delete_flag and @values and $old_cf->Content eq $values[0] ) {
                     shift @values;
                     next;
                 }

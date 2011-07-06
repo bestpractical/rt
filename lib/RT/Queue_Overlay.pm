@@ -886,7 +886,7 @@ sub DeleteWatcher {
         return ( 0, $self->loc("No principal specified") );
     }
 
-    if ( !$args{PrincipalId} and $args{Email} ) {
+    if ( not $args{PrincipalId} and $args{Email} ) {
         my $user = RT::User->new( $self->CurrentUser );
         my ($rv, $msg) = $user->LoadByEmail( $args{Email} );
         $args{PrincipalId} = $user->PrincipalId if $rv;

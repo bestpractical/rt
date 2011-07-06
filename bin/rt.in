@@ -316,7 +316,7 @@ sub list {
             $bad = 1; last;
         }
     }
-    if ( ! $rawprint and ! exists $data{format} ) {
+    unless ( $rawprint or exists $data{format} ) {
         $data{format} = 'l';
     }
     if ( $reverse_sort and $data{orderby} =~ /^-/ ) {
@@ -1675,7 +1675,7 @@ sub date_diff {
     $new = time() if ! $new;
     $old = str2time($old) if $old !~ /^\d+$/;
     $new = str2time($new) if $new !~ /^\d+$/;
-    return "???" if ! $old or ! $new;
+    return "???" if not $old or not $new;
 
     my %seconds = (min => 60,
                    hr  => 60*60,
@@ -1711,7 +1711,7 @@ sub prettyshow {
     # dates in these attributes are in GMT and will be converted
     foreach my $form (@$forms) {
         my ($c, $o, $k, $e) = @$form;
-        next if ! $k->{id} or exists $k->{Queue};
+        next if not $k->{id} or exists $k->{Queue};
         if ( exists $k->{Created} ) {
             my ($y,$m,$d,$hh,$mm,$ss) = ($k->{Created} =~ /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/);
             $m--;

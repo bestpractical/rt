@@ -423,7 +423,7 @@ sub _FindOrGuessCharset {
         return $charset;
     }
 
-    if ( !$head_only and $head->mime_type =~ m{^text/}) {
+    if ( not $head_only and $head->mime_type =~ m{^text/}) {
 	my $body = $entity->bodyhandle or return;
 	return _GuessCharset( $body->as_string );
     }

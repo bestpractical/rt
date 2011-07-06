@@ -172,7 +172,7 @@ sub DeleteEntry {
     );
     my $found = 0;
     foreach my $attr ( $self->Named( $args{'Name'} ) ) {
-        if ( ( !defined $args{'id'} and !defined $args{'Content'} )
+        if ( ( not defined $args{'id'} and not defined $args{'Content'} )
              or ( defined $args{'id'} and $attr->id eq $args{'id'} )
              or ( defined $args{'Content'} and $attr->Content eq $args{'Content'} ) )
         {
