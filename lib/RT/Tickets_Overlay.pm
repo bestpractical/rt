@@ -1827,8 +1827,12 @@ Returns a frozen string suitable for handing back to ThawLimits.
 =cut
 
 sub _FreezeThawKeys {
-    'TicketRestrictions', 'restriction_index', 'looking_at_effective_id',
-        'looking_at_type';
+    return qw/
+                 TicketRestrictions
+                 restriction_index
+                 looking_at_effective_id
+                 looking_at_type
+             /;
 }
 
 # {{{ sub FreezeLimits

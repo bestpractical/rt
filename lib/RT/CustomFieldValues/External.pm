@@ -190,7 +190,8 @@ sub _DoSearch {
     my $check = $self->__BuildAggregatorsCheck;
     foreach( @{ $self->ExternalValues } ) {
         my $value = $self->NewItem;
-        $value->LoadFromHash( { %defaults, %$_ } );
+        my %load = ( %defaults, %{$_} );
+        $value->LoadFromHash( \%load );
         next if $check && !$check->( $self, $value );
         $self->AddRecord( $value );
     }

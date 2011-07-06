@@ -57,7 +57,7 @@ use warnings;
 sub Groupings {
     my $self = shift;
     my %args = (@_);
-    my @fields = map {$_, $_} qw(
+    my @fields = map {$_ => $_} qw(
         Status
         Queue
     );
