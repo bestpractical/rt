@@ -168,21 +168,12 @@ if ($chart_class eq "GD::Graph::bars") {
 }
 
 # refine values' colors, with both Color::Scheme's help and my own tweak
-$chart->{dclrs} = [
-    '66cc66', 'ff6666', 'ffcc66', '663399',
-    '3333cc', 
-    '339933', '993333', '996633', '663399',
-    '33cc33', 'cc3333', 'cc9933', '6633cc'
-];
-
-{
-    no warnings 'redefine';
-    *GD::Graph::pick_data_clr = sub {
-        my $self      = shift;
-        my $color_hex = $self->{dclrs}[ $_[0] % @{ $self->{dclrs} } - 1 ];
-        return map { hex } ( $color_hex =~ /(..)(..)(..)/ );
-    };
-}
+$chart->set( dclrs => [
+    '#66cc66', '#ff6666', '#ffcc66', '#663399',
+    '#3333cc',
+    '#339933', '#993333', '#996633', '#663399',
+    '#33cc33', '#cc3333', '#cc9933', '#6633cc'
+] );
 
 my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
 $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
