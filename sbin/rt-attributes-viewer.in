@@ -95,7 +95,7 @@ RT::LoadConfig();
 RT::Init();
 
 require RT::Attribute;
-my $attr = RT::Attribute->new( do { no warnings 'once'; $RT::SystemUser } );
+my $attr = RT::Attribute->new( RT->SystemUser );
 $attr->Load( $id );
 unless ( $attr->id ) {
     print STDERR "Couldn't load attribute #$id\n";

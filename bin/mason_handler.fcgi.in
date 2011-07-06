@@ -48,7 +48,6 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
-no warnings qw(once);
 
 use File::Basename;
 require (dirname(__FILE__) .'/webmux.pl');

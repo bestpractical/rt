@@ -883,15 +883,17 @@ sub Update {
         # and might not have a Name method. But "can" won't find autoloaded
         # items. If it fails, we don't care
         do {
-            no warnings "uninitialized";
             local $@;
+
+            my $current = $self->$attribute();
             eval {
                 my $object = $attribute . "Obj";
-                my $name = $self->$object->Name;
-                next if $name eq $value || $name eq ($value || 0);
+                $current = $self->$object->Name;
             };
-            next if $value eq $self->$attribute();
-            next if ($value || 0) eq $self->$attribute();
+
+            $current = '' unless defined $current;
+            next if (defined $value ? $value : '') eq $current;
+            next if ($value || 0) eq $current;
         };
 
         my $method = "Set$attribute";

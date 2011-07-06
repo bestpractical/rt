@@ -159,7 +159,6 @@ Server config:
 
 use strict;
 use warnings;
-no warnings qw(once);
 
 package RT::Interface::Web::FCGI::Server;
 use base qw(FCGI::ProcManager);

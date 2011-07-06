@@ -52,7 +52,7 @@
 #
 
 use strict;
-no warnings qw(numeric redefine);
+use warnings;
 use Getopt::Long;
 my %args;
 my %deps;
