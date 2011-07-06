@@ -970,18 +970,20 @@ sub Update {
         # and might not have a Name method. But "can" won't find autoloaded
         # items. If it fails, we don't care
         do {
-            no warnings "uninitialized";
             local $@;
             my $name = eval {
                 my $object = $attribute . "Obj";
-                $self->$object->Name;
+                $self->$object->Name // "";
             };
             unless ($@) {
-                next if $name eq $value || $name eq ($value || 0);
+                next if $value eq $name;
+                next if ($value || 0) eq $name;
             }
 
-            next if $truncated_value eq $self->$attribute();
-            next if ( $truncated_value || 0 ) eq $self->$attribute();
+            my $attr_value = $self->$attribute // "";
+
+            next if $truncated_value eq $attr_value;
+            next if ( $truncated_value || 0 ) eq $attr_value;
         };
 
         $new_values{$attribute} = $value;
