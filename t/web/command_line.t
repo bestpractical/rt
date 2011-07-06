@@ -265,6 +265,55 @@ expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
 expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
 expect_like(qr/\QCF.{MultipleCF$$}\E: '1,2\\'s,3'/i, 'Verified change');
 
+# Test escaping of quotes - generate (foo)(bar') with no escapes
+my $ticket = RT::Ticket->new($RT::SystemUser);
+expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo',bar'\"", "Changing CF with no slashes: 'foo',bar'");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+$ticket->Load($ticket_id);
+is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo"."\n"."bar'", "Direct value checks out");
+expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should be present)");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
+expect_like(qr/CF\.{MultipleCF$$}: foo/i, 'Verified change');
+
+# With one \, generate (foo',bar)
+expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\',bar'\"", "Changing CF to one slash: 'foo\\',bar'");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+$ticket->Load($ticket_id);
+is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo',bar", "Direct value checks out");
+expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should _not_ be present)");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
+expect_like(qr/CF\.{MultipleCF$$}: 'foo\\',bar'/i, 'Verified change');
+
+# With two \, generate (foo\)(bar')
+expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\\\',bar'\"", "Changing CF to two slashes: 'foo\\\\',bar'");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+$ticket->Load($ticket_id);
+is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo\\"."\n"."bar'", "Direct value checks out");
+expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should be present)");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
+expect_like(qr/CF\.{MultipleCF$$}: 'foo\\\\'/i, 'Verified change');
+
+# With three \, generate (foo\',bar)
+expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\\\\\',bar'\"", "Changing CF to three slashes: 'foo\\\\\\',bar'");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+$ticket->Load($ticket_id);
+is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo\\'bar", "Direct value checks out");
+expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should _not_ be present)");
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
+expect_like(qr/CF\.{MultipleCF$$}: 'foo\\\\\\',bar'/i, 'Verified change');
+
+# Check that we don't infinite-loop on 'foo'bar,baz
+TODO: {
+    todo_skip "Quotes not at comma boundries infinite-loop", 2;
+    expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo'bar,baz\"", 'Changing CF to have quotes not at commas');
+    expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+}
+
+
 # ...
 # change a ticket's ...[other properties]...
 # ...
