@@ -51,6 +51,7 @@
 $id
 $format => 's'
 $changes => {}
+$fields => undef
 </%ARGS>
 <%perl>
 my @comments;
@@ -128,6 +129,21 @@ if (keys %data == 0) {
             $key = "ContactInfo" if $key eq 'FreeformContactInfo';
             push @data, [ $key => $val ];
         }
+    }
+
+    # Custom fields
+    my $CustomFields = $user->CustomFields;
+    while ( my $CustomField = $CustomFields->Next() ) {
+        next
+            unless ( !%$fields
+            || exists $fields->{ lc "CF-" . $CustomField->Name } );
+        next unless $CustomField->CurrentUserHasRight('SeeCustomField');
+        my $CFvalues = $user->CustomFieldValues( $CustomField->Id );
+        my @CFvalues;
+        while ( my $CFvalue = $CFvalues->Next() ) {
+            push @CFvalues, $CFvalue->Content;
+        }
+        push @data, [ "CF-" . $CustomField->Name => \@CFvalues ];
     }
 
     my %k = map {@$_} @data;
