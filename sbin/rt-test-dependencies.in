@@ -53,7 +53,6 @@
 
 use strict;
 use warnings;
-no warnings qw(numeric redefine);
 use Getopt::Long;
 use Cwd qw(abs_path);
 my %args;
