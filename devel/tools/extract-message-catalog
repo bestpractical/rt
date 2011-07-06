@@ -334,7 +334,7 @@ sub update {
     my $lang = shift;
     my $file = shift;
 
-    unless (!-e $file or -w $file) {
+    if (-e $file and not -w $file) {
         warn "Can't write to $lang, skipping...\n";
         return;
     }

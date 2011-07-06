@@ -1021,8 +1021,8 @@ sub TransactionAddresses {
 # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
                 next
                     if (    $addresses{ $addr->address }
-                         && $addresses{ $addr->address }->phrase
-                         && not $addr->phrase );
+                         and $addresses{ $addr->address }->phrase
+                         and not $addr->phrase );
 
                 # skips "comment-only" addresses
                 next unless ( $addr->address );
