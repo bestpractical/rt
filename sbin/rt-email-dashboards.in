@@ -98,8 +98,6 @@ require RT::Interface::Web::Handler;
 require RT::Dashboard;
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
-no warnings 'once';
-
 # Read in the options
 my %opts;
 GetOptions( \%opts,
@@ -251,7 +249,11 @@ SUMMARY
         return;
     }
 
-    $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+    # Set the current user, while avoiding "used only once", without
+    # turning off warnings
+    $HTML::Mason::Commands::session{CurrentUser} =
+        $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+
     my $contents = run_component(
         '/Dashboards/Render.html',
         id      => $dashboard->Id,
