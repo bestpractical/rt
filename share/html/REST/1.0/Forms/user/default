@@ -141,6 +141,22 @@ if (keys %data == 0) {
         }
     }
 
+    # Custom fields
+    my $CustomFields = $user->CustomFields;
+    while ( my $CustomField = $CustomFields->Next() ) {
+        # show cf unless there are specified fields that don't include it
+        next
+            unless ( !%$fields
+            || exists $fields->{ lc "CF-" . $CustomField->Name } );
+        next unless $CustomField->CurrentUserHasRight('SeeCustomField');
+        my $CFvalues = $user->CustomFieldValues( $CustomField->Id );
+        my @CFvalues;
+        while ( my $CFvalue = $CFvalues->Next() ) {
+            push @CFvalues, $CFvalue->Content;
+        }
+        push @data, [ "CF-" . $CustomField->Name => \@CFvalues ];
+    }
+
     my %k = map {@$_} @data;
     $o = [ map {$_->[0]} @data ];
     $k = \%k;
