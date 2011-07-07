@@ -114,12 +114,12 @@ else {
     my $transactions = $ticket->Transactions;
     while (my $t = $transactions->Next) {
         my $attachments = $t->Attachments;
-        while (my $a = $attachments->Next) {
-            my $size = length($a->Content || '');
+        while (my $att = $attachments->Next) {
+            my $size = length($att->Content || '');
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
-            my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : "(Unnamed)";
-            push @attachments, $a->Id.": $name (".$a->ContentType . " / $size)";
+            my $name = (defined $att->Filename and length $att->Filename) ? $att->Filename : "(Unnamed)";
+            push @attachments, $att->Id.": $name (".$att->ContentType . " / $size)";
         }
     }
 

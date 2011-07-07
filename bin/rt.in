@@ -826,8 +826,8 @@ sub comment {
                 $status = shift @ARGV;
             }
             elsif (/-([bc])/) {
-                my $a = $_ eq "-b" ? \@bcc : \@cc;
-                @$a = split /\s*,\s*/, shift @ARGV;
+                my $ref = $_ eq "-b" ? \@bcc : \@cc;
+                @$ref = split /\s*,\s*/, shift @ARGV;
             }
             elsif (/-m/) {
                 $msg = shift @ARGV;
