@@ -1235,6 +1235,19 @@ via SSL encrypted HTTP connections.
 
 Set($WebSecureCookies, 0);
 
+=item C<$WebHttpOnlyCookies>
+
+Default RT's session cookie to not being directly accessible to
+javascript.  The content is still sent during regular and AJAX requests,
+and other cookies are unaffected, but the session-id is less
+programmatically accessible to javascript.  Turning this off should only
+be necessary in situations with odd client-side authentication
+requirements.
+
+=cut
+
+Set($WebHttpOnlyCookies, 1);
+
 =item C<$WebFlushDbCacheEveryRequest>
 
 By default, RT clears its database cache after every page view.
