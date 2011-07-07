@@ -245,7 +245,7 @@ unless ( defined $Rows ) {
 my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
-map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
+delete $ARGS{$_} for grep { $ARGS{$_} =~ /^$/ } keys %ARGS;
 
 my (@results);
 
