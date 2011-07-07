@@ -58,6 +58,7 @@ use File::Spec ();
 use Cwd ();
 use Scalar::Util qw(blessed);
 use UNIVERSAL::require;
+use Log::Dispatch;
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -223,8 +224,6 @@ Create the Logger object and set up signal handlers.
 =cut
 
 sub InitLogging {
-    use Log::Dispatch 1.6;
-
     my %level_to_num = (
         map( { $_ => } 0..7 ),
         debug     => 0,
