@@ -73,8 +73,7 @@ use RT::Record;
 use RT::CustomField;
 
 
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base qw( RT::Record );
 
 sub _Init {
   my $self = shift; 

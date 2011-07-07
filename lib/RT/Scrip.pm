@@ -76,8 +76,7 @@ use RT::ScripCondition;
 use RT::ScripAction;
 
 
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base qw( RT::Record );
 
 sub _Init {
   my $self = shift; 

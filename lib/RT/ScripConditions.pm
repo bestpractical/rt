@@ -75,8 +75,7 @@ package RT::ScripConditions;
 use RT::SearchBuilder;
 use RT::ScripCondition;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

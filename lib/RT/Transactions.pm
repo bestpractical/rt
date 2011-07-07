@@ -75,8 +75,7 @@ package RT::Transactions;
 use RT::SearchBuilder;
 use RT::Transaction;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

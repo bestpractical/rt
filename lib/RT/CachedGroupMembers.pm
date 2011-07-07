@@ -75,8 +75,7 @@ package RT::CachedGroupMembers;
 use RT::SearchBuilder;
 use RT::CachedGroupMember;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

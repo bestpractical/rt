@@ -75,8 +75,7 @@ package RT::Scrips;
 use RT::SearchBuilder;
 use RT::Scrip;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

@@ -75,8 +75,7 @@ package RT::Users;
 use RT::SearchBuilder;
 use RT::User;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

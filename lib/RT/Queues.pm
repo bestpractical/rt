@@ -75,8 +75,7 @@ package RT::Queues;
 use RT::SearchBuilder;
 use RT::Queue;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

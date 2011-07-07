@@ -75,8 +75,7 @@ package RT::Groups;
 use RT::SearchBuilder;
 use RT::Group;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {

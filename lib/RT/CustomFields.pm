@@ -75,8 +75,7 @@ package RT::CustomFields;
 use RT::SearchBuilder;
 use RT::CustomField;
 
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
 
 
 sub _Init {
