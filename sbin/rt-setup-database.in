@@ -87,7 +87,7 @@ BEGIN {
 use Term::ReadKey;
 use Getopt::Long;
 
-$| = 1; # unbuffer all output.
+local $| = 1; # unbuffer all output.
 
 my %args;
 GetOptions(

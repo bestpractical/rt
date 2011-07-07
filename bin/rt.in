@@ -176,7 +176,7 @@ sub handler {
 # The following subs are handlers for each entry in %actions.
 
 sub shell {
-    $|=1;
+    local $| = 1;
     my $term = Term::ReadLine->new('RT CLI');
     while ( defined ($_ = $term->readline($prompt)) ) {
         next if /^#/ || /^\s*$/;

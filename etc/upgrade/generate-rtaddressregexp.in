@@ -57,7 +57,7 @@ RT::LoadConfig();
 RT->Config->Set('LogToScreen' => 'debug');
 RT::Init();
 
-$| = 1;
+local $| = 1;
 
 if (my $re = RT->Config->Get('RTAddressRegexp')) {
     print "No need to use this script, you already have RTAddressRegexp set to $re\n";

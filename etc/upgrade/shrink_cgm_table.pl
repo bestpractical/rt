@@ -89,7 +89,7 @@ $cgms->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
-$| = 1;
+local $| = 1;
 my $total = $cgms->Count;
 my $i = 0;
 

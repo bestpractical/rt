@@ -89,7 +89,7 @@ $txns->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
-$| = 1;
+local $| = 1;
 my $total = $txns->Count;
 my $i = 0;
 
