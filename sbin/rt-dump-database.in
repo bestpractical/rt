@@ -189,8 +189,9 @@ no strict; use XML::Simple; *_ = XMLin(do { local \$/; readline(DATA) }, ForceAr
 __DATA__
 .
 
+my %out = map { ($_ => ($RV{$_} || [])) } @classes;
 print XMLout(
-    { map { ($_ => ($RV{$_} || [])) } @classes },
+    \%out,
     RootName => 'InitialData',
     NoAttr => 1,
     SuppressEmpty => '',
