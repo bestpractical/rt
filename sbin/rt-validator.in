@@ -236,18 +236,19 @@ foreach my $table ( qw(Users Groups) ) {
             bind_values => [ $type ],
             action => sub {
                 my $id = shift;
-                return unless my $a = prompt_action( ['Delete', 'create'], $msg );
+                my $action = prompt_action( ['Delete', 'create'], $msg );
+                return unless $action;
 
-                if ( $a eq 'd' ) {
+                if ( $action eq 'd' ) {
                     delete_record( $table, $id );
                 }
-                elsif ( $a eq 'c' ) {
+                elsif ( $action eq 'c' ) {
                     my $principal_id = create_record( 'Principals',
                         id => $id, PrincipalType => $type, ObjectId => $id, Disabled => 0
                     );
                 }
                 else {
-                    die "Unknown action '$a'";
+                    die "Unknown action '$action'";
                 }
             },
         );
@@ -1072,8 +1073,8 @@ sub prompt {
 
     print $msg, "\n";
     print "$action ALL records with the same defect? [N]: ";
-    my $a = <STDIN>;
-    return $cached_answer{ $token } = 1 if $a =~ /^(y|yes)$/i;
+    my $input = <STDIN>;
+    return $cached_answer{ $token } = 1 if $input =~ /^(y|yes)$/i;
     return $cached_answer{ $token } = 0;
 } }
 
@@ -1089,11 +1090,11 @@ sub prompt_action {
 
     print $msg, "\n";
     print join( ' or ', @$actions ) ." ALL records with the same defect? [do nothing]: ";
-    my $a = <STDIN>;
-    chomp $a;
-    return $cached_answer{ $token } = '' unless $a;
-    foreach ( grep rindex(lc $_, lc $a, 0) == 0, @$actions ) {
-        return $cached_answer{ $token } = lc substr $a, 0, 1;
+    my $input = <STDIN>;
+    chomp $input;
+    return $cached_answer{ $token } = '' unless $input;
+    foreach ( grep rindex(lc $_, lc $input, 0) == 0, @$actions ) {
+        return $cached_answer{ $token } = lc substr $input, 0, 1;
     }
     return $cached_answer{ $token } = '';
 } }
@@ -1111,8 +1112,10 @@ sub prompt_integer {
 
     print $msg, "\n";
     print "$action ALL records with the same defect? [0]: ";
-    my $a = <STDIN>; chomp $a; $a = int($a);
-    return $cached_answer{ $token } = $a;
+    my $input = <STDIN>;
+    chomp $input;
+    $input = int($input);
+    return $cached_answer{ $token } = $input;
 } }
 
 1;

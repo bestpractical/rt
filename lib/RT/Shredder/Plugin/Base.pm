@@ -122,8 +122,8 @@ sub HasSupportForArgs
     my $self = shift;
     my @args = @_;
     my @unsupported = ();
-    foreach my $a( @args ) {
-        push @unsupported, $a unless grep $_ eq $a, $self->SupportArgs;
+    foreach my $arg ( @args ) {
+        push @unsupported, $arg unless grep $_ eq $arg, $self->SupportArgs;
     }
     return( 1 ) unless @unsupported;
     return( 0, "Plugin doesn't support argument(s): @unsupported" ) if @unsupported;

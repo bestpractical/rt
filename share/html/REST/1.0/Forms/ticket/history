@@ -147,11 +147,11 @@ if ($tid) {
     if (!%$fields || exists $fields->{lc 'Attachments'}) {
 	my $attachlist;
 	my $attachments = $t->Attachments;
-	while (my $a = $attachments->Next) {
-	    my $size = length($a->Content||'');
+	while (my $att = $attachments->Next) {
+	    my $size = length($att->Content||'');
 	    if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
 	    else              { $size .= "b" }
-	    $attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
+	    $attachlist .= "\n" . $att->Id.": ".($att->Filename || "untitled")." (".$size.")";
 	}
 	
 	push @data, [Attachments => $attachlist];

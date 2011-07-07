@@ -752,9 +752,6 @@ sub GenerateRandomPassword {
 
     my ( $frequency, $start_freq, $total_sum, $row_sums );
 
-    #When munging characters, we need to know where to start counting letters from
-    my $a = ord('a');
-
     # frequency of English digraphs (from D Edwards 1/27/66) 
     $frequency = [
         [
@@ -888,12 +885,12 @@ sub GenerateRandomPassword {
     my $length = $min_length + int( rand( $max_length - $min_length ) );
 
     my $char = $self->_GenerateRandomNextChar( $total_sum, $start_freq );
-    my @word = ( $char + $a );
+    my @word = ( $char + ord('a') );
     for ( 2 .. $length ) {
         $char =
           $self->_GenerateRandomNextChar( $row_sums->[$char],
             $frequency->[$char] );
-        push ( @word, $char + $a );
+        push ( @word, $char + ord('a') );
     }
 
     #Return the password

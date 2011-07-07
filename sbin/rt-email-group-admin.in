@@ -214,8 +214,8 @@ Lists actions and its descriptions.
 
 sub list {
     my $actions = _get_our_actions();
-    while( my $a = $actions->Next ) {
-        _list( $a );
+    while( my $action = $actions->Next ) {
+        _list( $action );
     }
     return;
 }

@@ -591,9 +591,9 @@ sub ContentAsMIME {
         VALUE => 'multipart/',
     );
     $attachments->LimitNotEmpty;
-    while ( my $a = $attachments->Next ) {
+    while ( my $att = $attachments->Next ) {
         $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME );
+        $entity->add_part( $att->ContentAsMIME );
     }
     return $entity;
 }
