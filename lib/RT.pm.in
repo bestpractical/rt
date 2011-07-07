@@ -214,11 +214,6 @@ Create the Logger object and set up signal handlers.
 =cut
 
 sub InitLogging {
-
-    # We have to set the record separator ($, man perlvar)
-    # or Log::Dispatch starts getting
-    # really pissy, as some other module we use unsets it.
-    $, = '';
     use Log::Dispatch 1.6;
 
     my %level_to_num = (
