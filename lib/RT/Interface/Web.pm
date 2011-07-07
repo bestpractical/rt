@@ -657,10 +657,11 @@ sub InstantiateNewSession {
 
 sub SendSessionCookie {
     my $cookie = CGI::Cookie->new(
-        -name   => _SessionCookieName(),
-        -value  => $HTML::Mason::Commands::session{_session_id},
-        -path   => RT->Config->Get('WebPath'),
-        -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
+        -name     => _SessionCookieName(),
+        -value    => $HTML::Mason::Commands::session{_session_id},
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
+        -httponly => 1,
     );
 
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
