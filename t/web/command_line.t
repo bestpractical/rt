@@ -213,7 +213,7 @@ expect_send("edit ticket/$ticket_id set CF-myCF$$=1,2,3", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
 expect_like(qr/\QCF.{myCF$$}\E: 1,2,3/i, 'Verified change');
-expect_send("edit ticket/$ticket_id set CF-myCF$$=\"1's,2,3\"", 'Changing CF...');
+expect_send(qq{edit ticket/$ticket_id set CF-myCF$$="1's,2,3"}, 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
 expect_like(qr/\QCF.{myCF$$}\E: 1's,2,3/i, 'Verified change');
@@ -238,79 +238,86 @@ expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
 expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
 expect_like(qr/\QCF.{MultipleCF$$}\E: b,\s*c,\s*o/i, 'Verified multiple cf change');
 
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'a,b,c'\" ", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=a", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: 'a,b,c'/i, 'Verified change');
+sub multi_round_trip {
+    my ($op, $value, $regex) = @_;
+    $Test::Builder::Level++;
+    # The outer double quotes are for the argument parsing that the
+    # command-line does; the extra layer of escaping is to for them, as
+    # well.  It is equivilent to the quoting that the shell would
+    # require.
+    my $quoted = $value;
+    $quoted =~ s/(["\\])/\\$1/g;
+    expect_send(qq{edit ticket/$ticket_id $op CF.{MultipleCF$$}="$quoted"}, qq{CF $op $value});
+    expect_like(qr/Ticket $ticket_id updated/,                              qq{Got expected "updated" answer});
+    expect_send(qq{show ticket/$ticket_id -f CF.{MultipleCF$$}},            qq{Sent "show"});
+    expect_like(qr/\QCF.{MultipleCF$$}\E: $regex$/i,                        qq{Answer matches $regex});
+}
 
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=q{a,b,c}", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=a", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"'a,b,c'\"", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: \s*$/i, 'Verified change');
+# Test simple quoting
+my $ticket = RT::Ticket->new($RT::SystemUser);
+$ticket->Load($ticket_id);
+multi_round_trip(set => q|'a,b,c'|,  qr/'a,b,c'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1,     "Has only one CF value");
+is($ticket->FirstCustomFieldValue("MultipleCF$$"), q{a,b,c}, "And that CF value is as expected");
 
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"q{1,2's,3}\"", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/\QCF.{MultipleCF$$}\E: '1,2\\'s,3'/i, 'Verified change');
+multi_round_trip(del => q|a|,        qr/'a,b,c'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1,     "Still has only one CF value");
+is($ticket->FirstCustomFieldValue("MultipleCF$$"), q{a,b,c}, "And that CF value is as expected");
+
+multi_round_trip(set => q|q{a,b,c}|, qr/'a,b,c'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Still has only one CF value");
+is($ticket->FirstCustomFieldValue("MultipleCF$$"), q{a,b,c}, "And that CF value is as expected");
+
+multi_round_trip(del => q|a|,        qr/'a,b,c'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Still has only one CF value");
+is($ticket->FirstCustomFieldValue("MultipleCF$$"), q{a,b,c}, "And that CF value is as expected");
+
+multi_round_trip(del => q|'a,b,c'|,  qr/\s*/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 0, "Now has no CF values");
+
+multi_round_trip(set => q|q{1,2's,3}|, qr/'1,2\\'s,3'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Still has only one CF value");
+is($ticket->FirstCustomFieldValue("MultipleCF$$"), q{1,2's,3}, "And that CF value is as expected");
+
+multi_round_trip(del => q|q{1,2's,3}|, qr/\s*/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 0, "Now has no CF values");
 
 # Test escaping of quotes - generate (foo)(bar') with no escapes
-my $ticket = RT::Ticket->new($RT::SystemUser);
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo',bar'\"", "Changing CF with no slashes: 'foo',bar'");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-$ticket->Load($ticket_id);
-is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo"."\n"."bar'", "Direct value checks out");
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should be present)");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/CF\.{MultipleCF$$}: foo/i, 'Verified change');
+multi_round_trip(set => q|'foo',bar'|, qr/foo,bar'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 2, "Has two values");
+is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|foo|,  "Direct value checks out");
+is($ticket->CustomFieldValues("MultipleCF$$")->Last->Content,  q|bar'|, "Direct value checks out");
+multi_round_trip(del => q|bar'|,       qr/foo/);
 
 # With one \, generate (foo',bar)
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\',bar'\"", "Changing CF to one slash: 'foo\\',bar'");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-$ticket->Load($ticket_id);
-is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo',bar", "Direct value checks out");
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should _not_ be present)");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/CF\.{MultipleCF$$}: 'foo\\',bar'/i, 'Verified change');
+
+# We obviously need two \s in the following q|| string in order to
+# generate a string with one actual \ in it; this causes the string to,
+# in general, have twice as many \s in it as we wish to test.
+multi_round_trip(set => q|'foo\\',bar'|, qr/'foo\\',bar'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Has one value");
+is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|foo',bar|,  "Direct value checks out");
 
 # With two \, generate (foo\)(bar')
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\\\',bar'\"", "Changing CF to two slashes: 'foo\\\\',bar'");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-$ticket->Load($ticket_id);
-is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo\\"."\n"."bar'", "Direct value checks out");
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should be present)");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/CF\.{MultipleCF$$}: 'foo\\\\'/i, 'Verified change');
+multi_round_trip(set => q|'foo\\\\',bar'|, qr/foo\\,bar'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 2, "Has two values");
+is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|foo\\|,  "Direct value checks out");
+is($ticket->CustomFieldValues("MultipleCF$$")->Last->Content,  q|bar'|, "Direct value checks out");
+multi_round_trip(del => q|bar'|,           qr/foo\\/);
 
 # With three \, generate (foo\',bar)
-expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo\\\\\\',bar'\"", "Changing CF to three slashes: 'foo\\\\\\',bar'");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-$ticket->Load($ticket_id);
-is($ticket->CustomFieldValuesAsString("MultipleCF$$"), "foo\\'bar", "Direct value checks out");
-expect_send("edit ticket/$ticket_id del CF.{MultipleCF$$}=\"bar'\"", "Stripping off bar' (should _not_ be present)");
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF.{MultipleCF$$}", 'Checking new value');
-expect_like(qr/CF\.{MultipleCF$$}: 'foo\\\\\\',bar'/i, 'Verified change');
+multi_round_trip(set => q|'foo\\\\\\',bar'|, qr/'foo\\\\\\',bar'/);
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Has one value");
+is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|foo\\',bar|,  "Direct value checks out");
 
-# Check that we don't infinite-loop on 'foo'bar,baz
+# Check that we don't infinite-loop on 'foo'bar,baz; this should be ('foo'bar)(baz)
 TODO: {
-    todo_skip "Quotes not at comma boundries infinite-loop", 2;
+    todo_skip "Quotes not at comma boundries infinite-loop", 5;
     expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo'bar,baz\"", 'Changing CF to have quotes not at commas');
     expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+    is($ticket->CustomFieldValues("MultipleCF$$")->Count, 2, "Has two value");
+    is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|'foo'bar|,  "Direct value checks out");
+    is($ticket->CustomFieldValues("MultipleCF$$")->Last->Content, q|baz|,  "Direct value checks out");
 }
 
 
