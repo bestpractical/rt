@@ -1591,6 +1591,8 @@ sub vpush {
     }
 }
 
+# WARNING: this code is duplicated in lib/RT/Interface/REST.pm
+# If you change one, change both functions at once
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
     my ($val) = @_;
