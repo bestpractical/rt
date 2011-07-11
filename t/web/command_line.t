@@ -311,14 +311,11 @@ is($ticket->CustomFieldValues("MultipleCF$$")->Count, 1, "Has one value");
 is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|foo\\',bar|,  "Direct value checks out");
 
 # Check that we don't infinite-loop on 'foo'bar,baz; this should be ('foo'bar)(baz)
-TODO: {
-    todo_skip "Quotes not at comma boundries infinite-loop", 5;
-    expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo'bar,baz\"", 'Changing CF to have quotes not at commas');
-    expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-    is($ticket->CustomFieldValues("MultipleCF$$")->Count, 2, "Has two value");
-    is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|'foo'bar|,  "Direct value checks out");
-    is($ticket->CustomFieldValues("MultipleCF$$")->Last->Content, q|baz|,  "Direct value checks out");
-}
+expect_send("edit ticket/$ticket_id set CF.{MultipleCF$$}=\"'foo'bar,baz\"", 'Changing CF to have quotes not at commas');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
+is($ticket->CustomFieldValues("MultipleCF$$")->Count, 2, "Has two value");
+is($ticket->CustomFieldValues("MultipleCF$$")->First->Content, q|'foo'bar|,  "Direct value checks out");
+is($ticket->CustomFieldValues("MultipleCF$$")->Last->Content, q|baz|,  "Direct value checks out");
 
 
 # ...
