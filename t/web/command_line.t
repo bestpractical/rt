@@ -592,7 +592,11 @@ sub check_attachment {
     TODO: {
         local $TODO = "Binary PNG content is getting mangled somewhere along the way"
             if $attachment_path =~ /\.png$/;
-        expect_is($attachment_content,"Attachment contains original text");
+        is(
+            MIME::Base64::encode_base64(Test::Expect::before()),
+            MIME::Base64::encode_base64($attachment_content),
+            "Attachment contains original text"
+       );
     }
 }
 
