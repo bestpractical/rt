@@ -282,8 +282,8 @@ if (!keys(%data)) {
         else {
             while (my $v = $vals->Next()) {
                 my $content = $v->Content;
-                $content =~ s/'/\\'/g;
                 if ( $v->Content =~ /,/ ) {
+                    $content =~ s/([\\'])/\\$1/g;
                     push @out, q{'} . $content . q{'};
                 }
                 else {
