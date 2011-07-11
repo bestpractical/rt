@@ -292,17 +292,52 @@ sub vpush {
 
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
-    my ($val) = @_;
+    my ($val, $strip) = @_;
     my @words;
+    my @values = map {split /\n/} (ref $val eq 'ARRAY' ? @$val : $val);
 
-    foreach my $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : ($val||''))
-    {
-        # XXX: This should become a real parser, ? la Text::ParseWords.
-        $line =~ s/^\s+//;
-        $line =~ s/\s+$//;
-        push @words, split /\s*,\s*/, $line;
+    foreach my $line (@values) {
+        while ($line =~ /\S/) {
+            $line =~ s/^
+                       \s*   # Trim leading whitespace
+                       (?:
+                           (")   # Quoted string
+                           ((?>[^\\"]*(?:\\.[^\\"]*)*))"
+                       |
+                           (')   # Single-quoted string
+                           ((?>[^\\']*(?:\\.[^\\']*)*))'
+                       |
+                           q{(.*?)}  # A perl-ish q{} string; this does
+                                     # no paren balancing, however, and
+                                     # only exists for back-compat
+                       |
+                           (.*?)     # Anything else, until the next comma
+                       )
+                       \s*   # Trim trailing whitespace
+                       (?:
+                           \Z  # Finish at end-of-line
+                       |
+                           ,   # Or a comma
+                       )
+                      //xs or last; # There should be no way this match
+                                    # fails, but add a failsafe to
+                                    # prevent infinite-looping if it
+                                    # somehow does.
+            my ($quote, $quoted) = ($1 ? ($1, $2) : $3 ? ($3, $4) : ('', $5 || $6));
+            # Only unquote the quote character, or the backslash -- and
+            # only if we were originally quoted..
+            if ($5) {
+                $quoted =~ s/([\\'])/\\$1/g;
+                $quote = "'";
+            }
+            if ($strip) {
+                $quoted =~ s/\\([\\$quote])/$1/g if $quote;
+                push @words, $quoted;
+            } else {
+                push @words, "$quote$quoted$quote";
+            }
+        }
     }
-
     return \@words;
 }
 

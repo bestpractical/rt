@@ -367,37 +367,7 @@ else {
                     }
                 }
                 else {
-                    my @new;
-                    my ( $a, $b ) = split /\s*,\s*/, $val, 2;
-                    while ($a) {
-                        no warnings 'uninitialized';
-                        if ( $a =~ /^'/ ) {
-                            my $s = $a;
-                            while ( $a !~ /'$/ || ( $a !~ /(\\\\)+'$/
-                                            && $a =~ /(\\)+'$/ ) ) {
-                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
-                                $s .= ',' . $a;
-                            }
-                            $s =~ s/^'//;
-                            $s =~ s/'$//;
-                            $s =~ s/\\'/'/g;
-                            push @new, $s;
-                        }
-                        elsif ( $a =~ /^q{/ ) {
-                            my $s = $a;
-                            while ( $a !~ /}$/ ) {
-                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
-                                $s .= ',' . $a;
-                            }
-                            $s =~ s/^q{//;
-                            $s =~ s/}//;
-                            push @new, $s;
-                        }
-                        else {
-                            push @new, $a;
-                        }
-                        ( $a, $b ) = split /\s*,\s*/, $b, 2;
-                    }
+                    my @new = @{vsplit($val, 1)};
 
                     my %new;
                     $new{$_}++ for @new;
