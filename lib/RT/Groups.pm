@@ -348,13 +348,22 @@ sub ForWhichCurrentUserHasRight {
         @_,
     );
 
-    my $member = $self->WithMember(
+    # Groups which the current user is a member of
+    $self->WithMember(
         PrincipalId => $self->CurrentUser->Id,
         Recursively => 1,
     );
 
-    my $acl = $self->_JoinACL( %args );
+    # Which are themselves a member of a any group...
+    my $member = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'MemberId'
+    );
 
+    # ...with the right in question
+    my $acl = $self->_JoinACL( %args );
     $self->Join(
         ALIAS1 => $member,
         FIELD1 => 'GroupId',

@@ -119,10 +119,7 @@ ok($ok, $msg);
 
     my %has_right = map { ($_->Name => 1) } @{ $groups->ItemsArrayRef };
     ok(delete $has_right{Employees}, "Has the right on a group it's in");
-    TODO: {
-        local $TODO = "Doesn't recurse properly";
-        ok(delete $has_right{Hackers}, "Grants the right recursively");
-    }
+    ok(delete $has_right{Hackers}, "Grants the right recursively");
     ok(not(delete $has_right{Other}), "Doesn't have the right on a group it's in");
     ok(not(keys %has_right), "Has no other groups")
 }
