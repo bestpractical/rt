@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodata => 1, tests => 17;
+use RT::Test nodata => 1, tests => 21;
 
 RT::Group->AddRights(
     'RTxGroupRight' => 'Just a right for testing rights',
@@ -60,6 +60,14 @@ ok(!$hacks->HasMemberRecursively($eric->PrincipalId), 'hacks does not have membe
 ok($ok, $msg);
 
 { # Eric is an Employee directly, so has it on Employees
+    my $e = RT::Group->new(RT::CurrentUser->new($eric));
+    $e->Load($employees->Id);
+    ok($e->CurrentUserHasRight("RTxGroupRight"), "Eric has the right on employees");
+
+    my $h = RT::Group->new(RT::CurrentUser->new($eric));
+    $h->Load($hacks->Id);
+    ok(!$h->CurrentUserHasRight("RTxGroupRight"), "Doesn't have it on hackers");
+
     my $groups = RT::Groups->new(RT::CurrentUser->new($eric));
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
@@ -67,6 +75,14 @@ ok($ok, $msg);
 }
 
 { # Herbert is an Employee by way of Hackers, so should have it on both
+    my $e = RT::Group->new(RT::CurrentUser->new($herbert));
+    $e->Load($employees->Id);
+    ok($e->CurrentUserHasRight("RTxGroupRight"), "Herbert has the right on employees");
+
+    my $h = RT::Group->new(RT::CurrentUser->new($herbert));
+    $h->Load($hacks->Id);
+    ok(!$h->CurrentUserHasRight("RTxGroupRight"), "Also has it on hackers");
+
     my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
