@@ -39,7 +39,7 @@ RT::Group->AddRights(
     is ($groups->First->Id , $g->Id, "it's the right one");
 }
 
-no warnings qw/redefine/;
+no warnings qw/redefine once/;
 
 my $q = RT::Queue->new(RT->SystemUser);
 my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');
