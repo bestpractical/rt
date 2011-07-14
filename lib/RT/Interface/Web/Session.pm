@@ -112,25 +112,19 @@ new session objects.
 
 sub Attributes {
     my $class = $_[0]->Class;
-    if ($class->isa('Apache::Session::File')) {
+    if ( defined RT->Config->Get('WebSessionAttributes') ) {
+        return RT->Config->Get('WebSessionAttributes');
+    } elsif ($class->isa('Apache::Session::File')) {
         return {
             Directory     => $RT::MasonSessionDir,
             LockDirectory => $RT::MasonSessionDir,
             Transaction   => 1,
         };
-    } elsif ($class->isa('Apache::Session::MySQL') || $class->isa('Apache::Session::Postgres')) {
+    } else {
         return {
             Handle      => $RT::Handle->dbh,
             LockHandle  => $RT::Handle->dbh,
             Transaction => 1,
-        };
-    } elsif ($class->isa('Apache::Session::Memcached')) {
-        return {
-            Servers => RT->Config->Get('MemcachedServer'),
-            NoRehash => 1,
-            Readonly => 0,
-            Debug => 0,
-            CompressThreshold => 10_000
         };
     }
 }

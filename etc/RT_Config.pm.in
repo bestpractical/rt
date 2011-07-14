@@ -1780,13 +1780,19 @@ this line to F<RT_SiteConfig.pm> to prevent session corruption.
 # Set($WebSessionClass, "Apache::Session::File");
 # Set($WebSessionClass, "Apache::Session::Memcached");
 
-=item C<$MemcachedServer>
+=item C<$WebSessionAttributes>
 
-If using memcached set C<$MemcachedServer> to your memcached server.
+You can set your own attributes to WebSessionClass.
 
 =cut
 
-# Set($MemcachedServer, "127.0.0.1:11211");
+# Set($WebSessionAttributes, {
+#    Servers => '127.0.0.1:11211',
+#    NoRehash => 1,
+#    Readonly => 0,
+#    Debug => 0,
+#    CompressThreshold => 10_000
+# });
 
 =item C<$AutoLogoff>
 
