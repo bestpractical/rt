@@ -348,27 +348,26 @@ sub ForWhichCurrentUserHasRight {
         @_,
     );
 
-    # Groups which the current user is a member of
-    $self->WithMember(
-        PrincipalId => $self->CurrentUser->Id,
-        Recursively => 1,
-    );
-
-    # Which are themselves a member of a any group...
-    my $member = $self->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'CachedGroupMembers',
-        FIELD2 => 'MemberId'
-    );
-
-    # ...with the right in question
+    # Groups which are the target object of an ACL with that right, or
+    # where the target is the system object (a global right)
     my $acl = $self->_JoinACL( %args );
-    $self->Join(
-        ALIAS1 => $member,
-        FIELD1 => 'GroupId',
-        ALIAS2 => $acl,
-        FIELD2 => 'PrincipalId',
+    $self->_AddSubClause(
+        ACLObjects => "( (main.id = $acl.ObjectId AND $acl.ObjectType = 'RT::Group')"
+                   . " OR $acl.ObjectType = 'RT::System')");
+
+    # ...and where that right is granted to any group..
+    my $member = $self->Join(
+        ALIAS1 => $acl,
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'GroupId',
+    );
+
+    # ...with the current user in it
+    $self->Limit(
+        ALIAS => $member,
+        FIELD => 'MemberId',
+        VALUE => $self->CurrentUser->Id,
     );
 
     return;

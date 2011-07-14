@@ -98,19 +98,13 @@ $m->content_contains('Subscription', "Subscription link not hidden because we ha
 
 $m->get_ok("/Dashboards/index.html");
 
-TODO: {
-    local $TODO = "We currently entirely fail to show group dashboards";
-    $m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
-}
+$m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
 
 my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
     RT::Dashboard->new($currentuser)->_PrivacyObjects;
 ok($group, "Found the group in  the privacy objects list");
 
 
-TODO: {
-    local $TODO = "We currently entirely fail to show group dashboards";
-    ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
-        RT::Dashboard->new($currentuser)->ObjectsForLoading;
-    ok($group, "Found the group in the objects for loading");
-}
+($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
+    RT::Dashboard->new($currentuser)->ObjectsForLoading;
+ok($group, "Found the group in the objects for loading");
