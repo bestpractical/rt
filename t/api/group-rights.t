@@ -51,6 +51,14 @@ ok($ok, $msg);
 
 
 { # Eric doesn't have the right yet
+    my $g = RT::Group->new(RT::CurrentUser->new($eric));
+    $g->Load($employees->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Eric doesn't yet have the right on employees");
+    $g->Load($hacks->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Nor on hackers");
+    $g->Load($other->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Nor on other");
+
     my $groups = RT::Groups->new(RT::CurrentUser->new($eric));
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
@@ -59,6 +67,14 @@ ok($ok, $msg);
 }
 
 { # Neither does Herbert
+    my $g = RT::Group->new(RT::CurrentUser->new($herbert));
+    $g->Load($employees->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Herbert doesn't yet have the right on employees");
+    $g->Load($hacks->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Nor on hackers");
+    $g->Load($other->Id);
+    ok(!$g->CurrentUserHasRight("RTxGroupRight"), "Nor on other");
+
     my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
