@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 35;
+use RT::Test nodata => 1, tests => 39;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -95,3 +95,22 @@ $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 
+
+$m->get_ok("/Dashboards/index.html");
+
+TODO: {
+    local $TODO = "We currently entirely fail to show group dashboards";
+    $m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
+}
+
+my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
+    RT::Dashboard->new($currentuser)->_PrivacyObjects;
+ok($group, "Found the group in  the privacy objects list");
+
+
+TODO: {
+    local $TODO = "We currently entirely fail to show group dashboards";
+    ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
+        RT::Dashboard->new($currentuser)->ObjectsForLoading;
+    ok($group, "Found the group in the objects for loading");
+}
