@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodata => 1, no_plan => 1;
+use RT::Test nodata => 1, tests => 114;
 
 RT::Group->AddRights(
     'RTxGroupRight' => 'Just a right for testing rights',
