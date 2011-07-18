@@ -49,7 +49,9 @@
 # put the list of dashboards into the navigation
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading;
+my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(
+               IncludeSuperusers => $IncludeSuperusers
+           );
 
 my %dashboard_map;
 
@@ -75,3 +77,6 @@ $m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboard
 
 return @dashboards;
 </%init>
+<%args>
+$IncludeSuperusers => 1
+</%args>

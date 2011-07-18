@@ -61,7 +61,7 @@ my $query_string = sub {
 my $build_main_nav = sub {
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
-    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperusers => 0);
     my $limit      = 7;
 
     my $more = 0;

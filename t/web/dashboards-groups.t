@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 40;
+use RT::Test nodata => 1, tests => 48;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -100,8 +100,10 @@ $m->content_contains('Subscription', "Subscription link not hidden because we ha
 
 
 $m->get_ok("/Dashboards/index.html");
-
 $m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
+
+$m->get_ok("/index.html");
+$m->content_contains("inner dashboard", "We can see the inner dashboard from the menu drop-down");
 
 my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
     RT::Dashboard->new($currentuser)->_PrivacyObjects;
@@ -111,3 +113,22 @@ ok($group, "Found the group in  the privacy objects list");
 ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
     RT::Dashboard->new($currentuser)->ObjectsForLoading;
 ok($group, "Found the group in the objects for loading");
+
+
+# With superuser, the dashboards of groups we're not in should not show
+# up in the menu, but should in the dashboard list.
+$user_obj->PrincipalObj->RevokeRight(
+    Right  => 'SeeGroupDashboard',
+    Object => $inner_group,
+);
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SuperUser',
+    Object => RT->System,
+);
+$inner_group->DeleteMember($user_obj->PrincipalObj->Id);
+ok(!$outer_group->HasMemberRecursively($user_obj->PrincipalId), "outer no longer has user recursively");
+ok(!$inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner no longer has user recursively");
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "Superuser can see dashboards in their own groups");
+$m->get_ok("/index.html");
+$m->content_lacks("inner dashboard", "Also in the menu");

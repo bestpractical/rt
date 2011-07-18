@@ -379,6 +379,10 @@ sub Subscription {
 
 sub ObjectsForLoading {
     my $self = shift;
+    my %args = (
+        IncludeSuperusers => 1,
+        @_
+    );
     my @objects;
 
     my $CurrentUser = $self->CurrentUser;
@@ -390,7 +394,7 @@ sub ObjectsForLoading {
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
         Right             => 'SeeGroupDashboard',
-        IncludeSuperusers => 1,
+        %args,
     );
     my $attrs = $groups->Join(
         ALIAS1 => 'main',
