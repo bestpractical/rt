@@ -61,6 +61,10 @@ my $query_string = sub {
 my $build_main_nav = sub {
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
+    # We explicitly exclude superusers; otherwise the dashboards for
+    # groups you're not in (but can see the dashboards of by dint of
+    # being a superuser) would push the useful ones from the groups
+    # you're actually in off of the stack.
     my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperusers => 0);
     my $limit      = 7;
 
