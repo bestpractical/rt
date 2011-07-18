@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 39;
+use RT::Test nodata => 1, tests => 40;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -64,18 +64,21 @@ $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $
 $m->follow_link_ok({ id => 'home-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
-$m->field("Name" => 'inner dashboard');
+$m->field("Name" => 'broken dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
-
 $m->click_button(value => 'Create');
-
 $m->content_contains("saved", "we lack SeeGroupDashboard, so we end up back at the index.");
+
 $user_obj->PrincipalObj->GrantRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
 );
-$m->reload;
+$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->form_name('ModifyDashboard');
+$m->field("Name" => 'inner dashboard');
+$m->field("Privacy" => "RT::Group-" . $inner_group->Id);
+$m->click_button(value => 'Create');
 $m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
