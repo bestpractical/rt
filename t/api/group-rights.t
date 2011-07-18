@@ -128,3 +128,10 @@ $hackers->PrincipalObj->RevokeRight(  Right => 'RTxGroupRight', Object => RT->Sy
 $employees->PrincipalObj->GrantRight( Right => 'RTxGroupRight', Object => RT->System);
 CheckRights($eric,    Employees => 1, Hackers => 1, Other => 1 );
 CheckRights($herbert, Employees => 1, Hackers => 1, Other => 1 );
+
+
+# Disable the employees group.  Neither eric nor herbert will see the
+# right anywhere.
+$employees->SetDisabled(1);
+CheckRights($eric);
+CheckRights($herbert);

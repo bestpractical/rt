@@ -362,6 +362,11 @@ sub ForWhichCurrentUserHasRight {
         TABLE2 => 'CachedGroupMembers',
         FIELD2 => 'GroupId',
     );
+    $self->Limit(
+        ALIAS => $member,
+        FIELD => 'Disabled',
+        VALUE => '0',
+    );
 
     # ...with the current user in it
     $self->Limit(
