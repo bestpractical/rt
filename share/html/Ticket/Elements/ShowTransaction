@@ -143,10 +143,10 @@ unless ( $type_class ) {
 }
 
 $m->callback(
-    CallbackName   => 'MassageTypeClass',
-    Transaction    => $Transaction,
-    type_class_ref => \$type_class,
-    %ARGS,
+    CallbackName => 'MassageTypeClass',
+    Transaction  => $Transaction,
+    TypeClassRef => \$type_class,
+    ARGSRef      => \%ARGS,
 );
 
 my $TicketString = '';
