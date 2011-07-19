@@ -2263,7 +2263,7 @@ sub DryRun {
     my $self = shift;
     my %args = @_;
     my $action;
-    if ($args{'UpdateType'} || $args{Action} =~ /^respon(d|se)$/i ) {
+    if (($args{'UpdateType'} || $args{Action}) =~ /^respon(d|se)$/i ) {
         $action = 'Correspond';
     } else {
         $action = 'Comment';
