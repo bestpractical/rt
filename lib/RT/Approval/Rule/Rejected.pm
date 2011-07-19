@@ -112,4 +112,6 @@ sub Commit {    # XXX: from custom prepare code
 
 }
 
+RT::Base->_ImportOverlays();
+
 1;

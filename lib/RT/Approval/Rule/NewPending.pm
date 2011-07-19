@@ -94,4 +94,6 @@ sub Commit {
 
 }
 
+RT::Base->_ImportOverlays();
+
 1;
