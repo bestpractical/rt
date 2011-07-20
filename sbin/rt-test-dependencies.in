@@ -62,6 +62,7 @@ GetOptions(
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
     'with-ORACLE',                        'with-FASTCGI',
     'with-MODPERL1',                      'with-MODPERL2',
+    'with-STANDALONE',
 
     'with-DEV',
 
@@ -362,7 +363,7 @@ check_users();
 
 my %Missing_By_Type = ();
 foreach my $type (sort grep $args{$_}, keys %args) {
-    next unless ($type =~ /^with-(.*?)$/);
+    next unless ($type =~ /^with-(.*?)$/) and $deps{$1};
 
     $type = $1;
     section("$type dependencies");
