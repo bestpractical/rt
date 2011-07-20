@@ -1,10 +1,12 @@
-#!@PERL@
+#!/usr/bin/env perl
+
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
 #
 # This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
-#                                          <sales@bestpractical.com>
+#                                          <jesse@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -46,11 +48,18 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use strict;
-use warnings;
+use File::Find;
 
-# fix lib paths, some may be relative
-BEGIN { # BEGIN RT CMD BOILERPLATE
+File::Find::find({ no_chdir => 1, wanted => \&tag_it}, 'sbin', 'bin');
+
+sub tag_it {
+        my $file = $_;
+        return unless (-f $file);
+        return if $file !~ /.in$/;
+        open( FILE, '<', $file ) or die "Failed to open $file";
+        my $content = (join "", <FILE>);
+        close (FILE);
+        my $new = q'BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
     require Cwd;
     my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
@@ -64,52 +73,15 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
         unshift @INC, $lib;
     }
 
+}';
+        unless ($content =~ s/^BEGIN \{ # BEGIN RT CMD BOILERPLATE.*?^\}$/$new/ms) {
+            return;
+        }
+
+        warn $file;
+ 
+        open( FILE, '>', $file ) or die "couldn't write new file";
+        print FILE $content;
+        close FILE;
+
 }
-
-use Getopt::Long;
-my %opt;
-GetOptions( \%opt, 'help|h', );
-
-my $id = shift;
-
-if ( $opt{help} || !$id ) {
-    require Pod::Usage;
-    Pod::Usage::pod2usage({ verbose => 2 });
-    exit;
-}
-
-require RT;
-RT::LoadConfig();
-RT::Init();
-
-require RT::Attribute;
-my $attr = RT::Attribute->new( RT->SystemUser );
-$attr->Load( $id );
-unless ( $attr->id ) {
-    print STDERR "Couldn't load attribute #$id\n";
-    exit 1;
-}
-
-my %res = ();
-$res{$_} = $attr->$_() foreach qw(ObjectType ObjectId Name Description Content ContentType);
-
-use Data::Dumper;
-print "Content of attribute #$id: ". Dumper( \%res );
-
-__END__
-
-=head1 NAME
-
-rt-attributes-viewer - show the content of an attribute 
-
-=head1 SYNOPSIS
-
-    # show the content of attribute 2
-    rt-attributes-viewer 2  
-
-=head1 DESCRIPTION
-
-This script deserializes and print content of an attribute defined
-by <attribute id>. May be useful for developers and for troubleshooting
-problems.
-
