@@ -173,6 +173,7 @@ sub _ImportOverlays {
         eval { require $filename };
         die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
     }
+    return;
 }
 
 __PACKAGE__->_ImportOverlays();
