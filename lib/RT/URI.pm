@@ -178,9 +178,9 @@ sub _GetResolver {
     my $resolver = eval { $class->new($self->CurrentUser); };
 
     if ($resolver) {
-        $self->{'resolver'} = $resolver;
+        return $self->{'resolver'} = $resolver;
     } else {
-        $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
+        return $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
     }
 
 }
