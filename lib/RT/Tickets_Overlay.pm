@@ -260,6 +260,7 @@ sub CleanSlate {
         _sql_u_watchers_aliases
         _sql_current_user_can_see_applied
     );
+    return;
 }
 
 =head1 Limit Helper Routines
@@ -326,6 +327,7 @@ sub _IdLimit {
         );
     }
     $sb->_CloseParen;
+    return;
 }
 
 =head2 _EnumLimit
@@ -362,7 +364,7 @@ sub _EnumLimit {
         $o->Load($value);
         $value = $o->Id;
     }
-    $sb->_SQLLimit(
+    return $sb->_SQLLimit(
         FIELD    => $field,
         VALUE    => $value,
         OPERATOR => $op,
@@ -386,7 +388,7 @@ sub _IntLimit {
     die "Invalid Operator $op for $field"
         unless $op =~ /^(=|!=|>|<|>=|<=)$/;
 
-    $sb->_SQLLimit(
+    return $sb->_SQLLimit(
         FIELD    => $field,
         VALUE    => $value,
         OPERATOR => $op,
@@ -505,6 +507,7 @@ sub _LinkLimit {
             QUOTEVALUE => 0,
         );
     }
+    return;
 }
 
 =head2 _DateLimit
@@ -568,6 +571,7 @@ sub _DateLimit {
             @rest,
         );
     }
+    return;
 }
 
 =head2 _StringLimit
@@ -593,7 +597,7 @@ sub _StringLimit {
         $value = 'NULL';
     }
 
-    $sb->_SQLLimit(
+    return $sb->_SQLLimit(
         FIELD         => $field,
         OPERATOR      => $op,
         VALUE         => $value,
@@ -684,6 +688,7 @@ sub _TransDateLimit {
     }
 
     $sb->_CloseParen;
+    return;
 }
 
 =head2 _TransLimit
@@ -755,6 +760,7 @@ sub _TransLimit {
         );
     }
 
+    my $ret;
     #Search for the right field
     if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
         $self->_OpenParen;
@@ -784,8 +790,7 @@ sub _TransLimit {
 			CASESENSITIVE => 0,
         );
     }
-
-
+    return;
 }
 
 =head2 _WatcherLimit
@@ -979,6 +984,7 @@ sub _WatcherLimit {
         );
     }
     $self->_CloseParen;
+    return;
 }
 
 sub _RoleGroupsJoin {
@@ -1203,7 +1209,7 @@ sub _WatcherMembershipLimit {
     );
 
     $self->_CloseParen;
-
+    return;
 }
 
 =head2 _CustomFieldDecipher
@@ -1578,6 +1584,7 @@ sub _CustomFieldLimit {
             QUOTEVALUE => 0,
         );
     }
+    return;
 }
 
 sub _HasAttributeLimit {
@@ -1611,6 +1618,7 @@ sub _HasAttributeLimit {
         VALUE      => 'NULL',
         QUOTEVALUE => 0,
     );
+    return;
 }
 
 
@@ -1841,7 +1849,7 @@ sub FreezeLimits {
     my $self = shift;
     require Storable;
     require MIME::Base64;
-    MIME::Base64::base64_encode(
+    return MIME::Base64::base64_encode(
         Storable::freeze( \@{$self}{ $self->_FreezeThawKeys } ) );
 }
 
@@ -1873,7 +1881,7 @@ sub ThawLimits {
         = eval { @{ Storable::thaw( MIME::Base64::base64_decode($in) ) }; };
 
     $RT::Logger->error($@) if $@;
-
+    return;
 }
 
 # }}}
@@ -1911,7 +1919,7 @@ sub LimitQueue {
 
     #TODO check for a valid queue here
 
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Queue',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -1945,7 +1953,7 @@ sub LimitStatus {
         OPERATOR => '=',
         @_
     );
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Status',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -1975,7 +1983,7 @@ sub IgnoreType {
     # Tickets_Overlay_SQL/FromSQL goes down the right branch
 
     #  $self->LimitType(VALUE => '__any');
-    $self->{looking_at_type} = 1;
+    return $self->{looking_at_type} = 1;
 }
 
 # }}}
@@ -1999,7 +2007,7 @@ sub LimitType {
         VALUE    => undef,
         @_
     );
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Type',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2027,7 +2035,7 @@ VALUE is a string to search for in the subject of the ticket.
 sub LimitSubject {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Subject',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2060,7 +2068,7 @@ sub LimitId {
         @_
     );
 
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'id',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2084,7 +2092,7 @@ VALUE is a value to match the ticket\'s priority against
 sub LimitPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Priority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2110,7 +2118,7 @@ VALUE is a value to match the ticket\'s initial priority against
 sub LimitInitialPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'InitialPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2135,7 +2143,7 @@ VALUE is a value to match the ticket\'s final priority against
 sub LimitFinalPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'FinalPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2160,7 +2168,7 @@ VALUE is a value to match the ticket's TimeWorked attribute
 sub LimitTimeWorked {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'TimeWorked',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2185,7 +2193,7 @@ VALUE is a value to match the ticket's TimeLeft attribute
 sub LimitTimeLeft {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'TimeLeft',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2214,7 +2222,7 @@ VALUE is a string to search for in the body of the ticket
 sub LimitContent {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Content',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2239,7 +2247,7 @@ VALUE is a string to search for in the body of the ticket
 sub LimitFilename {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Filename',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2263,7 +2271,7 @@ VALUE is a content type to search ticket attachments for
 sub LimitContentType {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'ContentType',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2300,7 +2308,7 @@ sub LimitOwner {
     $owner->Load( $args{'VALUE'} );
 
     # FIXME: check for a valid $owner
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'Owner',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2344,7 +2352,7 @@ sub LimitWatcher {
         $watcher_type = "Watcher";
     }
 
-    $self->Limit(
+    return $self->Limit(
         FIELD       => $watcher_type,
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2385,7 +2393,7 @@ sub LimitLinkedTo {
         @_
     );
 
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'LinkedTo',
         BASE        => undef,
         TARGET      => $args{'TARGET'},
@@ -2430,7 +2438,7 @@ sub LimitLinkedFrom {
     my $type = $args{'TYPE'};
     $type = $fromToMap{$type} if exists( $fromToMap{$type} );
 
-    $self->Limit(
+    return $self->Limit(
         FIELD       => 'LinkedTo',
         TARGET      => undef,
         BASE        => $args{'BASE'},
@@ -2568,7 +2576,7 @@ sub LimitDate {
             . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit(%args);
+    return $self->Limit(%args);
 
 }
 
@@ -2576,39 +2584,39 @@ sub LimitDate {
 
 sub LimitCreated {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Created', @_ );
+    return $self->LimitDate( FIELD => 'Created', @_ );
 }
 
 sub LimitDue {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Due', @_ );
+    return $self->LimitDate( FIELD => 'Due', @_ );
 
 }
 
 sub LimitStarts {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Starts', @_ );
+    return $self->LimitDate( FIELD => 'Starts', @_ );
 
 }
 
 sub LimitStarted {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Started', @_ );
+    return $self->LimitDate( FIELD => 'Started', @_ );
 }
 
 sub LimitResolved {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Resolved', @_ );
+    return $self->LimitDate( FIELD => 'Resolved', @_ );
 }
 
 sub LimitTold {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Told', @_ );
+    return $self->LimitDate( FIELD => 'Told', @_ );
 }
 
 sub LimitLastUpdated {
     my $self = shift;
-    $self->LimitDate( FIELD => 'LastUpdated', @_ );
+    return $self->LimitDate( FIELD => 'LastUpdated', @_ );
 }
 
 #
@@ -2644,7 +2652,7 @@ sub LimitTransactionDate {
             . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit(%args);
+    return $self->Limit(%args);
 
 }
 
@@ -2733,6 +2741,7 @@ sub LimitCustomField {
     );
 
     $self->{'RecalcTicketLimits'} = 1;
+    return;
 }
 
 # }}}
@@ -3184,7 +3193,7 @@ to.
 sub RestrictionValues {
     my $self  = shift;
     my $field = shift;
-    map $self->{'TicketRestrictions'}{$_}{'VALUE'}, grep {
+    return map $self->{'TicketRestrictions'}{$_}{'VALUE'}, grep {
                $self->{'TicketRestrictions'}{$_}{'FIELD'}    eq $field
             && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
         }
@@ -3207,6 +3216,7 @@ sub ClearRestrictions {
     $self->{'looking_at_effective_id'} = 0;
     $self->{'looking_at_type'}         = 0;
     $self->{'RecalcTicketLimits'}      = 1;
+    return;
 }
 
 # }}}
@@ -3228,6 +3238,7 @@ sub DeleteRestriction {
     $self->{'RecalcTicketLimits'} = 1;
 
     #make the underlying easysearch object forget all its preconceptions
+    return;
 }
 
 # }}}
@@ -3363,7 +3374,7 @@ sub _ProcessRestrictions {
     }
 
     $self->{'RecalcTicketLimits'} = 0;
-
+    return;
 }
 
 =head2 _BuildItemMap
@@ -3396,6 +3407,7 @@ sub _BuildItemMap {
     }
     $self->{'item_map'}{'last'} = $prev
         if !$window || @$items < $window;
+    return;
 }
 
 =head2 ItemMap
@@ -3442,7 +3454,7 @@ sub PrepForSerialization {
     my $self = shift;
     delete $self->{'items'};
     delete $self->{'items_array'};
-    $self->RedoSearch();
+    return $self->RedoSearch();
 }
 
 =head1 FLAGS
