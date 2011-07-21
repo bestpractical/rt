@@ -57,7 +57,7 @@ sub Prepare {
     my $self = shift;
     return unless $self->SUPER::Prepare();
 
-    $self->OnStatusChange('resolved');
+    return $self->OnStatusChange('resolved');
 }
 
 sub Commit {
