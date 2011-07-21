@@ -72,6 +72,7 @@ sub _InitSQL {
   $self->{'_sql_watcher_join_users_alias'} = undef;
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
+  return;
 }
 
 sub _SQLLimit {
@@ -89,8 +90,8 @@ sub _SQLLimit {
 
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  $self->SUPER::Limit(%args,
-                      SUBCLAUSE => 'ticketsql');
+  return $self->SUPER::Limit(%args,
+                             SUBCLAUSE => 'ticketsql');
 }
 
 sub _SQLJoin {
@@ -98,16 +99,16 @@ sub _SQLJoin {
   # the aggregation
   my $this = shift;
 
-  $this->SUPER::Join(@_,
+  return $this->SUPER::Join(@_,
 		     SUBCLAUSE => 'ticketsql');
 }
 
 # Helpers
 sub _OpenParen {
-  $_[0]->SUPER::_OpenParen( 'ticketsql' );
+  return $_[0]->SUPER::_OpenParen( 'ticketsql' );
 }
 sub _CloseParen {
-  $_[0]->SUPER::_CloseParen( 'ticketsql' );
+  return $_[0]->SUPER::_CloseParen( 'ticketsql' );
 }
 
 =head1 SQL Functions
@@ -166,6 +167,7 @@ sub _close_bundle {
         }
         $bundle[0]->{dispatch}->( $self, \@args );
     }
+    return;
 }
 
 sub _parser {
@@ -238,6 +240,7 @@ sub _parser {
     };
     RT::SQL::Parse($string, \%callback);
     $self->_close_bundle(@bundle); @bundle = ();
+    return;
 }
 
 =head2 ClausesToSQL
