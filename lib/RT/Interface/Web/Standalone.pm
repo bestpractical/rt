@@ -55,7 +55,7 @@ use RT::Interface::Web::Handler;
 use RT::Interface::Web;
 use URI;
 
-sub handler_class { "RT::Interface::Web::Handler" }
+sub handler_class { return "RT::Interface::Web::Handler" }
 
 sub setup_escapes {
     my $self = shift;
@@ -64,6 +64,7 @@ sub setup_escapes {
     # Override HTTP::Server::Simple::Mason's version of this method to do
     # nothing.  (RT::Interface::Web::Handler does this already for us in
     # NewHandler.)
+    return;
 } 
 
 sub default_mason_config {
@@ -90,6 +91,7 @@ sub handle_request {
     $RT::Logger->crit($@) if $@ && $RT::Logger;
     warn $@ if $@ && !$RT::Logger;
     RT::Interface::Web::Handler->CleanupRequest();
+    return;
 }
 
 sub net_server {
@@ -119,7 +121,7 @@ sub print_banner {
             "You can connect to your server at "
             . $url->canonical
             . "\n" );
-
+    return;
 }
 
 
