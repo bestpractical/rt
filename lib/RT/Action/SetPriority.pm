@@ -73,7 +73,7 @@ sub Prepare  {
 sub Commit {
     my $self = shift;
     $self->TicketObj->SetPriority($self->Argument);
-
+    return 1;
 }
 
 RT::Base->_ImportOverlays();
