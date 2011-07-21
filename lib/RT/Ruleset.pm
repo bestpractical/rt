@@ -71,6 +71,7 @@ sub CommitRules {
     my ($class, $rules) = @_;
     $_->Commit
         for @$rules;
+    return;
 }
 
 sub Add {
@@ -78,7 +79,7 @@ sub Add {
     for (@{$args{Rules}}) {
         $_->require or die $UNIVERSAL::require::ERROR;
     }
-    push @RULE_SETS, $class->new(\%args);
+    return push @RULE_SETS, $class->new(\%args);
 }
 
 RT::Base->_ImportOverlays();
