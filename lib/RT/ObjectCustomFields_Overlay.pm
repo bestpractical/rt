@@ -54,13 +54,13 @@ no warnings qw(redefine);
 sub LimitToCustomField {
     my $self = shift;
     my $id = shift;
-    $self->Limit( FIELD => 'CustomField', VALUE => $id );
+    return $self->Limit( FIELD => 'CustomField', VALUE => $id );
 }
 
 sub LimitToObjectId {
     my $self = shift;
     my $id = shift || 0;
-    $self->Limit( FIELD => 'ObjectId', VALUE => $id );
+    return $self->Limit( FIELD => 'ObjectId', VALUE => $id );
 }
 
 sub LimitToLookupType {
@@ -73,7 +73,7 @@ sub LimitToLookupType {
         TABLE2 => 'CustomFields',
         FIELD2 => 'id',
     );
-    $self->Limit(
+    return $self->Limit(
         ALIAS    => $self->{'_cfs_alias'},
         FIELD    => 'LookupType',
         OPERATOR => '=',
@@ -101,7 +101,7 @@ sub HasEntryForCustomField {
 sub CustomFields {
     my $self = shift;
     my %seen;
-    map { $_->CustomFieldObj } @{$self->ItemsArrayRef};
+    return map { $_->CustomFieldObj } @{$self->ItemsArrayRef};
 }
 
 sub _DoSearch {
@@ -112,7 +112,7 @@ sub _DoSearch {
                  OPERATOR        => '!=',
                  VALUE           =>  1);
     }
-    $self->SUPER::_DoSearch()
+    return $self->SUPER::_DoSearch()
 }
 
 1;
