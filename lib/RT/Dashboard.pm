@@ -95,7 +95,7 @@ An object of this class is called "dashboard"
 
 =cut
 
-sub ObjectName { "dashboard" }
+sub ObjectName { return "dashboard" }
 
 sub SaveAttribute {
     my $self   = shift;
@@ -319,35 +319,35 @@ sub CurrentUserCanSee {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'See');
+    return $self->_CurrentUserCan($privacy, Right => 'See');
 }
 
 sub CurrentUserCanCreate {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Create');
+    return $self->_CurrentUserCan($privacy, Right => 'Create');
 }
 
 sub CurrentUserCanModify {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Modify');
+    return $self->_CurrentUserCan($privacy, Right => 'Modify');
 }
 
 sub CurrentUserCanDelete {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Delete');
+    return $self->_CurrentUserCan($privacy, Right => 'Delete');
 }
 
 sub CurrentUserCanSubscribe {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
+    return $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
 }
 
 RT::Base->_ImportOverlays();
