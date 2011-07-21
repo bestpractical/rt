@@ -78,9 +78,11 @@ sub _DoSearch {
         $RT::Logger->crit(
 "_DoSearch is not so successful as it still needs redo search, won't call _BuildAccessTable"
         );
+        return;
     }
     else {
         $self->_BuildAccessTable();
+        return 1;
     }
 }
 
@@ -91,6 +93,7 @@ sub _BuildAccessTable {
     while (my $attr = $self->Next) {
         push @{$self->{'attr'}->{$attr->Name}}, $attr;
     }
+    return;
 }
 
 
@@ -205,7 +208,7 @@ sub LimitToObject {
         && $obj->can('id') && $obj->id;
     $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => ref($obj), ENTRYAGGREGATOR => 'OR');
     $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $obj->id, ENTRYAGGREGATOR => 'OR', QUOTEVALUE => 0);
-
+    return 1;
 }
 
 # }}}
