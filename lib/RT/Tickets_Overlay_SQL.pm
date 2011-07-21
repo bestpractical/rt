@@ -188,7 +188,9 @@ sub _parser {
 
         # key has dot then it's compound variant and we have subkey
         my $subkey = '';
-        ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
+        if ( $key =~ /^([^\.]+)\.(.+)$/ ) {
+            ($key, $subkey) = ($1, $2);
+        }
 
         # normalize key and get class (type)
         my $class;

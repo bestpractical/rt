@@ -110,7 +110,7 @@ sub expand_list {
                     # mix, number must be first
                     :defined $a->[1]? -1: 1
         }
-        map [ $_, (defined( /^(\d+)$/ )? $1: undef), lc($_) ],
+        map [ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ],
         @elts;
 }
 

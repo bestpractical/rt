@@ -81,9 +81,8 @@ if ($q) {
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
     $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
 
-    if ($q =~ /^#?(\d+)$/) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Ticket/Display.html?id=".$1);
-    }
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Ticket/Display.html?id=".$q)
+          if $q =~ s/^#?(\d+)$/$1/;
 
     my %args = (
         Argument   => $q,

@@ -63,26 +63,23 @@
 
 my (@results);
 foreach my $arg (keys %ARGS) {
-    next unless ($arg =~ /^Delegate-Existing-ACE-(\d+)-to-(\d+)-as-(\d+)$/);
-       my $parent = $1;
-       my $principal = $2;
-       my $delegation = $3;
-       unless ($ARGS{"Delegate-ACE-$1-to-$2"}) {
-            my $ace_to_del = RT::ACE->new($session{'CurrentUser'});
-            $ace_to_del->Load($delegation);
-            my ($delval, $delmsg) = $ace_to_del->Delete();
-            push (@results, $delmsg);
-       }
+    my ($parent, $principal, $delegation) =
+        $arg =~ /^Delegate-Existing-ACE-(\d+)-to-(\d+)-as-(\d+)$/ or next;
+    unless ($ARGS{"Delegate-ACE-$parent-to-$principal"}) {
+        my $ace_to_del = RT::ACE->new($session{'CurrentUser'});
+        $ace_to_del->Load($delegation);
+        my ($delval, $delmsg) = $ace_to_del->Delete();
+        push (@results, $delmsg);
+    }
 }
 
 foreach my $arg (keys %ARGS) {
-    next unless ($arg =~ /^Delegate-ACE-(\d+)-to-(\d+)$/);
-    my $parent = $1;
-    my $principal = $2;
+    my ($parent, $principal) =
+        $arg =~ /^Delegate-ACE-(\d+)-to-(\d+)$/ or next;
     # if we already delegate it, we just don't care
     next if (grep /^Delegate-Existing-ACE-$parent-to-$principal-/, keys %ARGS);
     my $ace = RT::ACE->new($session{'CurrentUser'});
-    $ace->Load($1);
+    $ace->Load($parent);
     unless ($ace->Id) {
         push (@results, loc('Right not found'));
         next;

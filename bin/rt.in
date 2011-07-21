@@ -1074,7 +1074,8 @@ sub submit {
         $text =~ s/\n*$/\n/ if ($text);
 
         # "RT/3.0.1 401 Credentials required"
-        if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
+        my ($code, $message) = $status =~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#;
+        unless (defined $code and defined $message) {
             warn "rt: Malformed RT response from $config{server}.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;
@@ -1083,8 +1084,8 @@ sub submit {
         # Our caller can pretend that the server returned a custom HTTP
         # response code and message. (Doing that directly is apparently
         # not sufficiently portable and uncomplicated.)
-        $res->code($1);
-        $res->message($2);
+        $res->code($code);
+        $res->message($message);
         $res->content($text);
         $session->update($res) if ($res->is_success || $res->code != 401);
 
@@ -1591,7 +1592,7 @@ sub expand_list {
                     # mix, number must be first
                     :defined $a->[1]? -1: 1
         }
-        map [ $_, (defined( /^(\d+)$/ )? $1: undef), lc($_) ],
+        map [ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ],
         @elts;
 }
 

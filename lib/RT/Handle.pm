@@ -545,7 +545,7 @@ sub GetVersionFile {
     my @files = File::Glob::bsd_glob("$base_name*");
     return '' unless @files;
 
-    my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
+    my %version = map { ($_ =~ /\.\w+-([-\w\.]+)$/ ? $1 : 0) => $_ } @files;
     my $version;
     foreach ( reverse sort {cmp_version($a,$b)} keys %version ) {
         if ( cmp_version( $db_version, $_ ) >= 0 ) {

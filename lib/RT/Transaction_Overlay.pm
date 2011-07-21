@@ -1158,11 +1158,9 @@ sub UpdateCustomFields {
     }
 
     foreach my $arg ( keys %$args ) {
-        next
-          unless ( $arg =~
-            /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
-	next if $arg =~ /-Magic$/;
-        my $cfid   = $1;
+        next if $arg =~ /-Magic$/;
+        my ($cfid) = $arg =~ /^(?:Object-RT::Transaction--)?CustomField-(\d+)/;
+        next unless defined $cfid;
         my $values = $args->{$arg};
         foreach
           my $value ( (ref($values) eq 'ARRAY' ) ? @$values : $values )

@@ -164,14 +164,12 @@ sub LoadAction  {
 		 @_ );
 
     $self->{_TicketObj} = $args{TicketObj};
-    
-    #TODO: Put this in an eval  
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Action::". $module;
- 
+
+    $self->ExecModule =~ /^(\w+)$/ or die "Invalid scrip action: ".$self->ExecModule;
+    my $type = "RT::Action::" . $1;
+
     eval "require $type" || die "Require of $type failed.\n$@\n";
-    
+
     $self->{'Action'}  = $type->new ( Argument => $self->Argument,
                                       CurrentUser => $self->CurrentUser,
                                       ScripActionObj => $self, 

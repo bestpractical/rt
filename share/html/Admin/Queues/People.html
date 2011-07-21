@@ -152,7 +152,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     foreach my $key (keys %ARGS) {
             my $id = $QueueObj->Id;
 
-        if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
+        if ($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/) {
             my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
                                                         PrincipalId => $2);
             push @results, $msg;

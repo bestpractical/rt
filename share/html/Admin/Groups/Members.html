@@ -123,7 +123,7 @@ my (@results);
 
 # XXX: safe member id in value instead of name
 foreach my $key (keys %ARGS) {
-    next unless $key =~ /^DeleteMember-(\d+)$/;
+    $key =~ /^DeleteMember-(\d+)$/ or next;
 
     my ($val,$msg) = $Group->DeleteMember($1);
     push (@results, $msg);
