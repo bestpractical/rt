@@ -145,6 +145,7 @@ sub run_server {
     if ( my $err = $@ ) {
         handle_startup_error($err);
     }
+    return;
 }
 
 sub handle_startup_error {
@@ -156,6 +157,7 @@ sub handle_startup_error {
             "Something went wrong while trying to run RT's standalone web server:\n\t"
             . $err;
     }
+    return;
 }
 
 
@@ -182,4 +184,5 @@ EOF
         }
         run_server( 8000 + int( rand(1024) ) );
     }
+    return;
 }
