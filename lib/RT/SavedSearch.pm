@@ -76,11 +76,12 @@ An object of this class is called "search"
 
 =cut
 
-sub ObjectName { "search" }
+sub ObjectName { return "search" }
 
 sub PostLoad {
     my $self = shift;
     $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+    return;
 }
 
 sub SaveAttribute {
