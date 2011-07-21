@@ -128,8 +128,8 @@ sub Connect {
     }
 
 
-
-    $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
+    # XXX 4.2: return;
+    return $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
 
 =head2 BuildDSN
@@ -164,7 +164,7 @@ sub BuildDSN {
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
     }
-    $self->SUPER::BuildDSN( %args );
+    return $self->SUPER::BuildDSN( %args );
 }
 
 =head2 DSN
