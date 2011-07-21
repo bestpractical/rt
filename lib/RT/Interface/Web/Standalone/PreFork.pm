@@ -97,7 +97,7 @@ sub post_bind_hook {
         . (join ' , ', map { "http://localhost:$_/" } @ports)
         . "\n";
 
-    $self->SUPER::post_bind_hook(@_);
+    return $self->SUPER::post_bind_hook(@_);
 }
 
 1;
