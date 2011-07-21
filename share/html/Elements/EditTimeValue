@@ -58,7 +58,7 @@ $InputUnits => 'minutes'
 $ValueName ||= $Name;
 $UnitName  ||= ($Name||$ValueName) . '-TimeUnits';
 
-if ($InputUnits eq 'minutes' && RT->Config->Get('DefaultTimeUnitsToHours')) {
+if ($InputUnits eq 'minutes' && RT->Config->Get('DefaultTimeUnitsToHours', $session{'CurrentUser'})) {
     $Default = sprintf '%.3f', $Default / 60
         unless $Default eq '';
 }

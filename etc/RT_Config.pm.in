@@ -1921,7 +1921,7 @@ Set($AmbiguousDayInFuture, 0);
 =item C<$DefaultTimeUnitsToHours>
 
 Use this to set the default units for time entry to hours instead of
-minutes.
+minutes.  Note that this only effects entry, not display.
 
 =cut
 
