@@ -106,7 +106,7 @@ sub LimitToEnabled {
     my $self = shift;
 
     $self->{'handled_disabled_column'} = 1;
-    $self->Limit( FIELD => 'Disabled', VALUE => '0' );
+    return $self->Limit( FIELD => 'Disabled', VALUE => '0' );
 }
 
 =head2 LimitToDeleted
@@ -119,7 +119,7 @@ sub LimitToDeleted {
     my $self = shift;
 
     $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
-    $self->Limit( FIELD => 'Disabled', VALUE => '1' );
+    return $self->Limit( FIELD => 'Disabled', VALUE => '1' );
 }
 
 =head2 FindAllRows
@@ -129,7 +129,7 @@ Find all matching rows, regardless of whether they are disabled or not
 =cut
 
 sub FindAllRows {
-    shift->{'find_disabled_rows'} = 1;
+    return shift->{'find_disabled_rows'} = 1;
 }
 
 =head2 LimitAttribute PARAMHASH
@@ -220,6 +220,7 @@ sub LimitAttribute {
 	OPERATOR   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
 	VALUE      => 'NULL',
     ) if $args{NULL};
+    return;
 }
 
 =head2 LimitCustomField
@@ -271,7 +272,8 @@ sub LimitCustomField {
 	OPERATOR   => '=',
 	VALUE      => $self->_SingularClass,
     );
-    $self->Limit(
+    # XXX: 4.2 return;
+    return $self->Limit(
 	ALIAS      => $alias,
 	FIELD      => 'Content',
 	OPERATOR   => $args{'OPERATOR'},
@@ -308,7 +310,7 @@ sub Limit {
 
     if ($ARGS{FUNCTION}) {
         ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
-        $self->SUPER::Limit(%ARGS);
+        return $self->SUPER::Limit(%ARGS);
     } elsif ($ARGS{FIELD} =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
@@ -317,14 +319,14 @@ sub Limit {
                                   |IS(\s*NOT)?
                                   |IN)$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
-        $self->SUPER::Limit(
+        return $self->SUPER::Limit(
             %ARGS,
             FIELD    => 'id',
             OPERATOR => '<',
             VALUE    => '0',
         );
     } else {
-        $self->SUPER::Limit(%ARGS);
+        return $self->SUPER::Limit(%ARGS);
     }
 }
 
