@@ -112,10 +112,10 @@ if ($opts{'help'}) {
 }
 
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; 1 }
-sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
-sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
-sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
+sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; return 1 }
+sub debug    { print loc(@_), "\n" if $opts{debug}; return 1 }
+sub error    { $RT::Logger->error(loc(@_)); verbose(@_); return 1 }
+sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); return 1 }
 
 my $now = $opts{epoch} || time;
 verbose "Using time [_1]", scalar localtime($now);
@@ -271,7 +271,7 @@ SUMMARY
         RT->Config->Get('WebURL') . '/Dashboards/Render.html',
     );
 
-    email_dashboard($currentuser, $email, $dashboard, $subscription, $contents);
+    return email_dashboard($currentuser, $email, $dashboard, $subscription, $contents);
 }
 
 sub email_dashboard {
@@ -299,6 +299,7 @@ sub email_dashboard {
 
     error 'Failed to email dashboard to user [_1] <[_2]>',
           $currentuser->Name, $email;
+    return;
 }
 
 sub build_email {
@@ -363,7 +364,7 @@ sub build_email {
 }
 
 sub get_from {
-    RT->Config->Get('DashboardAddress') || RT->Config->Get('OwnerEmail')
+    return RT->Config->Get('DashboardAddress') || RT->Config->Get('OwnerEmail')
 }
 
 {
@@ -492,9 +493,9 @@ sub get_resource {
 }
 
 package RT::Dashboard::FakeRequest;
-sub new { bless {}, shift }
-sub header_out { shift }
-sub headers_out { shift }
+sub new { return bless {}, shift }
+sub header_out { return shift }
+sub headers_out { return shift }
 sub content_type {
     my $self = shift;
     $self->{content_type} = shift if @_;
