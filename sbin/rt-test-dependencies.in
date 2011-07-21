@@ -395,7 +395,7 @@ check_users();
 
 my %Missing_By_Type = ();
 foreach my $type (sort grep $args{$_}, keys %args) {
-    $type =~ /^with-(.*?)$/ or next;
+    next unless ($type =~ /^with-(.*?)$/);
 
     $type = $1;
     section("$type dependencies");

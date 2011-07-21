@@ -63,8 +63,8 @@
 
 my (@results);
 foreach my $arg (keys %ARGS) {
-    my ($parent, $principal, $delegation) =
-        $arg =~ /^Delegate-Existing-ACE-(\d+)-to-(\d+)-as-(\d+)$/ or next;
+    next unless ($arg =~ /^Delegate-Existing-ACE-(\d+)-to-(\d+)-as-(\d+)$/);
+    my ($parent, $principal, $delegation) = ($1, $2, $3);
     unless ($ARGS{"Delegate-ACE-$parent-to-$principal"}) {
         my $ace_to_del = RT::ACE->new($session{'CurrentUser'});
         $ace_to_del->Load($delegation);
@@ -74,8 +74,8 @@ foreach my $arg (keys %ARGS) {
 }
 
 foreach my $arg (keys %ARGS) {
-    my ($parent, $principal) =
-        $arg =~ /^Delegate-ACE-(\d+)-to-(\d+)$/ or next;
+    next unless ($arg =~ /^Delegate-ACE-(\d+)-to-(\d+)$/);
+    my ($parent, $principal) = ($1, $2);
     # if we already delegate it, we just don't care
     next if (grep /^Delegate-Existing-ACE-$parent-to-$principal-/, keys %ARGS);
     my $ace = RT::ACE->new($session{'CurrentUser'});

@@ -86,9 +86,10 @@ if ( $opt{help} ) {
 
 
 if( $opt{'older'} ) {
-    $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i
-        or die "wrong format of the 'older' argument\n";
-
+    unless( $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
+        print STDERR "wrong format of the 'older' argumnet\n";
+        exit(1);
+    }
     my ($num,$unit) = ($1, uc($2 ||'D'));
     my %factor = ( H => 60*60 );
     $factor{'D'} = $factor{'H'}*24;

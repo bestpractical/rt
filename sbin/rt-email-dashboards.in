@@ -464,9 +464,7 @@ sub get_resource {
     $content = run_component($path, %args);
 
     # guess at the filename from the component name
-    if ( $path =~ m{^.*/(.*?)$} ) {
-        $filename = $1;
-    }
+    $filename = $1 if $path =~ m{^.*/(.*?)$};
 
     # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
     ($mimetype, $encoding) = MIME::Types::by_suffix($filename);

@@ -58,7 +58,7 @@
 my (@actions);
 foreach my $arg ( keys %ARGS ) {
 
-    $arg =~ /Approval-(\d+)-Action/ or next;
+    next unless ( $arg =~ /Approval-(\d+)-Action/ );
 
     my ( $notesval, $notesmsg );
 

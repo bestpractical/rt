@@ -1552,7 +1552,7 @@ sub ProcessACLChanges {
     my @results;
 
     foreach my $arg ( keys %$ARGSref ) {
-        $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ or next;
+        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ );
 
         my ( $method, $principal_id, $object_type, $object_id ) = ( $1, $2, $3, $4 );
 
@@ -2290,7 +2290,7 @@ container object and the search id.
 sub _parse_saved_search {
     my $spec = shift;
     return unless $spec;
-    $spec =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ or return;
+    return unless $spec =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/;
 
     my $obj_type  = $1;
     my $obj_id    = $2;

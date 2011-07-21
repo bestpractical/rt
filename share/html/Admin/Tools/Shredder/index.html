@@ -107,7 +107,7 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
 
     my %args;
     foreach my $k( keys %ARGS ) {
-        $k =~ /^\Q$Plugin\E:(.*)$/ or next;
+        next unless $k =~ /^\Q$Plugin\E:(.*)$/;
         $args{ $1 } = $ARGS{$k};
     }
     ( $status, $msg ) = $plugin_obj->HasSupportForArgs( keys %args );
