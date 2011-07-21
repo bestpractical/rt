@@ -1493,11 +1493,9 @@ sub UpdateCustomFields {
     }
 
     foreach my $arg ( keys %$args ) {
-        next
-          unless ( $arg =~
-            /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
         next if $arg =~ /-Magic$/;
-        my $cfid   = $1;
+        my ($cfid) = $arg =~ /^(?:Object-RT::Transaction--)?CustomField-(\d+)/;
+        next unless defined $cfid;
         my $values = $args->{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
         next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);

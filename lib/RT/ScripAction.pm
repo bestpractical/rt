@@ -167,9 +167,8 @@ sub LoadAction  {
         $self->{'TemplateObj'} = $args{'TemplateObj'};
     }
 
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Action::". $module;
+    $self->ExecModule =~ /^(\w+)$/ or die "Invalid scrip action: ".$self->ExecModule;
+    my $type = "RT::Action::" . $1;
 
     $type->require or die "Require of $type action module failed.\n$@\n";
 

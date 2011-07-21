@@ -157,10 +157,8 @@ sub LoadCondition  {
                  TicketObj => undef,
                  @_ );
 
-    #TODO: Put this in an eval
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Condition::". $module;
+    $self->ExecModule =~ /^(\w+)$/ or die "Invalid scrip condition: ".$self->ExecModule;
+    my $type = "RT::Condition::" . $1;
 
     $type->require or die "Require of $type condition module failed.\n$@\n";
 

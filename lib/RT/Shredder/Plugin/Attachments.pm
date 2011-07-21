@@ -112,9 +112,10 @@ sub Run
     }
     if( $self->{'opt'}{'longer'} ) {
         my $size = $self->{'opt'}{'longer'};
-        $size =~ s/([mk])//i;
-        $size *= 1024 if $1 && lc $1 eq 'k';
-        $size *= 1024*1024 if $1 && lc $1 eq 'm';
+        if ($size =~ s/([km])//i) {
+            $size *= 1024      if lc $1 eq 'k';
+            $size *= 1024*1024 if lc $1 eq 'm';
+        }
         push @conditions, "( LENGTH(Content) > ? )";
         push @values, $size;
     }
