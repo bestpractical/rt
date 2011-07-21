@@ -477,9 +477,9 @@ sub InsertSchema {
 
     open( my $fh_schema, '<', $file ) or die $!;
 
-    my $has_local = 0;
+    my $has_local = 1;
     open( my $fh_schema_local, "<", $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type ))
-        and $has_local = 1;
+        or $has_local = 0;
 
     my $statement = "";
     foreach my $line ( <$fh_schema>, ($_ = ';;'), $has_local? <$fh_schema_local>: () ) {
