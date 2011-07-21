@@ -57,8 +57,8 @@ sub Prepare {
     my $self = shift;
     return unless $self->SUPER::Prepare();
 
-    $self->OnStatusChange('open') and
-    eval { $T::Approving = ($self->TicketObj->AllDependedOnBy( Type => 'ticket' ))[0] }
+    return $self->OnStatusChange('open') and
+           eval { $T::Approving = ($self->TicketObj->AllDependedOnBy( Type => 'ticket' ))[0] };
 }
 
 sub Commit {
