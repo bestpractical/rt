@@ -416,7 +416,7 @@ sub _get_dbh {
 sub _yesno {
     print "Proceed [y/N]:";
     my $x = scalar(<STDIN>);
-    $x =~ /^y/i;
+    return $x =~ /^y/i;
 }
 
 sub help {
@@ -466,7 +466,7 @@ Several actions can be combined using comma separated list.
 
 
 EOF
-
+    return;
 }
 
 1;
