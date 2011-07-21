@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 48;
+use RT::Test nodata => 1, tests => 64;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -109,26 +109,87 @@ my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
     RT::Dashboard->new($currentuser)->_PrivacyObjects;
 ok($group, "Found the group in  the privacy objects list");
 
+my @loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id],
+    "We can load from ourselves (SeeOwnDashboard) and a group we are with SeeGroupDashboard"
+);
 
-($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
-    RT::Dashboard->new($currentuser)->ObjectsForLoading;
-ok($group, "Found the group in the objects for loading");
-
-
-# With superuser, the dashboards of groups we're not in should not show
-# up in the menu, but should in the dashboard list.
+# If you are granted SeeGroupDashboard globally, you can only see
+# dashboards in groups you are in.
 $user_obj->PrincipalObj->RevokeRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
 );
 $user_obj->PrincipalObj->GrantRight(
-    Right  => 'SuperUser',
+    Right  => 'SeeGroupDashboard',
     Object => RT->System,
 );
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "Having SeeGroupDashboard gobally is fine for groups you are in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id],
+    "SeeGroupDashboard globally still works for groups you are in"
+);
+
 $inner_group->DeleteMember($user_obj->PrincipalObj->Id);
 ok(!$outer_group->HasMemberRecursively($user_obj->PrincipalId), "outer no longer has user recursively");
 ok(!$inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner no longer has user recursively");
 $m->get_ok("/Dashboards/index.html");
-$m->content_contains("inner dashboard", "Superuser can see dashboards in their own groups");
+$m->content_lacks("inner dashboard", "But global SeeGroupDashboard isn't enough for other groups");
+$m->no_warnings_ok;
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id],
+    "We only have our SeeOwnDashboard right, as we are no longer in inner"
+);
+
+# Similarly, if you're a SuperUser, you still only see dashboards for
+# groups you belong to
+$user_obj->PrincipalObj->RevokeRight(
+    Right  => 'SeeGroupDashboard',
+    Object => RT->System,
+);
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SuperUser',
+    Object => RT->System,
+);
+$m->get_ok("/Dashboards/index.html");
+$m->content_lacks("inner dashboard", "Superuser can't see dashboards in groups they're not in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "We pick up the system-level SeeDashboard right from superuser"
+);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperusers => 0);
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "IncludeSuperusers only cuts out _group_ dashboard objects for loading, not user and system ones"
+);
+
+$inner_group->AddMember($user_obj->PrincipalId);
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "Superuser can see dashboards in groups they are in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id, "RT::System-1"],
+    "Becoming a member of the group makes it a possibility"
+);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperusers => 0);
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "But only via superuser"
+);
+
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "The dashboards list includes superuser rights");
 $m->get_ok("/index.html");
-$m->content_lacks("inner dashboard", "Also in the menu");
+$m->content_lacks("inner dashboard", "But the menu skips them");
