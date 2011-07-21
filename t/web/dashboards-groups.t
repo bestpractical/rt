@@ -166,7 +166,7 @@ is_deeply(
     ["RT::User-".$user_obj->Id, "RT::System-1"],
     "We pick up the system-level SeeDashboard right from superuser"
 );
-@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperusers => 0);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperuserGroups => 0);
 is_deeply(
     \@loading,
     ["RT::User-".$user_obj->Id, "RT::System-1"],
@@ -182,7 +182,7 @@ is_deeply(
     ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id, "RT::System-1"],
     "Becoming a member of the group makes it a possibility"
 );
-@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperusers => 0);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperuserGroups => 0);
 is_deeply(
     \@loading,
     ["RT::User-".$user_obj->Id, "RT::System-1"],

@@ -50,7 +50,7 @@
 use RT::Dashboard;
 
 my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(
-               IncludeSuperusers => $IncludeSuperusers
+               IncludeSuperuserGroups => $IncludeSuperuserGroups
            );
 
 my %dashboard_map;
@@ -78,5 +78,5 @@ $m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboard
 return @dashboards;
 </%init>
 <%args>
-$IncludeSuperusers => 1
+$IncludeSuperuserGroups => 1
 </%args>

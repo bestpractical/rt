@@ -380,7 +380,7 @@ sub Subscription {
 sub ObjectsForLoading {
     my $self = shift;
     my %args = (
-        IncludeSuperusers => 1,
+        IncludeSuperuserGroups => 1,
         @_
     );
     my @objects;
@@ -399,7 +399,7 @@ sub ObjectsForLoading {
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
         Right             => 'SeeGroupDashboard',
-        %args,
+        IncludeSuperusers => $args{IncludeSuperuserGroups},
     );
     $groups->WithMember(
         Recursively => 1,

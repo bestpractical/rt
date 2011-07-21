@@ -65,7 +65,7 @@ my $build_main_nav = sub {
     # groups you're not in (but can see the dashboards of by dint of
     # being a superuser) would push the useful ones from the groups
     # you're actually in off of the stack.
-    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperusers => 0);
+    my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0);
     my $limit      = 7;
 
     my $more = 0;
