@@ -96,7 +96,7 @@ sub Limit  {
     }
     
 
-    $self->SUPER::Limit(%args);
+    return $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -113,7 +113,8 @@ sub LimitRefersTo {
     my $URI = shift;
 
     $self->Limit(FIELD => 'Type', VALUE => 'RefersTo');
-    $self->Limit(FIELD => 'Target', VALUE => $URI);
+    # XXX: 4.2 return;
+    return $self->Limit(FIELD => 'Target', VALUE => $URI);
 }
 
 # }}}
@@ -130,7 +131,8 @@ sub LimitReferredToBy {
     my $URI = shift;
 
     $self->Limit(FIELD => 'Type', VALUE => 'RefersTo');
-    $self->Limit(FIELD => 'Base', VALUE => $URI);
+    # XXX: 4.2 return;
+    return $self->Limit(FIELD => 'Base', VALUE => $URI);
 }
 
 # }}}
