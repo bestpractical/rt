@@ -115,6 +115,7 @@ sub CleanEnv {
     $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'}    = ''        if defined $ENV{'ENV'};
     $ENV{'IFS'}    = ''        if defined $ENV{'IFS'};
+    return;
 }
 
 
