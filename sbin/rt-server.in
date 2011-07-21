@@ -147,8 +147,15 @@ my $r = RT::PlackRunner->new( RT->InstallMode    ? ( server => 'Standalone' ) :
                               $0 =~ /fcgi$/      ? ( server => 'FCGI',    env => "deployment" )
                                                  : ( server => 'Starlet', env => "deployment" ) );
 $r->parse_options(@ARGV);
-$r->run;
 
+# Try to clean up wrong-permissions var/
+$SIG{INT} = sub {
+    local $@;
+    system("chown", "-R", "@WEB_USER@:@WEB_GROUP@", "@RT_VAR_PATH_R@");
+    exit 0;
+} if $> == 0;
+
+$r->run;
 
 __END__
 
