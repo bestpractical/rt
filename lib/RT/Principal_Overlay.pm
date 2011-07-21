@@ -585,6 +585,7 @@ sub InvalidateACLCache {
     my $lifetime;
     $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
     $_ACL_CACHE->expire_after( $lifetime || 60 );
+    return;
 }
 
 # }}}
