@@ -193,6 +193,7 @@ sub prompt_delete_objs
 	}
 	print $list;
 	exit(0) unless prompt_yN( "Do you want to proceed?" );
+    return;
 }
 
 sub prompt_yN
@@ -294,7 +295,7 @@ sub _process_search_plugin {
 
 sub _process_dump_plugin {
     my ($shredder, $plugin) = @_;
-    $shredder->AddDumpPlugin(
+    return $shredder->AddDumpPlugin(
         Object => $plugin,
     );
 }
