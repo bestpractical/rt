@@ -145,6 +145,7 @@ sub LoadLexicons {
         # TODO: untie that has to lower fetch impact
         # untie %$lex if tied %$lex;
     }
+    return;
 }
 
 =head2 encoding
@@ -157,7 +158,7 @@ If it can't find anything, it returns 'ISO-8859-1'
 =cut
 
 
-sub encoding { 'utf-8' }
+sub encoding { return 'utf-8' }
 
 # {{{ SetMIMEEntityToUTF8
 
@@ -169,7 +170,7 @@ It's now a wrap-up of SetMIMEEntityToEncoding($entity, 'utf-8').
 =cut
 
 sub SetMIMEEntityToUTF8 {
-    RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
+    return RT::I18N::SetMIMEEntityToEncoding(shift, 'utf-8');
 }
 
 # }}}
@@ -192,7 +193,7 @@ Currently, it returns true iff $type matches this regular expression
 
 sub IsTextualContentType {
     my $type = shift;
-    ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
+    return ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
 }
 
 # {{{ SetMIMEEntityToEncoding
@@ -292,6 +293,7 @@ sub SetMIMEEntityToEncoding {
         $head->mime_attr( "content-type.charset" => $enc );
         $entity->bodyhandle($new_body);
     }
+    return;
 }
 
 # NOTES:  Why Encode::_utf8_off before Encode::from_to
@@ -547,6 +549,7 @@ sub SetMIMEHeadToEncoding {
             $head->add( $tag, $value );
         }
     }
+    return;
 
 }
 # }}}
