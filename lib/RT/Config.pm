@@ -637,6 +637,7 @@ sub PostLoadCheck {
     foreach my $o ( grep $META{$_}{'PostLoadCheck'}, $self->Options( Overridable => undef ) ) {
         $META{$o}->{'PostLoadCheck'}->( $self, $self->Get($o) );
     }
+    return;
 }
 
 =head2 Configs
