@@ -236,6 +236,7 @@ sub extract_strings_from_code {
 	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
 	push @{ $FILECAT->{$val} }, [ $filename, $line, '' ];
     }
+    return;
 
 }
 # }}} extract from strings
