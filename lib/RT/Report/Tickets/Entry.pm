@@ -53,7 +53,7 @@ use warnings;
 use base qw/RT::Record/;
 
 # XXX TODO: how the heck do we acl a report?
-sub CurrentUserHasRight {1}
+sub CurrentUserHasRight { return 1 }
 
 =head2 LabelValue
 
