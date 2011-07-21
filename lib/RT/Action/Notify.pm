@@ -66,7 +66,7 @@ Set up the relevant recipients, then call our parent.
 sub Prepare {
     my $self = shift;
     $self->SetRecipients();
-    $self->SUPER::Prepare();
+    return $self->SUPER::Prepare();
 }
 
 =head2 SetRecipients
@@ -157,9 +157,8 @@ sub SetRecipients {
         @{ $self->{'Cc'} }  = grep ( lc $_ ne lc $creator, @Cc );
         @{ $self->{'Bcc'} } = grep ( lc $_ ne lc $creator, @Bcc );
     }
-    @{ $self->{'PseudoTo'} } = @PseudoTo;
-
-
+    # XXX 4.2: return;
+    return @{ $self->{'PseudoTo'} } = @PseudoTo;
 }
 
 RT::Base->_ImportOverlays();
