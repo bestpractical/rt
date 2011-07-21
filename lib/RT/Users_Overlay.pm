@@ -124,7 +124,7 @@ sub LimitToEnabled {
     my $self = shift;
 
     $self->{'handled_disabled_column'} = 1;
-    $self->Limit(
+    return $self->Limit(
         ALIAS    => $self->PrincipalsAlias,
         FIELD    => 'Disabled',
         VALUE    => '0',
@@ -141,7 +141,7 @@ sub LimitToDeleted {
     my $self = shift;
     
     $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
-    $self->Limit(
+    return $self->Limit(
         ALIAS => $self->PrincipalsAlias,
         FIELD => 'Disabled',
         VALUE => 1,
@@ -161,7 +161,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
+    return $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
 }
 
 # }}}
@@ -189,10 +189,10 @@ sub MemberOfGroup {
                  ALIAS2 => $groupalias,
                  FIELD2 => 'MemberId' );
 
-    $self->Limit( ALIAS    => "$groupalias",
-                  FIELD    => 'GroupId',
-                  VALUE    => "$group",
-                  OPERATOR => "=" );
+    return $self->Limit( ALIAS    => "$groupalias",
+                         FIELD    => 'GroupId',
+                         VALUE    => "$group",
+                         OPERATOR => "=" );
 }
 
 # }}}
@@ -213,7 +213,7 @@ sub LimitToPrivileged {
     unless ( $priv->Id ) {
         $RT::Logger->crit("Couldn't find a privileged users group");
     }
-    $self->MemberOfGroup( $priv->PrincipalId );
+    return $self->MemberOfGroup( $priv->PrincipalId );
 }
 
 # }}}
@@ -462,11 +462,11 @@ sub _JoinGroupMembersForGroupRights
     my $self = shift;
     my %args = (@_);
     my $group_members = $self->_JoinGroupMembers( %args );
-    $self->Limit( ALIAS => $args{'ACLAlias'},
-                  FIELD => 'PrincipalId',
-                  VALUE => "$group_members.GroupId",
-                  QUOTEVALUE => 0,
-                );
+    return $self->Limit( ALIAS => $args{'ACLAlias'},
+                         FIELD => 'PrincipalId',
+                         VALUE => "$group_members.GroupId",
+                         QUOTEVALUE => 0,
+                        );
 }
 
 # XXX: should be generalized
@@ -553,6 +553,7 @@ sub WhoBelongToGroups {
                       ENTRYAGGREGATOR => 'OR',
                     );
     }
+    return;
 }
 # }}}
 
