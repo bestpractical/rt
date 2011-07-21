@@ -96,7 +96,7 @@ be used by the scrips that actually send the email.
 
 sub Commit {
     my $self = shift;
-    $self->CreateTransaction();
+    return $self->CreateTransaction();
 }
 
 sub CreateTransaction {
@@ -108,7 +108,7 @@ sub CreateTransaction {
     
     my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Correspond(
 	MIMEObj => $self->TemplateObj->MIMEObj);
-    $self->{'TransactionObj'} = $transaction;
+    return $self->{'TransactionObj'} = $transaction;
 }
     
 
