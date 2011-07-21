@@ -73,9 +73,9 @@ sub Describe {
 sub OnStatusChange {
     my ($self, $value) = @_;
 
-    $self->TransactionObj->Type eq 'Status' and
-    $self->TransactionObj->Field eq 'Status' and
-    $self->TransactionObj->NewValue eq $value
+    return ($self->TransactionObj->Type eq 'Status' and
+            $self->TransactionObj->Field eq 'Status' and
+            $self->TransactionObj->NewValue eq $value)
 }
 
 sub RunScripAction {
@@ -101,8 +101,7 @@ sub RunScripAction {
     $action->{'TemplateObj'} = $template;
     $action->{'ScripObj'} = RT::Scrip->new($self->CurrentUser); # Stub. sendemail action really wants a scripobj available
     $action->Prepare or return;
-    $action->Commit;
-
+    return $action->Commit;
 }
 
 RT::Base->_ImportOverlays();
