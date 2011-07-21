@@ -348,7 +348,10 @@ sub ForWhichCurrentUserHasRight {
         @_,
     );
 
-    # Groups which are the target object of an ACL with that right, or
+    # Non-disabled groups...
+    $self->LimitToEnabled;
+
+    # ...which are the target object of an ACL with that right, or
     # where the target is the system object (a global right)
     my $acl = $self->_JoinACL( %args );
     $self->_AddSubClause(
