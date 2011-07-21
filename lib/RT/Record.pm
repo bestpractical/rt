@@ -518,7 +518,7 @@ sub _Set {
 =head2 _SetLastUpdated
 
 This routine updates the LastUpdated and LastUpdatedBy columns of the row in question
-It takes no options. Arguably, this is a bug
+It takes no options. Arguably, this is a bug.
 
 =cut
 
@@ -540,6 +540,7 @@ sub _SetLastUpdated {
             Value => $self->CurrentUser->id
         );
     }
+    return;
 }
 
 # }}}
@@ -653,7 +654,7 @@ sub __Value {
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
 
 sub _CacheConfig {
-  {
+  return {
      'cache_p'        => 1,
      'cache_for_sec'  => 30,
   }
@@ -688,6 +689,7 @@ sub _BuildTableAttributes {
             }
         }
     }
+    return;
 }
 
 
@@ -1588,7 +1590,7 @@ $id is ID of created L<ObjectCustomFieldValue> object.
 
 sub AddCustomFieldValue {
     my $self = shift;
-    $self->_AddCustomFieldValue(@_);
+    return $self->_AddCustomFieldValue(@_);
 }
 
 sub _AddCustomFieldValue {
