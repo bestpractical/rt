@@ -59,13 +59,14 @@ sub Prepare {
     my $self = shift;
     return unless $self->SUPER::Prepare();
 
-    $self->TransactionObj->Type eq 'Create' &&
-    !$self->TicketObj->HasUnresolvedDependencies( Type => 'approval' );
+    return $self->TransactionObj->Type eq 'Create'
+           && !$self->TicketObj->HasUnresolvedDependencies( Type => 'approval' );
 }
 
 sub Commit {
     my $self = shift;
     $self->RunScripAction('Open Tickets' => 'Blank');
+    return;
 }
 
 1;
