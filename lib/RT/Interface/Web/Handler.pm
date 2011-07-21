@@ -64,7 +64,7 @@ use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
-sub DefaultHandlerArgs  { (
+sub DefaultHandlerArgs  { return (
     comp_root => [
         [ local    => $RT::MasonLocalComponentRoot ],
         (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
@@ -124,7 +124,7 @@ sub InitSessionDir {
         die "Can't read and write $RT::MasonSessionDir"
         unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
     }
-
+    return;
 }
 
 # }}}
@@ -269,6 +269,8 @@ sub CleanupRequest {
     # Explicitly remove any tmpfiles that GPG opened, and close their
     # filehandles.
     File::Temp::cleanup;
+
+    return;
 }
 # }}}
 
