@@ -100,14 +100,14 @@ sub LimitToObject {
         VALUE           => ref($obj),
         ENTRYAGGREGATOR => 'OR'
     );
-    $self->Limit(
+    # XXX 4.2: return;
+    return $self->Limit(
         FIELD           => 'ObjectId',
         OPERATOR        => '=',
         VALUE           => $obj->id,
         ENTRYAGGREGATOR => 'OR',
         QUOTEVALUE      => 0
     );
-
 }
 
 # }}}
@@ -136,7 +136,8 @@ sub LimitNotObject {
 		  ENTRYAGGREGATOR => 'OR',
 		  SUBCLAUSE => $obj->id
 		);
-    $self->Limit( FIELD => 'ObjectId',
+    # XXX 4.2: return;
+    return $self->Limit( FIELD => 'ObjectId',
 		  OPERATOR => '!=',
 		  VALUE => $obj->id,
 		  ENTRYAGGREGATOR => 'OR',
@@ -202,6 +203,7 @@ sub LimitToPrincipal {
                       VALUE           => $args{'Id'},
                       ENTRYAGGREGATOR => 'OR' );
     }
+    return 1;
 }
 
 # }}}
@@ -219,7 +221,8 @@ Don't list rights which have been delegated.
 sub ExcludeDelegatedRights {
     my $self = shift;
     $self->DelegatedBy(Id => 0);
-    $self->DelegatedFrom(Id => 0);
+    # XXX 4.2: return;
+    return $self->DelegatedFrom(Id => 0);
 }
 # }}}
 
@@ -240,13 +243,12 @@ sub DelegatedBy {
         Id => undef,
         @_
     );
-    $self->Limit(
+    return $self->Limit(
         FIELD           => 'DelegatedBy',
         OPERATOR        => '=',
         VALUE           => $args{'Id'},
         ENTRYAGGREGATOR => 'OR'
     );
-
 }
 
 # }}}
@@ -267,8 +269,7 @@ sub DelegatedFrom {
     my %args = (
                  Id => undef,
                  @_);
-    $self->Limit(FIELD => 'DelegatedFrom', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
-
+    return $self->Limit(FIELD => 'DelegatedFrom', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
 }
 
 # }}}
@@ -336,6 +337,7 @@ sub _BuildHash {
         $self->{'as_hash'}->{"$hashkey"} =1;
 
     }
+    return;
 }
 
 
