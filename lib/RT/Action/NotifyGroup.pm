@@ -169,6 +169,7 @@ sub __HandleUserArgument {
         return;
     }
     $self->__PushUserAddress( $uea );
+    return;
 }
 
 sub __HandleGroupArgument {
@@ -179,6 +180,7 @@ sub __HandleGroupArgument {
     while( my $m = $members->Next ) {
         $self->__HandleUserArgument( $m );
     }
+    return;
 }
 
 sub __SplitArg {
