@@ -59,7 +59,7 @@ $ValueName ||= $Name;
 $UnitName  ||= ($Name||$ValueName) . '-TimeUnits';
 
 if ($InputUnits eq 'minutes' && RT->Config->Get('DefaultTimeUnitsToHours')) {
-    $Default = sprintf '%.3g', $Default / 60
+    $Default = sprintf '%.3f', $Default / 60
         unless $Default eq '';
 }
 </%INIT>
