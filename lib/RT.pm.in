@@ -169,7 +169,7 @@ sub LoadConfig {
         $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
     
-    RT::I18N->Init;
+    return RT::I18N->Init;
 }
 
 =head2 Init
@@ -192,7 +192,7 @@ sub Init {
     InitLogging(); 
     InitPlugins();
     RT->Config->PostLoadCheck;
-
+    return;
 }
 
 =head2 ConnectToDatabase
@@ -334,6 +334,7 @@ sub InitLogging {
         }
     }
     InitSignalHandlers();
+    return;
 }
 
 sub InitSignalHandlers {
@@ -366,6 +367,7 @@ sub InitSignalHandlers {
         }
         die $_[0];
     };
+    return;
 }
 
 
@@ -483,6 +485,7 @@ sub InitClasses {
 
         RT::I18N->LoadLexicons;
     }
+    return;
 }
 
 =head2 InitSystemObjects
@@ -505,6 +508,7 @@ sub InitSystemObjects {
 
     require RT::System;
     $System = RT::System->new( $SystemUser );
+    return;
 }
 
 =head1 CLASS METHODS
@@ -637,6 +641,7 @@ sub InitPluginPaths {
 
     my %seen;
     @INC = grep !$seen{$_}++, @tmp_inc;
+    return;
 }
 
 =head2 InitPlugins
