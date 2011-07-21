@@ -109,7 +109,7 @@ sub mail_ok (&@) {
             diag $te->as_string;
         }
     }
-    RT::Test->clean_caught_mails;
+    return RT::Test->clean_caught_mails;
 }
 
 END {
