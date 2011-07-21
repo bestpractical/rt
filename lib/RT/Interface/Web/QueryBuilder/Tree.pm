@@ -88,6 +88,8 @@ sub TraversePrePost {
    }
    
    $postfunc->($self) if $postfunc;
+
+   return;
 }
 
 =head2 GetReferencedQueues
@@ -173,6 +175,7 @@ sub PruneChildlessAggregators {
             $node->DESTROY;
         }
     );
+    return;
 }
 
 =head2 GetDisplayedNodes
