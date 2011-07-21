@@ -444,7 +444,7 @@ sub Delete {
       ) {
         return ( 0, $self->loc('Permission Denied') );
     }
-    $self->_Delete(@_);
+    return $self->_Delete(@_);
 }
 
 # Helper for Delete with no ACL check
