@@ -385,16 +385,25 @@ sub ObjectsForLoading {
     );
     my @objects;
 
+    # If you've been granted the SeeOwnDashboard global right (which you
+    # could have by way of global user right or global group right), you
+    # get to see your own dashboards
     my $CurrentUser = $self->CurrentUser;
     push @objects, $CurrentUser->UserObj
         if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeOwnDashboard');
 
-
+    # Find groups for which: (a) you are a member of the group, and (b)
+    # you have been granted SeeGroupDashboard on (by any means), and (c)
+    # have at least one dashboard
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
         Right             => 'SeeGroupDashboard',
         %args,
+    );
+    $groups->WithMember(
+        Recursively => 1,
+        PrincipalId => $CurrentUser->UserObj->PrincipalId
     );
     my $attrs = $groups->Join(
         ALIAS1 => 'main',
@@ -412,10 +421,11 @@ sub ObjectsForLoading {
         FIELD => 'Name',
         VALUE => 'Dashboard',
     );
-
     push @objects, @{ $groups->ItemsArrayRef };
 
-
+    # Finally, if you have been granted the SeeDashboard right (which
+    # you could have by way of global user right or global group right),
+    # you can see system dashboards.
     push @objects, RT::System->new($CurrentUser)
         if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeDashboard');
 
