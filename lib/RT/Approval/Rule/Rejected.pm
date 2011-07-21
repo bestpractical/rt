@@ -58,7 +58,8 @@ sub Prepare {
     return unless $self->SUPER::Prepare();
 
     return (0)
-        unless $self->OnStatusChange('rejected') or $self->OnStatusChange('deleted')
+        unless $self->OnStatusChange('rejected') or $self->OnStatusChange('deleted');
+    return (1);
 }
 
 sub Commit {    # XXX: from custom prepare code
@@ -109,7 +110,7 @@ sub Commit {    # XXX: from custom prepare code
             );
         }
     }
-
+    return;
 }
 
 1;
