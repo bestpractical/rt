@@ -245,7 +245,6 @@ while( my $cgi = CGI::Fast->new ) {
         next;
     }
 
-    $comp = $1 if ($comp =~ /^(.*)$/);
     my $web_path = RT->Config->Get('WebPath');
     $comp =~ s|^\Q$web_path\E\b||i;
     $comp .= "index.html" if ($comp =~ /\/$/);
