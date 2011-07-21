@@ -107,7 +107,10 @@ $no_strong_auth = 'switched off by externalauth=0'
 my $prompt = 'rt> ';
 
 sub whine;
-sub DEBUG { warn @_ if $config{debug} >= shift }
+sub DEBUG {
+    warn @_ if $config{debug} >= shift;
+    return;
+}
 
 # These regexes are used by command handlers to parse arguments.
 # (XXX: Ask Autrijus how i18n changes these definitions.)
@@ -184,6 +187,7 @@ sub shell {
         @ARGV = shellwords($_);
         handler();
     }
+    return 0;
 }
 
 sub version {
@@ -1156,7 +1160,7 @@ sub submit {
     # Deletes the current session cookie.
     sub delete {
         my ($self) = @_;
-        delete $self->{sids}{$s}{$u};
+        return delete $self->{sids}{$s}{$u};
     }
 
     # Adds a Cookie header to an outgoing HTTP request.
@@ -1165,6 +1169,7 @@ sub submit {
         my $cookie = $self->cookie();
 
         $request->header(Cookie => $cookie) if defined $cookie;
+        return $cookie;
     }
 
     # Extracts the Set-Cookie header from an HTTP response, and updates
@@ -1176,6 +1181,7 @@ sub submit {
         if (defined $cookie && $cookie =~ /^RT_SID_(.[^;,\s]+=[0-9A-Fa-f]+);/) {
             $self->{sids}{$s}{$u} = $1;
         }
+        return $self->{sids}{$s}{$u};
     }
 
     # Loads the session cache from the specified file.
@@ -1522,6 +1528,7 @@ sub vpush {
     else {
         $hash->{$key} = $val;
     }
+    return;
 }
 
 # "Normalise" a hash key that's known to be multi-valued.
@@ -1626,7 +1633,7 @@ sub get_var_argument {
     if (@ARGV) {
         my $kv = shift @ARGV;
         if (my ($k, $v) = $kv =~ /^($field)=(.*)$/) {
-            push @{ $data->{$k} }, $v;
+            return push @{ $data->{$k} }, $v;
         }
         else {
             @_ = ("Invalid variable specification: '$kv'.");
@@ -1637,6 +1644,7 @@ sub get_var_argument {
         @_ = ("No variable argument specified with -S.");
         goto &whine;
     }
+    return;
 }
 
 sub is_object_spec {
@@ -1731,6 +1739,7 @@ sub prettyshow {
         print "$k->{Attachments}\n" if exists $k->{Attachments} and
                                    $k->{Attachments};
     }
+    return;
 }
 
 sub prettylist {
@@ -1768,6 +1777,7 @@ sub prettylist {
     print @me if @me;
     printf "========== %2d unowned tickets ==========\n", scalar @open if @open;
     print @open if @open;
+    return;
 }
 
 exit handler();
