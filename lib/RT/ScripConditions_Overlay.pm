@@ -91,7 +91,8 @@ sub LimitToType  {
 		FIELD => 'Type',
 		VALUE => "Correspond")
       if $type eq "Create";
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
+  # XXX: 4.2 return;
+  return $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
 		VALUE => 'any');
   
