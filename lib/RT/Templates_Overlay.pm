@@ -98,10 +98,11 @@ aren't that queue's templates.
 sub LimitToNotInQueue {
     my $self = shift;
     my $queue_id = shift;
-    $self->Limit(FIELD => 'Queue',
-                 VALUE => "$queue_id",
-                 OPERATOR => '!='
-                );
+    return $self->Limit(
+        FIELD    => 'Queue',
+        VALUE    => "$queue_id",
+        OPERATOR => '!='
+    );
 }
 # }}}
 
@@ -117,10 +118,11 @@ which can be used with any queue.
 sub LimitToGlobal {
     my $self = shift;
     my $queue_id = shift;
-    $self->Limit(FIELD => 'Queue',
-                 VALUE => "0",
-                 OPERATOR => '='
-                );
+    return $self->Limit(
+        FIELD    => 'Queue',
+        VALUE    => "0",
+        OPERATOR => '='
+    );
 }
 # }}}
 
@@ -136,10 +138,11 @@ templates
 sub LimitToQueue {
     my $self = shift;
     my $queue_id = shift;
-    $self->Limit(FIELD => 'Queue',
-                 VALUE => "$queue_id",
-                 OPERATOR => '='
-                );
+    return $self->Limit(
+        FIELD    => 'Queue',
+        VALUE    => "$queue_id",
+        OPERATOR => '='
+    );
 }
 # }}}
 
