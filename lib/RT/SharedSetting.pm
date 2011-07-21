@@ -358,10 +358,10 @@ sub IsVisibleTo {
     return 0;
 }
 
-sub CurrentUserCanSee    { 1 }
-sub CurrentUserCanCreate { 1 }
-sub CurrentUserCanModify { 1 }
-sub CurrentUserCanDelete { 1 }
+sub CurrentUserCanSee    { return 1 }
+sub CurrentUserCanCreate { return 1 }
+sub CurrentUserCanModify { return 1 }
+sub CurrentUserCanDelete { return 1 }
 
 ### Internal methods
 
