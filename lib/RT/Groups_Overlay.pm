@@ -141,7 +141,7 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 
 sub LimitToSystemInternalGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal');
+    return $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal');
     # All system internal groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '0');
 }
@@ -160,7 +160,7 @@ Return only UserDefined Groups
 
 sub LimitToUserDefinedGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+    return $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
     # All user-defined groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
@@ -183,9 +183,10 @@ sub LimitToPersonalGroupsFor {
     my $princ = shift;
 
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
-    $self->Limit(   FIELD => 'Instance',   
-                    OPERATOR => '=', 
-                    VALUE => $princ);
+    # XXX 4.2: return;
+    return $self->Limit( FIELD => 'Instance',
+                         OPERATOR => '=',
+                         VALUE => $princ);
 }
 
 
@@ -203,7 +204,8 @@ sub LimitToRolesForQueue {
     my $self = shift;
     my $queue = shift;
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
+    # XXX 4.2: return;
+    return $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
 
 # }}}
@@ -220,7 +222,8 @@ sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
+    # XXX 4.2: return;
+    return $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
 }
 
 # }}}
@@ -235,7 +238,7 @@ Limits the set of groups found to role groups for System System_ID
 
 sub LimitToRolesForSystem {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
+    return $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
 # }}}
@@ -262,7 +265,7 @@ sub WithMember {
     $self->Join(ALIAS1 => 'main', FIELD1 => 'id',
                 ALIAS2 => $members, FIELD2 => 'GroupId');
 
-    $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
+    return $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
 }
 
 sub WithoutMember {
@@ -287,7 +290,8 @@ sub WithoutMember {
         OPERATOR => '=',
         VALUE    => $args{'PrincipalId'},
     );
-    $self->Limit(
+    # XXX 4.2: return;
+    return $self->Limit(
         ALIAS    => $members_alias,
         FIELD    => 'MemberId',
         OPERATOR => 'IS',
@@ -354,11 +358,12 @@ sub _JoinGroupMembersForGroupRights {
     unless( $group_members eq 'main' ) {
         return $self->RT::Users::_JoinGroupMembersForGroupRights( %args );
     }
-    $self->Limit( ALIAS => $args{'ACLAlias'},
-                  FIELD => 'PrincipalId',
-                  VALUE => "main.id",
-                  QUOTEVALUE => 0,
-                );
+    return $self->Limit(
+        ALIAS => $args{'ACLAlias'},
+        FIELD => 'PrincipalId',
+        VALUE => "main.id",
+        QUOTEVALUE => 0,
+    );
 }
 sub _JoinACL                  { return (shift)->RT::Users::_JoinACL( @_ ) }
 sub _RoleClauses              { return (shift)->RT::Users::_RoleClauses( @_ ) }
@@ -379,7 +384,7 @@ sub LimitToEnabled {
     my $self = shift;
 
     $self->{'handled_disabled_column'} = 1;
-    $self->Limit(
+    return $self->Limit(
         ALIAS => $self->PrincipalsAlias,
         FIELD => 'Disabled',
         VALUE => '0',
@@ -399,7 +404,7 @@ sub LimitToDeleted {
     my $self = shift;
     
     $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
-    $self->Limit(
+    return $self->Limit(
         ALIAS => $self->PrincipalsAlias,
         FIELD => 'Disabled',
         VALUE => 1,
