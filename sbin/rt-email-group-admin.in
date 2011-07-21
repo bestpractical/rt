@@ -187,6 +187,7 @@ sub usage {
         my $parser = Pod::PlainText->new( sentence => 0, width => 78 );
         $parser->parse_from_file( $0 );
     }
+    return;
 }
 
 parse_args();
