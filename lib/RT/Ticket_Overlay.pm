@@ -703,69 +703,6 @@ sub Create {
 
 # }}}
 
-# {{{ _Parse822HeadersForAttributes Content
-
-=head2 _Parse822HeadersForAttributes Content
-
-Takes an RFC822 style message and parses its attributes into a hash.
-
-=cut
-
-sub _Parse822HeadersForAttributes {
-    my $self    = shift;
-    my $content = shift;
-    my %args;
-
-    my @lines = ( split ( /\n/, $content ) );
-    while ( defined( my $line = shift @lines ) ) {
-        if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
-            my $value = $2;
-            my $tag   = lc($1);
-
-            $tag =~ s/-//g;
-            if ( defined( $args{$tag} ) )
-            {    #if we're about to get a second value, make it an array
-                $args{$tag} = [ $args{$tag} ];
-            }
-            if ( ref( $args{$tag} ) )
-            {    #If it's an array, we want to push the value
-                push @{ $args{$tag} }, $value;
-            }
-            else {    #if there's nothing there, just set the value
-                $args{$tag} = $value;
-            }
-        } elsif ($line =~ /^$/) {
-
-            #TODO: this won't work, since "" isn't of the form "foo:value"
-
-                while ( defined( my $l = shift @lines ) ) {
-                    push @{ $args{'content'} }, $l;
-                }
-            }
-        
-    }
-
-    foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new($RT::SystemUser);
-        if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
-            $dateobj->Set( Format => 'unix', Value => $args{$date} );
-        }
-        else {
-            $dateobj->Set( Format => 'unknown', Value => $args{$date} );
-        }
-        $args{$date} = $dateobj->ISO;
-    }
-    $args{'mimeobj'} = MIME::Entity->new();
-    $args{'mimeobj'}->build(
-        Type => ( $args{'contenttype'} || 'text/plain' ),
-        Data => ($args{'content'} || '')
-    );
-
-    return (%args);
-}
-
-# }}}
-
 # {{{ sub Import
 
 =head2 Import PARAMHASH
