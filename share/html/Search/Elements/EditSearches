@@ -158,7 +158,8 @@ if ( $ARGS{'SavedSearchRevert'} ) {
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
     if ( $container ) {
-        my $search = $container->Attributes->WithId( $id );
+        my $search = RT::Attribute->new( $session{'CurrentUser'} );
+        $search->Load( $id );
         $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
         $SavedSearch->{'Object'}      = $search;
         $SavedSearch->{'Description'} = $search->Description;
@@ -194,7 +195,8 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = $container->Attributes->WithId( $id );
+    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
+    $SavedSearch->{'Object'}->Load( $id );
     if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'Object'}->Description ) {
         $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'};
     } else {
@@ -208,7 +210,8 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
      && !$SavedSearch->{'Object'} )
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = $container->Attributes->WithId( $id );
+    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
+    $SavedSearch->{'Object'}->Load( $id );
     $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
 }
 
@@ -300,8 +303,8 @@ elsif ( $id eq 'new' ) {
     );
 
     if ( $status ) {
-        $SavedSearch->{'Object'} =
-            $session{'CurrentUser'}->UserObj->Attributes->WithId( $saved_search->Id );
+        $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
+        $SavedSearch->{'Object'}->Load( $saved_search->Id );
         # Build new SearchId
         $SavedSearch->{'Id'} =
                 ref( $session{'CurrentUser'}->UserObj ) . '-'

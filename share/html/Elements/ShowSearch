@@ -67,7 +67,8 @@ if ($SavedSearch) {
         $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $SavedSearch));
         return;
     }
-    $search = $container_object->Attributes->WithId($search_id);
+    $search = RT::Attribute->new( $session{'CurrentUser'} );
+    $search->Load($search_id);
     unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
         $m->out(loc("Saved search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
         return;
