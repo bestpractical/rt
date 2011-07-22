@@ -59,7 +59,7 @@
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id);
 
-my ($title, $current_subtab);
+my $title;
 
 if ($QueueObj->id) {
     $title = loc("Edit Templates for queue [_1]", $QueueObj->Name);

@@ -365,7 +365,7 @@ sub Quote {
     my %args=(Reply=>undef, # Prefilled reply (i.e. from the KB/FAQ system)
 	      @_);
 
-    my ($quoted_content, $body, $headers);
+    my ($body, $headers);
     my $max=0;
 
     # TODO: Handle Multipart/Mixed (eventually fix the link in the

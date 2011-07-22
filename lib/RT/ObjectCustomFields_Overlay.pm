@@ -100,7 +100,6 @@ sub HasEntryForCustomField {
 
 sub CustomFields {
     my $self = shift;
-    my %seen;
     map { $_->CustomFieldObj } @{$self->ItemsArrayRef};
 }
 

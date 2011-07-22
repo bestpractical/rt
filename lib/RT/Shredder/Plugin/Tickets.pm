@@ -90,7 +90,6 @@ sub TestArgs
 {
     my $self = shift;
     my %args = @_;
-    my $queue;
     if( $args{'query'} ) {
         my $objs = RT::Tickets->new( $RT::SystemUser );
         $objs->{'allow_deleted_search'} = 1;

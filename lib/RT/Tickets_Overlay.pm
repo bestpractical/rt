@@ -1630,7 +1630,6 @@ C<ALIAS> is set to the name of a watcher type.
 sub OrderByCols {
     my $self = shift;
     my @args = @_;
-    my $clause;
     my @res   = ();
     my $order = 0;
 
@@ -2335,14 +2334,7 @@ sub LimitWatcher {
         @_
     );
 
-    #build us up a description
-    my ( $watcher_type, $desc );
-    if ( $args{'TYPE'} ) {
-        $watcher_type = $args{'TYPE'};
-    }
-    else {
-        $watcher_type = "Watcher";
-    }
+    my $watcher_type = $args{'TYPE'} || "Watcher";
 
     $self->Limit(
         FIELD       => $watcher_type,
