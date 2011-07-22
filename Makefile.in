@@ -146,6 +146,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-email-digest \
 				rt-email-group-admin \
 				rt-fulltext-indexer \
+				rt-preferences-viewer \
 				rt-server \
 				rt-server.fcgi \
 				rt-session-viewer \

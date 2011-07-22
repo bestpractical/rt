@@ -22,6 +22,7 @@ sbin/rt-email-dashboards
 sbin/rt-email-digest
 sbin/rt-email-group-admin
 sbin/rt-fulltext-indexer
+sbin/rt-preferences-viewer
 sbin/rt-server
 sbin/rt-server.fcgi
 sbin/rt-session-viewer

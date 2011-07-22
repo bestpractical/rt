@@ -1,0 +1,149 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            unless ($bin_path) {
+                if ( File::Spec->file_name_is_absolute(__FILE__) ) {
+                    $bin_path = ( File::Spec->splitpath(__FILE__) )[1];
+                }
+                else {
+                    require FindBin;
+                    no warnings "once";
+                    $bin_path = $FindBin::Bin;
+                }
+            }
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+}
+
+use Getopt::Long;
+my %opt;
+GetOptions( \%opt, 'help|h', 'user|u=s', 'option|o=s' );
+
+if ( $opt{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;
+}
+
+require RT;
+RT::LoadConfig();
+RT::Init();
+
+require RT::Attributes;
+my $attrs = RT::Attributes->new( RT->SystemUser );
+$attrs->Limit( FIELD => 'Name', VALUE => 'Pref-RT::System-1' );
+$attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+
+if ($opt{user}) {
+    my $user = RT::User->new( RT->SystemUser );
+    my ($val, $msg) = $user->Load($opt{user});
+    unless ($val) {
+        RT->Logger->error("Unable to load $opt{user}: $msg");
+        exit(1);
+    }
+    $attrs->Limit( FIELD => 'ObjectId', VALUE => $user->Id );
+}
+
+use Data::Dumper;
+$Data::Dumper::Terse = 1;
+
+while (my $attr = $attrs->Next ) {
+    my $user = RT::User->new( RT->SystemUser );
+    my ($val, $msg) = $user->Load($attr->ObjectId);
+    unless ($val) {
+        RT->Logger->warn("Unable to load User ".$attr->ObjectId." $msg");
+        next;
+    }
+    next if $user->Disabled;
+
+    my $content = $attr->Content;
+    if ( my $config_name = $opt{option} ) {
+        if ( exists $content->{$config_name} ) {
+            my $setting = $content->{$config_name};
+            print $user->Name, "\t$config_name: $setting\n";
+        }
+    } else {
+        print $user->Name, " => ", Dumper($content);
+    }
+
+}
+
+__END__
+
+=head1 NAME
+
+rt-preferences-viewer - show user defined preferences
+
+=head1 SYNOPSIS
+
+    rt-preferences-viewer
+
+    rt-preferences-viewer --user=falcone
+        show only the falcone user's preferences
+
+    rt-preferences-viewer --option=EmailFrequency
+        show users who have set the EmailFrequence config option
+
+=head1 DESCRIPTION
+
+This script shows user settings of preferences.  If a user is using the system
+default, it will not be listed.  You can limit to a user name or id or to users
+with a particular option set.
