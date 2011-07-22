@@ -142,7 +142,7 @@ sub tag_mason {
         open( $fh, '>', $pm ) or die "couldn't write new file";
         print $fh $file;
         close $fh;
-
+        return;
 }
 
 
@@ -175,7 +175,7 @@ sub tag_makefile {
         open( $fh, '>', $pm ) or die "couldn't write new file";
         print $fh $file;
         close $fh;
-
+        return;
 }
 
 
@@ -209,7 +209,7 @@ sub tag_pm {
         open( $fh, '>', $pm ) or die "couldn't write new file $pm";
         print $fh $file;
         close $fh;
-
+        return;
 }
 
 
@@ -246,7 +246,7 @@ sub tag_script {
         open( $fh, '>', $pm ) or die "couldn't write new file";
         print $fh $file;
         close $fh;
-
+        return;
 }
 
 sub another_license {

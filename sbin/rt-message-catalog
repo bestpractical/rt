@@ -119,6 +119,7 @@ sub stats {
     }
 
     print "\n$legend\n";
+    return;
 }
 
 sub shrink {
@@ -171,6 +172,7 @@ sub shrink {
     }
 
     print "\n$legend\n";
+    return;
 }
 
 sub clean {
@@ -257,12 +259,12 @@ sub rosetta {
         }
         $ext->write_po($fn_orig);
     }
-    extract({});
+    return extract({});
 }
 
 sub extract {
     shift;
-    system($^X, 'sbin/extract-message-catalog', @_);
+    return system($^X, 'sbin/extract-message-catalog', @_);
 }
 
 sub usage {

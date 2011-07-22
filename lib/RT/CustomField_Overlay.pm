@@ -136,6 +136,7 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+    return;
 }
 
 sub AvailableRights {
@@ -502,7 +503,7 @@ sub IsSelectionType {
     my $type = @_? shift : $self->Type;
     return undef unless $type;
 
-    $type =~ /(?:Select|Combobox|Autocomplete)/;
+    return $type =~ /(?:Select|Combobox|Autocomplete)/;
 }
 
 # }}}
@@ -603,7 +604,7 @@ sub SetType {
         $RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
         $self->SetMaxValues($1 ? 1 : 0);
     }
-    $self->SUPER::SetType($type);
+    return $self->SUPER::SetType($type);
 }
 
 =head2 SetPattern STRING
@@ -1328,8 +1329,7 @@ sub _ForObjectType {
     my $path = shift;
     my $friendly_name = shift;
 
-    $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
-
+    return $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
 }
 
 
@@ -1342,11 +1342,11 @@ as they display records with custom fields in RT.
 =cut
 
 sub SetIncludeContentForValue {
-    shift->IncludeContentForValue(@_);
+    return shift->IncludeContentForValue(@_);
 }
 sub IncludeContentForValue{
     my $self = shift;
-    $self->_URLTemplate('IncludeContentForValue', @_);
+    return $self->_URLTemplate('IncludeContentForValue', @_);
 }
 
 
@@ -1361,12 +1361,12 @@ browser as they display records with custom fields in RT.
 
 
 sub SetLinkValueTo {
-    shift->LinkValueTo(@_);
+    return shift->LinkValueTo(@_);
 }
 
 sub LinkValueTo {
     my $self = shift;
-    $self->_URLTemplate('LinkValueTo', @_);
+    return $self->_URLTemplate('LinkValueTo', @_);
 
 }
 

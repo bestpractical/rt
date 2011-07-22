@@ -123,6 +123,7 @@ Press enter to continue.
 END
 # Read a line of text, any line of text
     <STDIN>;
+    return;
 }
 
 use RT;
@@ -948,6 +949,7 @@ sub check_integrity {
         print STDERR "\t". describe( $stable, $sid ) ."\n";
         $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) ) if $args{'action'};
     }
+    return;
 }
 
 sub describe {
@@ -1010,6 +1012,7 @@ sub check_uniqueness {
             print STDERR "\t$columns[$i] => '$set[$i]'\n";
         }
     }
+    return;
 }
 
 sub load_record {

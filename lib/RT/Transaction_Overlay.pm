@@ -958,7 +958,7 @@ sub IsInbound {
 # }}}
 
 sub _OverlayAccessible {
-    {
+    return {
 
           ObjectType => { public => 1},
           ObjectId => { public => 1},
@@ -1173,6 +1173,7 @@ sub UpdateCustomFields {
             );
         }
     }
+    return;
 }
 
 
@@ -1218,7 +1219,7 @@ be passed to RT::CustomField->Create() via the 'LookupType' hash key.
 # }}}
 
 sub CustomFieldLookupType {
-    "RT::Queue-RT::Ticket-RT::Transaction";
+    return "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
 
@@ -1270,7 +1271,7 @@ sub DeferredRecipients {
 
 # Transactions don't change. by adding this cache config directive, we don't lose pathalogically on long tickets.
 sub _CacheConfig {
-  {
+  return {
      'cache_p'        => 1,
      'fast_update_p'  => 1,
      'cache_for_sec'  => 6000,

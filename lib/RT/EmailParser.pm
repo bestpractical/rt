@@ -221,6 +221,7 @@ sub _DecodeBodies {
     
     my @parts = $self->{'entity'}->parts_DFS;
     $self->_DecodeBody($_) foreach @parts;
+    return;
 }
 
 sub _DecodeBody {
@@ -255,7 +256,7 @@ sub _DecodeBody {
     $source->close or die "can't close: $!";
     $destination->close or die "can't close: $!";
 
-    $entity->bodyhandle( $new );
+    return $entity->bodyhandle( $new );
 }
 
 =head2 _PostProcessNewEntity
@@ -275,7 +276,7 @@ sub _PostProcessNewEntity {
     $self->Head->unfold;
 
     # try to convert text parts into utf-8 charset
-    RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
+    return RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
 }
 
 =head2 ParseCcAddressesFromHead HASHREF
@@ -513,7 +514,7 @@ sub _SetupMIMEParser {
         $parser->tmp_to_core(1);
         $parser->use_inner_files(1);
     }
-
+    return;
 }
 
 =head2 ParseEmailAddress string

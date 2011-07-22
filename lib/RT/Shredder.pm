@@ -271,7 +271,7 @@ sub Init
 {
     %opt = @_;
     RT::LoadConfig();
-    RT::Init();
+    return RT::Init();
 }
 
 =head4 new
@@ -299,6 +299,7 @@ sub _Init
     $self->{'cache'}        = {};
     $self->{'resolver'}     = {};
     $self->{'dump_plugins'} = [];
+    return;
 }
 
 =head4 CastObjectsToRecords( Objects => undef )
@@ -539,6 +540,7 @@ sub WipeoutAll
         next if $v->{'State'} & (WIPED | IN_WIPING);
         $self->Wipeout( Object => $v->{'Object'} );
     }
+    return;
 }
 
 sub Wipeout
@@ -615,6 +617,7 @@ sub ValidateRelations
         next if( $record->{'State'} & VALID );
         $record->{'Object'}->ValidateRelations( Shredder => $self );
     }
+    return;
 }
 
 =head3 Data storage and backups
@@ -766,6 +769,7 @@ sub DumpObject {
         my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }
+    return;
 }
 
 { my $mark = 1; # XXX: integer overflows?
@@ -784,6 +788,7 @@ sub PopDumpMark {
         my ($state, $msg) = $_->PushMark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
+    return;
 }
 sub RollbackDumpTo {
     my $self = shift;
@@ -791,6 +796,7 @@ sub RollbackDumpTo {
         my ($state, $msg) = $_->RollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
+    return;
 }
 }
 

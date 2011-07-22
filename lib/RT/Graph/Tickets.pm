@@ -260,7 +260,7 @@ sub AddTicket {
         }
     }
 
-    $args{'Graph'}->add_node( $args{'Ticket'}->id, %node_style );
+    return $args{'Graph'}->add_node( $args{'Ticket'}->id, %node_style );
 }
 
 sub TicketLinks {

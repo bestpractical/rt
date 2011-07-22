@@ -83,7 +83,7 @@ sub new {
 sub ParseObject  {
     my $self = shift;
     my $obj = shift;
-    $self->{'uri'} = "unknown-object:".ref($obj);
+    return $self->{'uri'} = "unknown-object:".ref($obj);
 }
 
 sub ParseURI { 
@@ -93,7 +93,7 @@ sub ParseURI {
     if ($uri =~  /^(.*?):/) { 
         $self->{'scheme'} = $1;
     }
-    $self->{'uri'} = $uri;
+    return $self->{'uri'} = $uri;
    
     
 }

@@ -79,7 +79,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('ObjectCustomFields');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -107,7 +107,7 @@ sub Create {
                 SortOrder => '0',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
                          ObjectId => $args{'ObjectId'},
                          SortOrder => $args{'SortOrder'},
@@ -232,7 +232,7 @@ Returns the current value of LastUpdated.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

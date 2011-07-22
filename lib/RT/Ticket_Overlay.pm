@@ -3221,6 +3221,7 @@ sub ApplyTransactionBatch {
     $self->_ApplyTransactionBatch;
 
     $self->{_TransactionBatch} = [];
+    return;
 }
 
 sub _ApplyTransactionBatch {
@@ -3245,7 +3246,7 @@ sub _ApplyTransactionBatch {
         TransactionObj => $batch->[0],
         Type           => $types,
     );
-    RT::Ruleset->CommitRules($rules);
+    return RT::Ruleset->CommitRules($rules);
 }
 
 my $have_global_destruction;
@@ -3289,7 +3290,7 @@ sub DESTROY {
 # {{{ sub _OverlayAccessible
 
 sub _OverlayAccessible {
-    {
+    return {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },
           Requestors      => { 'read' => 1,  'write' => 1 },
@@ -3630,7 +3631,7 @@ RT::CustomField->Create() via the 'LookupType' hash key.
 # }}}
 
 sub CustomFieldLookupType {
-    "RT::Queue-RT::Ticket";
+    return "RT::Queue-RT::Ticket";
 }
 
 =head2 ACLEquivalenceObjects

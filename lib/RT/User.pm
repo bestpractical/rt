@@ -78,7 +78,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('Users');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -158,7 +158,7 @@ sub Create {
                 PGPKey => '',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Name => $args{'Name'},
                          Password => $args{'Password'},
                          Comments => $args{'Comments'},
@@ -763,7 +763,7 @@ Returns the current value of LastUpdated.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

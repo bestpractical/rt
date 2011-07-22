@@ -107,7 +107,7 @@ sub _Init  {
   Scalar::Util::weaken($self->{'TemplateObj'});
   Scalar::Util::weaken($self->{'TicketObj'});
   Scalar::Util::weaken($self->{'TransactionObj'});
-
+  return;
 }
 # }}}
 

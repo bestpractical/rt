@@ -276,7 +276,7 @@ sub MailError {
 
     }
 
-    SendEmail( Entity => $entity, Bounce => 1 );
+    return SendEmail( Entity => $entity, Bounce => 1 );
 }
 
 
@@ -1050,6 +1050,7 @@ sub ParseErrorsToAddressFromHead {
             return ($addr) if ($addr);
         }
     }
+    return '';
 }
 
 
@@ -1097,6 +1098,7 @@ sub DeleteRecipientsFromHead {
                 Email::Address->parse( $head->get( $field ) )
         );
     }
+    return;
 }
 
 sub GenMessageId {
@@ -1151,7 +1153,8 @@ sub SetInReplyTo {
 
     my $mail = $args{'Message'};
     $mail->head->set( 'In-Reply-To' => join ' ', @rtid? (@rtid) : (@id) ) if @id || @rtid;
-    $mail->head->set( 'References' => join ' ', @references );
+    # XXX 4.2: return;
+    return $mail->head->set( 'References' => join ' ', @references );
 }
 
 sub ParseTicketId {
@@ -1688,6 +1691,7 @@ EOT
         LogLevel => 'error'
     );
     }
+    return;
 }
 
 =head2 _HandleMachineGeneratedMail

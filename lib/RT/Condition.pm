@@ -111,6 +111,7 @@ sub _Init  {
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
   $self->CurrentUser($args{'CurrentUser'});
+  return;
 }
 # }}}
 

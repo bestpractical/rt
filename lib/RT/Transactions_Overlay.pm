@@ -115,7 +115,7 @@ sub LimitToTicket {
             VALUE => 'RT::Ticket',
         );
     }
-    $self->Limit(
+    return $self->Limit(
         ALIAS           => $self->{tickets_table},
         FIELD           => 'EffectiveId',
         OPERATOR        => '=',

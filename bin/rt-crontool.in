@@ -228,6 +228,7 @@ sub process {
     #commit our action.
     return unless $action_obj->Commit;
     print loc("Action committed.\n") if $verbose;
+    return;
 }
 
 =head2 get_transactions
@@ -320,7 +321,7 @@ Localize this string, with the current user's currentuser object
 =cut
 
 sub loc {
-    $CurrentUser->loc(@_);
+    return $CurrentUser->loc(@_);
 }
 
 # }}}

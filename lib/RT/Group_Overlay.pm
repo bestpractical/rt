@@ -126,6 +126,7 @@ sub AddRights {
     $RIGHTS = { %$RIGHTS, %new };
     %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                       map { lc($_) => $_ } keys %new);
+    return;
 }
 
 =head2 AvailableRights
@@ -199,7 +200,7 @@ sub Load {
     my $identifier = shift || return undef;
 
     if ( $identifier !~ /\D/ ) {
-        $self->SUPER::LoadById($identifier);
+        return $self->SUPER::LoadById($identifier);
     }
     else {
         $RT::Logger->crit("Group -> Load called with a bogus argument");
@@ -279,6 +280,7 @@ sub LoadPersonalGroup {
                     User => undef,
                     @_);
 
+    return
         $self->LoadByCols( "Domain" => 'Personal',
                            "Instance" => $args{'User'},
                            "Type" => '',
@@ -328,6 +330,7 @@ sub LoadTicketRoleGroup {
     my %args = (Ticket => '0',
                 Type => undef,
                 @_);
+    return
         $self->LoadByCols( Domain => 'RT::Ticket-Role',
                            Instance =>$args{'Ticket'}, 
                            Type => $args{'Type'}
@@ -355,6 +358,7 @@ sub LoadQueueRoleGroup {
     my %args = (Queue => undef,
                 Type => undef,
                 @_);
+    return
         $self->LoadByCols( Domain => 'RT::Queue-Role',
                            Instance =>$args{'Queue'}, 
                            Type => $args{'Type'}
@@ -379,6 +383,7 @@ Takes a single param: Type
 sub LoadSystemRoleGroup {
     my $self       = shift;
     my $type = shift;
+    return
         $self->LoadByCols( Domain => 'RT::System-Role',
                            Type => $type
                            );
@@ -745,7 +750,7 @@ This routine finds all the cached group members that are members of this group  
 
 sub Disabled {
     my $self = shift;
-    $self->PrincipalObj->Disabled(@_);
+    return $self->PrincipalObj->Disabled(@_);
 }
 
 
@@ -957,7 +962,7 @@ sub AddMember {
     }
 
   	} 
-    $self->_AddMember(PrincipalId => $new_member);
+    return $self->_AddMember(PrincipalId => $new_member);
 }
 
 # A helper subroutine for AddMember that bypasses the ACL checks
@@ -1150,7 +1155,7 @@ sub DeleteMember {
         return ( 0, $self->loc("Permission Denied") );
     }
 	}
-    $self->_DeleteMember($member_id);
+    return $self->_DeleteMember($member_id);
 }
 
 # A helper subroutine for DeleteMember that bypasses the ACL checks
@@ -1380,7 +1385,7 @@ sub PrincipalId {
 # }}}
 
 sub BasicColumns {
-    (
+    return (
 	[ Name => 'Name' ],
 	[ Description => 'Description' ],
     );

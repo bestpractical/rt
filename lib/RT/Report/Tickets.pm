@@ -142,7 +142,7 @@ sub GroupBy {
     @{ $self->{'_group_by_field'} ||= [] } = map $_->{'FIELD'}, @args;
     $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
 
-    $self->SUPER::GroupBy( @args );
+    return $self->SUPER::GroupBy( @args );
 }
 
 sub Column {
@@ -174,6 +174,7 @@ sub _DoSearch {
     else {
         $self->AddEmptyRows;
     }
+    return $self->_RecordCount;
 }
 
 =head2 _FieldToFunction FIELD
@@ -279,7 +280,7 @@ sub AddRecord {
     my $self = shift;
     my $record = shift;
     push @{$self->{'items'}}, $record;
-    $self->{'rows'}++;
+    return ++$self->{'rows'};
 }
 
 1;
@@ -290,8 +291,7 @@ sub AddRecord {
 # don't want.
 sub Next {
     my $self = shift;
-    $self->RT::SearchBuilder::Next(@_);
-
+    return $self->RT::SearchBuilder::Next(@_);
 }
 
 sub NewItem {
@@ -322,6 +322,7 @@ sub AddEmptyRows {
             $self->AddRecord($record);
         }
     }
+    return;
 }
 
 RT::Base->_ImportOverlays();

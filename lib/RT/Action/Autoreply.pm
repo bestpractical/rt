@@ -63,7 +63,7 @@ Set up the relevant recipients, then call our parent.
 sub Prepare {
     my $self = shift;
     $self->SetRecipients();
-    $self->SUPER::Prepare();
+    return $self->SUPER::Prepare();
 }
 
 # {{{ sub SetRecipients
@@ -104,7 +104,7 @@ sub SetReturnAddress {
 		    $self->TicketObj->QueueObj->Name;
 	}
 
-    $self->SUPER::SetReturnAddress( @_, friendly_name => $friendly_name );
+    return $self->SUPER::SetReturnAddress( @_, friendly_name => $friendly_name );
     
 }
   
@@ -123,6 +123,7 @@ sub SetRTSpecialHeaders {
     my $self = shift;
     $self->SUPER::SetRTSpecialHeaders(@_);
     $self->SetHeader( 'Auto-Submitted', 'auto-replied' );
+    return;
 }
 
 # }}}

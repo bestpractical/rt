@@ -57,13 +57,13 @@ sub new {
     return($self);
 }
 
-sub label { my $self = shift; $self->_accessor( label => @_) } ;
-sub absolute_url { my $self = shift; $self->_accessor( absolute_url => @_) } ;
-sub rt_path { my $self = shift; $self->_accessor( rt_path => @_) } ;
+sub label { my $self = shift; return $self->_accessor( label => @_) } ;
+sub absolute_url { my $self = shift; return $self->_accessor( absolute_url => @_) } ;
+sub rt_path { my $self = shift; return $self->_accessor( rt_path => @_) } ;
 sub hilight { my $self = shift; $self->_accessor( hilight => @_);
-              $self->parent->hilight(1);
+              return $self->parent->hilight(1);
             } ;
-sub sort_order { my $self = shift; $self->_accessor( sort_order => @_) } ;
+sub sort_order { my $self = shift; return $self->_accessor( sort_order => @_) } ;
 
 sub add_child {
 }

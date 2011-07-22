@@ -77,7 +77,7 @@ use RT::Interface::Email;
 use Encode;
 
 sub _OverlayAccessible {
-    {
+    return {
 
         Name                    => { public => 1,  admin => 1 },
           Password              => { read   => 0 },
@@ -1805,7 +1805,7 @@ sub SetPrivateKey {
 }
 
 sub BasicColumns {
-    (
+    return (
     [ Name => 'User Id' ],
     [ EmailAddress => 'Email' ],
     [ RealName => 'Name' ],

@@ -88,6 +88,7 @@ sub CleanSlate {
     my $self = shift;
     $self->SquelchMailTo(undef);
     $self->AttachTickets(undef);
+    return;
 }
 
 =head2 Commit
@@ -395,6 +396,7 @@ sub AddAttachments {
         }
         $self->AddAttachment($attach);
     }
+    return;
 }
 
 =head2 AddAttachment $attachment
@@ -419,6 +421,7 @@ sub AddAttachment {
             . $attach->id,
         Encoding => '-SUGGEST',
     );
+    return;
 }
 
 =head2 AttachTickets [@IDs]
@@ -628,7 +631,7 @@ sub SetRTSpecialHeaders {
     ) {
         $self->SetHeader( 'RT-Originator', $email );
     }
-
+    return;
 }
 
 
@@ -706,6 +709,7 @@ sub DeferDigestRecipients {
                 . "transaction #"
                 . $self->TransactionObj->id );
     }
+    return;
 }
 
 
@@ -834,6 +838,7 @@ sub RemoveInappropriateRecipients {
         }
         @{ $self->{$type} } = @addrs;
     }
+    return;
 }
 
 =head2 SetReturnAddress is_comment => BOOLEAN
@@ -893,7 +898,7 @@ sub SetReturnAddress {
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
         $self->SetHeader( 'Reply-To', "$replyto" );
     }
-
+    return;
 }
 
 =head2 SetHeader FIELD, VALUE
@@ -953,7 +958,7 @@ sub SetSubject {
     $subject =~ s/(\r\n|\n|\s)/ /g;
 
     $self->SetHeader( 'Subject', $subject );
-
+    return;
 }
 
 =head2 SetSubjectToken
@@ -972,6 +977,7 @@ sub SetSubjectToken {
             $self->TicketObj,
         ),
     );
+    return;
 }
 
 =head2 SetReferencesHeaders
@@ -1041,7 +1047,7 @@ sub SetReferencesHeaders {
     # Add on the references
     $self->SetHeader( 'References', join( " ", @references ) );
     $self->TemplateObj->MIMEObj->head->fold_length( 'References', 80 );
-
+    return;
 }
 
 =head2 PseudoReference
@@ -1080,7 +1086,7 @@ sub SetHeaderAsEncoding {
     my $value = $head->get( $field );
     $value = $self->MIMEEncodeString( $value, $enc );
     $head->replace( $field, $value );
-
+    return;
 }
 
 =head2 MIMEEncodeString

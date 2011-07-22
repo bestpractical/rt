@@ -69,6 +69,7 @@ sub _Init
 {
     my $self = shift;
     $self->{'opt'} = { @_ };
+    return;
 }
 
 =head1 USAGE

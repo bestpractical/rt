@@ -80,14 +80,18 @@ another call to this method
 =cut
 
 sub LimitToQueue  {
-   my $self = shift;
-  my $queue = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => "$queue")
-      if defined $queue;
-  
+    my $self = shift;
+    my $queue = shift;
+
+    if (defined $queue) {
+        return $self->Limit(
+            ENTRYAGGREGATOR => 'OR',
+            FIELD => 'Queue',
+            VALUE => "$queue"
+        );
+    } else {
+        return;
+    }
 }
 # }}}
 
@@ -103,12 +107,13 @@ another call to this method or LimitToQueue
 
 
 sub LimitToGlobal  {
-   my $self = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => 0);
-  
+    my $self = shift;
+
+    return $self->Limit(
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'Queue',
+        VALUE           => 0
+    );
 }
 # }}}
 
@@ -172,7 +177,7 @@ sub Apply {
                  @_ );
 
     $self->Prepare(%args);
-    $self->Commit();
+    return $self->Commit();
 
 }
 
@@ -196,6 +201,7 @@ sub Commit {
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
                         TransactionObj => $self->{'TransactionObj'} );
     }
+    return;
 }
 
 
@@ -307,6 +313,7 @@ sub _SetupSourceObjects {
         $self->{'TransactionObj'}->Load( $args{'Transaction'} )
           || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}");
     }
+    return;
 } 
 
 # }}}
@@ -380,6 +387,7 @@ sub _FindScrips {
         ." for txn #".$self->{TransactionObj}->Id
         ." on ticket #".$self->{TicketObj}->Id
     );
+    return;
 }
 
 # }}}

@@ -267,7 +267,8 @@ sub LoadModules {
     my $self = shift;
 
     $self->ConditionObj->LoadCondition;
-    $self->ActionObj->LoadAction;
+    # XXX: 4.2 return 1;
+    return $self->ActionObj->LoadAction;
 }
 
 # {{{ sub TemplateObj

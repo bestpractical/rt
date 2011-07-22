@@ -110,6 +110,7 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
     my $s = shift;
     $section = $s;
     print "$s:\n" unless $args{'list-deps'};
+    return;
   }
 
   sub print_found {
@@ -126,6 +127,7 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
         print "\t\t$extra\n" if defined $extra;
     }
+    return;
   }
 }
 
@@ -191,6 +193,7 @@ required modules.  It will be called with the module name, or, if
 "RT_FIX_DEPS_CMD" contains a "%s", will replace the "%s" with the
 module name before calling the program.
 .
+    return;
 }
 
 
@@ -442,6 +445,7 @@ sub test_dep {
 
     if ( $args{'list-deps'} ) {
         print $module, ': ', $version || 0, "\n"; 
+        return 1;
     }
     else {
         eval "use $module $version ()";
@@ -583,6 +587,7 @@ sub check_perl_version {
   } else {
     print_found( sprintf(">=5.8.3(%vd)", $^V), 1 );
   }
+  return 1;
 }
 
 sub check_users {
@@ -593,6 +598,7 @@ sub check_users {
   print_found("libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@"));
   print_found("web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@"));
   print_found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
+  return;
 }
 
 

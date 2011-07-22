@@ -78,7 +78,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('CachedGroupMembers');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -110,7 +110,7 @@ sub Create {
                 Disabled => '0',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          GroupId => $args{'GroupId'},
                          MemberId => $args{'MemberId'},
                          Via => $args{'Via'},
@@ -223,7 +223,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

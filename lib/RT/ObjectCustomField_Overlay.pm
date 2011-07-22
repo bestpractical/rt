@@ -113,7 +113,7 @@ sub Delete {
         $OCF->SetSortOrder($this_order - 1);
     }
 
-    $self->SUPER::Delete;
+    return $self->SUPER::Delete;
 }
 
 sub CustomFieldObj {

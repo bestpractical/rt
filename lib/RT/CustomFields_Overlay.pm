@@ -90,7 +90,7 @@ sub LimitToLookupType  {
     my $self = shift;
     my $lookup = shift;
 
-    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+    return $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
 }
 
 =head2 LimitToChildType
@@ -105,7 +105,8 @@ sub LimitToChildType  {
     my $lookup = shift;
 
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
-    $self->Limit( FIELD => 'LookupType', ENDSWITH => "$lookup" );
+    # XXX 4.2: return;
+    return $self->Limit( FIELD => 'LookupType', ENDSWITH => "$lookup" );
 }
 
 
@@ -121,7 +122,8 @@ sub LimitToParentType  {
     my $lookup = shift;
 
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
-    $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
+    # XXX 4.2: return;
+    return $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
 }
 
 
@@ -151,6 +153,7 @@ sub LimitToGlobalOrObjectId {
                  OPERATOR        => '=',
                  VALUE           => 0,
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
+    return;
 }
 
 =head2 LimitToNotApplied
@@ -180,7 +183,8 @@ sub LimitToNotApplied {
         );
     }
 
-    $self->Limit(
+    # XXX 4.2: return;
+    return $self->Limit(
         ENTRYAGGREGATOR => 'AND',
         ALIAS    => $ocfs_alias,
         FIELD    => 'id',
@@ -201,7 +205,8 @@ sub LimitToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
     $self->LimitToGlobalOrObjectId( $queue );
-    $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+    # XXX 4.2: return;
+    return $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 
@@ -224,7 +229,8 @@ sub LimitToQueue  {
 		FIELD => 'ObjectId',
 		VALUE => "$queue")
       if defined $queue;
-  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+  # XXX 4.2: return;
+  return $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 
@@ -245,7 +251,8 @@ sub LimitToGlobal  {
                 ENTRYAGGREGATOR => 'OR',
 		FIELD => 'ObjectId',
 		VALUE => 0);
-  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+  # XXX 4.2: return;
+  return $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 
@@ -261,7 +268,7 @@ L<RT::CustomField/LookupType> and applied to one object or globally
 sub ApplySortOrder {
     my $self = shift;
     my $order = shift || 'ASC';
-    $self->OrderByCols( {
+    return $self->OrderByCols( {
         ALIAS => $self->_OCFAlias,
         FIELD => 'SortOrder',
         ORDER => $order,

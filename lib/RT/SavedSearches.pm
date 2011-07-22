@@ -113,6 +113,7 @@ sub LimitToPrivacy {
     } else {
 	$RT::Logger->error("Could not load object $privacy");
     }
+    return;
 }
 
 ### Accessor methods

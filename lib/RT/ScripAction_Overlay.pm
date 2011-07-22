@@ -169,15 +169,16 @@ sub LoadAction  {
     my $type = "RT::Action::" . $1;
 
     eval "require $type" || die "Require of $type failed.\n$@\n";
-
-    $self->{'Action'}  = $type->new ( Argument => $self->Argument,
-                                      CurrentUser => $self->CurrentUser,
-                                      ScripActionObj => $self, 
-                                      ScripObj => $args{'ScripObj'},
-                                      TemplateObj => $self->TemplateObj,
-                                      TicketObj => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
-				    );
+    
+    return $self->{'Action'} = $type->new(
+        Argument       => $self->Argument,
+        CurrentUser    => $self->CurrentUser,
+        ScripActionObj => $self,
+        ScripObj       => $args{'ScripObj'},
+        TemplateObj    => $self->TemplateObj,
+        TicketObj      => $args{'TicketObj'},
+        TransactionObj => $args{'TransactionObj'},
+    );
 }
 # }}}
 

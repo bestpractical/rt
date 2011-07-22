@@ -156,6 +156,7 @@ sub Commit {
    unless ($val) {
 	$RT::Logger->debug($self . " $msg"); 
    }
+   return (1);
 }
 
 RT::Base->_ImportOverlays();

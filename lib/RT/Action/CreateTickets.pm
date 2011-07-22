@@ -562,6 +562,7 @@ sub Parse {
         $self->_ParseXSVTemplate(%args);
 
     }
+    return;
 }
 
 =head2 _ParseMultilineTemplate
@@ -637,6 +638,7 @@ sub _ParseMultilineTemplate {
         if ( $template_id && !$queue && $args{'Queue'} ) {
             $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
         }
+        return;
     }
 
 sub ParseLines {
@@ -927,6 +929,7 @@ sub _ParseXSVTemplate {
         $self->{'templates'}->{$template_id} = $template;
 
     }
+    return;
 }
 
 sub GetDeferred {
@@ -954,6 +957,7 @@ sub GetDeferred {
         # Status is postponed so we don't violate dependencies
         $id, { Status => $args->{'status'}, }
     );
+    return;
 }
 
 sub GetUpdateTemplate {
@@ -1236,7 +1240,7 @@ sub PostProcess {
         my %args = %{ shift(@$postponed) };
         $ticket->SetStatus( $args{Status} ) if defined $args{Status};
     }
-
+    return;
 }
 
 RT::Base->_ImportOverlays();

@@ -288,6 +288,7 @@ sub vpush {
     else {
         $hash->{$key} = $val;
     }
+    return;
 }
 
 # "Normalise" a hash key that's known to be multi-valued.

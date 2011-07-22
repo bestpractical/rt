@@ -90,7 +90,7 @@ sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
 	       @_);
-  $self->SUPER::Limit(%args);
+  return $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -109,7 +109,7 @@ sub AddRecord {
     return unless $Queue->CurrentUserHasRight('SeeQueue');
 
     push @{$self->{'items'}}, $Queue;
-    $self->{'rows'}++;
+    return ++$self->{'rows'};
 }
 # }}}
 

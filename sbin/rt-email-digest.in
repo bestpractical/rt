@@ -139,6 +139,7 @@ sub run {
             print "Failed to send message to $user\n";
         }
     }
+    return;
 }
 exit 0;
 
@@ -213,6 +214,7 @@ sub mark_transactions_sent {
             );
         }
     }
+    return;
 }
 
 sub since_date {

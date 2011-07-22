@@ -179,6 +179,7 @@ sub import {
 
     Test::More->export_to_level($level);
     __PACKAGE__->export_to_level($level);
+    return;
 }
 
 sub is_empty {
@@ -194,7 +195,7 @@ my $created_new_db;    # have we created new db? mainly for parallel testing
 sub db_requires_no_dba {
     my $self = shift;
     my $db_type = RT->Config->Get('DatabaseType');
-    return 1 if $db_type eq 'SQLite';
+    return $db_type eq 'SQLite';
 }
 
 sub bootstrap_tempdir {
@@ -285,6 +286,7 @@ Set( \$LogToFile, 'debug' );
 Set( \$LogDir, q{$tmp{'directory'}} );
 Set( \$LogToFileNamed, 'rt.debug.log' );
 END
+    return;
 }
 
 sub set_config_wrapper {
@@ -319,6 +321,7 @@ sub set_config_wrapper {
         }
         return $old_sub->(@_);
     };
+    return;
 }
 
 sub bootstrap_db {
@@ -375,6 +378,7 @@ sub bootstrap_db {
         $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    return;
 }
 
 sub bootstrap_plugins {
@@ -453,6 +457,7 @@ sub bootstrap_plugins {
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
     $dba_dbh->disconnect if $dba_dbh;
+    return;
 }
 
 sub _get_dbh {
@@ -631,6 +636,7 @@ sub restore_rights {
             Test::More::diag "couldn't create a record: $msg";
         }
     }
+    return;
 }
 
 sub set_rights {
@@ -709,7 +715,7 @@ sub run_mailgate {
         }
     };
 
-    $self->run_and_capture(%args);
+    return $self->run_and_capture(%args);
 }
 
 sub run_and_capture {
@@ -782,7 +788,7 @@ sub close_mailgate_ok {
     my $class = shift;
     my $mail  = shift;
     close $mail;
-    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    return Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
 }
 
 sub mailsent_ok {
@@ -796,7 +802,7 @@ sub mailsent_ok {
             noexist => 1
         );
 
-    Test::More::is(
+    return Test::More::is(
         $mailsent, $expected,
         "The number of mail sent ($expected) matches. yay"
     );
@@ -818,7 +824,7 @@ sub fetch_caught_mails {
 }
 
 sub clean_caught_mails {
-    unlink $tmp{'mailbox'};
+    return unlink $tmp{'mailbox'};
 }
 
 =head2 get_relocatable_dir
@@ -1215,6 +1221,7 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
+    return;
 }
 
 sub file_content {

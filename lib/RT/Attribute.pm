@@ -78,7 +78,7 @@ sub _Init {
   my $self = shift; 
 
   $self->Table('Attributes');
-  $self->SUPER::_Init(@_);
+  return $self->SUPER::_Init(@_);
 }
 
 
@@ -112,7 +112,7 @@ sub Create {
                 ObjectId => '',
 
 		  @_);
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          Content => $args{'Content'},
@@ -280,7 +280,7 @@ Returns the current value of LastUpdated.
 
 
 sub _CoreAccessible {
-    {
+    return {
      
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

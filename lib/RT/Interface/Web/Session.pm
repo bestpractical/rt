@@ -257,6 +257,7 @@ sub ClearByUser {
         tied(%session)->delete;
         $RT::Logger->info("successfuly deleted session '$id'");
     }
+    return;
 }
 
 sub TIEHASH {

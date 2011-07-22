@@ -73,7 +73,7 @@ use MIME::Base64;
 use MIME::QuotedPrint;
 
 sub _OverlayAccessible {
-  {
+  return {
     TransactionId   => { 'read'=>1, 'public'=>1, 'write' => 0 },
     MessageId       => { 'read'=>1, 'write' => 0 },
     Parent          => { 'read'=>1, 'write' => 0 },
@@ -596,7 +596,7 @@ sub SetHeader {
     }
 
     $newheader .= "$tag: $_[0]\n" if defined $tag;
-    $self->__Set( Field => 'Headers', Value => $newheader);
+    return $self->__Set( Field => 'Headers', Value => $newheader);
 }
 
 =head2 SplitHeaders
@@ -753,7 +753,7 @@ sub _Value {
 # Transactions don't change. by adding this cache congif directiove,
 # we don't lose pathalogically on long tickets.
 sub _CacheConfig {
-    {
+    return {
         'cache_p'       => 1,
         'fast_update_p' => 1,
         'cache_for_sec' => 180,

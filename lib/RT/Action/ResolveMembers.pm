@@ -89,6 +89,7 @@ sub Commit {
 	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
         $base->Resolve;
     }
+    return 1;
 }
 
 
@@ -96,8 +97,6 @@ sub Commit {
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {
-  my $self = shift;
-  1;  
   return 1;
 }
 # }}}

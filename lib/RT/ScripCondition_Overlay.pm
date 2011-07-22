@@ -172,15 +172,16 @@ sub LoadCondition  {
     my $type = "RT::Condition::" . $1;
 
     eval "require $type" || die "Require of $type failed.\n$@\n";
-
-    $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
-					 'TicketObj' => $args{'TicketObj'},
-					 'ScripObj' => $args{'ScripObj'},
-					 'TransactionObj' => $args{'TransactionObj'},
-					 'Argument' => $self->Argument,
-				     'ApplicableTransTypes' => $self->ApplicableTransTypes,
-                     CurrentUser => $self->CurrentUser 
-				       );
+    
+    return $self->{'Condition'} = $type->new(
+        'ScripConditionObj'    => $self,
+        'TicketObj'            => $args{'TicketObj'},
+        'ScripObj'             => $args{'ScripObj'},
+        'TransactionObj'       => $args{'TransactionObj'},
+        'Argument'             => $self->Argument,
+        'ApplicableTransTypes' => $self->ApplicableTransTypes,
+        CurrentUser            => $self->CurrentUser
+    );
 }
 # }}}
 

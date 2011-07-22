@@ -247,11 +247,13 @@ sub HandleRequest {
 
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
+
+    return;
 }
 
 sub _ForceLogout {
 
-    delete $HTML::Mason::Commands::session{'CurrentUser'};
+    return delete $HTML::Mason::Commands::session{'CurrentUser'};
 }
 
 sub _UserLoggedIn {
@@ -480,7 +482,7 @@ sub ShowRequestedPage {
     } else {
         $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     }
-
+    return;
 }
 
 sub AttemptExternalAuth {
@@ -648,12 +650,27 @@ sub LoadSessionFromCookie {
         # save session on each request when AutoLogoff is turned on
         $HTML::Mason::Commands::session{'_session_last_update'} = $now if $now != $last_update;
     }
+    return;
 }
+
+=head2 InstantiateNewSession
+
+Deletes the current session, if any, and creates a new (empty) one.  Returns
+nothing.
+
+=cut
 
 sub InstantiateNewSession {
     tied(%HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
 }
+
+=head2 SendSessionCookie
+
+Adds a C<Set-Cookie> header to the response so the session gets saved by the
+client.  Returns nothing.
+
+=cut
 
 sub SendSessionCookie {
     my $cookie = CGI::Cookie->new(
@@ -742,6 +759,8 @@ sub StaticFileHeaders {
     # Last modified at server start time
     # $date->Set( Value => $^T );
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+
+    return;
 }
 
 =head2 PathIsSafe
@@ -845,6 +864,7 @@ sub SendStaticFile {
         $HTML::Mason::Commands::m->flush_buffer;
     }
     close $fh;
+    return;
 }
 
 sub StripContent {
@@ -899,7 +919,7 @@ sub StripContent {
 sub DecodeARGS {
     my $ARGS = shift;
 
-    %{$ARGS} = map {
+    return %{$ARGS} = map {
 
         # if they've passed multiple values, they'll be an array. if they've
         # passed just one, a scalar whatever they are, mark them as utf8
@@ -943,7 +963,7 @@ sub PreprocessTimeUpdates {
         }
         delete $ARGS->{$field};
     }
-
+    return;
 }
 
 sub MaybeEnableSQLStatementLog {
@@ -954,7 +974,7 @@ sub MaybeEnableSQLStatementLog {
         $RT::Handle->ClearSQLStatementLog;
         $RT::Handle->LogSQLStatements(1);
     }
-
+    return;
 }
 
 sub LogRecordedSQLStatements {
@@ -982,7 +1002,7 @@ sub LogRecordedSQLStatements {
                 . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
         );
     }
-
+    return;
 }
 
 package HTML::Mason::Commands;

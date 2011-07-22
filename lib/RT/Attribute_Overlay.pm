@@ -177,7 +177,7 @@ sub Create {
     }
 
     
-    $self->SUPER::Create(
+    return $self->SUPER::Create(
                          Name => $args{'Name'},
                          Content => $args{'Content'},
                          ContentType => $args{'ContentType'},
@@ -311,7 +311,7 @@ sub DeleteSubValue {
     my $key = shift;
     my %values = $self->Content();
     delete $values{$key};
-    $self->SetContent(%values);
+    return $self->SetContent(%values);
 
     
 
@@ -327,7 +327,7 @@ Deletes all subvalues for this attribute
 
 sub DeleteAllSubValues {
     my $self = shift; 
-    $self->SetContent({});
+    return $self->SetContent({});
 }
 
 =head2 SetSubValues  {  }
@@ -349,7 +349,7 @@ sub SetSubValues {
     $values->{$key} = $args{$key};
    }
 
-   $self->SetContent($values);
+   return $self->SetContent($values);
 
 }
 
