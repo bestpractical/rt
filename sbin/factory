@@ -131,7 +131,7 @@ my $dbh = DBI->connect( $dsn, $user, $password );
 #get all tables out of database
 my @tables = map { m/^\`\Q$database\E\`\.(.*)/ ? $1 : $_ } $dbh->tables();
 
-my ( %tablemap, $typemap, %modulemap );
+my ( %tablemap, %modulemap );
 
 foreach my $table (@tables) {
     $table =~ s/\`//g;

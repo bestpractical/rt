@@ -403,7 +403,6 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     $type = $1;
     section("$type dependencies");
 
-    my @missing;
     my @deps = @{ $deps{$type} };
 
     my %missing = test_deps(@deps);

@@ -760,7 +760,6 @@ sub _TransLimit {
         );
     }
 
-    my $ret;
     #Search for the right field
     if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
         $self->_OpenParen;
