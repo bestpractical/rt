@@ -245,8 +245,9 @@ sub WebRemoteUserAutocreateInfo {
 
     # default to making Privileged users, even if they specify
     # some other default Attributes
-    if ( !$RT::UserAutocreateDefaultsOnLogin
-        || ( ref($RT::UserAutocreateDefaultsOnLogin) && not exists $RT::UserAutocreateDefaultsOnLogin->{Privileged} ) )
+    my $autocreate = RT->Config->Get('UserAutocreateDefaultsOnLogin');
+    if ( not $autocreate
+        or ( ref($autocreate) and not exists $autocreate->{Privileged} ) )
     {
         $user_info{'Privileged'} = 1;
     }

@@ -164,7 +164,7 @@ sub LoadConfig {
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
     # If the user does that, do what they mean.
-    $RT::WebPath = '' if ($RT::WebPath eq '/');
+    $Config->Set( WebPath => '' ) if $Config->Get('WebPath') eq '/';
 
     # Fix relative LogDir; It cannot be fixed in a PostLoadCheck, as
     # they are run after logging is enabled.
