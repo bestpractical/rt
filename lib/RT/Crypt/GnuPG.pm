@@ -489,7 +489,7 @@ sub SignEncryptRFC3156 {
 
         $res{'exit_code'} = $?;
         foreach ( qw(stderr logger status) ) {
-            $res{$_} = do { local $/; readline $handle{$_} };
+            $res{$_} = do { local $/ = undef; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
@@ -545,7 +545,7 @@ sub SignEncryptRFC3156 {
 
         $res{'exit_code'} = $?;
         foreach ( qw(stderr logger status) ) {
-            $res{$_} = do { local $/; readline $handle{$_} };
+            $res{$_} = do { local $/ = undef; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
@@ -670,7 +670,7 @@ sub _SignEncryptTextInline {
     my $err = $@;
 
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -757,7 +757,7 @@ sub _SignEncryptAttachmentInline {
     my $err = $@;
 
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -858,7 +858,7 @@ sub SignEncryptContent {
     my $err = $@;
 
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1130,7 +1130,7 @@ sub VerifyAttachment {
     };
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1177,7 +1177,7 @@ sub VerifyRFC3156 {
     };
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1242,7 +1242,7 @@ sub DecryptRFC3156 {
     };
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1406,7 +1406,7 @@ sub _DecryptInlineBlock {
     };
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1526,7 +1526,7 @@ sub DecryptContent {
     };
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -2106,7 +2106,7 @@ sub GetKeysInfo {
 
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -2307,7 +2307,7 @@ sub DeleteKey {
     my %res;
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -2350,7 +2350,7 @@ sub ImportKey {
     my %res;
     $res{'exit_code'} = $?;
     foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -2417,7 +2417,7 @@ sub Probe {
     my ($handles, $handle_list) = _make_gpg_handles();
     my %handle = %$handle_list;
 
-    local $@;
+    local $@ = undef;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child { $gnupg->wrap_call( commands => ['--version' ], handles => $handles ) };
@@ -2441,7 +2441,7 @@ sub Probe {
             . ($? & 127 ? (" as recieved signal ". ($? & 127)) : '')
             . ".";
         foreach ( qw(stderr logger status) ) {
-            my $tmp = do { local $/; readline $handle{$_} };
+            my $tmp = do { local $/ = undef; readline $handle{$_} };
             next unless $tmp && $tmp =~ /\S/s;
             close $handle{$_};
             $msg .= "\n$_:\n$tmp\n";

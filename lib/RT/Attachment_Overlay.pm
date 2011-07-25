@@ -309,7 +309,7 @@ sub OriginalContent {
     }
 
     # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
-    local $@;
+    local $@ = undef;
     Encode::_utf8_off($content);
 
     if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {

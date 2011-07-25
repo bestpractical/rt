@@ -249,7 +249,7 @@ while ( my $cgi = CGI::Fast->new ) {
         $cgi->path_info( $cgi->path_info . "/index.html" );
     }
 
-    local $@;
+    local $@ = undef;
     eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);

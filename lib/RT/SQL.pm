@@ -52,7 +52,7 @@ use strict;
 use warnings;
 
 use constant HAS_BOOLEAN_PARSER => do {
-    local $@;
+    local $@ = undef;
     eval { require Parse::BooleanLogic; 1 }
 };
 

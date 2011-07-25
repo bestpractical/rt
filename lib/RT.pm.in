@@ -379,7 +379,7 @@ sub CheckPerlRequirements {
     # use $error here so the following "die" can still affect the global $@
     my $error;
     {
-        local $@;
+        local $@ = undef;
         eval {
             my $x = '';
             my $y = \$x;
@@ -469,14 +469,14 @@ sub InitClasses {
         my $scrips = RT::Scrips->new($RT::SystemUser);
         $scrips->Limit( FIELD => 'Stage', OPERATOR => '!=', VALUE => 'Disabled' );
         while ( my $scrip = $scrips->Next ) {
-            local $@;
+            local $@ = undef;
             eval { $scrip->LoadModules } or
                 $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
                                    "You should delete or repair this Scrip in the admin UI.\n$@\n");
         }
 
 	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            local $@;
+            local $@ = undef;
             eval "require $class; 1" or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
                 ." in the config, but we failed to load it:\n$@\n"

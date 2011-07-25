@@ -180,13 +180,13 @@ sub check_failure {
 sub write_down_message {
     use File::Temp qw(tempfile);
 
-    local $@;
+    local $@ = undef;
     my ($fh, $filename) = eval { tempfile() };
     if ( !$fh || $@ ) {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local (@ARGV, $/); <STDIN> };
+        my $message = \do { local (@ARGV, $/) = ((), undef); <STDIN> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
             exit 0;

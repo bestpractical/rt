@@ -890,7 +890,7 @@ sub Update {
         # and might not have a Name method. But "can" won't find autoloaded
         # items. If it fails, we don't care
         do {
-            local $@;
+            local $@ = undef;
 
             my $current = $self->$attribute();
             eval {

@@ -287,7 +287,7 @@ sub FromSQL {
 
     {
         # preserve first_row and show_rows across the CleanSlate
-        local ($self->{'first_row'}, $self->{'show_rows'});
+        local ($self->{'first_row'}, $self->{'show_rows'}) = (undef, undef);
         $self->CleanSlate;
     }
     $self->_InitSQL();

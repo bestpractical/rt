@@ -745,7 +745,7 @@ sub run_and_capture {
 
     close $child_in;
 
-    my $result = do { local $/; <$child_out> };
+    my $result = do { local $/ = undef; <$child_out> };
     close $child_out;
     waitpid $pid, 0;
     return ($?, $result);
@@ -946,7 +946,7 @@ sub lsign_gnupg_key {
     my %res;
     $res{'exit_code'} = $?;
     foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1014,7 +1014,7 @@ sub trust_gnupg_key {
     my %res;
     $res{'exit_code'} = $?;
     foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
+        $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
@@ -1075,7 +1075,7 @@ sub start_apache_server {
 
     Test::More::diag(do {
         open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
-        local $/;
+        local $/ = undef;
         <$fh>
     });
 
@@ -1238,7 +1238,7 @@ sub file_content {
             warn "couldn't open file '$path': $!" unless $args{noexist};
             return ''
         };
-    my $content = do { local $/; <$fh> };
+    my $content = do { local $/ = undef; <$fh> };
     close $fh;
 
     unlink $path if $args{'unlink'};
@@ -1316,7 +1316,7 @@ END {
 
     # we are in END block and should protect our exit code
     # so calls below may call system or kill that clobbers $?
-    local $?;
+    local $? = undef;
 
     RT::Test->stop_server;
 

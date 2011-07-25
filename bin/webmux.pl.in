@@ -80,8 +80,8 @@ sub handler {
         }
     }
 
-    local $SIG{__WARN__};
-    local $SIG{__DIE__};
+    local $SIG{__WARN__} = undef;
+    local $SIG{__DIE__} = undef;
     RT::InitSignalHandlers();
 
     if ($r->content_type =~ m/^httpd\b.*\bdirectory/i) {
@@ -110,7 +110,7 @@ sub handler {
 
     my (%session, $status);
     {
-        local $@;
+        local $@ = undef;
         $status = eval { $Handler->handle_request($r) };
         $RT::Logger->crit( $@ ) if $@;
     }

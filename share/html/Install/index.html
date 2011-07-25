@@ -127,7 +127,7 @@ elsif ( $Run ) {
     $session{'CurrentUser'} = RT::CurrentUser->new;
     $session{'CurrentUser'}->LanguageHandle( $Lang );
 }
-my $lang_handle = do { local $@;
+my $lang_handle = do { local $@ = undef;
     eval {
         ($session{'CurrentUser'} || RT::CurrentUser->new($RT::SystemUser->Id))
             ->LanguageHandle

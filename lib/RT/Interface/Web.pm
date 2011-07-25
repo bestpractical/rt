@@ -179,7 +179,7 @@ sub HandleRequest {
     MaybeEnableSQLStatementLog();
 
     # avoid reentrancy, as suggested by masonbook
-    local *HTML::Mason::Commands::session unless $HTML::Mason::Commands::m->is_subrequest;
+    local *HTML::Mason::Commands::session = {} unless $HTML::Mason::Commands::m->is_subrequest;
 
     $HTML::Mason::Commands::m->autoflush( $HTML::Mason::Commands::m->request_comp->attr('AutoFlush') )
         if ( $HTML::Mason::Commands::m->request_comp->attr_exists('AutoFlush') );
@@ -2247,7 +2247,7 @@ sub _UploadedFile {
 
     return {
         Value        => $filename,
-        LargeContent => do { local $/; scalar <$fh> },
+        LargeContent => do { local $/ = undef; scalar <$fh> },
         ContentType  => $upload_info->{'Content-Type'},
     };
 }

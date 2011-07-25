@@ -472,7 +472,7 @@ sub SendEmail {
     }
     elsif ( $mail_command eq 'smtp' ) {
         require Net::SMTP;
-        my $smtp = do { local $@; eval { Net::SMTP->new(
+        my $smtp = do { local $@ = undef; eval { Net::SMTP->new(
             Host  => RT->Config->Get('SMTPServer'),
             Debug => RT->Config->Get('SMTPDebug'),
         ) } };
@@ -516,7 +516,7 @@ sub SendEmail {
         }
     }
     else {
-        local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
+        local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'}) = (undef, undef);
 
         my @mailer_args = ($mail_command);
         if ( $mail_command eq 'sendmail' ) {

@@ -169,7 +169,7 @@ sub LoadByName
     my $self = shift;
     my $name = shift or return (0, "Name not specified");
 
-    local $@;
+    local $@ = undef;
     my $plugin = "RT::Shredder::Plugin::$name";
     eval "require $plugin" or return( 0, $@ );
     return( 0, "Plugin '$plugin' has no method new") unless $plugin->can('new');

@@ -431,7 +431,7 @@ sub InsertACL {
         $path = $base_path;
     }
 
-    local *acl;
+    local *acl = sub {};
     do $path || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
@@ -738,11 +738,9 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
-    local (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
+           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final) = ();
 
-    local $@;
+    local $@ = undef;
     $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
       or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
@@ -750,7 +748,7 @@ sub InsertData {
     if ( @Initial ) {
         $RT::Logger->debug("Running initial actions...");
         foreach ( @Initial ) {
-            local $@;
+            local $@ = undef;
             eval { $_->(); 1 } or return (0, "One of initial functions failed: $@");
         }
         $RT::Logger->debug("Done.");
@@ -1039,7 +1037,7 @@ sub InsertData {
     if ( @Final ) {
         $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
-            local $@;
+            local $@ = undef;
             eval { $_->(); };
             $RT::Logger->error( "Failed to run one of final actions: $@" )
                 if $@;

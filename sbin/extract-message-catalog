@@ -128,7 +128,7 @@ sub extract_strings_from_code {
         print "Cannot open $file for reading ($!), skipping.\n";
         return;
     }
-    local $/;
+    local $/ = undef;
     $_ = <$fh>;
     close $fh;
 
