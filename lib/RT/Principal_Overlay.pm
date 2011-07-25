@@ -583,7 +583,7 @@ Cleans out and reinitializes the user rights cache
 sub InvalidateACLCache {
     $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
     my $lifetime;
-    $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
+    $lifetime = RT->Config->Get('ACLCacheLifetime') if RT->Config;
     $_ACL_CACHE->expire_after( $lifetime || 60 );
     return;
 }

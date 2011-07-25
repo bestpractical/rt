@@ -106,7 +106,7 @@ sub CurrentUser {
             ." with a RT::CurrentUser or a RT::User object as the first argument.";
         $msg .= "\n". Carp::longmess() if @_;
 
-        $RT::Logger->error( $msg );
+        RT->Logger->error( $msg );
         return $self->{'user'} = undef;
     }
 

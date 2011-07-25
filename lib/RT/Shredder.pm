@@ -138,10 +138,10 @@ shredding session when the file had been created.
 
 =head1 CONFIGURATION
 
-=head2 $RT::DependenciesLimit
+=head2 $DependenciesLimit
 
 Shredder stops with an error if the object has more than
-C<$RT::DependenciesLimit> dependencies. For example: a ticket has 1000
+C<$DependenciesLimit> dependencies. For example: a ticket has 1000
 transactions or a transaction has 1000 attachments. This is protection
 from bugs in shredder from wiping out your whole database, but
 sometimes when you have big mail loops you may hit it.

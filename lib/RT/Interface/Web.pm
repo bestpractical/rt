@@ -141,8 +141,9 @@ sub WebExternalAutoInfo {
 
     # default to making Privileged users, even if they specify
     # some other default Attributes
-    if ( not $RT::AutoCreate
-        or ( ref($RT::AutoCreate) and not exists $RT::AutoCreate->{Privileged} ) )
+    my $autocreate = RT->Config->Get('AutoCreate');
+    if ( not $autocreate
+        or ( ref($autocreate) and not exists $autocreate->{Privileged} ) )
     {
         $user_info{'Privileged'} = 1;
     }

@@ -77,7 +77,7 @@ use RT::Base;
 
 BEGIN {
     my $base = 'DBIx::SearchBuilder::Record::Cachable';
-    if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
+    if ( RT->Config && RT->Config->Get('DontCacheSearchBuilderRecords') ) {
         $base = 'DBIx::SearchBuilder::Record';
     }
 

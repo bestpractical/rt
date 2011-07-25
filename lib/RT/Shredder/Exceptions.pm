@@ -68,7 +68,7 @@ use base qw(RT::Shredder::Exception);
 my %DESCRIPTION = (
     DependenciesLimit => <<END,
 Dependecies list have reached its limit.
-See \$RT::DependenciesLimit in RT::Shredder docs.
+See \$DependenciesLimit in RT::Shredder docs.
 END
 
     SystemObject => <<END,

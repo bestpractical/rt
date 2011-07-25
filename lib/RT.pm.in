@@ -156,7 +156,7 @@ sub LoadConfig {
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
     # If the user does that, do what they mean.
-    $RT::WebPath = '' if ($RT::WebPath eq '/');
+    $Config->Set( WebPath => '' ) if $Config->Get('WebPath') eq '/';
 
     # fix relative LogDir and GnuPG homedir
     unless ( File::Spec->file_name_is_absolute( $Config->Get('LogDir') ) ) {

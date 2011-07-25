@@ -115,7 +115,7 @@ sub _PushDependency
             TargetObject => $rec->{'Object'},
         );
 
-    if( scalar @{ $self->{'list'} } > ( $RT::DependenciesLimit || 1000 ) ) {
+    if( scalar @{ $self->{'list'} } > ( RT->Config->Get('DependenciesLimit') || 1000 ) ) {
         RT::Shredder::Exception::Info->throw( 'DependenciesLimit' );
     }
     return;

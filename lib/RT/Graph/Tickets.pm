@@ -57,7 +57,7 @@ RT::Graph::Tickets - view relations between tickets as graphs
 
 =cut
 
-unless ($RT::DisableGraphViz) {
+unless (RT->Config->Get('DisableGraphViz')) {
     require IPC::Run;
     IPC::Run->import;
     require IPC::Run::SafeHandles;
@@ -226,7 +226,7 @@ sub AddTicket {
     my %node_style = (
         style => 'filled,rounded',
         %{ $ticket_status_style{ $args{'Ticket'}->Status } || {} },
-        URL   => $RT::WebPath .'/Ticket/Display.html?id='. $args{'Ticket'}->id,
+        URL   => RT->Config->Get('WebPath') .'/Ticket/Display.html?id='. $args{'Ticket'}->id,
         tooltip => gv_escape( $args{'Ticket'}->Subject || '#'. $args{'Ticket'}->id ),
     );
 

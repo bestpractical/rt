@@ -1367,7 +1367,7 @@ sub Gateway {
     );
 
     # Do not pass loop messages to MailPlugins, to make sure the loop
-    # is broken, unless $RT::StoreLoops is set.
+    # is broken, unless $StoreLoops is set.
     if ($IsALoop && !$should_store_machine_generated_message) {
         return ( 0, $result, undef );
     }
