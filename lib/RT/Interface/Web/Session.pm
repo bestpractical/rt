@@ -170,7 +170,7 @@ sub ClearOld {
     my $class = shift || __PACKAGE__;
     my $attributes = $class->Attributes;
     if( $attributes->{Directory} ) {
-        return $class->_CleariOldDir( $attributes->{Directory}, @_ );
+        return $class->_ClearOldDir( $attributes->{Directory}, @_ );
     } else {
         return $class->_ClearOldDB( $RT::Handle->dbh, @_ );
     }

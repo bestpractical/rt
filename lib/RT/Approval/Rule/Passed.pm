@@ -62,13 +62,7 @@ sub Prepare {
 
 sub Commit {
     my $self = shift;
-    my $note;
-    my $t = $self->TicketObj->Transactions;
-
-    while ( my $o = $t->Next ) {
-        next unless $o->Type eq 'Correspond';
-        $note .= $o->Content . "\n" if $o->ContentObj;
-    }
+    my $note = $self->GetNotes;
 
     my ($top) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
     my $links  = $self->TicketObj->DependedOnBy;
@@ -107,5 +101,20 @@ sub Commit {
 
     return;
 }
+
+sub GetNotes {
+    my $self = shift;
+    my $t = $self->TicketObj->Transactions;
+    my $note = '';
+
+    while ( my $o = $t->Next ) {
+        next unless $o->Type eq 'Correspond';
+        $note .= $o->Content . "\n" if $o->ContentObj;
+    }
+    return $note;
+
+}
+
+RT::Base->_ImportOverlays();
 
 1;
