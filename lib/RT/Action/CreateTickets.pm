@@ -671,6 +671,11 @@ sub ParseLines {
 
         if ($err) {
             $RT::Logger->error( "Ticket creation failed: " . $err );
+            while ( my ( $k, $v ) = each %T::X ) {
+                $RT::Logger->debug(
+                    "Eliminating $template_id from ${k}'s parents.");
+                delete $v->{$template_id};
+            }
             next;
         }
     }
