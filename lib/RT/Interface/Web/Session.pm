@@ -227,7 +227,7 @@ sub _ClearOldDir {
         }
 
         my %session;
-        local $@;
+        local $@ = undef;
         eval { tie %session, $class, $id, $attrs };
         if( $@ ) {
             $RT::Logger->debug("skipped session '$id', couldn't load: $@");
@@ -297,7 +297,7 @@ sub ClearByUser {
     my %seen = ();
     foreach my $id( @{ $self->Ids } ) {
         my %session;
-        local $@;
+        local $@ = undef;
         eval { tie %session, $class, $id, $attrs };
         if( $@ ) {
             $RT::Logger->debug("skipped session '$id', couldn't load: $@");
@@ -325,7 +325,7 @@ sub TIEHASH {
 
     my %session;
 
-    local $@;
+    local $@ = undef;
     eval { tie %session, $class, $id, $attrs };
     eval { tie %session, $class, undef, $attrs } if $@;
     if ( $@ ) {

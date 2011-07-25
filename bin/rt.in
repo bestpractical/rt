@@ -1484,7 +1484,7 @@ sub config_from_file {
 sub parse_config_file {
     my %cfg;
     my ($file) = @_;
-    local $_; # $_ may be aliased to a constant, from line 1163
+    local $_ = undef; # $_ may be aliased to a constant, from line 1163
 
     open( my $handle, '<', $file ) or return;
 

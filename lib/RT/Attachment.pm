@@ -398,7 +398,7 @@ sub OriginalContent {
         $self->OriginalEncoding || 'utf-8'
     );
 
-    local $@;
+    local $@ = undef;
     eval { Encode::from_to($content, $from => $to) };
     if ($@) {
         $RT::Logger->error("Could not convert attachment from $from to $to: ".$@);

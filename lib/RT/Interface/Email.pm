@@ -527,7 +527,7 @@ sub SendEmail {
         print $fh $content, "\n";
         close $fh;
     } else {
-        local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
+        local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'}) = (undef, undef);
 
         my @mailer_args = ($mail_command);
         if ( $mail_command eq 'sendmail' ) {

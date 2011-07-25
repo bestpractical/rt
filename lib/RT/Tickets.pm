@@ -2509,7 +2509,7 @@ sub CurrentUserCanSee {
             Right => 'SuperUser', Object => $RT::System
         );
 
-    local $self->{using_restrictions};
+    local $self->{using_restrictions} = undef;
 
     my $id = $self->CurrentUser->id;
 
@@ -2798,7 +2798,7 @@ sub _ProcessRestrictions {
     my $sql = $self->Query;
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
 
-        local $self->{using_restrictions};
+        local $self->{using_restrictions} = undef;
         #  "Restrictions to Clauses Branch\n";
         my $clauseRef = eval { $self->_RestrictionsToClauses; };
         if ($@) {
@@ -3034,7 +3034,7 @@ sub FromSQL {
 
     {
         # preserve first_row and show_rows across the CleanSlate
-        local ($self->{'first_row'}, $self->{'show_rows'}, $self->{_sql_looking_at});
+        local ($self->{'first_row'}, $self->{'show_rows'}, $self->{_sql_looking_at}) = (undef, undef, undef);
         $self->CleanSlate;
         $self->_InitSQL();
     }

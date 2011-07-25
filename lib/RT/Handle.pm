@@ -833,7 +833,7 @@ sub InsertData {
     local (@Groups, @Users, @Members, @ACL, @Queues, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
-    local $@;
+    local $@ = undef;
     $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
       or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
@@ -841,7 +841,7 @@ sub InsertData {
     if ( @Initial ) {
         $RT::Logger->debug("Running initial actions...");
         foreach ( @Initial ) {
-            local $@;
+            local $@ = undef;
             eval { $_->(); 1 } or return (0, "One of initial functions failed: $@");
         }
         $RT::Logger->debug("Done.");
@@ -1268,7 +1268,7 @@ sub InsertData {
     if ( @Final ) {
         $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
-            local $@;
+            local $@ = undef;
             eval { $_->(); };
             $RT::Logger->error( "Failed to run one of final actions: $@" )
                 if $@;

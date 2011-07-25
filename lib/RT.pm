@@ -385,7 +385,7 @@ sub CheckPerlRequirements {
     # use $error here so the following "die" can still affect the global $@
     my $error;
     {
-        local $@;
+        local $@ = undef;
         eval {
             my $x = '';
             my $y = \$x;
@@ -467,7 +467,7 @@ sub InitClasses {
         # load scrips' modules
         my $scrips = RT::Scrips->new(RT->SystemUser);
         while ( my $scrip = $scrips->Next ) {
-            local $@;
+            local $@ = undef;
             eval { $scrip->LoadModules } or
                 $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
                                    "You should delete or repair this Scrip in the admin UI.\n$@\n");
