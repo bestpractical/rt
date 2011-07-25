@@ -248,7 +248,7 @@ sub _DecodeBody {
     my $source = $old->open('r') or die "couldn't open body: $!";
     my $destination = $new->open('w') or die "couldn't open body: $!";
     { 
-        local $@;
+        local $@ = undef;
         eval { $decoder->decode($source, $destination) };
         $RT::Logger->error($@) if $@;
     }

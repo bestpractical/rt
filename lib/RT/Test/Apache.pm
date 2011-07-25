@@ -107,7 +107,7 @@ sub start_server {
 
     RT::Test::diag(do {
         open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
-        local $/;
+        local $/ = undef;
         <$fh>
     });
 
@@ -162,7 +162,7 @@ sub start_server {
                   unless -e $opt{log_file};
 
             open my $log, "<", $opt{log_file};
-            my $error = do {local $/; <$log>};
+            my $error = do {local $/ = undef; <$log>};
             close $log;
             $RT::Logger->error($error) if $error;
             Test::More::BAIL_OUT("Couldn't start apache server!");

@@ -882,7 +882,7 @@ sub _IsValidRegex {
     my $self  = shift;
     my $regex = shift or return (1, 'valid');
 
-    local $^W; local $@;
+    local $^W; local $@ = undef;
     local $SIG{__DIE__} = sub { 1 };
     local $SIG{__WARN__} = sub { 1 };
 

@@ -1179,7 +1179,7 @@ sub run_and_capture {
 
     close $child_in;
 
-    my $result = do { local $/; <$child_out> };
+    my $result = do { local $/ = undef; <$child_out> };
     close $child_out;
     waitpid $pid, 0;
     return ($?, $result);
@@ -1708,7 +1708,7 @@ sub file_content {
             warn "couldn't open file '$path': $!" unless $args{noexist};
             return ''
         };
-    my $content = do { local $/; <$fh> };
+    my $content = do { local $/ = undef; <$fh> };
     close $fh;
 
     unlink $path if $args{'unlink'};
@@ -1771,7 +1771,7 @@ END {
 
     # we are in END block and should protect our exit code
     # so calls below may call system or kill that clobbers $?
-    local $?;
+    local $? = 0;
 
     Test::NoWarnings::had_no_warnings() if $check_warnings_in_end;
 

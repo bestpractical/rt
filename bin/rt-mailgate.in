@@ -262,7 +262,7 @@ sub check_failure {
 sub slurp_message {
     my $self = shift;
 
-    local $@;
+    local $@ = undef;
 
     my %message;
     my ( $fh, $filename )
@@ -271,7 +271,7 @@ sub slurp_message {
         print STDERR "$0: Couldn't create temp file, using memory\n";
         print STDERR "error: $@\n" if $@;
 
-        my $message = \do { local ( @ARGV, $/ ); <STDIN> };
+        my $message = \do { local ( $/, @ARGV ) = (undef); <STDIN> };
         unless ( $$message =~ /\S/ ) {
             print STDERR "$0: no message passed on STDIN\n";
             $self->exit_with_success;
