@@ -179,8 +179,10 @@ GENERAL INSTALLATION
  7) Configure the web server, as described in docs/web_deployment.pod,
     and the email gateway, as described below.
 
-    NOTE: root's password for the web interface is "password" (without
-    the quotes).  Not changing this is a SECURITY risk!
+    NOTE: The default credentials for RT are:
+        User: root
+        Pass: password
+    Not changing the root password from the default is a SECURITY risk!
 
     Once you've set up the web interface, consider setting up automatic
     logout for inactive sessions. For more information about how to do
