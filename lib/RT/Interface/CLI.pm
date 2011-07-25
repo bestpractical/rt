@@ -206,7 +206,7 @@ sub GetMessageContent {
         close ($fh) or die $!;
     }
     elsif ($args{'Content'}) {
-        @lines = split('\n',$args{'Content'});
+        @lines = split /\n/, $args{'Content'};
     }
     #get us a tempfile.
     my ($fh, $filename) = tempfile();

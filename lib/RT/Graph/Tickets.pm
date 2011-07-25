@@ -254,7 +254,7 @@ sub AddTicket {
             if ( $fill ) {
                 $node_style{'fillcolor'} = $fill;
                 $node_style{'style'} ||= '';
-                $node_style{'style'} = join ',', split( ',', $node_style{'style'} ), 'filled'
+                $node_style{'style'} = join ',', split( /,/, $node_style{'style'} ), 'filled'
                     unless $node_style{'style'} =~ /\bfilled\b/;
             }
         }

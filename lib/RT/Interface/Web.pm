@@ -795,7 +795,7 @@ sub PathIsSafe {
     # downdirs than updirs. So as soon as we get a negative score
     # (which means "breaking out" of the top level) we reject the path.
 
-    my @components = split '/', $cleaned_up;
+    my @components = split m|/|, $cleaned_up;
     my $score = 0;
     for my $component (@components) {
         if ($component eq '..') {
@@ -1267,7 +1267,7 @@ sub CreateTicket {
         Abort($ErrMsg);
     }
 
-    push( @Actions, split( "\n", $ErrMsg ) );
+    push( @Actions, split( /\n/, $ErrMsg ) );
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         Abort( "No permission to view newly created ticket #" . $Ticket->id . "." );
     }

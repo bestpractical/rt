@@ -373,7 +373,7 @@ sub CreateByTemplate {
         my ( $id, $transid, $msg )
             = $T::Tickets{$template_id}->Create(%$ticketargs);
 
-        foreach my $res ( split( '\n', $msg ) ) {
+        foreach my $res ( split /\n/, $msg ) {
             push @results,
                 $T::Tickets{$template_id}
                 ->loc( "Ticket [_1]", $T::Tickets{$template_id}->Id ) . ': '
