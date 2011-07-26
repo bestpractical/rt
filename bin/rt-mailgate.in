@@ -212,7 +212,7 @@ sub write_down_message {
         $empty = 0 if $buf =~ /\S/;
         print $fh $buf;
     };
-    close $fh;
+    close $fh or die "Can't close $filename: $!";
 
     if ( $empty ) {
         print STDERR "$0: no message passed on STDIN\n";

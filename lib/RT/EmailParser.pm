@@ -118,7 +118,7 @@ sub SmartParseMIMEEntityFromScalar {
             binmode $fh;
             $fh->autoflush(1);
             print $fh $args{'Message'};
-            close($fh);
+            close($fh) or warn "Can't close tmpfile: $!";
             if ( -f $temp_file ) {
                 my $entity = $self->ParseMIMEEntityFromFile( $temp_file, $args{'Decode'}, $args{'Exact'} );
                 unlink($temp_file);

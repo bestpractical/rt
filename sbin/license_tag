@@ -115,9 +115,9 @@ sub tag_mason {
         my $pm = $_;
         return unless (-f $pm);
         return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
-        open( my $fh, '<', $pm ) or die "Failed to open $pm";
+        open( my $fh, '<', $pm ) or die "Failed to open $pm: $!";
         my $file = (join "", <$fh>);
-        close ($fh);
+        close ($fh) or die "Failed to close $pm: $!";
         print "$pm - ";
         return if another_license($pm => $file) && print "has different license\n";
 
@@ -139,18 +139,18 @@ sub tag_mason {
 
 
 
-        open( $fh, '>', $pm ) or die "couldn't write new file";
+        open( $fh, '>', $pm ) or die "Failed to write $pm: $!";
         print $fh $file;
-        close $fh;
+        close $fh or die "Failed to close $pm: $!";
         return;
 }
 
 
 sub tag_makefile {
         my $pm = shift;
-        open( my $fh, '<', $pm ) or die "Failed to open $pm";
+        open( my $fh, '<', $pm ) or die "Failed to open $pm: $!";
         my $file = (join "", <$fh>);
-        close ($fh);
+        close ($fh) or die "Failed to close $pm: $!";
         print "$pm - ";
         return if another_license($pm => $file) && print "has different license\n";
 
@@ -172,9 +172,9 @@ sub tag_makefile {
 
 
 
-        open( $fh, '>', $pm ) or die "couldn't write new file";
+        open( $fh, '>', $pm ) or die "Failed to write $pm: $!";
         print $fh $file;
-        close $fh;
+        close $fh or die "Failed to close $pm: $!";
         return;
 }
 
@@ -182,9 +182,9 @@ sub tag_makefile {
 sub tag_pm {
         my $pm = $_;
         next unless $pm =~ /\.pm/s;
-        open( my $fh, '<', $pm ) or die "Failed to open $pm";
+        open( my $fh, '<', $pm ) or die "Failed to open $pm: $!";
         my $file = (join "", <$fh>);
-        close ($fh);
+        close ($fh) or die "Failed to close $pm: $!";
         print "$pm - ";
         return if another_license($pm => $file) && print "has different license\n";
 
@@ -206,9 +206,9 @@ sub tag_pm {
 
 
 
-        open( $fh, '>', $pm ) or die "couldn't write new file $pm";
+        open( $fh, '>', $pm ) or die "Failed to write $pm: $!";
         print $fh $file;
-        close $fh;
+        close $fh or die "Failed to close $pm: $!";
         return;
 }
 
@@ -216,9 +216,9 @@ sub tag_pm {
 sub tag_script {
         my $pm = $_;
         return unless (-f $pm);
-        open( my $fh, '<', $pm ) or die "Failed to open $pm";
+        open( my $fh, '<', $pm ) or die "Failed to open $pm: $!";
         my $file = (join "", <$fh>);
-        close ($fh);
+        close ($fh) or die "Failed to close $pm: $!";
         print "$pm - ";
         return if another_license($pm => $file) && print "has different license\n";
 
@@ -243,9 +243,9 @@ sub tag_script {
         print "\n";
 
 
-        open( $fh, '>', $pm ) or die "couldn't write new file";
+        open( $fh, '>', $pm ) or die "Failed to write $pm: $!";
         print $fh $file;
-        close $fh;
+        close $fh or die "Failed to close $pm: $!";
         return;
 }
 

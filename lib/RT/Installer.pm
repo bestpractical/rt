@@ -303,7 +303,7 @@ sub SaveConfig {
         }
         $content .= "1;\n";
         print $fh $content;
-        close $fh;
+        close $fh or return(0, "Failed to write $file: $!");
 
         return ( 1, "Successfully saved configuration to $file." );
     }

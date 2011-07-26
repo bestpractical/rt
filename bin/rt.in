@@ -1220,7 +1220,7 @@ sub submit {
                 }
             }
         }
-        close($f);
+        close($f) or return 0;
         chmod 0600, $file;
         return 1;
     }
@@ -1501,9 +1501,13 @@ sub vi {
     local $/ = undef;
     my $f;
 
-    open($f, '>', $file) or die "$file: $!\n"; print $f $text; close($f);
+    open($f, '>', $file) or die "Can't write $file: $!\n";
+    print $f $text;
+    close($f) or die "Failed to close $file: $!";
     system($editor, $file) && die "Couldn't run $editor.\n";
-    open($f, '<', $file) or die "$file: $!\n"; $text = <$f>; close($f);
+    open($f, '<', $file) or die "Can't read $file: $!\n";
+    $text = <$f>;
+    close($f) or die "Failed to close $file: $!";
     unlink($file);
 
     return $text;

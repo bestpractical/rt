@@ -475,14 +475,18 @@ sub InsertSchema {
 
     my (@schema);
 
-    open( my $fh_schema, '<', $file ) or die $!;
+    open( my $fh_schema, '<', $file ) or die "Can't read $file: $!";
+    my @lines = (<$fh_schema>, ";;");
+    close($fh_schema) or die "Can't close $file: $!";
 
-    my $has_local = 1;
-    open( my $fh_schema_local, "<", $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type ))
-        or $has_local = 0;
+    my $local_file = $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type );
+    if (open( my $fh_schema_local, "<", $local_file)) {
+        push @lines, <$fh_schema_local>;
+        close($fh_schema_local) or die "Can't close $local_file: $!";
+    }
 
     my $statement = "";
-    foreach my $line ( <$fh_schema>, ($_ = ';;'), $has_local? <$fh_schema_local>: () ) {
+    foreach my $line ( @lines ) {
         $line =~ s/\#.*//g;
         $line =~ s/--.*//g;
         $statement .= $line;
@@ -492,7 +496,6 @@ sub InsertSchema {
             $statement = "";
         }
     }
-    close $fh_schema; close $fh_schema_local;
 
     if ( $db_type eq 'Oracle' ) {
         my $db_user = RT->Config->Get('DatabaseUser');

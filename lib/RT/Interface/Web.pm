@@ -864,7 +864,7 @@ sub SendStaticFile {
         $HTML::Mason::Commands::m->out($_) while (<$fh>);
         $HTML::Mason::Commands::m->flush_buffer;
     }
-    close $fh;
+    close $fh or die "Couldn't close $file: $!";
     return;
 }
 

@@ -130,7 +130,10 @@ sub extract_strings_from_code {
     }
     local $/ = undef;
     $_ = <$fh>;
-    close $fh;
+    unless (close $fh) {
+        print "Cannot close $file ($!), skipping.\n";
+        return;
+    }
 
     my $re_space_wo_nl = qr{(?!\n)\s};
     my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
@@ -352,7 +355,7 @@ sub update {
 
     open( my $po, '>', $file ) or die "Couldn't open '$file' for writing: $!";
     print $po $out;
-    close $po;
+    close $po or die "Failed to write $file: $!";
 
     return 1;
 }

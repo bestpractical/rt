@@ -455,11 +455,11 @@ $ClassAccessible
     my $fh;
     open( $fh, '>', $RecordClassPath ) or die $!;
     print $fh $RecordClass;
-    close($fh);
+    close($fh) or die "Failed to write $RecordClassPath: $!";
 
     open( $fh, '>', $CollectionClassPath ) or die $!;
     print $fh $CollectionClass;
-    close($fh);
+    close($fh) or die "Failed to write $CollectionClassPath: $!";
 
 }
 
