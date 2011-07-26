@@ -1256,7 +1256,7 @@ sub submit {
                 }
             }
         }
-        close($handle);
+        close($handle) or return 0;
         chmod 0600, $file;
         return 1;
     }
@@ -1574,13 +1574,13 @@ sub vi {
 
     my $handle = File::Temp->new;
     print $handle $text;
-    close($handle);
+    close($handle) or die "Can't write to $handle: $!\n";
 
     system($editor, $handle->filename) && die "Couldn't run $editor.\n";
 
     open( $handle, '<', $handle->filename ) or die "$handle: $!\n";
     $text = <$handle>;
-    close($handle);
+    close($handle) or die "Can't read from $handle: $!\n";
 
     return $text;
 }

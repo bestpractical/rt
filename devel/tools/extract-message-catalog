@@ -146,7 +146,10 @@ sub extract_strings_from_code {
     }
     local $/ = undef;
     $_ = <$fh>;
-    close $fh;
+    unless (close $fh) {
+        print "Cannot close $file ($!), skipping.\n";
+        return;
+    }
 
     my $errors = 0;
 
