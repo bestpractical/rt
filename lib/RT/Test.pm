@@ -126,6 +126,9 @@ sub import {
     elsif ( exists $args{'tests'} ) {
         # do nothing if they say "tests => undef" - let them make the plan
     }
+    elsif ( $args{'skip_all'} ) {
+        $class->builder->plan(skip_all => $args{'skip_all'});
+    }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
