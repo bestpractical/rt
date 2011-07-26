@@ -445,6 +445,13 @@ sub CallGnuPG {
         close $handle{stdout};
     }
 
+    return Finalize( $err, \%handle );
+}
+
+sub Finalize {
+    my ($err, $handle) = @_;
+    my %handle = %{ $handle };
+
     my %res;
     $res{'exit_code'} = $?;
 
@@ -1969,20 +1976,7 @@ sub DeleteKey {
     my $err = $@;
     close $handle{'stdout'};
 
-    my %res;
-    $res{'exit_code'} = $?;
-    foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/ = undef; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+    return Finalize( $err, \%handle );
 }
 
 sub ImportKey {
