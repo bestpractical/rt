@@ -363,7 +363,7 @@ END
 
     print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
-    close $config;
+    close $config or die "Failed to write $tmp{config}{RT}: $!";
 
     return $config;
 }
@@ -418,7 +418,7 @@ sub set_config_wrapper {
                 $lines[-1] .= $_;
             }
         }
-        close $fh;
+        close $fh or die "Failed to write $tmp{config}{RT}: $!";
 
         # Traim trailing newlines and "1;"
         $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
@@ -1177,10 +1177,10 @@ sub run_and_capture {
 
     $after_open->($child_in, $child_out) if $after_open;
 
-    close $child_in;
+    close $child_in or die "Failed to close child stdin pipe: $!";
 
     my $result = do { local $/ = undef; <$child_out> };
-    close $child_out;
+    close $child_out or die "Failed to close child stdout pipe: $!";
     waitpid $pid, 0;
     return ($?, $result);
 }
@@ -1709,7 +1709,7 @@ sub file_content {
             return ''
         };
     my $content = do { local $/ = undef; <$fh> };
-    close $fh;
+    close $fh or die "Failed to close $path: $!";
 
     unlink $path if $args{'unlink'};
 
