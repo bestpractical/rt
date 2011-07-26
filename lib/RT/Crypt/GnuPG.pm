@@ -419,10 +419,18 @@ sub CallGnuPG {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child {
-            $gnupg->$method(
-                handles      => $handles,
-                command_args => $args{CommandArgs},
-            )
+            if ($method =~ /^--/) {
+                $gnupg->wrap_call(
+                    handles      => $handles,
+                    commands     => [$method],
+                    command_args => $args{CommandArgs},
+                );
+            } else {
+                $gnupg->$method(
+                    handles      => $handles,
+                    command_args => $args{CommandArgs},
+                );
+            }
         };
         {
             local $SIG{'PIPE'} = 'IGNORE';
@@ -434,6 +442,7 @@ sub CallGnuPG {
                 $handle{'stdin'}->print( $content );
             }
             close $handle{'stdin'} or die "Can't close gnupg handle: $!";
+            $args{Callback}->(%handle) if $args{Callback};
         }
         waitpid $pid, 0;
     };
@@ -1982,48 +1991,18 @@ sub _ParseDate {
 sub DeleteKey {
     my $key = shift;
 
-    my $gnupg = GnuPG::Interface->new();
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
-        meta_interactive => 0,
-    );
-
-    my ($handles, $handle_list) = _make_gpg_handles();
-    my %handle = %$handle_list;
-
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child { $gnupg->wrap_call(
-            handles => $handles,
-            commands => ['--delete-secret-and-public-key'],
-            command_args => ["--", $key],
-        ) };
-        close $handle{'stdin'};
-        while ( my $str = readline $handle{'status'} ) {
-            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
-                print { $handle{'command'} } "y\n";
+    return CallGnuPG(
+        Method      => "--delete-secret-and-public-key",
+        CommandArgs => ["--", $key],
+        Callback    => sub {
+            my %handle = @_;
+            while ( my $str = readline $handle{'status'} ) {
+                if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
+                    print { $handle{'command'} } "y\n";
+                }
             }
-        }
-        waitpid $pid, 0;
-    };
-    my $err = $@;
-    close $handle{'stdout'};
-
-    my %res;
-    $res{'exit_code'} = $?;
-    foreach ( qw(stderr logger status) ) {
-        $res{$_} = do { local $/ = undef; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+        },
+    );
 }
 
 sub ImportKey {
