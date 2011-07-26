@@ -1316,7 +1316,7 @@ END {
 
     # we are in END block and should protect our exit code
     # so calls below may call system or kill that clobbers $?
-    local $? = undef;
+    local $? = 0;
 
     RT::Test->stop_server;
 
