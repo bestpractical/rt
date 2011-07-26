@@ -2057,13 +2057,11 @@ properly (and false otherwise).
 
 
 sub Probe {
-    my $gnupg = GnuPG::Interface->new();
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my $gnupg = GnuPG::Interface->new;
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
-        armor => 1,
-        meta_interactive => 0,
+        _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') )
     );
+    $gnupg->options->meta_interactive( 0 );
 
     my ($handles, $handle_list) = _make_gpg_handles();
     my %handle = %$handle_list;
@@ -2071,7 +2069,12 @@ sub Probe {
     local $@ = undef;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child { $gnupg->wrap_call( commands => ['--version' ], handles => $handles ) };
+        my $pid = safe_run_child {
+            $gnupg->wrap_call(
+                commands => ['--version' ],
+                handles  => $handles
+            )
+        };
         close $handle{'stdin'};
         waitpid $pid, 0;
     };
@@ -2088,7 +2091,7 @@ sub Probe {
 # but there is no way to get actuall error
     if ( $? && ($? >> 8) != 2 ) {
         my $msg = "Probe for GPG failed."
-            ." Process exitted with code ". ($? >> 8)
+            ." Process exited with code ". ($? >> 8)
             . ($? & 127 ? (" as recieved signal ". ($? & 127)) : '')
             . ".";
         foreach ( qw(stderr logger status) ) {
