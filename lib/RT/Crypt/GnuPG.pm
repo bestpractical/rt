@@ -445,7 +445,7 @@ sub CallGnuPG {
             } elsif (defined $content) {
                 $handle{'stdin'}->print( $content );
             }
-            close $handle{'stdin'} or die "Can't close gnupg handle: $!";
+            close $handle{'stdin'} or die "Can't close gnupg input handle: $!";
             $args{Callback}->(%handle) if $args{Callback};
         }
         waitpid $pid, 0;
@@ -453,7 +453,9 @@ sub CallGnuPG {
     my $err = $@;
     if ($args{Output}) {
         push @{$args{Output}}, readline $handle{stdout};
-        close $handle{stdout};
+        if (not close $handle{stdout}) {
+            $err ||= "Can't close gnupg output handle: $!";
+        }
     }
 
     return Finalize( $err, \%handle );
@@ -469,7 +471,9 @@ sub Finalize {
     foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
+        if (not close $handle{$_}) {
+            $err ||= "Can't close gnupg $_ handle: $!";
+        }
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
@@ -2086,7 +2090,7 @@ sub Probe {
                 handles  => $handles
             )
         };
-        close $handle{'stdin'};
+        close $handle{'stdin'} or die "Can't close gnupg input handle: $!";
         waitpid $pid, 0;
     };
     if ( $@ ) {
@@ -2108,7 +2112,7 @@ sub Probe {
         foreach ( qw(stderr logger status) ) {
             my $tmp = do { local $/ = undef; readline $handle{$_} };
             next unless $tmp && $tmp =~ /\S/s;
-            close $handle{$_};
+            close $handle{$_} or $tmp .= "\nFailed to close: $!";
             $msg .= "\n$_:\n$tmp\n";
         }
         $RT::Logger->debug( $msg );
