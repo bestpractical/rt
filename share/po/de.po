@@ -7614,8 +7614,8 @@ msgstr "Reißwolf"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr "Shredder benötigt ein Verzeichnis für Export Dateien. Bitte prüfen Sie das <span class=\"file-path\">%1</span> vorhanden ist und für den Webserver beschreibbar ist."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "Shredder benötigt ein Verzeichnis für Export Dateien. Bitte prüfen Sie das %1 vorhanden ist und für den Webserver beschreibbar ist."
 
 #: share/html/Dashboards/Queries.html:180
 msgid "Sidebar"

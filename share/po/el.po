@@ -7051,7 +7051,7 @@ msgstr "Καταστροφέας"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr "Ο Καταστροφέας χρειάζεται ένα κατάλογο για να μπορεί να γράφει. Παρακαλώ ελέγξτε ότι έχετε το <span class=\"file-path\">%1</span> και ότι είναι εγγράψιμο από τον διακομιστή Ιστού σας"
 
 #: share/html/Dashboards/Queries.html:180

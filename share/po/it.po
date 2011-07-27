@@ -8375,8 +8375,8 @@ msgstr "Distruttore di ticket"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr "Lo Shredder necessita di una cartella sul disco del server per archiviare gli oggetti eliminati dal database. Verifica che la cartella <span class=\"file-path\">%1</span> esista, e che sia scrivibile dall'utente impersonato dal server web."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "Lo Shredder necessita di una cartella sul disco del server per archiviare gli oggetti eliminati dal database. Verifica che la cartella %1 esista, e che sia scrivibile dall'utente impersonato dal server web."
 
 #: share/html/Dashboards/Queries.html:180
 msgid "Sidebar"
