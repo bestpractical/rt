@@ -417,7 +417,8 @@ sub CallGnuPG {
         unless defined $args{'Passphrase'};
     $args{Passphrase} = GetPassphrase( Address => $args{Signer} )
         unless defined $args{'Passphrase'};
-    $gnupg->passphrase( $args{'Passphrase'} );
+    $gnupg->passphrase( $args{'Passphrase'} )
+        if defined $args{Passphrase};
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
