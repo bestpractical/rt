@@ -431,7 +431,7 @@ sub InsertACL {
         $path = $base_path;
     }
 
-    local *acl = sub {};
+    local *acl;
     do $path || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
