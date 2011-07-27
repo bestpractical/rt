@@ -369,7 +369,7 @@ my %supported_opt = map { $_ => 1 } qw(
 sub CallGnuPG {
     my %args = (
         Options     => undef,
-        Key         => undef,
+        Signer      => undef,
         Recipients  => [],
         Passphrase  => undef,
 
@@ -404,7 +404,7 @@ sub CallGnuPG {
     );
     $gnupg->options->armor( 1 );
     $gnupg->options->meta_interactive( 0 );
-    $gnupg->options->default_key( $args{Key} );
+    $gnupg->options->default_key( $args{Signer} );
 
     my %seen;
     $gnupg->options->push_recipients( $_ ) for
@@ -414,7 +414,7 @@ sub CallGnuPG {
 
     $args{Passphrase} = $GnuPGOptions{passphrase}
         unless defined $args{'Passphrase'};
-    $args{Passphrase} = GetPassphrase( Address => $args{Key} )
+    $args{Passphrase} = GetPassphrase( Address => $args{Signer} )
         unless defined $args{'Passphrase'};
     $gnupg->passphrase( $args{'Passphrase'} );
 
@@ -566,7 +566,7 @@ sub SignEncryptRFC3156 {
 
         my @signature;
         %res = CallGnuPG(
-            Key        => $args{'Signer'},
+            Signer     => $args{'Signer'},
             Method     => "detach_sign",
             Handles    => { stdin => IO::Handle::CRLF->new },
             Direct     => [],
@@ -599,7 +599,7 @@ sub SignEncryptRFC3156 {
 
         $entity->make_multipart( 'mixed', Force => 1 );
         %res = CallGnuPG(
-            Key        => $args{'Signer'},
+            Signer     => $args{'Signer'},
             Recipients => \@recipients,
             Method     => ( $args{'Sign'} ? "sign_and_encrypt" : "encrypt" ),
             Handles    => { stdout => $tmp_fh },
@@ -671,7 +671,7 @@ sub _SignEncryptTextInline {
 
     my $entity = $args{'Entity'};
     my %res = CallGnuPG(
-        Key        => $args{'Signer'},
+        Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Method     => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
@@ -712,7 +712,7 @@ sub _SignEncryptAttachmentInline {
     binmode $tmp_fh, ':raw';
 
     my %res = CallGnuPG(
-        Key        => $args{'Signer'},
+        Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Method     => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
@@ -765,7 +765,7 @@ sub SignEncryptContent {
     binmode $tmp_fh, ':raw';
 
     my %res = CallGnuPG(
-        Key        => $args{'Signer'},
+        Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Method     => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
