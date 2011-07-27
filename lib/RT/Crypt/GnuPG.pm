@@ -404,7 +404,8 @@ sub CallGnuPG {
     );
     $gnupg->options->armor( 1 );
     $gnupg->options->meta_interactive( 0 );
-    $gnupg->options->default_key( $args{Signer} );
+    $gnupg->options->default_key( $args{Signer} )
+        if defined $args{Signer};
 
     my %seen;
     $gnupg->options->push_recipients( $_ ) for
