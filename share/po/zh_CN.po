@@ -8085,8 +8085,8 @@ msgstr "请输入您当前的密码."
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
-msgstr "请注意，申请单需具有以下状态之一( %1 )，才会在此显示。 关于功能更加强大的搜索，请访问 <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">搜索生成器界面</a>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"%2\">search builder interface</a>."
+msgstr "请注意，申请单需具有以下状态之一( %1 )，才会在此显示。 关于功能更加强大的搜索，请访问 <a href=\"%2\">搜索生成器界面</a>."
 
 #: NOT FOUND IN SOURCE
 msgid "Please select a group"
