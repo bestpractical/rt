@@ -371,7 +371,7 @@ sub CallGnuPG {
         Recipients  => [],
         Passphrase  => undef,
 
-        Method      => undef,
+        Command     => undef,
         CommandArgs => [],
 
         Content     => undef,
@@ -388,7 +388,7 @@ sub CallGnuPG {
     %handle = %$handle_list;
 
     my $content = $args{Content};
-    my $method  = $args{Method};
+    my $command = $args{Command};
 
     my %GnuPGOptions = RT->Config->Get('GnuPGOptions');
     my %opt = (
@@ -419,14 +419,14 @@ sub CallGnuPG {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child {
-            if ($method =~ /^--/) {
+            if ($command =~ /^--/) {
                 $gnupg->wrap_call(
                     handles      => $handles,
-                    commands     => [$method],
+                    commands     => [$command],
                     command_args => $args{CommandArgs},
                 );
             } else {
-                $gnupg->$method(
+                $gnupg->$command(
                     handles      => $handles,
                     command_args => $args{CommandArgs},
                 );
@@ -562,7 +562,7 @@ sub SignEncryptRFC3156 {
         my @signature;
         %res = CallGnuPG(
             Signer     => $args{'Signer'},
-            Method     => "detach_sign",
+            Command    => "detach_sign",
             Handles    => { stdin => IO::Handle::CRLF->new },
             Direct     => [],
             Passphrase => $args{'Passphrase'},
@@ -596,7 +596,7 @@ sub SignEncryptRFC3156 {
         %res = CallGnuPG(
             Signer     => $args{'Signer'},
             Recipients => \@recipients,
-            Method     => ( $args{'Sign'} ? "sign_and_encrypt" : "encrypt" ),
+            Command    => ( $args{'Sign'} ? "sign_and_encrypt" : "encrypt" ),
             Handles    => { stdout => $tmp_fh },
             Passphrase => $args{'Passphrase'},
             Content    => $entity->parts(0),
@@ -668,7 +668,7 @@ sub _SignEncryptTextInline {
     my %res = CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
-        Method     => ( $args{'Sign'} && $args{'Encrypt'}
+        Command    => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
                       : ( $args{'Sign'}
                         ? 'clearsign'
@@ -709,7 +709,7 @@ sub _SignEncryptAttachmentInline {
     my %res = CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
-        Method     => ( $args{'Sign'} && $args{'Encrypt'}
+        Command    => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
                       : ( $args{'Sign'}
                         ? 'detach_sign'
@@ -762,7 +762,7 @@ sub SignEncryptContent {
     my %res = CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
-        Method     => ( $args{'Sign'} && $args{'Encrypt'}
+        Command    => ( $args{'Sign'} && $args{'Encrypt'}
                       ? 'sign_and_encrypt'
                       : ( $args{'Sign'}
                         ? 'clearsign'
@@ -1045,7 +1045,7 @@ sub VerifyAttachment {
     $tmp_fh->flush;
 
     return CallGnuPG(
-        Method      => "verify",
+        Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Signature'}->bodyhandle,
@@ -1061,7 +1061,7 @@ sub VerifyRFC3156 {
     $tmp_fh->flush;
 
     return CallGnuPG(
-        Method      => "verify",
+        Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Signature'}->bodyhandle,
@@ -1086,7 +1086,7 @@ sub DecryptRFC3156 {
     binmode $tmp_fh, ':raw';
 
     my %res = CallGnuPG(
-        Method      => "decrypt",
+        Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Data'}->bodyhandle,
@@ -1210,7 +1210,7 @@ sub _DecryptInlineBlock {
     binmode $tmp_fh, ':raw';
 
     my %res = CallGnuPG(
-        Method      => "decrypt",
+        Command     => "decrypt",
         Handles     => { stdout => $tmp_fh, stdin => $args{'BlockHandle'} },
         Passphrase  => $args{'Passphrase'},
     );
@@ -1279,7 +1279,7 @@ sub DecryptContent {
     binmode $tmp_fh, ':raw';
 
     my %res = CallGnuPG(
-        Method      => "decrypt",
+        Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Content'},
@@ -1832,7 +1832,7 @@ sub GetKeysInfo {
             'fingerprint'     => undef, # show fingerprint
             'fixed-list-mode' => undef, # don't merge uid with keys
         },
-        Method      => $method,
+        Command     => $method,
         ( $email ? (CommandArgs => ['--', $email]) : () ),
         Output      => \@info,
     );
@@ -1996,7 +1996,7 @@ sub DeleteKey {
     my $key = shift;
 
     return CallGnuPG(
-        Method      => "--delete-secret-and-public-key",
+        Command     => "--delete-secret-and-public-key",
         CommandArgs => ["--", $key],
         Callback    => sub {
             my %handle = @_;
@@ -2013,7 +2013,7 @@ sub ImportKey {
     my $key = shift;
 
     return CallGnuPG(
-        Method      => "import_keys",
+        Command     => "import_keys",
         Content     => $key,
     );
 }
