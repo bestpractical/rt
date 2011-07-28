@@ -33,6 +33,7 @@ for my $file (@files) {
         elsif ($mark_to_change) {
             # we're at the line after the msgid in question
             eval $code_str;
+            $mark_to_change = 0;
         }
         print $fh_out $_;
     }
