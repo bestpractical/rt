@@ -9101,7 +9101,7 @@ msgid "You can only take tickets that are unowned"
 msgstr ""
 
 #: share/html/Search/Simple.html:62
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
 #: lib/RT/Ticket.pm:3091
