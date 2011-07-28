@@ -165,14 +165,14 @@ sub Prepare {
     # Header
     $self->SetRTSpecialHeaders();
 
-    $self->RemoveInappropriateRecipients();
-
     my %seen;
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         @{ $self->{$type} }
             = grep defined && length && !$seen{ lc $_ }++,
             @{ $self->{$type} };
     }
+
+    $self->RemoveInappropriateRecipients();
 
     # Go add all the Tos, Ccs and Bccs that we need to to the message to
     # make it happy, but only if we actually have values in those arrays.
@@ -779,7 +779,7 @@ sub RemoveInappropriateRecipients {
                     foreach my $addr ( @{ $self->{$type} } ) {
                         my $user = RT::User->new(RT->SystemUser);
                         $user->LoadByEmail($addr);
-                        push @blacklist, $addr if ( !$user->Privileged );
+                        push @blacklist, $addr unless $user->id && $user->Privileged;
                     }
                 }
                 $RT::Logger->info( $msgid
