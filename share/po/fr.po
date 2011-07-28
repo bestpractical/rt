@@ -2835,8 +2835,8 @@ msgstr "Afficher les recherches sauvegardées de ce groupe"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
-msgstr "Distribué selon la %1version 2 de la GNU GPL%2</a>"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
+msgstr "Distribué selon la %1version 2 de la GNU GPL%2"
 
 #: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"

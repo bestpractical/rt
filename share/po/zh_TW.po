@@ -3883,8 +3883,8 @@ msgstr "顯示第%1號申請單"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
-msgstr "以 %1GNU GPL%2</a> 第二版發布。"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
+msgstr "以 %1GNU GPL%2 第二版發布。"
 
 #: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"

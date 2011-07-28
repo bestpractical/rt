@@ -2707,8 +2707,8 @@ msgstr "Parodyti išsaugotas užklausas šiai grupei"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
-msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją.</a>"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
+msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją."
 
 #: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
