@@ -255,6 +255,16 @@ our %META = (
             Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
         },
     },
+    DefaultTimeUnitsToHours => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 9,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enter time in hours by default', #loc
+            Hints       => 'Only for entry, not display', #loc
+        },
+    },
     SearchResultsRefreshInterval => {
         Section         => 'General',                       #loc
         Overridable     => 1,
