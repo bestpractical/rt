@@ -12082,8 +12082,8 @@ msgid "You need to restart the Request Tracker service for saved changes to take
 msgstr "您必須重新啟動 Request Tracker 服務，儲存的更動纔會生效。"
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "將會跳轉到登錄頁面，您可以以使用者<tt>root</tt>和之前設定的密碼登錄。"
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "將會跳轉到登錄頁面，您可以以使用者%1和之前設定的密碼登錄。"
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."

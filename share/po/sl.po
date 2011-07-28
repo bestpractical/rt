@@ -8715,8 +8715,8 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "Iti bi moral direktno na stran za prijavo. Prijavil se boš lahko z uporabniškim imenom <tt>root</tt> in geslom ki si ga nastavil pred tem."
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "Iti bi moral direktno na stran za prijavo. Prijavil se boš lahko z uporabniškim imenom %1 in geslom ki si ga nastavil pred tem."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."

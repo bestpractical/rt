@@ -8726,8 +8726,8 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "Θα κατευθυνθείτε απευθείας σε σελίδα εισόδου. Θα μπορείτε να συνδεθήτε με το όνομα χρήστη <tt>root</tt> και τον κωδικο που ορίσατε προηγουμένως."
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "Θα κατευθυνθείτε απευθείας σε σελίδα εισόδου. Θα μπορείτε να συνδεθήτε με το όνομα χρήστη %1 και τον κωδικο που ορίσατε προηγουμένως."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
