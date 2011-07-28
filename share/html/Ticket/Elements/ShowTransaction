@@ -178,28 +178,35 @@ else {
         my $can_modify = $ticket->CurrentUserHasRight('ModifyTicket');
         if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"".$UpdatePath
+                "[<a href=\"" . $UpdatePath
               . "?id=" . $Transaction->Ticket
               . "&QuoteTransaction=" . $Transaction->Id
-              . "&Action=Respond\">"
+              . "&Action=Respond\" "
+              . "class=\"reply-link\""
+              . ">"
               . loc('Reply')
               . "</a>]&nbsp;";
         }
         if ( $can_modify || $ticket->CurrentUserHasRight('CommentOnTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"".$UpdatePath."?id="
-              . $Transaction->Ticket
-              . "&QuoteTransaction="
-              . $Transaction->Id
-              . "&Action=Comment\">"
-              . loc('Comment') . "</a>]";
+                "[<a href=\"" . $UpdatePath
+              . "?id=" . $Transaction->Ticket
+              . "&QuoteTransaction=" . $Transaction->Id
+              . "&Action=Comment\" "
+              . "class=\"comment-link\""
+              . ">"
+              . loc('Comment')
+              . "</a>]";
         }
         if ( $ticket->CurrentUserHasRight('ForwardMessage') ) {
             $titlebar_commands .=
-                "[<a href=\"". $ForwardPath
-              . "?id=". $Transaction->Ticket
-              . "&QuoteTransaction=". $Transaction->Id
-              . "\">". loc('Forward') . "</a>]";
+                "[<a href=\"" . $ForwardPath
+              . "?id=" . $Transaction->Ticket
+              . "&QuoteTransaction=" . $Transaction->Id ."\" "
+              . "class=\"forward-link\""
+              . ">"
+              . loc('Forward')
+              . "</a>]";
         }
         if ( $can_modify
             && RT->Config->Get('GnuPG')->{'Enable'}
@@ -207,9 +214,12 @@ else {
             && $ticket->CurrentUserHasRight('ForwardMessage')
         ) {
             $titlebar_commands .=
-                "[<a href=\"". $EncryptionPath
-              . "?id=". $Transaction->Id
-              . "\">". loc('Encrypt/Decrypt') . "</a>]";
+                "[<a href=\"" . $EncryptionPath
+              . "?id=" . $Transaction->Id ."\" "
+              . "class=\"gpg-link\""
+              . ">"
+              . loc('Encrypt/Decrypt')
+              . "</a>]";
         }
     }
 }
