@@ -782,7 +782,7 @@ sub GetForwardFrom {
     my $txn    = $args{Transaction};
     my $ticket = $args{Ticket} || $txn->Object;
 
-    unless ( RT->Config->Get('ForwardFromUser') ) {
+    if ( RT->Config->Get('ForwardFromUser') ) {
         return ( $txn || $ticket )->CurrentUser->UserObj->EmailAddress;
     }
     else {
