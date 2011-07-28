@@ -5395,7 +5395,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "如果此工具程式為 setgid，惡意的本地端使用者即能由此取得 RT 的管理員權限。"
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料庫正在運行並且RT可以正常訪問它。完成之後，請重啟RT。"
 
 #: NOT FOUND IN SOURCE

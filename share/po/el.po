@@ -3667,7 +3667,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "Αν αυτό το εργαλείο είναι setgid, ένας κακόβουλος τοπικός χρήστης θα μπορούσε να το χρησιμοποιήσει για να αποκτήσει πρόσβαση διαχειριστή στο RT"
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "Αν έχετε ήδη κάποιο διακομιστή RT και βάση δεδομένων, θα πρέπει να βεβαιωθείτε ότι η βάση δεδομένων τρέχει και ότι ο διακομιστής RT μπορεί να ενωθεί με αυτή. Όταν το κάνετε αυτό σταματήστε και ξεκινήστε τον διακομιστή RT.</p>"
 
 #: NOT FOUND IN SOURCE

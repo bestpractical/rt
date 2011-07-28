@@ -4404,7 +4404,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "Hvis dette verktøyet var «setgid», kunne en ondsinnet lokal bruker bruke det for å få administrativ tilgang til RT."
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "Hvis du alt har en fungerende RT-tjener og RT-database, bør du nå se til at databasetjeneren kjører, og at RT-tjeneren kan koble til den. Når du har gjort dette, bør du stoppe og så starte RT-tjeneren på nytt."
 
 #: NOT FOUND IN SOURCE
