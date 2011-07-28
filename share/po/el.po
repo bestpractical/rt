@@ -6059,8 +6059,8 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "Το RT θα ψάξει για οτιδήποτε εισάγετε στο θέμα του αιτήματος"
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "Το RT θα αντικαταστήσει τα <tt>__id__</tt> και <tt>__CustomField__</tt> με την εγγεγραμένη ταυτότητα και τιμή ειδικού πεδίου, αντίστοιχα"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "Το RT θα αντικαταστήσει τα %1 και %2 με την εγγεγραμένη ταυτότητα και τιμή ειδικού πεδίου, αντίστοιχα"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"

@@ -6356,7 +6356,7 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr ""
 
 #: lib/RT/Installer.pm:142

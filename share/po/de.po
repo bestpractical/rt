@@ -6550,8 +6550,8 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "RT wird nach allem suchen was in einem Anfragen Betreff steht."
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT wird <tt>__id__</tt> und <tt>__CustomField__</tt> mit der Record ID und dem Wert des benutzerdefinierten Feldes ersetzen."
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "RT wird %1 und %2 mit der Record ID und dem Wert des benutzerdefinierten Feldes ersetzen."
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"

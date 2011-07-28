@@ -7287,8 +7287,8 @@ msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "O RT vai processar esta mensagem como se não fosse assinada.\\n"
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT vai substituir  <tt>__id__</tt> e <tt>__CustomField__</tt> respectivamente com o id do registro e o valor do campo personalizado"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "RT vai substituir  %1 e %2 respectivamente com o id do registro e o valor do campo personalizado"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
