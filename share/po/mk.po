@@ -594,7 +594,7 @@ msgstr "<%$Action%> овде"
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
 msgstr "<input type=\"submit\" class=\"button\" value=Нов тикет во\" />&nbsp;%1"
 
 #: lib/RT/StyleGuide.pod:779

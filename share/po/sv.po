@@ -701,8 +701,8 @@ msgstr "<%$fält%>"
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Nytt ärende i\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
+msgstr "%1Nytt ärende i%2&nbsp;%3"
 
 #: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
