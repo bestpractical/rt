@@ -12090,8 +12090,8 @@ msgid "You should choose the database you or your local database administrator i
 msgstr "您應當選擇您或資料庫管理員最順手的資料庫"
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "您看到這個畫面表示您的 RT 並沒有設定正確的資料庫。這大概是您第一次執行 RT。點選下方的<i>開始吧！</i>，RT 會幫助您設定好 RT 伺服器及資料庫。"
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
+msgstr "您看到這個畫面表示您的 RT 並沒有設定正確的資料庫。這大概是您第一次執行 RT。點選下方的<i>%1</i>，RT 會幫助您設定好 RT 伺服器及資料庫。"
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

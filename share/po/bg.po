@@ -8762,8 +8762,8 @@ msgid "You should choose the database you or your local database administrator i
 msgstr "Трябва да изберете базата данни, която е най-удобна на вас или на вашият администратор на бази данни."
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Виждате този екран, защото стартирахте RT сървър без работеща база данни. Най-вероятно, това е първият път, в който пускате RT. Ако щракнете <i>Давай!</i> по-долу, RT ще ви преведе през процедурата по установяването на RT сървър и база данни."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
+msgstr "Виждате този екран, защото стартирахте RT сървър без работеща база данни. Най-вероятно, това е първият път, в който пускате RT. Ако щракнете <i>%1</i> по-долу, RT ще ви преведе през процедурата по установяването на RT сървър и база данни."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

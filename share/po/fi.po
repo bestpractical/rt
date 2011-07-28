@@ -9811,7 +9811,7 @@ msgid "You should choose the database you or your local database administrator i
 msgstr ""
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
 msgstr ""
 
 #: share/html/NoAuth/Logout.html:59
