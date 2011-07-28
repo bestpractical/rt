@@ -61,7 +61,9 @@ jQuery(function(){
         // Auto-submit once a group is chosen
         select: function( event, ui ) {
             jQuery(event.target).val(ui.item.value);
-            jQuery(event.target).closest("form").submit();
+            var form = jQuery(event.target).closest('form');
+            form.find('input[name=GroupOp]').val('=');
+            form.submit();
         }
     });
 });
