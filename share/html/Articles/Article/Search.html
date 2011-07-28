@@ -109,8 +109,8 @@ use RT::SavedSearch;
 my @results;
 my $articles = RT::Articles->new( $session{'CurrentUser'} );
 my $format = q{
-    '<a href="/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
-    '<a href="/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
     '__ClassName__',
     '__CreatedRelative__',
     '__LastUpdatedRelative__',
