@@ -1284,9 +1284,8 @@ sub CreateTicket {
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add(
-            "X-RT-$argument" => Encode::encode_utf8( $ARGS{$argument} )
-        ) if defined $ARGS{$argument};
+        $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 )
+          if defined $ARGS{$argument};
     }
 
     my %create_args = (
@@ -1519,8 +1518,8 @@ sub ProcessUpdateMessage {
     }
 
     my %message_args = (
-        Sign         => $args{ARGSRef}->{'Sign'},
-        Encrypt      => $args{ARGSRef}->{'Encrypt'},
+        Sign         => ( $args{ARGSRef}->{'Sign'} ? 1 : 0 ),
+        Encrypt      => ( $args{ARGSRef}->{'Encrypt'} ? 1 : 0 ),
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
