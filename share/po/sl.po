@@ -8723,8 +8723,8 @@ msgid "You should choose the database you or your local database administrator i
 msgstr "Izberi bazo s katero si ti ali lokalno administrator najbolj domač."
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
-msgstr "To vidiš ker si strežnik zagnal brez delujoče baze. Najverjetneje je to prvič. Če klikneš <i>%1</i>, te bo RT vodil skozi namestitev RT strežnika in baze."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "To vidiš ker si strežnik zagnal brez delujoče baze. Najverjetneje je to prvič. Če klikneš "%1", te bo RT vodil skozi namestitev RT strežnika in baze."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

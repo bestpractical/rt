@@ -10338,8 +10338,8 @@ msgid "You should choose the database you or your local database administrator i
 msgstr "Debería elegir la BBDD con la que usted o su DBA local estén más cómodos."
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Está viendo esta pantalla debido a que comenzó en un servidor RT sin una BBDD funcional. Lo más probable es que esta sea la primera vez que ejecuta RT. Si pulsa <i>%1</i> más abajo, RT le guiará a través de la configuración de su servidor y BBDD."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "Está viendo esta pantalla debido a que comenzó en un servidor RT sin una BBDD funcional. Lo más probable es que esta sea la primera vez que ejecuta RT. Si pulsa "%1" más abajo, RT le guiará a través de la configuración de su servidor y BBDD."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

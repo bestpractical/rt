@@ -8734,8 +8734,8 @@ msgid "You should choose the database you or your local database administrator i
 msgstr "Θα πρέπει να επιλέξετε μια βάση δεδομένων στην οποία είτε εσείς είτε ο διαχειριστής συστημάτων σας είστε πιο καταρτισμένοι"
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>%1</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Βλέπετε αυτό το μήνυμα επιδή ξεκινήσατε τον διακομιστή RT χωρίς να υπάρχει έτοιμη βάση δεδομένων. Μάλλον, είναι η πρώτη φορά που τρέχετε το RT. Αν Πατήσετε το <i>%1</i> πιο κάτω, το RT θα σας καθοδηγήσει ώστενα ρυθμίσετε σωστά τον διακομιστή RT και την βάση δεδομένων σας."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "Βλέπετε αυτό το μήνυμα επιδή ξεκινήσατε τον διακομιστή RT χωρίς να υπάρχει έτοιμη βάση δεδομένων. Μάλλον, είναι η πρώτη φορά που τρέχετε το RT. Αν Πατήσετε το "%1" πιο κάτω, το RT θα σας καθοδηγήσει ώστενα ρυθμίσετε σωστά τον διακομιστή RT και την βάση δεδομένων σας."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
