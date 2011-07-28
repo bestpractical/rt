@@ -719,7 +719,7 @@ sub Decrypt {
     my $type = $self->ContentType;
     if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
         ($type) = ($type =~ /original-type="(.*)"/i);
-        $type ||= 'application/octeat-stream';
+        $type ||= 'application/octet-stream';
     } else {
         return (1, $self->loc('Is not encrypted'));
     }
