@@ -214,50 +214,50 @@ if ( $ARGS{'ResetAuthToken'} ) {
     push @results, $msg;
 }
 else {
-my @fields = qw(
-    Name Comments Signature EmailAddress FreeformContactInfo 
-    Organization RealName NickName Lang EmailEncoding WebEncoding 
-    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-    Address2 City State Zip Country Timezone
-);
-
-$m->callback(
-    CallbackName => 'UpdateLogic',
-    fields       => \@fields,
-    results      => \@results,
-    UserObj      => $UserObj,
-    ARGSRef      => \%ARGS,
-);
-
-push @results, UpdateRecordObject (
-    AttributesRef => \@fields,
-    Object => $UserObj,
-    ARGSRef => \%ARGS,
-);
-
-push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
-
-if ( $Lang ) {
-    $session{'CurrentUser'}->LanguageHandle($Lang);
-    $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
-}
-
-# Deal with special fields: Privileged, Enabled, and Password
-if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
-    my ($code, $msg) = $UserObj->SetPrivileged( $Privileged );
-    push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
-}
-
-my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
-if (defined $Pass1 && length $Pass1 ) {
-    my ($status, $msg) = $UserObj->SafeSetPassword(
-        Current      => $CurrentPass,
-        New          => $Pass1,
-        Confirmation => $Pass2,
+    my @fields = qw(
+        Name Comments Signature EmailAddress FreeformContactInfo 
+        Organization RealName NickName Lang EmailEncoding WebEncoding 
+        ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
+        AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+        Address2 City State Zip Country Timezone
     );
-    push @results, loc("Password: [_1]", $msg);
-}
+
+    $m->callback(
+        CallbackName => 'UpdateLogic',
+        fields       => \@fields,
+        results      => \@results,
+        UserObj      => $UserObj,
+        ARGSRef      => \%ARGS,
+    );
+
+    push @results, UpdateRecordObject (
+        AttributesRef => \@fields,
+        Object => $UserObj,
+        ARGSRef => \%ARGS,
+    );
+
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
+
+    if ( $Lang ) {
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    }
+
+    # Deal with special fields: Privileged, Enabled, and Password
+    if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
+        my ($code, $msg) = $UserObj->SetPrivileged( $Privileged );
+        push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+    }
+
+    my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
+    if (defined $Pass1 && length $Pass1 ) {
+        my ($status, $msg) = $UserObj->SafeSetPassword(
+            Current      => $CurrentPass,
+            New          => $Pass1,
+            Confirmation => $Pass2,
+        );
+        push @results, loc("Password: [_1]", $msg);
+    }
 }
 
 </%INIT>
