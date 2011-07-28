@@ -747,16 +747,18 @@ sub SendForward {
     my $subject = '';
     $subject = $txn->Subject if $txn;
     $subject ||= $ticket->Subject if $ticket;
-    if ( RT->Config->Get('ForwardFromUser') ) {
-        $from = ($txn || $ticket)->CurrentUser->UserObj->EmailAddress;
-    } else {
+
+    unless ( RT->Config->Get('ForwardFromUser') ) {
         # XXX: what if want to forward txn of other object than ticket?
         $subject = AddSubjectTag( $subject, $ticket );
-        $from = $ticket->QueueObj->CorrespondAddress
-            || RT->Config->Get('CorrespondAddress');
     }
+
     $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
-    $mail->head->set( From    => EncodeToMIME( String => $from ) );
+    $mail->head->set(
+        From => EncodeToMIME(
+            String => GetForwardFrom( Transaction => $txn, Ticket => $ticket )
+        )
+    );
 
     my $status = RT->Config->Get('ForwardFromUser')
         # never sign if we forward from User
@@ -764,6 +766,26 @@ sub SendForward {
         : SendEmail( %args, Entity => $mail );
     return (0, $ticket->loc("Couldn't send email")) unless $status;
     return (1, $ticket->loc("Sent email successfully"));
+}
+
+=head2 GetForwardFrom Ticket => undef, Transaction => undef
+
+Resolve the From field to use in forward mail
+
+=cut
+
+sub GetForwardFrom {
+    my %args   = ( Ticket => undef, Transaction => undef, @_ );
+    my $txn    = $args{Transaction};
+    my $ticket = $args{Ticket} || $txn->Object;
+
+    if ( RT->Config->Get('ForwardFromUser') ) {
+        return ( $txn || $ticket )->CurrentUser->UserObj->EmailAddress;
+    }
+    else {
+        return $ticket->QueueObj->CorrespondAddress
+          || RT->Config->Get('CorrespondAddress');
+    }
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
