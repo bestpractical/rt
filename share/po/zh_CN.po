@@ -894,8 +894,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"创建申请单\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>所有的iCal种子都内嵌一个授权给您的密钥。如果您的某个iCal种子的URL暴露在外部世界，您可以获得一个新的密钥，<b>断开以下所有已经存在的iCal种子</b> 。</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "所有的iCal种子都内嵌一个授权给您的密钥。如果您的某个iCal种子的URL暴露在外部世界，您可以获得一个新的密钥，<b>断开以下所有已经存在的iCal种子</b> 。"
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))

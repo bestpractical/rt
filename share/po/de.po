@@ -734,8 +734,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"übermitteln\" value=\"Neue Anfrage in\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Jeder iCal Feed enthält eine geheimes Kürzel, welches Dich authorisiert. Falls die URL deines iCal Feeds in falsche Hände gekommen ist, kannst Du hier ein neues geheimes Kürzel erstellen, <b>welches alle bestehenden iCal Feeds unbrauchbar macht</b></p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "Jeder iCal Feed enthält eine geheimes Kürzel, welches Dich authorisiert. Falls die URL deines iCal Feeds in falsche Hände gekommen ist, kannst Du hier ein neues geheimes Kürzel erstellen, <b>welches alle bestehenden iCal Feeds unbrauchbar macht</b>"
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))

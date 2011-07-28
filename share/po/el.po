@@ -643,8 +643,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Νέο αίτημα σε\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Όλες οι ροές iCal ενθέτουν ένα μυστικό κουπόνι που σας εξουσιοδοτεί. Αν η διεύθυνση URL κάποιας ροής εκτεθεί στον έξω κόσμο, μπορείτε να πάρετε ένα νέο μυστικό, <b>διακόπτωντας όλα τις υφιστάμενες ροές iCal</b> πιο κάτω.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "Όλες οι ροές iCal ενθέτουν ένα μυστικό κουπόνι που σας εξουσιοδοτεί. Αν η διεύθυνση URL κάποιας ροής εκτεθεί στον έξω κόσμο, μπορείτε να πάρετε ένα νέο μυστικό, <b>διακόπτωντας όλα τις υφιστάμενες ροές iCal</b> πιο κάτω."
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))

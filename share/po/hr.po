@@ -711,7 +711,7 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Novi zahtjev u\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
 msgstr "<p>Svi iCal izvori sadrže tajnu značku pomoću koje se autorizirate. Ako se URL nekog od vaših iCal izvora javno objavi, klikom na tipku dolje možete napraviti novu tajnu značku i time <b>deaktivirati sve postojeće iCal izvore</b>."
 
 #: share/html/Admin/Tools/Queries.html:81

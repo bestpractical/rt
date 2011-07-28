@@ -648,8 +648,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Создать заявку в очереди\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже."
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))

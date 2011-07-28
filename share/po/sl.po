@@ -640,8 +640,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Nova zadeva v\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Vsi iCal viri imajo vključen unikaten podatke za avtorazijo. Če je URL naslov iCal vira prišel v napačne roke, lahko dobiš nov naslov spodaj. <b>Vsi obstoječi iCal viri bodo s tem postali neveljavni!</b></p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "Vsi iCal viri imajo vključen unikaten podatke za avtorazijo. Če je URL naslov iCal vira prišel v napačne roke, lahko dobiš nov naslov spodaj. <b>Vsi obstoječi iCal viri bodo s tem postali neveljavni!</b>"
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))
