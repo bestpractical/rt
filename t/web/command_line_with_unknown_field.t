@@ -12,6 +12,7 @@ $ENV{'RTPASSWD'} = 'password';
 $RT::Logger->debug("Connecting to server at ".RT->Config->Get('WebBaseURL'));
 $ENV{'RTSERVER'} =RT->Config->Get('WebBaseURL') ;
 $ENV{'RTDEBUG'} = '1';
+$ENV{'RTCONFIG'} = '/dev/null';
 
 expect_run(
     command => "$rt_tool_path shell",
