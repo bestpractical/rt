@@ -51,7 +51,7 @@
         class => 'ticket-info-attachments',
         color => "#336699" &>
 
-% foreach my $key (sort keys %documents) {
+% foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
 <%$key%><br />
 <ul>
