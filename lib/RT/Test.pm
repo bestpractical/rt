@@ -212,7 +212,7 @@ sub bootstrap_tempdir {
     my $self = shift;
     my ($test_dir, $test_file) = ('t', '');
 
-    if (File::Spec->rel2abs((caller(1))[1]) =~ m{(?:^|[\\/])(x?t)[/\\](.*)}) {
+    if (File::Spec->rel2abs($0) =~ m{(?:^|[\\/])(x?t)[/\\](.*)}) {
         $test_dir  = $1;
         $test_file = $2;
         $test_file =~ s{[/\\]}{-}g;
