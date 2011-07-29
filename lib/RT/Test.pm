@@ -214,14 +214,14 @@ sub bootstrap_tempdir {
 
     if (File::Spec->rel2abs($0) =~ m{(?:^|[\\/])(x?t)[/\\](.*)}) {
         $test_dir  = $1;
-        $test_file = $2;
+        $test_file = "$2-";
         $test_file =~ s{[/\\]}{-}g;
     }
 
     my $dir_name = File::Spec->rel2abs("$test_dir/tmp");
     mkpath( $dir_name );
     return $tmp{'directory'} = File::Temp->newdir(
-        "$test_file-XXXXXXXX",
+        "${test_file}XXXXXXXX",
         DIR => $dir_name
     );
 }
