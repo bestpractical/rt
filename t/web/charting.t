@@ -1,7 +1,16 @@
 use strict;
 use warnings;
 
-use RT::Test no_plan => 1;
+BEGIN {
+    require RT::Test;
+
+    if (eval { require GD; 1 }) {
+        RT::Test->import(plan => 'no_plan');
+    }
+    else {
+        RT::Test->import(skip_all => 'GD required.');
+    }
+}
 
 for my $n (1..7) {
     my $ticket = RT::Ticket->new( RT->SystemUser );
