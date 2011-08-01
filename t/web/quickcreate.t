@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 10;
+use RT::Test tests => 11;
 
 RT->Config->Set('DisplayTicketAfterQuickCreate' => 0);
 
@@ -15,7 +15,8 @@ $m->field(Subject => 'from quick create');
 $m->submit;
 
 $m->content_like(qr/Ticket \d+ created in queue/, 'created ticket');
-is( $m->uri, $baseurl . '/index.html', 'still in homepage' );
+like( $m->uri, qr{^\Q$baseurl\E/(?:index\.html)?\?results=}, 'still in homepage' );
+unlike( $m->uri, qr{Ticket/Display.html}, 'not on ticket display page' );
 
 $m->get_ok($baseurl . '/Prefs/Other.html');
 $m->submit_form(
