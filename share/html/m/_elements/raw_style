@@ -465,7 +465,7 @@ div.entry, tr.input-row {
 }
 
 
-input, input[type=text], input[type=password], select {
+input[type=text], input[type=password], select {
     width: 100%;
 }
 
