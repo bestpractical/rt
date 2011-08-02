@@ -570,12 +570,19 @@ my $build_admin_menu = sub {
         my $has_query = '';
         my $current_search = $session{"CurrentSearchHash"} || {};
         my $search_id = $m->request_args->{'SavedSearchLoad'} || $m->request_args->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
+        my $chart_id = $m->request_args->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
+
+        if ($request_path =~ m{^/Search/Chart\.html}) {
+            if ($m->request_args->{'SavedSearchLoadButton'}) {
+                chart_id = $m->request_args->{'SavedSearchLoad'};
+            }
+        }
 
         $has_query = 1 if ( $m->request_args->{'Query'} or $current_search->{'Query'} );
 
         my %query_args = (
             SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
-            SavedChartSearchId => $m->request_args->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId},
+            SavedChartSearchId => $chart_id,
             Query => $m->request_args->{'Query'} || $current_search->{'Query'},
             Format => $m->request_args->{'Format'} || $current_search->{'Format'},
             OrderBy => $m->request_args->{'OrderBy'} || $current_search->{'OrderBy'} ||'',
