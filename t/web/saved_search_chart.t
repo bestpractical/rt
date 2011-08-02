@@ -2,9 +2,10 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 21;
+use RT::Test no_plan => 1;
 my ( $url, $m ) = RT::Test->started_ok;
 use RT::Attribute;
+
 my $search = RT::Attribute->new(RT->SystemUser);
 my $ticket = RT::Ticket->new(RT->SystemUser);
 my ( $ret, $msg ) = $ticket->Create(
@@ -84,3 +85,68 @@ $m->submit_form(
 $m->content_contains("Chart first chart deleted", 'found deleted message' );
 $m->content_unlike( qr/value="RT::User-\d+-SavedSearch-\d+"/,
     'no saved search' );
+
+for ('A' .. 'F') {
+    $ticket->Create(
+        Subject   => $$ . $_,
+    );
+}
+
+for ([A => 'subject="'.$$.'A"'], [BorC => 'subject="'.$$.'B" OR subject="'.$$.'C"']) {
+    $m->get_ok('/Search/Edit.html');
+    $m->form_name('BuildQueryAdvanced');
+    $m->field('Query', $_->[1]);
+    $m->submit;
+
+    # Save the search
+    $m->follow_link_ok({id => 'page-chart'});
+    $m->form_name('SaveSearch');
+    $m->field(SavedSearchDescription => $_->[0]);
+    $m->click_ok('SavedSearchSave');
+    $m->text_contains('Chart ' . $_->[0] . ' saved.');
+
+}
+
+$m->form_name('SaveSearch');
+my @saved_search_ids =
+    $m->current_form->find_input('SavedSearchLoad')->possible_values;
+shift @saved_search_ids; # first value is blank
+
+cmp_ok(@saved_search_ids, '==', 2, 'Two saved charts were made');
+
+# TODO get find_link('page-chart')->URI->params to work...
+sub page_chart_link_has {
+    my ($m, $id, $msg) = @_;
+
+    $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    (my $dec_id = $id) =~ s/:/%3A/g;
+
+    my $chart_url = $m->find_link(id => 'page-chart')->url;
+    like(
+        $chart_url, qr{SavedChartSearchId=\Q$dec_id\E},
+        $msg || 'Page chart link matches the pattern we expected'
+    );
+}
+
+# load the first chart
+$m->field('SavedSearchLoad' => $saved_search_ids[0]);
+$m->submit;
+
+page_chart_link_has($m, $saved_search_ids[0]);
+
+$m->form_name('SaveSearch');
+is($m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[0]);
+
+# now load the second chart
+$m->field('SavedSearchLoad' => $saved_search_ids[1]);
+$m->submit;
+
+page_chart_link_has($m, $saved_search_ids[1]);
+
+is(
+    $m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[1],
+    'Second form is seen as a hidden field'
+);
+
+page_chart_link_has($m, $saved_search_ids[1]);
