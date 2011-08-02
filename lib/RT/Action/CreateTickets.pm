@@ -1080,7 +1080,7 @@ sub UpdateWatchers {
 
     my @results;
 
-    foreach my $type qw(Requestor Cc AdminCc) {
+    foreach my $type (qw(Requestor Cc AdminCc)) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
 
