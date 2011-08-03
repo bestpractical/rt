@@ -60,7 +60,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
-% foreach my $var qw(Query Format OrderBy Order Rows Page SavedChartSearchId) {
+% foreach my $var (qw(Query Format OrderBy Order Rows Page SavedChartSearchId)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
 <& /Elements/CollectionList, 
@@ -358,13 +358,13 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         my @watchresults =
           ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
             $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
             $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
         }
         @linkresults =
           ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-        foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
             delete $ARGS{ $type . "-" . $Ticket->id };
             delete $ARGS{ $Ticket->id . "-" . $type };
         }

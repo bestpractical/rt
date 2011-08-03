@@ -723,7 +723,7 @@ sub ParseLines {
         }
     }
 
-    foreach my $date qw(due starts started resolved) {
+    foreach my $date (qw(due starts started resolved)) {
         my $dateobj = RT::Date->new( $self->CurrentUser );
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
@@ -1080,7 +1080,7 @@ sub UpdateWatchers {
 
     my @results;
 
-    foreach my $type qw(Requestor Cc AdminCc) {
+    foreach my $type (qw(Requestor Cc AdminCc)) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
 

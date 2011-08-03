@@ -196,7 +196,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
-        foreach my $attr qw(Name Description SortOrder Category) {
+        foreach my $attr (qw(Name Description SortOrder Category)) {
             my $param = join("-", $paramtag, $value->Id, $attr);
             next unless exists $ARGS{$param};
             $ARGS{$param} =~ s/^\s+//;
