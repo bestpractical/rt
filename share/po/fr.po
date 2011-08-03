@@ -6058,8 +6058,8 @@ msgstr "Veuillez saisir votre mot de passe actuel."
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"%2\">search builder interface</a>."
-msgstr "Veuillez noter que seuls les tickets ayant un de ces statut ( %1 ) sont affichés ici. Pour une recherche plus complète utilisez le <a href=\"%2\">moteur de recherche</a>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
+msgstr "Veuillez noter que seuls les tickets ayant un de ces statut ( %1 ) sont affichés ici. Pour une recherche plus complète utilisez le %2moteur de recherche%3."
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
