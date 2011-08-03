@@ -65,7 +65,7 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
 <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
 <br />
-%foreach my $type qw(To Cc Bcc) {
+%foreach my $type (qw(To Cc Bcc)) {
 %my @addresses =  $scrip->ActionObj->Action->$type();
 <ul>
 %foreach my $addr (@addresses) {
@@ -90,7 +90,7 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 %    next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
 <b><% $rule->Describe %></b>
 %    my $data = $rule->{hints}{recipients};
-%    foreach my $type qw(To Cc Bcc) {
+%    foreach my $type (qw(To Cc Bcc)) {
 <ul>
 %        foreach my $address (@{$data->{$type}}) {
 <li>
@@ -205,7 +205,7 @@ foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
     my $action = $scrip->ActionObj->Action;
     next unless $action->isa('RT::Action::SendEmail');
 
-    foreach my $type qw(To Cc Bcc) {
+    foreach my $type (qw(To Cc Bcc)) {
         push @recipients, $action->$type();
     }
 }
@@ -250,7 +250,7 @@ foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
     my $action = $scrip->ActionObj->Action;
     next unless $action->isa('RT::Action::SendEmail');
 
-    foreach my $type qw(To Cc Bcc) {
+    foreach my $type (qw(To Cc Bcc)) {
         push @recipients, $action->$type();
     }
 }
