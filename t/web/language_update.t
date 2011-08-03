@@ -19,6 +19,6 @@ $m->form_with_fields('Lang');
 $m->field(Lang => 'en_us');
 $m->submit;
 
-$m->text_contains("Lang changed from 'zh_TW' to 'en_us'", "successfully updated to en_us");
-$m->text_contains("breaking all existing iCal feeds", "when updating to language en_us, results are in en_us");
+$m->text_contains("breaking all existing iCal feeds", "successfully updated to en_us");
+$m->text_contains("Lang changed from 'zh_TW' to 'en_us'", "when updating to language en_us, results are in en_us");
 
