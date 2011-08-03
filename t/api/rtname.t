@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 9;
+use RT::Test nodata => 1, tests => 12;
 
 use RT::Interface::Email;
 
@@ -31,3 +31,8 @@ is(RT::Interface::Email::ParseTicketId("[site #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[newsite #123] test"), 123);
 is(RT::Interface::Email::ParseTicketId("[othersite #123] test"), undef);
 
+# Parens work fine
+RT->Config->Set( EmailSubjectTagRegex => qr/(new|)(site)/ );
+is(RT::Interface::Email::ParseTicketId("[site #123] test"), 123);
+is(RT::Interface::Email::ParseTicketId("[newsite #123] test"), 123);
+is(RT::Interface::Email::ParseTicketId("[othersite #123] test"), undef);
