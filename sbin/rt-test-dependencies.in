@@ -156,6 +156,10 @@ sub conclude {
                     0, $module->{error} );
             }
         }
+
+        print "\nPerl library path for @PERL@:\n";
+        print "    $_\n" for @INC;
+
         exit 1;
     }
 }
