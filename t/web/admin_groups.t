@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 29;
+use RT::Test tests => 26;
 
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
@@ -39,10 +39,8 @@ ok( $m->login(), 'logged in' );
         form_number => 3,
         fields => { Name => 'test group' },
     });
-    $m->content_contains('RT Error', 'found error title');
     $m->content_contains('Group could not be created', 'found results');
     $m->content_like(qr/Group name .+? is already in use/, 'found message');
-    $m->warning_like(qr/Group name .+? is already in use/, 'found warning');
 }
 
 {
