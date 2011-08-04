@@ -184,7 +184,9 @@ else {
             $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
         }
     } else {
-        $CustomFieldObj->Load( $id ) || push @results, loc('No CustomField');
+        push @results, loc('No CustomField')
+            unless  $CustomFieldObj->Load( $id );
+
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
 }
