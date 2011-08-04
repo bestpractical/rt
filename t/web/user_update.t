@@ -12,7 +12,7 @@ $m->form_with_fields('Lang');
 $m->field(Lang => 'ja');
 $m->submit;
 
-$m->text_contains("Lang changed from (no value) to 'ja'");
+$m->text_contains("Langは「(値なし)」から「'ja'」に変更されました");
 
 # we only changed one field, and it wasn't the default, so this feedback is
 # spurious and annoying
@@ -23,9 +23,7 @@ $m->form_with_fields('Lang');
 $m->field(Lang => 'en_us');
 $m->submit;
 
-# This message shows up in Japanese
-# $m->text_contains("Lang changed from 'ja' to 'en_us'");
-$m->text_contains("Langは「'ja'」から「'en_us'」に変更されました");
+$m->text_contains("Lang changed from 'ja' to 'en_us'");
 
 # another spurious update
 $m->content_lacks("That is already the current value");
