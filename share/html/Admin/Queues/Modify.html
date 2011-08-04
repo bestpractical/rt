@@ -98,7 +98,7 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn || $DefaultDueIn %>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn || $DefaultDueIn || "" %>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % my $CFs = $QueueObj->CustomFields;
