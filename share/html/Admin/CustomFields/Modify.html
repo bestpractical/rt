@@ -273,10 +273,13 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
-
-
-
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions     => \@results,
+    Arguments   => { id => $id },
+) if $CustomFieldObj->id;
 
 
 my $EnabledChecked = qq[checked="checked"];
