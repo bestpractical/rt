@@ -62,7 +62,7 @@ our (@ScripActions, @Scrips);
 {
 RT->Logger->debug("Going to add in Extract Subject Tag actions if they were missed during a previous upgrade");
 
-$actions = RT::ScripActions->new( RT->SystemUser );
+my $actions = RT::ScripActions->new( RT->SystemUser );
 $actions->Limit(
     FIELD => 'ExecModule',
     VALUE => 'ExtractSubjectTag',
