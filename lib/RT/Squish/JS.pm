@@ -114,15 +114,6 @@ sub Filter {
         }
     }
 
-    unless ($minified) {
-        eval { require JavaScript::Minifier };
-        if ($@) {
-            $RT::Logger->debug("can't load JavaScript::Minifier: $@");
-        }
-        else {
-            $content = JavaScript::Minifier::minify( input => $content );
-        }
-    }
     return $content;
 }
 
