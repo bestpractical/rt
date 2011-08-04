@@ -42,8 +42,8 @@ our @Initial = (
             next unless $attr;
             $cf->SetBasedOn($attr->Content);
         }
-        $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
-        $res = RT->DatabaseHandle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField' );
+        my $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
+        my $res = RT->DatabaseHandle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField' );
         unless ( $res ) {
             RT->Logger->error("Failed to delete BasedOn CustomFields from Attributes");
             return;
