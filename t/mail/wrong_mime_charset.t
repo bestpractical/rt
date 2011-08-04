@@ -9,8 +9,8 @@ use Encode;
 my $test_string    = 'À';
 my $encoded_string = encode( 'iso-8859-1', $test_string );
 my $mime           = MIME::Entity->build(
-    Subject => $encoded_string,
-    Data    => [$encoded_string],
+    "Subject" => $encoded_string,
+    "Data"    => [$encoded_string],
 );
 
 # set the wrong charset mime in purpose
