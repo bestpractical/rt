@@ -175,7 +175,7 @@ our @Final = (
         $scrips->LimitToQueue( $approvals_q->id );
         while ( my $scrip = $scrips->Next ) {
             my %tmp =
-                map { $tmp->{ $_ } = $scrip->_Value( $_ ) }
+                map { $_ => $scrip->_Value( $_ ) }
                 $scrip->ReadableAttributes;
 
             print $tmp_fh Data::Dumper::Dumper( \%tmp );
