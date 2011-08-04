@@ -4,7 +4,7 @@ use warnings;
 
 our @Final = (
     sub {
-        $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
+        RT->Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
 
         my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
@@ -52,7 +52,7 @@ our @Final = (
             next if $new eq $argument;
 
             my ($status, $msg) = $action->__Set( Field => 'Argument', Value => $new );
-            $RT::Logger->warning( "Couldn't change argument value of the action: $msg" )
+            RT->Logger->warning( "Couldn't change argument value of the action: $msg" )
                 unless $status;
         }
     },

@@ -3,7 +3,7 @@ use warnings;
 
 our @Initial = (
     sub {
-        $RT::Logger->debug('Removing all delegated rights');
+        RT->Logger->debug('Removing all delegated rights');
 
         my $acl = RT::ACL->new(RT->SystemUser);
         $acl->Limit( CLAUSE   => 'search',
@@ -22,7 +22,7 @@ our @Initial = (
             my ( $ok, $msg ) = $ace->Delete();
 
             if ( !$ok ) {
-                $RT::Logger->warn(
+                RT->Logger->warn(
                            "Unable to delete ACE " . $ace->id . ": " . $msg );
             }
         }
@@ -37,7 +37,7 @@ our @Initial = (
             while ( my $member = $members->Next ) {
                 my ( $ok, $msg ) = $group->DeleteMember( $member->MemberId );
                 if ( !$ok ) {
-                    $RT::Logger->warn(   "Unable to remove group member "
+                    RT->Logger->warn(   "Unable to remove group member "
                                        . $member->id . ": "
                                        . $msg );
                 }

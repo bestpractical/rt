@@ -6,16 +6,16 @@ my $move_attributes = sub {
     my $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
         ." Name = ? AND ObjectType = ? AND $table.id = Attributes.ObjectId)";
 
-    my $res = $RT::Handle->SimpleQuery( $query, $column, $type );
+    my $res = RT->DatabaseHandle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {
-        $RT::Logger->error("Failed to move $column on $type from Attributes into $table table");
+        RT->Logger->error("Failed to move $column on $type from Attributes into $table table");
         return;
     }
 
     $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
-    $res = $RT::Handle->SimpleQuery( $query, $column, $type );
+    $res = RT->DatabaseHandle->SimpleQuery( $query, $column, $type );
     unless ( $res ) {
-        $RT::Logger->error("Failed to delete $column on $type from Attributes");
+        RT->Logger->error("Failed to delete $column on $type from Attributes");
         return;
     }
     return 1;
@@ -43,9 +43,9 @@ our @Initial = (
             $cf->SetBasedOn($attr->Content);
         }
         $query = 'DELETE FROM Attributes WHERE Name = ? AND ObjectType = ?';
-        $res = $RT::Handle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField' );
+        $res = RT->DatabaseHandle->SimpleQuery( $query, 'BasedOn', 'RT::CustomField' );
         unless ( $res ) {
-            $RT::Logger->error("Failed to delete BasedOn CustomFields from Attributes");
+            RT->Logger->error("Failed to delete BasedOn CustomFields from Attributes");
             return;
         }
         return 1;
@@ -55,9 +55,9 @@ our @Initial = (
             or return;
 
         my $query = "UPDATE CustomFields SET ValuesClass = NULL WHERE ValuesClass = ?";
-        my $res = $RT::Handle->SimpleQuery( $query, 'RT::CustomFieldValues' );
+        my $res = RT->DatabaseHandle->SimpleQuery( $query, 'RT::CustomFieldValues' );
         unless ( $res ) {
-            $RT::Logger->error("Failed to replace default with NULLs");
+            RT->Logger->error("Failed to replace default with NULLs");
             return;
         }
         return 1;
@@ -71,13 +71,13 @@ our @Initial = (
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $qid );
             unless ( $queue->id ) {
-                $RT::Logger->warning("Couldn't load queue #$qid. Skipping...");
+                RT->Logger->warning("Couldn't load queue #$qid. Skipping...");
                 next;
             }
 
             my ($status, $msg) = $queue->SetSubjectTag($tag);
             unless ( $status ) {
-                $RT::Logger->error("Couldn't set subject tag for queue #$qid: $msg");
+                RT->Logger->error("Couldn't set subject tag for queue #$qid: $msg");
                 next;
             }
         }

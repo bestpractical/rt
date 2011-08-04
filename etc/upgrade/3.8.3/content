@@ -13,7 +13,7 @@ our @ScripConditions = (
 
 our @Final = (
     sub {
-        $RT::Logger->debug("Going to correct descriptions of notify actions in the DB");
+        RT->Logger->debug("Going to correct descriptions of notify actions in the DB");
 
         my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
@@ -26,11 +26,11 @@ our @Final = (
         );
         while ( my $action = $actions->Next ) {
             my ($status, $msg) = $action->__Set( Field => 'Name', Value => 'Notify Owner, Requestors, Ccs and AdminCcs' );
-            $RT::Logger->warning( "Couldn't change action name: $msg" )
+            RT->Logger->warning( "Couldn't change action name: $msg" )
                 unless $status;
 
             ($status, $msg) = $action->__Set( Field => 'Description', Value => 'Send mail to owner and all watchers' );
-            $RT::Logger->warning( "Couldn't change action description: $msg" )
+            RT->Logger->warning( "Couldn't change action description: $msg" )
                 unless $status;
         }
 
@@ -45,22 +45,22 @@ our @Final = (
         );
         while ( my $action = $actions->Next ) {
             my ($status, $msg) = $action->__Set( Field => 'Name', Value => 'Notify Owner, Requestors, Ccs and AdminCcs as Comment' );
-            $RT::Logger->warning( "Couldn't change action name: $msg" )
+            RT->Logger->warning( "Couldn't change action name: $msg" )
                 unless $status;
 
             ($status, $msg) = $action->__Set( Field => 'Description', Value => 'Send mail to owner and all watchers as a "comment"' );
-            $RT::Logger->warning( "Couldn't change action description: $msg" )
+            RT->Logger->warning( "Couldn't change action description: $msg" )
                 unless $status;
         }
 
-        $RT::Logger->debug("Corrected descriptions of notify actions in the DB.");
+        RT->Logger->debug("Corrected descriptions of notify actions in the DB.");
         return 1;
     },
 );
 
 
 {
-$RT::Logger->debug("Going to add in Extract Subject Tag actions if they were missed during a previous upgrade");
+RT->Logger->debug("Going to add in Extract Subject Tag actions if they were missed during a previous upgrade");
 
 $actions = RT::ScripActions->new( RT->SystemUser );
 $actions->Limit(
@@ -70,10 +70,10 @@ $actions->Limit(
 my $extract_action = $actions->First;
 
 if ( $extract_action && $extract_action->Id ) {
-    $RT::Logger->debug("You appear to already have an Extract Subject Tag action, skipping");
+    RT->Logger->debug("You appear to already have an Extract Subject Tag action, skipping");
     return 1;
 } else {
-    $RT::Logger->debug("Didn't find an existing Extract Subject Tag action, adding it");
+    RT->Logger->debug("Didn't find an existing Extract Subject Tag action, adding it");
     push @ScripActions, (
             { Name        => 'Extract Subject Tag',                               # loc
               Description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
@@ -81,7 +81,7 @@ if ( $extract_action && $extract_action->Id ) {
             },
     );
 
-    $RT::Logger->debug("Adding Extract Subject Tag Scrip");
+    RT->Logger->debug("Adding Extract Subject Tag Scrip");
     push @Scrips, (
         {  Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
            ScripCondition => 'On Transaction',

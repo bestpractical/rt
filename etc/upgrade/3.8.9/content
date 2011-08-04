@@ -3,7 +3,7 @@ use warnings;
 
 our @Initial = (
     sub {
-        $RT::Logger->debug('Make sure local links are local');
+        RT->Logger->debug('Make sure local links are local');
 
         use RT::URI::fsck_com_rt;
         my $prefix = RT::URI::fsck_com_rt->LocalURIPrefix . '/ticket/';
