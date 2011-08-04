@@ -29,7 +29,7 @@ our @Initial = (
         return $move_attributes->( 'CustomFields', 'RT::CustomField', 'RenderType');
     },
     sub {
-        my $cfs = RT::CustomFields->new($RT::SystemUser);
+        my $cfs = RT::CustomFields->new( RT->SystemUser );
         $cfs->UnLimit;
         $cfs->FindAllRows;
         while ( my $cf = $cfs->Next ) {
