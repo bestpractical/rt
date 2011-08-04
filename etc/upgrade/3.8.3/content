@@ -58,7 +58,7 @@ our @Final = (
     },
 );
 
-
+our (@ScripActions, @Scrips);
 {
 RT->Logger->debug("Going to add in Extract Subject Tag actions if they were missed during a previous upgrade");
 
