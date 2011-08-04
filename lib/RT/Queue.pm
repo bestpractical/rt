@@ -404,8 +404,12 @@ sub Create {
         return ( 0, $self->loc("No permission to create queues") );
     }
 
-    unless ( $self->ValidateName( $args{'Name'} ) ) {
-        return ( 0, $self->loc('Queue already exists') );
+    {
+        my ($val, $msg) = $self->ValidateName( $args{'Name'} );
+
+        if (!$val) {
+            return ($val, $self->loc($msg));
+        }
     }
 
     if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
@@ -539,12 +543,15 @@ sub ValidateName {
 
     #If this queue exists, return undef
     if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
-        return (undef);
+        return (undef, "Queue already exists.");
     }
 
     #If the queue doesn't exist, return 1
+    elsif (my $q = $self->SUPER::ValidateName($name)) {
+        return ($q);
+    }
     else {
-        return ($self->SUPER::ValidateName($name));
+        return (undef, "That's not a valid name.");
     }
 
 }
