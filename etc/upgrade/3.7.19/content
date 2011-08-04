@@ -1,4 +1,7 @@
-@Final = (
+use strict;
+use warnings;
+
+our @Final = (
     sub {
         require RT::Scrips;
         my $scrips = RT::Scrips->new( RT->SystemUser );

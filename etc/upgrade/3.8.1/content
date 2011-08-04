@@ -1,4 +1,7 @@
-@Final = (
+use strict;
+use warnings;
+
+our @Final = (
     sub {
         $RT::Logger->debug("Going to adjust 'Bookmarked Tickets'");
         my $sys = RT::System->new(RT->SystemUser);

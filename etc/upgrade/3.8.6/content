@@ -1,4 +1,7 @@
-@Templates = (
+use strict;
+use warnings;
+
+our @Templates = (
     {  Queue       => 0,
        Name        => "Forward Ticket",    # loc
        Description => "Heading of a forwarded Ticket", # loc

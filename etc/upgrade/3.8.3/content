@@ -1,4 +1,7 @@
-@ScripConditions = (
+use strict;
+use warnings;
+
+our @ScripConditions = (
     {  Name                 => 'On Reject',                                # loc
        Description          => 'Whenever a ticket is rejected',            # loc
        ApplicableTransTypes => 'Status',
@@ -8,7 +11,7 @@
     },
 );
 
-@Final = (
+our @Final = (
     sub {
         $RT::Logger->debug("Going to correct descriptions of notify actions in the DB");
 

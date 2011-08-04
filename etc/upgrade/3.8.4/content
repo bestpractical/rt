@@ -1,8 +1,10 @@
+use strict;
+use warnings;
 
-@Final = (
+
+our @Final = (
     sub {
         $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
-        use strict;
 
         my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(

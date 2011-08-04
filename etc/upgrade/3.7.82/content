@@ -1,4 +1,7 @@
-@Attributes = (
+use strict;
+use warnings;
+
+our @Attributes = (
     { Name => 'Search - Bookmarked Tickets',
       Description => 'Bookmarked Tickets', #loc
       Content     =>

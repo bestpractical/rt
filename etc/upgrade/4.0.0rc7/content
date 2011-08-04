@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         $RT::Logger->debug("Going to set lifecycle for approvals");
 

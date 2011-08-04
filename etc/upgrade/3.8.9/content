@@ -1,6 +1,8 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
-        use strict;
         $RT::Logger->debug('Make sure local links are local');
 
         use RT::URI::fsck_com_rt;

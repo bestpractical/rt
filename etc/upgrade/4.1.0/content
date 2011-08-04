@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         my $users = RT::Users->new(RT->SystemUser);
         $users->UnLimit;

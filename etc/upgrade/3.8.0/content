@@ -1,4 +1,7 @@
-@Final = (
+use strict;
+use warnings;
+
+our @Final = (
     # by incident we've changed 'My Bookmarks' to 'Bookmarked Tickets' when
     # 3.7.82 upgrade script still was creating 'My Bookmarks', try to fix it
     sub {

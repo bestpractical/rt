@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         # make sure global CFs are not applied to local objects
         my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );

@@ -1,6 +1,8 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
-        use strict;
         $RT::Logger->debug('Removing all delegated rights');
 
         my $acl = RT::ACL->new(RT->SystemUser);

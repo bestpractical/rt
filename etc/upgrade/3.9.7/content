@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 my $move_attributes = sub {
     my ($table, $type, $column) = @_;
     my $query = "UPDATE $table SET $column = (SELECT Content FROM Attributes WHERE"
@@ -18,7 +21,7 @@ my $move_attributes = sub {
     return 1;
 };
 
-@Initial = (
+our @Initial = (
     sub {
         return $move_attributes->( 'Users', 'RT::User', 'AuthToken');
     },

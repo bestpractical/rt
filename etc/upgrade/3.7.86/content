@@ -1,4 +1,7 @@
-@Final = (
+use strict;
+use warnings;
+
+our @Final = (
     sub {
         $RT::Logger->debug("Adding search for bookmarked tickets to defaults");
         my $sys = RT::System->new(RT->SystemUser);

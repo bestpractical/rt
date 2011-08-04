@@ -1,4 +1,7 @@
-@Templates = (
+use strict;
+use warnings;
+
+our @Templates = (
 {
     Queue       => 0,
     Name        => "Error: Missing dashboard",    # loc

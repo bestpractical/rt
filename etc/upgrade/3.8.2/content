@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         $RT::Logger->warning(
             "Going to add [OLD] prefix to all templates in approvals queue."
@@ -25,13 +28,13 @@
         return 1;
     },
 );
-@ACL = (
+our @ACL = (
     { GroupDomain => 'SystemInternal',
       GroupType => 'privileged',
       Right  => 'ShowApprovalsTab', },
 );
 
-@Templates = (
+our @Templates = (
     {  Queue       => '___Approvals',
        Name        => "New Pending Approval",    # loc
        Description =>
@@ -106,7 +109,7 @@ The ticket has been approved, you may now start to act on it.
     },
 );
 
-@Final = (
+our @Final = (
     sub {
         $RT::Logger->debug("Going to adjust dashboards");
         my $sys = RT::System->new(RT->SystemUser);
