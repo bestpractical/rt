@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test nodata => 1, tests => 35;
+use RT::Test nodata => 1, tests => 64;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -64,18 +64,21 @@ $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $
 $m->follow_link_ok({ id => 'home-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
-$m->field("Name" => 'inner dashboard');
+$m->field("Name" => 'broken dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
-
 $m->click_button(value => 'Create');
-
 $m->content_contains("saved", "we lack SeeGroupDashboard, so we end up back at the index.");
+
 $user_obj->PrincipalObj->GrantRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
 );
-$m->reload;
+$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->form_name('ModifyDashboard');
+$m->field("Name" => 'inner dashboard');
+$m->field("Privacy" => "RT::Group-" . $inner_group->Id);
+$m->click_button(value => 'Create');
 $m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
@@ -95,3 +98,98 @@ $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 
+
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
+
+$m->get_ok("/index.html");
+$m->content_contains("inner dashboard", "We can see the inner dashboard from the menu drop-down");
+
+my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
+    RT::Dashboard->new($currentuser)->_PrivacyObjects;
+ok($group, "Found the group in  the privacy objects list");
+
+my @loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id],
+    "We can load from ourselves (SeeOwnDashboard) and a group we are with SeeGroupDashboard"
+);
+
+# If you are granted SeeGroupDashboard globally, you can only see
+# dashboards in groups you are in.
+$user_obj->PrincipalObj->RevokeRight(
+    Right  => 'SeeGroupDashboard',
+    Object => $inner_group,
+);
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SeeGroupDashboard',
+    Object => RT->System,
+);
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "Having SeeGroupDashboard gobally is fine for groups you are in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id],
+    "SeeGroupDashboard globally still works for groups you are in"
+);
+
+$inner_group->DeleteMember($user_obj->PrincipalObj->Id);
+ok(!$outer_group->HasMemberRecursively($user_obj->PrincipalId), "outer no longer has user recursively");
+ok(!$inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner no longer has user recursively");
+$m->get_ok("/Dashboards/index.html");
+$m->content_lacks("inner dashboard", "But global SeeGroupDashboard isn't enough for other groups");
+$m->no_warnings_ok;
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id],
+    "We only have our SeeOwnDashboard right, as we are no longer in inner"
+);
+
+# Similarly, if you're a SuperUser, you still only see dashboards for
+# groups you belong to
+$user_obj->PrincipalObj->RevokeRight(
+    Right  => 'SeeGroupDashboard',
+    Object => RT->System,
+);
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SuperUser',
+    Object => RT->System,
+);
+$m->get_ok("/Dashboards/index.html");
+$m->content_lacks("inner dashboard", "Superuser can't see dashboards in groups they're not in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "We pick up the system-level SeeDashboard right from superuser"
+);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperuserGroups => 0);
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "IncludeSuperusers only cuts out _group_ dashboard objects for loading, not user and system ones"
+);
+
+$inner_group->AddMember($user_obj->PrincipalId);
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "Superuser can see dashboards in groups they are in");
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::Group-".$inner_group->Id, "RT::System-1"],
+    "Becoming a member of the group makes it a possibility"
+);
+@loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading(IncludeSuperuserGroups => 0);
+is_deeply(
+    \@loading,
+    ["RT::User-".$user_obj->Id, "RT::System-1"],
+    "But only via superuser"
+);
+
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("inner dashboard", "The dashboards list includes superuser rights");
+$m->get_ok("/index.html");
+$m->content_lacks("inner dashboard", "But the menu skips them");
