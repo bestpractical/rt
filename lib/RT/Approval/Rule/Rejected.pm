@@ -65,14 +65,7 @@ sub Commit {    # XXX: from custom prepare code
     my $self = shift;
     if ( my ($rejected) =
         $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
-        my $note = '';
-        if ( RT->Config->Get('ApprovalRejectionNotes') ) {
-            my $t = $self->TicketObj->Transactions;
-            while ( my $o = $t->Next ) {
-                next unless $o->Type eq 'Correspond';
-                $note .= $o->Content . "\n" if $o->ContentObj;
-            }
-        }
+        my $note = $self->GetNotes;
 
         my $template = $self->GetTemplate('Approval Rejected',
                                           TicketObj => $rejected,
@@ -111,5 +104,21 @@ sub Commit {    # XXX: from custom prepare code
     }
 
 }
+
+sub GetNotes {
+    my $self = shift;
+    my $note = '';
+
+    if ( RT->Config->Get('ApprovalRejectionNotes') ) {
+        my $t = $self->TicketObj->Transactions;
+        while ( my $o = $t->Next ) {
+            next unless $o->Type eq 'Correspond';
+            $note .= $o->Content . "\n" if $o->ContentObj;
+        }
+    }
+    return $note;
+}
+
+RT::Base->_ImportOverlays();
 
 1;

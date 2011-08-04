@@ -140,6 +140,13 @@ unless ( $type_class ) {
     }
 }
 
+$m->callback(
+    CallbackName => 'MassageTypeClass',
+    Transaction  => $Transaction,
+    TypeClassRef => \$type_class,
+    ARGSRef      => \%ARGS,
+);
+
 my $TicketString = '';
 if ( $Ticket->Id != $Transaction->Ticket ) {
     $TicketString = loc("Ticket #[_1]:", $Transaction->Ticket) .' ';
@@ -155,6 +162,13 @@ unless ($Attachments) {
     $ARGS{'Attachments'} = $Attachments = $attachments->ItemsArrayRef();
 }
 my $titlebar_commands = '';
+
+$m->callback(
+    CallbackName   => 'MassageAttachments',
+    Transaction    => $Transaction,
+    AttachmentsRef => \$Attachments,
+    ARGSRef        => \%ARGS,
+);
 
 if ( $type =~ /EmailRecord$/ ) {
 
