@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
+    title => loc($desc, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize,
@@ -141,6 +141,13 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
 }
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+
+my $desc = $search->Description;
+
+# we only use [_1] here, let's escape other "[" and "]" unless they are
+# escaped already
+$desc =~ s/(?<!~)\[(?!_1\])/~[/g;
+$desc =~ s/(?<!~)(?<!\[_1)\]/~]/g;
 
 </%init>
 <%ARGS>
