@@ -9209,14 +9209,10 @@ msgstr "Vous devriez être redirigé vers la page de connection. Vous pourrez vo
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Vous devez choisir la base de données que vous ou votre administrateur de base de données maîtrisez le mieux."
 
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
-msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données fonctionnelle. C'est probablement la première fois que vous lancez RT. Si vous cliques "%1" ci-dessous, RT vous guidera pour configurer votre serveur RT et votre base de données."
-
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
-msgstr ""
+msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données fonctionnelle. C'est probablement la première fois que vous lancez RT. Si vous cliques \"%1\" ci-dessous, RT vous guidera pour configurer votre serveur RT et votre base de données."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

@@ -10441,14 +10441,10 @@ msgstr "Você pode ser direcionado diretamente para uma página de entrada. Voc�
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Você pode escolher o banco de dados que faça você ou o administrador local de bancos de dados se sentir mais confortável."
 
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
-msgstr "Você está vendo esta tela porque iniciou um servidor RT sem um banco de dados ativo. Mais parece que é a primeira vez que você está executando RT. Se você pressionar <i>Vamos!> abaixo, RT vai guiar você na definição de seu servidor RT e do banco de dados."
-
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
-msgstr ""
+msgstr "Você está vendo esta tela porque iniciou um servidor RT sem um banco de dados ativo. Mais parece que é a primeira vez que você está executando RT. Se você pressionar \"%1\" abaixo, RT vai guiar você na definição de seu servidor RT e do banco de dados."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

@@ -12141,14 +12141,10 @@ msgstr "將會跳轉到登錄頁面，您可以以使用者%1和之前設定的�
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "您應當選擇您或資料庫管理員最順手的資料庫"
 
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
-msgstr "您看到這個畫面表示您的 RT 並沒有設定正確的資料庫。這大概是您第一次執行 RT。點選下方的"%1"，RT 會幫助您設定好 RT 伺服器及資料庫。"
-
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
-msgstr ""
+msgstr "您看到這個畫面表示您的 RT 並沒有設定正確的資料庫。這大概是您第一次執行 RT。點選下方的\"%1\"，RT 會幫助您設定好 RT 伺服器及資料庫。"
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
