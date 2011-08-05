@@ -885,8 +885,8 @@ msgstr "<留空>"
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"创建申请单\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
+msgstr "%1创建申请单%2&nbsp;%3"
 
 #: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -894,8 +894,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"创建申请单\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>所有的iCal种子都内嵌一个授权给您的密钥。如果您的某个iCal种子的URL暴露在外部世界，您可以获得一个新的密钥，<b>断开以下所有已经存在的iCal种子</b> 。</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "所有的iCal种子都内嵌一个授权给您的密钥。如果您的某个iCal种子的URL暴露在外部世界，您可以获得一个新的密钥，<b>断开以下所有已经存在的iCal种子</b> 。"
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))
@@ -3870,8 +3870,8 @@ msgstr "显示第%1号申请单"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
-msgstr "以 %1GNU GPL%2</a> 第二版发布。"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
+msgstr "以 %1GNU GPL%2 第二版发布。"
 
 #: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
@@ -5378,7 +5378,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "如果此工具程序为setgid, 恶意的本地端用户即能由此取得RT的管理员权限。"
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "如果已经有了正常工作的RT，在这里您还可以确定数据库正在运行并且RT可以正常访问它。完成之后，请重启RT。"
 
 #: NOT FOUND IN SOURCE
@@ -8085,8 +8085,8 @@ msgstr "请输入您当前的密码."
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
-msgstr "请注意，申请单需具有以下状态之一( %1 )，才会在此显示。 关于功能更加强大的搜索，请访问 <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">搜索生成器界面</a>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
+msgstr "请注意，申请单需具有以下状态之一( %1 )，才会在此显示。 关于功能更加强大的搜索，请访问 %2搜索生成器界面%3."
 
 #: NOT FOUND IN SOURCE
 msgid "Please select a group"
@@ -8622,8 +8622,8 @@ msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "RT 以未签章方式处理这封邮件。\\n"
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT 会将 <tt>__id__</tt> 及 <tt>__CustomField__</tt> 置换成记录编号及自定字段"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "RT 会将 %1 及 %2 置换成记录编号及自定字段"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -9890,7 +9890,7 @@ msgstr "粉碎机"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr "粉碎机需要一个目录来保存信息. 请检查<span class=\"file-path\">%1</span>是否存在以及可被网页服务器执行写操作"
 
 #: share/html/Dashboards/Queries.html:180
@@ -11983,7 +11983,7 @@ msgid "You can only take tickets that are unowned"
 msgstr "您只能受理尚无拥有人的申请单"
 
 #: share/html/Search/Simple.html:62
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
 #: lib/RT/Ticket.pm:3091
@@ -12049,16 +12049,16 @@ msgid "You need to restart the Request Tracker service for saved changes to take
 msgstr "您必须重新激活 Request Tracker 服务，保存的更改才会生效。"
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "将会跳转到登录页面，您可以以用户<tt>root</tt>和之前设置的密码登录。"
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "将会跳转到登录页面，您可以以用户%1和之前设置的密码登录。"
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "您应当选择您或数据库管理员最顺手的数据库"
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "您看到这个页面是因为你启动了RT服务但是却没有可用的数据库。通常这是因为您第一次启动RT，如此，可点击<i>Let's go</i>，RT会指导您创建RT数据库和服务。"
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "您看到这个页面是因为你启动了RT服务但是却没有可用的数据库。通常这是因为您第一次启动RT，如此，可点击"%1"，RT会指导您创建RT数据库和服务。"
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

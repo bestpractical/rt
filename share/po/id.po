@@ -683,7 +683,7 @@ msgstr "<%$kolom%>"
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
 msgstr ""
 
 #: lib/RT/StyleGuide.pod:779
@@ -692,7 +692,7 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<Tipe input=\"submit\" nilai=\"Tiket Baru di dalam \">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
 msgstr ""
 
 #: share/html/Admin/Tools/Queries.html:81
@@ -2780,7 +2780,7 @@ msgstr "Tampilkan pencarian yang disimpan untuk grup ini"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -3828,7 +3828,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "Jika alat ini adalah setgid, hostile local user dapat menggunakan alat ini untuk mendapatkan akses administrasi ke RT."
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr ""
 
 #: share/html/Install/Finish.html:60
@@ -6031,7 +6031,7 @@ msgstr ""
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
 msgstr ""
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
@@ -6356,7 +6356,7 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr ""
 
 #: lib/RT/Installer.pm:142
@@ -7384,7 +7384,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr ""
 
 #: share/html/Dashboards/Queries.html:180
@@ -9101,7 +9101,7 @@ msgid "You can only take tickets that are unowned"
 msgstr ""
 
 #: share/html/Search/Simple.html:62
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
 #: lib/RT/Ticket.pm:3091
@@ -9159,7 +9159,7 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr ""
 
 #: share/html/Install/DatabaseType.html:55
@@ -9167,7 +9167,7 @@ msgid "You should choose the database you or your local database administrator i
 msgstr ""
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
 msgstr ""
 
 #: share/html/NoAuth/Logout.html:59

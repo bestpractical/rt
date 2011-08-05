@@ -639,8 +639,8 @@ msgstr ""
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Создать заявку в очереди\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
+msgstr "%1Создать заявку в очереди%2&nbsp;%3"
 
 #: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -648,8 +648,8 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Создать заявку в очереди\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgstr "Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже."
 
 #: share/html/Admin/Tools/Queries.html:81
 #. ($request->{Path}, sprintf('%.4f', $total))
@@ -2713,7 +2713,7 @@ msgstr "Показывать сохранённые запросы для это
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -3725,7 +3725,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "Если бы эта программа имела установленный бит setgid, то зловредный пользователь мог бы воспользоваться этим для получения административных полномочий в RT."
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "Если у вас уже есть работающий RT сервер и база данных, вы можете воспользоваться этим, чтобы убедиться в работоспособности сервера БД и в правильности соединения c RT. После этого остановите и снова запустите сервер RT.</p>"
 
 #: NOT FOUND IN SOURCE
@@ -5860,8 +5860,8 @@ msgstr ""
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
-msgstr "Учтите, что здесь будут отображены заявки только со следующими статусами: %1. Для более гибкого поиска воспользуйтесь <strong><a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">интерфейсом построения запросов</a></strong>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
+msgstr "Учтите, что здесь будут отображены заявки только со следующими статусами: %1. Для более гибкого поиска воспользуйтесь <strong>%2интерфейсом построения запросов%3</strong>."
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
@@ -6189,8 +6189,8 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "Всё остальное, что вы введёте, RT будет искать в темах заявок."
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT заменит <tt>__id__</tt> и <tt>__CustomField__</tt> идентификатором записи и значением дополнительного поля соответственно"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "RT заменит %1 и %2 идентификатором записи и значением дополнительного поля соответственно"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -7189,7 +7189,7 @@ msgstr "Зачистка"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr ""
 
 #: share/html/Dashboards/Queries.html:180
@@ -8818,7 +8818,7 @@ msgid "You can only take tickets that are unowned"
 msgstr "Вы можете назначать себя ответственным только за заявки, которые никому не принадлежат"
 
 #: share/html/Search/Simple.html:62
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
 #: lib/RT/Ticket.pm:3091
@@ -8876,16 +8876,16 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "Вы будете перенаправлены на страницу входа в систему. Вы сможете войти под именем <tt>root</tt> и паролем, который вы установили ранее."
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "Вы будете перенаправлены на страницу входа в систему. Вы сможете войти под именем %1 и паролем, который вы установили ранее."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Вы должны выбрать СУБД с которой вам или вашему администратору БД будет удобнее работать."
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Вы видите этот экран так как сервер RT запущен без настроенной БД. Вероятнее всего это первый запуск RT. Если вы нажмёте <i>Поехали!</i> ниже, система установки RT проведёт Вас  через все шаги, необходимые для настройки сервера и БД RT."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "Вы видите этот экран так как сервер RT запущен без настроенной БД. Вероятнее всего это первый запуск RT. Если вы нажмёте "%1" ниже, система установки RT проведёт Вас  через все шаги, необходимые для настройки сервера и БД RT."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

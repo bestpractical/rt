@@ -702,8 +702,8 @@ msgstr ""
 
 #: share/html/Elements/CreateTicket:51
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ))
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Novi zahtjev u\" />&nbsp;%1"
+msgid "%1New ticket in%2&nbsp;%3"
+msgstr "%1Novi zahtjev u%2&nbsp;%3"
 
 #: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -711,7 +711,7 @@ msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Novi zahtjev u\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:180
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
 msgstr "<p>Svi iCal izvori sadrže tajnu značku pomoću koje se autorizirate. Ako se URL nekog od vaših iCal izvora javno objavi, klikom na tipku dolje možete napraviti novu tajnu značku i time <b>deaktivirati sve postojeće iCal izvore</b>."
 
 #: share/html/Admin/Tools/Queries.html:81
@@ -2943,7 +2943,7 @@ msgstr "Prikaži zahtjev br. %1"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -4059,7 +4059,7 @@ msgid "If this tool were setgid, a hostile local user could use this tool to gai
 msgstr "Ako je ovaj alat 'setgid', neprijateljski lokalni korisnik bi mogao koristiti ovaj alat za dobivanje administratorskog pristupa RT-u."
 
 #: share/html/Install/index.html:83
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "Ako već imate radeći RT poslužitelj i bazu podataka, sad bi trebali provjeriti je li baza podataka pokrenuta i može li se RT poslužitelj spojiti na nju.  Nakon toga zaustavite i ponovo pokrenite RT poslužitelj."
 
 #: NOT FOUND IN SOURCE
@@ -6366,7 +6366,7 @@ msgstr "Molim unesite vašu trenutnu lozinku."
 
 #: share/html/Search/Simple.html:71
 #. ($status_str)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
 msgstr ""
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
@@ -6715,8 +6715,8 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "Bilo koji drugi unos RT će potražiti u naslovu zahtjeva."
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT će zamijeniti <tt>__id__</tt> i <tt>__CustomField__</tt> sa identifikatorom zapisa i vrijednosti vlastitog polja, respektivno"
+msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
+msgstr "RT će zamijeniti %1 i %2 sa identifikatorom zapisa i vrijednosti vlastitog polja, respektivno"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -7815,7 +7815,7 @@ msgstr "Čistač"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:54
 #. ($m->interp->apply_escapes( $Path ))
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr "Čistač zahtjeva direktorij za spremanje stanja. Molim provjerite da direktorij <span class=\"file-path\">%1</span> postoji i web poslužitelj može pisati u njega."
 
 #: share/html/Dashboards/Queries.html:180
@@ -9656,7 +9656,7 @@ msgid "You can only take tickets that are unowned"
 msgstr "Možete preuzeti samo zahtjeve koji nemaju rješavatelja"
 
 #: share/html/Search/Simple.html:62
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
 #: lib/RT/Ticket.pm:3091
@@ -9714,16 +9714,16 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "Nakon ovoga trebala bi se prikazati stranica za prijavu. Možete se prijaviti sa korisničkim imenom <tt>root</tt> i lozinkom koju ste prije zadali."
+msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
+msgstr "Nakon ovoga trebala bi se prikazati stranica za prijavu. Možete se prijaviti sa korisničkim imenom %1 i lozinkom koju ste prije zadali."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Odaberite bazu s kojom ste vi ili vaš administrator baze podataka najviše upoznati."
 
 #: share/html/Install/index.html:79
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Ova stranica je prikazana jer se pokrenuli RT poslužitelj bez radeće baze podataka. Najvjerojatnije ovo je prvi put da ste pokrenuli RT. Ako dolje kliknete na <i>Krenimo!</i>, RT će vas voditi kroz postavljanje vašeg RT poslužitelja i baze podataka."
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click "%1" below, RT will guide you through setting up your RT server and database."
+msgstr "Ova stranica je prikazana jer se pokrenuli RT poslužitelj bez radeće baze podataka. Najvjerojatnije ovo je prvi put da ste pokrenuli RT. Ako dolje kliknete na "%1", RT će vas voditi kroz postavljanje vašeg RT poslužitelja i baze podataka."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"

@@ -385,8 +385,11 @@ my $build_admin_menu = sub {
 
 
 
+    my $username = '<span class="current-user">'
+                 . $m->interp->apply_escapes($session{'CurrentUser'}->Name, 'h')
+                 . '</span>';
     my $about_me = Menu->child( 'preferences' => title =>
-                        loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
+                        loc( 'Logged in as [_1]', $username),
                     escape_title => 0,
                     sort_order   => 99
     );
@@ -731,8 +734,11 @@ my $build_selfservice_nav = sub {
     }
 
 
+    my $username = '<span class="current-user">'
+                 . $m->interp->apply_escapes($session{'CurrentUser'}->Name, 'h')
+                 . '</span>';
     my $about_me = Menu->child( 'preferences' => title =>
-                        loc( 'Logged in as <span class="current-user">[_1]</span>', $session{'CurrentUser'}->Name),
+                        loc( 'Logged in as [_1]', $username),
                     escape_title => 0,
                     sort_order   => 99
     );
