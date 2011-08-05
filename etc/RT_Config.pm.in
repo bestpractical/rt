@@ -243,13 +243,13 @@ Set($LogToScreen, "info");
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
 
-Logging to a standalone file is also possible.  The file
-needs to both exist and be writable by all direct users of the
-RT API.  This generally includes the web server and whoever
-rt-crontool runs as.  Note that rt-mailgate and the RT CLI go through
-the webserver, so their users do not need to have write permissions to
-this file. If you expect to have multiple users of the direct API,
-Best Practical recommends using syslog instead of direct file logging.
+Logging to a standalone file is also possible. The file needs to both
+exist and be writable by all direct users of the RT API. This generally
+includes the web server and whoever rt-crontool runs as. Note that
+rt-mailgate and the RT CLI go through the webserver, so their users do
+not need to have write permissions to this file. If you expect to have
+multiple users of the direct API, Best Practical recommends using syslog
+instead of direct file logging.
 
 You should set C<$LogToFile> to one of the levels documented above.
 
