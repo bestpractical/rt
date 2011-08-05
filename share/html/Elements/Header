@@ -76,7 +76,7 @@
 % }
 
 % if ($JavaScript) {
-<& HeaderJavascript, focus => $Focus, onload => $onload &>
+<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
 % }
 
 % my $stylesheet_plugin = "/NoAuth/css/". RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} )."/InHeader";
@@ -148,4 +148,5 @@ $onload => undef
 $LinkRel => undef
 $JavaScript => 1
 $SkipDoctype => 0
+$RichText => 1
 </%ARGS>
