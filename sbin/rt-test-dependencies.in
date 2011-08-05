@@ -231,7 +231,6 @@ Text::WikiFormat 0.76
 CSS::Squish 0.06
 Devel::StackTrace 1.19
 JSON
-JavaScript::Minifier
 IPC::Run3
 .
 
