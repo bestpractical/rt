@@ -52,8 +52,3 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init', CallbackPage => '/autoh
 
 RT::Interface::Web::HandleRequest(\%ARGS);
 </%INIT>
-<%ARGS>
-$user => undef
-$pass => undef
-$menu => undef
-</%ARGS>
