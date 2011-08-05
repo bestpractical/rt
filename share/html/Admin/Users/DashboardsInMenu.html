@@ -84,7 +84,7 @@ my $user = RT::CurrentUser->new( $session{CurrentUser} );
 $user->Load( $UserObj->id );
 my @dashboards =
   map { [ $_->id, $_->Name ] }
-  $m->comp( "/Dashboards/Elements/ListOfDashboards", User => $user );
+  $m->comp( "/Dashboards/Elements/ListOfDashboards", User => $user, IncludeSuperuserGroups => 0 );
 
 
 my $current_pref =

@@ -52,6 +52,6 @@
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 
-<& /Dashboards/Elements/ShowDashboards &>
+<& /Dashboards/Elements/ShowDashboards, IncludeSuperuserGroups => 0 &>
 
 </&>

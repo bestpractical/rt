@@ -81,11 +81,18 @@ if ($id ne 'new') {
     if (!$ticket->Id) {
         return [ "# Ticket $id does not exist.", [], {}, 1 ];
     }
-    elsif (!$ticket->CurrentUserHasRight('ShowTicket') ||
-           (%data && !$ticket->CurrentUserHasRight('ModifyTicket')))
-    {
-        my $act = %data ? "modify" : "display";
-        return [ "# You are not allowed to $act ticket $id.", [], {}, 1 ];
+    elsif ( %data ) {
+        if ( $data{status} && $data{status} eq 'deleted' && ! grep { $_ ne 'id' && $_ ne 'status' } keys %data ) {
+            if ( !$ticket->CurrentUserHasRight('DeleteTicket') ) {
+                return [ "# You are not allowed to delete ticket $id.", [], {}, 1 ];
+            }
+        }
+        elsif ( !$ticket->CurrentUserHasRight('ModifyTicket') ) {
+                return [ "# You are not allowed to modify ticket $id.", [], {}, 1 ];
+        }
+    }
+    elsif (!$ticket->CurrentUserHasRight('ShowTicket')) {
+        return [ "# You are not allowed to display ticket $id.", [], {}, 1 ];
     }
 }
 else {

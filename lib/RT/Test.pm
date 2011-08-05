@@ -126,6 +126,9 @@ sub import {
     elsif ( exists $args{'tests'} ) {
         # do nothing if they say "tests => undef" - let them make the plan
     }
+    elsif ( $args{'skip_all'} ) {
+        $class->builder->plan(skip_all => $args{'skip_all'});
+    }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
@@ -211,13 +214,18 @@ sub db_requires_no_dba {
 
 sub bootstrap_tempdir {
     my $self = shift;
-    my $test_file = (
-        File::Spec->rel2abs((caller)[1])
-            =~ m{(?:^|[\\/])t[/\\](.*)}
-    );
-    my $dir_name = File::Spec->rel2abs('t/tmp/'. $test_file);
+    my ($test_dir, $test_file) = ('t', '');
+
+    if (File::Spec->rel2abs($0) =~ m{(?:^|[\\/])(x?t)[/\\](.*)}) {
+        $test_dir  = $1;
+        $test_file = "$2-";
+        $test_file =~ s{[/\\]}{-}g;
+    }
+
+    my $dir_name = File::Spec->rel2abs("$test_dir/tmp");
     mkpath( $dir_name );
     return $tmp{'directory'} = File::Temp->newdir(
+        "${test_file}XXXXXXXX",
         DIR => $dir_name
     );
 }

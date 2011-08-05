@@ -152,7 +152,7 @@
 
 </form>
 <%INIT>
-my ($title, @results, $Disabled);
+my ($title, @results);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 
@@ -173,6 +173,7 @@ else {
             LinkValueTo   => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
             BasedOn       => $BasedOn,
+            Disabled      => !$Enabled,
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
@@ -186,7 +187,7 @@ else {
 if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     #we're asking about enabled on the web page but really care about disabled.
-    $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
+    $ARGS{'Disabled'} = $Enabled? 0 : 1;
 
     my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
     push @results, UpdateRecordObject(

@@ -63,11 +63,11 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name||''%>" /></td>
+<td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
 </tr>
 <tr>
 <td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||''%>" size="60" /></td>
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
 </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
@@ -105,16 +105,17 @@ if ($Create) {
 } else {
     if ($id eq 'new' ) {
 	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
-        unless ($create_id) {
-            Abort (loc("Group could not be created: [_1]", $create_msg));
+        if ($create_id) {
+            $id = $Group->Id;
+            push @results, $create_msg;
+        } else {
+            push @results, loc("Group could not be created: [_1]", $create_msg);
         }
-	$id = $Group->Id;
-        push @results, $create_msg;
     } else {
 	$Group->Load($id) || Abort('Could not load group');
     }
 
-    if ($id) {
+    if ($Group->Id) {
 	$title = loc("Modify the group [_1]", $Group->Name);
     }
 
@@ -125,7 +126,7 @@ if ($Create) {
     }
 }
 
-if ($id) {
+if ($Group->Id) {
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $Group,
@@ -148,7 +149,7 @@ if (defined $Enabled && $Enabled == 1) {
 } else {
     $Disabled = 1;
 }
-if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
+if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
     push @results, $msg;
 }
@@ -157,7 +158,7 @@ if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
 MaybeRedirectForResults(
     Actions     => \@results,
     Arguments   => { id => $Group->id },
-);
+) if $Group->Id;
 
 push @results, @warnings;
 

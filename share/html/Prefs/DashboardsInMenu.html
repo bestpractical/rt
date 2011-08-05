@@ -92,7 +92,7 @@ my $dashboard_pref =
 
 my $current_dashboards = $dashboard_pref->{dashboards} || [];
 
-my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards");
+my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
 
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureDashboardsInMenu',
