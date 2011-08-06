@@ -125,6 +125,7 @@ sub extract_strings_from_code {
         qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
     return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
     return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
+    return if ( /StyleGuide.pod/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
