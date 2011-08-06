@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 18:23+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:27+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 18:41+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -77,7 +77,7 @@ msgstr "%1, %3 %2 %4"
 #: lib/RT/Date.pm:624
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr ""
+msgstr "%1 %3 %2 %6 %4.%5"
 
 #: lib/RT/Date.pm:621
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -153,7 +153,7 @@ msgstr "%1 (Ej ändrad)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (från panel %2)"
 
 #: bin/rt-crontool:360
 #. ("--log")
@@ -269,7 +269,7 @@ msgstr "%1 ändrat från %2 till %3"
 #: share/html/Admin/CustomFields/Modify.html:211
 #. (loc("Render Type"), $original, $RenderType)
 msgid "%1 changed from '%2' to '%3'"
-msgstr ""
+msgstr "%1 ändrades från '%2' till '%3'"
 
 #: share/html/Search/Chart.html:2
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
@@ -339,7 +339,7 @@ msgstr ""
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr ""
+msgstr "%1 är en adress som RT tar emot e-post för. Att lägga till det som en '%2' skapar en e-postloop"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 is no longer a %2 for this queue."
@@ -358,7 +358,7 @@ msgstr "%1 är inte längre ett värde för extrafältet %2"
 #: lib/RT/Queue.pm:269
 #. ($value)
 msgid "%1 is not valid lifecycle"
-msgstr ""
+msgstr "%1 är inte en tillåten livscykel"
 
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
@@ -421,7 +421,7 @@ msgstr "%1:s %2:s %3 objekt"
 #: share/html/Admin/Users/GnuPG.html:107
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
-msgstr ""
+msgstr "%1s GnuPG-nycklar"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
@@ -476,13 +476,13 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTransactionAttachments:131
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1m"
 
 #: share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr ""
+msgstr "%1 s"
 
 #: share/html/Articles/Topics.html:252
 #. ($Articles->Count)
@@ -502,11 +502,11 @@ msgstr "'%1' är ogiltigt statusvärde"
 #: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
-msgstr ""
+msgstr "'%1' är inte en tillåten klassidentifierare"
 
 #: lib/RT/Interface/Web.pm:2671
 msgid "'Roles'"
-msgstr ""
+msgstr "Roller"
 
 #: lib/RT/Interface/Web.pm:2634
 msgid "'System'"
@@ -705,8 +705,16 @@ msgid "<%$field%>"
 msgstr "<%$fält%>"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nytt ärende i\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Nytt ärende i\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Alla iCal-feeds innehåller en hemlig nyckel för att verifiera din identitet. Om URLen för en av dina iCal-feeds har råkat bli publik kan du få en ny nyckel, <b>men det innebär att alla dina befintliga iCal-feeds slutar fungera</b>.</p>"
 
 #: etc/initialdata:194
 msgid "A blank template"
@@ -2462,7 +2470,7 @@ msgstr "Dagligt sammandrag"
 
 #: share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr "Instrumentpanel"
 
 #: share/html/Dashboards/Modify.html:110
 #. ($msg)
@@ -3841,6 +3849,10 @@ msgstr "Om detta verktyg var setgid, kunde en fientlig användare använda detta
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr "Om du redan har en fungerande RT-server och databas så bör du kontrollera att din databasserver kör och att RT-servern kan ansluta sig till den. När du har gjort det kan du starta om RT-servern.</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
@@ -6003,7 +6015,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:747 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
-msgstr "Preferenser"
+msgstr "Inställningar"
 
 #: NOT FOUND IN SOURCE
 msgid "Preferences %1 for user %2 ."
@@ -6018,7 +6030,7 @@ msgstr ""
 #. ($pane)
 #. (loc('summary rows'))
 msgid "Preferences saved for %1."
-msgstr "Preferenser har sparats för %1."
+msgstr "Inställningarna har sparats för %1."
 
 #: share/html/Admin/Users/MyRT.html:77
 #. ($UserObj->Name)
@@ -6115,7 +6127,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:69
 msgid "Queries"
-msgstr ""
+msgstr "Frågor"
 
 #: share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:152
 msgid "Query"
@@ -6317,6 +6329,10 @@ msgstr "RT kommer att söka efter allt annat som du skriver in i ärendeämnen."
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT kommer att ersätta %1 och %2 med register-ID och extrafältvärde respektive"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT kommer att ersätta <tt>__id__</tt> och <tt>__ExtraFält__</tt> med register-ID och extrafältvärde respektive"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -6711,7 +6727,7 @@ msgstr "Rader per sida"
 
 #: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:211
 msgid "SQL Queries"
-msgstr ""
+msgstr "SQL-frågor"
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
@@ -6743,7 +6759,7 @@ msgstr "Spara ändringar"
 
 #: share/html/User/Prefs.html:190
 msgid "Save Preferences"
-msgstr "Spara preferenser"
+msgstr "Spara inställningar"
 
 #: share/html/Search/Elements/EditSearches:66
 msgid "Save as New"
@@ -7203,7 +7219,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:400 share/html/Prefs/Other.html:79
 msgid "Settings"
-msgstr ""
+msgstr "Inställningar"
 
 #: lib/RT/Config.pm:176
 msgid "Short usernames"
@@ -7496,7 +7512,7 @@ msgstr "Statusändring"
 #: lib/RT/Transaction.pm:640
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
-msgstr ""
+msgstr "Status ändrad från %1 till %2"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:94
 msgid "Status changes"
@@ -7879,11 +7895,11 @@ msgstr "Följande kommando kommer att ta fram alla aktiva ärenden i kön 'allm�
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
-msgstr ""
+msgstr "Följande frågor har blivit raderade och kommer att försvinna från instrumentpanelen så fort panelen är uppdaterad."
 
 #: share/html/Dashboards/Elements/HiddenSearches:74
 msgid "The following queries may not be visible to all users who can see this dashboard."
-msgstr ""
+msgstr "Följande frågor kanske inte visas för alla användare som kan se den här instrumentpanelen."
 
 #: lib/RT/Crypt/GnuPG.pm:2196
 msgid "The key has been disabled"
@@ -7924,7 +7940,7 @@ msgstr "Anmälaren av ett ärende"
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
 msgid "The settings you've chosen are stored in %1."
-msgstr ""
+msgstr "Inställningarna du valt är sparade i %1."
 
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
@@ -9614,7 +9630,7 @@ msgstr "användare %1"
 
 #: share/html/Admin/Elements/EditRights:126
 msgid "username"
-msgstr ""
+msgstr "användarnamn"
 
 #: NOT FOUND IN SOURCE
 msgid "verbose"
@@ -9622,12 +9638,12 @@ msgstr "utförlig"
 
 #: share/html/Dashboards/Subscription.html:104
 msgid "weekly"
-msgstr ""
+msgstr "veckovis"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:95
 #. (loc($day), $hour)
 msgid "weekly (on %1) at %2"
-msgstr ""
+msgstr "veckovis (på %1) klockan %2"
 
 #: lib/RT/Date.pm:354 share/html/Dashboards/Subscription.html:120
 msgid "weeks"

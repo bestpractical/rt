@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-18 22:18+0000\n"
-"Last-Translator: Quentin Pagès <Unknown>\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:16+0000\n"
+"Last-Translator: Alex Vandiver <alexmv@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -702,8 +702,16 @@ msgid "<%$field%>"
 msgstr "<%$field%>"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Créer un ticket dans\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Créer un ticket dans\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Tous les flux iCal contiennent un code secret qui vous autorise à y accéder. Si une des URLs de vos flux iCal ont a été révélé à des personnes non souhaitées, vous pouvez obtenir un nouveau code, <b> ceci rendra inaccessibles tous les flux iCal existants</b> ci-dessous.</p>"
 
 #: etc/initialdata:194
 msgid "A blank template"
@@ -2833,6 +2841,10 @@ msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "Distribué selon la %1version 2 de la GNU GPL%2"
 
 #: NOT FOUND IN SOURCE
+msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgstr "Distribué selon la %1version 2 de la GNU GPL%2</a>"
+
+#: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr "Distribué selon les termes de la version 2 de la <a href=\"http://www.gnu.org/copyleft/gpl.html\">licence GNU GPL.</a>"
 
@@ -3637,7 +3649,7 @@ msgstr "Go"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
-msgstr ""
+msgstr "Aller au groupe"
 
 #: share/html/Admin/Users/index.html:60
 msgid "Go to user"
@@ -3857,6 +3869,10 @@ msgstr "Si cet outil était setgid, un utilisateur local mal intentionné pourra
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+msgstr "Si vous avez déjà un serveur et une base de données RT fonctionnelle, vous devriez saisir cette opportunité pour être certain que votre serveur de base de données est en fonctionnement et que le serveur RT peut s'y connecter. Une fois ceci fait, arrêtez et redémarrez le serveur RT.</p>"
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 msgstr "Si vous avez déjà un serveur et une base de données RT fonctionnelle, vous devriez saisir cette opportunité pour être certain que votre serveur de base de données est en fonctionnement et que le serveur RT peut s'y connecter. Une fois ceci fait, arrêtez et redémarrez le serveur RT.</p>"
 
 #: NOT FOUND IN SOURCE
@@ -6078,6 +6094,10 @@ msgstr "Veuillez saisir votre mot de passe actuel."
 msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
 msgstr "Veuillez noter que seuls les tickets ayant un de ces statut ( %1 ) sont affichés ici. Pour une recherche plus complète utilisez le %2moteur de recherche%3."
 
+#: NOT FOUND IN SOURCE
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgstr "Veuillez noter que seuls les tickets ayant un de ces statut ( %1 ) sont affichés ici. Pour une recherche plus complète utilisez le <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">moteur de recherche</a>."
+
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "Recherches possible cachées"
@@ -6418,6 +6438,10 @@ msgstr "RT va rechercher pour tout ce que vous pouvez saisir d'autre, dans les s
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT remplacera respectivement %1 et %2 avec l'identifiant et la valeur du champs personnalisé"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT remplacera respectivement <tt>__id__</tt> et <tt>__CustomField__</tt> avec l'identifiant et la valeur du champs personnalisé"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -7276,7 +7300,7 @@ msgstr "Envoyer un courrier à l'intervenant"
 
 #: lib/RT/Interface/Email.pm:768
 msgid "Sent email successfully"
-msgstr ""
+msgstr "Courriel envoyé avec succès"
 
 #: lib/RT/Date.pm:99
 msgid "Sep"
@@ -7446,6 +7470,10 @@ msgstr "Shredder"
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr "Le Shredder a besoin d'un répertoire afin d'écrire ses \"dumps\". Veuillez vérifier que %1 existe et est en écriture pour votre serveur web."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgstr "Le Shredder a besoin d'un répertoire afin d'écrire ses \"dumps\". Veuillez vérifier que <span class=\"file-path\">%1</span> existe et est en écriture pour votre serveur web."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)
@@ -9205,9 +9233,17 @@ msgstr "Vous devez définir une adresse de réponse pour cette file afin de conf
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Vous devriez être redirigé vers la page de connection. Vous pourrez vous identifier avec l'identifiant %1 et le mot de passe configuré précédemment."
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "Vous devriez être redirigé vers la page de connection. Vous pourrez vous identifier avec l'identifiant <tt>root</tt> et le mot de passe configuré précédemment."
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Vous devez choisir la base de données que vous ou votre administrateur de base de données maîtrisez le mieux."
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données fonctionnelle. C'est probablement la première fois que vous lancez RT. Si vous cliques <i>C'est parti!</i> ci-dessous, RT vous guidera pour configurer votre serveur RT et votre base de données."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

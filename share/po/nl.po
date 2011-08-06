@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:30+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:24+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -732,6 +732,10 @@ msgstr ""
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nieuw ticket in\" />&nbsp;%1"
 
 #: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
@@ -6794,6 +6798,10 @@ msgstr "RT zal dit bericht verwerken als of het ongesigneerd is.\\n"
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT zal %1 en %2 vervangen met het record id respectievelijk de custom field waarde"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT zal <tt>__id__</tt> en <tt>__CustomField__</tt> vervangen met het record id respectievelijk de custom field waarde"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"

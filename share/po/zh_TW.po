@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:48+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:31+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:20+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -890,8 +890,16 @@ msgid "<blank>"
 msgstr "<留空>"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"提出申請單\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"提出申請單\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>所有 iCal feeds 都內嵌了一個能驗證是你的秘密 token. 如果你有 iCal feeds 的 URL 被曝露在外面的險惡世界的話, 你可以在下面取得一個新的秘密 token, <b>並讓現存的 iCal feeds不再能用</b>.</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "<tt>%1</tt> - <i>%2s</i>"
@@ -3885,6 +3893,10 @@ msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "以 %1GNU GPL%2 第二版發布。"
 
 #: NOT FOUND IN SOURCE
+msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgstr "以 %1GNU GPL%2</a> 第二版發布。"
+
+#: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr "依 <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU 通用公共授權</a> 第二版散布。"
 
@@ -5405,6 +5417,10 @@ msgstr "如果此工具程式為 setgid，惡意的本地端使用者即能由�
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料庫正在運行並且RT可以正常訪問它。完成之後，請重啟RT。"
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料庫正在運行並且RT可以正常訪問它。完成之後，請重啟RT。"
 
 #: NOT FOUND IN SOURCE
@@ -8139,6 +8155,10 @@ msgid "Please note that only tickets with one of these statuses( %1 ) are displa
 msgstr "請注意，申請單需具有以下狀態之一( %1 )，才會在此顯示。 關於功能更加強大的搜索，請訪問 %2搜索生成器界面%3."
 
 #: NOT FOUND IN SOURCE
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgstr "請注意，申請單需具有以下狀態之一( %1 )，才會在此顯示。 關於功能更加強大的搜索，請訪問 <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">搜索生成器界面</a>."
+
+#: NOT FOUND IN SOURCE
 msgid "Please select a group"
 msgstr "請選擇群組"
 
@@ -8674,6 +8694,10 @@ msgstr "RT 以未簽章方式處理這封郵件。\\n"
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT 會將 %1 及 %2 置換成紀錄編號及自訂欄位"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT 會將 <tt>__id__</tt> 及 <tt>__CustomField__</tt> 置換成紀錄編號及自訂欄位"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -9957,6 +9981,10 @@ msgstr "粉碎機"
 
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "粉碎機需要一個目錄來保存資訊. 請檢查<span class=\"file-path\">%1</span>是否存在以及可被網頁伺服器執行寫操作"
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr "粉碎機需要一個目錄來保存資訊. 請檢查<span class=\"file-path\">%1</span>是否存在以及可被網頁伺服器執行寫操作"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
@@ -12137,9 +12165,17 @@ msgstr "您必須重新啟動 Request Tracker 服務，儲存的更動纔會生�
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "將會跳轉到登錄頁面，您可以以使用者%1和之前設定的密碼登錄。"
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "將會跳轉到登錄頁面，您可以以使用者<tt>root</tt>和之前設定的密碼登錄。"
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "您應當選擇您或資料庫管理員最順手的資料庫"
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "您看到這個畫面表示您的 RT 並沒有設定正確的資料庫。這大概是您第一次執行 RT。點選下方的<i>開始吧！</i>，RT 會幫助您設定好 RT 伺服器及資料庫。"
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

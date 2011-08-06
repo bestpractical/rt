@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 18:20+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:34+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 18:41+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Country: JAPAN\n"
 "X-Poedit-SearchPath-0: \n"
 "X-Poedit-Basepath: /usr/local/share/request-tracker3.8/\n"
@@ -676,8 +676,16 @@ msgid "<%$Action%> here"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"チケット登録:\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"新規作成\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>iCal フィードには、あなたを認証する秘密のトークンが埋めこまれています。iCal フィードの URL が外部に漏洩した場合は、以下の <b>既存 iCal フィードを全て無効にして </b> 新しく秘密のトークンを得ることができます。</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "<tt>%1</tt> - <i>%2s</i>"
@@ -835,7 +843,7 @@ msgstr ""
 #: lib/RT/Queue.pm:944
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Added %1 to members of %2 for this queue."
-msgstr ""
+msgstr "%1 を このキューにおける %2 のメンバーに追加しました。"
 
 #: NOT FOUND IN SOURCE
 msgid "Added principal as a %1 for this queue"
@@ -976,7 +984,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/index.html:98
 msgid "All queues matching search criteria"
-msgstr ""
+msgstr "検索条件にマッチするキュー全て"
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
@@ -1024,11 +1032,11 @@ msgstr ""
 
 #: share/html/Search/Edit.html:62
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #: share/html/Admin/Articles/Classes/Objects.html:60 share/html/Admin/CustomFields/Objects.html:61
 msgid "Apply globally"
-msgstr ""
+msgstr "全体に適用"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"

@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 18:16+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:11+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 18:41+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -729,8 +729,16 @@ msgid "<%$field%>"
 msgstr "<%$field%>"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Neues Ticket in\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"übermitteln\" value=\"Neue Anfrage in\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Jeder iCal Feed enthält eine geheimes Kürzel, welches Dich authorisiert. Falls die URL deines iCal Feeds in falsche Hände gekommen ist, kannst Du hier ein neues geheimes Kürzel erstellen, <b>welches alle bestehenden iCal Feeds unbrauchbar macht</b></p>"
 
 #: etc/initialdata:194
 msgid "A blank template"
@@ -2287,15 +2295,15 @@ msgstr ""
 
 #: lib/RT/Group.pm:97
 msgid "Create, modify and delete saved searches"
-msgstr ""
+msgstr "Erstelle, ändere und lösche gespeicherte Suchen"
 
 #: lib/RT/System.pm:81
 msgid "Create, modify and delete users"
-msgstr ""
+msgstr "Erstelle, ändere und lösche Benutzer"
 
 #: lib/RT/Class.pm:89
 msgid "CreateArticle"
-msgstr ""
+msgstr "ErstelleArtikel"
 
 #: lib/RT/Dashboard.pm:82
 msgid "CreateDashboard"
@@ -3197,15 +3205,15 @@ msgstr "Verschlüsselung aktiviert"
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
-msgstr ""
+msgstr "Gebe Artikel, Tickets, oder andere URLs an die mit diesem Artikel in Zusammenhang stehen."
 
 #: lib/RT/CustomField.pm:187
 msgid "Enter multiple IP address ranges"
-msgstr ""
+msgstr "Gebe mehrere IP-Adressbereiche ein"
 
 #: lib/RT/CustomField.pm:178
 msgid "Enter multiple IP addresses"
-msgstr ""
+msgstr "Gebe mehrere IP-Adressen ein"
 
 #: lib/RT/CustomField.pm:93
 msgid "Enter multiple values"
@@ -3221,7 +3229,7 @@ msgstr "Gib Objekte oder URI's ein um zu anderen Objekten zu verlinken. Trenne m
 
 #: lib/RT/CustomField.pm:179
 msgid "Enter one IP address"
-msgstr ""
+msgstr "Gebe eine IP-Adresse ein"
 
 #: lib/RT/CustomField.pm:188
 msgid "Enter one IP address range"
@@ -3604,7 +3612,7 @@ msgstr "NachrichtWeiterleiten"
 #: lib/RT/Transaction.pm:665
 #. ($self->Data)
 msgid "Forwarded Ticket to %1"
-msgstr ""
+msgstr "Leite Ticket weiter zu %1"
 
 #: lib/RT/Transaction.pm:662
 #. ($self->Field, $self->Data)
@@ -3740,11 +3748,11 @@ msgstr "Los"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
-msgstr ""
+msgstr "Gehe zu Gruppe"
 
 #: share/html/Admin/Users/index.html:60
 msgid "Go to user"
-msgstr ""
+msgstr "Gehe zu Benutzer"
 
 #: share/html/Admin/Articles/Classes/index.html:69 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:76 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:88 share/html/Admin/Users/index.html:87 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:88
 msgid "Go!"
@@ -3752,7 +3760,7 @@ msgstr "Los!"
 
 #: share/html/SelfService/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto Ticket"
-msgstr ""
+msgstr "Gehe zu Ticket"
 
 #: share/html/Elements/GotoTicket:49
 msgid "Goto ticket"
@@ -3867,11 +3875,11 @@ msgstr "Helfe uns nützliche Standard Werte für RT zu setzen."
 
 #: share/html/Ticket/Elements/FoldStanzaJS:50
 msgid "Hide quoted text"
-msgstr ""
+msgstr "Verberge zitierten Text"
 
 #: lib/RT/Config.pm:345
 msgid "Hide ticket history by default"
-msgstr ""
+msgstr "Verberge den Ticketverlauf standardmäßig"
 
 #: share/html/Elements/Tabs:295 share/html/Elements/Tabs:314 share/html/Elements/Tabs:454 share/html/Elements/Tabs:674 share/html/Elements/Tabs:690 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
@@ -3964,6 +3972,10 @@ msgstr "Wenn dieses Programm setgid ist, könnte ein böswilliger lokaler Nutzer
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+msgstr "Wenn Du bereits einen funktionierenden RT Server und Datenbank hast, solltest Du die Gelegenheit nutzen und Dich vergewissern, dass der Datenbank Server läuft und RT sich damit verbinden kann. Wenn das erledigt ist, stoppe und starte den RT Server."
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 msgstr "Wenn Du bereits einen funktionierenden RT Server und Datenbank hast, solltest Du die Gelegenheit nutzen und Dich vergewissern, dass der Datenbank Server läuft und RT sich damit verbinden kann. Wenn das erledigt ist, stoppe und starte den RT Server."
 
 #: NOT FOUND IN SOURCE
@@ -4261,7 +4273,7 @@ msgstr "Januar"
 
 #: lib/RT/Group.pm:96
 msgid "Join or leave group"
-msgstr ""
+msgstr "betrete oder verlasse Gruppe"
 
 #: NOT FOUND IN SOURCE
 msgid "Join or leave this group"
@@ -6566,6 +6578,10 @@ msgstr "RT wird nach allem suchen was in einem Anfragen Betreff steht."
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT wird %1 und %2 mit der Record ID und dem Wert des benutzerdefinierten Feldes ersetzen."
 
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT wird <tt>__id__</tt> und <tt>__CustomField__</tt> mit der Record ID und dem Wert des benutzerdefinierten Feldes ersetzen."
+
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
 msgstr ""
@@ -6715,6 +6731,10 @@ msgstr "Seite alle %1 Minuten aktualisieren."
 #: etc/RT_Config.pm:2272 etc/RT_Config.pm:2288 etc/RT_Config.pm:2346 etc/RT_Config.pm:2362
 msgid "Reject"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "Reject tickets"
+msgstr "Tickets Ablehnen"
 
 #: lib/RT/Config.pm:164
 msgid "Remember default queue"
@@ -7633,6 +7653,10 @@ msgstr "Reißwolf"
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
 msgstr "Shredder benötigt ein Verzeichnis für Export Dateien. Bitte prüfen Sie das %1 vorhanden ist und für den Webserver beschreibbar ist."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
+msgstr "Shredder benötigt ein Verzeichnis für Export Dateien. Bitte prüfen Sie das <span class=\"file-path\">%1</span> vorhanden ist und für den Webserver beschreibbar ist."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)

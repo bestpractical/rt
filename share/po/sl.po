@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-03-15 15:57+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:09+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:20+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -635,8 +635,16 @@ msgid "<%$Action%> here"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nova zadeva v\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Nova zadeva v\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Vsi iCal viri imajo vključen unikaten podatke za avtorazijo. Če je URL naslov iCal vira prišel v napačne roke, lahko dobiš nov naslov spodaj. <b>Vsi obstoječi iCal viri bodo s tem postali neveljavni!</b></p>"
 
 #: etc/initialdata:194
 msgid "A blank template"
@@ -3669,6 +3677,10 @@ msgid "If you already have a working RT server and database, you should take thi
 msgstr "Če že imaš delujoč RT strežnik in bazo, svetujem da izkoristiš to priložnost da preveriš ali podatkovna baza deluje in da se RT strežnik lahko poveže nanjo. Ko to opraviš, ustavi in ponovno zaženi RT strežmnik.</p>"
 
 #: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr "Če že imaš delujoč RT strežnik in bazo, svetujem da izkoristiš to priložnost da preveriš ali podatkovna baza deluje in da se RT strežnik lahko poveže nanjo. Ko to opraviš, ustavi in ponovno zaženi RT strežmnik.</p>"
+
+#: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Če zamenjaš vrata na katerih teče RT, boš moral ponovno zagnati strežnik da bi se lahko prijavil."
 
@@ -6052,6 +6064,10 @@ msgstr "RT bo iskal karkoli vneseš v iskalno polje."
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT bo zamenjal %1 and %2 z id-jem in prilagojenim poljem zapisa"
 
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT bo zamenjal <tt>__id__</tt> and <tt>__CustomField__</tt> z id-jem in prilagojenim poljem zapisa"
+
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
 msgstr "RT bo uporabil ta niz za unikatno identifikacijo te namestitve in bo to uporabil pri iskanju v e-poštnih sporočilih, da se bo lahko odločil h kateri zadevi sporočilo pripada. Predlagamo da nastaviš to vrednost na ime internetne domene. (npr: domena.si)"
@@ -7046,6 +7062,10 @@ msgstr "Rezalnik"
 
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "Rezalnik potrebuje direktorij v katerega zapisuje svoje izločke. Preveri da <span class=\"file-path\">%1</span> obstaja in da je v ta direktorij možno pisati."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr "Rezalnik potrebuje direktorij v katerega zapisuje svoje izločke. Preveri da <span class=\"file-path\">%1</span> obstaja in da je v ta direktorij možno pisati."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
@@ -8746,9 +8766,17 @@ msgstr ""
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Iti bi moral direktno na stran za prijavo. Prijavil se boš lahko z uporabniškim imenom %1 in geslom ki si ga nastavil pred tem."
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "Iti bi moral direktno na stran za prijavo. Prijavil se boš lahko z uporabniškim imenom <tt>root</tt> in geslom ki si ga nastavil pred tem."
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Izberi bazo s katero si ti ali lokalno administrator najbolj domač."
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "To vidiš ker si strežnik zagnal brez delujoče baze. Najverjetneje je to prvič. Če klikneš <i>Let's go!</i>, te bo RT vodil skozi namestitev RT strežnika in baze."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

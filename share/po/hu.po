@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:44+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:14+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:20+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -624,6 +624,10 @@ msgstr ""
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Új probléma:\" />&nbsp;%1"
 
 #: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
@@ -7066,6 +7070,10 @@ msgstr "adatok törlése"
 
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "Az adatok törléséhez az adatbázisból kell egy könyvtár ahova a dump fájlok kerülnek. Ellenőrizd hogy létezik-e a <span class=\"file-path\">%1</span> és írható-e a webszerver által."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr "Az adatok törléséhez az adatbázisból kell egy könyvtár ahova a dump fájlok kerülnek. Ellenőrizd hogy létezik-e a <span class=\"file-path\">%1</span> és írható-e a webszerver által."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55

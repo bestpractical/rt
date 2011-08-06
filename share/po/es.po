@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:07+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:19+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:12+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -782,8 +782,16 @@ msgid "<%$Action%> here"
 msgstr "<%$Action%> aquí"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nuevo caso en\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Nuevo caso en\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Todos los feeds de iCal incluyen un token secreto que le identifica y autoriza. Si la URL uno de sus fees iCal se ve expuesta al mundo exterior, puede conseguir un suevo secreto, <b>rompiendo todos los feeds de iCal existentes</b> debajo.</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "<tt>%1</tt> - <i>%2s</i>"
@@ -4416,6 +4424,10 @@ msgid "If you already have a working RT server and database, you should take thi
 msgstr "Si usted ya tiene un servidor de IM de trabajo y base de datos, deberían aprovechar esta oportunidad para asegurarse de que su servidor de base de datos se está ejecutando y que el servidor de IM puede conectarse a él. Una vez que hayas hecho esto, detener e iniciar el servidor de IM. </ P>"
 
 #: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr "Si usted ya tiene un servidor de IM de trabajo y base de datos, deberían aprovechar esta oportunidad para asegurarse de que su servidor de base de datos se está ejecutando y que el servidor de IM puede conectarse a él. Una vez que hayas hecho esto, detener e iniciar el servidor de IM. </ P>"
+
+#: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Si ha cambiado el puerto en el que se ejecuta RT, tendrá que reiniciar el servidor en poder acceder a él"
 
@@ -7243,6 +7255,10 @@ msgstr "RT procesará este mensaje como si fuera uno no firmado\\n"
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT reemplazará %1 y %2 con el id del registro y el valor del campo personalizado, respectivamente"
 
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT reemplazará <tt>__id__</tt> y <tt>__CustomField__</tt> con el id del registro y el valor del campo personalizado, respectivamente"
+
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
 msgstr "RT utilizará esta cadena de texto para identificar de forma unívoca su instalación, y la buscará en el asunto de los correos para decidir a qué caso corresponde un mensaje. Se recomienda que establezca esta cadena con el valor de su dominio de internet (por ejemplo: ejemplo.com)"
@@ -8373,6 +8389,10 @@ msgstr "Trituradora"
 
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "La trituradora necesita un directorio en el que escribir la basura. Por favor, chequee que tiene <span class=\"file-path\">%1</span> en su servidor web, y que tiene permisos de escritura en él."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr "La trituradora necesita un directorio en el que escribir la basura. Por favor, chequee que tiene <span class=\"file-path\">%1</span> en su servidor web, y que tiene permisos de escritura en él."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
@@ -10365,9 +10385,17 @@ msgstr ""
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Será redirigido a la página de ingreso. Podrá loguearse con el usuario de %1 y la contraseña establecida previamente."
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "Será redirigido a la página de ingreso. Podrá loguearse con el usuario de <tt>root</tt> y la contraseña establecida previamente."
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Debería elegir la BBDD con la que usted o su DBA local estén más cómodos."
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "Está viendo esta pantalla debido a que comenzó en un servidor RT sin una BBDD funcional. Lo más probable es que esta sea la primera vez que ejecuta RT. Si pulsa <i>¡Vámos!</i> más abajo, RT le guiará a través de la configuración de su servidor y BBDD."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

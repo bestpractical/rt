@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:02+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:10+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
@@ -628,6 +628,10 @@ msgstr ""
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "<%$Action%> here"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Nový požadavek v\" />&nbsp;%1"
 
 #: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
@@ -3704,6 +3708,10 @@ msgid "If you already have a working RT server and database, you should take thi
 msgstr "Pokud již máte funkční RT server i databázi, měli byste využít této příležitosti k ověření, že váš databázový server běží a že se s ním RT server může spojit. Až to uděláte, zastavte a znovu spusťte RT server.</p>"
 
 #: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr "Pokud již máte funkční RT server i databázi, měli byste využít této příležitosti k ověření, že váš databázový server běží a že se s ním RT server může spojit. Až to uděláte, zastavte a znovu spusťte RT server.</p>"
+
+#: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Pokud jste změnili port, na kterém RT běží, tak budete potřebovat restartovat server, abyste se mohli přihlásit."
 
@@ -6162,6 +6170,10 @@ msgstr "Vše ostatní, co zadáte, bude RT hledat v předmětech požadavků."
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT nahradí %1 a %2 identifikátorem záznamu a hodnotou uživatelské položky (v uvedeném pořadí)"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT nahradí <tt>__id__</tt> a <tt>__CustomField__</tt> identifikátorem záznamu a hodnotou uživatelské položky (v uvedeném pořadí)"
 
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -8865,9 +8877,17 @@ msgstr ""
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Měli byste být přesměrováni na přihlašovací stránku. Budete schopni se přihlásit uživatelským jménem %1 a heslem, které jste dříve zadali."
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "Měli byste být přesměrováni na přihlašovací stránku. Budete schopni se přihlásit uživatelským jménem <tt>root</tt> a heslem, které jste dříve zadali."
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Měli byste vybrat databázi, se kterou jste vy nebo váš místní databázový správce nejvíce obeznámeni."
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "Tuto obrazovku vidíte proto, že jste spustili RT server bez fungující databáze. Velmi pravděpodobně jste spustili RT poprvé. Pokud kliknete níže na <i>Pokračovat</i> , RT vás provede nastavením RT serveru a databáze."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

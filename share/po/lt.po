@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:45+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:03+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " (no pubkey!)"
@@ -641,8 +641,16 @@ msgid "<%$Action%> here"
 msgstr "<%$Action%> čia"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Naujas prašymas eilėje\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Создать заявку в очереди\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Visi iCal srautai turi slaptą žymą, kuri jus autorizuoja.  Jeigu vieno iš jūsų iCal srautų URL bus atskleistas pasauliui, galite gauti naują slaptą žymą, bet tokiu atveju <b>sugrius visi jūsų dabartiniai iCal srautai</b> žemiau.</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "<tt>%1</tt> - <i>%2s</i>"
@@ -713,7 +721,7 @@ msgstr "Aktyvūs prašymai"
 #: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
 msgid "Active tickets for %1"
-msgstr ""
+msgstr "Atviri prašymai, priskirti %1"
 
 #: share/html/Admin/Elements/EditRights:105
 #. (loc($AddPrincipal))
@@ -2709,6 +2717,10 @@ msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją."
 
 #: NOT FOUND IN SOURCE
+msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
+msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją.</a>"
+
+#: NOT FOUND IN SOURCE
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
 msgstr "Platinama pagal 2 versiją <a href=\"http://www.gnu.org/copyleft/gpl.html\"> GNU GPL.</a>"
 
@@ -3509,7 +3521,7 @@ msgstr "Rodyti"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
-msgstr ""
+msgstr "Pasirinkti grupę"
 
 #: share/html/Admin/Users/index.html:60
 msgid "Go to user"
@@ -3730,6 +3742,10 @@ msgstr "Jeigu ši programa nustatyta setgid, priešiškas naudotojas gali pasina
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 
 #: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
@@ -4636,7 +4652,7 @@ msgstr "Pakeiti prašymo #%1 datas"
 
 #: share/html/Elements/Tabs:202
 msgid "Modify global article topics"
-msgstr ""
+msgstr "Keisti globalaus straipsnio temas"
 
 #: share/html/Elements/Tabs:160
 msgid "Modify global custom fields"
@@ -5874,6 +5890,10 @@ msgstr "Nurodykite dabartinį slaptažodį."
 msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
 msgstr "Atkreipkite dėmesį, kad tik prašymai vienoje iš šių būsenų ( %1 ) yra rodomi. Išsamesnei paieškai naudokite  %2paieškos konstravimo sąsają%3."
 
+#: NOT FOUND IN SOURCE
+msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
+msgstr "Atkreipkite dėmesį, kad tik prašymai vienoje iš šių būsenų ( %1 ) yra rodomi. Išsamesnei paieškai naudokite  <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">paieškos konstravimo sąsają</a>."
+
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "Galimos paslėtos paieškos"
@@ -6203,6 +6223,10 @@ msgstr "Neradęs kitur, RT ieškos prašymų antraštėse."
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT pakeis %1 ir %2 prašymo numeriu ir papildomo lauko reikšme atitinkamai"
 
+#: NOT FOUND IN SOURCE
+msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr "RT pakeis <tt>__id__</tt> ir <tt>__CustomField__</tt> prašymo numeriu ir papildomo lauko reikšme atitinkamai"
+
 #: lib/RT/Installer.pm:142
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
 msgstr "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -6238,7 +6262,7 @@ msgstr "Gavėjas"
 
 #: share/html/Dashboards/Subscription.html:239
 msgid "Recipient must be an email address"
-msgstr ""
+msgstr "Turi būti nurodytas el. pašto adresas"
 
 #: share/html/Ticket/Elements/ShowSimplifiedRecipients:77
 msgid "Recipients"
@@ -6761,6 +6785,10 @@ msgid "Searching the full text of every ticket can take a long time, but if you 
 msgstr ""
 
 #: NOT FOUND IN SOURCE
+msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgstr "Teksto fragmento paieška visuose prašymuose gali užtrukti ilgai, tačiau jeigu jums tikrai to reikia, naudokite paieškos sąlygą <b>fulltext:<i>ieškomas tekstas</i></b>."
+
+#: NOT FOUND IN SOURCE
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
 msgstr "Paieška pagal bet kokį tekstą kiekviename prašyme užima daug laiko, bet jeigu jums iš tikro to reikia, galite nurodyti pilnatekstės paieškos žodį rašydami <b>fulltext:<i>žodis</i></b>."
 
@@ -7052,7 +7080,7 @@ msgstr "Pasiųsti laišką atsakingam"
 
 #: lib/RT/Interface/Email.pm:768
 msgid "Sent email successfully"
-msgstr ""
+msgstr "Laiškas sėkmingai išsiųstas"
 
 #: lib/RT/Date.pm:99
 msgid "Sep"
@@ -7068,7 +7096,7 @@ msgstr "Rugsėjis"
 
 #: lib/RT/User.pm:1572
 msgid "Set private key"
-msgstr ""
+msgstr "Nustatyti asmeninį raktą"
 
 #: share/html/Elements/Tabs:400 share/html/Prefs/Other.html:79
 msgid "Settings"
@@ -7221,6 +7249,10 @@ msgstr "Naikiklis"
 
 #: NOT FOUND IN SOURCE
 msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
+msgstr "Trynimo procedūrai reikalinga direktorija išsaugoti duomenims. Patikrinkite ar egzistuoja <span class=\"file-path\">%1</span> ir web serveris turi ten rašymo teises."
+
+#: NOT FOUND IN SOURCE
+msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr "Trynimo procedūrai reikalinga direktorija išsaugoti duomenims. Patikrinkite ar egzistuoja <span class=\"file-path\">%1</span> ir web serveris turi ten rašymo teises."
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
@@ -8879,6 +8911,10 @@ msgstr "Jūs galite paskirti sau tik tuos prašymus, kurie nepriskirti niekam"
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
+msgstr "Galite ieškote teksto fragmento visuose prašymuose naudodami sąlygą <b>fulltext:<i>ieškomas tekstas</i></b>."
+
 #: lib/RT/Ticket.pm:3112
 #. ($self->loc($old), $self->loc($new))
 msgid "You can't change status from '%1' to '%2'."
@@ -8937,9 +8973,17 @@ msgstr "Jūs privalote nurodyti adresą susirašinėjimui, jeigu norite naudoti 
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 
+#: NOT FOUND IN SOURCE
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "You should choose the database you or your local database administrator is most comfortable with."
+
+#: NOT FOUND IN SOURCE
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))

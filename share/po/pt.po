@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-03-25 07:17+0000\n"
-"PO-Revision-Date: 2011-05-20 16:31+0000\n"
+"POT-Creation-Date: 2011-08-05 23:32+0000\n"
+"PO-Revision-Date: 2011-08-06 00:39+0000\n"
 "Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-20 17:21+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -706,8 +706,16 @@ msgid "<%$field%>"
 msgstr "<%$field%>"
 
 #: NOT FOUND IN SOURCE
+msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"Novo Pedido em\" />&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Novo Pedido em\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+msgstr "<p>Todas as feeds iCal embebem um token privado que o autorizam. Se o URL de um dos seus feeds iCal foi exposto ao exterior, pode ter um novo token privado ao <b>quebrar as feeds existentes</b>.</p>"
 
 #: etc/initialdata:194
 msgid "A blank template"
@@ -3845,6 +3853,10 @@ msgstr "Se esta ferramenta fosse setgid, um utilizador local hostil poderia usá
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+msgstr "Se já tem um servidor RT e base de dados funcionais, deveria aproveitar a oportunidade para se assegurar que o seu servidor de base de dados está a correr e que o servidor do RT consegue-se ligar a ele. Depois disto, pare e inicie o servidor do RT. </p>"
+
+#: NOT FOUND IN SOURCE
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 msgstr "Se já tem um servidor RT e base de dados funcionais, deveria aproveitar a oportunidade para se assegurar que o seu servidor de base de dados está a correr e que o servidor do RT consegue-se ligar a ele. Depois disto, pare e inicie o servidor do RT. </p>"
 
 #: NOT FOUND IN SOURCE
