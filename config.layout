@@ -29,7 +29,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
-  manualdir:		${datadir}/doc
+  manualdir:		${prefix}/docs
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
@@ -54,7 +54,7 @@
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
   fontdir:		${datadir}/fonts
-  manualdir:		${datadir}/doc
+  manualdir:		${datadir}/docs
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
@@ -189,7 +189,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
-  manualdir:	${datadir}/doc
+  manualdir:	docs
   localstatedir:	var
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
@@ -214,7 +214,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
-  manualdir:	${datadir}/doc
+  manualdir:	docs
   localstatedir:	var/rt/
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
