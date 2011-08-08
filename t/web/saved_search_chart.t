@@ -131,16 +131,18 @@ sub page_chart_link_has {
 
 # load the first chart
 $m->field('SavedSearchLoad' => $saved_search_ids[0]);
-$m->submit;
+$m->click('SavedSearchLoadSubmit');
 
 page_chart_link_has($m, $saved_search_ids[0]);
 
 $m->form_name('SaveSearch');
 is($m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[0]);
 
+$m->form_name('SaveSearch');
+
 # now load the second chart
 $m->field('SavedSearchLoad' => $saved_search_ids[1]);
-$m->submit;
+$m->click('SavedSearchLoadSubmit');
 
 page_chart_link_has($m, $saved_search_ids[1]);
 
