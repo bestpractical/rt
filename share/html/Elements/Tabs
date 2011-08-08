@@ -572,36 +572,48 @@ my $build_admin_menu = sub {
         my $search_id = $m->request_args->{'SavedSearchLoad'} || $m->request_args->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
         my $chart_id = $m->request_args->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
 
-        if ($request_path =~ m{^/Search/Chart\.html}) {
-            if ($m->request_args->{'SavedSearchLoadButton'}) {
-                chart_id = $m->request_args->{'SavedSearchLoad'};
-            }
-        }
-
         $has_query = 1 if ( $m->request_args->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args = (
-            SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
-            SavedChartSearchId => $chart_id,
-            Query => $m->request_args->{'Query'} || $current_search->{'Query'},
-            Format => $m->request_args->{'Format'} || $current_search->{'Format'},
-            OrderBy => $m->request_args->{'OrderBy'} || $current_search->{'OrderBy'} ||'',
-            Order => $m->request_args->{'Order'} || $current_search->{'Order'} ||'',
-            Page => $m->request_args->{'Page'} || $current_search->{'Page'},
-            RowsPerPage => ( defined $m->request_args->{'RowsPerPage'}
-                             ? $m->request_args->{'RowsPerPage'}
-                             : $current_search->{'RowsPerPage'})
-                         );
-        for my $field (qw(Order OrderBy)) {
-            if ( ref( $query_args{$field} ) eq 'ARRAY' ) {
-                $query_args{$field} = join( "|", @{ $query_args{$field} } );
-            } elsif (not defined $query_args{$field}) {
-                delete $query_args{$field};
-            }
+        my %query_args;
+        my %fallback_query_args = (
+            SavedSearchId => sub { ( $search_id eq 'new' ) ? undef : $search_id },
+            SavedChartSearchId => sub { $chart_id },
+            (
+                map {
+                    $_ => sub { $m->request_args->{$_} || $current_search->{$_} }
+                } qw(Query Format OrderBy Order Page)
+            ),
+            RowsPerPage => sub {
+                defined $m->request_args->{'RowsPerPage'}
+                ? $m->request_args->{'RowsPerPage'}
+                : $current_search->{'RowsPerPage'}
+            },
+        );
+
+        if ($QueryString) {
+            $args = '?' . $QueryString;
         }
+        else {
+            my %final_query_args = ();
+            # key => callback to avoid unnecessary work
 
-        $args = "?" . ($QueryString || $query_string->(%query_args));
+            for my $param (keys %fallback_query_args) {
+                $final_query_args{$param} = $QueryArgs->{$param} || $fallback_query_args{$param}->();
+            }
 
+            for my $field (qw(Order OrderBy)) {
+                if ( ref( $final_query_args{$field} ) eq 'ARRAY' ) {
+                    $final_query_args{$field} = join( "|", @{ $final_query_args{$field} } );
+                } elsif (not defined $final_query_args{$field}) {
+                    delete $final_query_args{$field};
+                }
+                else {
+                    $final_query_args{$field} ||= '';
+                }
+            }
+
+            $args = '?' . $query_string->(%final_query_args);
+        }
 
         my $current_search_menu;
         if ( $request_path =~ m{^/Ticket} ) {
@@ -629,23 +641,25 @@ my $build_admin_menu = sub {
                                    spreadsheet => title => loc('Spreadsheet'),
                                    path => "/Search/Results.tsv$args" );
 
+            my %rss_data = map { $_ => $QueryArgs->{$_} || $query_args{$_} || '' }
+                           qw(Query Order OrderBy Rows);
             my $RSSQueryString = "?"
-                . $query_string->( Query   => $query_args{Query},
-                                   Order   => $query_args{Order},
-                                   OrderBy => $query_args{OrderBy}
+                . $query_string->( Query   => $rss_data{Query},
+                                   Order   => $rss_data{Order},
+                                   OrderBy => $rss_data{OrderBy}
                                  );
             my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
                 $session{'CurrentUser'}->UserObj->Name,
                 $session{'CurrentUser'}
-                ->UserObj->GenerateAuthString(   $query_args{Query}
-                                               . $query_args{Order}
-                                               . $query_args{OrderBy} );
+                ->UserObj->GenerateAuthString(   $rss_data{Query}
+                                               . $rss_data{Order}
+                                               . $rss_data{OrderBy} );
 
             $more->child( rss => title => loc('RSS') => path => "/NoAuth/rss/$RSSPath/$RSSQueryString");
             my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
                 $session{'CurrentUser'}->UserObj->Name,
-                $session{'CurrentUser'}->UserObj->GenerateAuthString( $query_args{Query} ),
-                $query_args{Query};
+                $session{'CurrentUser'}->UserObj->GenerateAuthString( $rss_data{Query} ),
+                $rss_data{Query};
             $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
 
             if ($request_path =~ m{^/Search/Results.html}
@@ -654,8 +668,8 @@ my $build_admin_menu = sub {
                 my $shred_args = $query_string->(
                     search          => 1,
                     plugin          => 'Tickets',
-                    'Tickets:query' => $query_args{'Query'},
-                    'Tickets:limit' => $query_args{'Rows'},
+                    'Tickets:query' => $rss_data{'Query'},
+                    'Tickets:limit' => $rss_data{'Rows'},
                 );
 
                 $more->child( 'shredder' => title => loc('Shredder'),
@@ -774,4 +788,5 @@ if ( $request_path !~ m{^/SelfService/} ) {
 <%ARGS>
 $show_menu => 1
 $QueryString => ''
+$QueryArgs => {}
 </%ARGS>

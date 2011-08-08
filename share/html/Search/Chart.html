@@ -101,12 +101,15 @@ my %query;
         $query{$_} = $m->request_args->{$_} unless defined $query{$_};
     }
 
+    if ($m->request_args->{'SavedSearchLoadSubmit'}) {
+        $query{'SavedChartSearchId'} = $m->request_args->{'SavedSearchLoad'};
+    }
+
 }
 
-my $QueryString = $m->comp('/Elements/QueryString', %query );
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs, QueryString => $QueryString &>
+<& /Elements/Tabs, QueryArgs => \%query &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
