@@ -56,8 +56,8 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use RT::Test tests => 45;
-my ($baseurl, $m) = RT::Test->started_ok;
+use RT::Test tests => 42;
+
 # 12.0 is outlook 2007, 14.0 is 2010
 for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
     diag "Test mail with multipart/alternative";

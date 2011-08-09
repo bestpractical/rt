@@ -49,9 +49,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 7;
+use RT::Test tests => 4;
 use RT::Test::Email;
-my ($baseurl, $m) = RT::Test->started_ok;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 my $user  = RT::Test->load_or_create_user( Name => 'bob', EmailAddress => 'bob@example.com' );
