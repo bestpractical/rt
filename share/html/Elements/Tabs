@@ -599,7 +599,9 @@ my $build_admin_menu = sub {
             # key => callback to avoid unnecessary work
 
             for my $param (keys %fallback_query_args) {
-                $final_query_args{$param} = $QueryArgs->{$param} || $fallback_query_args{$param}->();
+                $final_query_args{$param} = defined($QueryArgs->{$param})
+                                          ? $QueryArgs->{$param}
+                                          : $fallback_query_args{$param}->();
             }
 
             for my $field (qw(Order OrderBy)) {

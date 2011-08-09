@@ -66,7 +66,7 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs, QueryString => $QueryString &>
+<& /Elements/Tabs, %TabArgs &>
 
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
@@ -297,12 +297,12 @@ if ( $ARGS{'DoSearch'} ) {
 
 # Build a querystring for the tabs
 
-my $QueryString = '';
+my %TabArgs = ();
 if ($NewQuery) {
-    $QueryString = 'NewQuery=1';
+    $TabArgs{QueryString} = 'NewQuery=1';
 }
 elsif ( $query{'Query'} ) {
-    $QueryString = $m->comp('/Elements/QueryString', %query );
+    $TabArgs{QueryArgs} = \%query;
 }
 
 </%INIT>
