@@ -9,7 +9,8 @@ This file applies if:
     RT was installed on MySQL 4.1 or newer
 
 If neither of the above cases apply, your should upgrade as per the
-instructions in the README.
+instructions in the README.  If both cases apply, you should first
+upgrade MySQL and then upgrade RT.
 
 These changes are necessary because MySQL 4.1 and greater changed some
 aspects of character set handling that may result in RT failures; this
