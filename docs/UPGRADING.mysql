@@ -1,18 +1,21 @@
-MySQL 4.1 and greater implemented changes in character set handling that
-may result in RT failures; specifically, multiple login requests, binary
-attachments breakage, image custom fields breakage and more.  In order
-to resolve this issue, we've changed our schema for MySQL 4.1 and above.
+If you did not start by reading the README file, please start there;
+these steps do not list the full upgrading process, merely a part which
+is sometimes necessary.
 
-If you're installing a new RT installation, you can skip this file
-entirely.
+This file applies if:
+ 1) You are migrating from MySQL 4.0 to MySQL 4.1 or above
+                      OR
+ 2) You are upgrading RT from versions prior to 3.8.0, even if your old
+    RT was installed on MySQL 4.1 or newer
 
-If you're migrating from MySQL 4.0 to MySQL 4.1 or above, then you MUST
-follow instructions at the bottom of this file.
+If neither of the above cases apply, your should upgrade as per the
+instructions in the README.
 
-If you're upgrading RT from versions prior to 3.8.0 then you MUST follow
-instructions below even if your old RT was installed on MySQL 4.1 or
-newer.
-
+These changes are necessary because MySQL 4.1 and greater changed some
+aspects of character set handling that may result in RT failures; this
+will manifest as multiple login requests, corrupted binary attachments,
+and corrupted image custom fields, among others.  In order to resolve
+this issue, the upgrade process will need to modify the schema.
 
 
 === Upgrading RT from versions prior to 3.8.0 ===
