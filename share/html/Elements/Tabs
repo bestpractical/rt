@@ -644,8 +644,9 @@ my $build_admin_menu = sub {
                                    spreadsheet => title => loc('Spreadsheet'),
                                    path => "/Search/Results.tsv$args" );
 
-            my %rss_data = map { $_ => $QueryArgs->{$_} || $query_args{$_} || '' }
-                           qw(Query Order OrderBy Rows);
+            my %rss_data = map {
+                $_ => $QueryArgs->{$_} || $fallback_query_args{$_}->() || '' }
+                    qw(Query Order OrderBy);
             my $RSSQueryString = "?"
                 . $query_string->( Query   => $rss_data{Query},
                                    Order   => $rss_data{Order},
@@ -672,7 +673,7 @@ my $build_admin_menu = sub {
                     search          => 1,
                     plugin          => 'Tickets',
                     'Tickets:query' => $rss_data{'Query'},
-                    'Tickets:limit' => $rss_data{'Rows'},
+                    'Tickets:limit' => $QueryArgs->{'Rows'},
                 );
 
                 $more->child( 'shredder' => title => loc('Shredder'),
