@@ -54,7 +54,7 @@
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
   fontdir:		${datadir}/fonts
-  manualdir:		${datadir}/docs
+  manualdir:		${prefix}/docs
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
