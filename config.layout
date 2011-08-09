@@ -214,7 +214,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
-  manualdir:	docs
+  manualdir:	docs/rt
   localstatedir:	var/rt/
   logfiledir:		${localstatedir}/log
   masonstatedir:	${localstatedir}/mason_data
