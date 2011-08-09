@@ -580,7 +580,8 @@ my $build_admin_menu = sub {
             SavedChartSearchId => sub { $chart_id },
             (
                 map {
-                    $_ => sub { $m->request_args->{$_} || $current_search->{$_} }
+                    my $p = $_;
+                    $p => sub { $m->request_args->{$p} || $current_search->{$p} }
                 } qw(Query Format OrderBy Order Page)
             ),
             RowsPerPage => sub {
