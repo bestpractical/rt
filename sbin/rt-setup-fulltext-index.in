@@ -503,7 +503,7 @@ sub ora_create_format_column {
     }
     $detect_format .= qq{
                 WHEN type = 'text' THEN 'text'
-                WHEN type = 'text/rtf' THEN '$binary'
+                WHEN type = 'text/rtf' THEN 'ignore'
                 WHEN type LIKE 'text/%' THEN 'text'
                 WHEN type LIKE 'message/%' THEN 'text'
                 WHEN type LIKE 'multipart/%' THEN 'ignore'
