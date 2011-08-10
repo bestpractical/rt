@@ -59,3 +59,32 @@
 <tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 
+% if (@quoted_attachments) {
+<tr>
+  <td class="label"><&|/l&>Include attachments</&>:</td>
+  <td>
+%     for my $attach (@quoted_attachments) {
+    <label>
+      <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
+             <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
+      <% $attach->Filename %>
+    </label>
+%     }
+  </td>
+</tr>
+% }
+<%init>
+my @quoted_attachments;
+if ($QuoteTransaction) {
+    my $txn = RT::Transaction->new( $session{'CurrentUser'} );
+    $txn->Load($QuoteTransaction);
+    if ($txn->Id and $txn->CurrentUserCanSee) {
+        @quoted_attachments = grep { defined $_->Filename and length $_->Filename }
+                                  @{$txn->Attachments->ItemsArrayRef};
+    }
+}
+</%init>
+<%args>
+@AttachExisting => ()
+$QuoteTransaction => ''
+</%args>

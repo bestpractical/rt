@@ -2183,6 +2183,7 @@ sub _RecordNote {
         TimeTaken    => 0,
         CommitScrips => 1,
         SquelchMailTo => undef,
+        AttachExisting => [],
         @_
     );
 
@@ -2198,6 +2199,17 @@ sub _RecordNote {
 
     # convert text parts into utf-8
     RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
+
+    # Set the magic RT headers which include existing attachments on this note
+    if ($args{'AttachExisting'}) {
+        $args{'AttachExisting'} = [$args{'AttachExisting'}]
+            if not ref $args{'AttachExisting'} eq 'ARRAY';
+
+        for my $attach (@{$args{'AttachExisting'}}) {
+            next if $attach =~ /\D/;
+            $args{'MIMEObj'}->head->add( 'RT-Attach' => $attach );
+        }
+    }
 
     # If we've been passed in CcMessageTo and BccMessageTo fields,
     # add them to the mime object for passing on to the transaction handler
