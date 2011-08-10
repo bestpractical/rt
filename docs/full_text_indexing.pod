@@ -147,11 +147,6 @@ triggers to support this index.  The script will also output an
 appropriate C<%FullTextSearch> configuration to add to your
 F<RT_SiteConfig>.
 
-The Oracle index determines which content types it will index, at
-creation time.  By default, unknown content-types are ignored; to
-instead index unknown content-types as binary data, pass the C<--binary>
-flag to C<rt-setup-fulltext-index>.
-
 =head2 Updating the index
 
 To update the index, you will need to run the following at regular
