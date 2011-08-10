@@ -506,16 +506,6 @@ sub ora_create_format_column {
                 WHEN type = 'text/rtf' THEN 'ignore'
                 WHEN type LIKE 'text/%' THEN 'text'
                 WHEN type LIKE 'message/%' THEN 'text'
-                WHEN type LIKE 'multipart/%' THEN 'ignore'
-                WHEN type LIKE 'image/%' THEN 'ignore'
-                WHEN type LIKE 'audio/%' THEN 'ignore'
-                WHEN type LIKE 'video/%' THEN 'ignore'
-                WHEN type LIKE '%signature%' THEN 'ignore'
-                WHEN type LIKE '%pkcs7%' THEN 'ignore'
-                WHEN type LIKE '%compress%' THEN 'ignore'
-                WHEN type LIKE '%zip%' THEN 'ignore'
-                WHEN type LIKE '%tar%' THEN 'ignore'
-                WHEN type LIKE '%/octet-stream' THEN 'ignore'
                 ELSE 'ignore'
             END;
             RETURN format;
