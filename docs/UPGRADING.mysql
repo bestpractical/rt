@@ -81,5 +81,5 @@ this issue, the upgrade process will need to modify the schema.
 
 10) If you were upgrading from MySQL 4.0, you may now, if you wish,
     reconfigure your newer MySQL instance to use UTF-8 as the default
-    character set, as step 7 above adjusted the cahracter sets on all
+    character set, as step 7 above adjusted the character sets on all
     existing tables to contain UTF-8 encoded data, rather than Latin1.
