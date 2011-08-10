@@ -699,9 +699,10 @@ To test what will happen without running any DDL, pass the C<--dryrun>
 flag.
 
 The Oracle index determines which content-types it will index at
-creation time. By default, uploaded attachments (attachments with
-filenames) are indexed; to ignore these instead, pass the
-C<--no-attachments> flag when the index is create.
+creation time. By default, textual message bodies and textual uploaded
+attachments (attachments with filenames) are indexed; to ignore textual
+attachments, pass the C<--no-attachments> flag when the index is
+created.
 
 
 =head1 AUTHOR
