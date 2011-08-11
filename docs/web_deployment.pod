@@ -117,7 +117,7 @@ one the server is configured for.
         </Perl>
     </VirtualHost>
 
-=head2 mod_perl 1.xx
+=head3 mod_perl 1.xx
 
 B<WARNING: mod_perl 1.99_xx is not supported.>
 
@@ -189,8 +189,6 @@ With the nginx configuration:
         }
     }
 
-
-=cut
 
 =head1 Running RT at /rt rather than /
 
