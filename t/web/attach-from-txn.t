@@ -1,6 +1,7 @@
 use strict;
+use warnings;
 
-use RT::Test tests => 46;
+use RT::Test tests => 54;
 
 my $LogoName    = 'image.png';
 my $ImageName   = 'owls.jpg';
@@ -99,13 +100,14 @@ like $mail, qr/filename=.?\Q$ImageName\E.?/, "found filename";
 # add header to template, make a normal reply, and see that it worked
 my $link = $m->find_link(text_regex => qr/\Q$LogoName\E/, url_regex => qr/Attachment/);
 ok $link;
-my ($id) = $link->url =~ /Attachment\/\d+\/(\d+)/;
-ok $id;
+my ($LogoId) = $link->url =~ /Attachment\/\d+\/(\d+)/;
+ok $LogoId;
 my $template = RT::Template->new( RT->SystemUser );
 $template->LoadGlobalTemplate('Correspondence');
 ok $template->Id;
-$template->SetContent( "RT-Attach: $id\n" . $template->Content );
-like $template->Content, qr/RT-Attach/, "updated template";
+my $old_template = $template->Content;
+$template->SetContent( "RT-Attach: $LogoId\n" . $template->Content );
+like $template->Content, qr/RT-Attach:/, "updated template";
 
 # reply...
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
@@ -120,6 +122,31 @@ my @mails = RT::Test->fetch_caught_mails;
 is scalar @mails, 1, "got one outgoing email";
 my $mail = shift @mails;
 like $mail, qr/To: owls\@localhost/, 'got To';
-like $mail, qr/RT-Attach: $id/, "found attachment we expected";
-like $mail, qr/RT-Attachment: \d+\/\d+\/$id/, "found RT-Attachment header";
+like $mail, qr/RT-Attach: $LogoId/, "found attachment we expected";
+like $mail, qr/RT-Attachment: \d+\/\d+\/$LogoId/, "found RT-Attachment header";
 like $mail, qr/filename=.?\Q$LogoName\E.?/, "found filename";
+
+# create a new, privileged user who can't see this ticket but can reply
+$template->SetContent($old_template);
+unlike $template->Content, qr/RT-Attach:/, "no header in template anymore";
+
+my $peter = RT::Test->load_or_create_user(
+    Name            => 'peter',
+    EmailAddress    => 'peter@localhost',
+);
+ok( RT::Test->add_rights({ Principal => 'Everyone', Right => [qw(ReplyToTicket)] }), 'add ReplyToTicket rights');
+
+my $ticket = RT::Ticket->new($peter);
+$ticket->Load(1);
+ok $ticket->Id, "loaded ticket";
+
+my ($ok, $msg, $txn) = $ticket->Correspond( AttachExisting => $LogoId, Content => 'Hi' );
+ok $ok, $msg;
+
+# check mail that went out doesn't contain the logo
+my @mails = RT::Test->fetch_caught_mails;
+is scalar @mails, 1, "got one outgoing email";
+my $mail = shift @mails;
+like $mail, qr/RT-Attach: $LogoId/, "found header we expected";
+unlike $mail, qr/RT-Attachment: \d+\/\d+\/$LogoId/, "lacks RT-Attachment header";
+unlike $mail, qr/filename=.?\Q$LogoName\E.?/, "lacks filename";
