@@ -580,8 +580,8 @@ sub EncodedHeaders {
 
 =head2 GetHeader $TAG
 
-Returns the value of the header Tag as a string. This bypasses the weeding out
-done in Headers() above.
+Returns the value of the B<first> header Tag as a string. This bypasses the
+weeding out done in Headers() above.
 
 =cut
 
@@ -597,6 +597,24 @@ sub GetHeader {
     
     # we found no header. return an empty string
     return undef;
+}
+
+=head2 GetAllHeaders $TAG
+
+Returns a list of all values for the the given header tag, in the order they
+appear.
+
+=cut
+
+sub GetAllHeaders {
+    my $self = shift;
+    my $tag = shift;
+    my @values = ();
+    foreach my $line ($self->_SplitHeaders) {
+        next unless $line =~ /^\Q$tag\E:\s+(.*)$/si;
+        push @values, $1;
+    }
+    return @values;
 }
 
 =head2 DelHeader $TAG

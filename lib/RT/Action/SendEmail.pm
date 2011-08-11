@@ -416,12 +416,11 @@ C<RT-Attach> headers appropriately on Comment/Correspond.
 
 sub AddAttachmentsFromHeaders {
     my $self  = shift;
-    my $orig  = $self->TransactionObj->Attachments->First;
     my $email = $self->TemplateObj->MIMEObj;
 
     # Add the RT-Attach headers from the transaction to the email
-    if ($orig and $orig->GetHeader('RT-Attach')) {
-        for my $id ($orig->ContentAsMIME(Children => 0)->head->get_all('RT-Attach')) {
+    if (my $attachment = $self->TransactionObj->Attachments->First) {
+        for my $id ($attachment->GetAllHeaders('RT-Attach')) {
             $email->head->add('RT-Attach' => $id);
         }
     }
