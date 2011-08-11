@@ -78,6 +78,17 @@ unless ( $display_headers{'_all'} ) {
 my $ticket = $Message->TransactionObj->TicketObj;
 foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
+    if ($f->{'Tag'} eq 'RT-Attach') {
+        # Blat in the filename and linkify
+        my $att = RT::Attachment->new( $session{'CurrentUser'} );
+        $att->Load($f->{'Value'});
+        next unless $att->Id and $att->TransactionObj->CurrentUserCanSee;
+
+        $f->{'Value'} = sprintf '<a href="%s/Ticket/Attachment/%d/%d/%s">%s</a>',
+                                RT->Config->Get('WebPath'), $att->TransactionObj->Id, $att->Id,
+                                $m->interp->apply_escapes($att->Filename, qw(u h)),
+                                $m->interp->apply_escapes($att->Filename, 'h');
+    }
 }
 
 if ( $Localize ) {
