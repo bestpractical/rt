@@ -79,7 +79,8 @@ if ($QuoteTransaction) {
     my $txn = RT::Transaction->new( $session{'CurrentUser'} );
     $txn->Load($QuoteTransaction);
     if ($txn->Id and $txn->CurrentUserCanSee) {
-        @quoted_attachments = grep { defined $_->Filename and length $_->Filename }
+        @quoted_attachments = sort { lc($a->Filename) cmp lc($b->Filename) }
+                              grep { defined $_->Filename and length $_->Filename }
                                   @{$txn->Attachments->ItemsArrayRef};
     }
 }
