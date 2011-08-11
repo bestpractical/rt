@@ -118,9 +118,9 @@ is($m->status, 200, "request successful");
 $m->content_contains('who gives a hoot');
 
 # then see if we got the right mail
-my @mails = RT::Test->fetch_caught_mails;
+@mails = RT::Test->fetch_caught_mails;
 is scalar @mails, 1, "got one outgoing email";
-my $mail = shift @mails;
+$mail = shift @mails;
 like $mail, qr/To: owls\@localhost/, 'got To';
 like $mail, qr/RT-Attach: $LogoId/, "found attachment we expected";
 like $mail, qr/RT-Attachment: \d+\/\d+\/$LogoId/, "found RT-Attachment header";
@@ -144,9 +144,9 @@ my ($ok, $msg, $txn) = $ticket->Correspond( AttachExisting => $LogoId, Content =
 ok $ok, $msg;
 
 # check mail that went out doesn't contain the logo
-my @mails = RT::Test->fetch_caught_mails;
+@mails = RT::Test->fetch_caught_mails;
 is scalar @mails, 1, "got one outgoing email";
-my $mail = shift @mails;
+$mail = shift @mails;
 like $mail, qr/RT-Attach: $LogoId/, "found header we expected";
 unlike $mail, qr/RT-Attachment: \d+\/\d+\/$LogoId/, "lacks RT-Attachment header";
 unlike $mail, qr/filename=.?\Q$LogoName\E.?/, "lacks filename";
