@@ -22,6 +22,12 @@ to use L<Starman>, a high performance preforking server:
 
     /opt/rt4/sbin/rt-server --server Starman --port 8080
 
+B<NOTICE>: After you run the standalone server as root, you will need to
+remove your C<var/mason> directory, or the non-standalone servers
+(Apache, etc), which run as a non-privileged user, will not be able to
+write to it and will not work.
+
+
 =head2 Apache
 
 B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.
@@ -124,6 +130,7 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
 configuration examples.
 
+
 =head2 nginx
 
 C<nginx> requires that you start RT's fastcgi process externally, for
@@ -167,6 +174,7 @@ With the nginx configuration:
             root /opt/rt4/share/html;
         }
     }
+
 
 =head2 lighttpd
 
