@@ -61,14 +61,14 @@
 
 % if (@quoted_attachments) {
 <tr>
-  <td class="label"><&|/l&>Include attachments</&>:</td>
+  <td class="label" valign="top"><&|/l&>Include attachments</&>:</td>
   <td>
 %     for my $attach (@quoted_attachments) {
     <label>
       <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
              <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
       <% $attach->Filename %>
-    </label>
+    </label><br />
 %     }
   </td>
 </tr>
