@@ -576,19 +576,19 @@ my $build_admin_menu = sub {
 
         my %query_args;
         my %fallback_query_args = (
-            SavedSearchId => sub { ( $search_id eq 'new' ) ? undef : $search_id },
-            SavedChartSearchId => sub { $chart_id },
+            SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+            SavedChartSearchId => $chart_id,
             (
                 map {
                     my $p = $_;
-                    $p => sub { $m->request_args->{$p} || $current_search->{$p} }
+                    $p => $m->request_args->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page)
             ),
-            RowsPerPage => sub {
+            RowsPerPage => (
                 defined $m->request_args->{'RowsPerPage'}
                 ? $m->request_args->{'RowsPerPage'}
                 : $current_search->{'RowsPerPage'}
-            },
+            ),
         );
 
         if ($QueryString) {
@@ -601,7 +601,7 @@ my $build_admin_menu = sub {
             for my $param (keys %fallback_query_args) {
                 $final_query_args{$param} = defined($QueryArgs->{$param})
                                           ? $QueryArgs->{$param}
-                                          : $fallback_query_args{$param}->();
+                                          : $fallback_query_args{$param};
             }
 
             for my $field (qw(Order OrderBy)) {
@@ -645,7 +645,7 @@ my $build_admin_menu = sub {
                                    path => "/Search/Results.tsv$args" );
 
             my %rss_data = map {
-                $_ => $QueryArgs->{$_} || $fallback_query_args{$_}->() || '' }
+                $_ => $QueryArgs->{$_} || $fallback_query_args{$_} || '' }
                     qw(Query Order OrderBy);
             my $RSSQueryString = "?"
                 . $query_string->( Query   => $rss_data{Query},
