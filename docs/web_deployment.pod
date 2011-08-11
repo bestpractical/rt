@@ -24,9 +24,9 @@ to use L<Starman>, a high performance preforking server:
 
 =head2 Apache
 
-B<WARNING>: Both mod_speling and mod_cache are known to break RT.
-mod_speling will cause RT's CSS and JS to not be loaded, making RT
-appear unstyled. mod_cache will cause cookies to be cached, making it
+B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.
+C<mod_speling> will cause RT's CSS and JS to not be loaded, making RT
+appear unstyled. C<mod_cache> will cause cookies to be cached, making it
 appear that RT is logging you in as a different user.
 
 =head3 mod_fastcgi
