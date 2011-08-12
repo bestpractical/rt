@@ -1475,6 +1475,12 @@ sub DecryptAttachment {
     $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $res_fh;
 
     my $head = $args{'Data'}->head;
+
+    # we can not trust original content type
+    # TODO: and don't have way to detect, so we just use octet-stream
+    # some clients may send .asc files (encryped) as text/plain
+    $head->mime_attr( "Content-Type" => 'application/octet-stream' );
+
     my $filename = $head->recommended_filename;
     $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
     $head->mime_attr( $_ => $filename )
