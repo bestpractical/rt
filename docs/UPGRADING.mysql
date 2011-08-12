@@ -18,9 +18,9 @@ will manifest as multiple login requests, corrupted binary attachments,
 and corrupted image custom fields, among others.  In order to resolve
 this issue, the upgrade process will need to modify the schema.
 
- 1) If you are migrating from MySQL 4.0 to MySQL 4.1 or above:
-   1a) Dump the database from your MySQL 4.0; be sure to pass the
-       mysqldump command the --default-character-set=binary option.
+ 1) If you are moving database and/or upgrading MySQL
+   1a) Dump the database; with MySQL 4.1 and greater be sure to pass
+       the mysqldump command the --default-character-set=binary option.
        This is necessary because the data was originally encoded in
        Latin1.
 
