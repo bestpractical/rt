@@ -72,6 +72,7 @@ package RT::ScripAction;
 use strict;
 no warnings qw(redefine);
 use RT::Template;
+use UNIVERSAL::require;
 
 # {{{ sub _Accessible 
 sub _Accessible  {
@@ -168,8 +169,8 @@ sub LoadAction  {
     $self->ExecModule =~ /^(\w+)$/ or die "Invalid scrip action: ".$self->ExecModule;
     my $type = "RT::Action::" . $1;
 
-    eval "require $type" || die "Require of $type failed.\n$@\n";
-    
+    $type->require or die "Require of $type failed.\n$@\n";
+
     return $self->{'Action'} = $type->new(
         Argument       => $self->Argument,
         CurrentUser    => $self->CurrentUser,

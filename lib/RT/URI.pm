@@ -53,6 +53,7 @@ use base 'RT::Base';
 
 use RT::URI::base;
 use Carp;
+use UNIVERSAL::require;
 
 =head1 NAME
 
@@ -174,7 +175,7 @@ sub _GetResolver {
     $scheme =~ s/(\.|-)/_/g;
 
     my $class = "RT::URI::$scheme";
-    eval "require $class";
+    $class->require;
     my $resolver = eval { $class->new($self->CurrentUser); };
 
     if ($resolver) {

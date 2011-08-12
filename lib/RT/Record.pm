@@ -74,6 +74,7 @@ use Encode qw();
 our $_TABLE_ATTR = { };
 
 use RT::Base;
+use UNIVERSAL::require;
 
 BEGIN {
     my $base = 'DBIx::SearchBuilder::Record::Cachable';
@@ -81,7 +82,7 @@ BEGIN {
         $base = 'DBIx::SearchBuilder::Record';
     }
 
-    eval "require $base" or die $@;
+    $base->require;
     require base;
     base->import('RT::Base', $base);
 }

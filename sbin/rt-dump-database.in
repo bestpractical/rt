@@ -78,6 +78,7 @@ BEGIN {
 
 use RT;
 use XML::Simple;
+use UNIVERSAL::require;
 
 RT::LoadConfig();
 RT::Init();
@@ -100,8 +101,9 @@ my @classes = qw(
     Templates Scrips ACL CustomFields
 );
 foreach my $class (@classes) {
-    require "RT/$class.pm";
-    my $objects = "RT::$class"->new($RT::SystemUser);
+    my $fullclass = "RT::$class";
+    $fullclass->require or die "Can't load $fullclass: $@";
+    my $objects = $fullclass->new($RT::SystemUser);
     $objects->{find_disabled_rows} = 1;
     $objects->UnLimit;
 

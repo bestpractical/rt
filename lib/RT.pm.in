@@ -55,6 +55,7 @@ package RT;
 use File::Spec ();
 use Cwd ();
 use Log::Dispatch;
+use UNIVERSAL::require;
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_INSTALL_MODE);
 
@@ -477,7 +478,7 @@ sub InitClasses {
 
 	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
             local $@ = undef;
-            eval "require $class; 1" or $RT::Logger->error(
+            $class->require or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
                 ." in the config, but we failed to load it:\n$@\n"
             );
@@ -655,8 +656,7 @@ sub InitPlugins {
     my @plugins;
     require RT::Plugin;
     foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
-        $plugin->require;
-        die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        $plugin->require or die $UNIVERSAL::require::ERROR;
         push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;

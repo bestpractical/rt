@@ -50,7 +50,8 @@ package RT::Installer;
 use strict;
 use warnings;
 
-require UNIVERSAL::require;
+use UNIVERSAL::require;
+
 my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',

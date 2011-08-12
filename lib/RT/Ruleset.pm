@@ -77,7 +77,7 @@ sub CommitRules {
 sub Add {
     my ($class, %args) = @_;
     for (@{$args{Rules}}) {
-        $_->require or die $UNIVERSAL::require::ERROR;
+        $_->require or die $@;
     }
     return push @RULE_SETS, $class->new(\%args);
 }

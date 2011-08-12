@@ -71,6 +71,7 @@ package RT::ScripCondition;
 
 use strict;
 no warnings qw(redefine);
+use UNIVERSAL::require;
 
 
 # {{{  sub _Init 
@@ -171,8 +172,8 @@ sub LoadCondition  {
     $self->ExecModule =~ /^(\w+)$/ or die "Invalid scrip condition: ".$self->ExecModule;
     my $type = "RT::Condition::" . $1;
 
-    eval "require $type" || die "Require of $type failed.\n$@\n";
-    
+    $type->require or die "Require of $type failed.\n$@\n";
+
     return $self->{'Condition'} = $type->new(
         'ScripConditionObj'    => $self,
         'TicketObj'            => $args{'TicketObj'},

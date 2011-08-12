@@ -54,6 +54,7 @@ no warnings qw(redefine);
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
+use UNIVERSAL::require;
 
 
 our %FieldTypes = (
@@ -381,7 +382,7 @@ sub Values {
     my $self = shift;
 
     my $class = $self->ValuesClass || 'RT::CustomFieldValues';
-    eval "require $class" or die "$@";
+    $class->require or die $@;
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {

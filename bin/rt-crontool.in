@@ -76,6 +76,7 @@ BEGIN {
 use RT;
 
 use Getopt::Long;
+use UNIVERSAL::require;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 
@@ -303,11 +304,8 @@ Loads a perl module, dying nicely if it can't find it.
 
 sub load_module {
     my $modname = shift;
-    eval "require $modname";
-    if ($@) {
-        die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
-    }
-
+    $modname->require
+        or die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
 }
 
 # }}}
