@@ -893,6 +893,8 @@ sub FindProtectedParts {
 
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
+        my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+
         my $io = $entity->open('r');
         unless ( $io ) {
             $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
@@ -904,8 +906,8 @@ sub FindProtectedParts {
             $RT::Logger->debug("Found $type inline part");
             return {
                 Type    => $type,
-                Format  => 'Inline',
-                Data  => $entity,
+                Format  => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
+                Data    => $entity,
             };
         }
         $io->close;
