@@ -181,14 +181,10 @@ sub WebExternalAutoInfo {
         $user_info{'Privileged'} = 1;
     }
 
-    if ( $^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/ ) {
-
-        # Populate fields with information from Unix /etc/passwd
-
-        my ( $comments, $realname ) = ( getpwnam($user) )[ 5, 6 ];
-        $user_info{'Comments'} = $comments if defined $comments;
-        $user_info{'RealName'} = $realname if defined $realname;
-    }
+    # Populate fields with information from Unix /etc/passwd
+    my ( $comments, $realname ) = ( getpwnam($user) )[ 5, 6 ];
+    $user_info{'Comments'} = $comments if defined $comments;
+    $user_info{'RealName'} = $realname if defined $realname;
 
     # and return the wad of stuff
     return {%user_info};
