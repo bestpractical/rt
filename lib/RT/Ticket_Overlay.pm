@@ -3187,7 +3187,7 @@ sub _ApplyTransactionBatch {
 }
 
 my $have_global_destruction;
-$have_global_destruction = 1 if eval "require Devel::GlobalDestruction";
+$have_global_destruction = 1 if eval { require Devel::GlobalDestruction; 1};
 
 sub DESTROY {
     my $self = shift;

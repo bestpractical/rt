@@ -1479,7 +1479,7 @@ sub whine {
 }
 
 sub read_passwd {
-    eval 'require Term::ReadKey';
+    eval { require Term::ReadKey };
     if ($@) {
         die "No password specified (and Term::ReadKey not installed).\n";
     }

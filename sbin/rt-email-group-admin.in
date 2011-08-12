@@ -180,7 +180,7 @@ sub parse_args {
 
 sub usage {
     local $@ = undef;
-    eval "require Pod::PlainText;";
+    eval { require Pod::PlainText; };
     if ( $@ ) {
         print "see `perldoc $0`\n";
     } else {
