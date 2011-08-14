@@ -46,10 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table><tr>
-<td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $self->{'Sign'} &>
-using <& SelectKeyForSigning, User => $session{'CurrentUser'}->UserObj &>
-</td>
+<% loc( '<td>Sign</td><td>[_1] using [_2]</td>'
+    $m->scomp('/Widgets/Form/Boolean:InputOnly',
+        Name => 'Sign', CurrentValue => $self->{'Sign'}
+    ),
+    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),
+) |n %>
+
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
 </tr></table>
