@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table><tr>
-<% loc( '<td>Sign</td><td>[_1] using [_2]</td>'
+<% loc( '<td>Sign</td><td>[_1] using [_2]</td>',
     $m->scomp('/Widgets/Form/Boolean:InputOnly',
         Name => 'Sign', CurrentValue => $self->{'Sign'}
     ),
