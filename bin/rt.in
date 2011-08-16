@@ -213,8 +213,8 @@ sub help {
 
     # What help topics do we know about?
     if (!%help) {
-        local $/ = undef;
-        foreach my $item (@{ Form::parse(<DATA>) }) {
+        my $help = do { local $/ = undef; <DATA> };
+        foreach my $item (@{ Form::parse( $help ) }) {
             my $titleref = $item->[2]{Title};
             my @titles = ref $titleref eq 'ARRAY' ? @$titleref : $titleref;
 
