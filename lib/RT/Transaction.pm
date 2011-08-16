@@ -1919,6 +1919,25 @@ sub FindDependencies {
     }
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $self->Attachments,
+        Shredder => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn( %args );
+}
+
 sub Serialize {
     my $self = shift;
     my %args = (@_);

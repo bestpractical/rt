@@ -493,6 +493,64 @@ sub FindDependencies {
     $deps->Add( out => $self->TargetObj ) if $self->TargetObj and $self->TargetObj->id;
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# AddLink transactions
+    my $map = { %RT::Link::TYPEMAP };
+    my $link_meta = $map->{ $self->Type };
+    unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
+        RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );
+    }
+    if ( $self->BaseURI->IsLocal ) {
+        my $objs = $self->BaseObj->Transactions;
+        $objs->Limit(
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => 'AddLink',
+        );
+        $objs->Limit( FIELD => 'NewValue', VALUE => $self->Target );
+        while ( my ($k, $v) = each %$map ) {
+            next unless $v->{'Type'} eq $link_meta->{'Type'};
+            next unless $v->{'Mode'} eq $link_meta->{'Mode'};
+            $objs->Limit( FIELD => 'Field', VALUE => $k );
+        }
+        push( @$list, $objs );
+    }
+
+    my %reverse = ( Base => 'Target', Target => 'Base' );
+    if ( $self->TargetURI->IsLocal ) {
+        my $objs = $self->TargetObj->Transactions;
+        $objs->Limit(
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => 'AddLink',
+        );
+        $objs->Limit( FIELD => 'NewValue', VALUE => $self->Base );
+        while ( my ($k, $v) = each %$map ) {
+            next unless $v->{'Type'} eq $link_meta->{'Type'};
+            next unless $v->{'Mode'} eq $reverse{ $link_meta->{'Mode'} };
+            $objs->Limit( FIELD => 'Field', VALUE => $k );
+        }
+        push( @$list, $objs );
+    }
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON|RT::Shredder::Constants::WIPE_AFTER,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn( %args );
+}
+
 sub Serialize {
     my $self = shift;
     my %args = (@_);

@@ -1145,6 +1145,53 @@ sub FindDependencies {
     $deps->Add( in => $objs );
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# Tickets
+    my $objs = RT::Tickets->new( $self->CurrentUser );
+    $objs->{'allow_deleted_search'} = 1;
+    $objs->Limit( FIELD => 'Queue', VALUE => $self->Id );
+    push( @$list, $objs );
+
+# Queue role groups( Cc, AdminCc )
+    $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    push( @$list, $objs );
+
+# Scrips
+    $objs = RT::Scrips->new( $self->CurrentUser );
+    $objs->LimitToQueue( $self->id );
+    push( @$list, $objs );
+
+# Templates
+    $objs = $self->Templates;
+    push( @$list, $objs );
+
+# Custom Fields
+    $objs = RT::CustomFields->new( $self->CurrentUser );
+    $objs->SetContextObject( $self );
+    $objs->LimitToQueue( $self->id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn( %args );
+}
+
+
 sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;

@@ -355,6 +355,28 @@ sub PreInflate {
     return not $importer->SkipBy( "Name", $class, $uid, $data );
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+
+# Scrips
+    my $objs = RT::Scrips->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'ScripAction', VALUE => $self->Id );
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $objs,
+        Shredder => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn( %args );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

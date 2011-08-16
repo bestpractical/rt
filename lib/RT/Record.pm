@@ -75,6 +75,7 @@ require RT::User;
 require RT::Attributes;
 require RT::Transactions;
 require RT::Link;
+use RT::Shredder::Dependencies;
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 

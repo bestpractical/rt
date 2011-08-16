@@ -437,6 +437,45 @@ sub Serialize {
     die "CachedGroupMembers should never be serialized";
 }
 
+sub __DependsOn
+{
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# deep memebership
+    my $objs = RT::CachedGroupMembers->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Via', VALUE => $self->Id );
+    $objs->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
+    push( @$list, $objs );
+
+# principal lost group membership and lost some rights which he could delegate to
+# some body
+
+# XXX: Here is problem cause HasMemberRecursively would return true allways
+# cause we didn't delete anything yet. :(
+    # if pricipal is not member anymore(could be via other groups) then proceed
+    if( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+        my $acl = RT::ACL->new( $self->CurrentUser );
+        $acl->LimitToPrincipal( Id => $self->GroupId );
+    }
+
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn( %args );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

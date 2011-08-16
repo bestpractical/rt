@@ -826,6 +826,50 @@ sub _CoreAccessible {
  }
 };
 
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# Group or User
+# Could be wiped allready
+    my $obj = $self->Object;
+    if( defined $obj->id ) {
+        push( @$list, $obj );
+    }
+
+# Access Control List
+    my $objs = RT::ACL->new( $self->CurrentUser );
+    $objs->Limit(
+        FIELD => 'PrincipalId',
+        OPERATOR        => '=',
+        VALUE           => $self->Id
+    );
+    push( @$list, $objs );
+
+# AddWatcher/DelWatcher txns
+    foreach my $type ( qw(AddWatcher DelWatcher) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $type =~ /Add/? 'NewValue': 'OldValue', VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => $type );
+        push( @$list, $objs );
+    }
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn( %args );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
