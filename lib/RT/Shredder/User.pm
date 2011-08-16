@@ -91,7 +91,7 @@ sub __DependsOn
 # Principal
     $deps->_PushDependency(
             BaseObject => $self,
-            Flags => DEPENDS_ON | WIPE_AFTER,
+            Flags => RT::Shredder::Constants::DEPENDS_ON | RT::Shredder::Constants::WIPE_AFTER,
             TargetObject => $self->PrincipalObj,
             Shredder => $args{'Shredder'}
         );
@@ -110,7 +110,7 @@ sub __DependsOn
 
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );
@@ -129,7 +129,7 @@ sub __DependsOn
     }
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON | VARIABLE,
+            Flags => RT::Shredder::Constants::DEPENDS_ON | RT::Shredder::Constants::VARIABLE,
             TargetObjects => \@var_objs,
             Shredder => $args{'Shredder'}
         );

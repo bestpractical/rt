@@ -112,7 +112,7 @@ sub __DependsOn
 
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON|WIPE_AFTER,
+            Flags => RT::Shredder::Constants::DEPENDS_ON|RT::Shredder::Constants::WIPE_AFTER,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );

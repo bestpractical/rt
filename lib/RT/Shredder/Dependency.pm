@@ -54,9 +54,9 @@ use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
 my %FlagDescs = (
-    DEPENDS_ON, 'depends on',
-    VARIABLE,   'resolvable dependency',
-    WIPE_AFTER, 'delete after',
+    RT::Shredder::Constants::DEPENDS_ON, 'depends on',
+    RT::Shredder::Constants::VARIABLE,   'resolvable dependency',
+    RT::Shredder::Constants::WIPE_AFTER, 'delete after',
 );
 
 sub new
@@ -70,7 +70,7 @@ sub new
 sub Set
 {
     my $self = shift;
-    my %args = ( Flags => DEPENDS_ON, @_ );
+    my %args = ( Flags => RT::Shredder::Constants::DEPENDS_ON, @_ );
     my @keys = qw(Flags BaseObject TargetObject);
     @$self{ @keys } = @args{ @keys };
 

@@ -51,15 +51,13 @@ package RT::Shredder::Constants;
 use strict;
 use warnings;
 
-use base qw(Exporter);
-
 =head1 NAME
 
 RT::Shredder::Constants -  RT::Shredder constants that is used to mark state of RT objects.
 
 =head1 DESCRIPTION
 
-This module exports two group of bit constants.
+This module contains two group of bit constants.
 First group is group of flags which are used to clarify dependecies between objects, and
 second group is states of RT objects in Shredder cache.
 
@@ -112,14 +110,5 @@ use constant {
     IN_WIPING => 0x010,
     WIPED     => 0x020,
 };
-
-our @EXPORT = qw(
-        DEPENDS_ON
-        WIPE_AFTER
-        VARIABLE
-        ON_STACK
-        IN_WIPING
-        WIPED
-        );
 
 1;

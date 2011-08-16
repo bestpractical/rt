@@ -73,7 +73,7 @@ sub __DependsOn
     $objs->Limit( FIELD => 'ScripAction', VALUE => $self->Id );
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             TargetObjects => $objs,
             Shredder => $args{'Shredder'}
         );

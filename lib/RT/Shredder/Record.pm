@@ -100,7 +100,7 @@ sub Dependencies
     my $self = shift;
     my %args = (
             Shredder => undef,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             @_,
            );
 
@@ -109,7 +109,7 @@ sub Dependencies
     }
 
     my $deps = RT::Shredder::Dependencies->new();
-    if( $args{'Flags'} & DEPENDS_ON ) {
+    if( $args{'Flags'} & RT::Shredder::Constants::DEPENDS_ON ) {
         $self->__DependsOn( %args, Dependencies => $deps );
     }
     return $deps;
@@ -161,7 +161,7 @@ sub __DependsOn
 
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );
