@@ -1639,8 +1639,8 @@ sub MakeMIMEEntity {
     if ( $args{'AttachmentFieldName'} ) {
 
         my $cgi_object = $m->cgi_object;
-
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+        my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} );
+        if ( defined $filehandle && length $filehandle ) {
 
             my ( @content, $buffer );
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {

@@ -101,7 +101,7 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
 # store the uploaded attachment in session
-if ( $ARGS{'Attach'} ) {    # attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     my $attachment = MakeMIMEEntity(
