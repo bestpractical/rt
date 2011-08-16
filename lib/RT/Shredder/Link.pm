@@ -58,7 +58,6 @@ use RT::Shredder::Dependencies;
 use RT::Shredder::Constants;
 
 use RT::Shredder::Transaction;
-use RT::Shredder::Record;
 
 sub __DependsOn
 {
