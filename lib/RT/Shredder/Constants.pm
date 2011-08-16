@@ -87,9 +87,9 @@ change this reference when we delete user.
 =cut
 
 use constant {
-    DEPENDS_ON => 0x01,
-    WIPE_AFTER => 0x02,
-    VARIABLE   => 0x04,
+    DEPENDS_ON => 0x001,
+    WIPE_AFTER => 0x002,
+    VARIABLE   => 0x004,
 };
 
 =head1 STATES
@@ -108,9 +108,9 @@ delete query is called once.
 =cut
 
 use constant {
-    ON_STACK  => 0x00,
-    IN_WIPING => 0x01,
-    WIPED     => 0x02,
+    ON_STACK  => 0x000,
+    IN_WIPING => 0x010,
+    WIPED     => 0x020,
 };
 
 our @EXPORT = qw(
