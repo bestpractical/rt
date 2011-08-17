@@ -1,6 +1,6 @@
 use strict;
 
-use RT::Test tests => 9;
+use RT::Test tests => 12;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -58,3 +58,32 @@ $m->form_name ('SelectionBox-body');
 #$m->click_button (name => 'body-Save');
 $m->get ( $url );
 $m->content_contains('highest priority tickets', 'adds them back');
+
+
+#create a saved search with special chars
+$m->get( $url . "Search/Build.html" );
+$m->form_name('BuildQuery');
+$m->field( "ValueOfAttachment"      => 'stupid' );
+$m->field( "SavedSearchDescription" => 'special chars [test] [_1] ~[_1~]' );
+$m->click_button( name => 'SavedSearchSave' );
+my ($name) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
+ok( $name, 'saved search name' );
+$m->get( $url . 'Prefs/MyRT.html' );
+$m->content_contains( 'special chars [test] [_1] ~[_1~]',
+    'saved search listed in rt at a glance items' );
+
+$m->get( $url . 'Prefs/MyRT.html' );
+$m->form_name('SelectionBox-body');
+$m->field(
+    'body-Available' => [
+        'component-QuickCreate',
+        'system-Unowned Tickets',
+        'system-My Tickets',
+        'saved-' . $name,
+    ]
+);
+$m->click_button( name => 'add' );
+
+$m->get($url);
+$m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
+    'special chars in titlebox' );

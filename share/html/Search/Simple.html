@@ -57,18 +57,21 @@
 <p><&|/l&>Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.</&></p>
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
+% my $fulltext_keyword = 'fulltext:';
 % if ( $config->{'Enable'} ) {
 % if ( $config->{'Indexed'} ) {
-<p><&|/l&>You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
+<p><&|/l, $fulltext_keyword &>You can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % } else {
-<p><&|/l&>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>.</&></p>
+<p><&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % }
 % }
 
 <p><&|/l&>RT will look for anything else you enter in ticket subjects.</&></p>
 
-% my $status_str = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
-<p><&|/l, $status_str&>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the <a href="<%RT->Config->Get('WebPath')%>/Search/Build.html">search builder interface</a>.</&></p>
+% my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
+% my $link_start  = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html">';
+% my $link_end    = '</a>';
+<p><&|/l, $status_str, $link_start, $link_end &>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the [_2]search builder interface[_3].</&></p>
 
 <br />
 <br />

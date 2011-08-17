@@ -178,8 +178,8 @@ our %META = (
             Description => 'Username format', # loc
             Values      => [qw(concise verbose)],
             ValuesLabel => {
-                concise => 'Short usernames', # loc_left_pair
-                verbose => 'Name and email address', # loc_left_pair
+                concise => 'Short usernames', # loc
+                verbose => 'Name and email address', # loc
             },
         },
     },

@@ -62,9 +62,9 @@ configured as aliases for F<rt-mailgate>.
 
 =cut
 
-Set($CorrespondAddress, "");
+Set($CorrespondAddress, '');
 
-Set($CommentAddress, "");
+Set($CommentAddress, '');
 
 =item C<$WebDomain>
 
@@ -306,7 +306,7 @@ should I<not> be an address that's managed by your RT instance.
 
 =cut
 
-Set($OwnerEmail, "root");
+Set($OwnerEmail, 'root');
 
 =item C<$LoopsToRTOwner>
 
@@ -650,7 +650,7 @@ then C<$OwnerEmail> will be used.
 
 =cut
 
-Set($DashboardAddress, "");
+Set($DashboardAddress, '');
 
 =item C<$DashboardSubject>
 
