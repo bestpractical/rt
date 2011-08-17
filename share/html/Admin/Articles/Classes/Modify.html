@@ -137,7 +137,10 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
 
 my %include = (Name => 1, Summary => 1);
 my $cfs = $ClassObj->ArticleCustomFields;
-$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
+
+while ( my $cf= $cfs->Next ) {
+    $include{"CF-Title-".$cf->Id} = $include{"CF-Value-".$cf->Id} = 1;
+}
 
 if  ( $Submitted ) {
     if ( $Disabled != $ClassObj->Disabled) {
