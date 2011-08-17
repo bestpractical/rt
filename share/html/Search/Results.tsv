@@ -66,6 +66,9 @@ my $should_loc = { map { $_ => 1 } qw(Status) };
 
 my $col_entry = sub {
     my $col = shift;
+    # in tsv output, "#" is often a comment character but we use it for "id"
+    delete $col->{title}
+        if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
     return {
         header => Encode::encode_utf8(loc($col->{title} || $col->{attribute})),
         map    => $m->comp(

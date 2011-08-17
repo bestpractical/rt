@@ -88,7 +88,7 @@ $RIGHTS = {
     SeeClass            => 'See that this class exists',               #loc_pair
     CreateArticle       => 'Create articles in this class',            #loc_pair
     ShowArticle         => 'See articles in this class',               #loc_pair
-    ShowArticleHistory  => 'See articles in this class',               #loc_pair
+    ShowArticleHistory  => 'See changes to articles in this class',    #loc_pair
     ModifyArticle       => 'Modify or delete articles in this class',  #loc_pair
     ModifyArticleTopics => 'Modify topics for articles in this class', #loc_pair
     AdminClass          => 'Modify metadata and custom fields for this class',              #loc_pair
@@ -277,6 +277,7 @@ sub ArticleCustomFields {
     if ( $self->CurrentUserHasRight('SeeClass') ) {
         $cfs->LimitToGlobalOrObjectId( $self->Id );
         $cfs->LimitToLookupType( RT::Article->CustomFieldLookupType );
+        $cfs->ApplySortOrder;
     }
     return ($cfs);
 }
