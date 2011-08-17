@@ -262,7 +262,7 @@ END
     $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
     close $config or die "Failed to write $tmp{config}{RT}: $!";
 
-    return $config;
+    return 1;
 }
 
 sub bootstrap_logging {
@@ -278,6 +278,7 @@ sub bootstrap_logging {
     # make world writable so apache under different user
     # can write into it
     chmod 0666, $tmp{'log'}{'RT'};
+    close $fh;
 
     print $config <<END;
 Set( \$LogToSyslog , undef);
@@ -998,12 +999,6 @@ sub start_apache_server {
 
     my %info = $self->apache_server_info( variant => $variant );
 
-    Test::More::diag(do {
-        open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
-        local $/ = undef;
-        <$fh>
-    });
-
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
         'apache'. $info{'version'} .'+'. $variant .'.conf'
@@ -1049,6 +1044,7 @@ sub start_apache_server {
             or Test::More::BAIL_OUT("Couldn't open pid file: $!");
         my $pid = <$pid_fh>;
         chomp $pid;
+        close $pid_fh;
         $pid;
     };
 
@@ -1221,9 +1217,9 @@ sub process_in_file {
             or die "couldn't open '$out_conf': $!";
     }
     print $out_fh $text;
-    seek $out_fh, 0, 0;
+    close $out_fh;
 
-    return ($out_fh, $out_conf);
+    return 1;
 }
 
 sub parse_mail {

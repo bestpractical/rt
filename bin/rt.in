@@ -1201,6 +1201,7 @@ sub submit {
             my ($server, $user, $cookie) = split / /, $_;
             $sids->{$server}{$user} = $cookie;
         }
+        close $f;
         return 1;
     }
 
@@ -1463,6 +1464,7 @@ sub parse_config_file {
             die "rt: $file:$.: unknown configuration directive.\n";
         }
     }
+    close $cfg;
 
     return %cfg;
 }
@@ -1499,15 +1501,17 @@ sub vi {
     my $editor = $ENV{EDITOR} || $ENV{VISUAL} || "vi";
 
     local $/ = undef;
-    my $f;
 
-    open($f, '>', $file) or die "Can't write $file: $!\n";
-    print $f $text;
-    close($f) or die "Failed to close $file: $!";
+    open(my $write, '>', $file) or die "Can't write $file: $!\n";
+    print $write $text;
+    close($write) or die "Failed to close $file: $!";
+
     system($editor, $file) && die "Couldn't run $editor.\n";
-    open($f, '<', $file) or die "Can't read $file: $!\n";
-    $text = <$f>;
-    close($f) or die "Failed to close $file: $!";
+
+    open(my $read, '<', $file) or die "Can't read $file: $!\n";
+    $text = <$read>;
+    close($read) or die "Failed to close $file: $!";
+
     unlink($file);
 
     return $text;

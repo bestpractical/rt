@@ -258,9 +258,11 @@ sub update {
     print "Updating $lang...\n";
 
     my @lines;
-    my $lexicon_fh;
-    @lines = (<$lexicon_fh>) if open $lexicon_fh, '<', $file;
-    @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
+    if (open my $lexicon_fh, '<', $file) {
+        @lines = <$lexicon_fh>;
+        close $lexicon_fh;
+        @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
+    }
     while (@lines) {
         my $msghdr = "";
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );

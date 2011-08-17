@@ -227,9 +227,9 @@ sub GetMessageContent {
         system ($ENV{'EDITOR'}, $filename);
     }
 
-    open( $fh, '<', $filename ) or die $!;
-    my @newlines = (<$fh>);
-    close ($fh) or die $!;
+    open( my $read, '<', $filename ) or die $!;
+    my @newlines = (<$read>);
+    close ($read) or die $!;
 
     unlink ($filename) unless (debug());
     return(\@newlines);
