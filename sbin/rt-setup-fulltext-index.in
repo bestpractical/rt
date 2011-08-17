@@ -118,7 +118,6 @@ GetOptions(
     'h|help!'        => \$OPT{'help'},
     'ask!'           => \$OPT{'ask'},
     'dry-run!'       => \$OPT{'dryrun'},
-    'binary!'        => \$OPT{'binary'},
     'attachments!'   => \$OPT{'attachments'},
 
     'table=s'        => \$OPT{'table'},
@@ -502,23 +501,12 @@ sub ora_create_format_column {
                 WHEN fname IS NOT NULL THEN 'ignore'
         };
     }
-    my $binary = $OPT{'binary'} ? 'binary' : 'ignore';
     $detect_format .= qq{
                 WHEN type = 'text' THEN 'text'
-                WHEN type = 'text/rtf' THEN '$binary'
+                WHEN type = 'text/rtf' THEN 'ignore'
                 WHEN type LIKE 'text/%' THEN 'text'
                 WHEN type LIKE 'message/%' THEN 'text'
-                WHEN type LIKE 'multipart/%' THEN 'ignore'
-                WHEN type LIKE 'image/%' THEN 'ignore'
-                WHEN type LIKE 'audio/%' THEN 'ignore'
-                WHEN type LIKE 'video/%' THEN 'ignore'
-                WHEN type LIKE '%signature%' THEN 'ignore'
-                WHEN type LIKE '%pkcs7%' THEN 'ignore'
-                WHEN type LIKE '%compress%' THEN 'ignore'
-                WHEN type LIKE '%zip%' THEN 'ignore'
-                WHEN type LIKE '%tar%' THEN 'ignore'
-                WHEN type LIKE '%/octet-stream' THEN 'ignore'
-                ELSE '$binary'
+                ELSE 'ignore'
             END;
             RETURN format;
         END;
@@ -711,11 +699,11 @@ To test what will happen without running any DDL, pass the C<--dryrun>
 flag.
 
 The Oracle index determines which content-types it will index at
-creation time.  By default, unknown content-types are ignored; to
-instead index unknown content-types as binary data, pass the C<--binary>
-flag when the index is created.  By default, uploaded attachments
-(attachments with filenames) are indexed; to ignore these instead, pass
-the C<--no-attachments> flag when the index is create.
+creation time. By default, textual message bodies and textual uploaded
+attachments (attachments with filenames) are indexed; to ignore textual
+attachments, pass the C<--no-attachments> flag when the index is
+created.
+
 
 =head1 AUTHOR
 
