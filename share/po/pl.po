@@ -114,7 +114,7 @@ msgstr "%1 %2 zapisano."
 msgid "%1 %2 updated."
 msgstr "%1 %2 zaktualizowano"
 
-#: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:14
+#: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:70
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
@@ -269,7 +269,7 @@ msgstr "%1 zmieniło się z %2 na %3"
 msgid "%1 changed from '%2' to '%3'"
 msgstr ""
 
-#: share/html/Search/Chart.html:2
+#: share/html/Search/Chart.html:93
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 msgid "%1 chart by %2"
 msgstr "%1 wykres przez %2"
@@ -529,7 +529,7 @@ msgstr ""
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' to nieprawidłowa wartość statusu"
 
-#: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
+#: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:225 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
 msgstr ""
@@ -1686,11 +1686,11 @@ msgstr ""
 msgid "Class is"
 msgstr "Klasą jest"
 
-#: lib/RT/Class.pm:406
+#: lib/RT/Class.pm:407
 msgid "Class is already applied Globally"
 msgstr ""
 
-#: lib/RT/Class.pm:401
+#: lib/RT/Class.pm:402
 #. ($queue->Name)
 msgid "Class is already applied to %1"
 msgstr ""
@@ -2329,7 +2329,7 @@ msgstr "Utwórz pole, które dotyczy wszystkich kolejek"
 msgid "Create a new Custom Field"
 msgstr "Utwórz nowe pole definiowane przez użytkownika"
 
-#: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:231
+#: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:230
 msgid "Create a new article"
 msgstr "Utwórz nowy artykuł"
 
@@ -2875,7 +2875,7 @@ msgstr "DelegateRights"
 msgid "Delegation"
 msgstr "Przekazywanie uprawnień"
 
-#: etc/RT_Config.pm:2276 etc/RT_Config.pm:2350 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:676 share/html/Elements/Tabs:696 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
+#: etc/RT_Config.pm:2286 etc/RT_Config.pm:2360 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:676 share/html/Elements/Tabs:696 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "Usuń"
 
@@ -4423,7 +4423,7 @@ msgstr ""
 msgid "Invalid Group Type"
 msgstr "Nieprawidłowy typ grupy"
 
-#: lib/RT/Class.pm:395
+#: lib/RT/Class.pm:396
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
 msgstr ""
@@ -5187,7 +5187,7 @@ msgstr "Modyfikuj skrypt dla kolejki %1"
 msgid "Modify a scrip that applies to all queues"
 msgstr "Modyfikuj skrypt, który dotyczy wszystkich kolejek"
 
-#: share/html/Articles/Article/Edit.html:209 share/html/Articles/Article/Edit.html:317
+#: share/html/Articles/Article/Edit.html:208 share/html/Articles/Article/Edit.html:316
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
 msgstr "Modyfikuj artykuł #%1"
@@ -5892,7 +5892,7 @@ msgstr ""
 msgid "No permission to set preferences"
 msgstr ""
 
-#: share/html/Articles/Article/Edit.html:324
+#: share/html/Articles/Article/Edit.html:323
 msgid "No permission to view Article"
 msgstr ""
 
@@ -6275,7 +6275,7 @@ msgstr ""
 msgid "Open"
 msgstr "Otwarte"
 
-#: etc/RT_Config.pm:2264 etc/RT_Config.pm:2293 etc/RT_Config.pm:2338 etc/RT_Config.pm:2367
+#: etc/RT_Config.pm:2274 etc/RT_Config.pm:2303 etc/RT_Config.pm:2348 etc/RT_Config.pm:2377
 msgid "Open It"
 msgstr ""
 
@@ -6519,7 +6519,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:688 lib/RT/Attachment.pm:689 lib/RT/Attachment.pm:750 lib/RT/Attachment.pm:751 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:388 lib/RT/Class.pm:440 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1057 lib/RT/Group.pm:1109 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:882 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1197 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:570 lib/RT/Queue.pm:596 lib/RT/Queue.pm:820 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1065 lib/RT/Ticket.pm:1071 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1221 lib/RT/Ticket.pm:1231 lib/RT/Ticket.pm:1245 lib/RT/Ticket.pm:1340 lib/RT/Ticket.pm:1687 lib/RT/Ticket.pm:1920 lib/RT/Ticket.pm:2087 lib/RT/Ticket.pm:2135 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2427 lib/RT/Ticket.pm:2506 lib/RT/Ticket.pm:2519 lib/RT/Ticket.pm:2618 lib/RT/Ticket.pm:2632 lib/RT/Ticket.pm:2891 lib/RT/Ticket.pm:2902 lib/RT/Ticket.pm:2908 lib/RT/Ticket.pm:3117 lib/RT/Ticket.pm:3191 lib/RT/Ticket.pm:3386 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:587 lib/RT/Transaction.pm:609 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1410 lib/RT/User.pm:1547 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
+#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:688 lib/RT/Attachment.pm:689 lib/RT/Attachment.pm:750 lib/RT/Attachment.pm:751 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:441 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1057 lib/RT/Group.pm:1109 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:882 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1197 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:570 lib/RT/Queue.pm:596 lib/RT/Queue.pm:820 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1065 lib/RT/Ticket.pm:1071 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1221 lib/RT/Ticket.pm:1231 lib/RT/Ticket.pm:1245 lib/RT/Ticket.pm:1340 lib/RT/Ticket.pm:1687 lib/RT/Ticket.pm:1920 lib/RT/Ticket.pm:2087 lib/RT/Ticket.pm:2135 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2427 lib/RT/Ticket.pm:2506 lib/RT/Ticket.pm:2519 lib/RT/Ticket.pm:2618 lib/RT/Ticket.pm:2632 lib/RT/Ticket.pm:2891 lib/RT/Ticket.pm:2902 lib/RT/Ticket.pm:2908 lib/RT/Ticket.pm:3117 lib/RT/Ticket.pm:3191 lib/RT/Ticket.pm:3386 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:587 lib/RT/Transaction.pm:609 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1410 lib/RT/User.pm:1547 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
 msgid "Permission Denied"
 msgstr "Odmowa dostępu"
 
@@ -7014,7 +7014,7 @@ msgstr ""
 msgid "RTFM Error"
 msgstr "Błąd RTFM"
 
-#: etc/RT_Config.pm:2296 etc/RT_Config.pm:2300 etc/RT_Config.pm:2370 etc/RT_Config.pm:2374
+#: etc/RT_Config.pm:2306 etc/RT_Config.pm:2310 etc/RT_Config.pm:2380 etc/RT_Config.pm:2384
 msgid "Re-open"
 msgstr ""
 
@@ -7151,7 +7151,7 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "Odświeżaj tę stronę co %1 minut."
 
-#: etc/RT_Config.pm:2272 etc/RT_Config.pm:2288 etc/RT_Config.pm:2346 etc/RT_Config.pm:2362
+#: etc/RT_Config.pm:2282 etc/RT_Config.pm:2298 etc/RT_Config.pm:2356 etc/RT_Config.pm:2372
 msgid "Reject"
 msgstr ""
 
@@ -7298,7 +7298,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Tel. domowy"
 
-#: etc/RT_Config.pm:2268 etc/RT_Config.pm:2284 etc/RT_Config.pm:2342 etc/RT_Config.pm:2358 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2278 etc/RT_Config.pm:2294 etc/RT_Config.pm:2352 etc/RT_Config.pm:2368 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Zamknij"
 
@@ -7548,11 +7548,7 @@ msgstr "Kryteria wyszukiwania"
 msgid "Search Preferences"
 msgstr "Preferencje wyszukiwania"
 
-#: share/html/SelfService/Article/Search.html:53
-msgid "Search for Articles articles matching"
-msgstr ""
-
-#: share/html/Articles/Elements/BeforeMessageBox:55
+#: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
 msgstr ""
 
@@ -7607,8 +7603,12 @@ msgstr "Zabezpieczenie:"
 msgid "See also:"
 msgstr "Zobacz też:"
 
-#: lib/RT/Class.pm:90 lib/RT/Class.pm:91
+#: lib/RT/Class.pm:90
 msgid "See articles in this class"
+msgstr ""
+
+#: lib/RT/Class.pm:91
+msgid "See changes to articles in this class"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -8211,7 +8211,7 @@ msgstr "Arkusz kalkulacyjny"
 msgid "Stage"
 msgstr "Etap"
 
-#: etc/RT_Config.pm:2280 etc/RT_Config.pm:2354
+#: etc/RT_Config.pm:2290 etc/RT_Config.pm:2364
 msgid "Stall"
 msgstr ""
 
@@ -8791,7 +8791,7 @@ msgstr ""
 msgid "This Custom Field can not have list of values"
 msgstr ""
 
-#: lib/RT/Class.pm:445 lib/RT/CustomField.pm:1335
+#: lib/RT/Class.pm:446 lib/RT/CustomField.pm:1335
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -9237,7 +9237,7 @@ msgstr ""
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:239
+#: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:238
 msgid "Unable to load article"
 msgstr "Nie udało się załadować artykułu"
 
@@ -9271,12 +9271,12 @@ msgstr ""
 msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr ""
 
-#: share/html/Ticket/Elements/PreviewScrips:2
+#: share/html/Ticket/Elements/PreviewScrips:58
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2304 etc/RT_Config.pm:2378
+#: etc/RT_Config.pm:2314 etc/RT_Config.pm:2388
 msgid "Undelete"
 msgstr ""
 
@@ -9980,7 +9980,7 @@ msgstr ""
 msgid "You are not an authorized user"
 msgstr "Nie jesteś autoryzowanym użytkownikiem"
 
-#: share/html/Ticket/Elements/ShowUpdateStatus:51
+#: share/html/Ticket/Elements/ShowUpdateStatus:54
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
 msgstr ""
