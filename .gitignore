@@ -43,3 +43,6 @@ config.pld
 *.swo
 .prove
 nytprof.out*
+/jsmin.c
+/jsmin
+/bin/jsmin
