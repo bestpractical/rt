@@ -53,6 +53,7 @@
 
 PERL			=	@PERL@
 INSTALL			=	@INSTALL@
+CC				=	@CC@
 
 RT_LAYOUT		=	@rt_layout_name@
 
@@ -527,3 +528,37 @@ vessel-import: build-snapshot
      --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
 	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
 
+JSMIN_URL = http://www.crockford.com/javascript/jsmin.c
+
+jsmin: jsmin-checkcc jsmin-fetch jsmin-confirm jsmin-build jsmin-install
+	@echo ""
+	@echo "To configure RT to use jsmin, add the following line to $(DESTDIR)$(RT_ETC_PATH)/RT_SiteConfig.pm:"
+	@echo ""
+	@echo "    Set(\$$JSMinPath, '$(DESTDIR)$(RT_BIN_PATH)/jsmin');"
+	@echo ""
+
+jsmin-checkcc:
+	@[ -n "$(CC)" ] || (echo "You don't appear to have a C compiler, please set CC and re-run configure" && exit 1)
+
+jsmin-confirm:
+	@echo "jsmin is distributed under a slightly unusual license and can't be shipped"
+	@echo "with RT.  Before configuring RT to use jsmin, please read jsmin's license"
+	@echo "below:"
+	@echo ""
+	@$(PERL) -pe 'print && exit if /^\*\// or /^#include/' jsmin.c
+	@echo ""
+	@echo "Press Enter to accept the license, or Ctrl-C to stop now."
+	@$(PERL) -e '<STDIN>'
+
+jsmin-fetch:
+	@echo ""
+	@echo "Downloading jsmin.c from $(JSMIN_URL)"
+	@echo ""
+	@$(PERL) -MLWP::Simple -e 'exit not is_success(getstore("$(JSMIN_URL)", "jsmin.c"))' \
+		|| (echo "Failed to download $(JSMIN_URL)" && exit 1)
+
+jsmin-build:
+	$(CC) -o jsmin jsmin.c
+
+jsmin-install:
+	$(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "jsmin" "$(DESTDIR)$(RT_BIN_PATH)/"
