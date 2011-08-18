@@ -201,14 +201,14 @@ sub extract_strings_from_code {
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?(?:(qw\([^)]+\))[\}\)\],;]*)?$re_loc_qw_suffix/smgo) {
+    while (m/\G.*?(?:qw\(([^)]+)\)[\}\)\],;]*)?$re_loc_qw_suffix/smgo) {
         my $str = $1;
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
         unless ( defined $str ) {
             warn "Couldn't process loc_qw at $filename:$line";
             next;
         }
-        foreach my $value (eval($str)) {
+        foreach my $value (split ' ', $str) {
             push @{ $FILECAT{$value} }, [ $filename, $line, '' ];
         }
     }
