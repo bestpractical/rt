@@ -528,9 +528,10 @@ vessel-import: build-snapshot
      --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
 	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
 
-JSMIN_URL = http://www.crockford.com/javascript/jsmin.c
+JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2011-01-22.c
+JSMIN_SHA = 8a6b3b980a52c028eb73aee4a82ebe060c1ee854
 
-jsmin: jsmin-checkcc jsmin-fetch jsmin-confirm jsmin-build jsmin-install
+jsmin: jsmin-checkcc jsmin-fetch jsmin-verify jsmin-confirm jsmin-build jsmin-install
 	@echo ""
 	@echo "To configure RT to use jsmin, add the following line to $(DESTDIR)$(RT_ETC_PATH)/RT_SiteConfig.pm:"
 	@echo ""
@@ -556,6 +557,11 @@ jsmin-fetch:
 	@echo ""
 	@$(PERL) -MLWP::Simple -e 'exit not is_success(getstore("$(JSMIN_URL)", "jsmin.c"))' \
 		|| (echo "Failed to download $(JSMIN_URL)" && exit 1)
+
+jsmin-verify:
+	@$(PERL) -MDigest::SHA -e \
+		'exit not Digest::SHA->new(1)->addfile("jsmin.c")->hexdigest eq "$(JSMIN_SHA)"' \
+		|| (echo "Verification of jsmin.c failed! Possible man in the middle?" && exit 1)
 
 jsmin-build:
 	$(CC) -o jsmin jsmin.c
