@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w 
+#!/usr/bin/perl
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -49,6 +49,7 @@
 # Portions Copyright 2002 Autrijus Tang <autrijus@autrijus.org>
 
 use strict;
+use warnings;
 
 use File::Find;
 use File::Copy;

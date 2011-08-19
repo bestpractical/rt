@@ -1,4 +1,4 @@
-#!@PERL@ -w
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -50,6 +50,7 @@
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+use warnings;
 
 # This program is intentionally written to have as few non-core module
 # dependencies as possible. It should stay that way.

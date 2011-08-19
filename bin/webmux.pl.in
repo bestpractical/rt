@@ -47,6 +47,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
+
 local $ENV{'PATH'}   = '/bin:/usr/bin';                   # or whatever you need
 local $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 local $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};

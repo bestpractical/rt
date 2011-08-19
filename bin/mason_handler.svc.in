@@ -46,6 +46,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 mason_handler.svc - Win32 IIS Service handler for RT
@@ -81,6 +82,8 @@ registry setting will also be automatically populated.
 package RT::Mason;
 
 use strict;
+use warnings;
+
 use File::Basename;
 use vars '$Handler';
 require (dirname(__FILE__) . '/webmux.pl');
