@@ -1264,7 +1264,30 @@ sub started_ok {
     unless ( $self->can($function) ) {
         die "Don't know how to start server '$server'";
     }
-    return $self->$function( $variant, @_ );
+    return $self->$function( variant => $variant, @_ );
+}
+
+sub test_app {
+    my $self = shift;
+    my %server_opt = @_;
+
+    require RT::Interface::Web::Handler;
+    my $app = RT::Interface::Web::Handler->PSGIApp;
+
+    require Plack::Middleware::Test::StashWarnings;
+    $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+
+    if ($server_opt{basic_auth}) {
+        require Plack::Middleware::Auth::Basic;
+        $app = Plack::Middleware::Auth::Basic->wrap(
+            $app,
+            authenticator => sub {
+                my ($username, $password) = @_;
+                return $username eq 'root' && $password eq 'password';
+            }
+        );
+    }
+    return $app;
 }
 
 sub start_plack_server {
@@ -1294,7 +1317,7 @@ sub start_plack_server {
             unless $handled;
         push @SERVERS, $pid;
         my $Tester = Test::Builder->new;
-        $Tester->ok(1, 'plack test server ok');
+        $Tester->ok(1, "started plack server ok");
 
         __reconnect_rt();
         return ("http://localhost:$port", RT::Test::Web->new);
@@ -1309,18 +1332,13 @@ sub start_plack_server {
     # stick this in a scope so that when $app is garbage collected,
     # StashWarnings can complain about unhandled warnings
     do {
-        require RT::Interface::Web::Handler;
-        my $app = RT::Interface::Web::Handler->PSGIApp;
-
-        require Plack::Middleware::Test::StashWarnings;
-        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
-
-        $plack_server->run($app);
+        $plack_server->run($self->test_app(@_));
     };
 
     exit;
 }
 
+our $TEST_APP;
 sub start_inline_server {
     my $self = shift;
 
@@ -1332,16 +1350,22 @@ sub start_inline_server {
     RT::Interface::Web->ClearSquished;
 
     Test::More::ok(1, "psgi test server ok");
+    $TEST_APP = $self->test_app(@_);
     return ("http://localhost:$port", RT::Test::Web->new);
 }
 
 sub start_apache_server {
     my $self = shift;
-    my $variant = shift || 'mod_perl';
-    $ENV{RT_TEST_WEB_HANDLER} = "apache+$variant";
+    my %server_opt = @_;
+    $server_opt{variant} ||= 'mod_perl';
+    $ENV{RT_TEST_WEB_HANDLER} = "apache+$server_opt{variant}";
 
     require RT::Test::Apache;
-    my $pid = RT::Test::Apache->start_server($variant || 'mod_perl', $port, \%tmp);
+    my $pid = RT::Test::Apache->start_server(
+        %server_opt,
+        port => $port,
+        tmp => \%tmp
+    );
     push @SERVERS, $pid;
 
     my $url = RT->Config->Get('WebURL');
