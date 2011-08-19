@@ -452,7 +452,9 @@ sub CallGnuPG {
     my $err = $@;
     if ($args{Output}) {
         push @{$args{Output}}, readline $handle{stdout};
-        close $handle{stdout} or $err ||= "Can't close gnupg output handle: $!";
+        if (not close $handle{stdout}) {
+            $err ||= "Can't close gnupg output handle: $!";
+        }
     }
 
     return Finalize( $err, \%handle );
@@ -468,7 +470,9 @@ sub Finalize {
     foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/ = undef; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_} or $err ||= "Can't close gnupg $_ handle: $!";
+        if (not close $handle{$_}) {
+            $err ||= "Can't close gnupg $_ handle: $!";
+        }
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
