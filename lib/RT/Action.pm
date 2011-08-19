@@ -62,11 +62,13 @@
 =cut
 
 package RT::Action;
-
 use strict;
-use Scalar::Util;
+use warnings;
 
 use base qw/RT::Base/;
+
+use Scalar::Util;
+
 
 # {{{ sub new 
 sub new  {

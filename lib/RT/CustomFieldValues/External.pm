@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::CustomFieldValues::External;
-
 use strict;
 use warnings;
 

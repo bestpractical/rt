@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ObjectCustomFieldValue ();
 package RT::ObjectCustomFieldValue;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::ObjectCustomFieldValue ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

@@ -65,8 +65,8 @@
 
 
 package RT::Users;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub _Init 

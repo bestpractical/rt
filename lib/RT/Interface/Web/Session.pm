@@ -47,8 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::Session;
-use warnings;
 use strict;
+use warnings;
 
 use RT::CurrentUser;
 use UNIVERSAL::require;

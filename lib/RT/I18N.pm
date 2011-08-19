@@ -53,7 +53,6 @@ RT::I18N - a base class for localization of RT
 =cut
 
 package RT::I18N;
-
 use strict;
 use warnings;
 

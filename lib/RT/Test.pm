@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Test;
-
 use strict;
 use warnings;
 

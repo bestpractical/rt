@@ -64,8 +64,8 @@
 
 
 package RT::Scrip;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub Create

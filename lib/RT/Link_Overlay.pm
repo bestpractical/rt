@@ -67,10 +67,9 @@ should only be accessed through exported APIs in Ticket other similar objects.
 
 
 package RT::Link;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
-
 
 use Carp;
 use RT::URI;

@@ -47,8 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::URI::base;
-
 use strict;
+use warnings;
+
 use base qw(RT::Base);
 
 =head1 NAME

@@ -47,8 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::CachedGroupMember;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 =head1 NAME

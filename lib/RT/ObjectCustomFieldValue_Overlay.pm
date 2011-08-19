@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::ObjectCustomFieldValue;
-
 use strict;
 use warnings;
+no warnings qw(redefine);
+
 use RT::Interface::Web;
 
-no warnings qw(redefine);
 
 sub Create {
     my $self = shift;

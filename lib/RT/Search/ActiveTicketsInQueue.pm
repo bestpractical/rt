@@ -64,10 +64,10 @@ Find all active tickets in the queue named in the argument passed in
 =cut
 
 package RT::Search::ActiveTicketsInQueue;
-
 use strict;
-use base qw(RT::Search);
+use warnings;
 
+use base qw(RT::Search);
 
 # {{{ sub Describe 
 sub Describe  {

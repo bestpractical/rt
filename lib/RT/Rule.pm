@@ -49,6 +49,7 @@
 package RT::Rule;
 use strict;
 use warnings;
+
 use base 'RT::Action';
 
 use constant _Stage => 'TransactionCreate';

@@ -73,8 +73,8 @@
 =cut
 
 package RT::Search;
-
 use strict;
+use warnings;
 
 # {{{ sub new 
 sub new  {

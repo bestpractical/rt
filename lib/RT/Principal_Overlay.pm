@@ -49,16 +49,13 @@
 #
 
 package RT::Principal;
-
 use strict;
 use warnings;
-
-use Cache::Simple::TimedExpiry;
-
 
 use RT;
 use RT::Group;
 use RT::User;
+use Cache::Simple::TimedExpiry;
 
 # Set up the ACL cache on startup
 our $_ACL_CACHE;

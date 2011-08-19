@@ -58,11 +58,8 @@ See C<rt-email-group-admin> and L<RT::Action::NotifyGroup> docs for more info.
 =cut
 
 package RT::Action::NotifyGroupAsComment;
-
 use strict;
 use warnings;
-
-use RT::Action::NotifyGroup;
 
 use base qw(RT::Action::NotifyGroup);
 

@@ -47,8 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::CustomField;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::CustomFieldValues;

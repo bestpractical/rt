@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder::Plugin::Base;
-
 use strict;
 use warnings FATAL => 'all';
 

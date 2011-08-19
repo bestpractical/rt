@@ -76,7 +76,6 @@
 =cut
 
 package RT::Condition;
-
 use strict;
 use warnings;
 

@@ -66,8 +66,8 @@ This module lets you manipulate RT\'s ticket object.
 
 
 package RT::Ticket;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Queue;

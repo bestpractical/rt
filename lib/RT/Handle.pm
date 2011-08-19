@@ -67,7 +67,6 @@ loaded.
 =cut
 
 package RT::Handle;
-
 use strict;
 use warnings;
 use vars qw/@ISA/;

@@ -66,9 +66,10 @@
 
 
 package RT::Links;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use RT::URI;
 
 # {{{ sub Limit 

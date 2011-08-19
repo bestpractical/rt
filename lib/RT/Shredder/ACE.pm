@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ACE ();
 package RT::ACE;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::ACE ();
 
 use RT::Shredder::Exceptions;
 use RT::Shredder::Constants;

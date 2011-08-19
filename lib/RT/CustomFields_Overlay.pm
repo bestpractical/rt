@@ -64,10 +64,10 @@
 
 
 package RT::CustomFields;
-
 use strict;
 use warnings;
 no warnings qw(redefine);
+
 use DBIx::SearchBuilder::Unique;
 
 sub _Init {

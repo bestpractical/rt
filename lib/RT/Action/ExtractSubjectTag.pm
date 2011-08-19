@@ -47,8 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::ExtractSubjectTag;
-use base 'RT::Action';
 use strict;
+use warnings;
+
+use base 'RT::Action';
 
 sub Describe {
     my $self = shift;

@@ -65,11 +65,8 @@
 
 
 package RT::Principals;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
-
-
-
 
 1;

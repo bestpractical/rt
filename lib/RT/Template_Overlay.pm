@@ -66,7 +66,6 @@
 
 
 package RT::Template;
-
 use strict;
 use warnings;
 no warnings qw(redefine);

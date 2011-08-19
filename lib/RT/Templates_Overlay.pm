@@ -49,6 +49,7 @@
 =head1 NAME
 
   RT::Templates - a collection of RT Template objects
+use warnings;
 
 =head1 SYNOPSIS
 
@@ -64,10 +65,9 @@
 
 
 package RT::Templates;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
-
 
 # {{{ sub _Init
 

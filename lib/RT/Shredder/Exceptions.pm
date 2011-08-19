@@ -47,9 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder::Exception;
-
-use warnings;
 use strict;
+use warnings;
 
 use Exception::Class;
 use base qw(Exception::Class::Base);

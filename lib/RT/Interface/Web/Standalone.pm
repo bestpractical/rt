@@ -46,11 +46,13 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use strict;
-use warnings;
 package RT::Interface::Web::Standalone;
 
+use strict;
+use warnings;
+
 use base 'HTTP::Server::Simple::Mason';
+
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
 use URI;

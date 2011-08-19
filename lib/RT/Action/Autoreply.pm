@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::Autoreply;
-
 use strict;
 use warnings;
 

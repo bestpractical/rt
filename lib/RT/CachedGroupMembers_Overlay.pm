@@ -65,8 +65,8 @@
 
 
 package RT::CachedGroupMembers;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ LimitToUsers

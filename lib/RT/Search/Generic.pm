@@ -63,9 +63,10 @@ This module is provided only for backwards compatibility.
 
 =cut
 
+package RT::Search::Generic;
 use strict;
 use warnings;
-package RT::Search::Generic;
+
 use base 'RT::Search';
 
 RT::Base->_ImportOverlays;

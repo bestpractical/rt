@@ -46,11 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT;
 use strict;
 use warnings;
-
-package RT;
-
 
 use File::Spec ();
 use Cwd ();

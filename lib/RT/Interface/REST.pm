@@ -52,6 +52,7 @@
 package RT::Interface::REST;
 use strict;
 use warnings;
+
 use RT;
 
 BEGIN {

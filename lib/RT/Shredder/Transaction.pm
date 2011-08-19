@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Transaction ();
 package RT::Transaction;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Transaction ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

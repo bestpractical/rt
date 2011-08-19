@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder::Plugin::SQLDump;
-
 use strict;
 use warnings;
 
 use base qw(RT::Shredder::Plugin::Base::Dump);
+
 use RT::Shredder;
 
 sub AppliesToStates { return 'after wiping dependencies' }

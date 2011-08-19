@@ -66,7 +66,6 @@ In the future, there will probably be other API goodness encapsulated here.
 
 
 package RT::System;
-
 use strict;
 use warnings;
 use base qw/RT::Record/;

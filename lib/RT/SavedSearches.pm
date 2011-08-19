@@ -66,11 +66,12 @@
 =cut
 
 package RT::SavedSearches;
+use strict;
+use warnings;
+
+use base 'RT::Base';
 
 use RT::SavedSearch;
-
-use strict;
-use base 'RT::Base';
 
 sub new  {
     my $proto = shift;

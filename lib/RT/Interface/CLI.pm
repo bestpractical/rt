@@ -46,11 +46,11 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Interface::CLI;
 use strict;
+use warnings;
 
 use RT;
-package RT::Interface::CLI;
-
 
 
 BEGIN {

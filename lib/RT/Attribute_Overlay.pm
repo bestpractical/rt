@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Attribute;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use Storable qw/nfreeze thaw/;
 use MIME::Base64;
-
 
 =head1 NAME
 

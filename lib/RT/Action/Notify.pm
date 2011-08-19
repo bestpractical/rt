@@ -48,7 +48,6 @@
 
 #
 package RT::Action::Notify;
-
 use strict;
 use warnings;
 

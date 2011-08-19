@@ -65,8 +65,8 @@ my $ACL = RT::ACL->new($CurrentUser);
 
 
 package RT::ACL;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 

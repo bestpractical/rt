@@ -63,9 +63,10 @@
 
 
 package RT::ACE;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use RT::Principals;
 use RT::Queues;
 use RT::Groups;

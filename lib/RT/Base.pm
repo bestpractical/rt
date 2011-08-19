@@ -47,13 +47,13 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Base;
+use strict;
+use warnings;
+
 use Carp ();
 use Scalar::Util ();
 
-use strict;
-use warnings;
 use vars qw(@EXPORT);
-
 @EXPORT=qw(loc CurrentUser);
 
 =head1 NAME

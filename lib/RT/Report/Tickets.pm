@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Report::Tickets;
-
-use base qw/RT::Tickets/;
-use RT::Report::Tickets::Entry;
-
 use strict;
 use warnings;
+
+use base qw/RT::Tickets/;
+
+use RT::Report::Tickets::Entry;
 
 sub Groupings {
     my $self = shift;

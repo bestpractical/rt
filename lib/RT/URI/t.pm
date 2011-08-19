@@ -70,10 +70,10 @@
 # 
 # END LICENSE BLOCK
 
+package RT::URI::t;
 use strict;
 use warnings;
 
-package RT::URI::t;
 use base 'RT::URI::fsck_com_rt';
 
 =head1 NAME

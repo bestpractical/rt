@@ -64,8 +64,8 @@ An RT queue object.
 
 
 package RT::Queue;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Groups;

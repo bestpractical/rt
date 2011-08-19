@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::CustomField ();
 package RT::CustomField;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::CustomField ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

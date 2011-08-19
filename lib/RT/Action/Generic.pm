@@ -63,9 +63,10 @@ This module is provided only for backwards compatibility.
 
 =cut
 
+package RT::Action::Generic;
 use strict;
 use warnings;
-package RT::Action::Generic;
+
 use base 'RT::Action';
 
 RT::Base->_ImportOverlays();

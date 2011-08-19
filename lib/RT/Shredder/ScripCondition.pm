@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ScripCondition ();
 package RT::ScripCondition;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::ScripCondition ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::User ();
 package RT::User;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::User ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

@@ -58,10 +58,10 @@ RT::Interface::Web
 
 =cut
 
-use strict;
-use warnings;
 
 package RT::Interface::Web;
+use strict;
+use warnings;
 
 use RT::SavedSearches;
 use URI qw();

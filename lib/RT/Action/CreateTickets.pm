@@ -47,10 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::CreateTickets;
-use base 'RT::Action';
-
 use strict;
 use warnings;
+
+use base 'RT::Action';
 
 use MIME::Entity;
 

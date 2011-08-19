@@ -68,8 +68,8 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 
 
 package RT::Attachments;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Attachment;

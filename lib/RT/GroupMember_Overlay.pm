@@ -72,9 +72,10 @@ doing something wrong.
 
 
 package RT::GroupMember;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use RT::CachedGroupMembers;
 
 # {{{ sub Create

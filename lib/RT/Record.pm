@@ -62,7 +62,6 @@
 =cut
 
 package RT::Record;
-
 use strict;
 use warnings;
 

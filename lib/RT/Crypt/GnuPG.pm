@@ -46,10 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Crypt::GnuPG;
 use strict;
 use warnings;
-
-package RT::Crypt::GnuPG;
 
 use IO::Handle;
 use GnuPG::Interface;

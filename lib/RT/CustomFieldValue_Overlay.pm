@@ -46,13 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
-use strict;
-
 package RT::CustomFieldValue;
-
+use strict;
+use warnings;
 no warnings qw/redefine/;
-
 
 =head2 ValidateName
 

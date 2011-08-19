@@ -49,6 +49,7 @@
 package RT::Approval::Rule::Rejected;
 use strict;
 use warnings;
+
 use base 'RT::Approval::Rule';
 
 use constant Description => "If an approval is rejected, reject the original and delete pending approvals"; # loc

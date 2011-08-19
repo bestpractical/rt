@@ -64,8 +64,9 @@ Find all tickets described by the SQL statement passed as an argument
 =cut
 
 package RT::Search::FromSQL;
-
 use strict;
+use warnings;
+
 use base qw(RT::Search);
 
 =head2 Describe

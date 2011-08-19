@@ -68,9 +68,10 @@ should only be accessed through exported APIs in other modules.
 
 
 package RT::ScripAction;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use RT::Template;
 use UNIVERSAL::require;
 

@@ -60,9 +60,9 @@ more info see its documentation.
 =cut
 
 package RT::Action::NotifyGroup;
-
 use strict;
 use warnings;
+
 use base qw(RT::Action::Notify);
 
 require RT::User;

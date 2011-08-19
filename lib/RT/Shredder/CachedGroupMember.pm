@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::CachedGroupMember ();
 package RT::CachedGroupMember;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::CachedGroupMember ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

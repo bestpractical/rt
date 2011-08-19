@@ -68,9 +68,10 @@ should only be accessed through exported APIs in other modules.
 
 
 package RT::ScripCondition;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
+
 use UNIVERSAL::require;
 
 

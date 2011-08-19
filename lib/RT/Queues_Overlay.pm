@@ -65,8 +65,8 @@
 
 
 package RT::Queues;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub _Init

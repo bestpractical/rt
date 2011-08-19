@@ -77,8 +77,8 @@
 =cut
 
 package RT::Tickets;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::CustomFields;

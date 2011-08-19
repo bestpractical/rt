@@ -65,8 +65,8 @@
 
 
 package RT::Scrips;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub LimitToQueue 

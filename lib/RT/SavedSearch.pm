@@ -63,9 +63,9 @@ a description, and a number of search parameters.
 =cut
 
 package RT::SavedSearch;
-
 use strict;
 use warnings;
+
 use base qw/RT::SharedSetting/;
 
 =head1 METHODS

@@ -47,9 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder::Plugin::Objects;
-
 use strict;
 use warnings FATAL => 'all';
+
 use base qw(RT::Shredder::Plugin::Base::Search);
 
 use RT::Shredder;

@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Template ();
 package RT::Template;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Template ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

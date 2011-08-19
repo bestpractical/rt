@@ -87,13 +87,12 @@ passed to Load method.
 
 
 package RT::CurrentUser;
-
-use RT::I18N;
-
 use strict;
 use warnings;
 
 use base qw/RT::User/;
+
+use RT::I18N;
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load

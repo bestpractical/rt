@@ -64,8 +64,8 @@ similar objects.
 
 
 package RT::Attachment;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Transaction;

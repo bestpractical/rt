@@ -51,6 +51,7 @@ use strict;
 use warnings;
 
 use base 'Class::Accessor::Fast';
+
 use UNIVERSAL::require;
 
 __PACKAGE__->mk_accessors(qw(Name Rules));

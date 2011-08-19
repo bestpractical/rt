@@ -47,12 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::EmailParser;
-
-
-use base qw/RT::Base/;
-
 use strict;
 use warnings;
+
+use base qw/RT::Base/;
 
 use Email::Address;
 use MIME::Entity;

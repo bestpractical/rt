@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Link ();
 package RT::Link;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Link ();
 
 use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;

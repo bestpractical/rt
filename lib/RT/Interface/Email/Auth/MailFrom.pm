@@ -47,9 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Email::Auth::MailFrom;
-use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
 use strict;
 use warnings;
+
+use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 

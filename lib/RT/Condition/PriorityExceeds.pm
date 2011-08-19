@@ -47,8 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Condition::PriorityExceeds;
-use base 'RT::Condition';
 use strict;
+use warnings;
+
+use base 'RT::Condition';
 
 =head2 IsApplicable
 

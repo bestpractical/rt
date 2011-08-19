@@ -63,9 +63,10 @@ This module is provided only for backwards compatibility.
 
 =cut
 
+package RT::Condition::Generic;
 use strict;
 use warnings;
-package RT::Condition::Generic;
+
 use base 'RT::Condition';
 
 RT::Base->_ImportOverlays();

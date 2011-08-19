@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Ticket ();
 package RT::Ticket;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Ticket ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

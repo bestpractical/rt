@@ -72,9 +72,10 @@ as the ticket heads toward its due date.
 
 
 package RT::Action::EscalatePriority;
-use base 'RT::Action';
-
 use strict;
+use warnings;
+
+use base 'RT::Action';
 
 #Do what we need to do and send it out.
 

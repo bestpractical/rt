@@ -65,8 +65,8 @@
 
 
 package RT::GroupMembers;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ LimitToUsers

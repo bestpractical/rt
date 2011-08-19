@@ -65,8 +65,8 @@
 
 
 package RT::User;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use Digest::SHA;

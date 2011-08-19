@@ -47,8 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::RecordCorrespondence;
-use base 'RT::Action';
 use strict;
+use warnings;
+
+use base 'RT::Action';
 
 =head1 NAME
 

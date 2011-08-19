@@ -46,10 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
-use strict;
-
 package RT::Plugin;
+use strict;
+use warnings;
+
 use File::ShareDir;
 
 =head1 NAME

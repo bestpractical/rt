@@ -70,8 +70,8 @@ It can have arbitrary MIME attachments.
 
 
 package RT::Transaction;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use vars qw( %_BriefDescriptions $PreferredContentType );

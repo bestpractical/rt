@@ -67,13 +67,13 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 
 
 package RT::Date;
+use strict;
+use warnings;
+
+use base qw/RT::Base/;
 
 use Time::Local;
 use POSIX qw(tzset);
-
-use strict;
-use warnings;
-use base qw/RT::Base/;
 
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 

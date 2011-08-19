@@ -135,9 +135,9 @@ update, if it's been said to.
 =cut
 
 package RT::Action::LinearEscalate;
-
 use strict;
 use warnings;
+
 use base qw(RT::Action);
 
 our $VERSION = '0.06';

@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Queue ();
 package RT::Queue;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Queue ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

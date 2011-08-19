@@ -46,10 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
-use strict;
-
 package RT::Interface::Web::Standalone::PreFork;
+use strict;
+use warnings;
+
 use base qw/Net::Server::PreFork/;
 
 my %option_map = (

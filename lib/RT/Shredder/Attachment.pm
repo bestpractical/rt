@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Attachment ();
 package RT::Attachment;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Attachment ();
 
 use RT::Shredder::Exceptions;
 use RT::Shredder::Constants;

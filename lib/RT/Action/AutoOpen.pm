@@ -48,7 +48,6 @@
 
 # This Action will open the BASE if a dependent is resolved.
 package RT::Action::AutoOpen;
-
 use strict;
 use warnings;
 

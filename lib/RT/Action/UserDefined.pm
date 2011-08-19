@@ -47,9 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::UserDefined;
-use base 'RT::Action';
-
 use strict;
+use warnings;
+
+use base 'RT::Action';
 
 =head2 Prepare
 

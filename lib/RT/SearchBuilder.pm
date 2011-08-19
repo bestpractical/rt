@@ -63,10 +63,6 @@
 =cut
 
 package RT::SearchBuilder;
-
-use RT::Base;
-use DBIx::SearchBuilder "1.40";
-
 use strict;
 use warnings;
 

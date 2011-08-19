@@ -46,10 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::URI::fsck_com_rt;
 use strict;
 use warnings;
 
-package RT::URI::fsck_com_rt;
 use base 'RT::URI::base';
 
 =head2 LocalURIPrefix  

@@ -47,9 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder;
-
 use strict;
 use warnings;
+
 use UNIVERSAL::require;
 
 

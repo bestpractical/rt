@@ -65,9 +65,9 @@ Use the argument passed in as a "Google-style" set of keywords
 =cut
 
 package RT::Search::Googleish;
-
 use strict;
 use warnings;
+
 use base qw(RT::Search);
 
 use Regexp::Common qw/delimited/;

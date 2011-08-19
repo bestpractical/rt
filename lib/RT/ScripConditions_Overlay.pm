@@ -66,8 +66,8 @@
 
 
 package RT::ScripConditions;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 # {{{ sub _Init

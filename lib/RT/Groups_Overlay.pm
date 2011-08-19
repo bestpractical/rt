@@ -70,8 +70,8 @@
 
 
 package RT::Groups;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Users;

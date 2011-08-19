@@ -46,10 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Test::Email;
 use warnings;
 use strict;
 
-package RT::Test::Email;
 use Test::More;
 use Test::Email;
 use Email::Abstract;

@@ -46,12 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Group ();
 package RT::Group;
-
 use strict;
 use warnings;
 use warnings FATAL => 'redefine';
+
+use RT::Group ();
 
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;

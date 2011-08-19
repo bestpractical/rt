@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::SQL;
-
 use strict;
 use warnings;
 

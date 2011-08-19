@@ -47,8 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::I18N::i_default;
-use base 'RT::I18N';
 use strict;
+use warnings;
+
+use base 'RT::I18N';
 
 RT::Base->_ImportOverlays();
 

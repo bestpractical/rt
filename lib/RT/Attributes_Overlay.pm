@@ -64,10 +64,9 @@ RT::Attributes - collection of RT::Attribute objects
 
 
 package RT::Attributes;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
-
 
 sub _DoSearch {
     my $self = shift;

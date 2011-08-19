@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Email;
-
 use strict;
 use warnings;
 

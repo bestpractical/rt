@@ -47,9 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::SetPriority;
-use base 'RT::Action';
-
 use strict;
+use warnings;
+
+use base 'RT::Action';
 
 #Do what we need to do and send it out.
 

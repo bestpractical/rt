@@ -72,8 +72,8 @@ An RT group object.
 
 
 package RT::Group;
-
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 use RT::Users;

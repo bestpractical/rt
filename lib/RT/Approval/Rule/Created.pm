@@ -49,6 +49,7 @@
 package RT::Approval::Rule::Created;
 use strict;
 use warnings;
+
 use base 'RT::Approval::Rule';
 
 use constant _Stage => 'TransactionBatch';

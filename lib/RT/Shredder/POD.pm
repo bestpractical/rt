@@ -47,9 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Shredder::POD;
-
 use strict;
 use warnings;
+
 use Pod::Select;
 
 sub plugin_html

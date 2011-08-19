@@ -47,7 +47,6 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::Web::QueryBuilder;
-
 use strict;
 use warnings;
 

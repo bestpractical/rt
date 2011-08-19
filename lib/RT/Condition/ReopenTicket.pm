@@ -47,12 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Condition::ReopenTicket;
-
 use strict;
 use warnings;
 
 use base 'RT::Condition';
-
 
 =head2 IsApplicable
 
