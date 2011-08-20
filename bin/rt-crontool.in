@@ -187,6 +187,7 @@ while ( my $ticket = $tickets->Next() ) {
 
         process($ticket, undef, $template_obj);
     }
+    print "\n" if $verbose;
 }
 
 sub process {
