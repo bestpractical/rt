@@ -21,14 +21,14 @@ sub check {
         qr/^use warnings(?:;|\s+)/m,
         $File::Find::name . ' has "use warnings"'
     );
-    my $mode = sprintf( '%04o', ( stat $file )[2] & 07777 );
+    my $executable = ( stat $file )[2] & 0100;
     if ( $type eq 'script' ) {
         like( $content, qr/^#!/, $File::Find::name . ' has shebang' );
         if ( $file =~ /\.in/ ) {
-            is( $mode, '0644', $File::Find::name . ' permission is 0644' );
+            ok( !$executable, $File::Find::name . ' permission is not u+x' );
         }
         else {
-            is( $mode, '0754', $File::Find::name . ' permission is 0754' );
+            ok( $executable, $File::Find::name . ' permission is u+x' );
         }
     }
     elsif ( $type eq 'devel' ) {
@@ -37,11 +37,11 @@ sub check {
             qr{^#!/usr/bin/env perl},
             $File::Find::name . ' has shebang'
         );
-        is( $mode, '0755', $File::Find::name . ' permission is 0755' );
+        ok( $executable, $File::Find::name . ' permission is u+x' );
     }
     else {
         unlike( $content, qr/^#!/, $File::Find::name . ' has no shebang' );
-        is( $mode, '0644', $File::Find::name . ' permission is 0644' );
+        ok( !$executable, $File::Find::name . ' permission is not u+x' );
     }
 }
 
