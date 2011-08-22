@@ -308,6 +308,7 @@ sub load_module {
     my $modname = shift;
     $modname->require
         or die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
+    return 1;
 }
 
 # }}}

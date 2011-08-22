@@ -293,6 +293,7 @@ sub convert_table {
         push @sql_commands, qq{ALTER TABLE $table\n   }.
             join(",\n   ",@{$alter_aggregator{$conversiontype}});
     }
+    return;
 }
 
 sub convert_column {
@@ -322,6 +323,7 @@ sub convert_column {
     } else {
         char_to_char( $required_charset, %info);
     }
+    return;
 }
 
 sub char_to_binary {
@@ -332,7 +334,7 @@ sub char_to_binary {
     my $new_type = calc_suitable_binary_type(%info);
     push @{$alter_aggregator{char_to_binary}},
         "MODIFY $column $new_type ".build_column_definition(%info);
-
+    return;
 }
 
 sub binary_to_char {
@@ -351,6 +353,7 @@ sub binary_to_char {
     push @{$alter_aggregator{binary_to_char}},
         "MODIFY $column ". uc($new_type) ." CHARACTER SET ". $charset
         ." ". build_column_definition(%info);
+    return;
 }
 
 sub char_to_char {
@@ -364,6 +367,7 @@ sub char_to_char {
     push @{$alter_aggregator{binary_to_char}},
         "MODIFY $column ". uc($new_type)." CHARACTER SET ". $charset
         ." ". build_column_definition(%info);
+    return;
 }
 
 sub calc_suitable_binary_type {
