@@ -31,6 +31,14 @@ sub check {
             is( $mode, '0754', $File::Find::name . ' permission is 0754' );
         }
     }
+    elsif ( $type eq 'devel' ) {
+        like(
+            $content,
+            qr{^#!/usr/bin/env perl},
+            $File::Find::name . ' has shebang'
+        );
+        is( $mode, '0755', $File::Find::name . ' permission is 0755' );
+    }
     else {
         unlike( $content, qr/^#!/, $File::Find::name . ' has no shebang' );
         is( $mode, '0644', $File::Find::name . ' permission is 0644' );
@@ -59,6 +67,13 @@ find(
         check( $_, 'script' );
     },
     'bin',
-    'sbin'
+    'sbin',
 );
 
+find(
+    sub {
+        return unless -f && $_ !~ m{/(localhost\.(crt|key)|mime\.types)$};
+        check( $_, 'devel' );
+    },
+    'devel/tools',
+);

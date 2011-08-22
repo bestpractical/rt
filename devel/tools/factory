@@ -47,6 +47,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
 use DBI;
 
 die "Usage: $0 database namespace" if @ARGV != 2;
