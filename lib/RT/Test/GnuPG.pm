@@ -48,6 +48,7 @@
 
 package RT::Test::GnuPG;
 use strict;
+use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);

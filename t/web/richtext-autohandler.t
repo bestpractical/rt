@@ -1,4 +1,5 @@
 use strict;
+use warnings;
 
 use RT::Test tests => 9;
 my ($baseurl, $agent) = RT::Test->started_ok;

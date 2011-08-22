@@ -47,6 +47,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
 use Carp;
 
 # fix lib paths, some may be relative

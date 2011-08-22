@@ -50,6 +50,7 @@
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+use warnings;
 
 if ( $ARGV[0] && $ARGV[0] =~ /^(?:--help|-h)$/ ) {
     require Pod::Usage;

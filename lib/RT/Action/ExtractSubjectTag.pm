@@ -49,6 +49,7 @@
 package RT::Action::ExtractSubjectTag;
 use base 'RT::Action';
 use strict;
+use warnings;
 
 sub Describe {
     my $self = shift;

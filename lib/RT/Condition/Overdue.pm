@@ -59,6 +59,7 @@ Returns true if the ticket we're operating on is overdue
 package RT::Condition::Overdue;
 use base 'RT::Condition';
 use strict;
+use warnings;
 
 
 =head2 IsApplicable

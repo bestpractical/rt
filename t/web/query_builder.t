@@ -1,6 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
+use warnings;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;

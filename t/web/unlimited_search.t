@@ -1,6 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
+use warnings;
 
 use RT::Test tests => 85;
 my ($baseurl, $agent) = RT::Test->started_ok;

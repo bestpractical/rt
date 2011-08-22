@@ -78,6 +78,7 @@ package RT::Action::EscalatePriority;
 use base 'RT::Action';
 
 use strict;
+use warnings;
 
 #Do what we need to do and send it out.
 

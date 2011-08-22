@@ -47,6 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 
 package RT::Topics;

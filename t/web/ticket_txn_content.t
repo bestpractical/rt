@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 
 use RT::Test tests => 63;
 my $plain_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.txt' );
