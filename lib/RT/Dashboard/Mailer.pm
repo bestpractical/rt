@@ -161,7 +161,7 @@ sub IsSubscriptionReady {
 
     if ($sub_frequency eq 'weekly') {
         # correct day of week?
-        return 0 if $sub_frequency ne $dow;
+        return 0 if $sub_dow ne $dow;
 
         # does it match the "every N weeks" clause?
         $sub_fow = 1 if !$sub_fow;
