@@ -23,17 +23,28 @@ sub prepare_code_with_value {
     return
         '$self->TicketObj->SetSubject(' .
         '$self->TicketObj->Subject . ' .
-        $value .
+        '"|" . ' . $value .
         ')';
 }
 
 {
     # preserve order for checking the subject string later
-    my @values_for_actions = (
-        [4 => '"Fwd"'],
-        [5 => '"FwdTicket"'],
-        [6 => '"FwdTransaction"'],
-    );
+    my @values_for_actions;
+
+    my $conds = RT::ScripConditions->new(RT->SystemUser);
+    for ('On Forward', 'On Forward Ticket', 'On Forward Transaction') {
+        $conds->Limit(
+            FIELD           => 'name',
+            VALUE           => $_,
+            ENTRYAGGREGATOR => 'OR',
+        );
+    }
+
+    while (my $rec = $conds->Next) {
+        push @values_for_actions, [$rec->Id, '"' . $rec->Name . '"'];
+    }
+
+    @values_for_actions = sort { $a->[0] cmp $b->[0] } @values_for_actions;
 
     foreach my $data (@values_for_actions) {
         my ($condition, $prepare_code_value) = @$data;
@@ -72,7 +83,7 @@ sub prepare_code_with_value {
         button => 'ForwardAndReturn'
     );
 
-    $m->text_contains("#${ticket}: subjectFwdFwdTicket");
+    $m->text_contains("#${ticket}: subject|On Forward|On Forward Ticket");
 
     diag "Forward Transaction" if $ENV{TEST_VERBOSE};
     # get the first transaction on the ticket
@@ -88,7 +99,7 @@ sub prepare_code_with_value {
         button => 'ForwardAndReturn'
     );
 
-    $m->text_contains("#${ticket}: subjectFwdFwdTicketFwdFwdTransaction");
+    $m->text_contains("#${ticket}: subject|On Forward|On Forward Ticket|On Forward|On Forward Transaction");
 
     RT::Test->clean_caught_mails;
 }
