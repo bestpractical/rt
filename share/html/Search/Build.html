@@ -80,8 +80,8 @@
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
-<& /Elements/Submit,  Label => loc('Add these terms'), Name => 'AddClause'&>
-<& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch'&>
+<& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
+<& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
 
 
 <div id="editquery">
@@ -290,8 +290,8 @@ $session{'CurrentSearchHash'} = {
 # Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    $m->comp( 'Results.html', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'}, );
-    $m->comp( '/Elements/Footer' );
+    my $redir_query_string = $m->comp('/Elements/QueryString', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'});
+    RT::Interface::Web::Redirect(RT->Config->Get('WebPath') . '/Search/Results.html?' . $redir_query_string);
     $m->abort;
 }
 
