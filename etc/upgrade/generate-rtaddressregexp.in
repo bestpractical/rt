@@ -75,8 +75,8 @@ while ( my $queue = $queues->Next ) {
 }
 
 my %seen;
-my $re = join '|', map "\Q$_\E",
-    grep defined && length && !$seen{ lc $_ }++,
+my $re = join '|', map {"\Q$_\E"}
+    grep {defined && length && !$seen{ lc $_ }++}
     @addresses;
 
 print <<ENDDESCRIPTION;

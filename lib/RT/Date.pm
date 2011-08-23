@@ -824,7 +824,7 @@ sub RFC2822 {
         $time .= sprintf " %s%02d%02d", $self->_SplitOffset( $offset );
     }
 
-    return join ' ', grep $_, ($date, $time);
+    return join ' ', grep {$_} ($date, $time);
 }
 
 =head3 RFC2616 (HTTP)

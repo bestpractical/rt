@@ -171,7 +171,7 @@ sub Prepare {
     my %seen;
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         @{ $self->{$type} }
-            = grep defined && length && !$seen{ lc $_ }++,
+            = grep {defined && length && !$seen{ lc $_ }++}
             @{ $self->{$type} };
     }
 
@@ -203,7 +203,7 @@ sub Prepare {
     $self->SetHeader( 'Content-Transfer-Encoding', '8bit' );
 
     # For security reasons, we only send out textual mails.
-    foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
+    foreach my $part ( grep {!$_->is_multipart} $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
         $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
         $part->head->mime_attr( "Content-Type" => $type );
@@ -437,7 +437,7 @@ clean list by passing undef as argument.
 
     sub AttachTickets {
         my $self = shift;
-        $list = [ grep defined, @_ ] if @_;
+        $list = [ grep {defined} @_ ] if @_;
         return @$list;
     }
 }
@@ -748,7 +748,7 @@ clean this list when blocking is not required anymore, pass undef to do this.
     sub SquelchMailTo {
         my $self = shift;
         if (@_) {
-            $squelch = [ grep defined, @_ ];
+            $squelch = [ grep {defined} @_ ];
         }
         return @$squelch;
     }
@@ -810,7 +810,7 @@ sub RemoveInappropriateRecipients {
     }
 
 # Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
-    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo;
+    push @blacklist, map { $_->Content } $self->TicketObj->SquelchMailTo;
     push @blacklist, $self->SquelchMailTo;
 
     # Cycle through the people we're sending to and pull out anyone on the
@@ -829,7 +829,7 @@ sub RemoveInappropriateRecipients {
                 $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
                 next;
             }
-            if ( grep /^\Q$addr\E$/, @blacklist ) {
+            if ( grep {/^\Q$addr\E$/} @blacklist ) {
                 $RT::Logger->info( $msgid . "$addr was blacklisted for outbound mail on this transaction. Skipping");
                 next;
             }

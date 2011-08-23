@@ -405,9 +405,9 @@ sub bootstrap_plugins {
 
         return $cwd if $args{'testing'} && $name eq $args{'testing'};
 
-        if ( grep $name eq $_, @plugins ) {
-            my $variants = join "(?:|::|-|_)", map "\Q$_\E", split /::/, $name;
-            my ($path) = map $ENV{$_}, grep /^CHIMPS_(?:$variants).*_ROOT$/i, keys %ENV;
+        if ( grep {$name eq $_} @plugins ) {
+            my $variants = join "(?:|::|-|_)", map { "\Q$_\E" } split /::/, $name;
+            my ($path) = map { $ENV{$_} } grep {/^CHIMPS_(?:$variants).*_ROOT$/i} keys %ENV;
             return $path if $path;
         }
         return $old_func->(@_);
@@ -795,7 +795,7 @@ sub mailsent_ok {
     my $class = shift;
     my $expected  = shift;
 
-    my $mailsent = scalar grep /\S/, split /%% split me! %%\n/,
+    my $mailsent = scalar grep {/\S/} split /%% split me! %%\n/,
         RT::Test->file_content(
             $tmp{'mailbox'},
             'unlink' => 0,
@@ -815,7 +815,7 @@ sub set_mail_catcher {
 
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%\n/,
+    return grep {/\S/} split /%% split me! %%\n/,
         RT::Test->file_content(
             $tmp{'mailbox'},
             'unlink' => 1,
@@ -1076,7 +1076,7 @@ sub apache_server_info {
 
     $res{'modules'} = [
         map {my $mod = $_; $mod =~ s/^\s+//; $mod =~ s/\s+$//; $mod}
-        grep $_ !~ /Compiled in modules/i,
+        grep {$_ !~ /Compiled in modules/i}
         split /\r*\n/, `$bin -l`
     ];
 
@@ -1095,7 +1095,7 @@ sub apache_mod_perl_server_options {
 
     $current->{'load_modules'} = '';
     foreach my $mod ( @mlist ) {
-        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
+        next if grep {$_ =~ /^(mod_|)$mod\.c$/} @{ $info{'modules'} };
 
         $current->{'load_modules'} .=
             "LoadModule ${mod}_module modules/mod_${mod}.so\n";
@@ -1115,7 +1115,7 @@ sub apache_fastcgi_server_options {
 
     $current->{'load_modules'} = '';
     foreach my $mod ( @mlist ) {
-        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
+        next if grep {$_ =~ /^(mod_|)$mod\.c$/} @{ $info{'modules'} };
 
         $current->{'load_modules'} .=
             "LoadModule ${mod}_module modules/mod_${mod}.so\n";
@@ -1125,8 +1125,8 @@ sub apache_fastcgi_server_options {
 
 sub find_apache_server {
     my $self = shift;
-    return $_ foreach grep defined,
-        map $self->find_executable($_),
+    return $_ foreach grep {defined}
+        map {$self->find_executable($_)}
         qw(httpd apache apache2 apache1);
     return undef;
 }
@@ -1241,7 +1241,7 @@ END {
     RT::Test->stop_server;
 
     # not success
-    if ( !$Test->summary || grep !$_, $Test->summary ) {
+    if ( !$Test->summary || grep {!$_} $Test->summary ) {
         $tmp{'directory'}->unlink_on_destroy(0);
 
         Test::More::diag(

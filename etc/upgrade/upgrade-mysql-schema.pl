@@ -269,7 +269,7 @@ my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
 push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
 
-print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
+print join "\n", map {/;$/? $_ : "$_;"} (@sql_commands, "");
 my $use_p = $db_pass ? " -p" : '';
 print STDERR <<ENDREMINDER;
 -- ** NOTICE: No database changes have been made. **

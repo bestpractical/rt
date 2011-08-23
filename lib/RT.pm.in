@@ -474,7 +474,7 @@ sub InitClasses {
                                    "You should delete or repair this Scrip in the admin UI.\n$@\n");
         }
 
-	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
+	foreach my $class ( grep {$_} RT->Config->Get('CustomFieldValuesSources') ) {
             local $@ = undef;
             $class->require or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
@@ -604,7 +604,7 @@ sub PluginDirs {
     require RT::Plugin;
 
     my @res;
-    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+    foreach my $plugin (grep {$_} RT->Config->Get('Plugins')) {
         my $path = RT::Plugin->new( name => $plugin )->Path( $subdir );
         next unless -d $path;
         push @res, $path;
@@ -639,7 +639,7 @@ sub InitPluginPaths {
     push @tmp_inc, @lib_dirs unless $added;
 
     my %seen;
-    @INC = grep !$seen{$_}++, @tmp_inc;
+    @INC = grep {!$seen{$_}++} @tmp_inc;
     return;
 }
 
@@ -653,7 +653,7 @@ sub InitPlugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
-    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+    foreach my $plugin (grep {$_} RT->Config->Get('Plugins')) {
         $plugin->require or die $UNIVERSAL::require::ERROR;
         push @plugins, RT::Plugin->new(name =>$plugin);
     }

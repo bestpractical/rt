@@ -128,8 +128,9 @@ sub WriteDownTransaction {
         if $props->{'ObjectId'};
     return 1 if $skip_refs_to{ $props->{'Object'} };
 
-    delete $props->{$_} foreach grep
-        !defined $props->{$_} || $props->{$_} eq '', keys %$props;
+    delete $props->{$_} for
+        grep {!defined $props->{$_} || $props->{$_} eq ''}
+        keys %$props;
 
     return $self->_WriteDownHash( $args{'Object'}, $props );
 }
@@ -149,7 +150,7 @@ sub WriteDownScrip {
 sub _MakeHash {
     my ($self, $obj) = @_;
     my $hash = $self->__MakeHash( $obj );
-    foreach (grep exists $hash->{$_}, qw(Creator LastUpdatedBy)) {
+    foreach (grep {exists $hash->{$_}} qw(Creator LastUpdatedBy)) {
         my $method = $_ .'Obj';
         my $u = $obj->$method();
         $hash->{ $_ } = $u->EmailAddress || $u->Name || $u->_AsString;

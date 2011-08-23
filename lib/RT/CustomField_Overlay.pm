@@ -832,7 +832,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep {!/(?:[Tt]ext|Combobox)-0/} map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 SetLookupType

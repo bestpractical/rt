@@ -171,12 +171,12 @@ sub CheckNoPrivateKey {
     my %args = (Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 
-    my @decrypts = grep $_->{'Operation'} eq 'Decrypt', @status;
+    my @decrypts = grep {$_->{'Operation'} eq 'Decrypt'} @status;
     return 1 unless @decrypts;
     foreach my $action ( @decrypts ) {
         # if at least one secrete key exist then it's another error
         return 1 if
-            grep !$_->{'User'}{'SecretKeyMissing'},
+            grep {!$_->{'User'}{'SecretKeyMissing'}}
                 @{ $action->{'EncryptedTo'} };
     }
 
@@ -200,9 +200,9 @@ sub CheckNoPrivateKey {
 
 sub CheckBadData {
     my %args = (Message => undef, Status => [], @_ );
-    my @bad_data_messages = 
-        map $_->{'Message'},
-        grep $_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data',
+    my @bad_data_messages =
+        map {$_->{'Message'}}
+        grep {$_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data'}
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
 
@@ -239,7 +239,7 @@ sub VerifyDecrypt {
     $RT::Logger->debug('Found GnuPG protected parts');
 
     # return on any error
-    if ( grep $_->{'exit_code'}, @res ) {
+    if ( grep {$_->{'exit_code'}} @res ) {
         $RT::Logger->debug("Error during verify/decrypt operation");
         return (0, @res);
     }

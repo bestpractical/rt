@@ -295,7 +295,7 @@ sub _IdLimit {
         my $tmp = $sb->CurrentUser->UserObj->FirstAttribute('Bookmarks');
         $tmp = $tmp->Content if $tmp;
         $tmp ||= {};
-        grep $_, keys %$tmp;
+        grep {$_} keys %$tmp;
     };
 
     return $sb->_SQLLimit(
@@ -2995,7 +2995,7 @@ sub CurrentUserCanSee {
         foreach my $role ( keys %roles ) {
             next unless ref $roles{ $role };
 
-            my @queues = grep !$skip{$_}, @{ $roles{ $role } };
+            my @queues = grep {!$skip{$_}} @{ $roles{ $role } };
             if ( @queues ) {
                 $roles{ $role } = \@queues;
             } else {
@@ -3009,7 +3009,7 @@ sub CurrentUserCanSee {
 # the idea here is that if the right is set globaly for a role
 # and user plays this role for a queue directly not a ticket
 # then we have to check in advance
-    if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
+    if ( my @tmp = grep {$_ ne 'Owner' && !ref $roles{ $_ }} keys %roles ) {
 
         my $groups = RT::Groups->new( $RT::SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
@@ -3184,10 +3184,9 @@ to.
 sub RestrictionValues {
     my $self  = shift;
     my $field = shift;
-    return map $self->{'TicketRestrictions'}{$_}{'VALUE'}, grep {
-               $self->{'TicketRestrictions'}{$_}{'FIELD'}    eq $field
-            && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
-        }
+    return map {$self->{'TicketRestrictions'}{$_}{'VALUE'}}
+        grep { $self->{'TicketRestrictions'}{$_}{'FIELD'}    eq $field
+            && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "=" }
         keys %{ $self->{'TicketRestrictions'} };
 }
 

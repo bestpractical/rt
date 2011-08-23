@@ -91,7 +91,7 @@ sub SetRecipients {
     $TransactionCurrentUser->LoadByName($creatorObj->Name);
 
     unless (RT->Config->Get('NotifyActor',$TransactionCurrentUser)) {
-        @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
+        @{ $self->{'To'} } = grep {!/^\Q$creator\E$/} @{ $self->{'To'} };
     }
 
     $self->{'seen_ueas'} = {};
@@ -184,7 +184,7 @@ sub __HandleGroupArgument {
 }
 
 sub __SplitArg {
-    return grep length, map {
+    return grep {length} map {
         my $arg = $_;
         $arg =~ s/^\s+//;
         $arg =~ s/\s+$//;

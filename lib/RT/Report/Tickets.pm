@@ -131,7 +131,7 @@ sub SetupGroupings {
 
     my @res;
     push @res, $self->Column( FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' );
-    push @res, map $self->Column( FIELD => $_ ), @group_by;
+    push @res, map { $self->Column( FIELD => $_ ) } @group_by;
     return @res;
 }
 
@@ -139,7 +139,7 @@ sub GroupBy {
     my $self = shift;
     my @args = ref $_[0]? @_ : { @_ };
 
-    @{ $self->{'_group_by_field'} ||= [] } = map $_->{'FIELD'}, @args;
+    @{ $self->{'_group_by_field'} ||= [] } = map { $_->{'FIELD'} } @args;
     $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
 
     return $self->SUPER::GroupBy( @args );
@@ -312,7 +312,7 @@ sub AddEmptyRows {
     if ( @{ $self->{'_group_by_field'} || [] } == 1 && $self->{'_group_by_field'}[0] eq 'Status' ) {
         my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {
+        foreach my $status ( grep {!$has{$_}} RT::Queue->new($self->CurrentUser)->StatusArray ) {
 
             my $record = $self->NewItem;
             $record->LoadFromHash( {

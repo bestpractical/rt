@@ -104,7 +104,7 @@ unless ( $args{'action'} ) {
 }
 
 # check and setup @actions
-my @actions = grep $_, split /,/, $args{'action'};
+my @actions = grep {$_} split /,/, $args{'action'};
 if ( @actions > 1 && $args{'datafile'} ) {
     print STDERR "You can not use --datafile option with multiple actions.\n";
     exit(-1);
@@ -273,7 +273,7 @@ sub action_upgrade {
         unless @versions;
 
     print "\nGoing to apply following upgrades:\n";
-    print map "* $_\n", @versions;
+    print map { "* $_\n" } @versions;
 
     {
         my $custom_upgrading_to = undef;
@@ -311,7 +311,7 @@ sub action_upgrade {
                 unless @versions;
 
             print "\nGoing to apply following upgrades:\n";
-            print map "* $_\n", @versions;
+            print map { "* $_\n" } @versions;
         }
     }
 
@@ -338,12 +338,12 @@ sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
     opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
-    my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
+    my @versions = grep {-d "$base_dir/$_" && /\d+\.\d+\.\d+/} readdir $dh;
     closedir $dh;
 
     return
-        grep RT::Handle::cmp_version($_, $to) <= 0,
-        grep RT::Handle::cmp_version($_, $from) > 0,
+        grep { RT::Handle::cmp_version($_, $to)  <= 0 }
+        grep { RT::Handle::cmp_version($_, $from) > 0 }
         sort RT::Handle::cmp_version @versions;
 }
 

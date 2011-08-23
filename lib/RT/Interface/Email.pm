@@ -485,8 +485,9 @@ sub SendEmail {
 
         # duplicate head as we want drop Bcc field
         my $head = $args{'Entity'}->head->dup;
-        my @recipients = map $_->address, map 
-            Email::Address->parse($head->get($_)), qw(To Cc Bcc);                       
+        my @recipients = map { $_->address }
+            map { Email::Address->parse($head->get($_)) }
+            qw(To Cc Bcc);
         $head->delete('Bcc');
 
         my $sender = RT->Config->Get('SMTPFrom')
@@ -595,7 +596,7 @@ sub SendEmailUsingTemplate {
     }
 
     $mail->head->set( $_ => Encode::encode_utf8( $args{ $_ } ) )
-        foreach grep defined $args{$_}, qw(To Cc Bcc From);
+        foreach grep {defined $args{$_}} qw(To Cc Bcc From);
 
     SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
 
@@ -636,8 +637,8 @@ sub ForwardTicket {
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
     );
-    $entity->add_part( $_ ) foreach 
-        map $_->ContentAsMIME,
+    $entity->add_part( $_ ) foreach
+        map { $_->ContentAsMIME }
         @{ $txns->ItemsArrayRef };
 
     return SendForward( %args, Entity => $entity, Ticket => $ticket, Template => 'Forward Ticket' );
@@ -701,7 +702,7 @@ sub SendForward {
     }
 
     $mail->head->set( $_ => EncodeToMIME( String => $args{$_} ) )
-        foreach grep defined $args{$_}, qw(To Cc Bcc);
+        foreach grep {defined $args{$_}} qw(To Cc Bcc);
 
     $mail->attach(
         Type => 'message/rfc822',
@@ -820,7 +821,7 @@ sub SignEncrypt {
 
     DeleteRecipientsFromHead(
         $args{'Entity'}->head,
-        map $_->{'AddressObj'}->address, @bad_recipients
+        map { $_->{'AddressObj'}->address } @bad_recipients
     );
 
     unless ( $args{'Entity'}->head->get('To')
@@ -911,7 +912,7 @@ sub EncodeToMIME {
 
     # encode an join chuncks
     $value = join "\n ",
-        map MIME::Words::encode_mimeword( $_, $encoding, $charset ),
+        map { MIME::Words::encode_mimeword( $_, $encoding, $charset ) }
         @chunks;
     return ($value);
 }
@@ -996,9 +997,9 @@ sub ParseCcAddressesFromHead {
     my $user = $args{'CurrentUser'}->UserObj;
 
     return
-        grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
-        map lc $user->CanonicalizeEmailAddress( $_->address ),
-        map Email::Address->parse( $args{'Head'}->get( $_ ) ),
+        grep { $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ) }
+        map { lc $user->CanonicalizeEmailAddress( $_->address ) }
+        map { Email::Address->parse( $args{'Head'}->get( $_ ) ) }
         qw(To Cc);
 }
 
@@ -1067,7 +1068,7 @@ sub ParseAddressFromHeader {
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
     my @Addresses = RT::EmailParser->ParseEmailAddress($Addr);
 
-    my ($AddrObj) = grep ref $_, @Addresses;
+    my ($AddrObj) = grep {ref $_} @Addresses;
     unless ( $AddrObj ) {
         return ( undef, undef );
     }
@@ -1093,7 +1094,7 @@ sub DeleteRecipientsFromHead {
 
     foreach my $field ( qw(To Cc Bcc) ) {
         $head->set( $field =>
-            join ', ', map $_->format, grep !$skip{ lc $_->address },
+            join ', ', map {$_->format} grep {!$skip{ lc $_->address }}
                 Email::Address->parse( $head->get( $field ) )
         );
     }
@@ -1132,7 +1133,7 @@ sub SetInReplyTo {
         } else {
             @res = $args{'InReplyTo'}->GetHeader( shift ) || '';
         }
-        return grep length, map { split /\s+/m, $_ } grep defined, @res;
+        return grep {length} map { split /\s+/m, $_ } grep {defined} @res;
     };
 
     my @id = $get_header->('Message-ID');
@@ -1145,7 +1146,7 @@ sub SetInReplyTo {
     push @references, @id, @rtid;
     if ( $args{'Ticket'} ) {
         my $pseudo_ref =  '<RT-Ticket-'. $args{'Ticket'}->id .'@'. RT->Config->Get('Organization') .'>';
-        push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
+        push @references, $pseudo_ref unless grep {$_ eq $pseudo_ref} @references;
     }
     @references = splice @references, 4, -6
         if @references > 10;
@@ -1312,12 +1313,12 @@ sub Gateway {
         );
     }
 
-    my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
+    my @mail_plugins = grep {$_} RT->Config->Get('MailPlugins');
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
     @mail_plugins = _LoadPlugins( @mail_plugins );
 
     my %skip_plugin;
-    foreach my $class( grep !ref, @mail_plugins ) {
+    foreach my $class( grep {!ref} @mail_plugins ) {
         # check if we should apply filter before decoding
         my $check_cb = $class->can("ApplyBeforeDecode");
         next unless defined $check_cb;
@@ -1341,7 +1342,7 @@ sub Gateway {
             return (0, $msg, undef);
         }
     }
-    @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+    @mail_plugins = grep {!$skip_plugin{"$_"}} @mail_plugins;
     $parser->_DecodeBodies;
     $parser->_PostProcessNewEntity;
 
@@ -1444,7 +1445,7 @@ sub Gateway {
 
     my $Ticket = RT::Ticket->new($CurrentUser);
 
-    if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
+    if ( !$args{'ticket'} && grep {/^(comment|correspond)$/} @actions )
     {
 
         my @Cc;
@@ -1477,7 +1478,7 @@ sub Gateway {
 
         # strip comments&corresponds from the actions we don't need
         # to record them if we've created the ticket just now
-        @actions = grep !/^(comment|correspond)$/, @actions;
+        @actions = grep {!/^(comment|correspond)$/} @actions;
         $args{'ticket'} = $id;
 
     } elsif ( $args{'ticket'} ) {
@@ -1593,7 +1594,7 @@ sub GetAuthenticationLevel {
         }
 
         # strip actions we should skip
-        @{$args{Actions}} = grep !$skip_action{$_}, @{$args{Actions}}
+        @{$args{Actions}} = grep {!$skip_action{$_}} @{$args{Actions}}
             if $AuthStat == -2;
         last unless @{$args{Actions}};
 
@@ -1781,7 +1782,7 @@ Returns a list of valid actions we've found for this message
 
 sub IsCorrectAction {
     my $action = shift;
-    my @actions = grep $_, split /-/, $action;
+    my @actions = grep {$_} split /-/, $action;
     return ( 0, '(no value)' ) unless @actions;
     foreach ( @actions ) {
         return ( 0, $_ ) unless /^(?:comment|correspond|take|resolve)$/;

@@ -610,7 +610,7 @@ B<Never> returns C<RT-Send-Bcc> field.
 
 sub SplitHeaders {
     my $self = shift;
-    return (grep !/^RT-Send-Bcc/i, $self->_SplitHeaders(@_) );
+    return (grep {!/^RT-Send-Bcc/i} $self->_SplitHeaders(@_) );
 }
 
 =head2 _SplitHeaders
@@ -658,7 +658,7 @@ sub Encrypt {
 
     my $queue = $txn->TicketObj->QueueObj;
     my $encrypt_for;
-    foreach my $address ( grep $_,
+    foreach my $address ( grep {$_}
         $queue->CorrespondAddress,
         $queue->CommentAddress,
         RT->Config->Get('CorrespondAddress'),

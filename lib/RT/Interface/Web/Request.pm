@@ -122,17 +122,17 @@ sub callback {
     unless ( $callbacks ) {
         $callbacks = [];
         my $path  = "/Callbacks/*$page/$name";
-        my @roots = map $_->[1],
+        my @roots = map { $_->[1] }
                         $HTML::Mason::VERSION <= 1.28
                             ? $self->interp->resolver->comp_root_array
                             : $self->interp->comp_root_array;
 
         my %seen;
         @$callbacks = (
-            grep defined && length,
+            grep {defined && length}
             # Skip backup files, files without a leading package name,
             # and files we've already seen
-            grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
+            grep {!$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$}}
             map { sort $self->interp->resolver->glob_path($path, $_) }
             @roots
         );

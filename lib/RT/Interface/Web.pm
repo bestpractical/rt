@@ -1183,8 +1183,8 @@ sub CreateTicket {
 
     my @temp_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @temp_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
-            if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+        push @temp_squelch, map { $_->address } Email::Address->parse( $create_args{$type} )
+            if grep {$_ eq $type || $_ eq ( $type . 's' )} @{ $ARGS{'SkipNotification'} || [] };
 
     }
 
@@ -1234,14 +1234,14 @@ sub CreateTicket {
             } elsif ( defined $ARGS{$arg} ) {
                 @values = split /\r*\n/, $ARGS{$arg};
             }
-            @values = grep length, map {
+            @values = grep {length} map {
                 my $value = $_;
                 $value =~ s/\r+\n/\n/g;
                 $value =~ s/^\s+//;
                 $value =~ s/\s+$//;
                 $value;
                 }
-                grep defined, @values;
+                grep {defined} @values;
 
             $create_args{"CustomField-$cfid"} = \@values;
         }
@@ -1258,7 +1258,7 @@ sub CreateTicket {
     );
     foreach my $key ( keys %map ) {
         next unless $ARGS{$key};
-        $create_args{ $map{$key} } = [ grep $_, split ' ', $ARGS{$key} ];
+        $create_args{ $map{$key} } = [ grep {$_} split ' ', $ARGS{$key} ];
 
     }
 
@@ -1411,14 +1411,14 @@ sub ProcessUpdateMessage {
 
     my @temp_squelch;
     foreach my $type (qw(Cc AdminCc)) {
-        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{$type} );
+        if (grep {$_ eq $type || $_ eq ( $type . 's' )} @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map { $_->address } Email::Address->parse( $message_args{$type} );
             push @temp_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
             push @temp_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
     }
-    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
-            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{Requestor} );
+    if (grep {$_ eq 'Requestor' || $_ eq 'Requestors'} @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map { $_->address } Email::Address->parse( $message_args{Requestor} );
             push @temp_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
 
@@ -1486,7 +1486,7 @@ sub MakeMIMEEntity {
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
         map { $_ => Encode::encode_utf8( $args{ $_} ) }
-            grep defined $args{$_}, qw(Subject From Cc)
+            grep {defined $args{$_}} qw(Subject From Cc)
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
@@ -1583,7 +1583,7 @@ sub ProcessACLChanges {
         } else {
             @rights = $ARGSref->{$arg};
         }
-        @rights = grep $_, @rights;
+        @rights = grep {$_} @rights;
         next unless @rights;
 
         my $principal = RT::Principal->new( $session{'CurrentUser'} );
@@ -1883,14 +1883,14 @@ sub _ProcessObjectCustomFieldUpdates {
             @values = split /\r*\n/, $args{'ARGS'}->{$arg}
                 if defined $args{'ARGS'}->{$arg};
         }
-        @values = grep length, map {
+        @values = grep {length} map {
             my $value = $_;
             $value =~ s/\r+\n/\n/g;
             $value =~ s/^\s+//;
             $value =~ s/\s+$//;
             $value;
             }
-            grep defined, @values;
+            grep {defined} @values;
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
@@ -2280,7 +2280,7 @@ sub ProcessColumnMapValue {
             my @tmp = $value->( @{ $args{'Arguments'} } );
             return ProcessColumnMapValue( ( @tmp > 1 ? \@tmp : $tmp[0] ), %args );
         } elsif ( ref($value) eq 'ARRAY' ) {
-            return join '', map ProcessColumnMapValue( $_, %args ), @$value;
+            return join '', map { ProcessColumnMapValue( $_, %args ) } @$value;
         } elsif ( ref($value) eq 'SCALAR' ) {
             return $$value;
         }

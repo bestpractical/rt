@@ -765,7 +765,7 @@ sub DumpObject {
     return unless $active_dump_state{ lc $args{'State'} };
 
     foreach (@{ $self->{'dump_plugins'} }) {
-        next unless grep lc $args{'State'} eq lc $_, $_->AppliesToStates;
+        next unless grep {lc $args{'State'} eq lc $_} $_->AppliesToStates;
         my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }

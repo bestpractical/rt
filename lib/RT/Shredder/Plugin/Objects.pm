@@ -85,7 +85,7 @@ sub TestArgs
 
         my $list = $args{$name};
         $list = [$list] unless ref($list) eq 'ARRAY';
-        push @strings, map "RT::$name\-$_", @$list;
+        push @strings, map { "RT::$name\-$_" } @$list;
     }
 
     my @objs = RT::Shredder->CastObjectsToRecords( Objects => \@strings );

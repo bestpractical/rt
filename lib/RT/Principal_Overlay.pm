@@ -472,7 +472,7 @@ sub _HasRoleRight
       . "AND Principals.id = CachedGroupMembers.GroupId "
       . "AND CachedGroupMembers.MemberId = ". $self->Id ." "
 
-      . "AND (". join(' OR ', map "Groups.Type = '$_'", @roles ) .")"
+      . "AND (". join(' OR ', map { "Groups.Type = '$_'" } @roles ) .")"
     ;
 
     my (@object_clauses);

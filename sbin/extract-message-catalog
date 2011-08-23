@@ -322,7 +322,7 @@ sub update {
         $Lexicon{$str} ||= '';
     }
     foreach ( sort keys %Lexicon ) {
-        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
+        my $f = join ( ' ', sort map { $_->[0].":".$_->[1] } @{ $FILECAT->{$_} } );
         my $nospace = $_;
         $nospace =~ s/ +$//;
 

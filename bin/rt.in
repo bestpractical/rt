@@ -219,7 +219,7 @@ sub help {
             my $titleref = $item->[2]{Title};
             my @titles = ref $titleref eq 'ARRAY' ? @$titleref : $titleref;
 
-            foreach my $title (grep $_, @titles) {
+            foreach my $title (grep {$_} @titles) {
                 $help{$title} = $item->[2]{Text};
             }
         }
@@ -590,7 +590,7 @@ sub edit {
     # form if we're creating a new ticket, so that the default values
     # get filled in properly.
 
-    my @new_objects = grep /\/new$/, @objects;
+    my @new_objects = grep {/\/new$/} @objects;
 
     if ($input) {
         local $/ = undef;
@@ -1597,7 +1597,7 @@ sub expand_list {
         push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
-    return map $_->[0], # schwartzian transform
+    return map {$_->[0]} # schwartzian transform
         sort {
             defined $a->[1] && defined $b->[1]?
                 # both numbers
@@ -1608,7 +1608,7 @@ sub expand_list {
                     # mix, number must be first
                     :defined $a->[1]? -1: 1
         }
-        map [ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ],
+        map {[ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ]}
         @elts;
 }
 

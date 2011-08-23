@@ -141,9 +141,9 @@ sub List
     my $woflags = delete $args{'WithoutFlags'};
 
     return
-        map $args{'Callback'}? $args{'Callback'}->($_): $_,
-        grep !defined( $wflags ) || ($_->Flags & $wflags) == $wflags,
-        grep !defined( $woflags ) || !($_->Flags & $woflags),
+        map {$args{'Callback'}? $args{'Callback'}->($_): $_}
+        grep {!defined( $wflags ) || ($_->Flags & $wflags) == $wflags}
+        grep {!defined( $woflags ) || !($_->Flags & $woflags)}
         @{ $self->{'list'} };
 }
 

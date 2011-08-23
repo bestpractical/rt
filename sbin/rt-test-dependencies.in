@@ -97,7 +97,7 @@ my %default = (
     'with-GD' => @RT_GD@,
     'with-DASHBOARDS' => 1
 );
-$args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
+$args{$_} = $default{$_} foreach grep {!exists $args{$_}} keys %default;
 
 {
   my $section;
@@ -397,7 +397,7 @@ check_perl_version();
 check_users();
 
 my %Missing_By_Type = ();
-foreach my $type (sort grep $args{$_}, keys %args) {
+foreach my $type (sort grep {$args{$_}} keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
 
     $type = $1;
@@ -460,7 +460,7 @@ sub test_dep {
         
         if ( $avoid ) {
             my $version = $module->VERSION;
-            if ( grep $version eq $_, @$avoid ) {
+            if ( grep {$version eq $_} @$avoid ) {
                 return 0 unless wantarray;
                 return (0, "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually.");
             }

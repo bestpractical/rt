@@ -193,7 +193,7 @@ sub SubjectTag {
     return $map->{ $queue->id } if $queue;
 
     my %seen = ();
-    return grep !$seen{lc $_}++, values %$map;
+    return grep {!$seen{lc $_}++} values %$map;
 }
 
 RT::Base->_ImportOverlays();

@@ -633,7 +633,7 @@ EOF
 
 sub PostLoadCheck {
     my $self = shift;
-    foreach my $o ( grep $META{$_}{'PostLoadCheck'}, $self->Options( Overridable => undef ) ) {
+    foreach my $o ( grep {$META{$_}{'PostLoadCheck'}} $self->Options( Overridable => undef ) ) {
         $META{$o}->{'PostLoadCheck'}->( $self, $self->Get($o) );
     }
     return;
@@ -653,14 +653,14 @@ sub Configs {
     foreach my $path ( $RT::LocalEtcPath, RT->PluginDirs('etc'), $RT::EtcPath ) {
         my $mask = File::Spec->catfile( $path, "*_Config.pm" );
         my @files = glob $mask;
-        @files = grep !/^RT_Config\.pm$/,
-            grep $_ && /^\w+_Config\.pm$/,
+        @files = grep {!/^RT_Config\.pm$/}
+            grep {$_ && /^\w+_Config\.pm$/}
             map { m/^.*[\\\/](.*)/ ? $1 : $_ } @files;
         push @configs, sort @files;
     }
 
     my %seen;
-    @configs = grep !$seen{$_}++, @configs;
+    @configs = grep {!$seen{$_}++} @configs;
     return @configs;
 }
 
@@ -899,8 +899,8 @@ sub Sections {
     my $self = shift;
     my %seen;
     my @sections = sort
-        grep !$seen{$_}++,
-        map $_->{'Section'} || 'General',
+        grep {!$seen{$_}++}
+        map {$_->{'Section'} || 'General'}
         values %META;
     return @sections;
 }
@@ -909,21 +909,18 @@ sub Options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, Sorted => 1, @_ );
     my @res  = keys %META;
-    
-    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
-        @res 
-    ) if defined $args{'Section'};
+
+    @res = grep { ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'} } @res
+        if defined $args{'Section'};
 
     if ( defined $args{'Overridable'} ) {
-        @res
-            = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'},
-            @res );
+        @res = grep { ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'} } @res;
     }
 
     if ( $args{'Sorted'} ) {
         @res = sort {
             ($META{$a}->{SortOrder}||9999) <=> ($META{$b}->{SortOrder}||9999)
-            || $a cmp $b 
+            || $a cmp $b
         } @res;
     } else {
         @res = sort { $a cmp $b } @res;

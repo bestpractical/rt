@@ -1115,8 +1115,8 @@ sub UpdateWatchers {
         my %oldhash = map { $_ => 1 } @old;
         my %newhash = map { $_ => 1 } @new;
 
-        my @add    = grep( !defined $oldhash{$_}, @new );
-        my @delete = grep( !defined $newhash{$_}, @old );
+        my @add    = grep {!defined $oldhash{$_}} @new;
+        my @delete = grep {!defined $newhash{$_}} @old;
 
         foreach (@add) {
             my ( $val, $msg ) = $ticket->AddWatcher(

@@ -606,7 +606,7 @@ sub EmailFrequency {
         && $self->id != $RT::SystemUser->id;
     return 'no email' unless my $email = $self->EmailAddress;
     return 'squelched' if $args{'Ticket'} &&
-        grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
+        grep {lc $email eq lc $_->Content} $args{'Ticket'}->SquelchMailTo;
     my $frequency = RT->Config->Get( 'EmailFrequency', $self ) || '';
     return 'daily' if $frequency =~ /daily/i;
     return 'weekly' if $frequency =~ /weekly/i;

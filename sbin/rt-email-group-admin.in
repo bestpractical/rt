@@ -357,7 +357,7 @@ sub __add
     my @cur = argument_to_list( $action );
 
     my $id = $obj->id;
-    return if grep $_ == $id, @cur;
+    return if grep { $_ == $id } @cur;
 
     push @cur, $id;
 
@@ -386,7 +386,7 @@ sub delete_action {
             push @sid, $s->id;
         }
         print STDERR "ScripAction '". $opts->{'name'} ."'"
-            . " is in use by Scrip(s) ". join( ", ", map "#$_", @sid )
+            . " is in use by Scrip(s) ". join( ", ", map { "#$_" } @sid )
             . "\n";
         exit(-1);
     }

@@ -2616,7 +2616,7 @@ sub Merged {
         VALUE    => $id,
     );
     return @{ $MERGE_CACHE{'merged'}{ $id } ||= [] }
-        = map $_->id, @{ $mergees->ItemsArrayRef || [] };
+        = map { $_->id } @{ $mergees->ItemsArrayRef || [] };
 }
 
 # }}}
@@ -3166,7 +3166,9 @@ sub _ApplyTransactionBatch {
     my $batch = $self->TransactionBatch;
 
     my %seen;
-    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
+    my $types = join ',', grep {defined and not $seen{$_}++}
+                          map {$_->__Value('Type')}
+                          grep {defined} @{$batch};
 
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(

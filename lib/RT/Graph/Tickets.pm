@@ -113,7 +113,7 @@ our %property_cb = (
     Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
     CF    => sub {
         my $values = $_[0]->CustomFieldValues( $_[1] );
-        return join ', ', map $_->Content, @{ $values->ItemsArrayRef };
+        return join ', ', map { $_->Content } @{ $values->ItemsArrayRef };
     },
 );
 foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
@@ -139,12 +139,12 @@ foreach my $field (qw(Told Starts Started Due Resolved LastUpdated Created)) {
 }
 foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
     $property_cb{ $field } = sub {
-        return join ', ', map $_->BaseObj->id, @{ $_[0]->$field->ItemsArrayRef };
+        return join ', ', map { $_->BaseObj->id } @{ $_[0]->$field->ItemsArrayRef };
     };
 }
 foreach my $field (qw(MemberOf DependsOn RefersTo)) {
     $property_cb{ $field } = sub {
-        return join ', ', map $_->TargetObj->id, @{ $_[0]->$field->ItemsArrayRef };
+        return join ', ', map { $_->TargetObj->id } @{ $_[0]->$field->ItemsArrayRef };
     };
 }
 
@@ -178,7 +178,7 @@ sub _SplitProperty {
     my $self = shift;
     my $property = shift;
     my ($key, @subkeys) = split /\./, $property;
-    foreach ( grep /^{.*}$/, @subkeys ) {
+    foreach ( grep {/^{.*}$/} @subkeys ) {
         s/^{//;
         s/}$//;
     }

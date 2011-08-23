@@ -107,7 +107,7 @@ sub Init {
         $file = $1;
 
         my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
-        next unless grep $_ eq '*' || $_ eq $lang, @lang;
+        next unless grep {$_ eq '*' || $_ eq $lang} @lang;
         require $file;
     }
 

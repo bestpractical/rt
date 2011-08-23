@@ -351,7 +351,7 @@ sub _GetEquivObjects
         push @objects, 'RT::System';
     }
     push @objects, @{ $args{'EquivObjects'} };
-    return grep $_, @objects;
+    return grep {$_} @objects;
 }
 
 # XXX: should be generalized
@@ -426,7 +426,7 @@ sub WhoHaveRoleRight
                   VALUE => $RT::SystemUser->id
                 );
 
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Type = '$_'", @roles ) .")" );
+    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map { "$groups.Type = '$_'" } @roles ) .")" );
 
     my @groups_clauses = $self->_RoleClauses( $groups, @objects );
     $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @groups_clauses ) .")" )

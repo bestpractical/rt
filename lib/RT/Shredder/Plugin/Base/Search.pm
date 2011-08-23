@@ -76,7 +76,7 @@ sub SupportArgs
 {
     my %seen;
     my @args = sort
-        grep $_ && !$seen{$_},
+        grep {$_ && !$seen{$_}}
             shift->SUPER::SupportArgs(@_),
             qw(limit);
     return @args;

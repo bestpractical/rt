@@ -893,7 +893,7 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
 };
 my %CHECKS = @CHECKS;
 
-@do_check = do { my $i = 1; grep $i++%2, @CHECKS };
+@do_check = do { my $i = 1; grep {$i++%2} @CHECKS };
 
 while ( my $check = shift @do_check ) {
     $CHECKS{ $check }->();
@@ -901,7 +901,7 @@ while ( my $check = shift @do_check ) {
     foreach my $redo ( keys %redo_check ) {
         die "check $redo doesn't exist" unless $CHECKS{ $redo };
         delete $redo_check{ $redo };
-        next if grep $_ eq $redo, @do_check; # don't do twice
+        next if grep {$_ eq $redo} @do_check; # don't do twice
         push @do_check, $redo;
     }
 }
@@ -917,14 +917,14 @@ sub check_integrity {
     print "Checking integrity of $stable.{". join(', ', @scols) ."} => $ttable.{". join(', ', @tcols) ."}\n"
         if $opt{'verbose'};
 
-    my $query = "SELECT s.id, ". join(', ', map "s.$_", @scols)
+    my $query = "SELECT s.id, ". join(', ', map { "s.$_" } @scols)
         ." FROM $stable s LEFT JOIN $ttable t"
         ." ON (". join(
-            ' AND ', map columns_eq_cond('s', $stable, $scols[$_] => 't', $ttable, $tcols[$_]), (0..(@scols-1))
+            ' AND ', map { columns_eq_cond('s', $stable, $scols[$_] => 't', $ttable, $tcols[$_]) } (0..(@scols-1))
         ) .")"
         . ($args{'join_condition'}? " AND ( $args{'join_condition'} )": "")
         ." WHERE t.id IS NULL"
-        ." AND ". join(' AND ', map "s.$_ IS NOT NULL", @scols);
+        ." AND ". join(' AND ', map { "s.$_ IS NOT NULL" } @scols);
 
     $query .= " AND ( $args{'condition'} )" if $args{'condition'};
 
@@ -985,7 +985,7 @@ sub check_uniqueness {
 
     my @columns = @{ $args{'columns'} };
 
-    print "Checking uniqueness of ( ", join(', ', map "'$_'", @columns )," ) in table '$on'\n"
+    print "Checking uniqueness of ( ", join(', ', map { "'$_'" } @columns )," ) in table '$on'\n"
         if $opt{'versbose'};
 
     my ($scond, $tcond);
@@ -994,12 +994,12 @@ sub check_uniqueness {
         $tcond =~ s/(\s|^)\./$1t./g;
     }
 
-    my $query = "SELECT s.id, t.id, ". join(', ', map "s.$_", @columns)
+    my $query = "SELECT s.id, t.id, ". join(', ', map { "s.$_" } @columns)
         ." FROM $on s LEFT JOIN $on t "
-        ." ON s.id != t.id AND ". join(' AND ', map "s.$_ = t.$_", @columns)
+        ." ON s.id != t.id AND ". join(' AND ', map { "s.$_ = t.$_" } @columns)
         . ($tcond? " AND ( $tcond )": "")
         ." WHERE t.id IS NOT NULL "
-        ." AND ". join(' AND ', map "s.$_ IS NOT NULL", @columns);
+        ." AND ". join(' AND ', map { "s.$_ IS NOT NULL" } @columns);
     $query .= " AND ( $scond )" if $scond;
 
     my $sth = execute_query(
@@ -1047,8 +1047,8 @@ sub update_records {
     while ( my ($k, $v) = each %$what ) { push @what_cols, $k; push @what_binds, $v; }
 
     print "Updating record(s) in $table\n" if $opt{'verbose'};
-    my $query = "UPDATE $table SET ". join(', ', map "$_ = ?", @what_cols)
-        ." WHERE ". join(' AND ', map "$_ = ?", @where_cols);
+    my $query = "UPDATE $table SET ". join(', ', map { "$_ = ?" } @what_cols)
+        ." WHERE ". join(' AND ', map { "$_ = ?" } @where_cols);
     $redo_check{ $_ } = 1 foreach @{ $redo_on{'Update'}{ $table } || [] };
     return execute_query( $query, @what_binds, @where_binds );
 }
@@ -1096,7 +1096,7 @@ sub prompt_action {
     my $input = <STDIN>;
     chomp $input;
     return $cached_answer{ $token } = '' unless $input;
-    foreach ( grep rindex(lc $_, lc $input, 0) == 0, @$actions ) {
+    foreach ( grep {rindex(lc $_, lc $input, 0) == 0} @$actions ) {
         return $cached_answer{ $token } = lc substr $input, 0, 1;
     }
     return $cached_answer{ $token } = '';

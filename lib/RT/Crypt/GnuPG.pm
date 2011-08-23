@@ -527,8 +527,9 @@ sub SignEncrypt {
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
         $args{'Recipients'} = [
-            grep $_ && !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+            grep {$_ && !$seen{ $_ }++}
+            map { $_->address }
+            map { Email::Address->parse( $entity->head->get( $_ ) ) }
             qw(To Cc Bcc)
         ];
     }
@@ -559,7 +560,7 @@ sub SignEncryptRFC3156 {
     my %res;
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
-        foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
+        foreach ( grep {!$_->is_multipart} $entity->parts_DFS ) {
             my $tenc = $_->head->mime_encoding;
             unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
                 $_->head->mime_attr( 'Content-Transfer-Encoding'
@@ -595,8 +596,8 @@ sub SignEncryptRFC3156 {
         );
     }
     if ( $args{'Encrypt'} ) {
-        my @recipients = map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+        my @recipients = map { $_->address }
+            map { Email::Address->parse( $entity->head->get( $_ ) ) }
             qw(To Cc Bcc);
 
         my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -891,8 +892,8 @@ sub FindProtectedParts {
         my ($file_name) = $sig_name =~ /^(.*?)(?:\.sig)?$/;
 
         my ($data_part_idx) =
-            grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
-            grep $sig_part  ne  $entity->parts($_),
+            grep {$file_name eq ($entity->parts($_)->head->recommended_filename||'')}
+            grep {$sig_part  ne  $entity->parts($_)}
                 0 .. $entity->parts - 1;
         unless ( defined $data_part_idx ) {
             $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
@@ -929,7 +930,7 @@ sub FindProtectedParts {
     }
 
     push @res, FindProtectedParts( Entity => $_ )
-        foreach grep !$skip{"$_"}, $entity->parts;
+        foreach grep {!$skip{"$_"}} $entity->parts;
 
     return @res;
 }
@@ -949,7 +950,7 @@ sub VerifyDecrypt {
     my @protected = FindProtectedParts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures
-    foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {
+    foreach my $item( grep {$_->{'Type'} eq 'signed'} @protected ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} ) };
@@ -965,7 +966,7 @@ sub VerifyDecrypt {
             push @res, { VerifyAttachment( %$item ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [
-                    grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
+                    grep {"$_" ne $item->{'Signature'}} $item->{'Top'}->parts
                 ] );
                 $item->{'Top'}->make_singlepart;
             }
@@ -978,7 +979,7 @@ sub VerifyDecrypt {
             );
         }
     }
-    foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
+    foreach my $item( grep {$_->{'Type'} eq 'encrypted'} @protected ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { DecryptRFC3156( %$item ) };
@@ -1617,15 +1618,15 @@ sub _ParseUserHint {
     return (
         MainKey      => $main_key_id,
         String       => $user_str,
-        EmailAddress => (map $_->address, Email::Address->parse( $user_str ))[0],
+        EmailAddress => (map { $_->address } Email::Address->parse( $user_str ))[0],
     );
 }
 
 sub _PrepareGnuPGOptions {
     my %opt = @_;
-    my %res = map { lc $_ => $opt{ $_ } } grep $supported_opt{ lc $_ }, keys %opt;
+    my %res = map { lc $_ => $opt{ $_ } } grep {$supported_opt{ lc $_ }} keys %opt;
     $res{'extra_args'} ||= [];
-    foreach my $o ( grep !$supported_opt{ lc $_ }, keys %opt ) {
+    foreach my $o ( grep {!$supported_opt{ lc $_ }} keys %opt ) {
         push @{ $res{'extra_args'} }, '--'. lc $o;
         push @{ $res{'extra_args'} }, $opt{ $o }
             if defined $opt{ $o };
@@ -1642,7 +1643,7 @@ sub UseKeyForEncryption {
         %key = ();
     } elsif ( @_ > 1 ) {
         %key = (%key, @_);
-        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
+        $key{ lc($_) } = delete $key{ $_ } for grep {lc ne $_} keys %key;
     } else {
         return $key{ $_[0] };
     }
@@ -1708,7 +1709,7 @@ sub CheckRecipients {
     my ($status, @issues) = (1, ());
 
     my %seen;
-    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
+    foreach my $address ( grep {!$seen{ lc $_ }++} map {$_->address} @recipients ) {
         my %res = GetKeysForEncryption( $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
@@ -1722,8 +1723,8 @@ sub CheckRecipients {
         if ( my $fpr = UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
-                    grep lc $_->{'Fingerprint'} eq lc $fpr,
-                    grep $_->{'TrustLevel'} > 0,
+                    grep {lc $_->{'Fingerprint'} eq lc $fpr}
+                    grep {$_->{'TrustLevel'} > 0}
                     @{ $res{'info'} };
             }
 
@@ -2078,7 +2079,7 @@ sub Probe {
 sub _make_gpg_handles {
     my %handle_map = (@_);
     $handle_map{$_} = IO::Handle->new
-        foreach grep !defined $handle_map{$_}, 
+        foreach grep {!defined $handle_map{$_}}
         qw(stdin stdout stderr logger status command);
 
     my $handles = GnuPG::Handles->new(%handle_map);

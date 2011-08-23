@@ -152,9 +152,9 @@ sub SetRecipients {
         @{ $self->{'Bcc'} } = @Bcc;
     }
     else {
-        @{ $self->{'To'} }  = grep ( lc $_ ne lc $creator, @To );
-        @{ $self->{'Cc'} }  = grep ( lc $_ ne lc $creator, @Cc );
-        @{ $self->{'Bcc'} } = grep ( lc $_ ne lc $creator, @Bcc );
+        @{ $self->{'To'} }  = grep {lc $_ ne lc $creator} @To;
+        @{ $self->{'Cc'} }  = grep {lc $_ ne lc $creator} @Cc;
+        @{ $self->{'Bcc'} } = grep {lc $_ ne lc $creator} @Bcc;
     }
     # XXX 4.2: return;
     return @{ $self->{'PseudoTo'} } = @PseudoTo;

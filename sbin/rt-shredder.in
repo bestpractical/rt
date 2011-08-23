@@ -303,7 +303,7 @@ sub _process_dump_plugin {
 sub show_plugin_list
 {
 	print "Plugins list:\n";
-	print "\t$_\n" foreach( grep !/^Base$/, keys %plugins );
+	print "\t$_\n" foreach( grep {!/^Base$/} keys %plugins );
 	exit(1);
 }
 

@@ -179,7 +179,7 @@ sub LimitToNotApplied {
             FIELD      => 'ObjectId',
             OPERATOR   => 'IN',
             QUOTEVALUE => 0,
-            VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
+            VALUE      => "(". join( ',', map { $dbh->quote($_) } @ids ) .")",
         );
     }
 

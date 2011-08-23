@@ -100,7 +100,7 @@ sub expand_list {
         push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 
-    return map $_->[0], # schwartzian transform
+    return map { $_->[0] } # schwartzian transform
         sort {
             defined $a->[1] && defined $b->[1]?
                 # both numbers
@@ -111,7 +111,7 @@ sub expand_list {
                     # mix, number must be first
                     :defined $a->[1]? -1: 1
         }
-        map [ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ],
+        map { [ $_, ( /^(\d+)$/ ? $1 : undef), lc($_) ] }
         @elts;
 }
 

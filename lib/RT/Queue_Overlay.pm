@@ -255,7 +255,7 @@ sub IsValidStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->StatusArray );
+    my $retval = grep {$_ eq $value} $self->StatusArray;
     return ($retval);
 
 }
@@ -275,7 +275,7 @@ sub IsActiveStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->ActiveStatusArray );
+    my $retval = grep {$_ eq $value} $self->ActiveStatusArray;
     return ($retval);
 
 }
@@ -295,7 +295,7 @@ sub IsInactiveStatus {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->InactiveStatusArray );
+    my $retval = grep {$_ eq $value} $self->InactiveStatusArray;
     return ($retval);
 
 }
@@ -355,7 +355,7 @@ sub Create {
 
     #TODO better input validation
     $RT::Handle->BeginTransaction();
-    my $id = $self->SUPER::Create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
+    my $id = $self->SUPER::Create( map { $_ => $args{$_} } grep {exists $args{$_}} keys %attrs );
     unless ($id) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );

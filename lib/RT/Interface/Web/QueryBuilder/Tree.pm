@@ -142,10 +142,10 @@ sub GetQueryAndOptionList {
     my $list = $self->__LinearizeTree;
     foreach my $e( @$list ) {
         $e->{'DEPTH'}    = $e->{'NODE'}->getDepth;
-        $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? qq[ selected="selected"] : '';
+        $e->{'SELECTED'} = (grep {$_ == $e->{'NODE'}} @$selected_nodes)? qq[ selected="selected"] : '';
     }
 
-    return (join ' ', map $_->{'TEXT'}, @$list), $list;
+    return (join ' ', map { $_->{'TEXT'} } @$list), $list;
 }
 
 =head2 PruneChildLessAggregators
@@ -186,7 +186,7 @@ In fact, it's all of them but the root and its child.
 =cut
 
 sub GetDisplayedNodes {
-    return map $_->{NODE}, @{ (shift)->__LinearizeTree };
+    return map { $_->{NODE} } @{ (shift)->__LinearizeTree };
 }
 
 
