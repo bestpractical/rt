@@ -51,7 +51,7 @@
     title => loc("My reminders"),
     title_href => RT->Config->Get('WebPath') . '/Tools/MyReminders.html' &>
 
-<& /Elements/ShowReminders &>
+<& /Elements/ShowReminders, OnlyOverdue => 1 &>
 
 </&>
 
