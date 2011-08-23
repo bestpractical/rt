@@ -160,10 +160,6 @@ Server config:
 use strict;
 use warnings;
 
-package RT::Interface::Web::FCGI::Server;
-use base qw(FCGI::ProcManager);
-
-package main;
 
 use Getopt::Long;
 
@@ -209,8 +205,8 @@ $ENV{'FCGI_SOCKET_PATH'} = $opt{'socket'};
 $opt{'pidfile'} ||= File::Spec->catfile($RT::VarPath, 'fastcgi.pid');
 
 require CGI::Fast;
-
-my $proc_manager = RT::Interface::Web::FCGI::Server->new({
+require FCGI::ProcManager;
+my $proc_manager = FCGI::ProcManager->new({
     n_processes => $opt{'nprocesses'} || 10,
     pid_fname   => $opt{'pidfile'},
 });
