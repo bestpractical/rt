@@ -1481,6 +1481,20 @@ option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, 1);
 
+=item C<$DelayTransactionLoading>
+
+When set, delays loading ticket history until after the rest of the
+ticket display loads.  This should end up serving pages to users
+quicker, since generating all the HTML for transaction history can be
+slow for long tickets.
+
+Unlike C<$DeferTransactionLoading> below, it doesn't require any extra
+click to view the ticket history.
+
+=cut
+
+# Set($DelayTransactionLoading, 1);
+
 =item C<$DeferTransactionLoading>
 
 When set, defers loading ticket history until the user clicks a link.

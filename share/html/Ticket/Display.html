@@ -65,7 +65,13 @@
 
 % $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
 
-% if (not $ForceShowHistory and RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
+% if (not $ForceShowHistory
+%     and RT->Config->Get( 'DelayTransactionLoading', $session{'CurrentUser'} )) {
+    <& /Ticket/Elements/DelayShowHistory,
+        Ticket => $TicketObj,
+    &>
+% } elsif (not $ForceShowHistory
+%          and RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
     &>

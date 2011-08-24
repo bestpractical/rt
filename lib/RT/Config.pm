@@ -366,6 +366,15 @@ our %META = (
             Description => 'Hide ticket history by default',    #loc
         },
     },
+    DelayTransactionLoading => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 3.1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Delay load ticket history by default',    #loc
+        },
+    },
     ShowUnreadMessageNotifications => { 
         Section         => 'Ticket display',
         Overridable     => 1,
