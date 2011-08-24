@@ -260,7 +260,7 @@ sub update {
     my @lines;
     if (open my $lexicon_fh, '<', $file) {
         @lines = <$lexicon_fh>;
-        close $lexicon_fh;
+        close $lexicon_fh or die "Error reading $file: $!";
         @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     }
     while (@lines) {

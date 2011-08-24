@@ -282,7 +282,7 @@ sub SaveConfig {
         open( my $fh, '<', $file ) or die $!;
         $content = <$fh>;
         $content =~ s/^\s*1;\s*$//m;
-        close( $fh );
+        close( $fh ) or die $!;
     }
 
     # make organization the same as rtname

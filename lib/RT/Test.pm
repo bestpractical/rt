@@ -277,7 +277,7 @@ sub bootstrap_logging {
     # make world writable so apache under different user
     # can write into it
     chmod 0666, $tmp{'log'}{'RT'};
-    close $fh;
+    close $fh or die "Can't close $tmp{'config'}{'RT'}: $!";
 
     print $config <<END;
 Set( \$LogToSyslog , undef);
@@ -1043,7 +1043,7 @@ sub start_apache_server {
             or Test::More::BAIL_OUT("Couldn't open pid file: $!");
         my $pid = <$pid_fh>;
         chomp $pid;
-        close $pid_fh;
+        close $pid_fh or Test::More::BAIL_OUT("Couldn't close pid file: $!");
         $pid;
     };
 
@@ -1216,7 +1216,7 @@ sub process_in_file {
             or die "couldn't open '$out_conf': $!";
     }
     print $out_fh $text;
-    close $out_fh;
+    close $out_fh or die "Couldn't close '$out_conf': $!";
 
     return 1;
 }

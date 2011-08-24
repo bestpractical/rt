@@ -1202,7 +1202,7 @@ sub submit {
             my ($server, $user, $cookie) = split / /, $_;
             $sids->{$server}{$user} = $cookie;
         }
-        close $f;
+        close $f or return 0;
         return 1;
     }
 
@@ -1465,7 +1465,7 @@ sub parse_config_file {
             die "rt: $file:$.: unknown configuration directive.\n";
         }
     }
-    close $cfg;
+    close $cfg or return;
 
     return %cfg;
 }
