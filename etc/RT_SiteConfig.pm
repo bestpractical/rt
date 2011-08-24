@@ -1,3 +1,4 @@
+use warnings;
 # Any configuration directives you include  here will override 
 # RT's default configuration file, RT_Config.pm
 #
