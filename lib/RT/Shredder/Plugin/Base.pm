@@ -126,7 +126,7 @@ sub HasSupportForArgs
         push @unsupported, $arg unless grep {$_ eq $arg} $self->SupportArgs;
     }
     return( 1 ) unless @unsupported;
-    return( 0, "Plugin doesn't support argument(s): @unsupported" ) if @unsupported;
+    return( 0, "Plugin doesn't support argument(s): @unsupported" );
 }
 
 =head3 TestArgs
