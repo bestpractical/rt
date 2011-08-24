@@ -55,17 +55,10 @@ local $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
 local $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
 local $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-package HTML::Mason::Commands;
-our %session;
-
-package RT::Mason;
-
-our ($Nobody, $SystemUser, $Handler, $r);
-
 my $protect_fd;
 
-sub handler {
-    ($r) = @_;
+sub RT::Mason::handler {
+    my ($r) = @_;
 
     if ( !$protect_fd && $ENV{'MOD_PERL'} && exists $ENV{'MOD_PERL_API_VERSION'}
         && $ENV{'MOD_PERL_API_VERSION'} >= 2 && fileno(STDOUT) != 1
@@ -110,20 +103,17 @@ sub handler {
         return 400;
     }
 
-    my (%session, $status);
+    my ($status);
     {
         local $@ = undef;
-        $status = eval { $Handler->handle_request($r) };
+        $status = eval { $RT::Mason::Handler->handle_request($r) };
         $RT::Logger->crit( $@ ) if $@;
     }
-    undef %session;
 
     RT::Interface::Web::Handler->CleanupRequest();
 
     return $status;
 }
-
-package main;
 
 # check mod_perl version if it's mod_perl
 BEGIN {
