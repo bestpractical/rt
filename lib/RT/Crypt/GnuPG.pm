@@ -2029,7 +2029,9 @@ properly (and false otherwise).
 
 sub Probe {
     my $gnupg = GnuPG::Interface->new;
-    $gnupg->options->hash_init( RT->Config->Get('GnuPGOptions') );
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') ),
+    );
     $gnupg->options->meta_interactive( 0 );
 
     my ($handles, $handle_list) = _make_gpg_handles();
