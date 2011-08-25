@@ -144,12 +144,6 @@ if ($ClassObj->Id()) {
                                        ARGSRef => \%ARGS);
 }
 
-# This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions     => \@results,
-    Arguments   => { id => $ClassObj->Id },
-);
-
 #we're asking about enabled on the web page but really care about disabled.
 if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 0;
@@ -184,6 +178,13 @@ if  ( $Submitted ) {
     }
 
 }
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions     => \@results,
+    Arguments   => { id => $ClassObj->Id },
+);
+
 
 $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;
 $include{$_} = $include{$_} ? " CHECKED" : "" for keys %include;
