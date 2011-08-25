@@ -173,6 +173,16 @@ if  ( $Submitted ) {
             $ClassObj->SetAttribute(Name => "Skip-$_", Content => 1);
         }
     }
+
+    if ( $ARGS{SubjectOverride} ) {
+        my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $ARGS{SubjectOverride} );
+        push @results, $ok ? loc('Added Subject Override: [_1]', $ARGS{SubjectOverride}) :
+                             loc('Unable to add Subject Override: [_1]', $ARGS{SubjectOverride});
+    } else {
+        my ($ok, $msg) = $ClassObj->DeleteAttribute('SubjectOverride');
+        push @results, $ok ? loc('Added Subject Override: [_1]', $ARGS{SubjectOverride}) :
+                             loc('Unable to add Subject Override: [_1]', $ARGS{SubjectOverride});
+    }
 }
 
 $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;
