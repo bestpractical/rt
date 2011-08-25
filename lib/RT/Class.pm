@@ -450,6 +450,12 @@ sub RemoveFromObject {
     return ( $oid, $msg );
 }
 
+sub SubjectOverride {
+    my $self = shift;
+    my $override = $self->FirstAttribute('SubjectOverride');
+    return $override ? $override->Content : '';
+}
+
 
 
 =head2 id
