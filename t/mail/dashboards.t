@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 72;
+use RT::Test tests => 96;
 use Test::Warn;
 use RT::Dashboard::Mailer;
 
@@ -126,8 +126,8 @@ sub produces_no_dashboard_mail_ok { # {{{
     is @mails, 0, $name;
 } # }}}
 
-my $good_time = 1290337260; # 6:01 EST on a monday
-my $bad_time  = 1290340860; # 7:01 EST on a monday
+my $good_time = 1290423660; # 6:01 EST on a monday
+my $bad_time  = 1290427260; # 7:01 EST on a monday
 
 my $expected_subject = "[example.com] Daily Dashboard: Testing!\n";
 
@@ -222,3 +222,32 @@ is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 RT::Dashboard::Mailer->MailDashboards(All => 1);
 @mails = RT::Test->fetch_caught_mails;
 is(@mails, 0, "no mail because the subscription notice happens only once");
+
+RT::Test->stop_server;
+RT::Test->clean_caught_mails;
+RT->Config->Set('EmailDashboardRemove' => ());
+RT->Config->Set('DashboardAddress' => 'root');
+($baseurl, $m) = RT::Test->started_ok;
+$m->login;
+create_dashboard($baseurl, $m);
+create_subscription($baseurl, $m,
+    Frequency => 'weekly',
+    Hour => '06:00',
+);
+
+($dashboard_id, $subscription_id) = get_dash_sub_ids();
+
+# bump $bad_time to Tuesday
+$bad_time = $good_time + 86400;
+
+produces_dashboard_mail_ok(
+    Time    => $good_time,
+    Subject =>  "[example.com] a Weekly b Testing! c\n",
+);
+
+produces_no_dashboard_mail_ok(
+    Name    => "no mail because it's the wrong time",
+    Time    => $bad_time,
+);
+
+RT::Test->clean_caught_mails;
