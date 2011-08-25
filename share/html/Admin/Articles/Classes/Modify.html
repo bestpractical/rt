@@ -174,14 +174,20 @@ if  ( $Submitted ) {
         }
     }
 
-    if ( $ARGS{SubjectOverride} ) {
-        my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $ARGS{SubjectOverride} );
-        push @results, $ok ? loc('Added Subject Override: [_1]', $ARGS{SubjectOverride}) :
-                             loc('Unable to add Subject Override: [_1]', $ARGS{SubjectOverride});
+    my $override = $m->comp('/Widgets/Form/Select:Process',
+        Default   => 1,
+        Arguments => \%ARGS,
+        Name      => 'SubjectOverride'
+    );
+
+    if ( $override ) {
+        my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $override );
+        push @results, $ok ? loc('Added Subject Override: [_1]', $override) :
+                             loc('Unable to add Subject Override: [_1]', $override);
     } else {
         my ($ok, $msg) = $ClassObj->DeleteAttribute('SubjectOverride');
-        push @results, $ok ? loc('Added Subject Override: [_1]', $ARGS{SubjectOverride}) :
-                             loc('Unable to add Subject Override: [_1]', $ARGS{SubjectOverride});
+        push @results, $ok ? loc('Added Subject Override: [_1]', $override) :
+                             loc('Unable to add Subject Override: [_1]', $override);
     }
 }
 
