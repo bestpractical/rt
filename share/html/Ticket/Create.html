@@ -172,7 +172,7 @@
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
-<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
