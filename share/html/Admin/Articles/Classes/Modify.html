@@ -181,9 +181,11 @@ if  ( $Submitted ) {
     );
 
     if ( $override ) {
-        my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $override );
-        push @results, $ok ? loc('Added Subject Override: [_1]', $subject_cf_labels->{$override}) :
-                             loc('Unable to add Subject Override: [_1] [_2]', $subject_cf_labels->{$override}, $msg);
+        if ( $override != $ClassObj->SubjectOverride ) {
+            my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $override );
+            push @results, $ok ? loc('Added Subject Override: [_1]', $subject_cf_labels->{$override}) :
+                loc('Unable to add Subject Override: [_1] [_2]', $subject_cf_labels->{$override}, $msg);
+        }
     } else {
         my ($ok, $msg) = $ClassObj->DeleteAttribute('SubjectOverride');
         push @results, $ok ? loc('Added Subject Override: [_1]', $subject_cf_labels->{$override}) :
