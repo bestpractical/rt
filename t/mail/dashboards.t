@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 134;
+use RT::Test tests => 164;
 use Test::Warn;
 use RT::Dashboard::Mailer;
 
@@ -317,3 +317,47 @@ produces_dashboard_mail_ok(
     Time    => $bad_time - 86400 * 2, # friday
     Subject =>  "[example.com] a M-f b Testing! c\n",
 );
+
+
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 0, "no mail leftover");
+
+$m->no_warnings_ok;
+RT::Test->stop_server;
+RT->Config->Set('DashboardSubject' => 'a %s b %s c');
+RT->Config->Set('DashboardAddress' => 'dashboard@example.com');
+RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
+($baseurl, $m) = RT::Test->started_ok;
+
+delete_dashboard($dashboard_id);
+delete_subscriptions();
+
+RT::Test->clean_caught_mails;
+
+RT::Test->stop_server;
+
+RT->Config->Set('EmailDashboardRemove' => ());
+RT->Config->Set('DashboardAddress' => 'root');
+($baseurl, $m) = RT::Test->started_ok;
+$m->login;
+create_dashboard($baseurl, $m);
+create_subscription($baseurl, $m,
+    Frequency => 'monthly',
+    Hour => '06:00',
+);
+
+($dashboard_id, $subscription_id) = get_dash_sub_ids();
+
+$good_time = 1291201200;        # dec 1
+$bad_time = $good_time - 86400; # day before (i.e. different month)
+
+produces_dashboard_mail_ok(
+    Time    => $good_time,
+    Subject =>  "[example.com] a Monthly b Testing! c\n",
+);
+
+produces_no_dashboard_mail_ok(
+    Name    => "no mail because it's the wrong time",
+    Time    => $bad_time,
+);
+
