@@ -478,7 +478,7 @@ msgstr ""
 #. ($m->scomp('/Elements/ShowUser', User => $object))
 #. ($Object->Name)
 msgid "%1's dashboards"
-msgstr "Cuscotti di %1"
+msgstr "Cruscotti di %1"
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:56 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
 #. ($m->interp->apply_escapes($Object->Name, 'h'))
@@ -1303,7 +1303,7 @@ msgstr ""
 #: lib/RT/Article.pm:215
 #. ($self->id)
 msgid "Article %1 created"
-msgstr ""
+msgstr "Articolo %1 creato"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
@@ -1311,20 +1311,20 @@ msgstr ""
 
 #: lib/RT/Article.pm:323
 msgid "Article Deleted"
-msgstr ""
+msgstr "Articolo Cancellato"
 
 #: share/html/Articles/Article/Display.html:76 share/html/Articles/Article/Elements/ShowHistory:64 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
-msgstr ""
+msgstr "Articolo non trovato"
 
 #: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:100 share/html/Elements/Tabs:177 share/html/Elements/Tabs:183
 msgid "Articles"
-msgstr ""
+msgstr "Articoli"
 
 #: share/html/Articles/Topics.html:130
 #. ($currtopic->Name)
 msgid "Articles in %1"
-msgstr ""
+msgstr "Articoli in %1"
 
 #: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
@@ -2610,7 +2610,7 @@ msgstr "Campo personalizzato %1 creato"
 
 #: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #: NOT FOUND IN SOURCE
 msgid "Created in a date range"
@@ -3458,7 +3458,7 @@ msgstr "Email"
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "Email Address"
-msgstr ""
+msgstr "Indirizzi email"
 
 #: NOT FOUND IN SOURCE
 msgid "Email Configuration"
@@ -5859,11 +5859,11 @@ msgstr "Nuovo"
 
 #: share/html/Elements/Tabs:683
 msgid "New Article"
-msgstr ""
+msgstr "Nuovo Articolo"
 
 #: share/html/Elements/Tabs:90
 msgid "New Dashboard"
-msgstr ""
+msgstr "Nuovo Cruscotto"
 
 #: share/html/Elements/EditLinks:118 share/html/Ticket/Elements/BulkLinks:122
 msgid "New Links"
@@ -5984,11 +5984,11 @@ msgstr "Pagina seguente"
 
 #: NOT FOUND IN SOURCE
 msgid "NickName"
-msgstr "Nomignolo"
+msgstr "Soprannome"
 
 #: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:71 share/html/User/Prefs.html:72
 msgid "Nickname"
-msgstr "Nomignolo"
+msgstr "Soprannome"
 
 #: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Widgets/Form/Boolean:79
 msgid "No"
