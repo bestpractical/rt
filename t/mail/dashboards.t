@@ -126,6 +126,29 @@ sub produces_no_dashboard_mail_ok { # {{{
     is @mails, 0, $name;
 } # }}}
 
+sub delete_dashboard { # {{{
+    my $dashboard_id = shift;
+    # delete the dashboard and make sure we get exactly one subscription failure
+    # notice
+    my $dashboard = RT::Dashboard->new(RT::CurrentUser->new('root'));
+    my ($ok, $msg) = $dashboard->LoadById($dashboard_id);
+    ok($ok, $msg);
+
+    ($ok, $msg) = $dashboard->Delete;
+    ok($ok, $msg);
+} # }}}
+
+sub delete_subscriptions { # {{{
+    my $subscription_id = shift;
+    # delete the dashboard and make sure we get exactly one subscription failure
+    # notice
+    my $user = RT::User->new(RT->SystemUser);
+    $user->Load('root');
+    for my $subscription ($user->Attributes->Named('Subscription')) {
+        $subscription->Delete;
+    }
+} # }}}
+
 my $good_time = 1290423660; # 6:01 EST on a monday
 my $bad_time  = 1290427260; # 7:01 EST on a monday
 
@@ -198,14 +221,7 @@ SKIP: {
     unlike($body, qr{Testing!});
 };
 
-# delete the dashboard and make sure we get exactly one subscription failure
-# notice
-my $dashboard = RT::Dashboard->new(RT::CurrentUser->new('root'));
-my ($ok, $msg) = $dashboard->LoadById($dashboard_id);
-ok($ok, $msg);
-
-($ok, $msg) = $dashboard->Delete;
-ok($ok, $msg);
+delete_dashboard($dashboard_id);
 
 warning_like {
     RT::Dashboard::Mailer->MailDashboards(All => 1);
