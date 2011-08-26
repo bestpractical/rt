@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 164;
+use RT::Test tests => 187;
 use Test::Warn;
 use RT::Dashboard::Mailer;
 
@@ -358,6 +358,40 @@ produces_dashboard_mail_ok(
 
 produces_no_dashboard_mail_ok(
     Name    => "no mail because it's the wrong time",
+    Time    => $bad_time,
+);
+
+
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 0, "no mail leftover");
+
+$m->no_warnings_ok;
+RT::Test->stop_server;
+RT->Config->Set('DashboardSubject' => 'a %s b %s c');
+RT->Config->Set('DashboardAddress' => 'dashboard@example.com');
+RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
+($baseurl, $m) = RT::Test->started_ok;
+
+delete_dashboard($dashboard_id);
+delete_subscriptions();
+
+RT::Test->clean_caught_mails;
+
+RT::Test->stop_server;
+
+RT->Config->Set('EmailDashboardRemove' => ());
+RT->Config->Set('DashboardAddress' => 'root');
+($baseurl, $m) = RT::Test->started_ok;
+$m->login;
+create_dashboard($baseurl, $m);
+create_subscription($baseurl, $m,
+    Frequency => 'never',
+);
+
+($dashboard_id, $subscription_id) = get_dash_sub_ids();
+
+produces_no_dashboard_mail_ok(
+    Name    => "mail should never get sent",
     Time    => $bad_time,
 );
 
