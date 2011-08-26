@@ -300,7 +300,7 @@ $bad_time = $good_time - 86400;
 
 produces_dashboard_mail_ok(
     Time    => $good_time,
-    Subject =>  "[example.com] a M-f b Testing! c\n",
+    Subject =>  "[example.com] a Weekday b Testing! c\n",
 );
 
 produces_no_dashboard_mail_ok(
@@ -315,7 +315,7 @@ produces_no_dashboard_mail_ok(
 
 produces_dashboard_mail_ok(
     Time    => $bad_time - 86400 * 2, # friday
-    Subject =>  "[example.com] a M-f b Testing! c\n",
+    Subject =>  "[example.com] a Weekday b Testing! c\n",
 );
 
 
