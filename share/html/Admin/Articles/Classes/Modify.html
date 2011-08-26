@@ -128,8 +128,17 @@ if ($Create) {
 }
 
 if ($ClassObj->Id()) {
+
+    if ($ARGS{SubjectOverride}) {
+        $ARGS{SubjectOverride} = $m->comp('/Widgets/Form/Select:Process',
+            Arguments => \%ARGS,
+            Name      => 'SubjectOverride',
+            DefaultValue => (''),
+        );
+    }
+
     $ARGS{HotList} ||= 0 if $Submitted;
-    my @attribs= qw(Description Name HotList);
+    my @attribs= qw(Description Name HotList SubjectOverride);
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
                                        ARGSRef => \%ARGS);
@@ -174,23 +183,6 @@ if  ( $Submitted ) {
         }
     }
 
-    my $override = $m->comp('/Widgets/Form/Select:Process',
-        Default   => 1,
-        Arguments => \%ARGS,
-        Name      => 'SubjectOverride'
-    );
-
-    if ( $override ) {
-        if ( $override != $ClassObj->SubjectOverride ) {
-            my ($ok, $msg) = $ClassObj->SetAttribute( Name => 'SubjectOverride', Content => $override );
-            push @results, $ok ? loc('Added Subject Override: [_1]', $subject_cf_labels->{$override}) :
-                loc('Unable to add Subject Override: [_1] [_2]', $subject_cf_labels->{$override}, $msg);
-        }
-    } else {
-        my ($ok, $msg) = $ClassObj->DeleteAttribute('SubjectOverride');
-        push @results, $ok ? loc('Added Subject Override: [_1]', $subject_cf_labels->{$override}) :
-                             loc('Unable to add Subject Override: [_1] [_2]', $subject_cf_labels->{$override}, $msg);
-    }
 }
 
 $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;

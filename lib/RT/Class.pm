@@ -456,7 +456,27 @@ sub SubjectOverride {
     return $override ? $override->Content : '';
 }
 
+sub SetSubjectOverride {
+    my $self = shift;
+    my $override = shift;
 
+    if ( $override == $self->SubjectOverride ) {
+        return (0, "SubjectOverride is already set to that");
+    }
+
+    my $cf = RT::CustomField->new($self->CurrentUser);
+    $cf->Load($override);
+
+    if ( $override ) {
+        my ($ok, $msg) = $self->SetAttribute( Name => 'SubjectOverride', Content => $override );
+        return ($ok, $ok ? $self->loc('Added Subject Override: [_1]', $cf->Name) :
+                           $self->loc('Unable to add Subject Override: [_1] [_2]', $cf->Name, $msg));
+    } else {
+        my ($ok, $msg) = $self->DeleteAttribute('SubjectOverride');
+        return ($ok, $ok ? $self->loc('Removed Subject Override') :
+                           $self->loc('Unable to add Subject Override: [_1] [_2]', $cf->Name, $msg));
+    }
+}
 
 =head2 id
 
