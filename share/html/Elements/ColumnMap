@@ -57,7 +57,7 @@ my $COLUMN_MAP = {
     id => {
         attribute => 'id',
         title    => 'id', # loc
-        align     => 'right',
+        align     => 'left',
         value     => sub { return $_[0]->id }
     },
 
