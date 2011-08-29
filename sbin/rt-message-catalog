@@ -87,7 +87,7 @@ sub stats {
     use constant TRANSLATED => 0;
     use constant DISTINCT => 1;
 
-    foreach my $po_file (<$dir/*.po>) {
+    foreach my $po_file (glob("$dir/*.po")) {
         my $array = Locale::PO->load_file_asarray( $po_file );
 
         $res{$po_file} = [0, 0];
@@ -130,7 +130,7 @@ sub shrink {
 
     my %stats = ();
 
-    foreach my $po_file (<$dir/*.po>) {
+    foreach my $po_file (glob("$dir/*.po")) {
         my $array = Locale::PO->load_file_asarray( $po_file );
         $stats{ $po_file } = { };
         foreach my $entry ( splice @$array, 1 ) {
@@ -207,7 +207,7 @@ sub rosetta {
         die "Is not URL or directory: '$url'";
     }
 
-    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    my @files = glob("$dir/rt/*.po $dir/*.po");
     unless ( @files ) {
         print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
         exit;
