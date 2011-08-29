@@ -67,7 +67,7 @@ sub prepare_code_with_value {
         Queue   => 1,
     );
     my $ticket = $ticket_obj->id;
-    $m->get("$baseurl/Ticket/Display.html?id=$ticket");
+    $m->goto_ticket($ticket);
 
     $m->follow_link_ok(
         { id => 'page-actions-forward' },
