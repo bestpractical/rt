@@ -32,10 +32,10 @@ sub prepare_code_with_value {
     my @values_for_actions;
 
     my $conds = RT::ScripConditions->new(RT->SystemUser);
-    for ('On Forward', 'On Forward Ticket', 'On Forward Transaction') {
+    foreach my $cond_value ('On Forward', 'On Forward Ticket', 'On Forward Transaction') {
         $conds->Limit(
             FIELD           => 'name',
-            VALUE           => $_,
+            VALUE           => $cond_value,
             ENTRYAGGREGATOR => 'OR',
         );
     }
