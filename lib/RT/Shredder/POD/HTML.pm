@@ -46,41 +46,58 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Shredder::POD;
+package RT::Shredder::POD::HTML;
 use strict;
 use warnings;
 
-use Pod::PlainText;
-use RT::Shredder::POD::HTML;
+use base qw(Pod::Select);
 
-sub plugin_html
+sub command
 {
-    my ($file, $out_fh) = @_;
-    my $parser = RT::Shredder::POD::HTML->new;
-    $parser->select('ARGUMENTS', 'USAGE');
-    $parser->parse_from_file( $file, $out_fh );
+    my( $self, $command, $paragraph, $line_num ) = @_;
+
+    my $tag;
+    if ($command =~ /^head(\d+)$/) { $tag = "h$1" }
+    my $out_fh = $self->output_handle();
+    my $expansion = $self->interpolate($paragraph, $line_num);
+    $expansion =~ s/^\s+|\s+$//;
+
+    print $out_fh "<$tag>" if $tag;
+    print $out_fh $expansion;
+    print $out_fh "</$tag>" if $tag;
+    print $out_fh "\n";
     return;
 }
 
-sub plugin_cli
+sub verbatim
 {
-    my ($file, $out_fh, $no_name) = @_;
-    local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = Pod::PlainText->new;
-    $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
-    $parser->add_selection('NAME') unless $no_name;
-    $parser->parse_from_file( $file, $out_fh );
+    my ($self, $paragraph, $line_num) = @_;
+    my $out_fh = $self->output_handle();
+    print $out_fh "<pre>";
+    print $out_fh $paragraph;
+    print $out_fh "</pre>";
+    print $out_fh "\n";
     return;
 }
 
-sub shredder_cli
-{
-    my ($file, $out_fh) = @_;
-    local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = Pod::PlainText->new;
-    $parser->select('NAME', 'SYNOPSIS', 'USAGE', 'OPTIONS');
-    $parser->parse_from_file( $file, $out_fh );
+sub textblock {
+    my ($self, $paragraph, $line_num) = @_;
+    my $out_fh = $self->output_handle();
+    my $expansion = $self->interpolate($paragraph, $line_num);
+    $expansion =~ s/^\s+|\s+$//;
+    print $out_fh "<p>";
+    print $out_fh $expansion;
+    print $out_fh "</p>";
+    print $out_fh "\n";
     return;
+}
+
+sub interior_sequence {
+    my ($self, $seq_command, $seq_argument) = @_;
+    ## Expand an interior sequence; sample actions might be:
+    return "<b>$seq_argument</b>" if $seq_command eq 'B';
+    return "<i>$seq_argument</i>" if $seq_command eq 'I';
+    return "<span class=\"pod-sequence-$seq_command\">$seq_argument</span>";
 }
 
 1;
