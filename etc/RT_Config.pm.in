@@ -2229,7 +2229,8 @@ For example:
 
 Unless there is an explicit mapping between statuses in two different
 lifecycles, you can not move tickets between queues with these
-lifecycles.  Such a mapping is defined as follows:
+lifecycles.  This is true even if the different lifecycles use the exact
+same set of statuses.  Such a mapping is defined as follows:
 
     __maps__ => {
         'from lifecycle -> to lifecycle' => {
