@@ -43,7 +43,7 @@ foreach my $section (qw(thead tbody tfoot)) {
                 if ( my $q = $cell->{'query'} ) {
                     $m->out(
                         '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html'
-                        .'?Query='. $eu->(join ' AND ', grep defined && length, $Query, $q)
+                        .'?Query='. $eu->(join ' AND ', map "($_)", grep defined && length, $Query, $q)
                         . $eh->('&') . $base_query
                         . '">'
                     );

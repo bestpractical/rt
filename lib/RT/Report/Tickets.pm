@@ -659,7 +659,9 @@ sub CalculatePostFunction {
     foreach my $item ( @{ $self->{'items'} } ) {
         $item->{'values'}{$column} = $code->(
             $self,
-            Query => join( ' AND ', grep defined && length, $base_query, $item->Query ),
+            Query => join(
+                ' AND ', map "($_)", grep defined && length, $base_query, $item->Query,
+            ),
         );
         $item->{'fetched'}{$column} = 1;
     }
