@@ -75,7 +75,7 @@ if ( $order_by) {
 $collection->RedoSearch();
  
 if ($page > 1 && ! @{$collection->ItemsArrayRef||[]}) {
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')."m/tickets/search?page=".($page-1)."&query=".$query."&order=$order&order_by=$order_by");
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')."m/tickets/search?page=".($page-1)."&amp;query=".$query."&amp;order=$order&amp;order_by=$order_by");
 }
 
 </%init>
@@ -104,12 +104,12 @@ loc("Found [quant,_1,ticket]",$collection->Count) &>
 </ul>
 <div id="paging">
 % if ($page > 1) { 
-<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page-1%>&query=<%$query%>&order=<%$order%>&order_by=<%$order_by%>">Back</a>
+<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page-1%>&amp;query=<%$query%>&amp;order=<%$order%>&amp;order_by=<%$order_by%>">Back</a>
 % }
 Page <%$page%>
 
 % if ($collection->CountAll > $page * $rows) {
-<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page+1%>&query=<%$query%>&order=<%$order%>&order_by=<%$order_by%>">Next</a>
+<a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page+1%>&amp;query=<%$query%>&amp;order=<%$order%>&amp;order_by=<%$order_by%>">Next</a>
 % }
 </div>
 </&>
