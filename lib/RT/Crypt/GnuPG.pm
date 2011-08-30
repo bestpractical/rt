@@ -52,6 +52,7 @@ use warnings;
 package RT::Crypt::GnuPG;
 
 use IO::Handle;
+use RT::Crypt::GnuPG::CRLFHandle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 use RT::Util 'safe_run_child', 'mime_recommended_filename';
@@ -562,10 +563,12 @@ sub SignEncryptRFC3156 {
         $entity->make_multipart( 'mixed', Force => 1 );
 
         my @signature;
+        # We use RT::Crypt::GnuPG::CRLFHandle to canonicalize the
+        # MIME::Entity output to use \r\n instead of \n for its newlines
         %res = CallGnuPG(
             Signer     => $args{'Signer'},
             Command    => "detach_sign",
-            Handles    => { stdin => IO::Handle::CRLF->new },
+            Handles    => { stdin => RT::Crypt::GnuPG::CRLFHandle->new },
             Direct     => [],
             Passphrase => $args{'Passphrase'},
             Content    => $entity->parts(0),
@@ -2124,16 +2127,5 @@ sub _make_gpg_handles {
 }
 
 RT::Base->_ImportOverlays();
-
-# helper package to avoid using temp file
-package IO::Handle::CRLF;
-
-use base qw(IO::Handle);
-
-sub print {
-    my ($self, @args) = (@_);
-    s/\r*\n/\x0D\x0A/g foreach @args;
-    return $self->SUPER::print( @args );
-}
 
 1;
