@@ -54,7 +54,7 @@ use warnings FATAL => 'redefine';
 use RT::User ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
+use RT::Shredder::Exception::Info;
 use RT::Shredder::Dependencies;
 
 my @OBJECTS = qw(

@@ -172,7 +172,7 @@ prompt_delete_objs( \@objs ) unless $opt{'force'};
 $shredder->PutObjects( Objects => $_ ) foreach @objs;
 eval { $shredder->WipeoutAll };
 if( $@ ) {
-    require RT::Shredder::Exceptions;
+    require RT::Shredder::Exception::Info;
     if( my $e = RT::Shredder::Exception::Info->caught ) {
         print "\nERROR: $e\n\n";
         exit 1;

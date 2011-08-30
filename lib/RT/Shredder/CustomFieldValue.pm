@@ -54,7 +54,6 @@ use warnings FATAL => 'redefine';
 use RT::CustomFieldValue ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
 # No dependencies that should be deleted with record

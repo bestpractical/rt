@@ -54,7 +54,7 @@ use warnings FATAL => 'redefine';
 use RT::Record ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
+use RT::Shredder::Exception;
 
 =head2 _AsString
 

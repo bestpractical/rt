@@ -53,7 +53,6 @@ use warnings FATAL => 'redefine';
 
 use RT::Principal ();
 
-use RT::Shredder::Exceptions;
 use RT::Shredder::Constants;
 use RT::Shredder::Dependencies;
 

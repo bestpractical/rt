@@ -46,67 +46,55 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Shredder::Dependency;
+package RT::Shredder::Exception::Info;
 use strict;
 use warnings;
 
-use RT::Shredder::Constants;
+use base qw(RT::Shredder::Exception);
 
-my %FlagDescs = (
-    DEPENDS_ON, 'depends on',
-    VARIABLE,   'resolvable dependency',
-    WIPE_AFTER, 'delete after',
-    RELATES,    'relates with',
+my %DESCRIPTION = (
+    DependenciesLimit => <<END,
+Dependecies list have reached its limit.
+See \$DependenciesLimit in RT::Shredder docs.
+END
+
+    SystemObject => <<END,
+System object was requested for deletion, shredder couldn't
+do that because system would be unusable than.
+END
+
+    CouldntLoadObject => <<END,
+Shredder couldn't load object. Most probably it's not fatal error.
+May be you've used Objects plugin and asked to delete object that
+doesn't exist in the system. If you think that your request was
+correct and it's problem of the Shredder then you can get full error
+message from RT log files and send bug report.
+END
+
+    NoResolver => <<END,
+Object has dependency that could be resolved, but resolver
+wasn't defined. You have to re-read documentation of the
+plugin you're using, for example the 'Users' plugin has
+option 'replace_relations' argument.
+END
 );
 
-sub new
-{
-    my $proto = shift;
-    my $self = bless( {}, ref $proto || $proto );
-    $self->Set( @_ );
-    return $self;
-}
+sub Fields { return ((shift)->SUPER::Fields(@_), 'tag') }
 
-sub Set
-{
+sub tag { return (shift)->{'tag'} }
+
+sub full_message {
     my $self = shift;
-    my %args = ( Flags => DEPENDS_ON, @_ );
-    my @keys = qw(Flags BaseObject TargetObject);
-    @$self{ @keys } = @args{ @keys };
-
-    return;
-}
-
-sub AsString
-{
-    my $self = shift;
-    my $res = $self->BaseObject->_AsString;
-    $res .= " ". $self->FlagsAsString;
-    $res .= " ". $self->TargetObject->_AsString;
-    return $res;
-}
-
-sub Flags { return $_[0]->{'Flags'} }
-sub FlagsAsString
-{
-    my $self = shift;
-    my @res = ();
-    foreach ( sort keys %FlagDescs ) {
-        if( $self->Flags() & $_ ) {
-            push( @res, $FlagDescs{ $_ } );
-        }
+    my $error = $self->message;
+    if ( my $tag = $self->tag ) {
+        my $message = $DESCRIPTION{ $self->tag } || '';
+        warn "Tag '$tag' doesn't exist" unless $message;
+        $message .= "\nAdditional info:\n$error" if $error;
+        return $message;
     }
-    push @res, 'no flags' unless( @res );
-    return "(" . join( ',', @res ) . ")";
+    return $DESCRIPTION{$error} || $error;
 }
 
-
-sub BaseObject { return $_[0]->{'BaseObject'} }
-sub TargetObject { return $_[0]->{'TargetObject'} }
-sub Object { return shift()->{ ({@_})->{Type}. "Object" } }
-
-sub TargetClass { return ref $_[0]->{'TargetObject'} }
-sub BaseClass {    return ref $_[0]->{'BaseObject'} }
-sub Class { return ref shift()->Object( @_ ) }
+sub show_trace { return 0 }
 
 1;

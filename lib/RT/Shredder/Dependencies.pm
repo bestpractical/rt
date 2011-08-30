@@ -50,7 +50,7 @@ package RT::Shredder::Dependencies;
 use strict;
 use warnings;
 
-use RT::Shredder::Exceptions;
+use RT::Shredder::Exception::Info;
 use RT::Shredder::Constants;
 use RT::Shredder::Dependency;
 use RT::Record;

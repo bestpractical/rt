@@ -54,7 +54,6 @@ use warnings FATAL => 'redefine';
 use RT::ScripAction ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
 sub __DependsOn

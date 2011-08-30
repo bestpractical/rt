@@ -54,7 +54,6 @@ use warnings FATAL => 'redefine';
 use RT::CustomField ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
 #TODO: Queues if we wish export tool

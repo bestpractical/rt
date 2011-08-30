@@ -81,7 +81,7 @@ my ($plugin_obj, @objs);
 
 my $catch_non_fatals = sub {
     my $error = $@;
-    require RT::Shredder::Exceptions;
+    require RT::Shredder::Exception::Info;
     if ( my $e = RT::Shredder::Exception::Info->caught ) {
         push @{ $messages{Errors} }, "$e";
         $Search = ''; @objs = ();

@@ -54,7 +54,7 @@ use warnings FATAL => 'redefine';
 use RT::GroupMember ();
 
 use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
+use RT::Shredder::Exception;
 use RT::Shredder::Dependencies;
 
 # No dependencies that should be deleted with record
