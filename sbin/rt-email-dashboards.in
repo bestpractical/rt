@@ -96,7 +96,8 @@ RT::Init();
 require RT::Interface::Web;
 require RT::Interface::Web::Handler;
 require RT::Dashboard;
-$HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
+require RT::Dashboard::MockRequest;
+$HTML::Mason::Commands::r = RT::Dashboard::MockRequest->new;
 
 # Read in the options
 my %opts;
@@ -490,16 +491,6 @@ sub get_resource {
         $encoding;
 
     return ($content, $filename, $mimetype, $encoding);
-}
-
-package RT::Dashboard::FakeRequest;
-sub new { return bless {}, shift }
-sub header_out { return shift }
-sub headers_out { return shift }
-sub content_type {
-    my $self = shift;
-    $self->{content_type} = shift if @_;
-    return $self->{content_type};
 }
 
 =head1 NAME
