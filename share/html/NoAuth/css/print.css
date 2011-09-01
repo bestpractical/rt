@@ -110,12 +110,7 @@ div.ticket-transaction .metadata .type {
 }
 
 div.titlebox-title .left {
-% if ( lc RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) =~
-%      /^(?:web2|ballard)$/ ){
-    background: white !important;
-% } else {
     background: transparent !important;
-% }
     border: 0 !important;
 }
 
@@ -165,6 +160,17 @@ div.summary > div > div.titlebox > div.titlebox-title {
 
 .message-stanza {
     display: inherit !important;
+}
+
+/* for web2 and ballard*/
+
+div.titlebox {
+    border: 0 !important;
+}
+
+div.history .titlebox-title {
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 /* for web2 */
