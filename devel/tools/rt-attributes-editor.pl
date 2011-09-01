@@ -1,0 +1,130 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+use Term::EditorEdit;
+use Getopt::Long;
+my ($help, $key, $id);
+GetOptions('help|h' => \$help, 'key|k=s' => \$key, 'id=i' => \$id);
+
+if ( $help || !$id ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage({ verbose => 2 });
+    exit;
+}
+
+require RT;
+RT::LoadConfig();
+RT::Init();
+
+require RT::Attribute;
+my $attr = RT::Attribute->new( RT->SystemUser );
+$attr->Load( $id );
+unless ( $attr->id ) {
+    print STDERR "Couldn't load attribute #$id\n";
+    exit 1;
+}
+
+my $orig;
+if ($key) {
+    if (ref($attr->Content) ne 'HASH') {
+        print STDERR "The attribute's content must be a hashref for editing keys\n";
+        exit 1;
+    }
+    $orig = $attr->Content->{$key} || '';
+}
+else {
+    use Data::Dumper;
+    $orig = Dumper( $attr->Content );
+}
+
+my $edit = Term::EditorEdit->edit(document => $orig);
+
+if ($edit ne $orig) {
+    if ($key) {
+        my $content = $attr->Content;
+        $content->{$key} = $edit;
+        $attr->SetContent($content);
+        print "Attribute key saved.\n";
+    }
+    else {
+        my $VAR1; eval $edit;
+        if ($@) {
+            print STDERR "Your change had an error: $@";
+            exit 1;
+        }
+        $attr->SetContent($VAR1);
+        print "Attribute saved.\n";
+    }
+}
+else {
+    print "Aborted.\n"
+}
+
+__END__
+
+=head1 NAME
+
+rt-attributes-editor - edit the content of an attribute 
+
+=head1 SYNOPSIS
+
+    # edit the Perl dump of attribute 2's content
+    rt-attributes-editor --id 2
+
+    # edit the dump of attribute 2's content (hash key: Query)
+    # note: this will error if the attribute content is not a hashref
+    rt-attributes-editor --id 2 --key Query
+
+=head1 DESCRIPTION
+
+This script deserializes and puts the content of an attribute defined
+by <attribute id> into the preferred editor set in C<$EDITOR>. May be
+useful for developers to editing attributes by hand if there is any
+trouble editing it from the UI.
