@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Dashboard::FakeRequest;
+package RT::Dashboard::MockRequest;
 use strict;
 use warnings;
 
