@@ -52,7 +52,8 @@
 
 body {
     margin: 1em;
-    font-size: 10pt;
+    font-size: 12pt;
+    background: white;
 }
 
 div#body {
@@ -64,11 +65,9 @@ div#body {
 div#header h1 {
     margin-bottom: 2em;
     position: relative;
-    margin-top: 2em;
-    height: 0;
     width: auto;
     left: 0;
-    overflow: visible;
+    color: black !important;
 }
 
 #header {
@@ -77,11 +76,12 @@ div#header h1 {
 
 #quickbar,
 #nav,
-#header #page-menu,
-#header #page-navigation,
-.titlebox .titlebox-title .widget,
+#page-menu,
+#main-navigation,
+#page-navigation,
+.titlebox-title .widget,
 .ticket-info-links .titlebox-title .right,
-.ticket-info-links .titlebox-content .labeltop .create,
+.ticket-info-links .titlebox-content .create,
 .history .titlebox .titlebox-title .right,
 .ticket-transaction .metadata .actions,
 .ticket-transaction .content .downloadattachment,
@@ -89,14 +89,53 @@ div#header h1 {
 .search-result-actions,
 #comp-Search-Chart #body div,
 #comp-Search-Chart #body form,
-#footer
+#footer,
+#topactions,
+#logo,
+.ticket-info-reminders
 {
-display: none;
+    display: none;
 }
 
 a:link, a:visited {
     background: transparent;
     font-weight: bold !important;
+}
+
+div.ticket-transaction .metadata .type {
+    display: none;
+}
+
+div.titlebox-title .left {
+% if ( lc RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) =~
+%      /^(?:web2|ballard)$/ ){
+    background: white !important;
+% } else {
+    background: transparent !important;
+% }
+    border: 0 !important;
+}
+
+div.titlebox-title .left * {
+    color: black !important;
+}
+
+div.messagebody a:link:after, a:visited:after {
     text-decoration: underline !important;
+    content: " (" attr(href) ") ";
+}
+
+div.titlebox-title {
+    page-break-after: avoid;
+}
+
+div.ticket-transaction {
+    page-break-inside: avoid;
+}
+
+/* for web2 */
+
+#page-action-menu {
+    display: none;
 }
 
