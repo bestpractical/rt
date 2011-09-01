@@ -52,7 +52,7 @@
 
 body {
     margin: 1em;
-    font-size: 12pt;
+    font-size: 10pt;
     background: white;
 }
 
@@ -116,6 +116,10 @@ div.titlebox-title .left {
     border: 0 !important;
 }
 
+div.titlebox-content {
+    border: 0 !important;
+}
+
 div.titlebox-title .left * {
     color: black !important;
 }
@@ -123,6 +127,10 @@ div.titlebox-title .left * {
 div.messagebody a:link:after, a:visited:after {
     text-decoration: underline !important;
     content: " (" attr(href) ") ";
+}
+
+div.history {
+    page-break-before: always;
 }
 
 div.titlebox-title {
