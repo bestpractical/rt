@@ -118,6 +118,7 @@ div.titlebox-title .left {
 
 div.titlebox-content {
     border: 0 !important;
+    padding-top: 0.5em !important;
 }
 
 div.titlebox-title .left * {
@@ -137,8 +138,30 @@ div.titlebox-title {
     page-break-after: avoid;
 }
 
-div.ticket-transaction {
+#ticket-history, div.ticket-transaction {
     page-break-inside: avoid;
+    border: 0 !important;
+}
+
+/* hide "Ticket metadata" */
+div.summary > div > div.titlebox > div.titlebox-title {
+    display: none !important;
+}
+
+.value {
+    font-weight: bold !important;
+}
+
+.label, .label a, .labeltop, .labeltop a {
+    font-weight: normal !important;
+}
+
+.message-stanza-folder {
+    display: none;
+}
+
+.message-stanza {
+    display: inherit !important;
 }
 
 /* for web2 */
