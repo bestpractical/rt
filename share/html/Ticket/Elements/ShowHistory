@@ -60,6 +60,12 @@ if ($ShowDisplayModes or $ShowTitle) {
     if ($ShowDisplayModes) {
         $titleright = '';
         
+        my $open_all  = $m->interp->apply_escapes( loc("Show all quotes"), 'h' );
+        my $close_all = $m->interp->apply_escapes( loc("Hide all quotes"), 'h' );
+        $titleright .=    '<a href="#" data-direction="open" '
+                        . qq{onclick='return toggle_all_folds(this, "$open_all", "$close_all");'}
+                        . ">$open_all</a> &mdash; ";
+
         if ($ShowHeaders) {
             $titleright .= qq{<a href="$URIFile?id=} .
                            $Ticket->id.qq{">} .
