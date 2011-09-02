@@ -453,7 +453,7 @@ sub RemoveFromObject {
 sub SubjectOverride {
     my $self = shift;
     my $override = $self->FirstAttribute('SubjectOverride');
-    return $override ? $override->Content : '';
+    return $override ? $override->Content : 0;
 }
 
 sub SetSubjectOverride {
