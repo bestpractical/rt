@@ -123,7 +123,7 @@ div.titlebox-title .left * {
     color: black !important;
 }
 
-div.messagebody a:link:after, a:visited:after {
+div.messagebody a[href]:after {
     text-decoration: underline !important;
     content: " (" attr(href) ") ";
 }
