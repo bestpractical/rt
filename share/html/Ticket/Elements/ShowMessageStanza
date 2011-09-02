@@ -114,9 +114,9 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         if ( $Depth == 1 ) {
             $m->comp('FoldStanzaJS');
         }
-        $m->out(   '<div class="message-stanza"'
-                 . ( $Depth == 1 ? ' style="display: none;" ' : '' )
-                 . '>' );
+        my @classes = ('message-stanza');
+        push @classes, $Depth == 1 ? 'closed' : 'open';
+        $m->out(   '<div class="' . join(" ", @classes) . '">' );
     }
     if ( length $para ) {
         $print_content->( \$para );

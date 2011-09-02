@@ -47,15 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 function fold_message_stanza(e,showmsg, hidemsg) {
     var box = jQuery(e).next("br").next('.message-stanza');
-    if ( box.css('display') == 'none') {
-        box.css('display', 'block');
-        jQuery(e).addClass('open');
-        jQuery(e).removeClass('closed');
+    if ( box.hasClass('closed') ) {
+        jQuery([e, box[0]]).removeClass('closed').addClass('open');
         jQuery(e).text( hidemsg);
     } else {
-        box.css('display', 'none');
-        jQuery(e).addClass('closed');
-        jQuery(e).removeClass('open');
+        jQuery([e, box[0]]).addClass('closed').removeClass('open');
         jQuery(e).text( showmsg);
     }
 }
