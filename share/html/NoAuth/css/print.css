@@ -155,14 +155,6 @@ div.summary > div > div.titlebox > div.titlebox-title {
     font-weight: normal !important;
 }
 
-.message-stanza-folder {
-    display: none;
-}
-
-.message-stanza {
-    display: inherit !important;
-}
-
 /* for web2 and ballard*/
 
 div.titlebox {
