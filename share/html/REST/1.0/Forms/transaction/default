@@ -107,7 +107,8 @@ if ($tid) {
   	      else {
   	        $size .= "b";
   	      }
-  	      $attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
+              my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : "untitled";
+              $attachlist .= "\n" . $a->Id.": $name ($size)";
   	    }
   	    push @data, [Attachments => $attachlist];
       }
