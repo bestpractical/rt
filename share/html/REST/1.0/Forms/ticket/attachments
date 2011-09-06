@@ -118,7 +118,8 @@ else {
             my $size = length($a->Content || '');
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
-            push @attachments, $a->Id.": ".($a->Filename || '(Unnamed)')." (".$a->ContentType . " / ".$size.")";
+            my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : "(Unnamed)";
+            push @attachments, $a->Id.": $name (".$a->ContentType . " / $size)";
         }
     }
 
