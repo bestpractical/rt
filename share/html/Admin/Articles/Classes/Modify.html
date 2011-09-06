@@ -90,6 +90,8 @@
 % }
 </ul>
 
+%$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
+
 <& /Elements/Submit &>
 </form>
 
@@ -117,6 +119,7 @@ if ($Create) {
 if ($ClassObj->Id()) {
     $ARGS{HotList} ||= 0 if $Submitted;
     my @attribs= qw(Description Name HotList);
+    $m->callback( CallbackName => 'AttributeList', Attributes => \@attribs );
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
                                        ARGSRef => \%ARGS);
