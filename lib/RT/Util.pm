@@ -52,7 +52,7 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename/;
 
 sub safe_run_child (&) {
     my $our_pid = $$;
@@ -94,6 +94,27 @@ sub safe_run_child (&) {
         die 'System Error: ' . $err;
     };
     return $want? (@res) : $res[0];
+}
+
+=head2 mime_recommended_filename( MIME::Head|MIME::Entity )
+
+# mimic our own recommended_filename
+# since MIME-tools 5.501, head->recommended_filename requires the head are
+# mime encoded, we don't meet this yet.
+
+=cut
+
+sub mime_recommended_filename {
+    my $head = shift;
+    $head = $head->head if $head->isa('MIME::Entity');
+
+    for my $attr_name (qw( content-disposition.filename content-type.name )) {
+        my $value = $head->mime_attr($attr_name);
+        if ( defined $value && $value =~ /\S/ ) {
+            return $value;
+        }
+    }
+    return;
 }
 
 RT::Base->_ImportOverlays();
