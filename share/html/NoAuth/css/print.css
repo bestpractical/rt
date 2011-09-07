@@ -135,6 +135,7 @@ div.history {
 
 div.titlebox-title {
     page-break-after: avoid;
+    border: 0 !important;
 }
 
 #ticket-history, div.ticket-transaction {
