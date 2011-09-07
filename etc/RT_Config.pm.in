@@ -2447,8 +2447,13 @@ Set(%AdminSearchResultFormat,
         .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
-        q{'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        .q{,__Stage__, __Condition__, __Action__, __Template__},
+
+    GlobalScrips =>
+        q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__Description__</a>/TITLE:Description'}
         .q{,__Stage__, __Condition__, __Action__, __Template__},
 
     Templates =>
