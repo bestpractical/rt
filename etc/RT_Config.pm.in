@@ -846,7 +846,9 @@ Set(@CustomFieldValuesSources, ());
 =item C<$CanonicalizeRedirectURLs>
 
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
-redirecting rather than the one we get from C<%ENV>.
+redirecting rather than the one we get from C<%ENV>. Note that
+apache's directive UseCanonicalName influence results, read
+server's documentation.
 
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
