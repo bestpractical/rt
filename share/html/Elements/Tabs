@@ -571,7 +571,16 @@ my $build_admin_menu = sub {
             }
         }
     }
-    if ( $request_path =~ m{^/(?:Ticket|Search)/} && $request_path !~ m{^/Search/Simple\.html}) {
+
+    if (
+        (
+               $request_path =~ m{^/(?:Ticket|Search)/}
+            && $request_path !~ m{^/Search/Simple\.html}
+        )
+        || (   $request_path =~ m{^/Search/Simple\.html}
+            && $m->request_args->{'q'} )
+      )
+    {
         my $search = Menu()->child('search');
         my $args      = '';
         my $has_query = '';
