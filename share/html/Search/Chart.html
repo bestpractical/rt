@@ -105,6 +105,10 @@ my %query;
         $query{'SavedChartSearchId'} = $m->request_args->{'SavedSearchLoad'};
     }
 
+    if ($m->request_args->{'SavedSearchSave'}) {
+        $query{'SavedChartSearchId'} = $saved_search->{'SearchId'};
+    }
+
 }
 
 </%init>
