@@ -750,7 +750,7 @@ Remove addresses that are RT addresses or that are on this transaction's blackli
 sub RemoveInappropriateRecipients {
     my $self = shift;
 
-    my @blacklist = ();
+    my %blacklist = ();
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
@@ -781,7 +781,8 @@ sub RemoveInappropriateRecipients {
                     foreach my $addr ( @{ $self->{$type} } ) {
                         my $user = RT::User->new(RT->SystemUser);
                         $user->LoadByEmail($addr);
-                        push @blacklist, $addr unless $user->id && $user->Privileged;
+                        $blacklist{ $addr } ||= 'not privileged'
+                            unless $user->id && $user->Privileged;
                     }
                 }
                 $RT::Logger->info( $msgid
@@ -792,20 +793,27 @@ sub RemoveInappropriateRecipients {
         }
 
         if ( my $squelch = $attachment->GetHeader('RT-Squelch-Replies-To') ) {
-            push @blacklist, map $_->address, Email::Address->parse( $squelch );
+            $blacklist{ $_->address } ||= 'squelch:attachment'
+                foreach Email::Address->parse( $squelch );
         }
     }
 
-    # Let's grab the SquelchMailTo attributes and push those entries into the @blacklisted
-    push @blacklist, map $_->Content, $self->TicketObj->SquelchMailTo, $self->TransactionObj->SquelchMailTo;
+    # Let's grab the SquelchMailTo attributes and push those entries
+    # into the blacklisted
+    $blacklist{ $_->Content } ||= 'squelch:transaction'
+        foreach $self->TransactionObj->SquelchMailTo;
+    $blacklist{ $_->Content } ||= 'squelch:ticket'
+        foreach $self->TicketObj->SquelchMailTo;
 
-    # Cycle through the people we're sending to and pull out anyone on the
-    # system blacklist
+    # canonicalize emails
+    foreach my $address ( keys %blacklist ) {
+        my $reason = delete $blacklist{ $address };
+        $blacklist{ lc $_ } = $reason
+            foreach map RT::User->CanonicalizeEmailAddress( $_->address ),
+            Email::Address->parse( $address );
+    }
 
-    # Trim leading and trailing spaces. 
-    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-        Email::Address->parse( join ', ', grep defined, @blacklist );
-
+    # Cycle through the people we're sending to and pull out anyone on the blacklist
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         my @addrs;
         foreach my $addr ( @{ $self->{$type} } ) {
@@ -816,7 +824,7 @@ sub RemoveInappropriateRecipients {
                 $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
                 next;
             }
-            if ( grep $addr eq $_, @blacklist ) {
+            if ( $blacklist{ lc $addr } ) {
                 $RT::Logger->info( $msgid . "$addr was blacklisted for outbound mail on this transaction. Skipping");
                 next;
             }
