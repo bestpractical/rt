@@ -792,7 +792,7 @@ sub RemoveInappropriateRecipients {
         }
 
         if ( my $squelch = $attachment->GetHeader('RT-Squelch-Replies-To') ) {
-            push @blacklist, split( /,/, $squelch );
+            push @blacklist, map $_->address, Email::Address->parse( $squelch );
         }
     }
 
