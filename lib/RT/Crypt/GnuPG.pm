@@ -351,6 +351,8 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
+our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
+
 # DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
 # need them, just pass 'new IO::Handle' and then close it after safe_run_child.
 # we don't want to leak anything into FCGI/Apache/MP handles, this break things.
@@ -891,6 +893,8 @@ sub FindProtectedParts {
 
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
+        my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+
         my $io = $entity->open('r');
         unless ( $io ) {
             $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
@@ -902,8 +906,8 @@ sub FindProtectedParts {
             $RT::Logger->debug("Found $type inline part");
             return {
                 Type    => $type,
-                Format  => 'Inline',
-                Data  => $entity,
+                Format  => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
+                Data    => $entity,
             };
         }
         $io->close;
@@ -1000,7 +1004,7 @@ sub FindProtectedParts {
 
     # attachments with inline encryption
     my @encrypted_indices =
-        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.pgp$/}
+        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.${RE_FILE_EXTENSIONS}$/}
             0 .. $entity->parts - 1;
 
     foreach my $i ( @encrypted_indices ) {
@@ -1472,9 +1476,16 @@ sub DecryptAttachment {
     $args{'Data'}->bodyhandle( new MIME::Body::File $res_fn );
     $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $res_fh;
 
-    my $filename = $args{'Data'}->head->recommended_filename;
-    $filename =~ s/\.pgp$//i;
-    $args{'Data'}->head->mime_attr( $_ => $filename )
+    my $head = $args{'Data'}->head;
+
+    # we can not trust original content type
+    # TODO: and don't have way to detect, so we just use octet-stream
+    # some clients may send .asc files (encryped) as text/plain
+    $head->mime_attr( "Content-Type" => 'application/octet-stream' );
+
+    my $filename = $head->recommended_filename;
+    $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
+    $head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;

@@ -2,12 +2,14 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test tests => 23;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
+
+use Digest::MD5 qw(md5_hex);
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
@@ -21,6 +23,7 @@ RT->Config->Set( 'GnuPG',
 
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
+                 'passphrase' => 'rt-test',
                  'no-permission-warning' => undef);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
@@ -69,6 +72,46 @@ RT::Test->set_rights(
 
     my @mail = RT::Test->fetch_caught_mails;
     is(scalar @mail, 1, "autoreply only");
+}
+
+{
+    my $id = send_via_mailgate('binary-asc-attach-marked-plain-text.txt');
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachs) = @{$txn->Attachments->ItemsArrayRef};
+
+    is (scalar @attachs, 3, 'text, attachment and original');
+    my $bin = $attachs[1];
+    is(
+        (split /;/, $bin->GetHeader('Content-Type'))[0],
+        'application/octet-stream',
+        'binary attachment'
+    );
+    is(md5_hex($bin->Content), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "correct png");
+}
+
+{
+    my $id = send_via_mailgate('inline-binary-attachment-with-wrap.txt');
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachs) = @{$txn->Attachments->ItemsArrayRef};
+
+    is (scalar @attachs, 3, 'text, attachment and original');
+    my $bin = $attachs[1];
+    is(
+        (split /;/, $bin->GetHeader('Content-Type'))[0],
+        'application/octet-stream',
+        'binary attachment'
+    );
+    is(md5_hex($bin->Content), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "correct png");
 }
 
 sub send_via_mailgate {

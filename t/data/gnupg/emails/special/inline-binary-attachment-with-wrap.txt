@@ -1,0 +1,54 @@
+Message-ID: <46BCDCF2.3080704@mit.edu>
+Date: Fri, 10 Aug 2007 17:47:30 -0400
+From: Christian Ternus <ternus@mit.edu>
+User-Agent: Thunderbird 1.5.0.12 (X11/20070604)
+MIME-Version: 1.0
+To:  rt-recipient@example.com
+Subject: Test Email ID:12
+X-Enigmail-Version: 0.94.2.0
+Content-Type: multipart/mixed;
+ boundary="------------090206040704060905090502"
+
+This is a multi-part message in MIME format.
+--------------090206040704060905090502
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+
+A binary file encrypted with PGP MESSAGE wrapping then attached
+to a mail. As it's .asc some clients attach it as content type is
+text/plain.
+
+--------------090206040704060905090502
+Content-Type: text/plain;
+ name="favicon.png.asc"
+Content-Disposition: attachment;
+ filename="favicon.png.asc"
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1.4.11 (Darwin)
+
+hQIOA076g5OuwfIOEAf/Qxa6rk76JTSjlyb27k1kZwpsvtXocnALZEd1tbJ4HwwH
+o0CQb5Ew6apUzAcfSFdVcZ+IbFXYmjJ7bH1mpG5kjfSz8mEYO0muX+ZrgVeL+Q3J
+/lR+A+THD7LNxnsZe11OfDi1aX8Uz71R03vmK+0o1ZIge3zzdm1BoUT9cmy1QPMi
+aJSdBAJn01EJ++ETfrBqspFj8n6yR/q0BukAcoefaMA0qzrJNQeluMsrqSEjbcuq
+nwXDEv8fhqF6efrWW+wtyMnY/JpIEwmlNbcCI0NZQFM92vkp89nusRPwbP0+z87m
+Qsr1vyLHMX79kqwcRKadf1EW/3eWVqlbrOC+yhvKKAf+MAcixgFDIUDup+NuWpjp
+YUbS357E4yqh2LXogpTZDsvjSL+Z4hKEurKq8TYju8T4exGHkas3VbcWnoPBKiMU
+3RjyVNCQzS3XeOtQv9g8WclENq6Pg8eQVNKd5tbpQ6Sios0J1FYFVXHSr/dQOaET
+Y1jSVKV/6GxVwERpR7DN+yTIVIr//pYnMIb6agNapSKbosvTKNEcGPSjjSB8ixpo
+C9yiZuIhml5lQUXV9ouDDMtHOFtguDUSSm7Ta84wRJ2VcVQUIv/ADg3jBC5Lmp5Q
+CGqwq5Hx7q5AKKZDnGNqHepWzeCiEs5Dg9J9onBYx4zrNMrGVP5uvF+RwK4J0pf0
+XtLAzgFryuv7cswKKxP9vJaEjLDI4Tizdui+la0vA2tJ6gVQ1CPVtREt0s3s+LM0
+oUzgVMvnb1X9KgyazcGp/a+bGHAZwy9/CscxoDYyDrQuUbypNK+f0xefpOURiQ0z
+N86G/DeaRwLkePoGWZySWk5Ktat6594lRP5h1/B/VYXhvBeh98Rm6E7S8gpjJlMr
+6wit2Bd3oPVeqv1fxru9BR1CEl4N+/4ODVwphqMhYM9MplIzGrrCC9bTudKC7g34
+UZ+IQV4GLlCK/1BckJQgkWEHTS5fDxAdwG4F7TWfpGzsp43IlDUr073aL7Z3TfkY
+iyAYGVdnq1EpzVAOPAc2IUMlybUGjoYTmolI1/XIEAxZG9cSFuSMXlrJ2On2kvFO
+/rla7j5euFpucFWumcNDbZ1HIgDUQ0AMxpzIqwVtd8ZGE0OhSqbT6lgP7jZUwiSA
+H4g6/4w+aM5XIy26jifvHOlHzsCraG/xGbzXgYkocXbmSuBhtFdoR4KFzOyFaI7H
+uFoUez7HUuEjl80w77pBeU2v
+=j0Yd
+-----END PGP MESSAGE-----
+--------------090206040704060905090502--
+
+
