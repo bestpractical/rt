@@ -56,10 +56,10 @@
 <table>
 
 <tr><td class="label"><&|/l&>Name</&></td>
-<td><input name="Name" value="<% $CustomFieldObj->Name || '' %>" size="20" /></td></tr>
+<td><input name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" /></td></tr>
 
 <tr><td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td></tr>
+<td><input name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
@@ -95,13 +95,13 @@
 <tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
     Name    => 'Pattern',
-    Default => $CustomFieldObj->Pattern,
+    Default => $CustomFieldObj->Pattern || $Pattern,
     Size    => 20,
     Values  => \@CFvalidations,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
-<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || '' %>" />
+<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -109,7 +109,7 @@
 </div></td></tr>
 
 <tr><td class="label"><&|/l&>Include page</&></td><td>
-<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || '' %>" />
+<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -122,7 +122,7 @@
 <& /Admin/Elements/SelectCustomField,
     Name => "BasedOn",
     LookupType => $CustomFieldObj->LookupType,
-    Default => $CustomFieldObj->BasedOnObj,
+    Default => $CustomFieldObj->BasedOnObj || $BasedOn,
     Not => $CustomFieldObj->id,
 &>
 </td></tr>
@@ -175,11 +175,18 @@ else {
             BasedOn       => $BasedOn,
             Disabled      => !$Enabled,
         );
-        $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
-        push @results, $msg;
-        $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
+        if (!$val) {
+            push @results, loc("Could not create CustomField: [_1]", $msg);
+            $title = loc( 'Create a CustomField');
+        }
+        else {
+            push @results, loc("Object created");
+            $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
+        }
     } else {
-        $CustomFieldObj->Load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
+        push @results, loc('No CustomField')
+            unless  $CustomFieldObj->Load( $id );
+
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
     }
 }
@@ -266,17 +273,14 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
-
-
-
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
-
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,
     Arguments   => { id => $id },
-);
+) if $CustomFieldObj->id;
+
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
