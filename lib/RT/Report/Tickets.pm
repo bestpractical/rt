@@ -196,7 +196,7 @@ our @STATISTICS = (
 foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
     my $friendly = lc join ' ', split /(?<=[a-z])(?=[A-Z])/, $field;
     push @STATISTICS, (
-        "ALL($field)" => [ucfirst $friendly,   'TimeAll',     $field ],
+        "ALL($field)" => ["Summary of $friendly",   'TimeAll',     $field ],
         "SUM($field)" => ["Total $friendly",   'Time', 'SUM', $field ],
         "AVG($field)" => ["Average $friendly", 'Time', 'AVG', $field ],
         "MIN($field)" => ["Minimum $friendly", 'Time', 'MIN', $field ],
@@ -215,8 +215,8 @@ foreach my $pair (qw(
 )) {
     my ($from, $to) = split /-/, $pair;
     push @STATISTICS, (
-        "ALL($pair)" => [$pair, 'DateTimeIntervalAll', $from, $to ],
-        "SUM($pair)" => ["Summary of $pair", 'DateTimeInterval', 'SUM', $from, $to ],
+        "ALL($pair)" => ["Summary of $pair", 'DateTimeIntervalAll', $from, $to ],
+        "SUM($pair)" => ["Total $pair", 'DateTimeInterval', 'SUM', $from, $to ],
         "AVG($pair)" => ["Average $pair", 'DateTimeInterval', 'AVG', $from, $to ],
         "MIN($pair)" => ["Minimum $pair", 'DateTimeInterval', 'MIN', $from, $to ],
         "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
