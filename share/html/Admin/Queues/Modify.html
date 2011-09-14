@@ -171,7 +171,7 @@ if ($Create) {
 } else {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
-        if ($val) {
+        if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
         }
         push @results, $msg;
