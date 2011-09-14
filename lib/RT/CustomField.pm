@@ -589,6 +589,20 @@ sub DeleteValue {
 }
 
 
+=head2 ValidateQueue Queue
+
+Make sure that the name specified is valid
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $value = shift;
+
+    return 0 unless length $value;
+
+    return $self->SUPER::ValidateName($value);
+}
 
 =head2 ValidateQueue Queue
 
