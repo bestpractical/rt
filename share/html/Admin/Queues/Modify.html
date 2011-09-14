@@ -179,7 +179,7 @@ if ($Create) {
     else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Configuration for queue [_1]', $QueueObj->Name);
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name||'');
 }
 if ( $QueueObj->Id ) {
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
