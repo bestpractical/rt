@@ -547,6 +547,15 @@ sub _ValidateName {
     my $self = shift;
     my $name = shift;
 
+    return (undef, "Queue name is required") unless length $name;
+
+    # Validate via the superclass first
+    # Case: short circuit if it's an integer so we don't have
+    # fale negatives when loading a temp queue
+    unless ( my $q = $self->SUPER::ValidateName($name) ) {
+        return ($q, "That's not a valid name.");
+    }
+
     my $tempqueue = RT::Queue->new(RT->SystemUser);
     $tempqueue->Load($name);
 
@@ -555,13 +564,7 @@ sub _ValidateName {
         return (undef, "Queue already exists.");
     }
 
-    #If the queue doesn't exist, return 1
-    elsif (my $q = $self->SUPER::ValidateName($name)) {
-        return ($q);
-    }
-    else {
-        return (undef, "That's not a valid name.");
-    }
+    return (1);
 }
 
 
