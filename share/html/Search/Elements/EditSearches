@@ -68,16 +68,16 @@
 </nobr>
 % }
 % if ( $Object && $Object->Id ) {
-<input type="submit" class="button" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } else {
-<input type="submit" class="button" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
 % }
 <br />
 <hr />
 <span class="label"><&|/l&>Load saved search</&>:</span>
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
-<input type="submit" value="<% loc('Load') %>" class="button" />
+<input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />
 
 </&>
 </div>

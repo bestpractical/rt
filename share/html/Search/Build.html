@@ -66,7 +66,7 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs, QueryString => $QueryString &>
+<& /Elements/Tabs, %TabArgs &>
 
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
@@ -80,8 +80,8 @@
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
-<& /Elements/Submit,  Label => loc('Add these terms'), Name => 'AddClause'&>
-<& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch'&>
+<& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
+<& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
 
 
 <div id="editquery">
@@ -179,6 +179,7 @@ if ( @parse_results ) {
         Query => $query{'Query'},
         Format => $query{'Format'},
         SavedSearchId => $saved_search{'Id'},
+        SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         actions => \@actions,
     );
 }
@@ -276,6 +277,12 @@ my ( $AvailableColumns, $CurrentFormat );
 # if we're asked to save the current search, save it
 push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
 
+# Populate the "query" context with saved search data
+
+if ($ARGS{SavedSearchSave}) {
+    $query{'SavedSearchId'} = $saved_search{'Id'};
+}
+
 # Push the updates into the session so we don't lose 'em
 
 $session{'CurrentSearchHash'} = {
@@ -289,20 +296,25 @@ $session{'CurrentSearchHash'} = {
 # Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    $m->comp( 'Results.html', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'}, );
-    $m->comp( '/Elements/Footer' );
+    my $redir_query_string = $m->comp(
+        '/Elements/QueryString',
+        %query,
+        SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+        SavedSearchId => $saved_search{'Id'},
+    );
+    RT::Interface::Web::Redirect(RT->Config->Get('WebPath') . '/Search/Results.html?' . $redir_query_string);
     $m->abort;
 }
 
 
 # Build a querystring for the tabs
 
-my $QueryString = '';
+my %TabArgs = ();
 if ($NewQuery) {
-    $QueryString = 'NewQuery=1';
+    $TabArgs{QueryString} = 'NewQuery=1';
 }
 elsif ( $query{'Query'} ) {
-    $QueryString = $m->comp('/Elements/QueryString', %query );
+    $TabArgs{QueryArgs} = \%query;
 }
 
 </%INIT>
