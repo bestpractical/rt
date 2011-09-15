@@ -37,3 +37,33 @@ $m->follow_link(id => 'page-bulk');
 
 $m->form_name('BulkUpdate');
 ok(!$m->value('UpdateTicket2'), "There is no Ticket #2 in the search's bulk update");
+
+sub edit_search_link_has {
+    my ($m, $id, $msg) = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    (my $dec_id = $id) =~ s/:/%3A/g;
+
+    my $chart_url = $m->find_link(id => 'page-edit_search')->url;
+    like(
+        $chart_url, qr{SavedSearchId=\Q$dec_id\E},
+        $msg || 'Search link matches the pattern we expected'
+    );
+}
+
+diag("Test search context");
+{
+    $m->get_ok($url . '/Search/Build.html');
+    $m->form_name('BuildQuery');
+    $m->field(ValueOfPriority => 45);
+    $m->click('AddClause');
+    $m->form_name('BuildQuery');
+    $m->set_fields(
+        SavedSearchDescription => 'my saved search',
+    );
+    $m->click('SavedSearchSave');
+
+    my $saved_search_id = $m->form_name('BuildQuery')->value('SavedSearchId');
+    edit_search_link_has($m, $saved_search_id);
+}
