@@ -296,7 +296,12 @@ $session{'CurrentSearchHash'} = {
 # Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    my $redir_query_string = $m->comp('/Elements/QueryString', %query, SavedChartSearchId => $ARGS{'SavedChartSearchId'});
+    my $redir_query_string = $m->comp(
+        '/Elements/QueryString',
+        %query,
+        SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+        SavedSearchId => $saved_search{'Id'},
+    );
     RT::Interface::Web::Redirect(RT->Config->Get('WebPath') . '/Search/Results.html?' . $redir_query_string);
     $m->abort;
 }
