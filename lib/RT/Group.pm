@@ -506,10 +506,10 @@ Enforces unique user defined group names when updating
 =cut
 
 sub ValidateName {
-    my ($self, $value) = @_;
+    my ($self, $value, %args) = @_;
 
     if ($self->Domain and $self->Domain eq 'UserDefined') {
-        my ($ok, $msg) = $self->_ValidateUserDefinedName($value);
+        my ($ok, $msg) = $self->_ValidateUserDefinedName($value, %args);
         # It's really too bad we can't pass along the actual error
         return 0 if not $ok;
     }
@@ -523,11 +523,14 @@ Returns true if the user defined group name isn't in use, false otherwise.
 =cut
 
 sub _ValidateUserDefinedName {
-    my ($self, $value) = @_;
-    my $dupcheck = RT::Group->new(RT->SystemUser);
-    $dupcheck->LoadUserDefinedGroup($value);
-    return (0, $self->loc("Group name '[_1]' is already in use", $value))
-        if $dupcheck->id;
+    my ($self, $value, %args) = @_;
+    return (0, $self->loc("A group name is required")) unless $value;
+    unless ($args{for_update_only}) {
+        my $dupcheck = RT::Group->new(RT->SystemUser);
+        $dupcheck->LoadUserDefinedGroup($value);
+        return (0, $self->loc("Group name '[_1]' is already in use", $value))
+            if $dupcheck->id;
+    }
     return 1;
 }
 
