@@ -46,7 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeCustomFields' );
-<div class="edit-custom-fields">
+% if ( $WRAP ) {
+<<% $WRAP %> class="edit-custom-fields">
+% }
 % while ( my $CustomField = $CustomFields->Next ) {
 % next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
 % my $Type = $CustomField->Type || 'Unknown';
@@ -73,7 +75,9 @@
   </<% $FIELD %>>
 % }
 
-</div>
+% if ( $WRAP ) {
+</<% $WRAP %>>
+% }
 % $m->callback( %ARGS, CallbackName => 'AfterCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 <%INIT>
 my $CustomFields;
@@ -88,8 +92,15 @@ if ($TicketObj && !$OnCreate) {
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
+$AsTable ||= $InTable;
 my $FIELD = $AsTable ? 'tr' : 'div';
 my $CELL  = $AsTable ? 'td' : 'div';
+my $WRAP  = '';
+if ( $AsTable ) {
+    $WRAP = 'table' unless $InTable;
+} else {
+    $WRAP = 'div';
+}
 
 </%INIT>
 <%ARGS>
@@ -99,4 +110,5 @@ $QueueObj => undef
 $OnCreate => undef
 $DefaultsFromTopArguments => 1
 $AsTable => 0
+$InTable => 0
 </%ARGS>
