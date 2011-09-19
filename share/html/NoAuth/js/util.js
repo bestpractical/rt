@@ -225,6 +225,11 @@ jQuery(function() {
     var opts = {
         dateFormat: 'yy-mm-dd',
         constrainInput: false,
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
     };
     jQuery(".ui-datepicker:not(.withtime)").datepicker(opts);
     jQuery(".ui-datepicker.withtime").datepicker( jQuery.extend({}, opts, {
