@@ -120,31 +120,14 @@ $id =~ s|index$||g
     if $id ne 'index';
 $id =~ s|-$||g;
 
-sub style_exists {
-    my $style = shift;
+my @roots = map $_->[1],
+    $HTML::Mason::VERSION <= 1.28
+        ? $m->interp->resolver->comp_root_array
+        : $m->interp->comp_root_array;
 
-    my @css_paths = (
-        $RT::MasonComponentRoot . '/NoAuth/css',
-        $RT::MasonLocalComponentRoot . '/NoAuth/css',
-    );
-
-    for my $css_path (@css_paths) {
-        if (-d "$css_path/$style") {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-my $style = RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} );
-
-unless (style_exists($style)) {
-    my $system_style = RT->Config->Get('WebDefaultStylesheet');
-    if (style_exists($system_style)) {
-        $style = $system_style;
-    }
-}
+my $style = $session{'CurrentUser'}
+          ? $session{'CurrentUser'}->Stylesheet(@roots)
+          : RT->Config->Get('WebDefaultStylesheet');
 
 my @css_files;
 if ( RT->Config->Get('DevelMode') ) {

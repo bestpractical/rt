@@ -1320,6 +1320,31 @@ sub SetPreferences {
     }
 }
 
+=head2 Stylesheet
+
+Returns a list of valid stylesheets take from preferences.
+
+=cut
+
+sub Stylesheet {
+    my $self = shift;
+    my @roots = @_;
+
+    my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
+
+
+    my @css_paths = map { $_ . '/NoAuth/css' } @roots;
+
+    for my $css_path (@css_paths) {
+        if (-d "$css_path/$style") {
+            return $style
+        }
+    }
+
+    # Fall back to the system stylesheet.
+    return RT->Config->Get('WebDefaultStylesheet');
+}
+
 =head2 WatchedQueues ROLE_LIST
 
 Returns a RT::Queues object containing every queue watched by the user.
