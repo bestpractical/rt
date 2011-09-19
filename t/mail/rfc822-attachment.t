@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
-my ($baseurl, $m) = RT::Test->started_ok;
 
 use MIME::Entity;
 
@@ -134,6 +133,5 @@ sub headers_like {
     }
 }
 
-undef $m;
 done_testing;
 
