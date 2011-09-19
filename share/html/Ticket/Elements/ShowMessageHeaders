@@ -79,6 +79,8 @@ my $ticket = $Message->TransactionObj->TicketObj;
 foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
     if ($f->{'Tag'} eq 'RT-Attach') {
+        $f->{'Value'} =~ s/(?:^\s*|\s*$)//g;
+
         # Blat in the filename and linkify
         my $att = RT::Attachment->new( $session{'CurrentUser'} );
         $att->Load($f->{'Value'});

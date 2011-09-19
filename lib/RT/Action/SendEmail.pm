@@ -428,6 +428,8 @@ sub AddAttachmentsFromHeaders {
     # Take all RT-Attach headers and add the attachments to the outgoing mail
     my $seen_attachment = 0;
     for my $id (uniq $email->head->get_all('RT-Attach')) {
+        $id =~ s/(?:^\s*|\s*$)//g;
+
         my $attach = RT::Attachment->new( $self->TransactionObj->CreatorObj );
         $attach->Load($id);
         next unless $attach->Id
