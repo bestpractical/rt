@@ -66,7 +66,7 @@ $m->submit_form_ok({
     fields => { Name => 'Test Redirect' },
 });
 $m->content_contains('Object created', 'found results');
-$m->content_contains('Editing Configuration for Class Test Redirect', 'found title');
+$m->content_contains('Modify the Class Test Redirect', 'found title');
 $m->form_number(3);
 $m->untick( 'Include-Name', 1 );
 $m->field( 'Description', 'Test Description' );
