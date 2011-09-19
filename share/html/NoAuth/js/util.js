@@ -222,14 +222,12 @@ function doOnLoad( js ) {
 }
 
 jQuery(function() {
-    jQuery(".ui-datepicker:not(.withtime)").datepicker( {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false
-    } );
-
-    jQuery(".ui-datepicker.withtime").datepicker( {
+    var opts = {
         dateFormat: 'yy-mm-dd',
         constrainInput: false,
+    };
+    jQuery(".ui-datepicker:not(.withtime)").datepicker(opts);
+    jQuery(".ui-datepicker.withtime").datepicker( jQuery.extend({}, opts, {
         onSelect: function( dateText, inst ) {
             // trigger timepicker to get time
             var button = document.createElement('input');
@@ -250,7 +248,7 @@ jQuery(function() {
 
             jQuery(button).focus();
         }
-    } );
+    }) );
 });
 
 function textToHTML(value) {
