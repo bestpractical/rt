@@ -89,9 +89,11 @@ if ( $id ) {
 
 if ($QueueObj->id) {
     $Scrips->LimitToQueue($id);
+    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
 }
 else {
     $Scrips->LimitToGlobal();
+    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'GlobalScrips'};
 }
 
 # deal with modifying and deleting existing scrips
@@ -107,9 +109,6 @@ foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
         push @actions, $msg;
     }
 }
-
-$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
-
 </%init>
 
 <%ARGS>

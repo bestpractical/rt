@@ -61,7 +61,7 @@
 % }
 
 <%init>
-my $Format = RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
+my $Format = RT->Config->Get('AdminSearchResultFormat')->{'GlobalScrips'};
 
 my $Scrips = RT::Scrips->new( $session{'CurrentUser'} );
 $Scrips->LimitToGlobal;
