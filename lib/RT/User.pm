@@ -716,9 +716,9 @@ sub SetRandomPassword {
 
 Returns status, [ERROR or new password].  Resets this user's password to
 a randomly generated pronouncable password and emails them, using a
-global template called "RT_PasswordChange", which can be overridden
-with global templates "RT_PasswordChange_Privileged" or "RT_PasswordChange_NonPrivileged"
-for privileged and Non-privileged users respectively.
+global template called "PasswordChange".
+
+This function is currently unused in the UI, but available for local scripts.
 
 =cut
 
