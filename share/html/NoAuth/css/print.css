@@ -161,8 +161,11 @@ div.titlebox-title {
 }
 
 #ticket-history, div.ticket-transaction {
-    page-break-inside: avoid;
     border: 0 !important;
+}
+
+div.ticket-transaction {
+    page-break-inside: avoid;
 }
 
 /* hide "Ticket metadata" */
