@@ -65,17 +65,17 @@ div#body {
 }
 
 div#header h1 {
-    margin-bottom: 2em;
-    position: relative;
+    margin-bottom: 1em;
+    position: static;
+    height: auto;
     width: auto;
-    left: 0;
+    overflow: visible;
     color: black !important;
     padding: 0 !important;
 }
 
 #header {
     padding: 0 !important;
-    margin-top: -2em !important;
 }
 
 #quickbar,
