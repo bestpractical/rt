@@ -48,12 +48,13 @@
 * {
     float: none;
     position: static;
+    background: transparent !important;
 }
 
 body {
     margin: 1em;
     font-size: 10pt;
-    background: white;
+    background: white !important;
 }
 
 div#body {
@@ -101,7 +102,6 @@ form
 }
 
 a:link, a:visited {
-    background: transparent;
     font-weight: bold !important;
 }
 
@@ -110,7 +110,6 @@ div.ticket-transaction .metadata .type {
 }
 
 div.titlebox-title .left {
-    background: transparent !important;
     border: 0 !important;
     color: black !important;
 }
