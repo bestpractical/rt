@@ -150,10 +150,6 @@ div.messagebody a[href]:after {
     content: " (" attr(href) ") ";
 }
 
-div.history {
-    page-break-before: always;
-}
-
 div.titlebox-title {
     page-break-after: avoid;
     border: 0 !important;
