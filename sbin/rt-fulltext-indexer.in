@@ -367,9 +367,13 @@ sub process_pg {
         $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
     }
 
-    my $status = $dbh->do( $query, undef, $$text, $attachment->id );
+    my $status = eval { $dbh->do( $query, undef, $$text, $attachment->id ) };
     unless ( $status ) {
-        die "error: ". $dbh->errstr;
+        if ($dbh->errstr =~ /string is too long for tsvector/) {
+            warn "Attachment @{[$attachment->id]} not indexed, as it contains too many unique words to be indexed";
+        } else {
+            die "error: ". $dbh->errstr;
+        }
     }
 }
 
