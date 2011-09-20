@@ -79,7 +79,7 @@
 <& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
 % }
 
-% my $stylesheet_plugin = "/NoAuth/css/". RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} )."/InHeader";
+% my $stylesheet_plugin = "/NoAuth/css/".$style."/InHeader";
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
@@ -96,7 +96,7 @@
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
-  <body class="<% lc RT->Config->Get('WebDefaultStylesheet', $session{'CurrentUser'}) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% lc $style %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>
