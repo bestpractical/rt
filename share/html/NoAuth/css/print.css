@@ -122,6 +122,11 @@ div.titlebox-title .left {
     padding-left: 0 !important;
 }
 
+.titlebox.rolled-up .titlebox-title .left:after {
+    content: " (<&|/l&>collapsed</&>)";
+    font-weight: normal;
+}
+
 div.titlebox-content {
     border: 0 !important;
     padding-top: 0.5em !important;
