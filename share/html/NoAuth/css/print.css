@@ -150,6 +150,11 @@ div.messagebody a[href]:after {
     content: " (" attr(href) ") ";
 }
 
+.messagebody {
+    orphans: 2;
+    widows: 2;
+}
+
 div.titlebox-title {
     page-break-after: avoid;
     border: 0 !important;
