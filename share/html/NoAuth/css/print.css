@@ -118,6 +118,8 @@ div.ticket-transaction .metadata .type {
 div.titlebox-title .left {
     border: 0 !important;
     color: black !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
 }
 
 div.titlebox-content {
