@@ -96,8 +96,14 @@ div#header h1 {
 #footer,
 #topactions,
 #logo,
-form
+form,
+div.summary + br
 {
+    display: none;
+}
+
+/* Hide "Click to load" and "Loading" message. Loaded history is #id > .history */
+#deferred_ticket_history > .titlebox, #delayed_ticket_history > .titlebox {
     display: none;
 }
 
@@ -117,6 +123,15 @@ div.titlebox-title .left {
 div.titlebox-content {
     border: 0 !important;
     padding-top: 0.5em !important;
+}
+
+/* outer Ticket Metadata titlebox gets no padding, but inside ones do below */
+.summary .titlebox-content {
+    padding: 0 !important;
+}
+
+div.summary .ticket-summary div.titlebox-content {
+    padding: 0.5em 1em 1em 1em !important;
 }
 
 div.titlebox-title .left * {
@@ -153,6 +168,10 @@ div.summary > div > div.titlebox > div.titlebox-title {
 
 .label, .label a, .labeltop, .labeltop a {
     font-weight: normal !important;
+}
+
+div.titlebox {
+    margin-bottom: 0;
 }
 
 /* for web2 and ballard*/
