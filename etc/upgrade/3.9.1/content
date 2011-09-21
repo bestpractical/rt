@@ -22,7 +22,11 @@
         }
 
         $templates = RT::Templates->new(RT->SystemUser);
-        $templates->UnLimit();
+        $templates->Limit(
+            FIELD => 'Type',
+            OPERATOR => '!=',
+            VALUE => 'Perl',
+        );
         while (my $template = $templates->Next) {
             my ($status, $msg) = $template->SetType('Perl');
             $RT::Logger->warning( "Couldn't change Type of Template #" . $template->Id . ": $msg" ) unless $status;
