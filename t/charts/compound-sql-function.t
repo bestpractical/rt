@@ -40,7 +40,7 @@ use_ok 'RT::Report::Tickets';
                         {
                           'cells' => [
                                { 'rowspan' => 2, 'value' => 'Queue', 'type' => 'head' },
-                               { 'colspan' => 4, 'value' => 'Created-Resolved', 'type' => 'head' }
+                               { 'colspan' => 4, 'value' => 'Summary of Created-Resolved', 'type' => 'head' }
                              ]
                         },
                         {
