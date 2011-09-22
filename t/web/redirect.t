@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 122;
+use RT::Test tests => 13;
 
 my $r = $HTML::Mason::Commands::r = bless {}, 'R';
 my $m = $HTML::Mason::Commands::m = bless {}, 'M';
