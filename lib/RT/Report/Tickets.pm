@@ -678,6 +678,9 @@ sub MapSubValues {
         my $dst = $item->{'values'}{ $to } = { };
         while (my ($k, $v) = each %{ $map } ) {
             $dst->{ $k } = delete $item->{'values'}{ $v->{'NAME'} };
+            utf8::decode( $dst->{ $k } )
+                if defined $dst->{ $k }
+               and not utf8::is_utf8( $dst->{ $k } );
             delete $item->{'fetched'}{ $v->{'NAME'} };
         }
         $item->{'fetched'}{ $to } = 1;
