@@ -463,6 +463,7 @@ sub SetupGroupings {
 
     my @function = grep defined && length,
         ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
+    push @function, 'COUNT' unless @function;
     foreach my $e ( @function ) {
         $e = {
             TYPE => 'statistic',
