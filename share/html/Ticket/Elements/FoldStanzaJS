@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <span
-    class="message-stanza-folder"
+    class="message-stanza-folder closed"
     onclick="fold_message_stanza(this, '<%loc('Show quoted text')%>', '<%loc('Hide quoted text')%>');"><%loc('Show quoted text')%></span><br />\
