@@ -60,8 +60,8 @@ if ($ShowDisplayModes or $ShowTitle) {
     if ($ShowDisplayModes) {
         $titleright = '';
         
-        my $open_all  = $m->interp->apply_escapes( loc("Show all quotes"), 'h' );
-        my $close_all = $m->interp->apply_escapes( loc("Hide all quotes"), 'h' );
+        my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
+        my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'h' );
         $titleright .=    '<a href="#" data-direction="open" '
                         . qq{onclick='return toggle_all_folds(this, "$open_all", "$close_all");'}
                         . ">$open_all</a> &mdash; ";
