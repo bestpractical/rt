@@ -889,8 +889,7 @@ Path to the jsmin binary, available from
 http://www.crockford.com/javascript/jsmin.html
 
 If specified, it will be used to minify C<JSFiles>.  If it cannot be
-found, RT will fall back to the L<JavaScript::Minifier> module;
-failing that, RT will will simply concatenate the files.
+found, RT will simply concatenate the files.
 
 =cut
 
