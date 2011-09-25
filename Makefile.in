@@ -254,7 +254,7 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "    $(RT_SBIN_PATH)/rt-setup-database --prompt-for-dba-password --action upgrade"
+	@echo "    make upgrade-database"
 
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
@@ -361,6 +361,9 @@ initdb :: initialize-database
 
 initialize-database: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --prompt-for-dba-password
+
+upgrade-database:
+	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action upgrade --prompt-for-dba-password
 
 dropdb: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --prompt-for-dba-password
