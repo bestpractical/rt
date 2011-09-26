@@ -220,6 +220,13 @@ sub LimitToUnprivileged {
 }
 
 
+sub Limit {
+    my $self = shift;
+    my %args = @_;
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    return $self->SUPER::Limit( %args );
+}
+
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
 
 
