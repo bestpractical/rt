@@ -188,7 +188,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
         my @owners =@{$ARGS{'Owner'}};
         delete $ARGS{'Owner'};
         foreach my $owner(@owners){
-            if (RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})) {
+            if ($ARGS{'Owner'} =~ /\D/) {
                 $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
             }
             else {
