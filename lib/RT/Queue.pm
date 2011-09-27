@@ -515,7 +515,6 @@ sub Load {
     }
 
     return ( $self->Id );
-
 }
 
 
@@ -535,8 +534,8 @@ sub ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
-        return (undef);
+    if ( $tempqueue->Name() && $tempqueue->id != $self->id) {
+        return wantarray ? (undef, "Queue already exists.") : 0;
     }
 
     #If the queue doesn't exist, return 1
