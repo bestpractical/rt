@@ -510,8 +510,9 @@ sub ValidateName {
 
     if ($self->Domain and $self->Domain eq 'UserDefined') {
         my ($ok, $msg) = $self->_ValidateUserDefinedName($value, %args);
-        # It's really too bad we can't pass along the actual error
-        return 0 if not $ok;
+        if (not $ok) {
+            return wantarray ? (0, $msg) : 0;
+        }
     }
     return 1;
 }
