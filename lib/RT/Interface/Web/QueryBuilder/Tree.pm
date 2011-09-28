@@ -110,10 +110,11 @@ sub GetReferencedQueues {
             return unless $node->isLeaf;
 
             my $clause = $node->getNodeValue();
+            return unless $clause->{Key} eq 'Queue';
 
-            if ( $clause->{Key} eq 'Queue' ) {
-                $queues->{ $clause->{Value} } = 1;
-            };
+            my $value = $clause->{Value};
+            $value =~ s/\\(.)/$1/g if $value =~ s/^'(.*)'$/$1/;
+            $queues->{ $value } = 1;
         }
     );
 
