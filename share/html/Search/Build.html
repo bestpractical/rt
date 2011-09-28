@@ -229,9 +229,9 @@ foreach my $arg ( keys %ARGS ) {
                 $op = "IS NOT";
             }
         }
-        else {
-            $value =~ s/'/\\'/g;
-            $value = "'$value'" unless $value =~ /^\d+$/;
+        elsif ($value =~ /\D/) {
+            $value =~ s/(['\\])/\\$1/g;
+            $value = "'$value'";
         }
 
         my $clause = {

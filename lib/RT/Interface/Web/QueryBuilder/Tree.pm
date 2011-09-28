@@ -268,10 +268,10 @@ sub ParseSQL {
             push @results, [ $args{'CurrentUser'}->loc("Unknown field: [_1]", $key), -1 ]
         }
 
-        $value =~ s/'/\\'/g;
         if ( lc $op eq 'is' || lc $op eq 'is not' ) {
             $value = 'NULL'; # just fix possible mistakes here
         } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
+            $value =~ s/(['\\])/\\$1/g;
             $value = "'$value'";
         }
         $key = "'$key'" if $key =~ /^CF./;
