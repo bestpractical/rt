@@ -92,8 +92,8 @@ sub TraversePrePost {
 
 =head2 GetReferencedQueues
 
-Returns a hash reference with keys each queue name referenced in a clause in
-the key (even if it's "Queue != 'Foo'"), and values all 1.
+Returns a hash reference; each queue referenced with an '=' operation
+will appear as a key whose value is 1.
 
 =cut
 
@@ -111,6 +111,7 @@ sub GetReferencedQueues {
 
             my $clause = $node->getNodeValue();
             return unless $clause->{Key} eq 'Queue';
+            return unless $clause->{Op} eq '=';
 
             my $value = $clause->{Value};
             $value =~ s/\\(.)/$1/g if $value =~ s/^'(.*)'$/$1/;
