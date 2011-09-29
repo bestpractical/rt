@@ -200,10 +200,11 @@ sub bootstrap_port {
 
     # Determine which ports are in use
     use Fcntl qw(:DEFAULT :flock);
-    sysopen(PORTS, "t/tmp/ports", O_RDWR|O_CREAT)
-        or die "Can't write to ports file: $!";
+    my $portfile = "$tmp{'directory'}/../ports";
+    sysopen(PORTS, $portfile, O_RDWR|O_CREAT)
+        or die "Can't write to ports file $portfile: $!";
     flock(PORTS, LOCK_EX)
-        or die "Can't write-lock ports file: $!";
+        or die "Can't write-lock ports file $portfile: $!";
     $ports{$_}++ for split ' ', join("",<PORTS>);
 
     # Pick a random port, checking that the port isn't in our in-use
@@ -1509,10 +1510,11 @@ END {
     # database, as our port lock is also a lock on the database name.
     if ($port) {
         my %ports;
-        sysopen(PORTS, "t/tmp/ports", O_RDWR|O_CREAT)
-            or die "Can't write to ports file: $!";
+        my $portfile = "$tmp{'directory'}/../ports";
+        sysopen(PORTS, $portfile, O_RDWR|O_CREAT)
+            or die "Can't write to ports file $portfile: $!";
         flock(PORTS, LOCK_EX)
-            or die "Can't write-lock ports file: $!";
+            or die "Can't write-lock ports file $portfile: $!";
         $ports{$_}++ for split ' ', join("",<PORTS>);
         delete $ports{$port};
         seek(PORTS, 0, 0);
