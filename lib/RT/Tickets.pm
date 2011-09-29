@@ -3374,8 +3374,8 @@ sub _RestrictionsToClauses {
         exists $clause{$realfield} or $clause{$realfield} = [];
 
         # Escape Quotes
-        $field =~ s!(['"])!\\$1!g;
-        $value =~ s!(['"])!\\$1!g;
+        $field =~ s!(['\\])!\\$1!g;
+        $value =~ s!(['\\])!\\$1!g;
         my $data = [ $ea, $type, $field, $op, $value ];
 
         # here is where we store extra data, say if it's a keyword or
