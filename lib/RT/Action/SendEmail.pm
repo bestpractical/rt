@@ -1009,16 +1009,16 @@ Set References and In-Reply-To headers for this message.
 
 sub SetReferencesHeaders {
     my $self = shift;
-    my ( @in_reply_to, @references, @msgid );
 
-    if ( my $top = $self->TransactionObj->Message->First ) {
-        @in_reply_to = split( /\s+/m, $top->GetHeader('In-Reply-To') || '' );
-        @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
-        @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
-    } else {
+    my $top = $self->TransactionObj->Message->First;
+    unless ( $top ) {
         $self->SetHeader( References => $self->PseudoReference );
         return (undef);
     }
+
+    my @in_reply_to = split( /\s+/m, $top->GetHeader('In-Reply-To') || '' );
+    my @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
+    my @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
 
     # There are two main cases -- this transaction was created with
     # the RT Web UI, and hence we want to *not* append its Message-ID
