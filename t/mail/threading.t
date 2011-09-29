@@ -39,7 +39,7 @@ EOF
     $ticket->Load( $id );
     ok $ticket->id, "loaded ticket";
 
-    my ($status, $msg) = $ticket->Correspond( Content => 'boo' );
+    ($status, my ($msg)) = $ticket->Correspond( Content => 'boo' );
     ok $status, "replied to the ticket";
 
     @mail = RT::Test->fetch_caught_mails;
