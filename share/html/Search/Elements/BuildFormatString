@@ -48,7 +48,7 @@
 <%ARGS>
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 
-%cfqueues => ()
+%queues => ()
 
 $Face => undef
 $Size => undef
@@ -101,7 +101,7 @@ my @fields = qw(
 $m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %cfqueues) {
+foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);

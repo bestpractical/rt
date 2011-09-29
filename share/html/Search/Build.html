@@ -78,7 +78,7 @@
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
+    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
@@ -269,7 +269,7 @@ my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
     %ARGS,
-    cfqueues => $queues,
+    queues => $queues,
     Format => $query{'Format'},
 );
 

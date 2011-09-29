@@ -95,7 +95,7 @@ $ARGS{'OrderBy'} = join '|', grep defined && /\S/, (ref $ARGS{'OrderBy'})? @{$AR
 my ( $AvailableColumns, $CurrentFormat );
 ( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     '/Search/Elements/BuildFormatString',
-    cfqueues => {}, %ARGS
+    %ARGS
 );
 
 if ($ARGS{'Save'}) {

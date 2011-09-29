@@ -55,8 +55,8 @@ if ($TicketObj) {
     @objects = ($TicketObj);
 } elsif ($QueueObj) {
     @objects = ($QueueObj);
-} elsif ($cfqueues) {
-    @objects = keys %{$cfqueues};
+} elsif ($Queues) {
+    @objects = keys %{$Queues};
 } else {
     # Let's check rights on an empty queue object. that will do a search
     # for any queue.
@@ -73,5 +73,5 @@ $m->callback(
 <%ARGS>
 $TicketObj  => undef
 $QueueObj   => undef
-$cfqueues   => undef
+$Queues   => undef
 </%ARGS>
