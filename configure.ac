@@ -227,6 +227,12 @@ AC_ARG_WITH(my-user-group,
             WEB_GROUP=$my_group)
 
 # Test for valid database names
+AC_MSG_CHECKING([if database name is set])
+          AS_IF([ echo $DB_DATABASE | $PERL -e 'exit(1) unless <> =~ /\S/' ],
+                [ AC_MSG_RESULT([yes]) ],
+                [ AC_MSG_ERROR([no.  database name is not set]) ]
+               )
+
 AS_IF([ test "$DB_TYPE" = "mysql" ],
       [ AC_MSG_CHECKING([if database name is valid])
           AS_IF([ echo $DB_DATABASE | $PERL -e 'exit(1) if <> =~ /-/'],
