@@ -43,5 +43,41 @@
             $group->RT::Record::Delete();
         }
     },
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing all Delegate and PersonalGroup rights');
+
+        my $acl = RT::ACL->new(RT->SystemUser);
+        for my $right (qw/AdminOwnPersonalGroups AdminAllPersonalGroups DelegateRights/) {
+            $acl->Limit( FIELD => 'RightName', VALUE => $right );
+        }
+
+        while ( my $ace = $acl->Next ) {
+            my ( $ok, $msg ) = $ace->Delete();
+            $RT::Logger->debug("Removing ACE ".$ace->id." for right ".$ace->__Value('RightName'));
+
+            if ( !$ok ) {
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
+            }
+        }
+    },
+    sub {
+        use strict;
+        $RT::Logger->debug('Removing unimplemented RejectTicket and ModifyTicketStatus rights');
+
+        my $acl = RT::ACL->new(RT->SystemUser);
+        for my $right (qw/RejectTicket ModifyTicketStatus/) {
+            $acl->Limit( FIELD => 'RightName', VALUE => $right );
+        }
+
+        while ( my $ace = $acl->Next ) {
+            my ( $ok, $msg ) = $ace->Delete();
+            $RT::Logger->debug("Removing ACE ".$ace->id." for right ".$ace->__Value('RightName'));
+
+            if ( !$ok ) {
+                $RT::Logger->warn( "Unable to delete ACE " . $ace->id . ": " . $msg );
+            }
+        }
+    },
 );
 

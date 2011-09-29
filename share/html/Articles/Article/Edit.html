@@ -152,7 +152,6 @@ elsif ( $id eq 'new' ) {
 
     foreach my $arg (keys %ARGS) {
         next if $arg =~ /-(?:Magic|Category)$/;
-        $RT::Logger->debug("Conteplating CF arg $arg"); 
         # Object-RT::Article--CustomField-3-Values
         if ( $arg =~ /^Object-RT::Article--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1; 

@@ -160,11 +160,14 @@ GENERAL INSTALLATION
 
           make upgrade
 
-      This will also display the appropriate rt-setup-database command to
-      upgrade your database.  You should back up your database before
-      running this command.  When you run it, you will be prompted for
-      your previous version of RT (such as 3.6.4) so that the appropriate
-      set of database upgrades can be applied.
+      This will also prompt you to upgrade your database by running:
+
+          make upgrade-database
+
+      You should back up your database before running this command.
+      When you run it, you will be prompted for your previous version of
+      RT (such as 3.6.4) so that the appropriate set of database
+      upgrades can be applied.
 
       Finally, clear the Mason cache dir:
 
@@ -175,8 +178,10 @@ GENERAL INSTALLATION
  7) Configure the web server, as described in docs/web_deployment.pod,
     and the email gateway, as described below.
 
-    NOTE: root's password for the web interface is "password" (without
-    the quotes).  Not changing this is a SECURITY risk!
+    NOTE: The default credentials for RT are:
+        User: root
+        Pass: password
+    Not changing the root password from the default is a SECURITY risk!
 
     Once you've set up the web interface, consider setting up automatic
     logout for inactive sessions. For more information about how to do

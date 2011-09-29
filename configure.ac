@@ -40,7 +40,7 @@ dnl WEB_HANDLER
 AC_ARG_WITH(web-handler,
     AC_HELP_STRING([--with-web-handler=LIST],
 	[comma separated list of web-handlers RT will be able to use.
-         Default is fastcgi when modperl1, modperl2, and fastcgi are valid.
+         Default is fastcgi. Valid values are modperl1, modperl2, fastcgi and standalone.
          To successfully run RT you need only one.
         ]),
     WEB_HANDLER=$withval,
@@ -395,6 +395,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/upgrade-articles
                  etc/upgrade/vulnerable-passwords
                  sbin/rt-attributes-viewer
+                 sbin/rt-preferences-viewer
                  sbin/rt-session-viewer
                  sbin/rt-dump-metadata
                  sbin/rt-setup-database

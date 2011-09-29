@@ -246,7 +246,7 @@ sub HandleWatcher     {
 sub HandleRequestor { return requestor => "Requestor STARTSWITH '$_[1]'";  }
 sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
 sub HandleQ         { return queue     => "Queue = '$_[1]'";      }
-sub HandleCf        { return "cf.$_[3]" => "CF.'$_[3]' LIKE '$_[1]'"; }
+sub HandleCf        { return "cf.$_[3]" => "'CF.{$_[3]}' LIKE '$_[1]'"; }
 
 RT::Base->_ImportOverlays();
 

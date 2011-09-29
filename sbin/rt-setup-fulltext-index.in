@@ -118,7 +118,6 @@ GetOptions(
     'h|help!'        => \$OPT{'help'},
     'ask!'           => \$OPT{'ask'},
     'dry-run!'       => \$OPT{'dryrun'},
-    'binary!'        => \$OPT{'binary'},
     'attachments!'   => \$OPT{'attachments'},
 
     'table=s'        => \$OPT{'table'},
@@ -142,7 +141,7 @@ $dbh->{'PrintError'} = 1;
 if ( $DB{'type'} eq 'mysql' ) {
     check_sphinx();
     my $table = $OPT{'table'} || prompt(
-        message => "Enter name of a new Mysql table that will be used to connect to the\n"
+        message => "Enter name of a new MySQL table that will be used to connect to the\n"
                  . "Sphinx server:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
@@ -370,8 +369,9 @@ EOQ
     unless ($fts) {
         print STDERR <<EOT;
 
-Your Postgres server does not include full-text support.  You will need
-to upgrade to Postgres version 8.3 or higher to use full-text indexing.
+Your PostgreSQL server does not include full-text support.  You will
+need to upgrade to PostgreSQL version 8.3 or higher to use full-text
+indexing.
 
 EOT
         exit 1;
@@ -383,10 +383,10 @@ sub check_sphinx {
 
     print STDERR <<EOT;
 
-Your Mysql server has not been compiled with the Sphinx storage engine
-(sphinxse).  Either install your system's sphinxse package, the binaries
-from http://sphinxsearch.org/, or recompile mysql according to the
-instructions in Sphinx's documentation.
+Your MySQL server has not been compiled with the Sphinx storage engine
+(sphinxse).  You will need to recompile MySQL according to the
+instructions in Sphinx's documentation at
+http://sphinxsearch.com/docs/current.html#sphinxse-installing
 
 EOT
     exit 1;
@@ -501,23 +501,12 @@ sub ora_create_format_column {
                 WHEN fname IS NOT NULL THEN 'ignore'
         };
     }
-    my $binary = $OPT{'binary'} ? 'binary' : 'ignore';
     $detect_format .= qq{
                 WHEN type = 'text' THEN 'text'
-                WHEN type = 'text/rtf' THEN '$binary'
+                WHEN type = 'text/rtf' THEN 'ignore'
                 WHEN type LIKE 'text/%' THEN 'text'
                 WHEN type LIKE 'message/%' THEN 'text'
-                WHEN type LIKE 'multipart/%' THEN 'ignore'
-                WHEN type LIKE 'image/%' THEN 'ignore'
-                WHEN type LIKE 'audio/%' THEN 'ignore'
-                WHEN type LIKE 'video/%' THEN 'ignore'
-                WHEN type LIKE '%signature%' THEN 'ignore'
-                WHEN type LIKE '%pkcs7%' THEN 'ignore'
-                WHEN type LIKE '%compress%' THEN 'ignore'
-                WHEN type LIKE '%zip%' THEN 'ignore'
-                WHEN type LIKE '%tar%' THEN 'ignore'
-                WHEN type LIKE '%/octet-stream' THEN 'ignore'
-                ELSE '$binary'
+                ELSE 'ignore'
             END;
             RETURN format;
         END;
@@ -710,11 +699,11 @@ To test what will happen without running any DDL, pass the C<--dryrun>
 flag.
 
 The Oracle index determines which content-types it will index at
-creation time.  By default, unknown content-types are ignored; to
-instead index unknown content-types as binary data, pass the C<--binary>
-flag when the index is created.  By default, uploaded attachments
-(attachments with filenames) are indexed; to ignore these instead, pass
-the C<--no-attachments> flag when the index is create.
+creation time. By default, textual message bodies and textual uploaded
+attachments (attachments with filenames) are indexed; to ignore textual
+attachments, pass the C<--no-attachments> flag when the index is
+created.
+
 
 =head1 AUTHOR
 

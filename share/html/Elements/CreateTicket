@@ -48,7 +48,10 @@
 <form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
 % $m->callback(CallbackName => 'InFormElement');
 >
-<&|/l, $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ) &><input type="submit" class="button" value="New ticket in" />&nbsp;[_1]</&>
+% my $button_start = '<input type="submit" class="button" value="';
+% my $button_end = '" />';
+% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo );
+<&|/l, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
 % $m->callback(CallbackName => 'BeforeFormEnd');
 </form>
 <%ARGS>

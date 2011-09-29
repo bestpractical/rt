@@ -1,0 +1,45 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use File::Copy;
+
+die "Usage: $0 'pattern to match msgid' 'code that changes \$_ for the msgstr' [files]" if @ARGV < 2;
+
+my $msgid_pattern = shift;
+my $msgid_regex   = qr#$msgid_pattern#o;
+
+my $code_str  = shift;
+
+@ARGV = (
+    <share/po/*.po>,
+    <share/po/*.pot>,
+    <po/*.po>,
+    <po/*.pot>
+) unless @ARGV;
+
+my @files = @ARGV;
+
+for my $file (@files) {
+    my ($src, $dest) = ($file, "$file.new");
+    open(my $fh_in, '<', $src) or die $!;
+    open(my $fh_out, '>', $dest) or die $!;
+    my $mark_to_change = 0;
+    while (<$fh_in>) {
+        if (/^msgid\s+"(.+?)"$/ and $1 =~ $msgid_regex) {
+            # we're at the msgid in question
+            $mark_to_change = 1;
+        }
+        elsif ($mark_to_change) {
+            # we're at the line after the msgid in question
+            eval $code_str;
+            $mark_to_change = 0;
+        }
+        print $fh_out $_;
+    }
+    close $_ for $fh_in, $fh_out;
+
+    # copy back to source
+    move($dest => $src);
+}
+

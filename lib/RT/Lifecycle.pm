@@ -484,7 +484,7 @@ sub RightsDescription {
         }
         my $description = 'Change status'
             . ( (grep $_ eq '*', @from)? '' : ' from '. join ', ', @from )
-            . ( (grep $_ eq '*', @to  )? '' : ' to '. join ', ', @from );
+            . ( (grep $_ eq '*', @to  )? '' : ' to '. join ', ', @to );
 
         $res{ $right } = $description;
     }

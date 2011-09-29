@@ -62,9 +62,9 @@ configured as aliases for F<rt-mailgate>.
 
 =cut
 
-Set($CorrespondAddress, "");
+Set($CorrespondAddress, '');
 
-Set($CommentAddress, "");
+Set($CommentAddress, '');
 
 =item C<$WebDomain>
 
@@ -228,6 +228,14 @@ From lowest to highest priority, the levels are:
 
     debug info notice warning error critical alert emergency
 
+Many syslogds are configured to discard or file debug messages away, so
+if you're attempting to debug RT you may need to reconfigure your
+syslogd or use one of the other logging options.
+
+Logging to your screen affects scripts run from the command line as well
+as the STDERR sent to your webserver (so these logs will usually show up
+in your web server's error logs).
+
 =cut
 
 Set($LogToSyslog, "info");
@@ -235,13 +243,15 @@ Set($LogToScreen, "info");
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
 
-Logging to a standalone file is also possible, but note that the file
-should needs to both exist and be writable by all direct users of the
-RT API.  This generally includes the web server and whoever
-rt-crontool runs as.  Note that rt-mailgate and the RT CLI go through
-the webserver, so their users do not need to have write permissions to
-this file. If you expect to have multiple users of the direct API,
-Best Practical recommends using syslog instead of direct file logging.
+Logging to a standalone file is also possible. The file needs to both
+exist and be writable by all direct users of the RT API. This generally
+includes the web server and whoever rt-crontool runs as. Note that
+rt-mailgate and the RT CLI go through the webserver, so their users do
+not need to have write permissions to this file. If you expect to have
+multiple users of the direct API, Best Practical recommends using syslog
+instead of direct file logging.
+
+You should set C<$LogToFile> to one of the levels documented above.
 
 =cut
 
@@ -313,7 +323,7 @@ should I<not> be an address that's managed by your RT instance.
 
 =cut
 
-Set($OwnerEmail, "root");
+Set($OwnerEmail, 'root');
 
 =item C<$LoopsToRTOwner>
 
@@ -657,7 +667,7 @@ then C<$OwnerEmail> will be used.
 
 =cut
 
-Set($DashboardAddress, "");
+Set($DashboardAddress, '');
 
 =item C<$DashboardSubject>
 
@@ -835,8 +845,12 @@ Set(@CustomFieldValuesSources, ());
 
 =item C<$CanonicalizeRedirectURLs>
 
-Set C<$CanonicalizeRedirectURLs> to 1 to use $C<WebURL> when
+Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
 redirecting rather than the one we get from C<%ENV>.
+
+Apache's UseCanonicalName directive changes the hostname that RT
+finds in C<%ENV>.  You can read more about what turning it On or Off
+means in the documentation for your version of Apache.
 
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
@@ -1802,7 +1816,7 @@ Set($LogoutRefresh, 1);
 
 =item C<$WebSecureCookies>
 
-By default, RT's session cookie isn't marked as "secure" Some web
+By default, RT's session cookie isn't marked as "secure". Some web
 browsers will treat secure cookies more carefully than non-secure
 ones, being careful not to write them to disk, only sending them over
 an SSL secured connection, and so on. To enable this behavior, set
@@ -1921,7 +1935,7 @@ Set($AmbiguousDayInFuture, 0);
 =item C<$DefaultTimeUnitsToHours>
 
 Use this to set the default units for time entry to hours instead of
-minutes.
+minutes.  Note that this only effects entry, not display.
 
 =cut
 
@@ -2083,19 +2097,19 @@ ticket creation>.
 
 =item on_merge
 
-When tickets are merged status of the ticket that merged is changed by
-force to this. It should be one of inactive statuses; 'resolved' or
-its equivalent is most probably the best candidate.
+When tickets are merged, the status of the ticket that was merged
+away is forced to this value.  It should be one of inactive statuses;
+'resolved' or its equivalent is most probably the best candidate.
 
 =item approved
 
-When an approval accepted status of depending tickets changed
-to this value.
+When an approval is accepted, the status of depending tickets will
+be changed to this value.
 
 =item denied
 
-When an approval denied status of depending tickets changed
-to this value.
+When an approval is denied, the status of depending tickets will
+be changed to this value.
 
 =back
 
@@ -2128,19 +2142,23 @@ above.
 =head3 Protecting status changes with rights
 
 A transition or group of transitions can be protected by a specific
-right.
-
-For example:
+right.  Additionally, you can name new right names, which will be added
+to the system to control that transition.  For example, if you wished to
+create a lesser right than ModifyTicket for rejecting tickets, you could
+write:
 
     default => {
         ...
         rights => {
             '* -> deleted'  => 'DeleteTicket',
             '* -> rejected' => 'RejectTicket',
-            '* -> *'        => 'ModifyTicketStatus',
+            '* -> *'        => 'ModifyTicket',
         },
         ...
     },
+
+This would create a new C<RejectTicket> right in the system which you
+could assign to whatever groups you choose.
 
 On the left hand side you can have the following variants:
 
@@ -2176,7 +2194,6 @@ Use the following format to define labels and actions of transitions:
 
     default => {
         ...
-        actions => {
         actions => [
             'new -> open'     => { label => 'Open it', update => 'Respond' },
             'new -> resolved' => { label => 'Resolve', update => 'Comment' },
@@ -2216,7 +2233,8 @@ For example:
 
 Unless there is an explicit mapping between statuses in two different
 lifecycles, you can not move tickets between queues with these
-lifecycles.  Such a mapping is defined as follows:
+lifecycles.  This is true even if the different lifecycles use the exact
+same set of statuses.  Such a mapping is defined as follows:
 
     __maps__ => {
         'from lifecycle -> to lifecycle' => {
@@ -2254,23 +2272,52 @@ Set(%Lifecycles,
         },
         rights => {
             '* -> deleted'  => 'DeleteTicket',
-            '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => { label => 'Open It',  update => 'Respond' },
-            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
-            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
-            'new -> deleted'   => { label => 'Delete'                        },
+            'new -> open'      => {
+                label  => 'Open It', # loc
+                update => 'Respond',
+            },
+            'new -> resolved'  => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'new -> rejected'  => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
+            'new -> deleted'   => {
+                label  => 'Delete', # loc
+            },
 
-            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
-            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
-            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
+            'open -> stalled'  => {
+                label  => 'Stall', # loc
+                update => 'Comment',
+            },
+            'open -> resolved' => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'open -> rejected' => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
 
-            'stalled -> open'  => { label => 'Open It'                       },
-            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
-            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
-            'deleted -> open'  => { label => 'Undelete'                      },
+            'stalled -> open'  => {
+                label  => 'Open It', # loc
+            },
+            'resolved -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'rejected -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'deleted -> open'  => {
+                label  => 'Undelete', # loc
+            },
         ],
     },
 # don't change lifecyle of the approvals, they are not capable to deal with
@@ -2302,19 +2349,49 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => { label => 'Open It',  update => 'Respond' },
-            'new -> resolved'  => { label => 'Resolve',  update => 'Comment' },
-            'new -> rejected'  => { label => 'Reject',   update => 'Respond' },
-            'new -> deleted'   => { label => 'Delete'                        },
+            'new -> open'      => {
+                label  => 'Open It', # loc
+                update => 'Respond',
+            },
+            'new -> resolved'  => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'new -> rejected'  => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
+            'new -> deleted'   => {
+                label  => 'Delete', # loc
+            },
 
-            'open -> stalled'  => { label => 'Stall',    update => 'Comment' },
-            'open -> resolved' => { label => 'Resolve',  update => 'Comment' },
-            'open -> rejected' => { label => 'Reject',   update => 'Respond' },
+            'open -> stalled'  => {
+                label  => 'Stall', # loc
+                update => 'Comment',
+            },
+            'open -> resolved' => {
+                label  => 'Resolve', # loc
+                update => 'Comment',
+            },
+            'open -> rejected' => {
+                label  => 'Reject', # loc
+                update => 'Respond',
+            },
 
-            'stalled -> open'  => { label => 'Open It'                       },
-            'resolved -> open' => { label => 'Re-open',  update => 'Comment' },
-            'rejected -> open' => { label => 'Re-open',  update => 'Comment' },
-            'deleted -> open'  => { label => 'Undelete'                      },
+            'stalled -> open'  => {
+                label  => 'Open It', # loc
+            },
+            'resolved -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'rejected -> open' => {
+                label  => 'Re-open', # loc
+                update => 'Comment',
+            },
+            'deleted -> open'  => {
+                label  => 'Undelete', # loc
+            },
         ],
     },
 );
@@ -2375,8 +2452,13 @@ Set(%AdminSearchResultFormat,
         .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
-        q{'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        .q{,__Stage__, __Condition__, __Action__, __Template__},
+
+    GlobalScrips =>
+        q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__Description__</a>/TITLE:Description'}
         .q{,__Stage__, __Condition__, __Action__, __Template__},
 
     Templates =>

@@ -68,4 +68,6 @@ sub Commit {
     $self->RunScripAction('Open Tickets' => 'Blank');
 }
 
+RT::Base->_ImportOverlays();
+
 1;

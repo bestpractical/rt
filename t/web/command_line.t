@@ -37,6 +37,7 @@ $ENV{'RTSERVER'} =RT->Config->Get('WebBaseURL') ;
 $ENV{'RTDEBUG'} = '1';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the
 #                    configuration file.
+$ENV{'RTCONFIG'} = '/dev/null';
 #
 #    - RTQUERY       Default RT Query for rt list
 #    - RTORDERBY     Default order for rt list

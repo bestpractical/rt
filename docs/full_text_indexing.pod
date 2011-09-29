@@ -87,16 +87,23 @@ restart your webserver after making these changes.  It will also print a
 sample Sphinx configuration, which should be placed in
 F</etc/sphinx.conf>, or equivalent.
 
-=head2 Updating the index
-
 To fill the index, you will need to run the C<indexer> command-line tool
 provided by Sphinx:
 
     indexer rt
 
-This command should also be run at regular intervals in order to pick up
-new and updated attachments from RT's database.  Failure to do so will
-result in stale data.
+Finally, start the Sphinx search daemon:
+
+    searchd
+
+=head2 Updating the index
+
+To keep the index up-to-date, you will need to run:
+
+    indexer rt --rotate
+
+...at regular intervals in order to pick up new and updated attachments
+from RT's database.  Failure to do so will result in stale data.
 
 =head2 Caveats
 
@@ -108,20 +115,24 @@ kept in sync.  The default, set during C<rt-setup-fulltext-index>, is
 maximum number of matches is reached but the results returned do not
 match RT's other criteria.
 
-Take, for example, the instance where only three results are returned,
-and tickets 1, 2, 3, 4, and 5 contain the string "target", but only
-ticket 5 is in status "Open".  A search for C<Content LIKE 'target' AND
-Status = 'Open'> may return no results, despite ticket 5 matching those
-criteria, as Sphinx will only return tickets 1, 2, and 3 as possible
-matches.
+Take, for example, the instance where Sphinx is configured to return a
+maximum of three results, and tickets 1, 2, 3, 4, and 5 contain the
+string "target", but only ticket 5 is in status "Open".  A search for
+C<Content LIKE 'target' AND Status = 'Open'> may return no results,
+despite ticket 5 matching those criteria, as Sphinx will only return
+tickets 1, 2, and 3 as possible matches.
 
+After index creation, altering C<MaxMatches> in C<RT_SiteConfig.pm> is
+insufficient to adjust this limit; both C<max_matches> in
+F</etc/sphinx.conf> and C<%FullTextSearch>'s C<MaxMatches> in
+C<RT_SiteConfig.pm> must be updated.
 
 =head1 ORACLE
 
 =head2 Creating and configuring the index
 
-Oracle supports full-text indexing natively; to configure your Oracle
-database for full-text searching, run:
+Oracle supports full-text indexing natively using the Oracle Text
+package.  Once Oracle Text is installed and configured, run:
 
     sbin/rt-setup-fulltext-index
 
@@ -135,11 +146,6 @@ Attachments table, as well as several preferences, functions and
 triggers to support this index.  The script will also output an
 appropriate C<%FullTextSearch> configuration to add to your
 F<RT_SiteConfig>.
-
-The Oracle index determines which content types it will index, at
-creation time.  By default, unknown content-types are ignored; to
-instead index unknown content-types as binary data, pass the C<--binary>
-flag to C<rt-setup-fulltext-index>.
 
 =head2 Updating the index
 

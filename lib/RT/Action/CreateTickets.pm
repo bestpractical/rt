@@ -778,14 +778,17 @@ sub ParseLines {
         my $orig_tag = $original_tags{$tag} or next;
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
-        } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
+        } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.+)$/i ) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByName( Name => $1, Queue => $ticketargs{Queue} );
+            $cf->LoadByName( Name => $1, Queue => 0 ) unless $cf->id;
+            next unless $cf->id;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByName( Name => $orig_tag, Queue => $ticketargs{Queue} );
-            next unless ($cf->id) ;
+            $cf->LoadByName( Name => $orig_tag, Queue => 0 ) unless $cf->id;
+            next unless $cf->id;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
         }

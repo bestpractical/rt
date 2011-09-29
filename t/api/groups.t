@@ -1,53 +1,45 @@
 use strict;
 use warnings;
-use RT::Test nodata => 1, tests => 44;
+use RT::Test nodata => 1, tests => 27;
 
 RT::Group->AddRights(
     'RTxGroupRight' => 'Just a right for testing rights',
 );
 
 {
+    my $g = RT::Group->new(RT->SystemUser);
+    my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'GroupsNotEqualTest');
+    ok ($id, "created group #". $g->id) or diag("error: $msg");
 
-# next had bugs
-# Groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => xx );
-my $g = RT::Group->new(RT->SystemUser);
-my ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'GroupsNotEqualTest');
-ok ($id, "created group #". $g->id) or diag("error: $msg");
-
-my $groups = RT::Groups->new(RT->SystemUser);
-$groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $g->id );
-$groups->LimitToUserDefinedGroups();
-my $bug = grep $_->id == $g->id, @{$groups->ItemsArrayRef};
-ok (!$bug, "didn't find group");
-
-
+    my $groups = RT::Groups->new(RT->SystemUser);
+    $groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $g->id );
+    $groups->LimitToUserDefinedGroups();
+    my $bug = grep $_->id == $g->id, @{$groups->ItemsArrayRef};
+    ok (!$bug, "didn't find group");
 }
 
+
 {
+    my $u = RT::User->new(RT->SystemUser);
+    my ($id, $msg) = $u->Create( Name => 'Membertests'. $$ );
+    ok ($id, 'created user') or diag "error: $msg";
 
-my $u = RT::User->new(RT->SystemUser);
-my ($id, $msg) = $u->Create( Name => 'Membertests'. $$ );
-ok ($id, 'created user') or diag "error: $msg";
+    my $g = RT::Group->new(RT->SystemUser);
+    ($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
+    ok ($id, $msg);
 
-my $g = RT::Group->new(RT->SystemUser);
-($id, $msg) = $g->CreateUserDefinedGroup(Name => 'Membertests');
-ok ($id, $msg);
+    my ($aid, $amsg) =$g->AddMember($u->id);
+    ok ($aid, $amsg);
+    ok($g->HasMember($u->PrincipalObj),"G has member u");
 
-my ($aid, $amsg) =$g->AddMember($u->id);
-ok ($aid, $amsg);
-ok($g->HasMember($u->PrincipalObj),"G has member u");
-
-my $groups = RT::Groups->new(RT->SystemUser);
-$groups->LimitToUserDefinedGroups();
-$groups->WithMember(PrincipalId => $u->id);
-is ($groups->Count , 1,"found the 1 group - " . $groups->Count);
-is ($groups->First->Id , $g->Id, "it's the right one");
-
-
+    my $groups = RT::Groups->new(RT->SystemUser);
+    $groups->LimitToUserDefinedGroups();
+    $groups->WithMember(PrincipalId => $u->id);
+    is ($groups->Count , 1,"found the 1 group - " . $groups->Count);
+    is ($groups->First->Id , $g->Id, "it's the right one");
 }
 
-{
-    no warnings qw/redefine once/;
+no warnings qw/redefine once/;
 
 my $q = RT::Queue->new(RT->SystemUser);
 my ($id, $msg) =$q->Create( Name => 'GlobalACLTest');
@@ -124,78 +116,3 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 $groups = RT::Groups->new(RT->SystemUser);
 $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2, EquivObjects => [ $RTxSysObj ]);
 is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
-
-}
-
-{
-    # this company is split into two halves, the hacks and the non-hacks
-    # herbert is a hacker but eric is not.
-    my $herbert = RT::User->new(RT->SystemUser);
-    my ($ok, $msg) = $herbert->Create(Name => 'herbert');
-    ok($ok, $msg);
-
-    my $eric = RT::User->new(RT->SystemUser);
-    ($ok, $msg) = $eric->Create(Name => 'eric');
-    ok($ok, $msg);
-
-    my $hacks = RT::Group->new(RT->SystemUser);
-    ($ok, $msg) = $hacks->CreateUserDefinedGroup(Name => 'Hackers');
-    ok($ok, $msg);
-
-    my $employees = RT::Group->new(RT->SystemUser);
-    ($ok, $msg) = $employees->CreateUserDefinedGroup(Name => 'Employees');
-    ok($ok, $msg);
-
-    ($ok, $msg) = $employees->AddMember($hacks->PrincipalId);
-    ok($ok, $msg);
-
-    ($ok, $msg) = $hacks->AddMember($herbert->PrincipalId);
-    ok($ok, $msg);
-
-    ($ok, $msg) = $employees->AddMember($eric->PrincipalId);
-    ok($ok, $msg);
-
-    ok($employees->HasMemberRecursively($hacks->PrincipalId), 'employees has member hacks');
-    ok($employees->HasMemberRecursively($herbert->PrincipalId), 'employees has member herbert');
-    ok($employees->HasMemberRecursively($eric->PrincipalId), 'employees has member eric');
-
-    ok($hacks->HasMemberRecursively($herbert->PrincipalId), 'hacks has member herbert');
-    ok(!$hacks->HasMemberRecursively($eric->PrincipalId), 'hacks does not have member eric');
-
-    {
-        my $groups = RT::Groups->new(RT::CurrentUser->new($eric));
-        $groups->LimitToUserDefinedGroups;
-        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-
-        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
-    }
-
-    {
-        my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
-        $groups->LimitToUserDefinedGroups;
-        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], [], 'no joined groups have RTxGroupRight yet');
-    }
-
-    ($ok, $msg) = $employees->PrincipalObj->GrantRight(Right => 'RTxGroupRight', Object => $employees);
-    ok($ok, $msg);
-
-    {
-        my $groups = RT::Groups->new(RT::CurrentUser->new($eric));
-        $groups->LimitToUserDefinedGroups;
-        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-        is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], ['Employees']);
-    }
-
-    {
-        my $groups = RT::Groups->new(RT::CurrentUser->new($herbert));
-        $groups->LimitToUserDefinedGroups;
-        $groups->ForWhichCurrentUserHasRight(Right => 'RTxGroupRight');
-
-        TODO: {
-            local $TODO = "not recursing across groups within groups yet";
-            is_deeply([sort map { $_->Name } @{ $groups->ItemsArrayRef }], ['Employees', 'Hackers']);
-        }
-    }
-}
-

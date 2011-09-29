@@ -60,14 +60,18 @@
 <&|/l&>Go to user</&>
 <input type="text" name="UserString" value="" id="autocomplete-UserString" />
 <script type="text/javascript">
+jQuery(function(){
     jQuery("#autocomplete-UserString").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users?return=Name",
         // Auto-submit once a user is chosen
         select: function( event, ui ) {
             jQuery(event.target).val(ui.item.value);
-            jQuery(event.target).closest("form").submit();
+            var form = jQuery(event.target).closest('form');
+            form.find('input[name=UserOp]').val('=');
+            form.submit();
         }
     });
+});
 </script>
 </form>
 

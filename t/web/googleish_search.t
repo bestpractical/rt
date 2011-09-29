@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 86, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
+use RT::Test tests => 96, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
@@ -63,6 +63,9 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL("status:active"), $active, "Explicit active search";
     is $parser->QueryToSQL("status:'active'"), "( Status = 'active' )", "Quoting active makes it the actual word";
     is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND $inactive", "correct parsing";
+
+    is $parser->QueryToSQL("cf.Foo:bar"), "( 'CF.{Foo}' LIKE 'bar' ) AND $active", "correct parsing of CFs";
+    is $parser->QueryToSQL(q{cf."don't foo?":'bar n\\' baz'}), qq/( 'CF.{don\\'t foo?}' LIKE 'bar n\\' baz' ) AND $active/, "correct parsing of CFs with quotes";
 }
 
 my $ticket_found_1 = RT::Ticket->new($RT::SystemUser);
@@ -189,3 +192,28 @@ for my $quote ( q{'}, q{"} ) {
             "base${quote}ticket is found" );
     }
 }
+
+# Create a CF
+{
+    my $cf = RT::CustomField->new(RT->SystemUser);
+    ok( $cf->Create(Name => 'Foo', Type => 'Freeform', MaxValues => '1', Queue => 0) );
+    ok $cf->Id;
+
+    $ticket_found_1->AddCustomFieldValue( Field => 'Foo', Value => 'bar' );
+    $ticket_found_2->AddCustomFieldValue( Field => 'Foo', Value => 'bar' );
+    $ticket_not_found->AddCustomFieldValue( Field => 'Foo', Value => 'baz' );
+    is( $ticket_found_1->FirstCustomFieldValue('Foo'), 'bar', 'cf value is ok' );
+    is( $ticket_found_2->FirstCustomFieldValue('Foo'), 'bar', 'cf value is ok' );
+    is( $ticket_not_found->FirstCustomFieldValue('Foo'), 'baz', 'cf value is ok' );
+
+    @queries = qw/cf.Foo:bar/;
+    for my $q (@queries) {
+        $m->form_with_fields('q');
+        $m->field( q => $q );
+        $m->submit;
+        $m->content_contains( 'base ticket 1', 'base ticket 1 is found' );
+        $m->content_contains( 'base ticket 2', 'base ticket 2 is found' );
+        $m->content_lacks( 'not found subject', 'not found ticket is not found' );
+    }
+}
+

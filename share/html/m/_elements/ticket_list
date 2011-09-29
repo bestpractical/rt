@@ -52,9 +52,12 @@ $query => ''
 $page => 1
 </%args>
 <%init>
+
+my $rows = 10;
+
 my $collection = RT::Tickets->new($session{'CurrentUser'});
 $collection->FromSQL($query);
-$collection->RowsPerPage(10);
+$collection->RowsPerPage($rows);
 $collection->GotoPage($page-1);
 # XXX: ->{'order_by'} is hacky, but there is no way to check if
 # collection is ordered or not
@@ -77,7 +80,7 @@ if ($page > 1 && ! @{$collection->ItemsArrayRef||[]}) {
 
 </%init>
 <&| /m/_elements/wrapper, title => 
-loc("Found [quant,_1,ticket]",$collection->Count) &>
+loc("Found [quant,_1,ticket]",$collection->CountAll) &>
 <&|/Widgets/TitleBox, class => 'search'
 &>
 <ul class="ticketlist">
@@ -105,7 +108,9 @@ loc("Found [quant,_1,ticket]",$collection->Count) &>
 % }
 Page <%$page%>
 
+% if ($collection->CountAll > $page * $rows) {
 <a href="<%RT->Config->Get('WebPath')%>/m/tickets/search?page=<%$page+1%>&query=<%$query%>&order=<%$order%>&order_by=<%$order_by%>">Next</a>
+% }
 </div>
 </&>
 </&>

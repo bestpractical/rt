@@ -950,15 +950,14 @@ sub Import {
 
     $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
 
-    my $watcher;
-    foreach $watcher ( @{ $args{'Cc'} } ) {
+    foreach my $watcher ( @{ $args{'Cc'} } ) {
         $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'AdminCc'} } ) {
+    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
         $self->_AddWatcher( Type => 'AdminCc', Email => $watcher,
             Silent => 1 );
     }
-    foreach $watcher ( @{ $args{'Requestor'} } ) {
+    foreach my $watcher ( @{ $args{'Requestor'} } ) {
         $self->_AddWatcher( Type => 'Requestor', Email => $watcher,
             Silent => 1 );
     }
@@ -2212,12 +2211,12 @@ sub _RecordNote {
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
                     Email::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
+            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $args{'MIMEObj'}->head->add(
+        $args{'MIMEObj'}->head->replace(
             "X-RT-$argument" => Encode::encode_utf8( $args{ $argument } )
         ) if defined $args{ $argument };
     }
@@ -2264,7 +2263,7 @@ sub DryRun {
     my $self = shift;
     my %args = @_;
     my $action;
-    if ($args{'UpdateType'} || $args{Action} =~ /^respon(d|se)$/i ) {
+    if (($args{'UpdateType'} || $args{Action}) =~ /^respon(d|se)$/i ) {
         $action = 'Correspond';
     } else {
         $action = 'Comment';

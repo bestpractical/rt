@@ -1075,15 +1075,8 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
-    if ($ENV{'rt.explicit_port'}) {
-        if ($ENV{SERVER_PORT} != $ENV{'rt.explicit_port'}) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the requested port ($ENV{'rt.explicit_port'}). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
-    }
-    else {
-        if ($ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-            $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}) in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
+    if (!$ENV{'rt.explicit_port'} && $ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
+        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 
     if ($ENV{HTTP_HOST}) {
@@ -1091,17 +1084,17 @@ sub ValidateWebConfig {
         my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
 
         if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
     else {
         if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}') in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
         }
     }
 
-    if ($ENV{PATH_INFO} !~ /^\Q$RT::WebPath\E/) {
-        $RT::Logger->warn("A requested path ($ENV{PATH_INFO}) does NOT fall within the configured WebPath ($RT::WebPath). You should fix your Set(\$WebPath, ...) setting in RT_SiteConfig.pm otherwise your internal links may be broken.");
+    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
+        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
 }
 
@@ -1291,9 +1284,8 @@ sub CreateTicket {
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add(
-            "X-RT-$argument" => Encode::encode_utf8( $ARGS{$argument} )
-        ) if defined $ARGS{$argument};
+        $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 )
+          if defined $ARGS{$argument};
     }
 
     my %create_args = (
@@ -1526,8 +1518,8 @@ sub ProcessUpdateMessage {
     }
 
     my %message_args = (
-        Sign         => $args{ARGSRef}->{'Sign'},
-        Encrypt      => $args{ARGSRef}->{'Encrypt'},
+        Sign         => ( $args{ARGSRef}->{'Sign'} ? 1 : 0 ),
+        Encrypt      => ( $args{ARGSRef}->{'Encrypt'} ? 1 : 0 ),
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
@@ -1647,8 +1639,8 @@ sub MakeMIMEEntity {
     if ( $args{'AttachmentFieldName'} ) {
 
         my $cgi_object = $m->cgi_object;
-
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+        my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} );
+        if ( defined $filehandle && length $filehandle ) {
 
             my ( @content, $buffer );
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {

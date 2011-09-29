@@ -22,34 +22,20 @@ to use L<Starman>, a high performance preforking server:
 
     /opt/rt4/sbin/rt-server --server Starman --port 8080
 
-=head2 mod_perl 2.xx
+B<NOTICE>: After you run the standalone server as root, you will need to
+remove your C<var/mason> directory, or the non-standalone servers
+(Apache, etc), which run as a non-privileged user, will not be able to
+write to it and will not work.
 
-B<WARNING: mod_perl 1.99_xx is not supported.>
 
-    <VirtualHost rt.example.com>
-        ### Optional apache logs for RT
-        # ErrorLog /opt/rt4/var/log/apache2.error
-        # TransferLog /opt/rt4/var/log/apache2.access
-        # LogLevel debug
+=head2 Apache
 
-        AddDefaultCharset UTF-8
+B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.
+C<mod_speling> will cause RT's CSS and JS to not be loaded, making RT
+appear unstyled. C<mod_cache> will cache cookies, making users be
+spontaneously logged in as other users in the system.
 
-        DocumentRoot "/opt/rt4/share/html"
-        <Location />
-            Order allow,deny
-            Allow from all
-
-            SetHandler perl-script
-            PerlResponseHandler Plack::Handler::Apache2
-            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
-        </Location>
-        <Perl>
-            use Plack::Handler::Apache2;
-            Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
-        </Perl>
-    </VirtualHost>
-
-=head2 mod_fastcgi
+=head3 mod_fastcgi
 
     # Tell FastCGI to put its temporary files somewhere sane; this may
     # be necessary if your distribution doesn't already set it
@@ -79,7 +65,7 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
         </Location>
     </VirtualHost>
 
-=head2 mod_fcgid
+=head3 mod_fcgid
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
@@ -103,7 +89,49 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
         </Location>
     </VirtualHost>
 
-=head3 nginx
+=head3 mod_perl 2.xx
+
+B<WARNING: mod_perl 1.99_xx is not supported.>
+
+B<WARNING>: Due to thread-safety limitations, all timestamps will be
+presented in the webserver's default time zone when using the C<worker>
+and C<event> MPMs; the C<$Timezone> setting and the user's timezone
+preference are ignored.  We suggest the C<prefork> MPM or FastCGI
+deployment if your privileged users are in a different timezone than the
+one the server is configured for.
+
+    <VirtualHost rt.example.com>
+        ### Optional apache logs for RT
+        # ErrorLog /opt/rt4/var/log/apache2.error
+        # TransferLog /opt/rt4/var/log/apache2.access
+        # LogLevel debug
+
+        AddDefaultCharset UTF-8
+
+        DocumentRoot "/opt/rt4/share/html"
+        <Location />
+            Order allow,deny
+            Allow from all
+
+            SetHandler modperl
+            PerlResponseHandler Plack::Handler::Apache2
+            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
+        </Location>
+        <Perl>
+            use Plack::Handler::Apache2;
+            Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
+        </Perl>
+    </VirtualHost>
+
+=head3 mod_perl 1.xx
+
+B<WARNING: mod_perl 1.99_xx is not supported.>
+
+To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
+configuration examples.
+
+
+=head2 nginx
 
 C<nginx> requires that you start RT's fastcgi process externally, for
 example using C<spawn-fcgi>:
@@ -147,7 +175,8 @@ With the nginx configuration:
         }
     }
 
-=head3 lighttpd
+
+=head2 lighttpd
 
     server.modules += ( "mod_fastcgi" )
     $HTTP["host"] =~ "^rt.example.com" {
@@ -168,15 +197,6 @@ With the nginx configuration:
         }
     }
 
-
-=head2 mod_perl 1.xx
-
-B<WARNING: mod_perl 1.99_xx is not supported.>
-
-To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
-configuration examples.
-
-=cut
 
 =head1 Running RT at /rt rather than /
 

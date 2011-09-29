@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 21;
+use RT::Test tests => 26;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
@@ -44,6 +44,19 @@ $m->back;
 ($js_link) =
   $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
 $m->get_ok( $url . $js_link, 'follow squished js' );
+$m->content_contains( 'function just_testing', "has not-by-default.js" );
+$m->content_contains('jQuery.noConflict', "found default js content");
+RT::Test->stop_server;
+
+
+diag "Test with a trivial jsmin which is a pass-through";
+RT->Config->Set( 'JSMinPath' => RT::Test::get_abs_relocatable_dir("passthrough-jsmin"));
+( $url, $m ) = RT::Test->started_ok;
+$m->login;
+($js_link) =
+  $m->content =~ m!src="([^"]+?squished-([a-f0-9]{32})\.js)"!;
+$m->get_ok( $url . $js_link, 'follow squished js' );
+$m->content_contains( 'passthrough-jsmin added this', "has passthrough-added content" );
 $m->content_contains( 'function just_testing', "has not-by-default.js" );
 $m->content_contains('jQuery.noConflict', "found default js content");
 RT::Test->stop_server;

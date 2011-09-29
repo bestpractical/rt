@@ -45,16 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($ARGS{'Delete'}) {
-<& /Articles/Article/Elements/Tabs, Title => $title &>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
+% if ($ARGS{'Delete'}) {
 <%$title%>
 <& /Elements/ListActions, actions => \@results &>
 
 % } else {
-<& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
-
 <b><&|/l&>Are you sure you want to delete this article?</&></b>
 <table>
 <tr>

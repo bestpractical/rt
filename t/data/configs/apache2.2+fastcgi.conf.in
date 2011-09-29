@@ -38,6 +38,8 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
     Order allow,deny
     Allow from all
 
+%%BASIC_AUTH%%
+
     Options +ExecCGI
     AddHandler fastcgi-script fcgi
 </Location>

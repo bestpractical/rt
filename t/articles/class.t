@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => 24;
 
 use_ok 'RT::Articles';
 use_ok 'RT::Classes';
@@ -54,3 +54,23 @@ $u->PrincipalObj->GrantRight(Right =>'AdminClass', Object => RT->System);
 ($id, $msg) = $cl->Create(Name => 'Test-nobody-'.$$, Description => 'A test class');
 
 ok ($id, $msg. "- Can create classes as a random new user after ACL grant");
+
+# now check the Web UI
+
+my ($url, $m) = RT::Test->started_ok;
+ok($m->login);
+$m->get_ok("$url/Admin/Articles/Classes/Modify.html?Create=1");
+$m->content_contains('Create a Class', 'found title');
+$m->submit_form_ok({
+    form_number => 3,
+    fields => { Name => 'Test Redirect' },
+});
+$m->content_contains('Object created', 'found results');
+$m->content_contains('Modify the Class Test Redirect', 'found title');
+$m->form_number(3);
+$m->untick( 'Include-Name', 1 );
+$m->field( 'Description', 'Test Description' );
+$m->submit();
+$m->content_like(qr/Description changed from.*no value.*to .*Test Description/,'description changed');
+$m->form_number(3);
+is($m->current_form->find_input('Include-Name')->value,undef,'Disabled Including Names for this Class');

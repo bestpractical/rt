@@ -66,37 +66,37 @@
 <tr><td align="right">
 <&|/l&>Username</&>:
 </td><td>
-<input name="Name" value="<%$UserObj->Name||''%>" /> <strong><&|/l&>(required)</&></strong>
+<input name="Name" value="<%$UserObj->Name||$Name||''%>" /> <strong><&|/l&>(required)</&></strong>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Email</&>:
 </td><td>
-<input name="EmailAddress" value="<%$UserObj->EmailAddress||''%>" />
+<input name="EmailAddress" value="<%$UserObj->EmailAddress||$EmailAddress||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Real Name</&>: 
 </td><td>
-<input name="RealName" value="<%$UserObj->RealName||''%>" />
+<input name="RealName" value="<%$UserObj->RealName||$RealName||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Nickname</&>: 
 </td><td>
-<input name="NickName" value="<%$UserObj->NickName||''%>" />
+<input name="NickName" value="<%$UserObj->NickName||$NickName||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Unix login</&>: 
 </td><td>
-<input name="Gecos" value="<%$UserObj->Gecos||''%>" />
+<input name="Gecos" value="<%$UserObj->Gecos||$Gecos||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Language</&>: 
 </td><td>
-<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &>
+<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang||$Lang &>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Extra info</&>: 
 </td><td>
-<textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo||''%></textarea>
+<textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo||$FreeformContactInfo||''%></textarea>
 </td></tr>
 </table>
 </&>
@@ -124,39 +124,39 @@
 <tr><td align="right">
 <&|/l&>Organization</&>: 
 </td><td>
-<input name="Organization" value="<%$UserObj->Organization||''%>" />
+<input name="Organization" value="<%$UserObj->Organization||$Organization||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address1</&>: 
 </td><td>
-<input name="Address1" value="<%$UserObj->Address1||''%>" />
+<input name="Address1" value="<%$UserObj->Address1||$Address1||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address2</&>: 
 </td><td>
-<input name="Address2" value="<%$UserObj->Address2||''%>" />
+<input name="Address2" value="<%$UserObj->Address2||$Address2||''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>City</&>: 
 </td><td>
-<input name="City" value="<%$UserObj->City||''%>" size="14" />
+<input name="City" value="<%$UserObj->City||$City||''%>" size="14" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>State</&>: 
 </td><td>
-<input name="State" value="<%$UserObj->State||''%>" size="3" />
+<input name="State" value="<%$UserObj->State||$State||''%>" size="3" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>Zip</&>: 
 </td><td>
-<input name="Zip" value="<%$UserObj->Zip||''%>" size="9" />
+<input name="Zip" value="<%$UserObj->Zip||$Zip||''%>" size="9" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Country</&>: 
 </td><td>
-<input name="Country" value="<%$UserObj->Country||''%>" />
+<input name="Country" value="<%$UserObj->Country||$Country||''%>" />
 </td></tr>
 </table>
 </&>
@@ -166,22 +166,22 @@
 <tr><td align="right">
 <&|/l&>Residence</&>: 
 </td><td>
-<input name="HomePhone" value="<%$UserObj->HomePhone||''%>" size="13" /><br />
+<input name="HomePhone" value="<%$UserObj->HomePhone||$HomePhone||''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Work</&>: 
 </td><td>
-<input name="WorkPhone" value="<%$UserObj->WorkPhone||''%>" size="13" /><br />
+<input name="WorkPhone" value="<%$UserObj->WorkPhone||$WorkPhone||''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Mobile</&>: 
 </td><td>
-<input name="MobilePhone" value="<%$UserObj->MobilePhone||''%>" size="13" /><br />
+<input name="MobilePhone" value="<%$UserObj->MobilePhone||$MobilePhone||''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Pager</&>: 
 </td><td>
-<input name="PagerPhone" value="<%$UserObj->PagerPhone||''%>" size="13" /><br />
+<input name="PagerPhone" value="<%$UserObj->PagerPhone||$PagerPhone||''%>" size="13" /><br />
 </td>
 </tr>
 </table>
@@ -208,12 +208,12 @@
 <tr>
 <td colspan="2">
 <&| /Widgets/TitleBox, title => loc('Comments about this user') &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments||''%></textarea>
+<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments||$Comments||''%></textarea>
 </&>
 %if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature||''%></textarea>
+<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature||$Signature||''%></textarea>
 </&>
 % }
 
@@ -363,7 +363,7 @@ unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked = 'checked="checked"';
 }
 
-if (!$Create && $UserObj->Privileged()) {  
+if ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $Privileged)) {  
     $PrivilegedChecked = 'checked="checked"';
 }
 
@@ -371,7 +371,7 @@ if (!$Create && $UserObj->Privileged()) {
 MaybeRedirectForResults(
     Actions   => \@results,
     Arguments => { id => $UserObj->Id },
-);
+) if $UserObj->Id;
 
 </%INIT>
 

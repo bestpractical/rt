@@ -54,7 +54,7 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
 % }
 
-% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
+% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/ckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
@@ -66,11 +66,13 @@ $onload => undef
     jQuery( <% $onload |n %> );
 % }
 
-% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
     jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
 % }
 --></script>
-
+<%ARGS>
+$RichText => 1
+</%ARGS>
 <%INIT>
 
 my @js_files;

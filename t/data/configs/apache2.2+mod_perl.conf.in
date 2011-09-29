@@ -50,7 +50,10 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
     Order allow,deny
     Allow from all
 
-    SetHandler perl-script
+%%BASIC_AUTH%%
+
+    SetHandler modperl
+
     PerlResponseHandler Plack::Handler::Apache2
     PerlSetVar psgi_app %%RT_SBIN_PATH%%/rt-server
 </Location>

@@ -55,7 +55,7 @@
 </select>
 <%INIT>
 $Name .= '-TimeUnits' unless $Name =~ /-TimeUnits$/io;
-my $HoursDefault = RT->Config->Get('DefaultTimeUnitsToHours');
+my $HoursDefault = RT->Config->Get('DefaultTimeUnitsToHours', $session{'CurrentUser'});
 </%INIT>
 <%ARGS>
 $Name => ''

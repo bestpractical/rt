@@ -174,7 +174,7 @@ foreach my $key (keys %ARGS) {
 }
 
 # store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
     );
@@ -332,13 +332,11 @@ $showrows->(
 
 );
 
-
-$m->scomp("/Ticket/Elements/EditCustomFields", %ARGS, QueueObj => $QueueObj );
-
-
-$m->scomp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $QueueObj );
-
 </%perl>
+
+<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
+<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
+
 % if (exists $session{'Attachments'}) {
 
 <%loc("Attached file") %>
@@ -363,7 +361,7 @@ $showrows->(
 
 
 % if ( $gnupg_widget ) {
-%$m->scomp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 
 

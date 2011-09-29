@@ -109,6 +109,7 @@ for my $category (@$Principals) {
                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
         <script type="text/javascript">
+        jQuery(function() {
             jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").keyup(function(){
                 toggle_addprincipal_validity(this, true);
             });
@@ -120,6 +121,7 @@ for my $category (@$Principals) {
                 change: addprincipal_onchange
             });
 % }
+        });
         </script>
 % my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
         <span class="warning"><&|/l, $type &>Invalid [_1]</&></span>

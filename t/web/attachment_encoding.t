@@ -82,7 +82,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     $m->back;
     $m->back;
-    $m->follow_link_ok( { text_regex => qr/by Enoch Root/ },
+    $m->follow_link_ok( { text => 'Download 附件.txt' },
         '-> /Ticket/Attachment/...' );
     $m->content_contains( '附件', 'has content 附件' );
 

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 49;
+use RT::Test tests => 54;
 
 
 {
@@ -14,9 +14,32 @@ use_ok('RT::ScripAction');
 use_ok('RT::ScripCondition');
 use_ok('RT::Ticket');
 
+
+use_ok('RT::CustomField');
+
+my $global_cf = RT::CustomField->new($RT::SystemUser);
+my ($id, $msg)=  $global_cf->Create( Name => 'GlobalCF',
+                                 Queue => '0',
+                                 SortOrder => '1',
+                                 Description => 'A Testing custom field',
+                                 Type=> 'SelectSingle');
+ok($id, 'Global custom field correctly created');
+
+
 my $approvalsq = RT::Queue->new(RT->SystemUser);
 $approvalsq->Create(Name => 'Approvals');
 ok ($approvalsq->Id, "Created Approvals test queue");
+
+my $queue_cf = RT::CustomField->new($RT::SystemUser);
+($id) = $queue_cf->Create(
+    Name => 'QueueCF',
+    Queue => $approvalsq->Id,
+    SortOrder => 2,
+    Description => 'A testing queue-specific custom field',
+    Type => 'SelectSingle',
+);
+ok($id, 'Queue-specific custom field correctly created');
+
 
 
 my $approvals = 
@@ -26,6 +49,8 @@ Type: approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
 Depended-On-By: {$Tickets{"TOP"}->Id}
 Refers-To: TOP 
+CustomField-GlobalCF: A Value
+CustomField-QueueCF: Another Value
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
@@ -76,6 +101,10 @@ my $deps = $t->DependsOn;
 is ($deps->Count, 1, "The ticket we created depends on one other ticket");
 my $dependson= $deps->First->TargetObj;
 ok ($dependson->Id, "It depends on a real ticket");
+is ($dependson->FirstCustomFieldValue('GlobalCF'), 'A Value',
+  'global custom field was set');
+is ($dependson->FirstCustomFieldValue('QueueCF'), 'Another Value',
+  'queue custom field was set');
 unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");

@@ -88,24 +88,29 @@ my ($n, $s);
 eval {
     ($n, $s) = $tickets->FromSQL($query);
 };
-my $sortstring = "";
+
 if ($orderby) {
-    $sortstring = 'FIELD => ';
+    my %args;
+
     my $order = substr($orderby, 0, 1);
     if ($order eq '+' || $order eq '-') {
-	$sortstring .= 'substr($orderby, 1)';
-	if ($order eq '+') {
-	    $sortstring .= ", ORDER => 'ASC'";
-	} elsif ($order eq '-') {
-	    $sortstring .= ", ORDER => 'DESC'";
-	}
-    } else {
-	$sortstring .= '$orderby';
+        # remove the +/- sorting sigil
+        substr($orderby, 0, 1, '');
+
+        if ($order eq '+') {
+            $args{ORDER} = 'ASC';
+        }
+        elsif ($order eq '-') {
+            $args{ORDER} = 'DESC';
+        }
     }
-    my $foo = 'FIELD => ';
-    $foo .= '$orderby';
-    $tickets->OrderBy(eval $sortstring);
+
+    $tickets->OrderBy(
+        FIELD => $orderby,
+        %args,
+    );
 }
+
 if ($@ || $n == 0) {
     $s ||= $@;
     $status = "400 Bad request";

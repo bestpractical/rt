@@ -76,9 +76,44 @@ my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
+my %query;
+
+{
+    if ($saved_search->{'CurrentSearch'}->{'Object'}) {
+        foreach my $search_field (@{ $saved_search->{'SearchFields'} }) {
+            $query{$search_field} = $saved_search->{'CurrentSearch'}->{'Object'}->Content->{$search_field};
+        }
+    }
+
+    my $current = $session{'CurrentSearchHash'};
+
+    my @session_fields = qw(
+        Query
+        SavedChartSearchId
+        SavedSearchDescription
+        SavedSearchLoad
+        SavedSearchLoadButton
+        SavedSearchOwner
+    );
+
+    for(@session_fields) {
+        $query{$_} = $current->{$_} unless defined $query{$_};
+        $query{$_} = $m->request_args->{$_} unless defined $query{$_};
+    }
+
+    if ($m->request_args->{'SavedSearchLoadSubmit'}) {
+        $query{'SavedChartSearchId'} = $m->request_args->{'SavedSearchLoad'};
+    }
+
+    if ($m->request_args->{'SavedSearchSave'}) {
+        $query{'SavedChartSearchId'} = $saved_search->{'SearchId'};
+    }
+
+}
+
 </%init>
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs, QueryArgs => \%query &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 

@@ -173,8 +173,8 @@ our %META = (
             Description => 'Username format', # loc
             Values      => [qw(concise verbose)],
             ValuesLabel => {
-                concise => 'Short usernames', # loc_left_pair
-                verbose => 'Name and email address', # loc_left_pair
+                concise => 'Short usernames', # loc
+                verbose => 'Name and email address', # loc
             },
         },
     },
@@ -253,6 +253,16 @@ our %META = (
             Description => 'Message box wrapping',   #loc
             Values => [qw(SOFT HARD)],
             Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
+        },
+    },
+    DefaultTimeUnitsToHours => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 9,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enter time in hours by default', #loc
+            Hints       => 'Only for entry, not display', #loc
         },
     },
     SearchResultsRefreshInterval => {
@@ -548,7 +558,16 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => { Type => 'ARRAY' },
+    Plugins      => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('Plugins');
+            # XXX Remove in RT 4.2
+            return unless $value and grep {$_ eq "RT::FM"} @{$value};
+            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
@@ -719,6 +738,33 @@ our %META = (
                     push @$value, $canonic;
                 }
             }
+        },
+    },
+
+    ActiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The ActiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'active' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
+        },
+    },
+    InactiveStatus => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            return unless shift;
+            # XXX Remove in RT 4.2
+            warn <<EOT;
+The InactiveStatus configuration has been replaced by the new Lifecycles
+functionality. You should set the 'inactive' property of the 'default'
+lifecycle and add transition rules; see RT_Config.pm for documentation.
+EOT
         },
     },
 );

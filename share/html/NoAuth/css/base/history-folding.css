@@ -60,6 +60,10 @@
     content: " - ";
 }
 
+.message-stanza.closed {
+    display: none;
+}
+
 /* Message quoting */
 
 .message-stanza {

@@ -55,14 +55,18 @@
 <&|/l&>Go to group</&>
 <input type="text" name="GroupString" value="" id="autocomplete-GroupString" />
 <script type="text/javascript">
+jQuery(function(){
     jQuery("#autocomplete-GroupString").autocomplete({
         source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
         // Auto-submit once a group is chosen
         select: function( event, ui ) {
             jQuery(event.target).val(ui.item.value);
-            jQuery(event.target).closest("form").submit();
+            var form = jQuery(event.target).closest('form');
+            form.find('input[name=GroupOp]').val('=');
+            form.submit();
         }
     });
+});
 </script>
 </form>
 

@@ -114,9 +114,7 @@ our $RIGHTS = {
     CommentOnTicket     => 'Comment on tickets',                                        # loc_pair
     OwnTicket           => 'Own tickets',                                               # loc_pair
     ModifyTicket        => 'Modify tickets',                                            # loc_pair
-    ModifyTicketStatus  => 'Modify ticket status',                                      # loc_pair
     DeleteTicket        => 'Delete tickets',                                            # loc_pair
-    RejectTicket        => 'Reject tickets',                                            # loc_pair
     TakeTicket          => 'Take tickets',                                              # loc_pair
     StealTicket         => 'Steal tickets',                                             # loc_pair
 
@@ -146,9 +144,7 @@ our $RIGHT_CATEGORIES = {
     CommentOnTicket     => 'General',
     OwnTicket           => 'Staff',
     ModifyTicket        => 'Staff',
-    ModifyTicketStatus  => 'Staff',
     DeleteTicket        => 'Staff',
-    RejectTicket        => 'Staff',
     TakeTicket          => 'Staff',
     StealTicket         => 'Staff',
     ForwardMessage      => 'Staff',
@@ -408,8 +404,12 @@ sub Create {
         return ( 0, $self->loc("No permission to create queues") );
     }
 
-    unless ( $self->ValidateName( $args{'Name'} ) ) {
-        return ( 0, $self->loc('Queue already exists') );
+    {
+        my ($val, $msg) = $self->ValidateName( $args{'Name'} );
+
+        if (!$val) {
+            return ($val, $self->loc($msg));
+        }
     }
 
     if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
@@ -543,12 +543,15 @@ sub ValidateName {
 
     #If this queue exists, return undef
     if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
-        return (undef);
+        return (undef, "Queue already exists.");
     }
 
     #If the queue doesn't exist, return 1
+    elsif (my $q = $self->SUPER::ValidateName($name)) {
+        return ($q);
+    }
     else {
-        return ($self->SUPER::ValidateName($name));
+        return (undef, "That's not a valid name.");
     }
 
 }
@@ -1006,7 +1009,7 @@ sub DeleteWatcher {
         return(0,$self->loc("Group not found"));
     }
 
-    return ( 0, "Unknown watcher type [_1]", $args{Type} )
+    return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
         unless $self->IsRoleGroupType($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);

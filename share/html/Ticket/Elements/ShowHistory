@@ -60,30 +60,26 @@ if ($ShowDisplayModes or $ShowTitle) {
     if ($ShowDisplayModes) {
         $titleright = '';
         
+        my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
+        my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'h' );
+        $titleright .=    '<a href="#" data-direction="open" '
+                        . qq{onclick='return toggle_all_folds(this, "$open_all", "$close_all");'}
+                        . ">$open_all</a> &mdash; ";
+
         if ($ShowHeaders) {
             $titleright .= qq{<a href="$URIFile?id=} .
                            $Ticket->id.qq{">} .
-                           loc("Brief headers") .
-                           qq{</a> &mdash; };
-            $titleright .= q[<span class="selected">] . loc("Full headers") . "</span>";
-        }
-        else {
-            $titleright .= q[<span class="selected">] . loc("Brief headers") . "</span> &mdash; ";
+                           loc("Show brief headers") .
+                           qq{</a>};
+        } else {
             $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
                            $Ticket->id.qq{">} .
-                           loc("Full headers") .
+                           loc("Show full headers") .
                            qq{</a>};
         }
     }
 </%perl>
 <div class="history">
-<script type="text/javascript">
-var _rt_dict = {};
-_rt_dict = { 'hide quoted text': '<% loc('hide quoted text') %>',
-             'show quoted text': '<% loc('show quoted text') %>'
-           };
-</script>
-
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 <div id="ticket-history">
