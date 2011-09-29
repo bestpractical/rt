@@ -1016,6 +1016,7 @@ sub SetReferencesHeaders {
         @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
         @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
     } else {
+        $self->SetHeader( References => $self->PseudoReference );
         return (undef);
     }
 
