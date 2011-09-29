@@ -274,7 +274,10 @@ sub ParseSQL {
             $value =~ s/(['\\])/\\$1/g;
             $value = "'$value'";
         }
-        $key = "'$key'" if $key =~ /^CF./;
+
+        if ($key =~ s/(['\\])/\\$1/g or $key =~ /\s/) {
+            $key = "'$key'";
+        }
 
         my $clause = { Key => $key, Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
