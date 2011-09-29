@@ -28,7 +28,6 @@ test "x$rt_version_patch" = 'x' && rt_version_patch=0
 
 dnl Check for programs
 AC_PROG_INSTALL
-AC_PROG_AWK
 AC_ARG_VAR([PERL],[Perl interpreter command])
 AC_PATH_PROG([PERL], [perl], [not found])
 if test "$PERL" = 'not found'; then
@@ -230,7 +229,7 @@ AC_ARG_WITH(my-user-group,
 # Test for valid database names
 AS_IF([ test "$DB_TYPE" = "mysql" ],
       [ AC_MSG_CHECKING([if database name is valid])
-          AS_IF([ echo $DB_DATABASE | $AWK '/-/ { exit 1 }' ],
+          AS_IF([ echo $DB_DATABASE | $PERL -e 'exit(1) if <> =~ /-/'],
                 [ AC_MSG_RESULT([yes]) ],
                 [ AC_MSG_ERROR([no.  database name ($DB_DATABASE) contains '-' which is not valid for mysql]) ]
                )
