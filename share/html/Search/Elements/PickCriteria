@@ -51,7 +51,7 @@
 
 
 
-<& PickBasics &>
+<& PickBasics, queues => \%queues &>
 <& PickCFs, queues => \%queues &>
 
 <tr class="separator"><td colspan="3"><hr /></td></tr>
