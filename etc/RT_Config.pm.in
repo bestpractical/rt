@@ -848,6 +848,10 @@ Set(@CustomFieldValuesSources, ());
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
 redirecting rather than the one we get from C<%ENV>.
 
+Apache's UseCanonicalName directive changes the hostname that RT
+finds in C<%ENV>.  You can read more about what turning it On or Off
+means in the documentation for your version of Apache.
+
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
 
