@@ -131,8 +131,8 @@ C<RT_SiteConfig.pm> must be updated.
 
 =head2 Creating and configuring the index
 
-Oracle supports full-text indexing natively; to configure your Oracle
-database for full-text searching, run:
+Oracle supports full-text indexing natively using the Oracle Text
+package.  Once Oracle Text is installed and configured, run:
 
     sbin/rt-setup-fulltext-index
 
