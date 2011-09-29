@@ -77,8 +77,15 @@ elsif ( $TicketObj ) {
 }
 elsif ( $QueueObj ) {
     @status = $QueueObj->Lifecycle->Transitions('');
-}
-else {
+} elsif ( %Queues ) {
+    for my $id (keys %Queues) {
+        my $queue = RT::Queue->new($session{'CurrentUser'});
+        $queue->Load($id);
+        push @status, $queue->Lifecycle->Valid if $queue->id;
+    }
+    my %seen;
+    @status = grep { not $seen{$_}++ } @status;
+} else {
     @status = RT::Queue->Lifecycle->Valid;
 }
 </%INIT>
