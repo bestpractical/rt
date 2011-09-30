@@ -76,7 +76,7 @@ $m->callback(
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my %line;
-    $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
+    $line{'Name'} = "CF.{" . $CustomField->Name . "}";
     $line{'Field'} = $CustomField->Name;
 
     # Op
