@@ -49,6 +49,7 @@
     float: none;
     position: static;
     background: transparent !important;
+    overflow: visible !important;
 }
 
 body {
@@ -201,5 +202,19 @@ div.history .titlebox-title {
 
 #page-action-menu {
     display: none;
+}
+
+/* form elements */
+input, select, option {
+    background: white !important;
+    border: 1px solid #666 !important;
+}
+
+option {
+    border: none !important;
+}
+
+option[selected] {
+    font-weight: bold !important;
 }
 
