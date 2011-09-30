@@ -70,7 +70,7 @@ $Scrip
 my @list = (
     CustomIsApplicableCode => loc('Custom condition'),
     CustomPrepareCode      => loc('Custom action preparation code'),
-    CustomCommitCode       => loc('Custom action cleanup code'),
+    CustomCommitCode       => loc('Custom action commit code'),
 );
 
 my $min_lines = 10;
