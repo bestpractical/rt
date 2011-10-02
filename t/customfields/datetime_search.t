@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 14;
+use RT::Test nodata => 1, tests => 18;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
 my $q = RT::Queue->new(RT->SystemUser);
@@ -19,6 +19,7 @@ ok(
     'create cf datetime'
 );
 ok( $cf->AddToObject($q), 'date cf apply to queue' );
+my $cf_name = $cf->Name;
 
 my $ticket = RT::Ticket->new(RT->SystemUser);
 
@@ -76,6 +77,23 @@ is(
 
     is( $tickets->Count, 0, 'did not find the ticket with wrong datetime: 2010-05-05' );
 }
+
+{
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL( "'CF.{$cf_name}' = 'May 4 2010 7am'" );
+    is( $tickets->Count, 1, 'found the ticket with = May 4 2010 7am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' = 'May 4 2010 8am'" );
+    is( $tickets->Count, 0, 'did not find the ticket with = May 4 2010 8am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' > 'May 3 2010 7am'" );
+    is( $tickets->Count, 1, 'found the ticket with > May 3 2010 7am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' < 'May 4 2010 8am'" );
+    is( $tickets->Count, 1, 'found the ticket with < May 4 2010 8am' );
+
+}
+
 
 my $tickets = RT::Tickets->new( RT->SystemUser );
 $tickets->UnLimit;

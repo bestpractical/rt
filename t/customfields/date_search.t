@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 13;
+use RT::Test nodata => 1, tests => 17;
 
 my $q = RT::Queue->new(RT->SystemUser);
 ok( $q->Create( Name => 'DateCFTest' . $$ ), 'create queue' );
@@ -18,6 +18,7 @@ ok(
     'create cf date'
 );
 ok( $cf->AddToObject($q), 'date cf apply to queue' );
+my $cf_name = $cf->Name;
 
 my $ticket = RT::Ticket->new(RT->SystemUser);
 
@@ -77,6 +78,22 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
 
     is( $tickets->Count, 0, 'did not find the ticket with = 2010-05-05' );
 }
+
+{
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL( "'CF.{$cf_name}' = 'May 4 2010'" );
+    is( $tickets->Count, 1, 'found the ticket with = May 4 2010' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' < 'May 4 2010'" );
+    is( $tickets->Count, 0, 'did not find the ticket with < May 4 2010' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' < 'May 5 2010'" );
+    is( $tickets->Count, 1, 'found the ticket with < May 5 2010' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' > 'May 3 2010'" );
+    is( $tickets->Count, 1, 'found the ticket with > May 3 2010' );
+}
+
 
 {
 
