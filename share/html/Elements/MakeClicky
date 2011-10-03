@@ -202,6 +202,6 @@ It will be provided with:
     have to. This can be used to add pre- or post-processing around
     all actions.
 
-Read more about writing new actions in docs/extending_clickable_links.pod
+Read more about writing new actions in docs/extending/clickable_links.pod
 
 </%doc>
