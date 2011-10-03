@@ -229,9 +229,15 @@ foreach my $arg ( keys %ARGS ) {
                 $op = "IS NOT";
             }
         }
-        else {
-            $value =~ s/'/\\'/g;
-            $value = "'$value'" unless $value =~ /^\d+$/;
+        elsif ($value =~ /\D/) {
+            $value =~ s/(['\\])/\\$1/g;
+            $value = "'$value'";
+        }
+
+        if ($keyword =~ /^'CF\.{(.*)}'/) {
+            my $cf = $1;
+            $cf =~ s/(['\\])/\\$1/g;
+            $keyword = "'CF.{$cf}'";
         }
 
         my $clause = {
