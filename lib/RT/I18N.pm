@@ -541,7 +541,13 @@ sub SetMIMEHeadToEncoding {
             }
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
                 unless $preserve_words;
-            $head->add( $tag, $value );
+
+            # We intentionally add a leading space when re-adding the
+            # header; Mail::Header strips it before storing, but it
+            # serves to prevent it from "helpfully" canonicalizing
+            # $head->add("Subject", "Subject: foo") into the same as
+            # $head->add("Subject", "foo");
+            $head->add( $tag, " " . $value );
         }
     }
 
