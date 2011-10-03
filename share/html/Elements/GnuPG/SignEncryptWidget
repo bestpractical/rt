@@ -46,10 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table><tr>
-<td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $self->{'Sign'} &>
-using <& SelectKeyForSigning, User => $session{'CurrentUser'}->UserObj &>
-</td>
+% my $columnsplit = "</td><td>";
+<td><% loc( 'Sign[_1][_2] using [_3]',
+    $columnsplit,
+    $m->scomp('/Widgets/Form/Boolean:InputOnly',
+        Name => 'Sign', CurrentValue => $self->{'Sign'}
+    ),
+    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),
+) |n %></td>
+
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
 </tr></table>
