@@ -24,8 +24,8 @@ sub create_dashboard {
     my $form = $m->form_name('Dashboard-Searches-body');
     my @input = $form->find_input('Searches-body-Available');
     my ($dashboards_component) =
-    map { ( $_->possible_values )[1] }
-    grep { ( $_->value_names )[1] =~ /Dashboards/ } @input;
+        map { ( $_->possible_values )[1] }
+        grep { ( $_->value_names )[1] =~ /Dashboards/ } @input;
     $form->value('Searches-body-Available' => $dashboards_component );
     $m->click_button(name => 'add');
     $m->content_contains('Dashboard updated');
