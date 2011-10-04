@@ -13,8 +13,10 @@ use_ok('RT::Scrips');
 use_ok('RT::Scrip');
 
 
-use File::Temp qw/tempfile/;
-my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
+my $filename = File::Spec->catfile( RT::Test->temp_directory, 'link_count' );
+open my $fh, '>', $filename or die $!;
+close $fh;
+
 my $link_scrips_orig = RT->Config->Get( 'LinkTransactionsRun1Scrip' );
 RT->Config->Set( 'LinkTransactionsRun1Scrip', 1 );
 

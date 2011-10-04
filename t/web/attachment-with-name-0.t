@@ -6,10 +6,8 @@ my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
 use File::Spec;
-use File::Temp 'tempdir';
 
-my $tmpdir = tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
-my $file = File::Spec->catfile( $tmpdir, 0 );
+my $file = File::Spec->catfile( RT::Test->temp_directory, 0 );
 open my $fh, '>', $file or die $!;
 print $fh 'foobar';
 close $fh;
