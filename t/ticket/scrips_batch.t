@@ -39,7 +39,7 @@ my $sid;
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
     is value_name($form, "Scrip-$sid-Stage"), 'TransactionBatch', 'correct stage';
 
-    my $tmp_fn = File::Spec->catfile( RT::Test->temp_directory, 'temp' );
+    my $tmp_fn = File::Spec->catfile( RT::Test->temp_directory, 'transactions' );
     open my $tmp_fh, '+>', $tmp_fn or die $!;
 
     my $code = <<END;

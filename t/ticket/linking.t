@@ -13,7 +13,7 @@ use_ok('RT::Scrips');
 use_ok('RT::Scrip');
 
 
-my $filename = File::Spec->catfile( RT::Test->temp_directory, 'temp' );
+my $filename = File::Spec->catfile( RT::Test->temp_directory, 'link_count' );
 open my $fh, '>', $filename or die $!;
 close $fh;
 
