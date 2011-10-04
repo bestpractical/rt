@@ -94,8 +94,21 @@ if ( ref $Message ) {
 AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         my $stanza = $Message->[$i];
         if ( ref $stanza eq "HASH" ) {
-            if (    $stanza->{raw}
-                 && $stanza->{raw} =~ /----- Original Message -----/ )
+            # Fix message stanza nesting for Outlook's quoting styles
+            if (     $stanza->{raw}
+                 and $stanza->{raw} =~ /^               # start of an internal line
+                                        \s*             # optional whitespace
+                                        (?:
+                                            -{3,}       # at least three hyphens
+                                            \s*         # whitespace varies between Outlook versions
+                                            [\w\s]+?    # words, loose to get different languages
+                                            \s*         # whitespace varies between Outlook versions
+                                            -{3,}       # at least three hyphens again
+                                          |
+                                            _{6,}       # OR: six or more underscores
+                                        )
+                                        \s*$            # optional whitespace until the end of the line
+                                       /xm )
             {
                 $Message->[ $i + 1 ] = [ splice @$Message, $i + 1 ]
                     if $Message->[ $i + 1 ];
