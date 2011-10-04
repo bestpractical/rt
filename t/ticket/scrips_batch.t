@@ -39,8 +39,8 @@ my $sid;
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
     is value_name($form, "Scrip-$sid-Stage"), 'TransactionBatch', 'correct stage';
 
-    use File::Temp qw(tempfile);
-    my ($tmp_fh, $tmp_fn) = tempfile();
+    my $tmp_fn = File::Spec->catfile( RT::Test->temp_directory, 'temp' );
+    open my $tmp_fh, '+>', $tmp_fn or die $!;
 
     my $code = <<END;
 open( my \$fh, '>', '$tmp_fn' ) or die "Couldn't open '$tmp_fn':\$!";
