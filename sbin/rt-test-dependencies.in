@@ -303,7 +303,7 @@ Log::Dispatch::Perl
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 CGI 3.38
-FCGI
+FCGI 0.74
 CGI::Fast 
 .
 
