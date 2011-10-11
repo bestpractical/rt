@@ -164,8 +164,19 @@ sub Apply {
                  Type           => undef,
                  @_ );
 
+    # This is a giant bandaid.
+    # RT::Scrips->_SetupSourceObjects will clobber
+    # the CurrentUser, but we need to keep this ticket
+    # so that the _TransactionBatch cache is maintained
+    # and doesn't run twice.  sigh.
+    my $old_current_user;
+    $old_current_user = $args{TicketObj}->CurrentUser if $args{TicketObj};
+
     $self->Prepare(%args);
     $self->Commit();
+
+    # Apply the bandaid.
+    $args{TicketObj}->CurrentUser($old_current_user) if $args{TicketObj};
 
 }
 
@@ -280,9 +291,13 @@ sub _SetupSourceObjects {
             @_ );
 
 
-    if ( $args{'TicketObj'} ) {
-        # clone the ticket here as we need to change CurrentUser
-        $self->{'TicketObj'} = bless { %{$args{'TicketObj'} } }, 'RT::Ticket';
+    if ( $self->{'TicketObj'} = $args{'TicketObj'} ) {
+        # This clobbers the passed in TicketObj by turning it into one
+        # whose current user is RT_System.  Anywhere in the Web UI
+        # currently calling into this is thus susceptable to a privilege
+        # leak; the only current call site is ->Apply, which bandaids
+        # over the top of this by re-asserting the CurrentUser
+        # afterwards.
         $self->{'TicketObj'}->CurrentUser( $self->CurrentUser );
     }
     else {
