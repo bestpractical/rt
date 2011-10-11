@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 5;
+use RT::Test tests => 9;
 
 my $q = RT::Test->load_or_create_queue ( Name => 'General' );
 
@@ -23,8 +23,23 @@ my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
                                     );
 ok($tv, $tm);
 
+my $testuser = RT::Test->load_or_create_user( Name => 'bob', EmailAddress => 'bob@example.com', Password => 'password' );
+ok($testuser->Id, "Created test user bob");
+
+ok( RT::Test->add_rights({ Principal => 'Privileged', Right => [qw(ShowTicket ModifyTicket SeeQueue)]}), 'Granted ticket management rights');
+
+my $test_current_user = RT::CurrentUser->new();
+$test_current_user->LoadByName($testuser->Name);
+my $api_test = RT::Ticket->new($test_current_user);
+$api_test->Load($ticket->Id);
+$api_test->SetTimeEstimated(12);
+$api_test->ApplyTransactionBatch;
+is($api_test->CurrentUser->UserObj->Name, $testuser->Name,"User didn't change running Transaction Batch scrips");
+$api_test->Load($api_test->Id);
+is($api_test->Priority,2,"Ticket priority updated");
+
 my ($baseurl, $m) = RT::Test->started_ok;
-$m->login;
+$m->login('bob','password');
 $m->get_ok("$baseurl/Ticket/Modify.html?id=".$ticket->Id);
     $m->submit_form( form_number => 3,
         fields => { TimeEstimated => 5 }
@@ -32,4 +47,4 @@ $m->get_ok("$baseurl/Ticket/Modify.html?id=".$ticket->Id);
 
 $ticket->FlushCache;
 $ticket->Load($ticket->Id);
-is ($ticket->Priority , '2', "Ticket priority is set right");
+is ($ticket->Priority , 4, "Ticket priority is set right");
