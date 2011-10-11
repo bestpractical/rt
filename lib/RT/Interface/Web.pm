@@ -1649,9 +1649,7 @@ sub MakeMIMEEntity {
 
             my $uploadinfo = $cgi_object->uploadInfo($filehandle);
 
-            # Prefer the cached name first over CGI.pm stringification.
-            my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined $filename;
+            my $filename = "$filehandle";
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
