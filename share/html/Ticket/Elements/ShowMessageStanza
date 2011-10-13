@@ -111,9 +111,28 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                                         \s*$            # optional whitespace until the end of the line
                                        /xm )
             {
-                $stanza->{_outlooked}++;
-                # Nest the current stanza and everything that follows
-                $stanza = $Message->[ $i ] = [ splice @$Message, $i ];
+                # There's content before the quoted message, but in the
+                # same stanza.  Break it out!
+                if ( my $start = $-[0] ) {
+                    my %preceding = %$stanza;
+
+                    # We don't process $stanza->{text} because we don't use it
+                    # and it isn't given to us by HTML::Quoted.  If we ever
+                    # need to, we can process it the same way as 'raw'.
+                    $preceding{raw} = substr($stanza->{raw}, 0, $start, '');
+
+                    # Replace the current stanza with the two we just created
+                    splice @$Message, $i, 1, \%preceding, $stanza;
+
+                    # Try it again from the top now that we've rejiggered our
+                    # stanzas.  We'll process the Outlook stanza again, and hit
+                    # the else below this time.
+                    redo;
+                } else {
+                    # Nest the current stanza and everything that follows
+                    $stanza->{_outlooked}++;
+                    $stanza = $Message->[ $i ] = [ splice @$Message, $i ];
+                }
             }
             else {
                 $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
