@@ -867,7 +867,7 @@ Set(@JSFiles, qw/
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
     jquery-ui-patch-datepicker.js
-    ui.timepickr.js
+    jquery-ui-timepicker-addon.js
     titlebox-state.js
     util.js
     userautocomplete.js
