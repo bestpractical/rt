@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 9;
+use RT::Test tests => 10;
 
 my $q = RT::Test->load_or_create_queue ( Name => 'General' );
 
@@ -32,6 +32,7 @@ my $test_current_user = RT::CurrentUser->new();
 $test_current_user->LoadByName($testuser->Name);
 my $api_test = RT::Ticket->new($test_current_user);
 $api_test->Load($ticket->Id);
+is($api_test->Priority,0,"Ticket priority starts at 0");
 $api_test->SetTimeEstimated(12);
 $api_test->ApplyTransactionBatch;
 is($api_test->CurrentUser->UserObj->Name, $testuser->Name,"User didn't change running Transaction Batch scrips");
