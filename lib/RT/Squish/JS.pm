@@ -76,7 +76,13 @@ sub Squish {
     my $content;
 
     for my $file ( RT->Config->Get('JSFiles') ) {
-        $content .= $HTML::Mason::Commands::m->scomp("/NoAuth/js/$file");
+        my $path = "/NoAuth/js/$file";
+        if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
+            $content .= $HTML::Mason::Commands::m->scomp($path);
+        } else {
+            RT->Logger->error("Unable to open $path for JS Squishing");
+            next;
+        }
     }
 
     return $self->Filter($content);
