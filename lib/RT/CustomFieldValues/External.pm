@@ -82,7 +82,7 @@ C<sortorder>.
 
 =head1 SEE ALSO
 
-L<docs/creating_external_custom_fields.pod>
+L<docs/extending/external_custom_fields.pod>
 
 =cut
 

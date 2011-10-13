@@ -1597,8 +1597,7 @@ User friendly message.
 
 =back
 
-This parser is based on information from GnuPG distribution, see also
-F<docs/design_docs/gnupg_details_on_output_formats> in the RT distribution.
+This parser is based on information from GnuPG distribution.
 
 =cut
 
