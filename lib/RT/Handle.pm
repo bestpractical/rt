@@ -954,6 +954,7 @@ sub InsertData {
                 my ($ok, $msg) = $princ->Load( $item->{'UserId'} );
                 unless ( $ok ) {
                     RT->Logger->error("Unable to load user: $item->{UserId} : $msg");
+                    next;
                 }
             }
 
