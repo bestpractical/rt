@@ -164,19 +164,8 @@ sub Apply {
                  Type           => undef,
                  @_ );
 
-    # This is a giant bandaid.
-    # RT::Scrips->_SetupSourceObjects will clobber
-    # the CurrentUser, but we need to keep this ticket
-    # so that the _TransactionBatch cache is maintained
-    # and doesn't run twice.  sigh.
-    my $old_current_user;
-    $old_current_user = $args{TicketObj}->CurrentUser if $args{TicketObj};
-
     $self->Prepare(%args);
     $self->Commit();
-
-    # Apply the bandaid.
-    $args{TicketObj}->CurrentUser($old_current_user) if $args{TicketObj};
 
 }
 
@@ -189,6 +178,15 @@ Commit all of this object's prepared scrips
 sub Commit {
     my $self = shift;
 
+    # RT::Scrips->_SetupSourceObjects will clobber
+    # the CurrentUser, but we need to keep this ticket
+    # so that the _TransactionBatch cache is maintained
+    # and doesn't run twice.  sigh.
+    $self->_StashCurrentUser( TicketObj => $self->{TicketObj} ) if $self->{TicketObj};
+
+    #We're really going to need a non-acled ticket for the scrips to work
+    $self->_SetupSourceObjects( TicketObj      => $self->{'TicketObj'},
+                                TransactionObj => $self->{'TransactionObj'} );
     
     foreach my $scrip (@{$self->Prepared}) {
         $RT::Logger->debug(
@@ -200,6 +198,9 @@ sub Commit {
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
                         TransactionObj => $self->{'TransactionObj'} );
     }
+
+    # Apply the bandaid.
+    $self->_RestoreCurrentUser( TicketObj => $self->{TicketObj} ) if $self->{TicketObj};
 }
 
 
@@ -219,6 +220,12 @@ sub Prepare {
                  Stage          => undef,
                  Type           => undef,
                  @_ );
+
+    # RT::Scrips->_SetupSourceObjects will clobber
+    # the CurrentUser, but we need to keep this ticket
+    # so that the _TransactionBatch cache is maintained
+    # and doesn't run twice.  sigh.
+    $self->_StashCurrentUser( TicketObj => $args{TicketObj} ) if $args{TicketObj};
 
     #We're really going to need a non-acled ticket for the scrips to work
     $self->_SetupSourceObjects( TicketObj      => $args{'TicketObj'},
@@ -252,6 +259,10 @@ sub Prepare {
 
     }
 
+    # Apply the bandaid.
+    $self->_RestoreCurrentUser( TicketObj => $args{TicketObj} ) if $args{TicketObj};
+
+
     return (@{$self->Prepared});
 
 };
@@ -268,7 +279,39 @@ sub Prepared {
     return ($self->{'prepared_scrips'} || []);
 }
 
+=head2 _StashCurrentUser TicketObj => RT::Ticket
 
+Saves aside the current user of the original ticket that was passed to these scrips.
+This is used to make sure that we don't accidentally leak the RT_System current user
+back to the calling code.
+
+=cut
+
+sub _StashCurrentUser {
+    my $self = shift;
+    my %args = @_;
+
+    $self->{_TicketCurrentUser} = $args{TicketObj}->CurrentUser;
+}
+
+=head2 _RestoreCurrentUser TicketObj => RT::Ticket
+
+Uses the current user saved by _StashCurrentUser to reset a Ticket object
+back to the caller's current user and avoid leaking an RT_System ticket to
+calling code.
+
+=cut
+
+sub _RestoreCurrentUser {
+    my $self = shift;
+    my %args = @_;
+    unless ( $self->{_TicketCurrentUser} ) {
+        RT->Logger->debug("Called _RestoreCurrentUser without a stashed current user object");
+        return;
+    }
+    $args{TicketObj}->CurrentUser($self->{_TicketCurrentUser});
+
+}
 
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
 
