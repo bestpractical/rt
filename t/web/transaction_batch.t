@@ -30,6 +30,6 @@ $m->get_ok("$baseurl/Ticket/Modify.html?id=".$ticket->Id);
         fields => { TimeEstimated => 5 }
     );
 
-
+$ticket->FlushCache;
 $ticket->Load($ticket->Id);
 is ($ticket->Priority , '2', "Ticket priority is set right");
