@@ -405,7 +405,7 @@ sub Create {
     }
 
     {
-        my ($val, $msg) = $self->ValidateName( $args{'Name'} );
+        my ($val, $msg) = $self->_ValidateName( $args{'Name'} );
 
         if (!$val) {
             return ($val, $self->loc($msg));
@@ -538,6 +538,15 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
+    my ($ok, $msg) = $self->_ValidateName($name);
+
+    return $ok ? 1 : 0;
+}
+
+sub _ValidateName {
+    my $self = shift;
+    my $name = shift;
+
     my $tempqueue = RT::Queue->new(RT->SystemUser);
     $tempqueue->Load($name);
 
@@ -553,7 +562,6 @@ sub ValidateName {
     else {
         return (undef, "That's not a valid name.");
     }
-
 }
 
 
