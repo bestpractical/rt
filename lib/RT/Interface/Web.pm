@@ -2024,7 +2024,9 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'}
+      && $ARGSRef->{'Owner'} !~ /\D/
+      && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
