@@ -77,7 +77,7 @@ $RichText => 1
 
 my @js_files;
 if ( RT->Config->Get('DevelMode') ) {
-    @js_files = RT->Config->Get('JSFiles' );
+    @js_files = RT::Interface::Web->JSFiles();
 }
 else {
     my $key = RT::Interface::Web::SquishedJS()->Key;
