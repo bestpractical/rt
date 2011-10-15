@@ -188,10 +188,10 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
         my @owners =@{$ARGS{'Owner'}};
         delete $ARGS{'Owner'};
         foreach my $owner(@owners){
-            if ($owner =~ /\D/) {
+            if (defined($owner) && $owner =~ /\D/) {
                 $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
             }
-            else {
+            elsif (length $owner) {
                 $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
             }
         }
