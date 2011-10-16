@@ -80,7 +80,12 @@
       <select id="section"></select>
     </li>
     <li>
-      <div class="description"><&|/l&>Select a color for the section</&>:</div>
+      <div class="description">
+        <&|/l&>Select a color for the section</&>:
+        <div id="logo-picker-hint" style="display: none;">
+          <&|/l&>You can also click on the logo above to get colors!</&>
+        </div>
+      </div>
 % if ($colors) {
 <div class="primary-colors">
 %   for (@$colors) {
@@ -93,6 +98,7 @@
 </div>
 % }
       <div id="color-picker"></div>
+      <canvas id="logo-color-picker" title="<&|/l&>Click to choose a color</&>"></canvas>
     </li>
   </ol>
 </div>
@@ -183,7 +189,35 @@ jQuery(function($) {
       change_color($(this).css('background-color'), $(this).css('color'));
   });
 
+    // Setup the canvas color picker
+    $("#logo-theme-editor img").load(function() {
+        var logo      = $(this);
+        var canvas    = $("#logo-color-picker");
+        var el_canvas = canvas.get(0);
 
+        if (!el_canvas.getContext) return;
+
+        var context      = el_canvas.getContext("2d");
+        el_canvas.width  = logo.width();
+        el_canvas.height = logo.height();
+        context.drawImage(logo.get(0), 0, 0);
+
+        logo.hide().after(canvas);
+        canvas.show().click(function(ev) {
+            ev.preventDefault();
+            var R = 0,
+                G = 1,
+                B = 2,
+                A = 3;
+            var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
+            // Farbtastic expects values in the range of 0..1
+            var rgba  = $.makeArray(pixel).map(function(v,i) { return v / 255 });
+            var wheel = $.farbtastic("#color-picker");
+            wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
+            // XXX TODO factor in the alpha channel too
+        });
+        $('#logo-picker-hint').show();
+    });
 });
 </script>
 <%INIT>
