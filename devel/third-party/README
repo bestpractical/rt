@@ -21,3 +21,7 @@ jQuery UI Accordian component that goes into our minified jquery.ui-1.8.4.custom
 jquery.tablesorter.js
 http://tablesorter.com/jquery.tablesorter.js
 jQuery tablesorter plugin version 2.05b
+
+jquery-ui-timepicker-addon.js fae432b1
+https://github.com/trentrichardson/jQuery-Timepicker-Addon
+Timepicker integrated with the jQuery UI datepicker
