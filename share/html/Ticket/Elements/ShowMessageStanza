@@ -102,6 +102,8 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                                         (?:
                                             -{3,}       # at least three hyphens
                                             \s*         # whitespace varies between Outlook versions
+                                                        # don't trigger on PGP signed message or signature blocks
+                                            (?!(?:BEGIN|END)\s+PGP)
                                             [\w\s]+?    # words, loose to get different languages
                                             \s*         # whitespace varies between Outlook versions
                                             -{3,}       # at least three hyphens again
