@@ -67,7 +67,12 @@
     <label>
       <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
              <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
-      <% $attach->Filename %>
+<%perl>
+my $url = sprintf '%s/Ticket/Attachment/%d/%d/%s',
+            RT->Config->Get('WebPath'), $attach->TransactionObj->Id, $attach->Id,
+            $m->interp->apply_escapes($attach->Filename, 'u');
+</%perl>
+      <a href="<% $url %>" target="_blank"><% $attach->Filename %></a>
     </label><br />
 %     }
   </td>
