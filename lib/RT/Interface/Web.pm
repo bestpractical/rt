@@ -1103,11 +1103,7 @@ sub ComponentRoots {
     my %args = ( Names => 0, @_ );
     my @roots;
     if (defined $HTML::Mason::Commands::m) {
-        my $m = $HTML::Mason::Commands::m;
-        @roots =
-            $HTML::Mason::VERSION <= 1.28
-                ? $m->interp->resolver->comp_root_array
-                : $m->interp->comp_root_array;
+        @roots = $HTML::Mason::Commands::m->interp->comp_root_array;
     } else {
         @roots = (
             [ local    => $RT::MasonLocalComponentRoot ],
