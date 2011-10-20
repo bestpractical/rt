@@ -120,13 +120,8 @@ $id =~ s|index$||g
     if $id ne 'index';
 $id =~ s|-$||g;
 
-my @roots = map $_->[1],
-    $HTML::Mason::VERSION <= 1.28
-        ? $m->interp->resolver->comp_root_array
-        : $m->interp->comp_root_array;
-
 my $style = $session{'CurrentUser'}
-          ? $session{'CurrentUser'}->Stylesheet(@roots)
+          ? $session{'CurrentUser'}->Stylesheet
           : RT->Config->Get('WebDefaultStylesheet');
 
 my @css_files;

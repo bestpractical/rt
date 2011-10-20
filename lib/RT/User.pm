@@ -1328,12 +1328,11 @@ Returns a list of valid stylesheets take from preferences.
 
 sub Stylesheet {
     my $self = shift;
-    my @roots = @_;
 
     my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
 
 
-    my @css_paths = map { $_ . '/NoAuth/css' } @roots;
+    my @css_paths = map { $_ . '/NoAuth/css' } RT::Interface::Web->ComponentRoots;
 
     for my $css_path (@css_paths) {
         if (-d "$css_path/$style") {

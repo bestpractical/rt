@@ -202,11 +202,7 @@ our %META = (
             my $self = shift;
             my $value = $self->Get('WebDefaultStylesheet');
 
-            my @comp_roots = (
-                $RT::MasonLocalComponentRoot,
-                (map { $_->ComponentRoot } @{RT->Plugins}),
-                $RT::MasonComponentRoot,
-            );
+            my @comp_roots = RT::Interface::Web->ComponentRoots;
             for my $comp_root (@comp_roots) {
                 return if -d $comp_root.'/NoAuth/css/'.$value;
             }

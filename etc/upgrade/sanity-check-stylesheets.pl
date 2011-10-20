@@ -59,11 +59,7 @@ use RT::Users;
 my $users = RT::Users->new( $RT::SystemUser );
 $users->UnLimit();
 
-my @comp_roots = (
-    $RT::MasonLocalComponentRoot,
-    (map { $_->ComponentRoot} @{RT->Plugins}),
-    $RT::MasonComponentRoot,
-);
+my @comp_roots = RT::Interface::Web->ComponentRoots;
 my %comp_root_check_cache;
 sub stylesheet_exists {
     my $stylesheet = shift;
