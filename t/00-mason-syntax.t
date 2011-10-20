@@ -33,7 +33,7 @@ sub compile_file {
     $compiler->compile(
         comp_source => $text,
         name => 'my',
-        $HTML::Mason::VERSION >= 1.36? (comp_path => 'my'): (),
+        comp_path => 'my',
     );
     return 1;
 }

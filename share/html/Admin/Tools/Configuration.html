@@ -173,7 +173,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 
 <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
 <ol>
-% foreach my $path ( map { $_->[1] } $m->interp->comp_root_array ) {
+% foreach my $path ( RT::Interface::Web->ComponentRoots ) {
 <li><% $path %></li>
 % }
 </ol>
