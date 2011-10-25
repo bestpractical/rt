@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/Modify.html" method="post">
+<form name="ModifyClass" action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/Modify.html" method="post">
 <input type="hidden" name="Submitted" value="1" />
 %if ($Create ) {
 <input type="hidden" name="id" value="new" />
