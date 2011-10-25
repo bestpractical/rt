@@ -219,7 +219,7 @@ sub ValidateName {
     my $obj = RT::Class->new($RT::SystemUser);
     $obj->Load($newval);
     return undef if ( $obj->Id );
-    return 1;
+    return $self->SUPER::ValidateName($newval);
 
 }
 
