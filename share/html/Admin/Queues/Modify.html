@@ -166,22 +166,20 @@ $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = 'checked="checked"';
 
-if ($Create) {
-    $title = loc("Create a queue");
-} else {
+unless ($Create) {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
         if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
         }
         push @results, $msg;
-    }
-    else {
+    } else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Configuration for queue [_1]', $QueueObj->Name||'');
 }
+
 if ( $QueueObj->Id ) {
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt Lifecycle SubjectTag Disabled);
 
@@ -226,6 +224,8 @@ if ( $QueueObj->Id ) {
             push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
         }
     }
+} else {
+    $title = loc("Create a queue");
 }
 
 # This code does automatic redirection if any updates happen.
