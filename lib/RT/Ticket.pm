@@ -3058,6 +3058,16 @@ sub Steal {
 
 
 
+=head2 Resolve
+
+A convenience method to change the current ticket's status to Resolved
+
+=cut
+
+sub Resolve {
+    my $self = shift;
+    return ( $self->SetStatus( 'resolved' ));
+}
 
 
 =head2 ValidateStatus STATUS
