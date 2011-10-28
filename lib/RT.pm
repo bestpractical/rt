@@ -590,10 +590,12 @@ sub Plugins {
 
 =head2 PluginDirs
 
-Takes optional subdir (e.g. po, lib, etc.) and return plugins' dirs that exist.
+Takes an optional subdir (e.g. po, lib, etc.) and returns a list of
+directories from plugins where that subdirectory exists.
 
-This code checks plugins names or anything else and required when main
-config is loaded to load plugins' configs.
+This code does not check plugin names, plugin validitity, or load
+plugins (see L</InitPlugins>) in any way, and requires that RT's
+configuration have been already loaded.
 
 =cut
 
