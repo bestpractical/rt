@@ -1255,6 +1255,9 @@ extra information about the user, this expects a Format string of user
 attributes.  Please note that not all the attributes are supported in
 this display because we're not building a table.
 
+Example:
+C<Set($MoreAboutRequestorExtraInfo,"Organization, Address1")>
+
 =cut
 
 Set($MoreAboutRequestorExtraInfo, "");
