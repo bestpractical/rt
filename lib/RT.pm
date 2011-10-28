@@ -130,8 +130,9 @@ sub LoadConfig {
 
 =head2 Init
 
-L<Connect to the database /ConnectToDatabase>, L<initilizes system objects /InitSystemObjects>,
-L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
+L<Connects to the database|/ConnectToDatabase>, L<initilizes system
+objects|/InitSystemObjects>, L<preloads classes|/InitClasses>, L<sets
+up logging|/InitLogging>, and L<loads plugins|/InitPlugins>.
 
 =cut
 
@@ -154,7 +155,7 @@ sub Init {
 
 =head2 ConnectToDatabase
 
-Get a database connection. See also </Handle>.
+Get a database connection. See also L</Handle>.
 
 =cut
 
@@ -472,8 +473,8 @@ sub InitClasses {
 
 =head2 InitSystemObjects
 
-Initializes system objects: C<$RT::System>, C<RT->SystemUser>
-and C<RT->Nobody>.
+Initializes system objects: C<$RT::System>, C<< RT->SystemUser >>
+and C<< RT->Nobody >>.
 
 =cut
 
@@ -496,8 +497,8 @@ sub InitSystemObjects {
 
 =head2 Config
 
-Returns the current L<config object RT::Config>, but note that
-you must L<load config /LoadConfig> first otherwise this method
+Returns the current L<config object|RT::Config>, but note that
+you must L<load config|/LoadConfig> first otherwise this method
 returns undef.
 
 Method can be called as class method.
@@ -508,7 +509,7 @@ sub Config { return $Config || shift->LoadConfig(); }
 
 =head2 DatabaseHandle
 
-Returns the current L<database handle object RT::Handle>.
+Returns the current L<database handle object|RT::Handle>.
 
 See also L</ConnectToDatabase>.
 
@@ -526,7 +527,7 @@ sub Logger { return $Logger }
 
 =head2 System
 
-Returns the current L<system object RT::System>. See also
+Returns the current L<system object|RT::System>. See also
 L</InitSystemObjects>.
 
 =cut
@@ -589,10 +590,12 @@ sub Plugins {
 
 =head2 PluginDirs
 
-Takes optional subdir (e.g. po, lib, etc.) and return plugins' dirs that exist.
+Takes an optional subdir (e.g. po, lib, etc.) and returns a list of
+directories from plugins where that subdirectory exists.
 
-This code chacke plugins names or anything else and required when main config
-is loaded to load plugins' configs.
+This code does not check plugin names, plugin validitity, or load
+plugins (see L</InitPlugins>) in any way, and requires that RT's
+configuration have been already loaded.
 
 =cut
 
@@ -643,7 +646,8 @@ sub InitPluginPaths {
 
 =head2 InitPlugins
 
-Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
+Initialize all Plugins found in the RT configuration file, setting up
+their lib and L<HTML::Mason> component roots.
 
 =cut
 
@@ -784,7 +788,6 @@ If you're not sure what's going on, report them rt-devel@lists.bestpractical.com
 
 L<RT::StyleGuide>
 L<DBIx::SearchBuilder>
-
 
 =cut
 
