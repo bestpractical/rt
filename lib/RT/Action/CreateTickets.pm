@@ -230,7 +230,7 @@ by repeating the fieldname on a new line with an additional value.
 Fields marked with a ! are postponed to be processed after all
 tickets in the same actions are created.  Except for 'Status', those
 field can also take a ticket name within the same action (i.e.
-the identifiers after ==Create-Ticket), instead of raw Ticket ID
+the identifiers after ===Create-Ticket), instead of raw Ticket ID
 numbers.
 
 When parsed, field names are converted to lowercase and have -s stripped.
