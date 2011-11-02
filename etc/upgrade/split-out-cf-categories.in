@@ -84,11 +84,11 @@ while (my $cf  = $CFs->Next ) {
     print "  $_\n" for @categories;
 
     print "Split this CF's categories into a hierarchical custom field (Y/n)? ";
-    my $dothis = <>;
+    my $dothis = <STDIN>;
     next if $dothis =~ /n/i;
 
     print "Enter name of CF to create as category ('@{[$cf->Name]} category'): ";
-    my $newname = <>;
+    my $newname = <STDIN>;
     chomp $newname;
     $newname = $cf->Name . " category" unless length $newname;
 
