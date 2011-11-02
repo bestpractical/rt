@@ -106,5 +106,5 @@ if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $
 }
 push @menu,  {   label => loc("Logout"), url   => '/m/logout', } ;
 
-$m->callback( CallbackName => 'MassageMenu', Links => \@menu );
+$m->callback( CallbackName => 'MassageMenu', Menu => \@menu );
 </%init>
