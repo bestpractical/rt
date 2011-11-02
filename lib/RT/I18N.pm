@@ -502,12 +502,19 @@ sub _CanonicalizeCharset {
     my $charset = lc shift;
     return $charset unless $charset;
 
+    # Canonicalize aliases if they're known
+    if (my $canonical = Encode::resolve_alias($charset)) {
+        $charset = $canonical;
+    }
+
     if ( $charset eq 'utf8' || $charset eq 'utf-8-strict' ) {
         return 'utf-8';
     }
-    elsif ( $charset eq 'gb2312' ) {
-        # gbk is superset of gb2312 so it's safe
+    elsif ( $charset eq 'euc-cn' ) {
+        # gbk is superset of gb2312/euc-cn so it's safe
         return 'gbk';
+        # XXX TODO: gb18030 is an even larger, more permissive superset of gbk,
+        # but needs Encode::HanExtra installed
     }
     else {
         return $charset;
