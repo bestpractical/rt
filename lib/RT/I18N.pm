@@ -289,7 +289,7 @@ sub DecodeMIMEWordsToUTF8 {
 
 sub DecodeMIMEWordsToEncoding {
     my $str = shift;
-    my $to_charset = shift;
+    my $to_charset = _CanonicalizeCharset(shift);
     my $field = shift || '';
 
     my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
@@ -303,6 +303,7 @@ sub DecodeMIMEWordsToEncoding {
         while (@list) {
             my ($prefix, $charset, $encoding, $enc_str, $trailing) =
                     splice @list, 0, 5;
+            $charset  = _CanonicalizeCharset($charset);
             $encoding = lc $encoding;
 
             $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
@@ -357,6 +358,7 @@ sub DecodeMIMEWordsToEncoding {
             my ( $prefix, $charset, $language, $enc_str, $trailing ) =
               splice @list, 0, 5;
             $prefix =~ s/\*=$/=/; # remove the *
+            $charset = _CanonicalizeCharset($charset);
             $enc_str =~ s/%(\w{2})/chr hex $1/eg;
             unless ( $charset eq $to_charset ) {
                 Encode::from_to( $enc_str, $charset, $to_charset );
