@@ -295,58 +295,58 @@ sub DecodeMIMEWordsToEncoding {
     my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
 
     if ( @list ) {
-    # add everything that hasn't matched to the end of the latest
-    # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    $list[-1] .= substr($str, pos $str);
+        # add everything that hasn't matched to the end of the latest
+        # string in array this happen when we have 'key="=?encoded?="; key="plain"'
+        $list[-1] .= substr($str, pos $str);
 
-    $str = "";
-    while (@list) {
-	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-            splice @list, 0, 5;
-        $encoding = lc $encoding;
+        $str = "";
+        while (@list) {
+            my ($prefix, $charset, $encoding, $enc_str, $trailing) =
+                    splice @list, 0, 5;
+            $encoding = lc $encoding;
 
-        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
+            $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
 
-	if ( $encoding eq 'q' ) {
-	    use MIME::QuotedPrint;
-	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
-	    $enc_str = decode_qp($enc_str);
-	} elsif ( $encoding eq 'b' ) {
-	    use MIME::Base64;
-	    $enc_str = decode_base64($enc_str);
-	} else {
-	    $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
-            ."only Q(uoted-printable) and B(ase64) are supported");
-	}
+            if ( $encoding eq 'q' ) {
+                use MIME::QuotedPrint;
+                $enc_str =~ tr/_/ /;		# Observed from Outlook Express
+                $enc_str = decode_qp($enc_str);
+            } elsif ( $encoding eq 'b' ) {
+                use MIME::Base64;
+                $enc_str = decode_base64($enc_str);
+            } else {
+                $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
+                    ."only Q(uoted-printable) and B(ase64) are supported");
+            }
 
-        # now we have got a decoded subject, try to convert into the encoding
-        unless ( $charset eq $to_charset ) {
-            Encode::from_to( $enc_str, $charset, $to_charset );
+            # now we have got a decoded subject, try to convert into the encoding
+            unless ( $charset eq $to_charset ) {
+                Encode::from_to( $enc_str, $charset, $to_charset );
+            }
+
+            # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+            # We _should_ be preserving them encoded until after parsing is completed and
+            # THEN undo the mime-encoding.
+            #
+            # This routine should be translating the existing mimeencoding to utf8 but leaving
+            # things encoded.
+            #
+            # It's legal for headers to contain mime-encoded commas and semicolons which
+            # should not be treated as address separators. (Encoding == quoting here)
+            #
+            # until this is fixed, we must escape any string containing a comma or semicolon
+            # this is only a bandaid
+
+            # Some _other_ MUAs encode quotes _already_, and double quotes
+            # confuse us a lot, so only quote it if it isn't quoted
+            # already.
+            $enc_str = qq{"$enc_str"}
+                if $enc_str =~ /[,;]/
+                and $enc_str !~ /^".*"$/
+                and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
+
+            $str .= $prefix . $enc_str . $trailing;
         }
-
-        # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
-        # We _should_ be preserving them encoded until after parsing is completed and
-        # THEN undo the mime-encoding.
-        #
-        # This routine should be translating the existing mimeencoding to utf8 but leaving
-        # things encoded.
-        #
-        # It's legal for headers to contain mime-encoded commas and semicolons which
-        # should not be treated as address separators. (Encoding == quoting here)
-        #
-        # until this is fixed, we must escape any string containing a comma or semicolon
-        # this is only a bandaid
-
-        # Some _other_ MUAs encode quotes _already_, and double quotes
-        # confuse us a lot, so only quote it if it isn't quoted
-        # already.
-        $enc_str = qq{"$enc_str"}
-            if $enc_str =~ /[,;]/
-            and $enc_str !~ /^".*"$/
-            and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
-
-	$str .= $prefix . $enc_str . $trailing;
-    }
     }
 
 # handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, see also rfc 2231
