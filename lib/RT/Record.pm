@@ -664,8 +664,8 @@ sub _BuildTableAttributes {
 
     }
 
-    foreach my $column (%$attributes) {
-        foreach my $attr ( %{ $attributes->{$column} } ) {
+    foreach my $column (keys %$attributes) {
+        foreach my $attr ( keys %{ $attributes->{$column} } ) {
             $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
         }
     }
@@ -673,8 +673,8 @@ sub _BuildTableAttributes {
         next unless UNIVERSAL::can( $self, $method );
         $attributes = $self->$method();
 
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
+        foreach my $column ( keys %$attributes ) {
+            foreach my $attr ( keys %{ $attributes->{$column} } ) {
                 $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
             }
         }
