@@ -1613,9 +1613,7 @@ provides two formats:
   link after the URL.
 
 * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-  replaces the URL with a link and *adds spaces* into the text if it
-  is longer then 30 characters. This allows the browser to wrap long
-  URLs and avoid horizontal scrolling.
+  replaces the URL with a link.
 
 See F<share/html/Elements/MakeClicky> for documentation on how to add
 your own styles of link detection.
