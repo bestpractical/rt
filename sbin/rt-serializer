@@ -17,6 +17,8 @@ GetOptions(
     "force!",
     "size|s=i",
 
+    "gnuplot|g!",
+
     "clone|c!",
     "all|a!",
     "queue|q=s",
@@ -37,6 +39,12 @@ $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
 
+if ($OPT{gnuplot}) {
+    die "--gnuplot requires a gnuplot binary"
+        unless `which gnuplot`;
+    require Time::HiRes;
+    $args{Progress} = \&gnuplot;
+}
 
 if ($OPT{ticketsql}) {
     $args{FollowDeleted} = 0;
@@ -110,4 +118,65 @@ print "\n";
 print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
+}
+
+{
+    my $last_written;
+    my $last_time;
+    my $start;
+
+    sub plot {
+        my ($title, $column) = @_;
+
+        my ($col, $row) = (100, 50);
+        eval {
+            require Term::ReadKey;
+            ($col, $row) = Term::ReadKey::GetTerminalSize();
+        };
+        $col -= 1;
+        $row = int(($row - 5) / 2);
+
+        my $file = $walker->Directory . "/progress.plot";
+        system("gnuplot", "-e", <<EOT );
+set term dumb $col $row;
+set xlabel "Seconds";
+unset key;
+set autoscale;
+set title "$title";
+plot "$file" using 1:$column with lines
+EOT
+    }
+
+    sub gnuplot {
+        my $obj = shift;
+        my $now = Time::HiRes::time();
+        return if defined $last_time and $now - $last_time <= 3;
+
+        $start = $now unless $start;
+        my $length = $walker->StackSize;
+
+        my $written = 0;
+        my %counts = $walker->ObjectCount;
+        $written += $_ for values %counts;
+
+        open(my $dat, ">>", $walker->Directory . "/progress.plot");
+        printf $dat "%10.3f\t%8d\t%10.3f\n",
+            $now - $start,
+            $length,
+            defined $last_time ?
+                ($written - $last_written)/($now - $last_time) :
+                0;
+        close $dat;
+
+        if ($last_written) {
+            print `clear`;
+            plot( "Queue Length" => 2 );
+            plot( "Objects written per second" => 3 );
+            print $walker->{msg} . "\n" if $walker->{msg};
+            $walker->{msg} = "";
+        }
+
+        $last_written = $written;
+        $last_time = $now;
+    }
 }

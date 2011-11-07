@@ -65,11 +65,13 @@ sub Init {
     my %args = (
         First         => "top",
         GC            => 0,
+        Progress      => undef,
         @_
     );
 
     $self->{first}    = $args{First};
     $self->{GC}       = $args{GC};
+    $self->{progress} = $args{Progress};
     $self->{stack}    = [];
 }
 
@@ -162,6 +164,7 @@ sub Process {
     return if $obj->isa("RT::System");
 
     my $uid = $obj->UID;
+    $self->{progress}->($obj) if $self->{progress};
     if (exists $self->{visited}{$uid}) {
         # Already visited -- no-op
         $self->Again(%args);

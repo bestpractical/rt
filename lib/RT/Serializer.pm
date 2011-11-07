@@ -202,6 +202,11 @@ sub RotateFile {
     push @{$self->{Files}}, $self->Filename;
 }
 
+sub StackSize {
+    my $self = shift;
+    return scalar @{$self->{stack}};
+}
+
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
