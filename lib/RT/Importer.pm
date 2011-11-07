@@ -197,11 +197,20 @@ sub Import {
         return $self->Id;
     };
 
+    my %unglobal;
+    my %new;
     for my $f (@files) {
         open(my $fh, "<", $f) or die "Can't read $f: $!";
         while (not eof($fh)) {
             my $loaded = Storable::fd_retrieve($fh);
             my ($class, $uid, $data) = @{$loaded};
+
+            # If it's a queue, store its ID away, as we'll need to know
+            # it to split global CFs into non-global across those
+            # fields.  We do this before inflating, so that queues which
+            # got merged still get the CFs applied
+            push @{$new{$class}}, $uid
+                if $class eq "RT::Queue";
 
             next unless $class->PreInflate( $self, $uid, $data );
 
@@ -222,6 +231,25 @@ sub Import {
             $obj = $class->new( RT->SystemUser );
             $obj->Load( $id );
             $obj->PostInflate( $self );
+
+            # If it's a CF, we don't know yet if it's global (the OCF
+            # hasn't been created yet) to store away the CF for later
+            # inspection
+            push @{$unglobal{"RT::Queue"}}, $uid
+                if $class eq "RT::CustomField"
+                    and $obj->LookupType =~ /^RT::Queue/;
+        }
+    }
+
+    # Take global CFs which we made and make them un-global
+    for my $class (keys %unglobal) {
+        my @objs = grep {$_} map {$self->LookupObj( $_ )} @{$new{$class}};
+
+        for my $uid (@{$unglobal{$class}}) {
+            my $obj = $self->LookupObj( $uid );
+            my $ocf = $obj->IsApplied( 0 ) or next;
+            $ocf->Delete;
+            $obj->AddToObject( $_ ) for @objs;
         }
     }
 
