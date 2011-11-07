@@ -1943,6 +1943,19 @@ sub UID {
     return "@{[ref $self]}-$RT::Organization-@{[$self->Id]}";
 }
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+    for my $col (qw/Creator LastUpdatedBy/) {
+        if ( $self->_Accessible( $col, 'read' ) ) {
+            next unless $self->$col;
+            my $obj = RT::Principal->new( $self->CurrentUser );
+            $obj->Load( $self->$col );
+            $deps->Add( out => $obj->Object );
+        }
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;
