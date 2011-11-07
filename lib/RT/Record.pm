@@ -1985,6 +1985,17 @@ sub Dependencies {
     }
 }
 
+sub Serialize {
+    my $self = shift;
+
+    my %store = %{$self->{values}};
+
+    # Never store the ID
+    delete $store{id};
+
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
