@@ -64,8 +64,12 @@ sub Init {
         Force       => undef,
         MaxFileSize => 32,
 
-        FollowQueueToTicket => 0,
+        AllUsers            => 1,
+        AllGroups           => 1,
         FollowDeleted       => 1,
+
+        FollowScrips        => 0,
+        FollowTickets       => 1,
         FollowACL           => 0,
         @_,
     );
@@ -84,9 +88,13 @@ sub Init {
     $self->{MaxFileSize} = delete $args{MaxFileSize};
 
     $self->{$_} = delete $args{$_}
-        for qw/FollowQueueToTicket
-               FollowDeleted
-               FollowACL
+        for qw/
+                  AllUsers
+                  AllGroups
+                  FollowDeleted
+                  FollowScrips
+                  FollowTickets
+                  FollowACL
               /;
 
     $self->SUPER::Init(@_, First => "top");
@@ -123,16 +131,6 @@ sub PushBasics {
     $systemroles->LimitToRolesForSystem;
     $self->PushObj( $systemroles );
 
-    # Global templates
-    my $templates = RT::Templates->new( RT->SystemUser );
-    $templates->LimitToGlobal;
-    $self->PushObj( $templates );
-
-    # Global scrips
-    my $scrips = RT::Scrips->new( RT->SystemUser );
-    $scrips->LimitToGlobal;
-    $self->PushObj( $scrips );
-
     # CFs on Users, Groups, Queues
     my $cfs = RT::CustomFields->new( RT->SystemUser );
     $cfs->Limit(
@@ -141,10 +139,48 @@ sub PushBasics {
     ) for qw/RT::User RT::Group RT::Queue/;
     $self->PushObj( $cfs );
 
-    # Global topics
+    # Global attributes
+    my $attributes = RT::System->new( RT->SystemUser )->Attributes;
+    $self->PushObj( $attributes );
+
+    # Global scrips
+    if ($self->{FollowScrips}) {
+        my $scrips = RT::Scrips->new( RT->SystemUser );
+        $scrips->LimitToGlobal;
+
+        my $templates = RT::Templates->new( RT->SystemUser );
+        $templates->LimitToGlobal;
+
+        my $actions = RT::ScripActions->new( RT->SystemUser );
+        $actions->UnLimit;
+
+        my $conditions = RT::ScripConditions->new( RT->SystemUser );
+        $conditions->UnLimit;
+        $self->PushObj( $scrips, $templates, $actions, $conditions );
+    }
+
+    if ($self->{AllUsers}) {
+        my $users = RT::Users->new( RT->SystemUser );
+        $users->LimitToPrivileged;
+        $self->PushObj( $users );
+    }
+
+    if ($self->{AllGroups}) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->LimitToUserDefinedGroups;
+        $self->PushObj( $groups );
+    }
+
     my $topics = RT::Topics->new( RT->SystemUser );
-    $topics->LimitToObject( RT::System->new );
-    $self->PushObj( $topics );
+    $topics->UnLimit;
+
+    my $classes = RT::Classes->new( RT->SystemUser );
+    $classes->UnLimit;
+    $self->PushObj( $topics, $classes );
+
+    my $queues = RT::Queues->new( RT->SystemUser );
+    $queues->UnLimit;
+    $self->PushObj( $queues );
 }
 
 sub Walk {
@@ -219,12 +255,12 @@ sub Observe {
     my $obj = $args{object};
     my $from = $args{from};
     if ($obj->isa("RT::Ticket")) {
-        return $self->{FollowDeleted}
-            if $obj->Status eq "deleted";
-        return $self->{FollowQueueToTicket}
-            if $from =~ /^RT::Queue-/;
+        return 0 if $obj->Status eq "deleted" and not $self->{FollowDeleted};
+        return $self->{FollowTickets};
     } elsif ($obj->isa("RT::ACE")) {
         return $self->{FollowACL};
+    } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template")) {
+        return $self->{FollowScrips};
     } elsif ($obj->isa("RT::GroupMember")) {
         my $grp = $obj->GroupObj->Object;
         if ($grp->Domain =~ /^RT::(Queue|Ticket)-Role$/) {

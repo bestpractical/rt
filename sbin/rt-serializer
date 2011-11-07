@@ -19,20 +19,16 @@ GetOptions(
 
     "gnuplot|g!",
 
-    "clone|c!",
-    "all|a!",
-    "queue|q=s",
-    "ticketsql|t=s",
+    "users!",
+    "groups!",
+    "deleted!",
+
+    "scrips!",
+    "tickets!",
+    "acls!",
 
     "gc=i",
 );
-
-die "Only one of --clone, --all, --queue, or --ticketsql allowed at once"
-    if (grep {$OPT{$_}} qw/clone all queue ticketsql/) > 1;
-
-$OPT{all} = 1 if $OPT{clone};
-$OPT{all} = 1 unless $OPT{queue} or $OPT{ticketsql};
-
 
 my %args;
 $args{Directory}   = $OPT{directory};
@@ -46,57 +42,18 @@ if ($OPT{gnuplot}) {
     $args{Progress} = \&gnuplot;
 }
 
-if ($OPT{ticketsql}) {
-    $args{FollowDeleted} = 0;
-} else {
-    $args{FollowQueueToTicket} = 1;
-}
+$args{AllUsers}      = $OPT{users}    if defined $OPT{users};
+$args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
+$args{FollowDeleted} = $OPT{deleted}  if defined $OPT{deleted};
 
-if ($OPT{clone}) {
-    $args{FollowACL} = 1;
-}
+$args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
+$args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
+$args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
 $args{GC} = $OPT{gc} if $OPT{gc};
 
 use RT::Serializer;
 my $walker = RT::Serializer->new( %args );
-
-if ($OPT{all}) {
-    my $attributes = RT::System->new( RT->SystemUser )->Attributes;
-
-    my $actions = RT::ScripActions->new( RT->SystemUser );
-    $actions->UnLimit;
-
-    my $conditions = RT::ScripConditions->new( RT->SystemUser );
-    $conditions->UnLimit;
-
-    my $users = RT::Users->new( RT->SystemUser );
-    $users->LimitToPrivileged;
-
-    my $groups = RT::Groups->new( RT->SystemUser );
-    $groups->LimitToUserDefinedGroups;
-
-    my $classes = RT::Classes->new( RT->SystemUser );
-    $classes->UnLimit;
-
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->UnLimit;
-
-    $walker->PushObj(
-        $attributes,
-        $actions, $conditions,
-        $users, $groups,
-        $classes, $queues,
-    );
-} elsif ($OPT{queue}) {
-    my $queue = RT::Queue->new( RT->SystemUser );
-    $queue->Load( $OPT{queue} );
-    $walker->PushObj( $queue );
-} else {
-    my $tickets = RT::Tickets->new( RT->SystemUser );
-    $tickets->FromSQL( $OPT{ticketsql} );
-    $walker->PushObj( $tickets );
-}
 
 my %counts = $walker->Walk;
 
