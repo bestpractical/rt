@@ -1954,6 +1954,10 @@ sub Dependencies {
             $deps->Add( out => $obj->Object );
         }
     }
+
+    # Object attributes, we have to check on every object
+    my $objs = $self->Attributes;
+    $deps->Add( in => $objs );
 }
 
 RT::Base->_ImportOverlays();
