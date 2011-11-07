@@ -1568,6 +1568,89 @@ sub PotentialPageAction {
     return "";
 }
 
+=head2 RewriteInlineImages PARAMHASH
+
+Turns C<< <img src="cid:..."> >> elements in HTML into working images pointing
+back to RT's stored copy.
+
+Takes the following parameters:
+
+=over 4
+
+=item Content
+
+Scalar ref of the HTML content to rewrite.  Modified in place to support the
+most common use-case.
+
+=item Attachment
+
+The L<RT::Attachment> object from which the Content originates.
+
+=item Related (optional)
+
+Array ref of related L<RT::Attachment> objects to use for C<Content-ID> matching.
+
+Defaults to the result of the C<Siblings> method on the passed Attachment.
+
+=item AttachmentPath (optional)
+
+The base path to use when rewriting C<src> attributes.
+
+Defaults to C< $WebPath/Ticket/Attachment >
+
+=back
+
+In scalar context, returns the number of elements rewritten.
+
+In list content, returns the attachments IDs referred to by the rewritten <img>
+elements, in the order found.  There may be duplicates.
+
+=cut
+
+sub RewriteInlineImages {
+    my %args = (
+        Content         => undef,
+        Attachment      => undef,
+        Related         => undef,
+        AttachmentPath  => RT->Config->Get('WebPath')."/Ticket/Attachment",
+        @_
+    );
+
+    return unless defined $args{Content}
+              and ref $args{Content} eq 'SCALAR'
+              and defined $args{Attachment};
+
+    my $related_part = $args{Attachment}->Closest("multipart/related")
+        or return;
+
+    $args{Related} ||= $related_part->Children->ItemsArrayRef;
+    return unless @{$args{Related}};
+
+    my $content = $args{'Content'};
+    my @rewritten;
+
+    require HTML::RewriteAttributes::Resources;
+    $$content = HTML::RewriteAttributes::Resources->rewrite($$content, sub {
+        my $cid  = shift;
+        my %meta = @_;
+        return $cid unless    lc $meta{tag}  eq 'img'
+                          and lc $meta{attr} eq 'src'
+                          and $cid =~ s/^cid://i;
+
+        for my $attach (@{$args{Related}}) {
+            if (($attach->GetHeader('Content-ID') || '') eq "<$cid>") {
+                push @rewritten, $attach->Id;
+                return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
+            }
+        }
+
+        # No attachments means this is a bogus CID. Just pass it through.
+        RT->Logger->debug(qq[Found bogus inline image src="cid:$cid"]);
+        return "cid:$cid";
+    });
+    return @rewritten;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -3551,6 +3634,15 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
 );
 
 our %SCRUBBER_RULES = ();
+
+# If we're displaying images, let embedded ones through
+if (RT->Config->Get('ShowTransactionImages')) {
+    $SCRUBBER_RULES{'img'} = {
+        '*' => 0,
+        alt => 1,
+        src => qr/^cid:/i,
+    };
+}
 
 sub _NewScrubber {
     require HTML::Scrubber;

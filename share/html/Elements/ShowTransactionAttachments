@@ -86,7 +86,9 @@ $m->comp(
     $m->current_comp,
     %ARGS,
     Parent    => $message->id,
-    ParentObj => $message
+    ParentObj => $message,
+
+    displayed_inline => $displayed_inline,
 );
 
 </%PERL>
@@ -103,6 +105,9 @@ $AttachmentContent => {}
 $Parent => 0
 $ParentObj => undef
 $WarnUnsigned => 0
+
+# Keep track of CID images we display inline
+$displayed_inline => {}
 </%ARGS>
 <%INIT>
 my @DisplayHeaders=qw(_all);
@@ -194,6 +199,19 @@ my $render_attachment = sub {
                     object  => $Object,
                 );
 
+                if (RT->Config->Get('ShowTransactionImages')) {
+                    my @rewritten = RT::Interface::Web::RewriteInlineImages(
+                        Content         => \$content,
+                        Attachment      => $message,
+                        # Not technically correct to search all parts of the
+                        # MIME structure, but it saves having to go to the
+                        # database again and is unlikely to break display.
+                        Related         => [ map { @$_ } values %$Attachments ],
+                        AttachmentPath  => $AttachmentPath,
+                    );
+                    $displayed_inline->{$_}++ for @rewritten;
+                }
+
                 require HTML::Quoted;
                 $content = HTML::Quoted->extract($content) unless length $name;
 
@@ -229,7 +247,11 @@ my $render_attachment = sub {
 
     # if it's an image, show it as an image
     elsif ( RT->Config->Get('ShowTransactionImages') and  $content_type =~ m{^image/} ) {
-        if ( $disposition ne 'inline' ) {
+        if ( $displayed_inline->{$message->Id} ) {
+            $m->out('<p><i>'. loc( 'Image displayed inline above' ) .'</i></p>');
+            return;
+        }
+        elsif ( $disposition ne 'inline' ) {
             $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
             return;
         }
