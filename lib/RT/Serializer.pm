@@ -71,6 +71,8 @@ sub Init {
         FollowScrips        => 0,
         FollowTickets       => 1,
         FollowACL           => 0,
+
+        Verbose => 1,
         @_,
     );
 
@@ -86,6 +88,8 @@ sub Init {
 
     # How many megabytes each chunk should be, approximitely
     $self->{MaxFileSize} = delete $args{MaxFileSize};
+
+    $self->{Verbose} = delete $args{Verbose};
 
     $self->{$_} = delete $args{$_}
         for qw/
@@ -288,6 +292,7 @@ sub Visit {
 
     # Serialize it
     my $obj = $args{object};
+    warn "Writing ".$obj->UID."\n" if $self->{Verbose};
     my @store = (
         ref($obj),
         $obj->UID,

@@ -27,6 +27,7 @@ GetOptions(
     "tickets!",
     "acls!",
 
+    "verbose!",
     "gc=i",
 );
 
@@ -34,6 +35,8 @@ my %args;
 $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
+
+$args{Verbose}     = $OPT{verbose};
 
 if ($OPT{gnuplot}) {
     die "--gnuplot requires a gnuplot binary"
