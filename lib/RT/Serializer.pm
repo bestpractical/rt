@@ -65,6 +65,7 @@ sub Init {
         MaxFileSize => 32,
 
         FollowQueueToTicket => 0,
+        FollowDeleted       => 1,
         @_,
     );
 
@@ -81,7 +82,10 @@ sub Init {
     # How many megabytes each chunk should be, approximitely
     $self->{MaxFileSize} = delete $args{MaxFileSize};
 
-    $self->{FollowQueueToTicket} = delete $args{FollowQueueToTicket};
+    $self->{$_} = delete $args{$_}
+        for qw/FollowQueueToTicket
+               FollowDeleted
+              /;
 
     $self->SUPER::Init(@_, First => "top");
 
@@ -208,6 +212,8 @@ sub Observe {
     my $obj = $args{object};
     my $from = $args{from};
     if ($obj->isa("RT::Ticket")) {
+        return $self->{FollowDeleted}
+            if $obj->Status eq "deleted";
         return $self->{FollowQueueToTicket}
             if $from =~ /^RT::Queue-/;
     } elsif ($obj->isa("RT::ACE")) {

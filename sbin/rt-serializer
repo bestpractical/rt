@@ -34,7 +34,9 @@ $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
 
 
-unless ($OPT{ticketsql}) {
+if ($OPT{ticketsql}) {
+    $args{FollowDeleted} = 0;
+} else {
     $args{FollowQueueToTicket} = 1;
 }
 
