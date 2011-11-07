@@ -40,6 +40,15 @@ if ($OPT{ticketsql}) {
     $args{FollowQueueToTicket} = 1;
 }
 
+$args{PostProcess} = sub {
+    my ($ref, $uid, $data) = @_;
+    if ($ref eq "RT::Group" and $data->{Domain} eq "UserDefined") {
+        $data->{Name} = $RT::Organization . ": " . $data->{Name};
+    } elsif ($ref eq "RT::Queue") {
+        $data->{Name} = $RT::Organization . ": " . $data->{Name}
+            unless $data->{Name} eq "___Approvals";
+    }
+};
 
 
 use RT::Serializer;
