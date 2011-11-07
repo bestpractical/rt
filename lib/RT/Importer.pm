@@ -64,6 +64,7 @@ sub Init {
     my $self = shift;
     my %args = (
         PreserveTicketIds => 0,
+        OriginalId        => undef,
         @_,
     );
 
@@ -73,6 +74,8 @@ sub Init {
     $tickets->UnLimit;
     warn "There are already tickets in the system; preserving ticket IDs is unlikely to work"
         if $tickets->Count;
+
+    $self->{OriginalId} = $args{OriginalId};
 
     # Objects we've created
     $self->{UIDs} = {};
@@ -236,6 +239,19 @@ sub Import {
             $obj = $class->new( RT->SystemUser );
             $obj->Load( $id );
             $obj->PostInflate( $self );
+
+            # If it's a ticket, we might need to create a
+            # TicketCustomField for the previous ID
+            if ($class eq "RT::Ticket" and $self->{OriginalId}) {
+                my ($org, $origid) = $uid =~ /^RT::Ticket-(.*)-(\d+)$/;
+                ($id, $msg) = $obj->AddCustomFieldValue(
+                    Field             => $self->{OriginalId},
+                    Value             => "$org:$origid",
+                    RecordTransaction => 0,
+                );
+                warn "Failed to add custom field to $uid: $msg"
+                    unless $id;
+            }
 
             # If it's a CF, we don't know yet if it's global (the OCF
             # hasn't been created yet) to store away the CF for later
