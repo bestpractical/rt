@@ -1971,6 +1971,18 @@ sub Dependencies {
         $objs->Limit( FIELD => 'ObjectId', VALUE => $self->id );
         $deps->Add( in => $objs );
     }
+
+    # Object custom field values
+    if (   $self->isa("RT::Transaction")
+        or $self->isa("RT::Ticket")
+        or $self->isa("RT::User")
+        or $self->isa("RT::Group")
+        or $self->isa("RT::Queue")
+        or $self->isa("RT::Article") )
+    {
+        $objs = $self->CustomFieldValues; # Actually OCFVs
+        $deps->Add( in => $objs );
+    }
 }
 
 RT::Base->_ImportOverlays();
