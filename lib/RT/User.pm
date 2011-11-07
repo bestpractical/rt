@@ -2337,6 +2337,46 @@ sub Serialize {
     );
 }
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    my $principal_uid = delete $data->{Principal};
+    my $disabled      = delete $data->{Disabled};
+
+    my $obj = RT::User->new( RT->SystemUser );
+    $obj->Load( $data->{Name} );
+
+    if ($obj->Id) {
+        # User already exists -- merge
+        warn "!!!!!!!!!!!!!!!!!! Merging @{[$obj->Name]}\n";
+        $importer->MergeValues($obj, $data);
+        $importer->SkipTransactions( $uid );
+
+        # Mark both the principal and the user object as resolved
+        $importer->Resolve(
+            $principal_uid,
+            ref($obj->PrincipalObj),
+            $obj->PrincipalObj->Id
+        );
+        $importer->Resolve( $uid => ref($obj) => $obj->Id );
+        return;
+    }
+
+    # Create a principal first, so we know what ID to use
+    my $principal = RT::Principal->new( RT->SystemUser );
+    my ($id) = $principal->Create(
+        PrincipalType => 'User',
+        Disabled => $disabled,
+        ObjectId => 0
+    );
+    $principal->__Set(Field => 'ObjectId', Value => $id);
+    $importer->Resolve( $principal_uid => ref($principal), $id );
+    $data->{id} = $id;
+
+    return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
 RT::Base->_ImportOverlays();
 
 

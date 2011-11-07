@@ -1711,6 +1711,26 @@ sub Serialize {
     return %store;
 }
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    my $on_uid = ${ $data->{Object} };
+    return if $importer->ShouldSkipTransaction($on_uid);
+
+    if ($data->{Type} eq "DeleteLink" and ref $data->{OldValue}) {
+        my $uid = ${ $data->{OldValue} };
+        my $obj = $importer->LookupObj( $uid );
+        $data->{OldValue} = $obj->URI;
+    } elsif ($data->{Type} eq "AddLink" and ref $data->{NewValue}) {
+        my $uid = ${ $data->{NewValue} };
+        my $obj = $importer->LookupObj( $uid );
+        $data->{NewValue} = $obj->URI;
+    }
+
+    return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -465,6 +465,23 @@ sub Serialize {
 }
 
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    for my $dir (qw/Base Target/) {
+        my $uid_ref = delete $data->{$dir};
+        next unless $uid_ref and ref $uid_ref;
+
+        my $uid = ${ $uid_ref };
+        my $obj = $importer->LookupObj( $uid );
+        $data->{$dir} = $obj->URI;
+        $data->{"Local$dir"} = $obj->Id if $obj->isa("RT::Ticket");
+    }
+
+    return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

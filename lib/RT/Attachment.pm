@@ -1043,6 +1043,24 @@ sub Dependencies {
     $deps->Add( out => $self->TransactionObj );
 }
 
+sub PreInflate {
+    my $class = shift;
+
+    my ($importer, $uid, $data) = @_;
+
+    if (defined $data->{Content}) {
+        my ($ContentEncoding, $Content) = $class->_EncodeLOB(
+            $data->{Content},
+            $data->{ContentType},
+            $data->{Filename}
+        );
+        $data->{ContentEncoding} = $ContentEncoding;
+        $data->{Content} = $Content;
+    }
+
+    return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

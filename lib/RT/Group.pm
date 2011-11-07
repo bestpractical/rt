@@ -1447,6 +1447,74 @@ sub Serialize {
     return %store;
 }
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    my $principal_uid = delete $data->{Principal};
+    my $disabled      = delete $data->{Disabled};
+
+    # Inflate refs into their IDs
+    $class->SUPER::PreInflate( $importer, $uid, $data );
+
+    # Factored out code, in case we find an existing version of this group
+    my $obj = RT::Group->new( RT->SystemUser );
+    my $duplicated = sub {
+        $importer->SkipTransactions( $uid );
+        $importer->Resolve(
+            $principal_uid,
+            ref($obj->PrincipalObj),
+            $obj->PrincipalObj->Id
+        );
+        $importer->Resolve( $uid => ref($obj), $obj->Id );
+        return;
+    };
+
+    # Go looking for the pre-existing version of the it
+    if ($data->{Domain} eq "ACLEquivalence") {
+        $obj->LoadACLEquivalenceGroup( $data->{Instance} );
+        if ($obj->Id) {
+            warn "---------- Skipping ACL equiv for existing user $data->{Instance}";
+            return $duplicated->();
+        }
+
+        # Update the name and description for the new ID
+        $data->{Name} = 'User '. $data->{Instance};
+        $data->{Description} = 'ACL equiv. for user '.$data->{Instance};
+    } elsif ($data->{Domain} eq "UserDefined") {
+        $obj->LoadUserDefinedGroup( $data->{Name} );
+        if ($obj->Id) {
+            warn "---------- Skipping user defined $data->{Name}";
+            $importer->MergeValues($obj, $data);
+            return $duplicated->();
+        }
+    } elsif ($data->{Domain} =~ /^(SystemInternal|RT::System-Role)$/) {
+        $obj->LoadByCols( Domain => $data->{Domain}, Type => $data->{Type} );
+        if ($obj->Id) {
+            warn "---------- Skipping $data->{Domain} $data->{Type}";
+            return $duplicated->();
+        }
+    } elsif ($data->{Domain} eq "RT::Queue-Role") {
+        $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Type => $data->{Type} );
+        if ($obj->Id) {
+            warn "---------- Skipping queue $data->{Instance} $data->{Type} role group";
+            return $duplicated->();
+        }
+    }
+
+    my $principal = RT::Principal->new( RT->SystemUser );
+    my ($id) = $principal->Create(
+        PrincipalType => 'Group',
+        Disabled => $disabled,
+        ObjectId => 0
+    );
+    $principal->__Set(Field => 'ObjectId', Value => $id);
+    $importer->Resolve( $principal_uid => ref($principal), $id );
+    $data->{id} = $id;
+
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

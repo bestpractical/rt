@@ -658,6 +658,17 @@ sub Dependencies {
     $deps->Add( in => $ocfs );
 }
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    $class->SUPER::PreInflate( $importer, $uid, $data );
+
+    return if $importer->MergeBy( "Name", $class, $uid, $data );
+
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

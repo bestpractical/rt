@@ -113,6 +113,18 @@ sub Lookup {
     return $self->{UIDs}{$uid};
 }
 
+sub LookupObj {
+    my $self = shift;
+    my ($uid) = @_;
+    my $ref = $self->Lookup( $uid );
+    return unless $ref;
+    my ($class, $id) = @{ $ref };
+
+    my $obj = $class->new( RT->SystemUser );
+    $obj->Load( $id );
+    return $obj;
+}
+
 sub Postpone {
     my $self = shift;
     my %args = (
@@ -124,6 +136,53 @@ sub Postpone {
     );
     my $uid = delete $args{for};
     push @{$self->{Pending}{$uid}}, \%args;
+}
+
+sub SkipTransactions {
+    my $self = shift;
+    my ($uid) = @_;
+    $self->{skiptransactions}{$uid} = 1;
+}
+
+sub ShouldSkipTransaction {
+    my $self = shift;
+    my ($uid) = @_;
+    return exists $self->{skiptransactions}{$uid};
+}
+
+sub MergeValues {
+    my $self = shift;
+    my ($obj, $data) = @_;
+    for my $col (keys %{$data}) {
+        next if defined $obj->__Value($col) and length $obj->__Value($col);
+        next unless defined $data->{$col} and length $data->{$col};
+        warn "$uid: Setting $col to $data->{$col}";
+        $obj->__Set( Field => $col, Value => $data->{$col} );
+    }
+}
+
+sub SkipBy {
+    my $self = shift;
+    my ($column, $class, $uid, $data) = @_;
+
+    my $obj = $class->new( RT->SystemUser );
+    $obj->Load( $data->{$column} );
+    return unless $obj->Id;
+
+    warn "!!!!!!!!!!!!!!!!!! Skipping $class @{[$obj->$column]}";
+    $self->SkipTransactions( $uid );
+
+    $self->Resolve( $uid => $class => $obj->Id );
+    return 1;
+}
+
+sub MergeBy {
+    my $self = shift;
+    my ($column, $class, $uid, $data) = @_;
+
+    return unless $self->SkipBy(@_);
+    $self->MergeValues( $obj, $data );
+    return 1;
 }
 
 sub Import {
