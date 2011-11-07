@@ -132,6 +132,7 @@ sub Walk {
 
         if ($self->{GC} > 0 and $self->{gc_count} > $self->{GC}) {
             $self->{gc_count} = 0;
+            require Time::HiRes;
             my $start_time = Time::HiRes::time();
             my $start_size = @{$self->{stack}};
             @{ $self->{stack} } = grep {
