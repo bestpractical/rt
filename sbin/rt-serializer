@@ -7,8 +7,24 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use Getopt::Long;
+
+my %OPT;
+GetOptions(
+    \%OPT,
+
+    "directory|d=s",
+    "force!",
+    "size|s=i",
+);
+
+my %args;
+$args{Directory}   = $OPT{directory};
+$args{Force}       = $OPT{force};
+$args{MaxFileSize} = $OPT{size} if $OPT{size};
+
 use RT::Serializer;
-my $walker = RT::Serializer->new();
+my $walker = RT::Serializer->new( %args );
 
 my $attributes = RT::System->new( RT->SystemUser )->Attributes;
 
@@ -38,6 +54,11 @@ $walker->PushObj(
 );
 
 my %counts = $walker->Walk;
+
+my @files = $walker->Files;
+print "Wrote @{[scalar @files]} files:\n";
+print "    $_\n" for @files;
+print "\n";
 
 print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {

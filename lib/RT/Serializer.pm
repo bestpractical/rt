@@ -59,28 +59,83 @@ use DateTime;
 sub Init {
     my $self = shift;
 
+    my %args = (
+        Directory   => undef,
+        Force       => undef,
+        MaxFileSize => 32,
+        @_,
+    );
+
+    # Set up the output directory we'll be writing to
+    $args{Directory} = $RT::Organization . ":" . DateTime->now->ymd
+        unless defined $args{Directory};
+    system("rm", "-rf", $args{Directory}) if $args{Force};
+    die "Output directory $args{Directory} already exists"
+        if -d $args{Directory};
+    mkdir $args{Directory}
+        or die "Can't create output directory $args{Directory}: $!\n";
+    $self->{Directory} = delete $args{Directory};
+
+    # How many megabytes each chunk should be, approximitely
+    $self->{MaxFileSize} = delete $args{MaxFileSize};
+
     $self->SUPER::Init(@_, First => "top");
 
     # Keep track of the number of each type of object written out
     $self->{ObjectCount} = {};
+
+    # Which file we're writing to
+    $self->{FileCount} = 1;
 }
 
 sub Walk {
     my $self = shift;
 
     # Set up our output file
-    open($self->{Filehandle}, ">", "serialized.dat"
-        or die "Can't write to serialized.dat: $!";
+    open($self->{Filehandle}, ">", $self->Filename)
+        or die "Can't write to file @{[$self->Filename]}: $!";
+    push @{$self->{Files}}, $self->Filename;
 
     # Walk the objects
     $self->SUPER::Walk( @_ );
 
     # Close everything back up
     close($self->{Filehandle})
-        or die "Can't close serialized.dat: $!";
+        or die "Can't close @{[$self->Filename]}: $!";
     $self->{FileCount}++;
 
     return $self->ObjectCount;
+}
+
+sub Files {
+    my $self = shift;
+    return @{ $self->{Files} };
+}
+
+sub Filename {
+    my $self = shift;
+    return sprintf(
+        "%s/%03d.dat",
+        $self->{Directory},
+        $self->{FileCount}
+    );
+}
+
+sub Directory {
+    my $self = shift;
+    return $self->{Directory};
+}
+
+sub RotateFile {
+    my $self = shift;
+    close($self->{Filehandle})
+        or die "Can't close @{[$self->Filename]}: $!";
+    $self->{FileCount}++;
+
+    open($self->{Filehandle}, ">", $self->Filename)
+        or die "Can't write to file @{[$self->Filename]}: $!";
+
+    push @{$self->{Files}}, $self->Filename;
 }
 
 sub ObjectCount {
@@ -122,6 +177,10 @@ sub Visit {
         @_
     );
 
+    # Rotate if we get too big
+    my $maxsize = 1024 * 1024 * $self->{MaxFileSize};
+    $self->RotateFile if tell($self->{Filehandle}) > $maxsize;
+
     # Serialize it
     my $obj = $args{object};
     my @store = (
@@ -134,7 +193,7 @@ sub Visit {
     # to; by clearing $! and checking it afterwards.
     $! = 0;
     Storable::nstore_fd(\@store, $self->{Filehandle});
-    die "Failed to write to serialized.dat: $!" if $!;
+    die "Failed to write to @{[$self->Filename]}: $!" if $!;
 
     $self->{ObjectCount}{ref($obj)}++;
 }
