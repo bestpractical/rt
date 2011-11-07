@@ -2038,6 +2038,52 @@ sub Serialize {
     return %store;
 }
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    my $ca = $class->_ClassAccessible;
+    my %ca = %{ $ca };
+    if ($data->{Object} and not $ca{Object}) {
+        my $ref_uid = ${ delete $data->{Object} };
+        my $ref = $importer->Lookup( $ref_uid );
+        if ($ref) {
+            my ($class, $id) = @{$ref};
+            $data->{ObjectId} = $id;
+            $data->{ObjectType} = $class;
+        } else {
+            $data->{ObjectId} = 0;
+            $data->{ObjectType} = "";
+            $importer->Postpone(
+                for => $ref_uid,
+                uid => $uid,
+                column => "ObjectId",
+                classcolumn => "ObjectType",
+            );
+        }
+    }
+
+    for my $col (keys %{$data}) {
+        if (ref $data->{$col}) {
+            my $ref_uid = ${ $data->{$col} };
+            my $ref = $importer->Lookup( $ref_uid );
+            if ($ref) {
+                my (undef, $id) = @{$ref};
+                $data->{$col} = $id;
+            } else {
+                $data->{$col} = 0;
+                $importer->Postpone(
+                    for => $ref_uid,
+                    uid => $uid,
+                    column => $col,
+                );
+            }
+        }
+    }
+
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

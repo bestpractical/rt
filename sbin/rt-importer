@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+use strict;
+use warnings;
+
+use lib 'lib';
+use RT;
+RT::LoadConfig();
+RT::Init();
+
+use RT::Importer;
+my $import = RT::Importer->new;
+
+my @files = map {-d $_ ? <$_/*.dat> : $_} @ARGV;
+my %counts = $import->Import( @files );
+
+print "Total object counts:\n";
+for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
+    printf "%8d %s\n", $counts{$_}, $_;
+}
