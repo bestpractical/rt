@@ -1937,6 +1937,12 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
+sub UID {
+    my $self = shift;
+    warn Carp::longmess("No ID for $self") unless defined $self->Id;
+    return "@{[ref $self]}-$RT::Organization-@{[$self->Id]}";
+}
+
 RT::Base->_ImportOverlays();
 
 1;
