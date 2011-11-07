@@ -90,6 +90,55 @@ sub Init {
 
     # Which file we're writing to
     $self->{FileCount} = 1;
+
+    $self->PushBasics;
+}
+
+
+sub PushBasics {
+    my $self = shift;
+
+    # System users
+    for my $name (qw/RT_System root nobody/) {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load( $name );
+        $self->PushObj( $user );
+    }
+
+    # System groups
+    foreach my $name (qw(Everyone Privileged Unprivileged)) {
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadSystemInternalGroup( $name );
+        $self->PushObj( $group );
+    }
+
+    # System role groups
+    my $systemroles = RT::Groups->new( RT->SystemUser );
+    $systemroles->LimitToRolesForSystem;
+    $self->PushObj( $systemroles );
+
+    # Global templates
+    my $templates = RT::Templates->new( RT->SystemUser );
+    $templates->LimitToGlobal;
+    $self->PushObj( $templates );
+
+    # Global scrips
+    my $scrips = RT::Scrips->new( RT->SystemUser );
+    $scrips->LimitToGlobal;
+    $self->PushObj( $scrips );
+
+    # CFs on Users, Groups, Queues
+    my $cfs = RT::CustomFields->new( RT->SystemUser );
+    $cfs->Limit(
+        FIELD => 'LookupType',
+        VALUE => $_
+    ) for qw/RT::User RT::Group RT::Queue/;
+    $self->PushObj( $cfs );
+
+    # Global topics
+    my $topics = RT::Topics->new( RT->SystemUser );
+    $topics->LimitToObject( RT::System->new );
+    $self->PushObj( $topics );
 }
 
 sub Walk {
