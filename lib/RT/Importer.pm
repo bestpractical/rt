@@ -199,6 +199,7 @@ sub Import {
     };
 
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
+    $self->SkipTransactions( RT->System->UID );
 
     my %unglobal;
     my %new;
