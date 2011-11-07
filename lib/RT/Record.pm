@@ -1958,6 +1958,19 @@ sub Dependencies {
     # Object attributes, we have to check on every object
     my $objs = $self->Attributes;
     $deps->Add( in => $objs );
+
+    # Transactions
+    if (   $self->isa("RT::Ticket")
+        or $self->isa("RT::User")
+        or $self->isa("RT::Group")
+        or $self->isa("RT::Article")
+        or $self->isa("RT::Queue") )
+    {
+        $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => 'ObjectType', VALUE => ref $self );
+        $objs->Limit( FIELD => 'ObjectId', VALUE => $self->id );
+        $deps->Add( in => $objs );
+    }
 }
 
 RT::Base->_ImportOverlays();
