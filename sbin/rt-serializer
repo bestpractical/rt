@@ -10,9 +10,32 @@ RT::Init();
 use RT::Serializer;
 my $walker = RT::Serializer->new();
 
+my $attributes = RT::System->new( RT->SystemUser )->Attributes;
+
+my $actions = RT::ScripActions->new( RT->SystemUser );
+$actions->UnLimit;
+
+my $conditions = RT::ScripConditions->new( RT->SystemUser );
+$conditions->UnLimit;
+
+my $users = RT::Users->new( RT->SystemUser );
+$users->LimitToPrivileged;
+
+my $groups = RT::Groups->new( RT->SystemUser );
+$groups->LimitToUserDefinedGroups;
+
+my $classes = RT::Classes->new( RT->SystemUser );
+$classes->UnLimit;
+
 my $queues = RT::Queues->new( RT->SystemUser );
 $queues->UnLimit;
-$walker->PushObj( $queues );
+
+$walker->PushObj(
+    $attributes,
+    $actions, $conditions,
+    $users, $groups,
+    $classes, $queues,
+);
 
 my %counts = $walker->Walk;
 
