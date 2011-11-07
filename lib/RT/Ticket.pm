@@ -4218,7 +4218,19 @@ sub Serialize {
     $obj->Load( $store{EffectiveId} );
     $store{EffectiveId} = \($obj->UID);
 
+    # Shove the ID back in, in case we want to preserve it during import
+    $store{id} = $obj->Id;
+
     return %store;
+}
+
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    delete $data->{id} unless $importer->PreserveTicketIds;
+
+    return $class->SUPER::PreInflate( $importer, $uid, $data );
 }
 
 RT::Base->_ImportOverlays();

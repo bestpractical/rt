@@ -62,6 +62,14 @@ sub new {
 
 sub Init {
     my $self = shift;
+    my %args = (
+        PreserveTicketIds => 0,
+        @_,
+    );
+
+    # Should we attempt to preserve ticket IDs as they are created?
+    $self->{PreserveTicketIds} = $args{PreserveTicketIds};
+
     # Objects we've created
     $self->{UIDs} = {};
 
@@ -70,6 +78,11 @@ sub Init {
 
     # What we created
     $self->{ObjectCount} = {};
+}
+
+sub PreserveTicketIds {
+    my $self = shift;
+    return $self->{PreserveTicketIds};
 }
 
 sub Resolve {
