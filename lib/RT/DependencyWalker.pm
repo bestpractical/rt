@@ -95,9 +95,20 @@ sub Walk {
         if ($ref->isa("RT::Record")) {
             $self->Process(%frame);
         } else {
-            $ref->FindAllRows;
+            unless ($ref->{unrolled}) {
+                $ref->FindAllRows;
+                $ref->RowsPerPage( 100 );
+                $ref->FirstPage;
+                $ref->{unrolled}++;
+            }
+            my $last;
             while (my $obj = $ref->Next) {
+                $last = $obj->Id;
                 $self->Process(%frame, object => $obj );
+            }
+            if (defined $last) {
+                $ref->NextPage;
+                push @{$self->{replace}}, \%frame;
             }
         }
         unshift @{$stack}, @{$self->{replace}};
