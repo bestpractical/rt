@@ -1442,6 +1442,9 @@ sub Serialize {
     my $instance = $self->InstanceObj;
     $store{Instance} = \($instance->UID) if $instance;
 
+    $store{Name} = "$RT::Organization: $store{Name}"
+        if $self->Domain eq "UserDefined";
+
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
     return %store;

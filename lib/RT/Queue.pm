@@ -1589,6 +1589,14 @@ sub Dependencies {
     $deps->Add( in => $objs );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+    $store{Name} = "$RT::Organization: $store{Name}"
+        if $self->Name ne "___Approvals";
+    return %store;
+}
+
 sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;

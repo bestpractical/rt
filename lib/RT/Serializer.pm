@@ -60,7 +60,6 @@ sub Init {
     my $self = shift;
 
     my %args = (
-        PostProcess => undef,
         Directory   => undef,
         Force       => undef,
         MaxFileSize => 32,
@@ -83,10 +82,6 @@ sub Init {
 
     # How many megabytes each chunk should be, approximitely
     $self->{MaxFileSize} = delete $args{MaxFileSize};
-
-    # An optional callback for doing arbitrary munging on data directly
-    # before it is written
-    $self->{PostProcess} = delete $args{PostProcess};
 
     $self->{$_} = delete $args{$_}
         for qw/FollowQueueToTicket
@@ -262,8 +257,6 @@ sub Visit {
         $obj->UID,
         { $obj->Serialize },
     );
-    # Give callers one last chance to munge it before it hits disk
-    $self->{PostProcess}->(@store) if $self->{PostProcess};
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have
     # to; by clearing $! and checking it afterwards.

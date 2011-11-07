@@ -54,16 +54,6 @@ if ($OPT{ticketsql}) {
 
 if ($OPT{clone}) {
     $args{FollowACL} = 1;
-} else {
-    $args{PostProcess} = sub {
-        my ($ref, $uid, $data) = @_;
-        if ($ref eq "RT::Group" and $data->{Domain} eq "UserDefined") {
-            $data->{Name} = $RT::Organization . ": " . $data->{Name};
-        } elsif ($ref eq "RT::Queue") {
-            $data->{Name} = $RT::Organization . ": " . $data->{Name}
-                unless $data->{Name} eq "___Approvals";
-        }
-    };
 }
 
 $args{GC} = $OPT{gc} if $OPT{gc};
