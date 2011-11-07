@@ -423,6 +423,8 @@ sub InitClasses {
     require RT::ObjectTopics;
     require RT::Topic;
     require RT::Topics;
+    require RT::Link;
+    require RT::Links;
 
     # on a cold server (just after restart) people could have an object
     # in the session, as we deserialize it so we never call constructor
@@ -446,6 +448,7 @@ sub InitClasses {
         RT::ObjectCustomField
         RT::ObjectCustomFieldValue
         RT::Attribute
+        RT::Link
     );
 
     if ( $args{'Heavy'} ) {
