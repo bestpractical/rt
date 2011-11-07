@@ -160,7 +160,6 @@ sub MergeValues {
     for my $col (keys %{$data}) {
         next if defined $obj->__Value($col) and length $obj->__Value($col);
         next unless defined $data->{$col} and length $data->{$col};
-        warn $obj->UID . ": Setting $col to $data->{$col}";
         $obj->__Set( Field => $col, Value => $data->{$col} );
     }
 }
@@ -173,7 +172,6 @@ sub SkipBy {
     $obj->Load( $data->{$column} );
     return unless $obj->Id;
 
-    warn "!!!!!!!!!!!!!!!!!! Skipping $class @{[$obj->$column]}";
     $self->SkipTransactions( $uid );
 
     $self->Resolve( $uid => $class => $obj->Id );

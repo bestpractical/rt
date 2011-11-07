@@ -1476,10 +1476,7 @@ sub PreInflate {
     # Go looking for the pre-existing version of the it
     if ($data->{Domain} eq "ACLEquivalence") {
         $obj->LoadACLEquivalenceGroup( $data->{Instance} );
-        if ($obj->Id) {
-            warn "---------- Skipping ACL equiv for existing user $data->{Instance}";
-            return $duplicated->();
-        }
+        return $duplicated->() if $obj->Id;
 
         # Update the name and description for the new ID
         $data->{Name} = 'User '. $data->{Instance};
@@ -1487,22 +1484,15 @@ sub PreInflate {
     } elsif ($data->{Domain} eq "UserDefined") {
         $obj->LoadUserDefinedGroup( $data->{Name} );
         if ($obj->Id) {
-            warn "---------- Skipping user defined $data->{Name}";
             $importer->MergeValues($obj, $data);
             return $duplicated->();
         }
     } elsif ($data->{Domain} =~ /^(SystemInternal|RT::System-Role)$/) {
         $obj->LoadByCols( Domain => $data->{Domain}, Type => $data->{Type} );
-        if ($obj->Id) {
-            warn "---------- Skipping $data->{Domain} $data->{Type}";
-            return $duplicated->();
-        }
+        return $duplicated->() if $obj->Id;
     } elsif ($data->{Domain} eq "RT::Queue-Role") {
         $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Type => $data->{Type} );
-        if ($obj->Id) {
-            warn "---------- Skipping queue $data->{Instance} $data->{Type} role group";
-            return $duplicated->();
-        }
+        return $duplicated->() if $obj->Id;
     }
 
     my $principal = RT::Principal->new( RT->SystemUser );

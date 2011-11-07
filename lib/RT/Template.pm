@@ -962,7 +962,6 @@ sub PreInflate {
         my $obj = RT::Template->new( RT->SystemUser );
         $obj->LoadGlobalTemplate( $data->{Name} );
         if ($obj->Id) {
-            warn "---------- Skipping global template $data->{Name}";
             $importer->Resolve( $uid => ref($obj) => $obj->Id );
             return;
         }

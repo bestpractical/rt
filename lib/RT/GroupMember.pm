@@ -518,7 +518,6 @@ sub PreInflate {
         MemberId => $data->{MemberId},
     );
     if ($obj->id) {
-        warn "............ Skipping existing membership $data->{MemberId} in $data->{GroupId}";
         $importer->Resolve( $uid => ref($obj) => $obj->Id );
         return;
     }
