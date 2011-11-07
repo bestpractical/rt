@@ -64,10 +64,12 @@ sub Init {
     my $self = shift;
     my %args = (
         First         => "top",
+        GC            => 0,
         @_
     );
 
     $self->{first}    = $args{First};
+    $self->{GC}       = $args{GC};
     $self->{stack}    = [];
 }
 
@@ -94,6 +96,7 @@ sub Walk {
 
     $self->{visited} = {};
     $self->{seen}    = {};
+    $self->{gc_count} = 0;
 
     my $stack = $self->{stack};
     while (@{$stack}) {
@@ -124,6 +127,25 @@ sub Walk {
         unshift @{$stack}, @{$self->{replace}};
         unshift @{$stack}, @{$self->{top}};
         push    @{$stack}, @{$self->{bottom}};
+
+        if ($self->{GC} > 0 and $self->{gc_count} > $self->{GC}) {
+            $self->{gc_count} = 0;
+            my $start_time = Time::HiRes::time();
+            my $start_size = @{$self->{stack}};
+            @{ $self->{stack} } = grep {
+                $_->{object}->isa("RT::Record")
+                    ? not exists $self->{visited}{$_->{uid} ||= $_->{object}->UID}
+                    : ( $_->{has_results} ||= do {
+                        $_->{object}->RowsPerPage(1);
+                        $_->{object}->Count;
+                    } )
+            } @{ $self->{stack} };
+            my $end_time = Time::HiRes::time();
+            my $end_size = @{$self->{stack}};
+            my $size = $start_size - $end_size;
+            my $time = $end_time - $start_time;
+            $self->{msg} = "GC -- $size removed, $time seconds, @{[$size/$time]}/s";
+        }
     }
 }
 
@@ -179,6 +201,7 @@ sub Process {
         }
         $obj->{satisfied}++;
         $self->{seen}{$uid}++;
+        $self->{gc_count}++ if $self->{GC} > 0;
     }
 }
 
@@ -197,7 +220,16 @@ sub AppendDeps {
     my $self = shift;
     my ($dir, $deps, $from) = @_;
     for my $obj (@{$deps->{$dir}}) {
-        next if $obj->isa("RT::Record") and not $obj->id;
+        if ($obj->isa("RT::Record")) {
+            next unless $obj->id;
+            next if $self->{GC} < 0 and exists $self->{seen}{$obj->UID};
+        } else {
+            $obj->FindAllRows;
+            if ($self->{GC} < 0) {
+                $obj->RowsPerPage(1);
+                next unless $obj->Count;
+            }
+        }
         push @{$self->{bottom}}, {
             object    => $obj,
             direction => $dir,
@@ -210,7 +242,16 @@ sub PrependDeps {
     my $self = shift;
     my ($dir, $deps, $from) = @_;
     for my $obj (@{$deps->{$dir}}) {
-        next if $obj->isa("RT::Record") and not $obj->id;
+        if ($obj->isa("RT::Record")) {
+            next unless $obj->id;
+            next if $self->{GC} < 0 and exists $self->{visited}{$obj->UID};
+        } else {
+            $obj->FindAllRows;
+            if ($self->{GC} < 0) {
+                $obj->RowsPerPage(1);
+                next unless $obj->Count;
+            }
+        }
         unshift @{$self->{top}}, {
             object    => $obj,
             direction => $dir,

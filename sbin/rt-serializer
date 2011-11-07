@@ -21,6 +21,8 @@ GetOptions(
     "all|a!",
     "queue|q=s",
     "ticketsql|t=s",
+
+    "gc=i",
 );
 
 die "Only one of --clone, --all, --queue, or --ticketsql allowed at once"
@@ -56,6 +58,7 @@ if ($OPT{clone}) {
     };
 }
 
+$args{GC} = $OPT{gc} if $OPT{gc};
 
 use RT::Serializer;
 my $walker = RT::Serializer->new( %args );
