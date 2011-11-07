@@ -1987,8 +1987,33 @@ sub Dependencies {
 
 sub Serialize {
     my $self = shift;
+    my %methods = (
+        Creator       => "CreatorObj",
+        LastUpdatedBy => "LastUpdatedByObj",
+        @_,
+    );
 
-    my %store = %{$self->{values}};
+    my %values = %{$self->{values}};
+    my %store;
+
+    my @cols = keys %{$self->_ClassAccessible};
+    @cols = grep {exists $values{lc $_} and defined $values{lc $_}} @cols;
+    for my $col ( @cols ) {
+        $store{$col} = $values{lc $col};
+        next unless $store{$col};
+
+        my $method = $methods{$col};
+        if (not $method) {
+            $method = $col;
+            $method =~ s/(Id)?$/Obj/;
+        }
+        next unless $self->can($method);
+
+        my $obj = $self->$method;
+        next unless $obj;
+        next unless $obj->isa("RT::Record");
+        $store{$col} = \($obj->UID);
+    }
 
     # Never store the ID
     delete $store{id};
