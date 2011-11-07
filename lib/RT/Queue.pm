@@ -1584,7 +1584,7 @@ sub Dependencies {
 
     # Tickets
     $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Queue', VALUE => $self->Id );
+    $objs->_SQLLimit( FIELD => "Queue", VALUE => $self->Id );
     $objs->{allow_deleted_search} = 1;
     $deps->Add( in => $objs );
 }
