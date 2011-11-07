@@ -82,6 +82,16 @@ sub Walk {
 
     $self->PushObj( @_ );
 
+    # Ensure that RT::Ticket's ->Load doesn't follow a merged ticket to
+    # the ticket it was merged into.
+    no warnings 'redefine';
+    local *RT::Ticket::Load = sub {
+        my $self = shift;
+        my $id   = shift;
+        $self->LoadById( $id );
+        return $self->Id;
+    };
+
     $self->{visited} = {};
     $self->{seen}    = {};
 
