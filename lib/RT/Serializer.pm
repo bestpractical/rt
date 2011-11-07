@@ -67,6 +67,7 @@ sub Init {
 
         FollowQueueToTicket => 0,
         FollowDeleted       => 1,
+        FollowACL           => 0,
         @_,
     );
 
@@ -90,6 +91,7 @@ sub Init {
     $self->{$_} = delete $args{$_}
         for qw/FollowQueueToTicket
                FollowDeleted
+               FollowACL
               /;
 
     $self->SUPER::Init(@_, First => "top");
@@ -222,7 +224,7 @@ sub Observe {
         return $self->{FollowQueueToTicket}
             if $from =~ /^RT::Queue-/;
     } elsif ($obj->isa("RT::ACE")) {
-        return 0;
+        return $self->{FollowACL};
     } elsif ($obj->isa("RT::GroupMember")) {
         my $grp = $obj->GroupObj->Object;
         if ($grp->Domain =~ /^RT::(Queue|Ticket)-Role$/) {

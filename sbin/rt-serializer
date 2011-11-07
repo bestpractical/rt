@@ -17,14 +17,16 @@ GetOptions(
     "force!",
     "size|s=i",
 
+    "clone|c!",
     "all|a!",
     "queue|q=s",
     "ticketsql|t=s",
 );
 
-die "Only one of --all, --queue, or --ticketsql allowed at once"
-    if (grep {$OPT{$_}} qw/all queue ticketsql/) > 1;
+die "Only one of --clone, --all, --queue, or --ticketsql allowed at once"
+    if (grep {$OPT{$_}} qw/clone all queue ticketsql/) > 1;
 
+$OPT{all} = 1 if $OPT{clone};
 $OPT{all} = 1 unless $OPT{queue} or $OPT{ticketsql};
 
 
@@ -40,15 +42,19 @@ if ($OPT{ticketsql}) {
     $args{FollowQueueToTicket} = 1;
 }
 
-$args{PostProcess} = sub {
-    my ($ref, $uid, $data) = @_;
-    if ($ref eq "RT::Group" and $data->{Domain} eq "UserDefined") {
-        $data->{Name} = $RT::Organization . ": " . $data->{Name};
-    } elsif ($ref eq "RT::Queue") {
-        $data->{Name} = $RT::Organization . ": " . $data->{Name}
-            unless $data->{Name} eq "___Approvals";
-    }
-};
+if ($OPT{clone}) {
+    $args{FollowACL} = 1;
+} else {
+    $args{PostProcess} = sub {
+        my ($ref, $uid, $data) = @_;
+        if ($ref eq "RT::Group" and $data->{Domain} eq "UserDefined") {
+            $data->{Name} = $RT::Organization . ": " . $data->{Name};
+        } elsif ($ref eq "RT::Queue") {
+            $data->{Name} = $RT::Organization . ": " . $data->{Name}
+                unless $data->{Name} eq "___Approvals";
+        }
+    };
+}
 
 
 use RT::Serializer;

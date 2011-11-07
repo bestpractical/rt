@@ -1983,6 +1983,17 @@ sub Dependencies {
         $objs = $self->CustomFieldValues; # Actually OCFVs
         $deps->Add( in => $objs );
     }
+
+    # ACE records
+    if (   $self->isa("RT::Group")
+        or $self->isa("RT::Class")
+        or $self->isa("RT::Queue")
+        or $self->isa("RT::CustomField") )
+    {
+        $objs = RT::ACL->new( $self->CurrentUser );
+        $objs->LimitToObject( $self );
+        $deps->Add( in => $objs );
+    }
 }
 
 sub Serialize {
