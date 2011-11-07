@@ -1035,6 +1035,14 @@ sub _CoreAccessible {
  }
 };
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+    $deps->Add( out => $self->TransactionObj );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

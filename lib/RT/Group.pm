@@ -1209,6 +1209,24 @@ sub PrincipalId {
     return $self->Id;
 }
 
+sub InstanceObj {
+    my $self = shift;
+
+    my $class;
+    if ( $self->Domain eq 'ACLEquivalence' ) {
+        $class = "RT::User";
+    } elsif ($self->Domain eq 'RT::Queue-Role') {
+        $class = "RT::Queue";
+    } elsif ($self->Domain eq 'RT::Ticket-Role') {
+        $class = "RT::Ticket";
+    }
+
+    return unless $class;
+
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->Instance );
+    return $obj;
+}
 
 sub BasicColumns {
     (
@@ -1394,6 +1412,28 @@ sub _CoreAccessible {
 
  }
 };
+
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+
+    my $instance = $self->InstanceObj;
+    $deps->Add( out => $instance ) if $instance;
+
+    # Group members records, unless we're a system group
+    if ($self->Domain ne "SystemInternal") {
+        my $objs = RT::GroupMembers->new( $self->CurrentUser );
+        $objs->LimitToMembersOfGroup( $self->PrincipalId );
+        $deps->Add( in => $objs );
+    }
+
+    # Group member records group belongs to
+    my $objs = RT::GroupMembers->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'MemberId', VALUE => $self->PrincipalId );
+    $deps->Add( in => $objs );
+}
 
 RT::Base->_ImportOverlays();
 

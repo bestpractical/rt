@@ -446,6 +446,16 @@ sub _CoreAccessible {
  }
 };
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+
+    $deps->Add( out => $self->BaseObj )   if $self->BaseObj   and $self->BaseObj->id;
+    $deps->Add( out => $self->TargetObj ) if $self->TargetObj and $self->TargetObj->id;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

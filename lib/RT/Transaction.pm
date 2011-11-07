@@ -1608,6 +1608,59 @@ sub _CoreAccessible {
  }
 };
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+
+    $deps->Add( out => $self->Object );
+    $deps->Add( in => $self->Attachments );
+
+    my $type = $self->Type;
+    if ($type eq "CustomField") {
+        my $cf = RT::CustomField->new( RT->SystemUser );
+        $cf->Load( $self->Field );
+        $deps->Add( out => $cf );
+    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
+        for my $field (qw/OldValue NewValue/) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $self->$field );
+            $deps->Add( out => $user );
+        }
+    } elsif ($type eq "DelWatcher") {
+        my $principal = RT::Principal->new( RT->SystemUser );
+        $principal->Load( $self->OldValue );
+        $deps->Add( out => $principal->Object );
+    } elsif ($type eq "AddWatcher") {
+        my $principal = RT::Principal->new( RT->SystemUser );
+        $principal->Load( $self->NewValue );
+        $deps->Add( out => $principal->Object );
+    } elsif ($type eq "DeleteLink") {
+        if ($self->OldValue) {
+            my $base = RT::URI->new( $self->CurrentUser );
+            $base->FromURI( $self->OldValue );
+            $deps->Add( out => $base->Object ) if $base->Resolver and $base->Object;
+        }
+    } elsif ($type eq "AddLink") {
+        if ($self->NewValue) {
+            my $base = RT::URI->new( $self->CurrentUser );
+            $base->FromURI( $self->NewValue );
+            $deps->Add( out => $base->Object ) if $base->Resolver and $base->Object;
+        }
+    } elsif ($type eq "Set" and $self->Field eq "Queue") {
+        for my $field (qw/OldValue NewValue/) {
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $self->$field );
+            $deps->Add( out => $queue );
+        }
+    } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load( $self->NewValue );
+	$deps->Add( out => $ticket );
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;

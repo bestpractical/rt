@@ -862,6 +862,15 @@ sub _CoreAccessible {
  }
 };
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+    $deps->Add( out => $self->ClassObj );
+    $deps->Add( in => $self->Topics );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

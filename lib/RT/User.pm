@@ -2284,6 +2284,44 @@ sub _CoreAccessible {
  }
 };
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+
+    # ACL equivalence group
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
+    # Memberships in SystemInternal groups
+    $objs = RT::GroupMembers->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'MemberId', VALUE => $self->Id );
+    my $principals = $objs->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'GroupId',
+        TABLE2 => 'Principals',
+        FIELD2 => 'id',
+    );
+    my $groups = $objs->Join(
+        ALIAS1 => $principals,
+        FIELD1 => 'ObjectId',
+        TABLE2 => 'Groups',
+        FIELD2 => 'Id',
+    );
+    $objs->Limit(
+        ALIAS => $groups,
+        FIELD => 'Domain',
+        VALUE => 'SystemInternal',
+    );
+    $deps->Add( in => $objs );
+
+    # XXX: This ignores the myriad of "in" references from the Creator
+    # and LastUpdatedBy columns.
+}
+
 RT::Base->_ImportOverlays();
 
 

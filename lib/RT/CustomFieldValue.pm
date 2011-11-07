@@ -329,6 +329,14 @@ sub _CoreAccessible {
 };
 
 
+sub Dependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::Dependencies($walker, $deps);
+
+    $deps->Add( out => $self->CustomFieldObj );
+}
 
 
 RT::Base->_ImportOverlays();
