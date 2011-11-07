@@ -63,6 +63,8 @@ sub Init {
         Directory   => undef,
         Force       => undef,
         MaxFileSize => 32,
+
+        FollowQueueToTicket => 0,
         @_,
     );
 
@@ -78,6 +80,8 @@ sub Init {
 
     # How many megabytes each chunk should be, approximitely
     $self->{MaxFileSize} = delete $args{MaxFileSize};
+
+    $self->{FollowQueueToTicket} = delete $args{FollowQueueToTicket};
 
     $self->SUPER::Init(@_, First => "top");
 
@@ -154,7 +158,10 @@ sub Observe {
 
     my $obj = $args{object};
     my $from = $args{from};
-    if ($obj->isa("RT::ACE")) {
+    if ($obj->isa("RT::Ticket")) {
+        return $self->{FollowQueueToTicket}
+            if $from =~ /^RT::Queue-/;
+    } elsif ($obj->isa("RT::ACE")) {
         return 0;
     } elsif ($obj->isa("RT::GroupMember")) {
         my $grp = $obj->GroupObj->Object;
