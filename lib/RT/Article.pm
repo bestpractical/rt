@@ -871,6 +871,12 @@ sub Dependencies {
     $deps->Add( in => $self->Topics );
 }
 
+sub PostInflate {
+    my $self = shift;
+
+    $self->__Set( Field => 'URI', Value => $self->URI );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

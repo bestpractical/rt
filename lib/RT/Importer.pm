@@ -217,6 +217,11 @@ sub Import {
 
             $self->{ObjectCount}{$class}++;
             $self->Resolve( $uid => $class, $id );
+
+            # Load it back to get real values into the columns
+            $obj = $class->new( RT->SystemUser );
+            $obj->Load( $id );
+            $obj->PostInflate( $self );
         }
     }
 

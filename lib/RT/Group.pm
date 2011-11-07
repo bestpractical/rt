@@ -1515,6 +1515,17 @@ sub PreInflate {
     return 1;
 }
 
+sub PostInflate {
+    my $self = shift;
+
+    my $cgm = RT::CachedGroupMember->new($self->CurrentUser);
+    $cgm->Create(
+        Group  => $self->PrincipalObj,
+        Member => $self->PrincipalObj,
+        ImmediateParent => $self->PrincipalObj
+    );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

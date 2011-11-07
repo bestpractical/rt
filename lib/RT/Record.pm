@@ -2084,6 +2084,9 @@ sub PreInflate {
     return 1;
 }
 
+sub PostInflate {
+}
+
 RT::Base->_ImportOverlays();
 
 1;
