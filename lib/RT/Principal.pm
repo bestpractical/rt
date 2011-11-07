@@ -817,6 +817,10 @@ sub _CoreAccessible {
  }
 };
 
+sub Serialize {
+    die "Principals should never be serialized";
+}
+
 RT::Base->_ImportOverlays();
 
 1;

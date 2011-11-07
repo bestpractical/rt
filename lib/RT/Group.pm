@@ -1435,6 +1435,18 @@ sub Dependencies {
     $deps->Add( in => $objs );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+
+    my $instance = $self->InstanceObj;
+    $store{Instance} = \($instance->UID) if $instance;
+
+    $store{Disabled} = $self->PrincipalObj->Disabled;
+    $store{Principal} = $self->PrincipalObj->UID;
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

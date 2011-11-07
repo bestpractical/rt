@@ -433,6 +433,10 @@ sub _CoreAccessible {
  }
 };
 
+sub Serialize {
+    die "CachedGroupMembers should never be serialized";
+}
+
 RT::Base->_ImportOverlays();
 
 1;

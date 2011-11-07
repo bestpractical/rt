@@ -4210,6 +4210,17 @@ sub Dependencies {
     $deps->Add( out => $self->OwnerObj );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+
+    my $obj = RT::Ticket->new( RT->SystemUser );
+    $obj->Load( $store{EffectiveId} );
+    $store{EffectiveId} = \($obj->UID);
+
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

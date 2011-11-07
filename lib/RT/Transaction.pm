@@ -1661,6 +1661,56 @@ sub Dependencies {
     }
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+
+    my $type = $store{Type};
+    if ($type eq "CustomField") {
+        my $cf = RT::CustomField->new( RT->SystemUser );
+        $cf->Load( $store{Field} );
+        $store{Field} = \($cf->UID);
+    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
+        for my $field (qw/OldValue NewValue/) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $store{$field} );
+            $store{$field} = \($user->UID);
+        }
+    } elsif ($type eq "DelWatcher") {
+        my $principal = RT::Principal->new( RT->SystemUser );
+        $principal->Load( $store{OldValue} );
+        $store{OldValue} = \($principal->UID);
+    } elsif ($type eq "AddWatcher") {
+        my $principal = RT::Principal->new( RT->SystemUser );
+        $principal->Load( $store{NewValue} );
+        $store{NewValue} = \($principal->UID);
+    } elsif ($type eq "DeleteLink") {
+        if ($store{OldValue}) {
+            my $base = RT::URI->new( $self->CurrentUser );
+            $base->FromURI( $store{OldValue} );
+            $store{OldValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+        }
+    } elsif ($type eq "AddLink") {
+        if ($store{NewValue}) {
+            my $base = RT::URI->new( $self->CurrentUser );
+            $base->FromURI( $store{NewValue} );
+            $store{NewValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+        }
+    } elsif ($type eq "Set" and $store{Field} eq "Queue") {
+        for my $field (qw/OldValue NewValue/) {
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $store{$field} );
+            $store{$field} = \($queue->UID);
+        }
+    } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load( $store{NewValue} );
+        $store{NewValue} = \($ticket->UID);
+    }
+
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

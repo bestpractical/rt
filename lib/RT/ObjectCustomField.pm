@@ -421,6 +421,20 @@ sub Dependencies {
     $deps->Add( out => $obj );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+
+    if ($store{ObjectId}) {
+        my $class = $self->CustomFieldObj->RecordClassFromLookupType;
+        my $obj = $class->new( RT->SystemUser );
+        $obj->Load( $store{ObjectId} );
+        $store{ObjectId} = \($obj->UID);
+    }
+    return %store;
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -2284,6 +2284,12 @@ sub _CoreAccessible {
  }
 };
 
+sub UID {
+    my $self = shift;
+    warn Carp::longmess("No Name for $self") unless defined $self->Name;
+    return "@{[ref $self]}-@{[$self->Name]}";
+}
+
 sub Dependencies {
     my $self = shift;
     my ($walker, $deps) = @_;
@@ -2320,6 +2326,15 @@ sub Dependencies {
 
     # XXX: This ignores the myriad of "in" references from the Creator
     # and LastUpdatedBy columns.
+}
+
+sub Serialize {
+    my $self = shift;
+    return (
+        Disabled => $self->PrincipalObj->Disabled,
+        Principal => $self->PrincipalObj->UID,
+        $self->SUPER::Serialize,
+    );
 }
 
 RT::Base->_ImportOverlays();

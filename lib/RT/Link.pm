@@ -456,6 +456,15 @@ sub Dependencies {
     $deps->Add( out => $self->TargetObj ) if $self->TargetObj and $self->TargetObj->id;
 }
 
+sub Serialize {
+    my $self = shift;
+    my %store = $self->SUPER::Serialize;
+    delete $store{LocalBase}   if $store{Base};
+    delete $store{LocalTarget} if $store{Target};
+    return %store;
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;
