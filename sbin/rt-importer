@@ -7,8 +7,18 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use Getopt::Long;
+
+my %OPT;
+GetOptions(
+    \%OPT,
+    "preserve-tickets|t!",
+);
+
 use RT::Importer;
-my $import = RT::Importer->new;
+my $import = RT::Importer->new(
+    PreserveTicketIds => $OPT{'preserve-tickets'},
+);
 
 my @files = map {-d $_ ? <$_/*.dat> : $_} @ARGV;
 my %counts = $import->Import( @files );
