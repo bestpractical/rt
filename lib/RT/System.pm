@@ -211,6 +211,8 @@ Returns RT::System's id. It's 1.
 *Id = \&id;
 sub id { return 1 }
 
+sub UID { return "RT::System" }
+
 =head2 Load
 
 Since this object is pretending to be an RT::Record, we need a load method.

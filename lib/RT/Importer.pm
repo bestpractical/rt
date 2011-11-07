@@ -198,6 +198,8 @@ sub Import {
         return $self->Id;
     };
 
+    $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
+
     my %unglobal;
     my %new;
     for my $f (@files) {
