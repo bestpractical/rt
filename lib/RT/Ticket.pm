@@ -4224,15 +4224,6 @@ sub Serialize {
     return %store;
 }
 
-sub PreInflate {
-    my $class = shift;
-    my ($importer, $uid, $data) = @_;
-
-    delete $data->{id} unless $importer->PreserveTicketIds;
-
-    return $class->SUPER::PreInflate( $importer, $uid, $data );
-}
-
 RT::Base->_ImportOverlays();
 
 1;

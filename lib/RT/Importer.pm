@@ -84,11 +84,6 @@ sub Init {
     $self->{ObjectCount} = {};
 }
 
-sub PreserveTicketIds {
-    my $self = shift;
-    return $self->{PreserveTicketIds};
-}
-
 sub Resolve {
     my $self = shift;
     my ($uid, $class, $id) = @_;
@@ -219,6 +214,10 @@ sub Import {
                 if $class eq "RT::Queue";
 
             next unless $class->PreInflate( $self, $uid, $data );
+
+            # Remove the ticket id, unless we specifically want it kept
+            delete $data->{id} if $class eq "RT::Ticket"
+                and not $self->{PreserveTicketIds};
 
             my $obj = $class->new( RT->SystemUser );
             my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
