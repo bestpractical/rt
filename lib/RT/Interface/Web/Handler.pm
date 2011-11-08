@@ -65,10 +65,8 @@ use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
 sub DefaultHandlerArgs  { (
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
-        [ standard => $RT::MasonComponentRoot ]
+    comp_root            => [
+        RT::Interface::Web->ComponentRoots( Names => 1 ),
     ],
     default_escape_flags => 'h',
     data_dir             => "$RT::MasonDataDir",

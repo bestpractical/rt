@@ -513,7 +513,7 @@ sub ValidateName {
         # It's really too bad we can't pass along the actual error
         return 0 if not $ok;
     }
-    return 1;
+    return $self->SUPER::ValidateName($value);
 }
 
 =head2 _ValidateUserDefinedName VALUE
@@ -524,6 +524,9 @@ Returns true if the user defined group name isn't in use, false otherwise.
 
 sub _ValidateUserDefinedName {
     my ($self, $value) = @_;
+
+    return (0, 'Name is required') unless length $value;
+
     my $dupcheck = RT::Group->new(RT->SystemUser);
     $dupcheck->LoadUserDefinedGroup($value);
     return (0, $self->loc("Group name '[_1]' is already in use", $value))

@@ -1098,6 +1098,23 @@ sub ValidateWebConfig {
     }
 }
 
+sub ComponentRoots {
+    my $self = shift;
+    my %args = ( Names => 0, @_ );
+    my @roots;
+    if (defined $HTML::Mason::Commands::m) {
+        @roots = $HTML::Mason::Commands::m->interp->comp_root_array;
+    } else {
+        @roots = (
+            [ local    => $RT::MasonLocalComponentRoot ],
+            (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
+            [ standard => $RT::MasonComponentRoot ]
+        );
+    }
+    @roots = map { $_->[1] } @roots unless $args{Names};
+    return @roots;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -2022,7 +2039,9 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'}
+      && $ARGSRef->{'Owner'} !~ /\D/
+      && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";

@@ -1053,7 +1053,7 @@ RT stores dates using the UTC timezone in the DB, so charts grouped by
 dates and time are not representative. Set C<$ChartsTimezonesInDB> to 1
 to enable timezone conversions using your DB's capabilities. You may
 need to do some work on the DB side to use this feature, read more in
-F<docs/timezones_in_charts.pod>.
+F<docs/customizing/timezones_in_charts.pod>.
 
 At this time, this feature only applies to MySQL and PostgreSQL.
 
@@ -1254,6 +1254,9 @@ shows the Requestor's name and ticket list.  If you would like to see
 extra information about the user, this expects a Format string of user
 attributes.  Please note that not all the attributes are supported in
 this display because we're not building a table.
+
+Example:
+C<Set($MoreAboutRequestorExtraInfo,"Organization, Address1")>
 
 =cut
 

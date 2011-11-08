@@ -46,6 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-tied(%session)->delete if (defined %session);
+tied(%session)->delete if keys %session;
 </%PERL>
 RT/<% $RT::VERSION %> 200 Ok
