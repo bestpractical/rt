@@ -66,12 +66,14 @@ sub Init {
         First         => "top",
         GC            => 0,
         Progress      => undef,
+        MessageHandler => sub { warn for @_ },
         @_
     );
 
     $self->{first}    = $args{First};
     $self->{GC}       = $args{GC};
     $self->{progress} = $args{Progress};
+    $self->{msg}      = $args{MessageHandler},
     $self->{stack}    = [];
 }
 
@@ -142,6 +144,7 @@ sub Walk {
             $self->{gc_count} = 0;
             require Time::HiRes;
             my $start_time = Time::HiRes::time();
+            $self->{msg}->("Starting GC pass...");
             my $start_size = @{$self->{stack}};
             @{ $self->{stack} } = grep {
                 $_->{object}->isa("RT::Record")
@@ -155,7 +158,7 @@ sub Walk {
             my $end_size = @{$self->{stack}};
             my $size = $start_size - $end_size;
             my $time = $end_time - $start_time;
-            $self->{msg} = "GC -- $size removed, $time seconds, @{[$size/$time]}/s";
+            $self->{msg}->("GC -- $size removed, $time seconds, @{[$size/$time]}/s");
         }
     }
 }

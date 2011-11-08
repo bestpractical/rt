@@ -8,6 +8,7 @@ RT::LoadConfig();
 RT::Init();
 
 use Getopt::Long;
+use Time::HiRes qw//;
 
 my %OPT;
 GetOptions(
@@ -17,8 +18,6 @@ GetOptions(
     "force!",
     "size|s=i",
 
-    "gnuplot|g!",
-
     "users!",
     "groups!",
     "deleted!",
@@ -27,7 +26,6 @@ GetOptions(
     "tickets!",
     "acls!",
 
-    "verbose!",
     "gc=i",
 );
 
@@ -35,15 +33,6 @@ my %args;
 $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
-
-$args{Verbose}     = $OPT{verbose};
-
-if ($OPT{gnuplot}) {
-    die "--gnuplot requires a gnuplot binary"
-        unless `which gnuplot`;
-    require Time::HiRes;
-    $args{Progress} = \&gnuplot;
-}
 
 $args{AllUsers}      = $OPT{users}    if defined $OPT{users};
 $args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
@@ -53,11 +42,24 @@ $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
 $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
-$args{GC} = $OPT{gc} if $OPT{gc};
+$args{GC} = defined $OPT{gc} ? $OPT{gc} : 5000;
+
+my $gnuplot = `which gnuplot`;
+my $msg = "";
+if (-t STDOUT) {
+    $args{Progress} = \&progress;
+    $args{MessageHandler} = sub {
+        print "\r", " "x60, "\r", $_[-1]; $msg = $_[-1];
+    };
+    $args{Verbose}  = 0;
+}
 
 use RT::Serializer;
 my $walker = RT::Serializer->new( %args );
 
+my %estimates = estimate();
+
+print "Beginning database serialization...";
 my %counts = $walker->Walk;
 
 my @files = $walker->Files;
@@ -70,63 +72,156 @@ for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
 }
 
-{
-    my $last_written;
-    my $last_time;
-    my $start;
 
-    sub plot {
-        my ($title, $column) = @_;
 
-        my ($col, $row) = (100, 50);
-        eval {
-            require Term::ReadKey;
-            ($col, $row) = Term::ReadKey::GetTerminalSize();
-        };
-        $col -= 1;
-        $row = int(($row - 5) / 2);
+sub estimate {
+    $| = 1;
+    my %e;
 
-        my $file = $walker->Directory . "/progress.plot";
-        system("gnuplot", "-e", <<EOT );
-set term dumb $col $row;
-set xlabel "Seconds";
-unset key;
-set autoscale;
-set title "$title";
-plot "$file" using 1:$column with lines
-EOT
+    # Expected types we'll serialize
+    my @types = qw/
+                      RT::Queue
+                      RT::Ticket
+                      RT::Transaction
+                      RT::Attachment
+                      RT::Link
+
+                      RT::User
+                      RT::Group
+                      RT::GroupMember
+
+                      RT::Attribute
+
+                      RT::CustomField
+                      RT::CustomFieldValue
+                      RT::ObjectCustomField
+                      RT::ObjectCustomFieldValue
+                  /;
+
+    $e{total} = 0;
+    for my $class (@types) {
+        print "Estimating $class count...";
+        my $collection = $class . "s";
+        my $objs = $collection->new( RT->SystemUser );
+        $objs->UnLimit;
+        $objs->{allow_deleted_search} = 1 if $class eq "RT::Ticket";
+        $e{$class} = $objs->Count;
+        $e{total} += $e{$class};
+        print "\r", " "x60, "\r";
     }
 
-    sub gnuplot {
+    return %e;
+}
+
+
+{
+    my $last_time;
+    my $start;
+    my $left;
+    sub progress {
         my $obj = shift;
         my $now = Time::HiRes::time();
         return if defined $last_time and $now - $last_time <= 3;
 
         $start = $now unless $start;
-        my $length = $walker->StackSize;
+        $last_time = $now;
 
-        my $written = 0;
-        my %counts = $walker->ObjectCount;
-        $written += $_ for values %counts;
+        my $elapsed = $now - $start;
 
-        open(my $dat, ">>", $walker->Directory . "/progress.plot");
-        printf $dat "%10.3f\t%8d\t%10.3f\n",
-            $now - $start,
-            $length,
-            defined $last_time ?
-                ($written - $last_written)/($now - $last_time) :
-                0;
-        close $dat;
+        print `clear`;
+        my ($cols, $rows) = (80, 25);
+        eval {
+            require Term::ReadKey;
+            ($cols, $rows) = Term::ReadKey::GetTerminalSize();
+        };
+        $cols -= 1;
 
-        if ($last_written) {
-            print `clear`;
-            plot( "Queue Length" => 2 );
-            plot( "Objects written per second" => 3 );
-            print $walker->{msg} . "\n" if $walker->{msg};
-            $walker->{msg} = "";
+        if ($gnuplot) {
+            my $length = $walker->StackSize;
+            my $file = $walker->Directory . "/progress.plot";
+            open(my $dat, ">>", $file);
+            printf $dat "%10.3f\t%8d\n",
+                $elapsed,
+                $length;
+            close $dat;
+
+            if ($rows <= 24) {
+                print "\n\n";
+            } elsif ($elapsed) {
+                system("gnuplot", "-e", <<EOT );
+set term dumb $cols @{[$rows - 15]};
+set xlabel "Seconds";
+unset key;
+set autoscale;
+set title "Queue length";
+plot "$file" using 1:2 with lines
+EOT
+            } else {
+                print "\n" for 1..($rows - 14);
+            }
+        } else {
+            print "\n\n";
         }
 
-        $last_written = $written;
-        $last_time = $now;
+        my %counts = $walker->ObjectCount;
+        # Just show the big ones
+        for my $class (map {"RT::$_"} qw/Ticket Transaction Attachment User Group/) {
+            my $display = $class;
+            $display =~ s/^RT::(.*)/@{[$1]}s:/;
+
+            $counts{$class} ||= 0;
+            my $fraction = $counts{$class}/$estimates{$class};
+
+            my $max_width = $cols - 30;
+            my $bar_width = int($max_width * $fraction);
+
+            printf "%20s |%-".$max_width."s|\n",
+                $display, "=" x $bar_width;
+        }
+
+        {
+            my $total = 0;
+            $total += $_ for values %counts;
+            print "\n";
+
+            my $fraction = $total/$estimates{total};
+
+            my $max_width = $cols - 30;
+            my $bar_width = int($max_width * $fraction);
+
+            printf "%20s |%-".$max_width."s|\n",
+                "Total:", "#" x $bar_width;
+
+            if ($fraction > 0.03) {
+                if (defined $left) {
+                    $left = 0.75 * $left
+                          + 0.25 * ($elapsed / $fraction - $elapsed);
+                } else {
+                    $left = ($elapsed / $fraction - $elapsed);
+                }
+            }
+            print "\n";
+            printf "%20s %s\n", "Elapsed time:",
+                format_time($elapsed);
+            printf "%20s %s\n", "Estimated left:",
+                (defined $left) ? format_time($left) : "-";
+        }
+
+        print "\n$msg";
+        $msg = "";
     }
+}
+
+sub format_time {
+    my $time = shift;
+    my $s = "";
+
+    $s .= int($time/60/60)."hr "
+        if $time > 60*60;
+    $s .= int(($time % (60*60))/60)."min "
+        if $time > 60;
+    $s .= int($time % 60)."s"
+        if $time < 60*60;
+
+    return $s;
 }
