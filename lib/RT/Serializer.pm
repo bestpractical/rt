@@ -203,6 +203,14 @@ sub Walk {
         or die "Can't close @{[$self->Filename]}: $!";
     $self->{FileCount}++;
 
+    # Write the summary file
+    open(my $summary, ">", $self->Directory . "/summary");
+    Storable::nstore_fd({
+        files  => [ $self->Files ],
+        counts => { $self->ObjectCount },
+    }, $summary);
+    close($summary);
+
     return $self->ObjectCount;
 }
 
