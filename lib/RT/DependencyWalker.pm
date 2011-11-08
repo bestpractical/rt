@@ -96,6 +96,14 @@ sub Walk {
         return $self->Id;
     };
 
+    # When we walk ticket links, find deleted tickets as well
+    local *RT::Links::IsValidLink = sub {
+        my $self = shift;
+        my $link = shift;
+        return unless $link && ref $link && $link->Target && $link->Base;
+        return 1;
+    };
+
     $self->{visited} = {};
     $self->{seen}    = {};
     $self->{gc_count} = 0;
