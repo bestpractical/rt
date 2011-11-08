@@ -2,7 +2,9 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 13, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 25, gnupg_options => { passphrase => 'rt-test' };
+
+use Digest::MD5 qw(md5_hex);
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -43,6 +45,46 @@ $user->SetEmailAddress('recipient@example.com');
 
     my @mail = RT::Test->fetch_caught_mails;
     is(scalar @mail, 1, "autoreply only");
+}
+
+{
+    my $id = send_via_mailgate('binary-asc-attach-marked-plain-text.txt');
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachs) = @{$txn->Attachments->ItemsArrayRef};
+
+    is (scalar @attachs, 3, 'text, attachment and original');
+    my $bin = $attachs[1];
+    is(
+        (split /;/, $bin->GetHeader('Content-Type'))[0],
+        'application/octet-stream',
+        'binary attachment'
+    );
+    is(md5_hex($bin->Content), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "correct png");
+}
+
+{
+    my $id = send_via_mailgate('inline-binary-attachment-with-wrap.txt');
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, @attachs) = @{$txn->Attachments->ItemsArrayRef};
+
+    is (scalar @attachs, 3, 'text, attachment and original');
+    my $bin = $attachs[1];
+    is(
+        (split /;/, $bin->GetHeader('Content-Type'))[0],
+        'application/octet-stream',
+        'binary attachment'
+    );
+    is(md5_hex($bin->Content), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "correct png");
 }
 
 sub send_via_mailgate {
