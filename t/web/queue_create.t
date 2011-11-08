@@ -31,14 +31,14 @@ diag "Create a queue";
             Name => '0',
         },
     );
-    $m->text_contains("That's not a valid name");
+    $m->text_contains("'0' is not a valid name");
     $m->submit_form(
         form_name => 'ModifyQueue',
         fields => {
             Name => '1',
         },
     );
-    $m->text_contains("That's not a valid name");
+    $m->text_contains("'1' is not a valid name");
     $m->submit_form(
         form_name => 'ModifyQueue',
         fields => {
