@@ -1,3 +1,4 @@
+
 %# BEGIN BPS TAGGED BLOCK {{{
 %#
 %# COPYRIGHT:
@@ -46,57 +47,22 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-@import "../base/msie6.css";
-
-.topaction .select-queue {
-    margin-top: 0;
+table.ticket-summary {
+    table-layout: fixed;
 }
 
-div#page-navigation {
-    width: 100%;
+.ticket-transaction div.metadata {
+    height: 1px;
 }
 
-.titlebox-title .widget {
-    top: -1em;
-    left: 0.5em;
-
-}
-.titlebox .titlebox-title .right{
-    position: absolute;
-    top: 0.25em;
-    right: 1em;
+div.downloadattachment {
+    position: relative;
 }
 
-/* nested things. like the ticket dates tab */
-.titlebox .titlebox .titlebox-title .right{
-    right: 1.3em;
+div.messagebody {
+    height: 3em;
 }
 
-#login-box .titlebox .titlebox-title .right {
-    margin-top: -0.1em;
-    right: 0em;
-}
-
-.titlebox
-{
-    height: auto !important;
-    height: 1.25em;
-}
-
-
-.ticket-transaction .messagebody img {
-    /* ie6 does not support max-width */
-    width: expression(this.width > 401 ? 400 : true);
-}
-
-#prefs-menu .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.gif);
-}
-
-#app-nav .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.gif);
-}
-
-.ticket-transaction div.metadata span.actions {
-    right: 1.1em;
+span.message-stanza-folder {
+    display: inline !important;
 }

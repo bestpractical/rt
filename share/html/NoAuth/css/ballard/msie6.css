@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+@import "../base/msie6.css";
+
 .topaction .select-queue {
     margin-top: 0;
 }
@@ -84,5 +87,13 @@ div#page-navigation ul#page-menu {
 .ticket-transaction .messagebody img {
     /* ie6 does not support max-width */
     width: expression(this.width > 401 ? 400 : true);
+}
+
+#page-navigation {
+    width: 100%;
+}
+
+.ticket-transaction div.metadata span.actions {
+    right: 1.1em;
 }
 
