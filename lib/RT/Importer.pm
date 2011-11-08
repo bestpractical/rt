@@ -70,10 +70,12 @@ sub Init {
 
     # Should we attempt to preserve ticket IDs as they are created?
     $self->{PreserveTicketIds} = $args{PreserveTicketIds};
-    my $tickets = RT::Tickets->new( RT->SystemUser );
-    $tickets->UnLimit;
-    warn "There are already tickets in the system; preserving ticket IDs is unlikely to work"
-        if $tickets->Count;
+    if ($self->{PreserveTicketIds}) {
+        my $tickets = RT::Tickets->new( RT->SystemUser );
+        $tickets->UnLimit;
+        warn "RT already contains tickets; preserving ticket IDs is unlikely to work"
+            if $tickets->Count;
+    }
 
     $self->{OriginalId} = $args{OriginalId};
 
