@@ -10,7 +10,7 @@ my $s1 = RT::Scrip->new(RT->SystemUser);
 my ($val, $msg) =$s1->Create( Queue => $q->Id,
              ScripCondition    => 'User Defined',
              ScripAction       => 'User Defined',
-             CustomIsApplicableCode => 'return $self->TransactionObj->Field eq "TimeEstimated"',
+             CustomIsApplicableCode => 'return ($self->TransactionObj->Field||"") eq "TimeEstimated"',
              CustomPrepareCode => 'return 1',
              CustomCommitCode  => '$self->TicketObj->SetPriority($self->TicketObj->Priority + 2); return 1;',
              Template          => 'Blank',
@@ -23,6 +23,9 @@ my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
                                     Subject => "hair on fire",
                                     );
 ok($tv, $tm);
+
+# Flush the Create transaction off of the ticket
+$ticket->ApplyTransactionBatch;
 
 my $testuser = RT::Test->load_or_create_user( Name => 'bob', EmailAddress => 'bob@example.com', Password => 'password' );
 ok($testuser->Id, "Created test user bob");
