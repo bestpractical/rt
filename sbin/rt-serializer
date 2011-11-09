@@ -8,11 +8,13 @@ RT::LoadConfig();
 RT::Init();
 
 use Getopt::Long;
+use Pod::Usage qw//;
 use Time::HiRes qw//;
 
 my %OPT;
 GetOptions(
     \%OPT,
+    "help|?",
 
     "directory|d=s",
     "force!",
@@ -27,7 +29,9 @@ GetOptions(
     "acls!",
 
     "gc=i",
-);
+) or Pod::Usage::pod2usage();
+
+Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
 
 my %args;
 $args{Directory}   = $OPT{directory};
@@ -225,3 +229,114 @@ sub format_time {
 
     return $s;
 }
+
+=head1 NAME
+
+rt-serializer - Serialize an RT database to disk
+
+=head1 SYNOPSIS
+
+    rt-validator --check && rt-serializer
+
+This script is used to write out the entire RT database to disk, for
+later import into a different RT instance.  It requires that the data in
+the database be self-consistent, in order to do so; please make sure
+that the database being exported passes validation by L<rt-validator>
+before attempting to use C<rt-serializer>.
+
+While running, it will attempt to estimate the number of remaining
+objects to be serialized; these estimates are pessimistic, and will be
+incorrect if C<--no-users>, C<--no-groups>, or C<--no-tickets> are used.
+
+If the controlling terminal is large enough (more than 25 columns high)
+and the C<gnuplot> program is installed, it will also show a textual
+graph of the queue size over time.
+
+=head2 OPTIONS
+
+=over
+
+=item B<--directory> I<name>
+
+The name of the output directory to write data files to, which should
+not exist yet; it is a fatal error if it does.  Defaults to
+C<< ./I<$Organization>:I<Date>/ >>, where I<$Organization> is as set in
+F<RT_SiteConfig.pm>, and I<Date> is today's date.
+
+=item B<--force>
+
+Remove the output directory before starting.
+
+=item B<--size> I<megabytes>
+
+By default, C<rt-serializer> chunks its output into data files which are
+around 32Mb in size; this option is used to set a different threshold
+size, in megabytes.  Note that this is the threshold after which it
+rotates to writing a new file, and is as such the I<lower bound> on the
+size of each output file.
+
+=item B<--no-users>
+
+By default, all privileged users are serialized; passing C<--no-users>
+limits it to only those users which are strictly necessary.
+
+=item B<--no-groups>
+
+By default, all groups are serialized; passing C<--no-groups> limits it
+to only those groups which are strictly necessary.
+
+=item B<--no-deleted>
+
+By default, all tickets, including deleted tickets, are serialized;
+passing C<--no-deleted> skips deleted tickets during serialization.
+
+=item B<--scrips>
+
+No scrips or templates are serialized by default; this option forces all
+scrips and templates to be serialized.
+
+=item B<--acls>
+
+No ACLs are serialized by default; this option forces all ACLs to be
+serialized.
+
+=item B<--no-tickets>
+
+Skip serialization of all ticket data.
+
+=item B<--gc> I<n>
+
+Adjust how often the garbage collection sweep is done; lower numbers are
+more frequent.  See L</GARBAGE COLLECTION>.
+
+=back
+
+=head1 GARBAGE COLLECTION
+
+C<rt-serializer> maintains a priority queue of objects to serialize, or
+searches which may result in objects to serialize.  When inserting into
+this queue, it does no checking if the object in question is already in
+the queue, or if the search will contain any results.  These checks are
+done when the object reaches the front of the queue, or during periodic
+garbage collection.
+
+During periodic garbage collection, the entire queue is swept for
+objects which have already been serialized, occur more than once in the
+queue, and searches which contain no results in the database.  This is
+done to reduce the memory footprint of the serialization process, and is
+triggered when enough new objects have been placed in the queue.  This
+parameter is tunable via the C<--gc> parameter, which defaults to
+running garbage collection every 5,000 objects inserted into the queue;
+smaller numbers will result in more frequent garbage collection.
+
+The default of 5,000 is roughly tuned based on a database with several
+thousand tickets, but optimal values will vary wildly depending on
+database configuration and size.  Values as low as 25 have provided
+speedups with smaller databases; if speed is a factor, experimenting
+with different C<--gc> values may be helpful.  Note that there are
+significant boundry condition changes in serialization rate, as the
+queue empties and fills, causing the time estimates to be rather
+imprecise near the start and end of the process.
+
+=cut
+
