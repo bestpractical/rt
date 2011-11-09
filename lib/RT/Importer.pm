@@ -77,7 +77,20 @@ sub Init {
             if $tickets->Count;
     }
 
+    # Where to shove the original ticket ID
     $self->{OriginalId} = $args{OriginalId};
+    if ($self->{OriginalId}) {
+        my $cf = RT::CustomField->new( RT->SystemUser );
+        $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
+        unless ($cf->Id) {
+            warn "Failed to find global CF named $self->{OriginalId} -- creating one";
+            $cf->Create(
+                Queue => 0,
+                Name  => $self->{OriginalId},
+                Type  => 'FreeformSingle',
+            );
+        }
+    }
 
     # Objects we've created
     $self->{UIDs} = {};

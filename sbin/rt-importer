@@ -21,20 +21,6 @@ my $import = RT::Importer->new(
     PreserveTicketIds => $OPT{'preserve-tickets'},
     OriginalId        => $OPT{originalid},
 );
-
-if ($OPT{originalid}) {
-    my $cf = RT::CustomField->new( RT->SystemUser );
-    $cf->LoadByName( Queue => 0, Name => $OPT{originalid} );
-    unless ($cf->Id) {
-        warn "Failed to find global CF named $OPT{originalid} -- creating one";
-        $cf->Create(
-            Queue => 0,
-            Name  => $OPT{originalid},
-            Type  => 'FreeformSingle',
-        );
-    }
-}
-
 my @files = map {-d $_ ? <$_/*.dat> : $_} @ARGV;
 my %counts = $import->Import( @files );
 
