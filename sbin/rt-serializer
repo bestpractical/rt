@@ -7,6 +7,7 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use RT::Migrate::Serializer;
 use Getopt::Long;
 use Pod::Usage qw//;
 use Time::HiRes qw//;
@@ -58,8 +59,7 @@ if (-t STDOUT) {
     $args{Verbose}  = 0;
 }
 
-use RT::Serializer;
-my $walker = RT::Serializer->new( %args );
+my $walker = RT::Migrate::Serializer->new( %args );
 
 my %estimates = estimate();
 

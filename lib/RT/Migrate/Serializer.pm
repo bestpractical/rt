@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Serializer;
+package RT::Migrate::Serializer;
 
 use strict;
 use warnings;

@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Importer;
+package RT::Migrate::Importer;
 
 use strict;
 use warnings;

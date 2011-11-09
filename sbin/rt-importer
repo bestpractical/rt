@@ -7,7 +7,9 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use RT::Migrate::Importer;
 use Getopt::Long;
+use Pod::Usage qw//;
 use Time::HiRes qw//;
 
 my %OPT;
@@ -27,8 +29,7 @@ if ($summary) {
     $estimates{total} = $total;
 }
 
-use RT::Importer;
-my $import = RT::Importer->new(
+my $import = RT::Migrate::Importer->new(
     PreserveTicketIds => $OPT{'preserve-tickets'},
     OriginalId        => $OPT{originalid},
     Progress          => (%estimates ? \&progress : undef),
