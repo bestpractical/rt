@@ -501,7 +501,9 @@ build-snapshot:
 	        INSTALL=./install-sh PERL=/usr/bin/perl ./configure \
 	            --with-db-type=SQLite                           \
 	            --enable-layout=relative                        \
-	            --with-web-handler=standalone                   \
+	            --with-web-handler=standalone                && \
+	        rm -rf autom4te.cache                               \
+	               config.status config.log config.pld          \
 	)
 	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
 	rm -fr "$(SNAPSHOT)/"
