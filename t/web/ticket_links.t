@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 106;
+use RT::Test tests => 142;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
@@ -105,6 +105,38 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
         );
         $m->content_unlike( qr{$deleted_id.*?\[deleted\]}, "no deleted ticket",
         );
+
+        diag "[$type]: Testing that reminders don't get copied for $c tickets";
+        {
+            my $ticket = RT::Test->create_ticket(
+                Subject => 'test ticket',
+                Queue   => 1,
+            );
+
+            $m->goto_ticket($ticket->Id);
+            $m->form_name('UpdateReminders');
+            $m->field('NewReminder-Subject' => 'hello test reminder subject');
+            $m->click_button(value => 'Save');
+            $m->text_contains('hello test reminder subject');
+
+            my $id = $ticket->Id;
+            my $type_value = $type;
+            if ($c eq 'base') {
+                $type_value = "new-$type_value";
+            }
+            else {
+                $type_value = "$type_value-new";
+            }
+
+            my $depends_on_url = sprintf(
+                '%s/Ticket/Create.html?Queue=%s&CloneTicket=%s&%s=%s',
+                $baseurl, '1', $id, $type_value, $id,
+            );
+            $m->get_ok($depends_on_url);
+            $m->form_name('TicketCreate');
+            $m->click_button(value => 'Create');
+            $m->content_lacks('hello test reminder subject');
+        }
     }
 }
 
