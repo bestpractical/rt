@@ -495,9 +495,9 @@ snapshot: build-snapshot build-third-party clearsign-snapshot clearsign-third-pa
 
 build-snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
-	( cd $(SNAPSHOT) &&\
-	        echo "$(SNAPSHOT)" > .tag &&\
-	        autoconf &&\
+	( cd $(SNAPSHOT)                                         && \
+	        echo "$(SNAPSHOT)" > .tag                        && \
+	        autoconf                                         && \
 	        INSTALL=./install-sh PERL=/usr/bin/perl ./configure \
 	            --with-db-type=SQLite                           \
 	            --enable-layout=relative                        \
