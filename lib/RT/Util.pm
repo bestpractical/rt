@@ -93,6 +93,8 @@ sub safe_run_child (&) {
         #TODO we need to localize this
         die 'System Error: ' . $err;
     };
+    $dbh->{'InactiveDestroy'} = 0 if $dbh;
+    $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
     return $want? (@res) : $res[0];
 }
 
