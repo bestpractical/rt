@@ -65,6 +65,7 @@ sub Init {
     my %args = (
         PreserveTicketIds => 0,
         OriginalId        => undef,
+        Progress          => undef,
         @_,
     );
 
@@ -91,6 +92,8 @@ sub Init {
             );
         }
     }
+
+    $self->{Progress} = $args{Progress};
 
     # Objects we've created
     $self->{UIDs} = {};
@@ -274,6 +277,8 @@ sub Import {
             push @{$unglobal{"RT::Queue"}}, $uid
                 if $class eq "RT::CustomField"
                     and $obj->LookupType =~ /^RT::Queue/;
+
+            $self->{Progress}->($obj) if $self->{Progress};
         }
     }
 
