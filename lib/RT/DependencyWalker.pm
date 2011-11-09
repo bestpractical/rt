@@ -158,7 +158,12 @@ sub Walk {
             my $end_size = @{$self->{stack}};
             my $size = $start_size - $end_size;
             my $time = $end_time - $start_time;
-            $self->{msg}->("GC -- $size removed, $time seconds, @{[$size/$time]}/s");
+            $self->{msg}->(
+                sprintf(
+                    "GC -- %d removed, %.2f seconds, %d/s",
+                    $size, $time, int($size/$time)
+                )
+            );
         }
     }
 }
