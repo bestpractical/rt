@@ -204,12 +204,10 @@ sub Walk {
     $self->{FileCount}++;
 
     # Write the summary file
-    open(my $summary, ">", $self->Directory . "/summary");
-    Storable::nstore_fd({
+    Storable::nstore( {
         files  => [ $self->Files ],
         counts => { $self->ObjectCount },
-    }, $summary);
-    close($summary);
+    }, $self->Directory . "/rt-serialized");
 
     return $self->ObjectCount;
 }
