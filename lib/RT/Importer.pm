@@ -296,6 +296,11 @@ sub Import {
     }
 
     # Return creation counts
+    return $self->ObjectCount;
+}
+
+sub ObjectCount {
+    my $self = shift;
     return %{ $self->{ObjectCount} };
 }
 
