@@ -7,6 +7,7 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use RT::Migrate;
 use RT::Migrate::Serializer;
 use Getopt::Long;
 use Pod::Usage qw//;
@@ -49,19 +50,24 @@ $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
 $args{GC} = defined $OPT{gc} ? $OPT{gc} : 5000;
 
+my $walker;
+
 my $gnuplot = `which gnuplot`;
 my $msg = "";
 if (-t STDOUT) {
-    $args{Progress} = \&progress;
+    $args{Progress} = RT::Migrate::progress(
+        top    => \&gnuplot,
+        bottom => sub { print "\n$msg"; $msg = ""; },
+        counts => sub { $walker->ObjectCount },
+        max    => { estimate() },
+    );
     $args{MessageHandler} = sub {
         print "\r", " "x60, "\r", $_[-1]; $msg = $_[-1];
     };
     $args{Verbose}  = 0;
 }
 
-my $walker = RT::Migrate::Serializer->new( %args );
-
-my %estimates = estimate();
+$walker = RT::Migrate::Serializer->new( %args );
 
 print "Beginning database serialization...";
 my %counts = $walker->Walk;
@@ -83,26 +89,13 @@ sub estimate {
     my %e;
 
     # Expected types we'll serialize
-    my @types = qw/
-                      RT::Queue
-                      RT::Ticket
-                      RT::Transaction
-                      RT::Attachment
-                      RT::Link
+    my @types = map {"RT::$_"} qw/
+        Queue Ticket Transaction Attachment Link
+        User  Group  GroupMember Attribute
+        CustomField CustomFieldValue
+        ObjectCustomField ObjectCustomFieldValue
+                                 /;
 
-                      RT::User
-                      RT::Group
-                      RT::GroupMember
-
-                      RT::Attribute
-
-                      RT::CustomField
-                      RT::CustomFieldValue
-                      RT::ObjectCustomField
-                      RT::ObjectCustomFieldValue
-                  /;
-
-    $e{total} = 0;
     for my $class (@types) {
         print "Estimating $class count...";
         my $collection = $class . "s";
@@ -110,7 +103,6 @@ sub estimate {
         $objs->UnLimit;
         $objs->{allow_deleted_search} = 1 if $class eq "RT::Ticket";
         $e{$class} = $objs->Count;
-        $e{total} += $e{$class};
         print "\r", " "x60, "\r";
     }
 
@@ -118,116 +110,32 @@ sub estimate {
 }
 
 
-{
-    my $last_time;
-    my $start;
-    my $left;
-    sub progress {
-        my $obj = shift;
-        my $now = Time::HiRes::time();
-        return if defined $last_time and $now - $last_time <= 3;
+sub gnuplot {
+    my ($elapsed, $rows, $cols) = @_;
+    my $length = $walker->StackSize;
+    my $file = $walker->Directory . "/progress.plot";
+    open(my $dat, ">>", $file);
+    printf $dat "%10.3f\t%8d\n", $elapsed, $length;
+    close $dat;
 
-        $start = $now unless $start;
-        $last_time = $now;
-
-        my $elapsed = $now - $start;
-
-        print `clear`;
-        my ($cols, $rows) = (80, 25);
-        eval {
-            require Term::ReadKey;
-            ($cols, $rows) = Term::ReadKey::GetTerminalSize();
-        };
-        $cols -= 1;
-
-        if ($gnuplot) {
-            my $length = $walker->StackSize;
-            my $file = $walker->Directory . "/progress.plot";
-            open(my $dat, ">>", $file);
-            printf $dat "%10.3f\t%8d\n",
-                $elapsed,
-                $length;
-            close $dat;
-
-            if ($rows <= 24) {
-                print "\n\n";
-            } elsif ($elapsed) {
-                system("gnuplot", "-e", <<EOT );
-set term dumb $cols @{[$rows - 15]};
-set xlabel "Seconds";
-unset key;
-set autoscale;
-set title "Queue length";
-plot "$file" using 1:2 with lines
-EOT
-            } else {
-                print "\n" for 1..($rows - 14);
-            }
-        } else {
-            print "\n\n";
-        }
-
-        my %counts = $walker->ObjectCount;
-        # Just show the big ones
-        for my $class (map {"RT::$_"} qw/Ticket Transaction Attachment User Group/) {
-            my $display = $class;
-            $display =~ s/^RT::(.*)/@{[$1]}s:/;
-
-            $counts{$class} ||= 0;
-            my $fraction = $counts{$class}/$estimates{$class};
-
-            my $max_width = $cols - 30;
-            my $bar_width = int($max_width * $fraction);
-
-            printf "%20s |%-".$max_width."s|\n",
-                $display, "=" x $bar_width;
-        }
-
-        {
-            my $total = 0;
-            $total += $_ for values %counts;
-            print "\n";
-
-            my $fraction = $total/$estimates{total};
-
-            my $max_width = $cols - 30;
-            my $bar_width = int($max_width * $fraction);
-
-            printf "%20s |%-".$max_width."s|\n",
-                "Total:", "#" x $bar_width;
-
-            if ($fraction > 0.03) {
-                if (defined $left) {
-                    $left = 0.75 * $left
-                          + 0.25 * ($elapsed / $fraction - $elapsed);
-                } else {
-                    $left = ($elapsed / $fraction - $elapsed);
-                }
-            }
-            print "\n";
-            printf "%20s %s\n", "Elapsed time:",
-                format_time($elapsed);
-            printf "%20s %s\n", "Estimated left:",
-                (defined $left) ? format_time($left) : "-";
-        }
-
-        print "\n$msg";
-        $msg = "";
+    if ($rows <= 24 or not $gnuplot) {
+        print "\n\n";
+    } elsif ($elapsed) {
+        my $gnuplot = qx|
+            gnuplot -e '
+                set term dumb $cols @{[$rows - 12]};
+                set xlabel "Seconds";
+                unset key;
+                set autoscale;
+                set title "Queue length";
+                plot "$file" using 1:2 with lines
+            '
+        |;
+        $gnuplot =~ s/^(\s*\n)//;
+        print $gnuplot;
+    } else {
+        print "\n" for 1..($rows - 13);
     }
-}
-
-sub format_time {
-    my $time = shift;
-    my $s = "";
-
-    $s .= int($time/60/60)."hr "
-        if $time > 60*60;
-    $s .= int(($time % (60*60))/60)."min "
-        if $time > 60;
-    $s .= int($time % 60)."s"
-        if $time < 60*60;
-
-    return $s;
 }
 
 =head1 NAME

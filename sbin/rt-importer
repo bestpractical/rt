@@ -7,6 +7,7 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+use RT::Migrate;
 use RT::Migrate::Importer;
 use Getopt::Long;
 use Pod::Usage qw//;
@@ -19,20 +20,22 @@ GetOptions(
     "originalid|i=s",
 );
 
-my %estimates;
+my $import;
+
+my $progress,
 my ($summary) = grep {-f $_} map {"$_/rt-serialized"} @ARGV;
 if ($summary) {
     my $ref = Storable::retrieve($summary);
-    %estimates = %{ $ref->{counts} };
-    my $total = 0;
-    $total += $_ for values %estimates;
-    $estimates{total} = $total;
+    $progress = RT::Migrate::progress(
+        counts => sub { $import->ObjectCount },
+        max    => $ref->{counts},
+    );
 }
 
-my $import = RT::Migrate::Importer->new(
+$import = RT::Migrate::Importer->new(
     PreserveTicketIds => $OPT{'preserve-tickets'},
     OriginalId        => $OPT{originalid},
-    Progress          => (%estimates ? \&progress : undef),
+    Progress          => $progress,
 );
 my @files = map {-d $_ ? <$_/*.dat> : $_} @ARGV;
 my %counts = $import->Import( @files );
@@ -40,87 +43,4 @@ my %counts = $import->Import( @files );
 print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
-}
-
-
-{
-    my $last_time;
-    my $start;
-    my $left;
-    sub progress {
-        my $obj = shift;
-        my $now = Time::HiRes::time();
-        return if defined $last_time and $now - $last_time <= 3;
-
-        $start = $now unless $start;
-        $last_time = $now;
-
-        my $elapsed = $now - $start;
-
-        print `clear`;
-        my ($cols, $rows) = (80, 25);
-        eval {
-            require Term::ReadKey;
-            ($cols, $rows) = Term::ReadKey::GetTerminalSize();
-        };
-        $cols -= 1;
-
-        my %counts = $import->ObjectCount;
-        # Just show the big ones
-        for my $class (map {"RT::$_"} qw/Ticket Transaction Attachment User Group/) {
-            my $display = $class;
-            $display =~ s/^RT::(.*)/@{[$1]}s:/;
-
-            $counts{$class} ||= 0;
-            my $fraction = $counts{$class}/$estimates{$class};
-
-            my $max_width = $cols - 30;
-            my $bar_width = int($max_width * $fraction);
-
-            printf "%20s |%-".$max_width."s|\n",
-                $display, "=" x $bar_width;
-        }
-
-        {
-            my $total = 0;
-            $total += $_ for values %counts;
-            print "\n";
-
-            my $fraction = $total/$estimates{total};
-
-            my $max_width = $cols - 30;
-            my $bar_width = int($max_width * $fraction);
-
-            printf "%20s |%-".$max_width."s|\n",
-                "Total:", "#" x $bar_width;
-
-            if ($fraction > 0.03) {
-                if (defined $left) {
-                    $left = 0.75 * $left
-                          + 0.25 * ($elapsed / $fraction - $elapsed);
-                } else {
-                    $left = ($elapsed / $fraction - $elapsed);
-                }
-            }
-            print "\n";
-            printf "%20s %s\n", "Elapsed time:",
-                format_time($elapsed);
-            printf "%20s %s\n", "Estimated left:",
-                (defined $left) ? format_time($left) : "-";
-        }
-    }
-}
-
-sub format_time {
-    my $time = shift;
-    my $s = "";
-
-    $s .= int($time/60/60)."hr "
-        if $time > 60*60;
-    $s .= int(($time % (60*60))/60)."min "
-        if $time > 60;
-    $s .= int($time % 60)."s"
-        if $time < 60*60;
-
-    return $s;
 }
