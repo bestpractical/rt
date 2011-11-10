@@ -3,18 +3,15 @@
         use strict;
         $RT::Logger->debug('Make sure templates all have known types');
 
+        # We update all NULL rows, below.  We want to find non-NULL
+        # rows, which weren't created by the current codebase running
+        # through earlier initialdatas.  Type != 'Perl' enforces the
+        # non-NULL part, as well
         my $templates = RT::Templates->new(RT->SystemUser);
         $templates->Limit(
             FIELD => 'Type',
             OPERATOR => '!=',
-            VALUE => 'Action',
-            ENTRYAGGREGATOR => 'AND'
-        );
-        $templates->Limit(
-            FIELD => 'Type',
-            OPERATOR => '!=',
             VALUE => 'Perl',
-            ENTRYAGGREGATOR => 'AND'
         );
 
         if ($templates->Count) {
