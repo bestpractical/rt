@@ -3,29 +3,26 @@
         use strict;
         $RT::Logger->debug('Make sure templates all have known types');
 
+        # We update all NULL rows, below.  We want to find non-NULL
+        # rows, which weren't created by the current codebase running
+        # through earlier initialdatas.  Type != 'Perl' enforces the
+        # non-NULL part, as well
         my $templates = RT::Templates->new(RT->SystemUser);
         $templates->Limit(
             FIELD => 'Type',
             OPERATOR => '!=',
-            VALUE => 'Action',
-            ENTRYAGGREGATOR => 'AND'
-        );
-        $templates->Limit(
-            FIELD => 'Type',
-            OPERATOR => '!=',
             VALUE => 'Perl',
-            ENTRYAGGREGATOR => 'AND'
         );
 
         if ($templates->Count) {
-            die "You have templates with Type other than Action. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
+            die "You have templates with Type already set. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
         }
 
         $templates = RT::Templates->new(RT->SystemUser);
         $templates->Limit(
             FIELD => 'Type',
-            OPERATOR => '!=',
-            VALUE => 'Perl',
+            OPERATOR => 'IS',
+            VALUE => 'NULL',
         );
         while (my $template = $templates->Next) {
             my ($status, $msg) = $template->SetType('Perl');
