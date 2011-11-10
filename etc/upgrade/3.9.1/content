@@ -15,7 +15,7 @@
         );
 
         if ($templates->Count) {
-            die "You have templates with Type other than Action. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
+            die "You have templates with Type already set. This will interfere with your upgrade because RT used to ignore the template Type field, but now uses it.";
         }
 
         $templates = RT::Templates->new(RT->SystemUser);
