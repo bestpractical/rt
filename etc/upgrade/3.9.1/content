@@ -24,8 +24,8 @@
         $templates = RT::Templates->new(RT->SystemUser);
         $templates->Limit(
             FIELD => 'Type',
-            OPERATOR => '!=',
-            VALUE => 'Perl',
+            OPERATOR => 'IS',
+            VALUE => 'NULL',
         );
         while (my $template = $templates->Next) {
             my ($status, $msg) = $template->SetType('Perl');
