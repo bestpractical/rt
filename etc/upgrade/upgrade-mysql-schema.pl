@@ -439,11 +439,15 @@ sub build_column_definition {
 sub column_byte_length {
     my ($table, $column) = @_;
     if ( $version >= 5.0 ) {
+        # information_schema searches can be case sensitive
+        # and users may use lower_case_table_names, use LOWER
+        # for everything just in case
+        # http://dev.mysql.com/doc/refman/5.1/en/charset-collation-information-schema.html
         my ($char, $octet) = @{ $dbh->selectrow_arrayref(
             "SELECT CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH FROM information_schema.COLUMNS WHERE"
-            ."     TABLE_SCHEMA = ". $dbh->quote($db_name)
-            ." AND TABLE_NAME   = ". $dbh->quote($table)
-            ." AND COLUMN_NAME  = ". $dbh->quote($column)
+            ."     LOWER(TABLE_SCHEMA) = ". lc( $dbh->quote($db_name) )
+            ." AND LOWER(TABLE_NAME)   = ". lc( $dbh->quote($table) )
+            ." AND LOWER(COLUMN_NAME)  = ". lc( $dbh->quote($column) )
         ) };
         return $octet if $octet == $char;
     }
