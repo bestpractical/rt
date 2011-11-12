@@ -81,17 +81,22 @@ sub safe_run_child (&) {
         } else {
             @res = ( scalar $code->() );
         }
+        exit 0 if $our_pid != $$;
         1;
     } or do {
         my $err = $@;
+        $RT::Logger->error( $err ) if $our_pid == $$;
+        $err =~ s/^Stack:.*$//ms;
         if ( $our_pid == $$ ) {
-            $RT::Logger->error( $err );
             $dbh->{'InactiveDestroy'} = 0 if $dbh;
             $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
+            #TODO we need to localize this
+            die 'System Error: ' . $err;
+        } else {
+            local $SIG{__WARN__};
+            warn 'System Error: ' . $err;
+            exit 1;
         }
-        $err =~ s/^Stack:.*$//ms;
-        #TODO we need to localize this
-        die 'System Error: ' . $err;
     };
     $dbh->{'InactiveDestroy'} = 0 if $dbh;
     $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
