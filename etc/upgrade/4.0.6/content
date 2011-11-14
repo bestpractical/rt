@@ -1,0 +1,17 @@
+@Initial = (
+    sub {
+        my $txns = RT::Transactions->new( $RT::SystemUser );
+        $txns->Limit(
+            FIELD => "ObjectType",
+            VALUE => "RT::User",
+        );
+        $txns->Limit(
+            FIELD => "Field",
+            VALUE => "Password",
+        );
+        while (my $txn = $txns->Next) {
+            $txn->__Set( Field => $_, Value => '********' )
+                for qw/OldValue NewValue/;
+        }
+    },
+);
