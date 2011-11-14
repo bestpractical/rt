@@ -1447,7 +1447,9 @@ sub _Set {
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
-
+        if ($args{'Field'} eq "Password") {
+            $args{'Value'} = $Old = '********';
+        }
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'Field'},
