@@ -21,11 +21,11 @@ edge [
 "Attachments" -> "Transactions" [label="TransactionId -> id"];
 "Attachments" -> "Attachments" [label="Parent -> id"];
 
-"CachedGroupMemers" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"CachedGroupMemers" -> "Groups" [label="GroupId -> id", weight=2];
-"CachedGroupMemers" -> "Principals" [label="MemberId -> id"];
-"CachedGroupMemers" -> "CachedGroupMemers" [label="Via -> id"];
-"CachedGroupMemers" -> "Groups" [label="ImmediateParentId -> id"];
+"CachedGroupMembers" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"CachedGroupMembers" -> "Groups" [label="GroupId -> id", weight=2];
+"CachedGroupMembers" -> "Principals" [label="MemberId -> id"];
+"CachedGroupMembers" -> "CachedGroupMembers" [label="Via -> id"];
+"CachedGroupMembers" -> "Groups" [label="ImmediateParentId -> id"];
 
 "CustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
