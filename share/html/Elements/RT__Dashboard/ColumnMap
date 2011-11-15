@@ -58,7 +58,7 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->Id },
     },
     Name => {
-        title     => sub { return "foo" }, #'Name', # loc
+        title     => 'Name', # loc
         attribute => 'Name',
         value     => sub { return $_[0]->Name()||loc("Unnamed dashboard") },
     },
