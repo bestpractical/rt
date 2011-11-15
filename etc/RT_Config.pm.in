@@ -2506,6 +2506,12 @@ that you most likely don't want in production:
 
 =item *
 
+Disables CSS and JS minification and concatenation.  Both CSS and JS
+will be instead be served as a number of individual smaller files,
+unchanged from how they are stored on disk.
+
+=item *
+
 Uses L<Module::Refresh> to reload changed Perl modules on each
 request.
 
