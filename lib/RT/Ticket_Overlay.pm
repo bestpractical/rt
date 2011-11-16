@@ -2220,7 +2220,7 @@ sub _Links {
     my $links = $self->{ $cache_key }
               = RT::Links->new( $self->CurrentUser );
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $links->Limit( FIELD => 'id', VALUE => 0 );
+        $links->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
         return $links;
     }
 

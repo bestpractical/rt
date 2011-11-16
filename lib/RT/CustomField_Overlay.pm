@@ -386,7 +386,7 @@ sub Values {
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField( $self->Id );
     } else {
-        $cf_values->Limit( FIELD => 'id', VALUE => 0 );
+        $cf_values->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
     }
     return ($cf_values);
 }
