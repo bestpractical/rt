@@ -545,6 +545,10 @@ sub Get
     my $self = shift;
     my %args = (Format => 'ISO', @_);
     my $formatter = $args{'Format'};
+    unless ( $self->ValidFormatter($formatter) ) {
+        RT->Logger->warning("Invalid date formatter '$formatter', falling back to ISO");
+        $formatter = 'ISO';
+    }
     $formatter = 'ISO' unless $self->can($formatter);
     return $self->$formatter( %args );
 }
@@ -581,6 +585,20 @@ sub Formatters
     my $self = shift;
 
     return @FORMATTERS;
+}
+
+=head3 ValidFormatter FORMAT
+
+Returns a true value if C<FORMAT> is a known formatter.  Otherwise returns
+false.
+
+=cut
+
+sub ValidFormatter {
+    my $self   = shift;
+    my $format = shift;
+    return (grep { $_ eq $format } $self->Formatters and $self->can($format))
+                ? 1 : 0;
 }
 
 =head3 DefaultFormat
