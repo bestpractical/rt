@@ -385,6 +385,8 @@ sub Values {
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField( $self->Id );
+    } else {
+        $cf_values->Limit( FIELD => 'id', VALUE => 0 );
     }
     return ($cf_values);
 }
