@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea autocomplete="off" class="messagebox" <% $cols |n %> rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
+<textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS);
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
@@ -68,13 +68,16 @@ if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signatur
 # wrap="something" seems to really break IE + richtext
 my $wrap_type = '';
 if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-    $wrap_type = qq(wrap="$Wrap");
+    $wrap_type = 'wrap="' . $m->interp->apply_escapes($Wrap, 'h') . '"';
 }
 
-# If there's no cols specified, we want to set the width to 100%
-my $cols = 'style="width: 100%"';
-if ( defined $Width and length $Width ) {
-    $cols = qq(cols="$Width");
+# If there's no cols specified, we want to set the width to 100% in CSS
+my $width_attr;
+if ($Width) {
+    $width_attr = 'cols';
+} else {
+    $width_attr = 'style';
+    $Width = 'width: 100%';
 }
 
 </%INIT>
