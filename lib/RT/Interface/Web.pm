@@ -266,7 +266,7 @@ sub HandleRequest {
             my $m = $HTML::Mason::Commands::m;
 
             # REST urls get a special 401 response
-            if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
+            if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
                 $HTML::Mason::Commands::r->content_type("text/plain");
                 $m->error_format("text");
                 $m->out("RT/$RT::VERSION 401 Credentials required\n");
@@ -434,7 +434,7 @@ sub MaybeShowInstallModePage {
     my $m = $HTML::Mason::Commands::m;
     if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
         $m->call_next();
-    } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+    } elsif ( $m->request_comp->path !~ m{^(/+)Install/} ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
     } else {
         $m->call_next();
@@ -531,7 +531,7 @@ sub ShowRequestedPage {
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
 
         # if the user is trying to access a ticket, redirect them
-        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS->{'id'} ) {
+        if ( $m->request_comp->path =~ m{^(/+)Ticket/Display.html} && $ARGS->{'id'} ) {
             RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "SelfService/Display.html?id=" . $ARGS->{'id'} );
         }
 
