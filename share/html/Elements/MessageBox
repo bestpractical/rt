@@ -67,7 +67,7 @@ if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signatur
 # wrap="something" seems to really break IE + richtext
 my $wrap_type = '';
 if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-    $wrap_type = qq(wrap="$Wrap");
+    $wrap_type = 'wrap="' . $m->interp->apply_escapes($Wrap, 'h') . '"';
 }
 
 </%INIT>
