@@ -679,15 +679,19 @@ sub LocalizedDateTime
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
-                 DateFormat => 'date_format_full',
-                 TimeFormat => 'time_format_medium',
+                 DateFormat => '',
+                 TimeFormat => '',
                  AbbrDay => 1,
                  AbbrMonth => 1,
                  @_,
                );
 
-    my $date_format = $args{'DateFormat'};
-    my $time_format = $args{'TimeFormat'};
+    # Require valid names for the format methods
+    my $date_format = $args{DateFormat} =~ /^\w+$/
+                    ? $args{DateFormat} : 'date_format_full';
+
+    my $time_format = $args{TimeFormat} =~ /^\w+$/
+                    ? $args{TimeFormat} : 'time_format_medium';
 
     my $formatter = $self->LocaleObj;
     $date_format = $formatter->$date_format;
