@@ -265,6 +265,18 @@ an error.
 If this object's table has any of the following atetributes defined as
 'Auto', this routine will automatically fill in their values.
 
+=over
+
+=item Created
+
+=item Creator
+
+=item LastUpdated
+
+=item LastUpdatedBy
+
+=back
+
 =cut
 
 sub Create {
