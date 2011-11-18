@@ -57,6 +57,7 @@ use RT::EmailParser;
 use File::Temp;
 use UNIVERSAL::require;
 use Mail::Mailer ();
+use Text::ParseWords qw/shellwords/;
 
 BEGIN {
     use base 'Exporter';
@@ -404,7 +405,7 @@ sub SendEmail {
 
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
-        my $args = RT->Config->Get('SendmailArguments');
+        my @args = shellwords(RT->Config->Get('SendmailArguments'));
 
         # SetOutgoingMailFrom
         if ( RT->Config->Get('SetOutgoingMailFrom') ) {
@@ -423,12 +424,13 @@ sub SendEmail {
 
             $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
 
-            $args .= " -f $OutgoingMailAddress"
+            push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;
         }
 
         # Set Bounce Arguments
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
+        push @args, shellwords(RT->Config->Get('SendmailBounceArguments'))
+            if $args{'Bounce'};
 
         # VERP
         if ( $TransactionObj and
@@ -438,32 +440,36 @@ sub SendEmail {
             my $from = $TransactionObj->CreatorObj->EmailAddress;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
-            $args .= " -f $prefix$from\@$domain";
+            push @args, "-f", "$prefix$from\@$domain";
         }
 
         eval {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
-            open( my $mail, '|-', "$path $args >/dev/null" )
-                or die "couldn't execute program: $!";
-
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
-            $args{'Entity'}->print($mail);
 
-            unless ( close $mail ) {
-                die "close pipe failed: $!" if $!; # system error
+            require IPC::Open2;
+            my ($mail, $stdout);
+            my $pid = IPC::Open2::open2( $stdout, $mail, $path, @args )
+                or die "couldn't execute program: $!";
+
+            $args{'Entity'}->print($mail);
+            close $mail or die "close pipe failed: $!";
+
+            waitpid($pid, 0);
+            if ($?) {
                 # sendmail exit statuses mostly errors with data not software
                 # TODO: status parsing: core dump, exit on signal or EX_*
-                my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
+                my $msg = "$msgid: `$path @args` exited with code ". ($?>>8);
                 $msg = ", interrupted by signal ". ($?&127) if $?&127;
                 $RT::Logger->error( $msg );
                 die $msg;
             }
         };
         if ( $@ ) {
-            $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
+            $RT::Logger->crit( "$msgid: Could not send mail with command `$path @args`: " . $@ );
             if ( $TicketObj ) {
                 _RecordSendEmailFailure( $TicketObj );
             }
