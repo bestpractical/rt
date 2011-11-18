@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& "SelectOwner$Widget", %ARGS, Objects => \@objects &>
 <%INIT>
-my $Widget = RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
+my $Widget;
+if ( !$QueueObj && !$TicketObj && RT->Config->Get('AutocompleteOwnersForSearch') ) {
+    $Widget = 'Autocomplete';
+}
+$Widget ||= RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
                 ? 'Autocomplete' : 'Dropdown';
 
 my @objects;

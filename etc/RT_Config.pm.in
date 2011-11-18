@@ -1312,6 +1312,16 @@ users have the OwnTicket right.
 
 Set($AutocompleteOwners, 0);
 
+=item C<$AutocompleteOwnersForSearch>
+
+If set to 1, the owner drop-downs for the query builder are always
+replaced by text field that autocomplete and C<$AutocompleteOwners>
+is ignored. Helpful when owners list is huge in the query builder.
+
+=cut
+
+Set($AutocompleteOwnersForSearch, 0);
+
 =item C<$UserAutocompleteFields>
 
 Specifies which fields of L<RT::User> to match against and how to
