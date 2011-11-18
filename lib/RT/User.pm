@@ -538,6 +538,30 @@ sub LoadOrCreateByEmail {
     return ($self->Id, $message);
 }
 
+=head2 CheckEmailAddress ADDRESS
+
+If ValidateUserEmailAddresses is set in the config, then this returns
+true if the email address parses.
+
+If the configuration setting is not set, this always returns true.
+
+=cut
+
+sub CheckEmailAddress {
+    my $self  = shift;
+    my $Value = shift;
+
+    # if the email address is null, it's always valid
+    return (1) if ( !$Value || $Value eq "" );
+
+    if ( RT->Config->Get('ValidateUserEmailAddresses') ) {
+        # We only allow one valid email address
+        my @addresses = Email::Address->parse($Value);
+        return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
+    }
+    return ( 1 );
+}
+
 =head2 ValidateEmailAddress ADDRESS
 
 Returns true if the email address entered is not in use by another user or is
@@ -552,12 +576,8 @@ sub ValidateEmailAddress {
     # if the email address is null, it's always valid
     return (1) if ( !$Value || $Value eq "" );
 
-    if ( RT->Config->Get('ValidateUserEmailAddresses') ) {
-        # We only allow one valid email address
-        my @addresses = Email::Address->parse($Value);
-        return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
-    }
-
+    my ($ok, $error) = $self->CheckEmailAddress($Value);
+    return (0, $error) unless $ok;
 
     my $TempUser = RT::User->new(RT->SystemUser);
     $TempUser->LoadByEmail($Value);
