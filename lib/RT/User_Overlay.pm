@@ -1360,6 +1360,37 @@ sub HasRight {
     return $self->PrincipalObj->HasRight(@_);
 }
 
+=head2 CurrentUserCanSee [FIELD]
+
+Returns true if the current user can see the user, based on if it is
+public, ourself, or we have AdminUsers
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my ($what) = @_;
+
+    # If it's public, fine.  Note that $what may be "transaction", which
+    # doesn't have an Accessible value, and thus falls through below.
+    if ( $self->_Accessible( $what, 'public' ) ) {
+        return 1;
+    }
+
+    # Users can see their own properties
+    elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
+        return 1;
+    }
+
+    # If the user has the admin users right, that's also enough
+    elsif ( $self->CurrentUser->HasRight( Right => 'AdminUsers', Object => $RT::System) ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 =head2 CurrentUserCanModify RIGHT
 
 If the user has rights for this object, either because
@@ -1675,33 +1706,9 @@ sub _Value {
     my $self  = shift;
     my $field = shift;
 
-    #If the current user doesn't have ACLs, don't let em at it.  
-
-    my @PublicFields = qw( Name EmailAddress Organization Disabled
-      RealName NickName Gecos ExternalAuthId
-      AuthSystem ExternalContactInfoId
-      ContactInfoSystem );
-
-    #if the field is public, return it.
-    if ( $self->_Accessible( $field, 'public' ) ) {
-        return ( $self->SUPER::_Value($field) );
-
-    }
-
-    #If the user wants to see their own values, let them
-    # TODO figure ouyt a better way to deal with this
-   elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
-        return ( $self->SUPER::_Value($field) );
-    }
-
-    #If the user has the admin users right, return the field
-    elsif ( $self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
-        return ( $self->SUPER::_Value($field) );
-    }
-    else {
-        return (undef);
-    }
-
+    # Defer to the abstraction above to know if the field can be read
+    return $self->SUPER::_Value($field) if $self->CurrentUserCanSee($field);
+    return undef;
 }
 
 =head2 FriendlyName
