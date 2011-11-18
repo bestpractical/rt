@@ -543,6 +543,17 @@ sub CurrentUserHasRight {
 
 }
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the article, using ShowArticle
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('ShowArticle');
+}
+
 # }}}
 
 # {{{ _Set

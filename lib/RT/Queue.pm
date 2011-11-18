@@ -1249,6 +1249,17 @@ sub CurrentUserHasRight {
 
 }
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the queue, using SeeQueue
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+
+    return $self->CurrentUserHasRight('SeeQueue');
+}
 
 
 =head2 HasRight
