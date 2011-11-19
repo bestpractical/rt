@@ -1091,7 +1091,7 @@ sub OldValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('OldValue');
+        return $self->_Value('OldValue');
     }
 }
 
@@ -1105,7 +1105,7 @@ sub NewValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('NewValue');
+        return $self->_Value('NewValue');
     }
 }
 
