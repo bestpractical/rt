@@ -175,6 +175,9 @@ content, try "LargeContent"
 sub Content {
     my $self = shift;
     my $content = $self->SUPER::Content;
+
+    return undef unless $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+
     if ( !(defined $content && length $content) && $self->ContentType && $self->ContentType eq 'text/plain' ) {
         return $self->LargeContent;
     } else {
