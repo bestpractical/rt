@@ -49,7 +49,6 @@
 %#
 <%ARGS>
 $id
-$args => undef
 $format => undef
 $fields => undef
 </%ARGS>
@@ -57,8 +56,6 @@ $fields => undef
 my $trans = new RT::Transactions $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {} , "");
 
-chomp $args;
-my @arglist = split('/', $args);
 my $tid = $id;
 
 $trans->Limit(FIELD => 'Id', OPERATOR => '=', VALUE => $tid);
