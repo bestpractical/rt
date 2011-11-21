@@ -1943,7 +1943,7 @@ sub UID {
     return "@{[ref $self]}-$RT::Organization-@{[$self->Id]}";
 }
 
-sub Dependencies {
+sub FindDependencies {
     my $self = shift;
     my ($walker, $deps) = @_;
     for my $col (qw/Creator LastUpdatedBy/) {

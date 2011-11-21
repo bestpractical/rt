@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::DependencyWalker::Dependencies;
+package RT::DependencyWalker::FindDependencies;
 
 use strict;
 use warnings;

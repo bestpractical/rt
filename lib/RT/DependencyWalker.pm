@@ -203,8 +203,8 @@ sub Process {
         # stack, then objects it refers to.
         return if defined $args{from}
             and not $self->Observe(%args);
-        my $deps = RT::DependencyWalker::Dependencies->new;
-        $obj->Dependencies($self, $deps);
+        my $deps = RT::DependencyWalker::FindDependencies->new;
+        $obj->FindDependencies($self, $deps);
         # Shove it back for later
         push @{$self->{replace}}, \%args;
         if ($self->{first} eq "top") {
