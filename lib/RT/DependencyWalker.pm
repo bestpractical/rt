@@ -240,8 +240,11 @@ sub AppendDeps {
     my $self = shift;
     my ($dir, $deps, $from) = @_;
     for my $obj (@{$deps->{$dir}}) {
-        if ($obj->isa("RT::Record")) {
-            next unless $obj->id;
+        if (not defined $obj) {
+            warn "$dir from $from contained an invalid reference";
+            next;
+        } elsif ($obj->isa("RT::Record")) {
+            warn "$dir from $from to $obj is an invalid reference" unless $obj->UID;
             next if $self->{GC} < 0 and exists $self->{seen}{$obj->UID};
         } else {
             $obj->FindAllRows;
@@ -262,8 +265,11 @@ sub PrependDeps {
     my $self = shift;
     my ($dir, $deps, $from) = @_;
     for my $obj (@{$deps->{$dir}}) {
-        if ($obj->isa("RT::Record")) {
-            next unless $obj->id;
+        if (not defined $obj) {
+            warn "$dir from $from contained an invalid reference";
+            next;
+        } elsif ($obj->isa("RT::Record")) {
+            warn "$dir from $from to $obj is an invalid reference" unless $obj->UID;
             next if $self->{GC} < 0 and exists $self->{visited}{$obj->UID};
         } else {
             $obj->FindAllRows;

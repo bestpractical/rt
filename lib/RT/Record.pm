@@ -1939,7 +1939,7 @@ sub WikiBase {
 
 sub UID {
     my $self = shift;
-    warn Carp::longmess("No ID for $self") unless defined $self->Id;
+    return undef unless defined $self->Id;
     return "@{[ref $self]}-$RT::Organization-@{[$self->Id]}";
 }
 

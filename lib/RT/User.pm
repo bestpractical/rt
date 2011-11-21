@@ -2286,7 +2286,7 @@ sub _CoreAccessible {
 
 sub UID {
     my $self = shift;
-    warn Carp::longmess("No Name for $self") unless defined $self->Name;
+    return undef unless defined $self->Name;
     return "@{[ref $self]}-@{[$self->Name]}";
 }
 
