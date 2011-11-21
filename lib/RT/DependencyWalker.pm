@@ -52,6 +52,7 @@ use strict;
 use warnings;
 
 use RT::DependencyWalker::Dependencies;
+use Carp;
 
 sub new {
     my $class = shift;
@@ -63,10 +64,10 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
-        First         => "top",
-        GC            => 0,
-        Progress      => undef,
-        MessageHandler => sub { warn for @_ },
+        First          => "top",
+        GC             => 0,
+        Progress       => undef,
+        MessageHandler => \&Carp::carp,
         @_
     );
 
