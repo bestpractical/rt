@@ -119,15 +119,17 @@ sub PushBasics {
     # System users
     for my $name (qw/RT_System root nobody/) {
         my $user = RT::User->new( RT->SystemUser );
-        $user->Load( $name );
-        $self->PushObj( $user );
+        my ($id, $msg) = $user->Load( $name );
+        warn "No '$name' user found: $msg" unless $id;
+        $self->PushObj( $user ) if $id;
     }
 
     # System groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
         my $group = RT::Group->new( RT->SystemUser );
-        $group->LoadSystemInternalGroup( $name );
-        $self->PushObj( $group );
+        my ($id, $msg) = $group->LoadSystemInternalGroup( $name );
+        warn "No '$name' group found: $msg" unless $id;
+        $self->PushObj( $group ) if $id;
     }
 
     # System role groups
