@@ -182,6 +182,10 @@ sub Process {
     return if $obj->isa("RT::System");
 
     my $uid = $obj->UID;
+    unless ($uid) {
+        warn "$args{direction} from $args{from} to $obj is an invalid reference";
+        return;
+    }
     $self->{progress}->($obj) if $self->{progress};
     if (exists $self->{visited}{$uid}) {
         # Already visited -- no-op
