@@ -449,6 +449,10 @@ sub InitClasses {
         RT::ObjectCustomFieldValue
         RT::Attribute
         RT::Link
+        RT::Topic
+        RT::Class
+        RT::Article
+        RT::ObjectTopic
     );
 
     if ( $args{'Heavy'} ) {
