@@ -75,6 +75,8 @@ unless ( $Portlets ) {
     );
 }
 
+$m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );
+
 my ($body, $summary) = @{$Portlets}{qw(body summary)};
 unless( $body && @$body ) {
     $body = $summary || [];
