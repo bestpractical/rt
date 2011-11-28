@@ -159,22 +159,22 @@ my $build_admin_menu = sub {
                                             path => '/Admin/Global/CustomFields/index.html',
                                             description => loc('Modify global custom fields') );
         {
-            $cfadmin->child( users => title => loc('Users') => text => loc('Select custom fields for all users'),
+            $cfadmin->child( users => title => loc('Users') => description => loc('Select custom fields for all users'),
                              path => '/Admin/Global/CustomFields/Users.html');
 
-            $cfadmin->child( groups => title => loc('Groups') => text => loc('Select custom fields for all user groups'),
+            $cfadmin->child( groups => title => loc('Groups') => description => loc('Select custom fields for all user groups'),
                           path => '/Admin/Global/CustomFields/Groups.html');
 
-            $cfadmin->child( queues => title => loc('Queues') => text => loc('Select custom fields for all queues'),
+            $cfadmin->child( queues => title => loc('Queues') => description => loc('Select custom fields for all queues'),
                              path => '/Admin/Global/CustomFields/Queues.html');
 
-            $cfadmin->child( tickets => title => loc('Tickets') => text => loc('Select custom fields for tickets in all queues'),
+            $cfadmin->child( tickets => title => loc('Tickets') => description => loc('Select custom fields for tickets in all queues'),
                     path => '/Admin/Global/CustomFields/Queue-Tickets.html');
 
-            $cfadmin->child( transactions => title => loc('Ticket Transactions') => text =>
+            $cfadmin->child( transactions => title => loc('Ticket Transactions') => description =>
                     loc( 'Select custom fields for transactions on tickets in all queues'),
                 path => '/Admin/Global/CustomFields/Queue-Transactions.html');
-            $cfadmin->child( 'custom-fields' => title => loc('Articles') => text =>
+            $cfadmin->child( 'custom-fields' => title => loc('Articles') => description =>
                     loc('Select Custom Fields for Articles in all Classes'),
                     path => '/Admin/Global/CustomFields/Class-Article.html');
 
