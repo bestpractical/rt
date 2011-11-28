@@ -380,7 +380,7 @@ sub FindDependencies {
     my ($walker, $deps) = @_;
 
     $self->SUPER::FindDependencies($walker, $deps);
-    $deps->Add( out => $self->ParentObj );
+    $deps->Add( out => $self->ParentObj ) if $self->ParentObj->Id;
     $deps->Add( in  => $self->Children );
     $deps->Add( out => $self->Object );
 }
