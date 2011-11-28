@@ -1,11 +1,13 @@
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 7;
+use RT::Test nodata => 1, tests => 11;
 use RT::I18N;
 use Encode;
 
 my %map = (
+    'euc-cn'  => 'gbk',
+    'gb-2312' => 'gbk',
     gb2312  => 'gbk',
     utf8    => 'utf-8',
     'utf-8' => 'utf-8',
