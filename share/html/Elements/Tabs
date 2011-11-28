@@ -131,7 +131,7 @@ my $build_admin_menu = sub {
             $users->child( select => title => loc('Select'), path   => "/Admin/Users/" );
             $users->child( create => title => loc('Create'), path => "/Admin/Users/Modify.html?Create=1" );
         }
-        my $groups = $admin->child( loc('Groups'), path => '/Admin/Groups/', description => loc('Manage groups and group membership') );
+        my $groups = $admin->child( groups => title => loc('Groups'), path => '/Admin/Groups/', description => loc('Manage groups and group membership') );
 
         $groups->child( select => title => loc('Select'), path => "/Admin/Groups/" );
         $groups->child( create => title => loc('Create'), path => "/Admin/Groups/Modify.html?Create=1" );
@@ -151,7 +151,7 @@ my $build_admin_menu = sub {
         my $scrips = $admin_global->child( scrips => title => loc('Scrips'), path => '/Admin/Global/Scrips.html', description => loc('Modify scrips which apply to all queues') );
         $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
         $scrips->child( create => title => loc('Create'), path => "/Admin/Global/Scrip.html?Create=1" );
-        my $templates = $admin_global->child( loc('Templates'), path => '/Admin/Global/Templates.html', description => loc('Edit system templates') );
+        my $templates = $admin_global->child( templates => title => loc('Templates'), path => '/Admin/Global/Templates.html', description => loc('Edit system templates') );
         $templates->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
         $templates->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
 
@@ -523,7 +523,8 @@ my $build_admin_menu = sub {
                 } else {
                     $url .= "Display.html?" . $query_string->( Status => $next, id => $id );
                 }
-                $actions->child( loc( $info->{'label'} || ucfirst($next) ) => path => $url);
+                my $key = $info->{'label'} || ucfirst($next);
+                $actions->child( $key => title => loc( $key ) => path => $url);
             }
 
             if ( $can->('OwnTicket') ) {
@@ -644,7 +645,7 @@ my $build_admin_menu = sub {
 
         $current_search_menu->child( edit_search => title => loc('Edit Search') =>
                                      path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
-        $current_search_menu->child( loc('Advanced') => path => "/Search/Edit.html$args" );
+        $current_search_menu->child( advanced => title => loc('Advanced') => path => "/Search/Edit.html$args" );
         if ($has_query) {
             $current_search_menu->child( results => title => loc('Show Results') => path => "/Search/Results.html$args" );
         }
