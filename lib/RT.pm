@@ -414,6 +414,7 @@ sub InitClasses {
     require RT::Dashboard;
     require RT::Approval;
     require RT::Lifecycle;
+    require RT::Link;
     require RT::Article;
     require RT::Articles;
     require RT::Class;
@@ -429,6 +430,9 @@ sub InitClasses {
     # in the session, as we deserialize it so we never call constructor
     # of the class, so the list of accessible fields is empty and we die
     # with "Method xxx is not implemented in RT::SomeClass"
+
+    # without this, we also can never call _ClassAccessible, because we
+    # won't have filled RT::Record::_TABLE_ATTR
     $_->_BuildTableAttributes foreach qw(
         RT::Ticket
         RT::Transaction
@@ -447,6 +451,13 @@ sub InitClasses {
         RT::ObjectCustomField
         RT::ObjectCustomFieldValue
         RT::Attribute
+        RT::ACE
+        RT::Link
+        RT::Article
+        RT::Class
+        RT::ObjectClass
+        RT::ObjectTopic
+        RT::Topic
     );
 
     if ( $args{'Heavy'} ) {
