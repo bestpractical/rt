@@ -226,11 +226,7 @@ sub CurrentUserHasRight {
     my $right = shift;
 
     my $equiv = [ $RT::System ];
-    if ($self->ObjectId) {
-        my $obj = $self->ObjectType->new($self->CurrentUser);
-        $obj->Load($self->ObjectId);
-        push @{$equiv}, $obj;
-    }
+    push @{$equiv}, $self->Object if $self->ObjectId;
     if ($self->Id) {
         return ( $self->CurrentUser->HasRight(
                                               Right        => $right,
@@ -252,6 +248,13 @@ sub CurrentUserHasRight {
 
 # }}}
 
+
+sub Object {
+    my $self  = shift;
+    my $Object = $self->__Value('ObjectType')->new( $self->CurrentUser );
+    $Object->Load( $self->__Value('ObjectId') );
+    return $Object;
+}
 
 =head2 id
 
@@ -378,11 +381,8 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
     $deps->Add( out => $self->ParentObj );
-    $deps->Add( in => $self->Children );
-
-    my $obj = $self->ObjectType->new( $self->CurrentUser );
-    $obj->Load( $self->ObjectId );
-    $deps->Add( out => $obj );
+    $deps->Add( in  => $self->Children );
+    $deps->Add( out => $self->Object );
 }
 
 RT::Base->_ImportOverlays();
