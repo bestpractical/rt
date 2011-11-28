@@ -22,9 +22,7 @@ after the URL.
 
 =item C<httpurl_overwrite>
 
-Detects URLs as C<httpurl> format, but replaces the URL with a link, and
-B<adds spaces> into the text if it is longer then 30 characters. This
-allows the browser to wrap long URLs, and avoid horizontal scrolling.
+Detects URLs as C<httpurl> format, but replaces the URL with a link.
 
 =back
 

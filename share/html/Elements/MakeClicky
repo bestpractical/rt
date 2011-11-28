@@ -61,8 +61,6 @@ my %actions = (
     url_overwrite => sub {
         my %args = @_;
         my $result = qq{<a target="new" href="$args{'value'}">};
-        #XXX: use spaces here. &shy; <wbr> are not well supported :(
-        $args{'value'} =~ s/(\S{30})/$1 /g;
         $result .= qq{$args{'value'}</a>};
         return qq{<span class="clickylink">$result</span>};
     },
@@ -178,9 +176,7 @@ provides two formats:
    link after the URL.
 
  * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-   replace URL with link and *adds spaces* into text if it's longer
-   then 30 chars. This allow browser to wrap long URLs and avoid
-   horizontal scrolling.
+   replace URL with link.
 
 To extend this with your own types of data, use the callback.
 It will be provided with:

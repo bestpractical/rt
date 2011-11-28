@@ -135,8 +135,7 @@ diag 'test httpurl_overwrite';
     @links = $m->find_link(
         tag  => 'a',
         url  => 'https://wiki.bestpractical.com/test#anchor',
-        # extra space on every 30 chars
-        text => 'https://wiki.bestpractical.com /test#anchor',
+        text => 'https://wiki.bestpractical.com/test#anchor',
     );
     ok( scalar @links, 'found clicky link with anchor' );
 }
