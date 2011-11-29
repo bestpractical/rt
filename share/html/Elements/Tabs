@@ -158,12 +158,12 @@ my $build_admin_menu = sub {
     my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/' );
     $class_admin->child( select =>
         title       => loc('Select'),
-        description => 'Modify and Create Classes',
+        description => loc('Modify and Create Classes'),
         path        => '/Admin/Articles/Classes/',
     );
     $class_admin->child( create =>
         title       => loc('Create'),
-        description => 'Modify and Create Custom Fields for Articles',
+        description => loc('Modify and Create Custom Fields for Articles'),
         path        => '/Admin/Articles/Classes/Modify.html?Create=1',
     );
 
