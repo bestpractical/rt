@@ -273,6 +273,21 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
+if ( $CustomFieldObj->id && $CustomFieldObj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+    my ( $ret, $msg );
+    my $object = $CustomFieldObj->RecordClassFromLookupType->new( $session{'CurrentUser'} );
+
+    if ( $CustomFieldObj->Disabled && $CustomFieldObj->IsApplied(0) ) {
+        ( $ret, $msg ) = $CustomFieldObj->RemoveFromObject($object);
+    }
+    elsif ( !$CustomFieldObj->Disabled && !$CustomFieldObj->IsApplied(0) ) {
+        ( $ret, $msg ) = $CustomFieldObj->AddToObject($object);
+    }
+
+    # successful msg("object created" or "object deleted ) is useless here
+    push @results, $msg unless $ret;
+}
+
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
 # This code does automatic redirection if any updates happen.
