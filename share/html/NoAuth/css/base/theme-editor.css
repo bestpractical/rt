@@ -109,3 +109,8 @@
     width: 78%; 
 }
 
+#logo-color-picker {
+    display: none; /* unhidden by javascript */
+    cursor: url(<% RT->Config->Get("WebImagesURL") %>/eyedropper.png), crosshair;
+}
+
