@@ -169,8 +169,8 @@ if ($chart_class eq "GD::Graph::bars") {
 # refine values' colors, with both Color::Scheme's help and my own tweak
 $chart->{dclrs} = [
     '66cc66', 'ff6666', 'ffcc66', '663399',
-    '3333cc', '339933', '993333', '996633', 
-    '33cc33', 'cc3333', 'cc9933', '6633cc'
+    '3333cc', '339933', '993333', '996633',
+    '33cc33', 'cc3333', 'cc9933', '6633cc',
 ];
 
 {
