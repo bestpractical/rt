@@ -69,11 +69,13 @@
 %     and RT->Config->Get( 'DelayTransactionLoading', $session{'CurrentUser'} )) {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
+        ShowHeaders => $ARGS{'ShowHeaders'},
     &>
 % } elsif (not $ForceShowHistory
 %          and RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
+        ShowHeaders => $ARGS{'ShowHeaders'},
     &>
 % } else {
     <& /Ticket/Elements/ShowHistory ,
