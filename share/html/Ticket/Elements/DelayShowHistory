@@ -53,7 +53,14 @@
 <script type="text/javascript">
 jQuery(function(){
     jQuery('#delayed_ticket_history').load('<% $url |n %>', null, function() {
-        jQuery(this).find('.titlebox-content').hide().slideDown();
+        jQuery(this).find('.titlebox-content').hide().slideDown(400, function(){
+            // Jump to any anchor specified after we load the txns into the page
+            var hash = window.location.hash;
+            if (hash) {
+                window.location.hash = "";  // trick the browser into a "change"
+                window.location.hash = hash;
+            }
+        });
     });
 });
 </script>
