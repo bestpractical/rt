@@ -82,6 +82,8 @@
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
+    OrderBy => \@OrderBy,
+    Order => \@Order,
     Format => $format,
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
