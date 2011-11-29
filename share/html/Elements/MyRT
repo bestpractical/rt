@@ -91,12 +91,16 @@ my $show_cb = sub {
     my $type  = $entry->{type};
     my $name = $entry->{'name'};
     if ( $type eq 'component' ) {
-        # XXX: security check etc.
-        $m->comp( $name, %{ $entry->{arguments} || {} } );
+        if (!$allowed_components{$name}) {
+            $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
+        }
+        else {
+            $m->comp( $name, %{ $entry->{arguments} || {} } );
+        }
     } elsif ( $type eq 'system' ) {
         $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows }, IgnoreMissing => 1 );
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
     } else {
         $RT::Logger->error("unknown portlet type '$type'");
     }
