@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    title sort_order target escape_title class raw_html key description
+    key title description raw_html escape_title sort_order target class
 ));
 
 =head1 NAME
@@ -69,9 +69,10 @@ RT::Interface::Web::Menu - Handle the API for menu navigation
 =head2 new PARAMHASH
 
 Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
-I<PARAMHASH> are L</title>, L</parent>, L</sort_order>, L</path>, L</class>,
-L</raw_html>, and L</active>, and L</escape_title>.  See the subroutines with
-the respective name below for each option's use.
+I<PARAMHASH> are L</parent>, L</title>, L</description>, L</path>,
+L</raw_html>, L<escape_title>, L</sort_order>, L</class>, L</target> and
+L</active>.  See the subroutines with the respective name below for
+each option's use.
 
 =cut
 
