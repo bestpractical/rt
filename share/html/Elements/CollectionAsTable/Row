@@ -60,7 +60,6 @@ $Classes => ''
 $m->out(  '<tr class="' . $Classes . ' '
         . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
-use HTML::Entities;
 my $item;
 foreach my $column (@Format) {
     if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
@@ -77,7 +76,7 @@ foreach my $column (@Format) {
         next;
     }
 
-    my $class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
+    my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
     $m->out(qq{<td class="$class" });
 
     my %attrs;

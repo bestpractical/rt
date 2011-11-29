@@ -56,7 +56,6 @@ use Text::Wrapper;
 use CGI::Cookie;
 use Time::ParseDate;
 use Time::HiRes;
-use HTML::Entities;
 use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
