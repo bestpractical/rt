@@ -78,10 +78,7 @@ sub Prepare  {
   my $self = shift;
 
   $self->TicketsObj->LimitQueue(VALUE => $self->Argument);
-
-  foreach my $status (RT::Queue->ActiveStatusArray()) {
-        $self->TicketsObj->LimitStatus(VALUE => $status);
-  }
+  $self->TicketsObj->LimitToActiveStatus;
 
   return(1);
 }

@@ -1089,10 +1089,7 @@ sub UnresolvedDependencies {
     my $self = shift;
     my $deps = RT::Tickets->new($self->CurrentUser);
 
-    my @live_statuses = RT::Queue->ActiveStatusArray();
-    foreach my $status (@live_statuses) {
-        $deps->LimitStatus(VALUE => $status);
-    }
+    $deps->LimitToActiveStatus;
     $deps->LimitDependedOnBy($self->Id);
 
     return($deps);
