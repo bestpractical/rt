@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 166;
+use RT::Test tests => 170;
 
 my ( $url, $m ) = RT::Test->started_ok;
 my $root = RT::Test->load_or_create_user( Name => 'root' );
@@ -121,6 +121,10 @@ $m->submit_form(
     },
     button => 'SubmitTicket',
 );
+{
+    local $TODO = "Locale::Maketext::Fuzzy bug incorrectly fires";
+    $m->no_warnings_ok;
+}
 $m->content_contains( 'ticket1', 'subject' );
 $m->content_contains( 'open', 'status' );
 
@@ -150,6 +154,10 @@ $m->submit_form(
         'Object-RT::Ticket--CustomField-' . $cfbar->id . '-Value' => 'cfvalue',
     }
 );
+{
+    local $TODO = "Locale::Maketext::Fuzzy bug incorrectly fires";
+    $m->no_warnings_ok;
+}
 like( $m->uri, qr'/m/ticket/show', 'ticket show page' );
 $m->content_contains( 'cfbar', 'has cf name' );
 $m->content_contains( 'cfvalue', 'has cf value' );
