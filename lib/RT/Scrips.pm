@@ -147,6 +147,85 @@ sub LimitByStage  {
     );
 }
 
+=head2 LimitByTemplate
+
+Takes a L<RT::Template> object and limits scrips to those that
+use the template.
+
+=cut
+
+sub LimitByTemplate {
+    my $self = shift;
+    my $template = shift;
+
+    $self->Limit( FIELD => 'Template', VALUE => $template->Name );
+
+    if ( $template->Queue ) {
+        # if template is local then we are interested in global and
+        # queue specific scrips
+        $self->LimitToQueue( $template->Queue );
+        $self->LimitToGlobal;
+    }
+    else { # template is global
+
+        # if every queue has a custom version then there
+        # is no scrip that uses the template
+        {
+            my $queues = RT::Queues->new( RT->SystemUser );
+            my $alias = $queues->Join(
+                TYPE   => 'LEFT',
+                ALIAS1 => 'main',
+                FIELD1 => 'id',
+                TABLE2 => 'Templates',
+                FIELD2 => 'Queue',
+            );
+            $queues->Limit(
+                LEFTJOIN   => $alias,
+                ALIAS      => $alias,
+                FIELD      => 'Name',
+                VALUE      => $template->Name,
+            );
+            $queues->Limit(
+                ALIAS      => $alias,
+                FIELD      => 'id',
+                OPERATOR   => 'IS',
+                VALUE      => 'NULL',
+            );
+            return $self->Limit( FIELD => 'id', VALUE => 0 )
+                unless $queues->Count;
+        }
+
+        # otherwise it's either a global scrip or application to
+        # a queue with custom version of the template.
+        my $os_alias = RT::ObjectScrips->new( $self->CurrentUser )
+            ->JoinTargetToThis( $self );
+        my $tmpl_alias = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $os_alias,
+            FIELD1 => 'ObjectId',
+            TABLE2 => 'Templates',
+            FIELD2 => 'Queue',
+        );
+        $self->Limit(
+            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Name', VALUE => $template->Name,
+        );
+        $self->Limit(
+            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Queue', OPERATOR => '!=', VALUE => 0,
+        );
+
+        $self->_OpenParen('UsedBy');
+        $self->Limit( SUBCLAUSE => 'UsedBy', ALIAS => $os_alias, FIELD => 'ObjectId', VALUE => 0 );
+        $self->Limit(
+            SUBCLAUSE => 'UsedBy',
+            ALIAS => $tmpl_alias,
+            FIELD => 'id',
+            OPERATOR => 'IS',
+            VALUE => 'NULL',
+        );
+        $self->_CloseParen('UsedBy');
+    }
+}
+
 sub ApplySortOrder {
     my $self = shift;
     my $order = shift || 'ASC';

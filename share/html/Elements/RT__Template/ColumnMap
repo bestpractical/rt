@@ -82,6 +82,20 @@ my $COLUMN_MAP = {
         title     => 'Empty', # loc
         value     => sub { $_[0]->IsEmpty? $_[0]->loc('Yes') : $_[0]->loc('No') },
     },
+    UsedBy => {
+        title     => 'Used by scrips', # loc
+        value     => sub {
+            my @res;
+            my $scrips = $_[0]->UsedBy;
+            while ( my $scrip = $scrips->Next ) {
+                push @res, ', ' if @res;
+                push @res, \'<a href="', RT->Config->Get('WebPath'), '/Admin/Scrips/Modify.html';
+                push @res, '?id='. $scrip->id;
+                push @res, \'" title="', $scrip->Description, \'">', $scrip->id, \'</a>';
+            }
+            return @res;
+        },
+    },
 };
 
 </%ONCE>

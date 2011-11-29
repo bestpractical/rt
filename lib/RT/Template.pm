@@ -314,6 +314,21 @@ sub Delete {
     return ( $self->SUPER::Delete(@_) );
 }
 
+=head2 UsedBy
+
+Returns L<RT::Scrips> limitted to scrips that use this template. Takes
+into account that template can be overriden in a queue.
+
+=cut
+
+sub UsedBy {
+    my $self = shift;
+
+    my $scrips = RT::Scrips->new( $self->CurrentUser );
+    $scrips->LimitByTemplate( $self );
+    return $scrips;
+}
+
 =head2 IsEmpty
 
 Returns true value if content of the template is empty, otherwise
