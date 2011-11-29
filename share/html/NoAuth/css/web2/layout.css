@@ -101,16 +101,15 @@ div#body {
 }
 
 #topactions form {
- display: block;
-
+    display: block;
+    float: right;
+    margin-left: 1em;
+    text-align: right;
 }
 
 #topactions #CreateTicketInQueue {
  text-align: right; 
 
-}
-#topactions #simple-search {
-    float: right;
 }
 
 #topactions #simple-search .field{
