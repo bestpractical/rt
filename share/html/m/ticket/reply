@@ -55,6 +55,10 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
+% if ($gnupg_widget) {
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+% }
+
 <div class="entry"><span class="label"><&|/l&>Status</&>:</span>
 <div class="value">
 <& /Elements/SelectStatus, Name=>"Status", TicketObj => $t, DefaultLabel => loc("[_1] (Unchanged)", loc($t->Status)), Default => $ARGS{'Status'} || ($t->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
@@ -88,7 +92,7 @@
 % }
 </select> 
 </div></div>
-<div class="entry"><span class="label"><&|/l&>Subject</&>:</span><div class="value"> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $t->Subject()%>" />
+<div class="entry"><span class="label"><&|/l&>Subject</&>:</span><div class="value"> <input type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $t->Subject()%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </div></div>
 
@@ -109,6 +113,31 @@
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 </div></div>
+
+% if (exists $session{'Attachments'}) {
+
+<%loc("Attached file") %>
+
+<%loc("Check box to delete")%><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+
+
+% } # end of if
+
+<div class="entry">
+<span class="label"><&|/l&>Attach file</&>:</span>
+<div class="value">
+<input type="file" name="Attach" />
+<input type="submit" class="button" name="AddMoreAttach" value="<% loc("Add More Files") %>" />
+</div>
+</div>
+
+% if ( $gnupg_widget ) {
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $t->QueueObj &>
+% }
+
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
 </form>
 </&>
@@ -170,7 +199,7 @@ foreach my $key (keys %ARGS) {
 }
 
 # store the uploaded attachment in session
-if ($ARGS{'Attach'}) {            # attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
     );
@@ -183,7 +212,9 @@ if ($ARGS{'Attach'}) {            # attachment?
 }
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+unless ( keys %{ $session{'Attachments'} }
+    && ( exists $ARGS{'AddMoreAttach'} || exists $ARGS{'SubmitTicket'} ) )
+{
     delete $session{'Attachments'};
 }
 
@@ -203,7 +234,18 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
     }
 }
 
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $t,
+);
+
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        TicketObj => $t,
+    );
+    $checks_failure = 1 unless $status;
     return $m->comp('/m/ticket/show', TicketObj => $t, %ARGS);
 }
 </%INIT>

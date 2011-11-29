@@ -70,10 +70,23 @@ if ($apxs and not $apache_module_prefix) {
 
 $apache_module_prefix ||= 'modules';
 
+sub basic_auth {
+    my $self = shift;
+    my $passwd = File::Spec->rel2abs( File::Spec->catfile(
+        't', 'data', 'configs', 'passwords' ) );
+
+    return <<"EOT";
+    AuthType Basic
+    AuthName "restricted area"
+    AuthUserFile $passwd
+    Require user root
+EOT
+}
+
 sub start_server {
-    my ($self, $variant, $port, $tmp) = @_;
-    my %tmp = %$tmp;
-    my %info = $self->apache_server_info( variant => $variant );
+    my ($self, %config) = @_;
+    my %tmp = %{$config{tmp}};
+    my %info = $self->apache_server_info( %config );
 
     RT::Test::diag(do {
         open( my $fh, '<', $tmp{'config'}{'RT'} ) or die $!;
@@ -83,10 +96,10 @@ sub start_server {
 
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
-        'apache'. $info{'version'} .'+'. $variant .'.conf'
+        'apache'. $info{'version'} .'+'. $config{variant} .'.conf'
     ) );
     my %opt = (
-        listen         => $port,
+        listen         => $config{port},
         server_root    => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
         document_root  => $RT::MasonComponentRoot,
@@ -95,6 +108,7 @@ sub start_server {
         rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
         load_modules   => $info{load_modules},
+        basic_auth     => $config{basic_auth} ? $self->basic_auth : "",
     );
     foreach (qw(log pid lock)) {
         $opt{$_ .'_file'} = File::Spec->catfile(
@@ -179,6 +193,7 @@ sub apache_server_info {
     ) unless exists $MODULES{$res{version}}{$res{variant}};
 
     my @mlist = @{$MODULES{$res{version}}{$res{variant}}};
+    push @mlist, "authn_file", "auth_basic", "authz_user" if $res{basic_auth};
 
     $res{'load_modules'} = '';
     foreach my $mod ( @mlist ) {

@@ -95,7 +95,7 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 <form id="login" name="login" method="post" action="<% $form_action %>">
 
 <div class="entry">
-    <span class="label"><&|/l&>Username</&>:</span><span class="value"><input name="user" value="<%$user%>" id="user" /></span>
+    <span class="label"><&|/l&>Username</&>:</span><span class="value"><input type="text" name="user" value="<%$user%>" id="user" /></span>
 </div>
 
 <div class="entry">

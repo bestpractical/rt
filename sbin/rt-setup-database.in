@@ -499,69 +499,69 @@ Several actions can be combined using comma separated list.
 
 =item init
 
-    Initialize the database. This is combination of multiple actions listed 
-    below. Create DB, schema, setup acl, insert core data and initial data.
+Initialize the database. This is combination of multiple actions listed below.
+Create DB, schema, setup acl, insert core data and initial data.
 
 =item upgrade
 
-    Apply all needed schema/acl/content updates (will ask for version to 
-    upgrade from)
+Apply all needed schema/acl/content updates (will ask for version to upgrade
+from)
 
 =item create
 
-    Create the database.
+Create the database.
 
 =item drop
 
-    Drop the database.
-    This will ERASE ALL YOUR DATA
+Drop the database.  This will B<ERASE ALL YOUR DATA>.
 
 =item schema
 
-    Initialize only the database schema
-    To use a local or supplementary datafile, specify it
-    using the '--datadir' option below.
+Initialize only the database schema
 
+To use a local or supplementary datafile, specify it using the '--datadir'
+option below.
 
 =item acl
-    Initialize only the database ACLs
-    To use a local or supplementary datafile, specify it
-    using the '--datadir' option below.
+
+Initialize only the database ACLs
+
+To use a local or supplementary datafile, specify it using the '--datadir'
+option below.
 
 =item coredata 
 
-    Insert data into RT's database. This data is required
-    for normal functioning of any RT instance.
+Insert data into RT's database. This data is required for normal functioning of
+any RT instance.
 
 =item insert
-    Insert data into RT's database.
-    By default, will use RT's installation data.
-    To use a local or supplementary datafile, specify it
-    using the '--datafile' option below.
+
+Insert data into RT's database.  By default, will use RT's installation data.
+To use a local or supplementary datafile, specify it using the '--datafile'
+option below.
 
 =back
-
 
 =item datafile
 
 file path of the data you want to action on
 
-e.g. --datafile /path/to/datafile
+e.g. C<--datafile /path/to/datafile>
 
 =item datadir
 
-    Used to specify a path to find the local database schema and acls to be
-    installed.
+Used to specify a path to find the local database schema and acls to be
+installed.
 
-e.g. --datadir /path/to/
+e.g. C<--datadir /path/to/>
 
 =item dba
 
-    dba's username
+dba's username
 
 =item dba-password
 
-    dba's password
+dba's password
 
 =item prompt-for-dba-password
 
@@ -569,12 +569,12 @@ Ask for the database administrator's password interactively
 
 =item skip-create
 
-    for 'init': skip creating the database and the user account, so we don't
-    need administrator privileges
+for 'init': skip creating the database and the user account, so we don't need
+administrator privileges
 
 =item root-password-file
 
-    for 'init' and 'insert': rather than using the default administrative 
-    password for RT's "root" user, use the password in this file.
+for 'init' and 'insert': rather than using the default administrative password
+for RT's "root" user, use the password in this file.
 
 =back

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%DOC>
-see docs/using_forms_widgets.pod
+see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget">
 <span class="description label"><% $Description %></span>

@@ -94,13 +94,51 @@ if ( ref $Message ) {
 AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         my $stanza = $Message->[$i];
         if ( ref $stanza eq "HASH" ) {
-            if (    $stanza->{raw}
-                 && $stanza->{raw} =~ /----- Original Message -----/ )
+            # Fix message stanza nesting for Outlook's quoting styles
+            if (     $stanza->{raw}
+                 and not $stanza->{_outlooked}
+                 and $stanza->{raw} =~ /^               # start of an internal line
+                                        \s*             # optional whitespace
+                                        (?:
+                                            -{3,}       # at least three hyphens
+                                            \s*         # whitespace varies between Outlook versions
+                                                        # don't trigger on PGP signed message or signature blocks
+                                            (?!(?:BEGIN|END)\s+PGP)
+                                            [\w\s]+?    # words, loose to get different languages
+                                            \s*         # whitespace varies between Outlook versions
+                                            -{3,}       # at least three hyphens again
+                                          |
+                                            _{6,}       # OR: six or more underscores
+                                        )
+                                        \s*$            # optional whitespace until the end of the line
+                                       /xm )
             {
-                $Message->[ $i + 1 ] = [ splice @$Message, $i + 1 ]
-                    if $Message->[ $i + 1 ];
+                # There's content before the quoted message, but in the
+                # same stanza.  Break it out!
+                if ( my $start = $-[0] ) {
+                    my %preceding = %$stanza;
+
+                    # We don't process $stanza->{text} because we don't use it
+                    # and it isn't given to us by HTML::Quoted.  If we ever
+                    # need to, we can process it the same way as 'raw'.
+                    $preceding{raw} = substr($stanza->{raw}, 0, $start, '');
+
+                    # Replace the current stanza with the two we just created
+                    splice @$Message, $i, 1, \%preceding, $stanza;
+
+                    # Try it again from the top now that we've rejiggered our
+                    # stanzas.  We'll process the Outlook stanza again, and hit
+                    # the else below this time.
+                    redo;
+                } else {
+                    # Nest the current stanza and everything that follows
+                    $stanza->{_outlooked}++;
+                    $stanza = $Message->[ $i ] = [ splice @$Message, $i ];
+                }
             }
-            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
+            else {
+                $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
+            }
         }
         next unless ref $stanza eq "ARRAY";
 
@@ -114,9 +152,9 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         if ( $Depth == 1 ) {
             $m->comp('FoldStanzaJS');
         }
-        $m->out(   '<div class="message-stanza"'
-                 . ( $Depth == 1 ? ' style="display: none;" ' : '' )
-                 . '>' );
+        my @classes = ('message-stanza');
+        push @classes, $Depth == 1 ? 'closed' : 'open';
+        $m->out(   '<div class="' . join(" ", @classes) . '">' );
     }
     if ( length $para ) {
         $print_content->( \$para );

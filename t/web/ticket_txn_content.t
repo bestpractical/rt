@@ -1,17 +1,15 @@
 use strict;
 
 use RT::Test tests => 63;
-use File::Temp 'tempfile';
-use File::Spec;
-my ( $plain_fh, $plain_file ) =
-  tempfile( 'rttestXXXXXX', SUFFIX => '.txt', UNLINK => 1, TMPDIR => 1 );
+my $plain_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.txt' );
+open my $plain_fh, '>', $plain_file or die $!;
 print $plain_fh "this is plain content";
 close $plain_fh;
 my $plain_name = (File::Spec->splitpath($plain_file))[-1];
 
-my ( $html_fh, $html_file ) =
-  tempfile( 'rttestXXXXXX', SUFFIX => '.html', UNLINK => 1, TMPDIR => 1 );
-print $html_fh "this is html content";
+my $html_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.html' );
+open my $html_fh, '>', $html_file or die $!;
+print $html_fh "this is plain content";
 close $html_fh;
 my $html_name = (File::Spec->splitpath($html_file))[-1];
 

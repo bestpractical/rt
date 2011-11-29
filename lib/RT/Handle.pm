@@ -973,9 +973,17 @@ sub InsertData {
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }
+                unless ( $princ->Id ) {
+                    RT->Logger->error("Unable to load Group: GroupDomain => $item->{GroupDomain}, GroupId => $item->{GroupId}, Queue => $item->{Queue}");
+                    next;
+                }
             } else {
                 $princ = RT::User->new(RT->SystemUser);
-                $princ->Load( $item->{'UserId'} );
+                my ($ok, $msg) = $princ->Load( $item->{'UserId'} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load user: $item->{UserId} : $msg");
+                    next;
+                }
             }
 
             # Grant it

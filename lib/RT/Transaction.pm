@@ -186,11 +186,14 @@ sub Create {
        # Entry point of the rule system
        my $ticket = RT::Ticket->new(RT->SystemUser);
        $ticket->Load($args{'ObjectId'});
+       my $txn = RT::Transaction->new($RT::SystemUser);
+       $txn->Load($self->id);
+
        my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             TicketObj   => $ticket,
-            TransactionObj => $self,
+            TransactionObj => $txn,
        );
 
         if ($args{'CommitScrips'} ) {

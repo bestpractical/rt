@@ -67,7 +67,7 @@ for my $queue (@queues) {
 
     $i++;
     my $name = $queue->{Name};
-    $name =~ s/'/\\'/g;
+    $name =~ s/(['\\])/\\$1/g;
     my $queue_cond = "Queue = '$name' AND ";
     my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", @cur_statuses ) . ')';
 </%PERL>

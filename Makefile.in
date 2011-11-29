@@ -53,6 +53,7 @@
 
 PERL			=	@PERL@
 INSTALL			=	@INSTALL@
+CC				=	@CC@
 
 RT_LAYOUT		=	@rt_layout_name@
 
@@ -253,7 +254,7 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "    $(RT_SBIN_PATH)/rt-setup-database --prompt-for-dba-password --action upgrade"
+	@echo "    make upgrade-database"
 
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
@@ -351,7 +352,7 @@ test:
 parallel-test: test-parallel
 
 test-parallel: 
-	RT_TEST_PARALLEL=1 $(PERL) "-MApp::Prove" -e 'my $$p = App::Prove->new(); $$p->process_args("-lrj5","--state=slow,save", "t"); $$p->run()'
+	RT_TEST_PARALLEL=1 $(PERL) "-MApp::Prove" -e 'my $$p = App::Prove->new(); $$p->process_args("-wlrj5","--state=slow,save", "t"); $$p->run()'
 
 regression-reset-db: force-dropdb
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba-password ''
@@ -360,6 +361,9 @@ initdb :: initialize-database
 
 initialize-database: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --prompt-for-dba-password
+
+upgrade-database:
+	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action upgrade --prompt-for-dba-password
 
 dropdb: 
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --prompt-for-dba-password
@@ -527,3 +531,43 @@ vessel-import: build-snapshot
      --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
 	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
 
+JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2011-01-22.c
+JSMIN_SHA = 8a6b3b980a52c028eb73aee4a82ebe060c1ee854
+
+jsmin: jsmin-checkcc jsmin-fetch jsmin-verify jsmin-confirm jsmin-build jsmin-install
+	@echo ""
+	@echo "To configure RT to use jsmin, add the following line to $(DESTDIR)$(RT_ETC_PATH)/RT_SiteConfig.pm:"
+	@echo ""
+	@echo "    Set(\$$JSMinPath, '$(DESTDIR)$(RT_BIN_PATH)/jsmin');"
+	@echo ""
+
+jsmin-checkcc:
+	@[ -n "$(CC)" ] || (echo "You don't appear to have a C compiler, please set CC and re-run configure" && exit 1)
+
+jsmin-confirm:
+	@echo "jsmin is distributed under a slightly unusual license and can't be shipped"
+	@echo "with RT.  Before configuring RT to use jsmin, please read jsmin's license"
+	@echo "below:"
+	@echo ""
+	@$(PERL) -pe 'print && exit if /^\*\// or /^#include/' jsmin.c
+	@echo ""
+	@echo "Press Enter to accept the license, or Ctrl-C to stop now."
+	@$(PERL) -e '<STDIN>'
+
+jsmin-fetch:
+	@echo ""
+	@echo "Downloading jsmin.c from $(JSMIN_URL)"
+	@echo ""
+	@$(PERL) -MLWP::Simple -e 'exit not is_success(getstore("$(JSMIN_URL)", "jsmin.c"))' \
+		|| (echo "Failed to download $(JSMIN_URL)" && exit 1)
+
+jsmin-verify:
+	@$(PERL) -MDigest::SHA -e \
+		'exit not Digest::SHA->new(1)->addfile("jsmin.c")->hexdigest eq "$(JSMIN_SHA)"' \
+		|| (echo "Verification of jsmin.c failed! Possible man in the middle?" && exit 1)
+
+jsmin-build:
+	$(CC) -o jsmin jsmin.c
+
+jsmin-install:
+	$(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "jsmin" "$(DESTDIR)$(RT_BIN_PATH)/"

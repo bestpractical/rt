@@ -101,8 +101,8 @@
 
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
 
-      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
-      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, AsTable => 1 &>
+      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
+      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
     </table>
   </&>
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj );
@@ -172,7 +172,7 @@
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
-<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
@@ -381,7 +381,7 @@ foreach my $key (keys %ARGS) {
 }
 
 # store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
     );

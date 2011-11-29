@@ -5,11 +5,11 @@ use warnings;
 use RT::Test tests => 9;
 use utf8;
 
-use File::Temp qw/tempfile/;
 use Encode;
 
 use RT::Ticket;
-my ( $fh, $file ) = tempfile;
+my $file = File::Spec->catfile( RT::Test->temp_directory, 'template' );
+open my $fh, '>', $file or die $!;
 my $template = <<EOF;
 ===Create-Ticket: ticket1
 Queue: General

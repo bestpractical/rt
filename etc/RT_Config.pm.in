@@ -841,6 +841,10 @@ Set(@CustomFieldValuesSources, ());
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
 redirecting rather than the one we get from C<%ENV>.
 
+Apache's UseCanonicalName directive changes the hostname that RT
+finds in C<%ENV>.  You can read more about what turning it On or Off
+means in the documentation for your version of Apache.
+
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
 
@@ -874,12 +878,12 @@ Set(@JSFiles, qw/
 
 =item C<$JSMinPath>
 
-Path to the jsmin binary, available from
-http://www.crockford.com/javascript/jsmin.html
+Path to the jsmin binary; if specified, it will be used to minify
+C<JSFiles>.  The default, and the fallback if the binary cannot be
+found, is to simply concatenate the files.
 
-If specified, it will be used to minify C<JSFiles>.  If it cannot be
-found, RT will fall back to the L<JavaScript::Minifier> module;
-failing that, RT will will simply concatenate the files.
+jsmin can be installed by running 'make jsmin' from the RT install
+directory, or from http://www.crockford.com/javascript/jsmin.html
 
 =cut
 
@@ -1042,7 +1046,7 @@ RT stores dates using the UTC timezone in the DB, so charts grouped by
 dates and time are not representative. Set C<$ChartsTimezonesInDB> to 1
 to enable timezone conversions using your DB's capabilities. You may
 need to do some work on the DB side to use this feature, read more in
-F<docs/timezones_in_charts.pod>.
+F<docs/customizing/timezones_in_charts.pod>.
 
 At this time, this feature only applies to MySQL and PostgreSQL.
 
@@ -1240,6 +1244,9 @@ shows the Requestor's name and ticket list.  If you would like to see
 extra information about the user, this expects a Format string of user
 attributes.  Please note that not all the attributes are supported in
 this display because we're not building a table.
+
+Example:
+C<Set($MoreAboutRequestorExtraInfo,"Organization, Address1")>
 
 =cut
 
@@ -1561,7 +1568,7 @@ Set($ShowTransactionImages, 1);
 Normally plaintext attachments are displayed as HTML with line breaks
 preserved.  This causes space- and tab-based formatting not to be
 displayed correctly.  By setting $PlainTextPre messages will be
-displayed using <pre>; this option overrides C<$PlainTextMono>.
+displayed using <pre>.
 
 =cut
 
@@ -1572,7 +1579,7 @@ Set($PlainTextPre, 0);
 
 Set C<$PlainTextMono> to 1 to use monospaced font and preserve
 formatting; unlike C<$PlainTextPre>, the text will wrap to fit width
-of the browser window.
+of the browser window; this option overrides C<$PlainTextPre>.
 
 =cut
 
@@ -1599,9 +1606,7 @@ provides two formats:
   link after the URL.
 
 * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-  replaces the URL with a link and *adds spaces* into the text if it
-  is longer then 30 characters. This allows the browser to wrap long
-  URLs and avoid horizontal scrolling.
+  replaces the URL with a link.
 
 See F<share/html/Elements/MakeClicky> for documentation on how to add
 your own styles of link detection.
@@ -1813,6 +1818,19 @@ connections.
 =cut
 
 Set($WebSecureCookies, 0);
+
+=item C<$WebHttpOnlyCookies>
+
+Default RT's session cookie to not being directly accessible to
+javascript.  The content is still sent during regular and AJAX requests,
+and other cookies are unaffected, but the session-id is less
+programmatically accessible to javascript.  Turning this off should only
+be necessary in situations with odd client-side authentication
+requirements.
+
+=cut
+
+Set($WebHttpOnlyCookies, 1);
 
 =item C<$MinimumPasswordLength>
 
@@ -2219,7 +2237,8 @@ For example:
 
 Unless there is an explicit mapping between statuses in two different
 lifecycles, you can not move tickets between queues with these
-lifecycles.  Such a mapping is defined as follows:
+lifecycles.  This is true even if the different lifecycles use the exact
+same set of statuses.  Such a mapping is defined as follows:
 
     __maps__ => {
         'from lifecycle -> to lifecycle' => {
@@ -2437,8 +2456,13 @@ Set(%AdminSearchResultFormat,
         .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
-        q{'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
+        .q{,__Stage__, __Condition__, __Action__, __Template__},
+
+    GlobalScrips =>
+        q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__Description__</a>/TITLE:Description'}
         .q{,__Stage__, __Condition__, __Action__, __Template__},
 
     Templates =>
@@ -2467,6 +2491,12 @@ convenience for developers, turns on several of development options
 that you most likely don't want in production:
 
 =over 4
+
+=item *
+
+Disables CSS and JS minification and concatenation.  Both CSS and JS
+will be instead be served as a number of individual smaller files,
+unchanged from how they are stored on disk.
 
 =item *
 

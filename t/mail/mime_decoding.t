@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 7;
+use RT::Test nodb => 1, tests => 8;
 
 use_ok('RT::I18N');
 
@@ -63,6 +63,18 @@ diag q{rfc2231};
         RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8' ),
         'filename=tést.txt filename=tést.txt',
         'right decodig'
+    );
+}
+
+diag q{canonicalize mime word encodings like gb2312};
+{
+    my $str = qq{Subject: =?gb2312?B?1NrKwL3nuPe12Lmy09CzrN9eX1NpbXBsaWZpZWRfQ05fR0IyMzEyYQ==?=
+	=?gb2312?B?dHRhY2hlbWVudCB0ZXN0IGluIENOIHNpbXBsaWZpZWQ=?=};
+
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        qq{Subject: 在世界各地共有超過_Simplified_CN_GB2312attachement test in CN simplified},
+        "right decoding"
     );
 }
 

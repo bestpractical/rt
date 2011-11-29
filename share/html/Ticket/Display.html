@@ -65,7 +65,7 @@
 
 % $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
 
-% if (RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
+% if (not $ForceShowHistory and RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
     &>
@@ -91,6 +91,7 @@ $id => undef
 $TicketObj => undef
 $ShowHeaders => 0
 $Collapsed => undef
+$ForceShowHistory => 0
 </%ARGS>
 
 <%INIT>

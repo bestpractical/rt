@@ -44,7 +44,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 {
 
     my $file =
-      File::Spec->catfile( File::Spec->tmpdir, encode_utf8 '附件.txt' );
+      File::Spec->catfile( RT::Test->temp_directory, encode_utf8 '附件.txt' );
     open( my $fh, '>', $file ) or die $!;
     binmode $fh, ':utf8';
     print $fh '附件';
@@ -81,7 +81,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     $m->back;
     $m->back;
-    $m->follow_link_ok( { text_regex => qr/by Enoch Root/ },
+    $m->follow_link_ok( { text => 'Download 附件.txt' },
         '-> /Ticket/Attachment/...' );
     $m->content_contains( '附件', 'has content 附件' );
 

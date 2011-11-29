@@ -158,7 +158,7 @@ my $tickets = $search->TicketsObj;
 
 #for each ticket we've found
 while ( my $ticket = $tickets->Next() ) {
-    print $ticket->Id() . ": " if ($verbose);
+    print $ticket->Id() . ":\n" if ($verbose);
 
     my $template_obj = get_template( $ticket );
 
@@ -166,15 +166,15 @@ while ( my $ticket = $tickets->Next() ) {
         my $txns = get_transactions($ticket);
         my $found = 0;
         while ( my $txn = $txns->Next ) {
-            print loc("Using transaction #[_1]...", $txn->id)
+            print "\t".loc("Using transaction #[_1]...", $txn->id)."\n"
                 if $verbose;
             process($ticket, $txn, $template_obj);
             $found = 1;
         }
-        print loc("Couldn't find suitable transaction, skipping")
+        print "\t".loc("Couldn't find suitable transaction, skipping")."\n"
             if $verbose && !$found;
     } else {
-        print loc("Processing without transaction, some conditions and actions may fail. Consider using --transaction argument")
+        print "\t".loc("Processing without transaction, some conditions and actions may fail. Consider using --transaction argument")."\n"
             if $verbose;
 
         process($ticket, undef, $template_obj);
@@ -200,7 +200,7 @@ sub process {
         # if the condition doesn't apply, get out of here
 
         return unless $condition_obj->IsApplicable;
-        print loc("Condition matches...") if $verbose;
+        print "\t".loc("Condition matches...")."\n" if $verbose;
     }
 
     #prepare our action
@@ -216,11 +216,11 @@ sub process {
 
     #if our preparation, move onto the next ticket
     return unless $action_obj->Prepare;
-    print loc("Action prepared...") if $verbose;
+    print "\t".loc("Action prepared...")."\n" if $verbose;
 
     #commit our action.
     return unless $action_obj->Commit;
-    print loc("Action committed.") if $verbose;
+    print "\t".loc("Action committed.")."\n" if $verbose;
 }
 
 # =head2 get_transactions
@@ -377,7 +377,7 @@ sub help {
     print loc("Escalate tickets"). "\n";
     print " bin/rt-crontool \\\n";
     print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print "  --action RT::Action::EscalatePriority\n";
+    print"  --action RT::Action::EscalatePriority\n";
  
  
  

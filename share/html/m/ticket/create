@@ -174,7 +174,7 @@ foreach my $key (keys %ARGS) {
 }
 
 # store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
     );
@@ -263,7 +263,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 
 <%perl>
 $showrows->(
-    loc("Subject") => '<input name="Subject" size="30" maxsize="200" value="'.($ARGS{Subject} || '').'" />');
+    loc("Subject") => '<input type="text" name="Subject" size="30" maxsize="200" value="'.($ARGS{Subject} || '').'" />');
 </%perl>
     <span class="content-label label"><%loc("Describe the issue below")%></span>
         <& /Elements/MessageBox, exists $ARGS{Content}  ? (Default => $ARGS{Content}, IncludeSignature => 0 ) : ( QuoteTransaction => $QuoteTransaction ), Height => 5  &>
@@ -323,7 +323,7 @@ $showrows->(
     loc("Admin Cc") =>
 
         $m->scomp( "/Elements/EmailInput", Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} )
-        . '<span class="comment" colspan="2"><i><font size="-2">'
+        . '<span class="comment"><i><font size="-2">'
         . loc(
         "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
         )
@@ -332,13 +332,11 @@ $showrows->(
 
 );
 
-
-$m->comp("/Ticket/Elements/EditCustomFields", %ARGS, QueueObj => $QueueObj );
-
-
-$m->comp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $QueueObj );
-
 </%perl>
+
+<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
+<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
+
 % if (exists $session{'Attachments'}) {
 
 <%loc("Attached file") %>
@@ -355,15 +353,14 @@ $m->comp("/Ticket/Elements/EditTransactionCustomFields", %ARGS, QueueObj => $Que
 $showrows->(
     loc("Attach file") =>
 
-        '<div class="value" colspan="5">
-<input type="file" name="Attach" />
+        '<input type="file" name="Attach" />
 <input type="submit" class="button" name="AddMoreAttach" value="' . loc("Add More Files") . '" />'
 );
 </%perl>
 
 
 % if ( $gnupg_widget ) {
-%$m->comp("/Elements/GnuPG/SignEncryptWidget", self => $gnupg_widget, QueueObj => $QueueObj )
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 
 
@@ -427,12 +424,12 @@ $showrows->(
 
 <%perl>
 $showrows->(
-    loc("Depends on")     => '<input size="10" name="new-DependsOn" value="' . ($ARGS{'new-DependsOn'} || '' ). '" />',
-    loc("Depended on by") => '<input size="10" name="DependsOn-new" value="' . ($ARGS{'DependsOn-new'} || '' ) . '" />',
-    loc("Parents")        => '<input size="10" name="new-MemberOf" value="' . ($ARGS{'new-MemberOf'} || '') . '" />',
-    loc("Children")       => '<input size="10" name="MemberOf-new" value="' . ($ARGS{'MemberOf-new'} || '') . '" />',
-    loc("Refers to")      => '<input size="10" name="new-RefersTo" value="' . ($ARGS{'new-RefersTo'} || '') . '" />',
-    loc("Referred to by") => '<input size="10" name="RefersTo-new" value="' . ($ARGS{'RefersTo-new'} || ''). '" />'
+    loc("Depends on")     => '<input type="text" size="10" name="new-DependsOn" value="' . ($ARGS{'new-DependsOn'} || '' ). '" />',
+    loc("Depended on by") => '<input type="text" size="10" name="DependsOn-new" value="' . ($ARGS{'DependsOn-new'} || '' ) . '" />',
+    loc("Parents")        => '<input type="text" size="10" name="new-MemberOf" value="' . ($ARGS{'new-MemberOf'} || '') . '" />',
+    loc("Children")       => '<input type="text" size="10" name="MemberOf-new" value="' . ($ARGS{'MemberOf-new'} || '') . '" />',
+    loc("Refers to")      => '<input type="text" size="10" name="new-RefersTo" value="' . ($ARGS{'new-RefersTo'} || '') . '" />',
+    loc("Referred to by") => '<input type="text" size="10" name="RefersTo-new" value="' . ($ARGS{'RefersTo-new'} || ''). '" />'
 );
 </%perl>
 

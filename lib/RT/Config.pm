@@ -203,6 +203,22 @@ our %META = (
             # XXX: we need support for 'get values callback'
             Values => [qw(web2 aileron ballard)],
         },
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('WebDefaultStylesheet');
+
+            my @comp_roots = RT::Interface::Web->ComponentRoots;
+            for my $comp_root (@comp_roots) {
+                return if -d $comp_root.'/NoAuth/css/'.$value;
+            }
+
+            $RT::Logger->warning(
+                "The default stylesheet ($value) does not exist in this instance of RT. "
+              . "Defaulting to aileron."
+            );
+
+            $self->Set('WebDefaultStylesheet', 'aileron');
+        },
     },
     UseSideBySideLayout => {
         Section => 'Ticket composition',

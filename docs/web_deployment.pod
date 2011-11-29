@@ -216,7 +216,7 @@ For example: if you're using the sample FastCGI config above, you might change
 the relevant directives to:
 
     Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
-    ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
+    ScriptAlias /rt /opt/rt4/sbin/rt-server.fcgi/
 
     # Set DocumentRoot as appropriate for the other content you want to serve
     DocumentRoot /var/www

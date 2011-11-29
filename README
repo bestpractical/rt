@@ -162,8 +162,7 @@ GENERAL INSTALLATION
 
       This will also prompt you to upgrade your database by running:
 
-          /opt/rt4/sbin/rt-setup-database \
-              --prompt-for-dba-password --action upgrade
+          make upgrade-database
 
       You should back up your database before running this command.
       When you run it, you will be prompted for your previous version of

@@ -136,30 +136,6 @@ sub LimitReferredToBy {
     $self->Limit(FIELD => 'Base', VALUE => $URI);
 }
 
-
-
-sub Next {
-    my $self = shift;
- 	
-    my $Link = $self->SUPER::Next();
-    return $Link unless $Link && ref $Link;
-
-    # skip very invalid Link records
-    unless ($Link->Target && $Link->Base) {
-        return $self->Next;
-    }
-    # Skip links to local objects thast are deleted
-    if ( $Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
-             and $Link->TargetObj->__Value('status') eq "deleted") {
-        return $self->Next;
-    } elsif ($Link->BaseURI->IsLocal   and UNIVERSAL::isa($Link->BaseObj,"RT::Ticket")
-             and $Link->BaseObj->__Value('status') eq "deleted") {
-        return $self->Next;
-    } else {
-        return $Link;
-    }
-}
-
 # }}}
 
 =head2 NewItem
@@ -172,6 +148,39 @@ sub NewItem {
     my $self = shift;
     return(RT::Link->new($self->CurrentUser));
 }
+
+sub AddRecord {
+    my $self = shift;
+    my $record = shift;
+    return unless $self->IsValidLink($record);
+
+    push @{$self->{'items'}}, $record;
+    $self->{'rows'}++;
+}
+
+=head2 IsValidLink
+
+if linked to a local ticket and is deleted, then the link is invalid.
+
+=cut
+
+sub IsValidLink {
+    my $self = shift;
+    my $link = shift;
+
+    return unless $link && ref $link && $link->Target && $link->Base;
+
+    # Skip links to local objects thast are deleted
+    return
+      if $link->TargetURI->IsLocal
+          && ( UNIVERSAL::isa( $link->TargetObj, "RT::Ticket" )
+              && $link->TargetObj->__Value('status') eq "deleted"
+              || UNIVERSAL::isa( $link->BaseObj, "RT::Ticket" )
+              && $link->BaseObj->__Value('status') eq "deleted" );
+
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

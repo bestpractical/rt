@@ -716,9 +716,9 @@ sub SetRandomPassword {
 
 Returns status, [ERROR or new password].  Resets this user's password to
 a randomly generated pronouncable password and emails them, using a
-global template called "RT_PasswordChange", which can be overridden
-with global templates "RT_PasswordChange_Privileged" or "RT_PasswordChange_NonPrivileged"
-for privileged and Non-privileged users respectively.
+global template called "PasswordChange".
+
+This function is currently unused in the UI, but available for local scripts.
 
 =cut
 
@@ -1329,6 +1329,30 @@ sub SetPreferences {
     } else {
         return $self->AddAttribute( Name => $name, Content => $value );
     }
+}
+
+=head2 Stylesheet
+
+Returns a list of valid stylesheets take from preferences.
+
+=cut
+
+sub Stylesheet {
+    my $self = shift;
+
+    my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
+
+
+    my @css_paths = map { $_ . '/NoAuth/css' } RT::Interface::Web->ComponentRoots;
+
+    for my $css_path (@css_paths) {
+        if (-d "$css_path/$style") {
+            return $style
+        }
+    }
+
+    # Fall back to the system stylesheet.
+    return RT->Config->Get('WebDefaultStylesheet');
 }
 
 =head2 WatchedQueues ROLE_LIST

@@ -59,15 +59,7 @@ require Test::More;
 sub new {
     my ($class, @args) = @_;
 
-    if ($class->isa('Test::WWW::Mechanize::PSGI')) {
-        require RT::Interface::Web::Handler;
-        my $app = RT::Interface::Web::Handler->PSGIApp;
-        require Plack::Middleware::Test::StashWarnings;
-        $app = Plack::Middleware::Test::StashWarnings->wrap($app);
-
-        push @args, app => $app;
-    }
-
+    push @args, app => $RT::Test::TEST_APP if $RT::Test::TEST_APP;
     my $self = $class->SUPER::new(@args);
     $self->cookie_jar(HTTP::Cookies->new);
 

@@ -2,10 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use RT::Test tests => 16;
-
-
-my ($baseurl, $m) = RT::Test->started_ok;
+use RT::Test tests => 13;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',

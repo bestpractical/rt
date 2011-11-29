@@ -119,6 +119,27 @@
 
     {
 
+      Name                 => 'On Forward',                                # loc
+      Description          => 'Whenever a ticket or transaction is forwarded', # loc
+      ApplicableTransTypes => 'Forward Transaction,Forward Ticket',
+      ExecModule           => 'AnyTransaction', },
+
+    {
+
+      Name                 => 'On Forward Ticket',                         # loc
+      Description          => 'Whenever a ticket is forwarded',            # loc
+      ApplicableTransTypes => 'Forward Ticket',
+      ExecModule           => 'AnyTransaction', },
+
+    {
+
+      Name                 => 'On Forward Transaction',                    # loc
+      Description          => 'Whenever a transaction is forwarded',       # loc
+      ApplicableTransTypes => 'Forward Transaction',
+      ExecModule           => 'AnyTransaction', },
+
+    {
+
       Name                 => 'On Comment',                                # loc
       Description          => 'Whenever comments come in',                 # loc
       ApplicableTransTypes => 'Comment',

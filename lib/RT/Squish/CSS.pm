@@ -87,7 +87,16 @@ subclass CSS::Squish::file_handle for RT
 sub file_handle {
     my $self    = shift;
     my $file    = shift;
-    my $content = $HTML::Mason::Commands::m->scomp("/NoAuth/css/$file") || '';
+
+    my $path = "/NoAuth/css/$file";
+    my $content;
+    if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
+        $content = $HTML::Mason::Commands::m->scomp("$path");
+    } else {
+        RT->Logger->error("Unable to open $path for CSS Squishing");
+        return undef;
+    }
+
     open( my $fh, '<', \$content ) or die $!;
     return $fh;
 }

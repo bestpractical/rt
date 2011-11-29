@@ -62,7 +62,7 @@ SIZE=<%$Size%>
 % while (my $Class=$Classes->Next) {
 % next unless ($Class->Name); # if they can't see it, don't list it
 % if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
-<option VALUE="<%$Class->Id%>" <%(grep { $_ && ( $Class->Id == $_ || $Class->Name eq $_ )} @Default) ? 'SELECTED' : '' %>><%$Class->Name%>
+<option VALUE="<%$Class->Id%>" <%(grep { $_ && ( ( /^\d+$/ && $Class->Id == $_ ) || $Class->Name eq $_ )} @Default) ? 'SELECTED' : '' %>><%$Class->Name%>
 %   if (($Verbose) and ($Class->Description) ){
 (<%$Class->Description%>)
 %  }

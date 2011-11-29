@@ -51,24 +51,24 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
 <table>
 <tr><td align="right"><&|/l&>Queue Name</&>:</td>
-<td colspan="3"><input name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>" /></td>
+<td colspan="3"><input name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || '' %>" size="60" /></td>
+<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Lifecycle</&>:</td>
 <td colspan="3"><& /Widgets/Form/Select:InputOnly,
     Name         => 'Lifecycle',
     Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List ],
-    CurrentValue => $Create ? "default" : $QueueObj->Lifecycle,
+    CurrentValue => $Create ? "default" : $QueueObj->Lifecycle || $ARGS{'Lifecycle'},
     Default      => 0,
 &></td>
 </tr>
@@ -78,27 +78,27 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || '' %>" />
+<td><input name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 <td align="right"><&|/l&>Comment Address</&>:</td>
-<td><input name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || '' %>" />
+<td><input name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
 <td><& /Elements/SelectPriority,
     Name => "InitialPriority",
-    Default => $Create? 0: $QueueObj->InitialPriority,
+    Default => $Create? 0: $QueueObj->InitialPriority || $InitialPriority,
 &></td>
 <td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
 <td><& /Elements/SelectPriority,
     Name => "FinalPriority",
-    Default => $Create? 0: $QueueObj->FinalPriority,
+    Default => $Create? 0: $QueueObj->FinalPriority || $FinalPriority,
 &><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn || $DefaultDueIn || "" %>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % my $CFs = $QueueObj->CustomFields;
@@ -166,20 +166,20 @@ $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = 'checked="checked"';
 
-if ($Create) {
-    $title = loc("Create a queue");
-} else {
+unless ($Create) {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
-        Abort("$msg") unless $val;
-	push @results, $msg;
-    }
-    else {
+        if (!$val) {
+            $Create = 1; # Create failed, so bring us back to step 1
+        }
+        push @results, $msg;
+    } else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Configuration for queue [_1]', $QueueObj->Name);
 }
+
 if ( $QueueObj->Id ) {
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt Lifecycle SubjectTag Disabled);
 
@@ -224,13 +224,15 @@ if ( $QueueObj->Id ) {
             push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
         }
     }
+} else {
+    $title = loc("Create a queue");
 }
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions   => \@results,
     Arguments => { id => $QueueObj->Id },
-);
+) if $QueueObj->id;
 
 push @results, @no_redirect_results;
 </%INIT>

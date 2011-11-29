@@ -148,7 +148,7 @@ my $COLUMN_MAP = {
             my $arg = $m->request_args->{ $name };
             my $checked = '';
             $checked = 'checked="checked"' if $arg && $arg == $id;
-            return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
+            return \qq{<input type="radio" name="}, $name, \qq{" value="$id" $checked />};
         },
     },
     (map {

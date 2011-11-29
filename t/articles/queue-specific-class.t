@@ -20,7 +20,7 @@ for my $name ( keys %class ) {
         fields      => { Name => $name, HotList => 1 },
     );
 
-    $m->content_contains( "Editing Configuration for Class $name",
+    $m->content_contains( "Modify the Class $name",
         'created class $name' );
     my ($id) = ( $m->content =~ /name="id" value="(\d+)"/ );
     ok( $id, "id of $name" );

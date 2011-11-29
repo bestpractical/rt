@@ -51,7 +51,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="ModifyAll.html" enctype="multipart/form-data">
+<form method="post" action="ModifyAll.html" name="TicketModifyAll" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
@@ -161,7 +161,7 @@ foreach my $key (keys %ARGS) {
 }
 
 # store the uploaded attachment in session
-if ($ARGS{'Attach'}) {            # attachment?
+if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $attachment = MakeMIMEEntity(
         AttachmentFieldName => 'Attach'
     );
@@ -188,7 +188,12 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
         my @owners =@{$ARGS{'Owner'}};
         delete $ARGS{'Owner'};
         foreach my $owner(@owners){
-            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+            if (defined($owner) && $owner =~ /\D/) {
+                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
+            }
+            elsif (length $owner) {
+                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+            }
         }
 
     }

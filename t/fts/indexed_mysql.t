@@ -25,7 +25,9 @@ ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
 sub setup_indexing {
-    my $port = RT::Test->generate_port;
+    # Since we're not running a webserver in this test, use the
+    # known-safe port we determined at test setup
+    my $port = $RT::Test::port;
     my ($exit_code, $output) = RT::Test->run_and_capture(
         'no-ask'       => 1,
         command        => $RT::SbinPath .'/rt-setup-fulltext-index',

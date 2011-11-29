@@ -724,10 +724,11 @@ sub InstantiateNewSession {
 
 sub SendSessionCookie {
     my $cookie = CGI::Cookie->new(
-        -name   => _SessionCookieName(),
-        -value  => $HTML::Mason::Commands::session{_session_id},
-        -path   => RT->Config->Get('WebPath'),
-        -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
+        -name     => _SessionCookieName(),
+        -value    => $HTML::Mason::Commands::session{_session_id},
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
     );
 
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
@@ -1096,6 +1097,23 @@ sub ValidateWebConfig {
     if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
         $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
     }
+}
+
+sub ComponentRoots {
+    my $self = shift;
+    my %args = ( Names => 0, @_ );
+    my @roots;
+    if (defined $HTML::Mason::Commands::m) {
+        @roots = $HTML::Mason::Commands::m->interp->comp_root_array;
+    } else {
+        @roots = (
+            [ local    => $RT::MasonLocalComponentRoot ],
+            (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
+            [ standard => $RT::MasonComponentRoot ]
+        );
+    }
+    @roots = map { $_->[1] } @roots unless $args{Names};
+    return @roots;
 }
 
 package HTML::Mason::Commands;
@@ -1639,8 +1657,8 @@ sub MakeMIMEEntity {
     if ( $args{'AttachmentFieldName'} ) {
 
         my $cgi_object = $m->cgi_object;
-
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+        my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} );
+        if ( defined $filehandle && length $filehandle ) {
 
             my ( @content, $buffer );
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
@@ -1649,9 +1667,7 @@ sub MakeMIMEEntity {
 
             my $uploadinfo = $cgi_object->uploadInfo($filehandle);
 
-            # Prefer the cached name first over CGI.pm stringification.
-            my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined $filename;
+            my $filename = "$filehandle";
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
@@ -2024,7 +2040,9 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'}
+      && $ARGSRef->{'Owner'} !~ /\D/
+      && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";

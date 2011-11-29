@@ -46,7 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
-<div class="edit-transaction-custom-fields">
+% if ( $WRAP ) {
+<<% $WRAP %> class="edit-transaction-custom-fields">
+% }
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
@@ -68,7 +70,9 @@
 </<% $FIELD %>>
 % }
 % }
-</div>
+% if ( $WRAP ) {
+</<% $WRAP %>>
+% }
 % $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
 
 <%INIT>
@@ -82,8 +86,15 @@ if ($TicketObj) {
 
 $m->callback( CallbackName => 'MassageTransactionCustomFields', CustomFields => $CustomFields );
 
+$AsTable ||= $InTable;
 my $FIELD = $AsTable ? 'tr' : 'div';
 my $CELL  = $AsTable ? 'td' : 'div';
+my $WRAP  = '';
+if ( $AsTable ) {
+    $WRAP = 'table' unless $InTable;
+} else {
+    $WRAP = 'div';
+}
 
 </%INIT>
 <%ARGS>
@@ -91,5 +102,6 @@ $NamePrefix => "Object-RT::Transaction--CustomField-"
 $TicketObj => undef
 $QueueObj => undef
 $AsTable => 0
+$InTable => 0
 </%ARGS>
 

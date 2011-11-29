@@ -2,10 +2,9 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
-use File::Temp 'tempfile';
 use File::Spec;
-my ( $att_fh, $att_file ) =
-  tempfile( 'rttestXXXXXX', SUFFIX => '.txt', UNLINK => 1, TMPDIR => 1 );
+my $att_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment' );
+open my $att_fh, '>', $att_file or die $!;
 print $att_fh "this is an attachment";
 close $att_fh;
 my $att_name = ( File::Spec->splitpath($att_file) )[-1];

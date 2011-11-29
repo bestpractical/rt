@@ -1,6 +1,6 @@
 use strict;
 
-use RT::Test tests => 25;
+use RT::Test tests => 32;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -12,6 +12,42 @@ ok $m->login, 'logged in';
 diag "Create a CF";
 {
     $m->follow_link( id => 'tools-config-custom-fields-create');
+
+    # Test form validation
+    $m->submit_form(
+        form_name => "ModifyCustomField",
+        fields => {
+            TypeComposite => 'Image-0',
+            LookupType => 'RT::Queue-RT::Ticket',
+            Name => '',
+            Description => 'img',
+        },
+    );
+    $m->text_contains('Invalid value for Name');
+
+    $m->submit_form(
+        form_name => "ModifyCustomField",
+        fields => {
+            TypeComposite => 'Image-0',
+            LookupType => 'RT::Queue-RT::Ticket',
+            Name => '0',
+            Description => 'img',
+        },
+    );
+    $m->text_contains('Invalid value for Name');
+
+    $m->submit_form(
+        form_name => "ModifyCustomField",
+        fields => {
+            TypeComposite => 'Image-0',
+            LookupType => 'RT::Queue-RT::Ticket',
+            Name => '1',
+            Description => 'img',
+        },
+    );
+    $m->text_contains('Invalid value for Name');
+
+    # The real submission
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -21,6 +57,36 @@ diag "Create a CF";
             Description => 'img',
         },
     );
+    $m->text_contains('Object created');
+
+    # Validation on update
+    $m->form_name("ModifyCustomField");
+    $m->set_fields(
+        TypeComposite => 'Image-0',
+        LookupType => 'RT::Queue-RT::Ticket',
+        Name => '',
+        Description => 'img',
+    );
+    $m->click('Update');
+    $m->text_contains('Illegal value for Name');
+    $m->form_name("ModifyCustomField");
+    $m->set_fields(
+        TypeComposite => 'Image-0',
+        LookupType => 'RT::Queue-RT::Ticket',
+        Name => '0',
+        Description => 'img',
+    );
+    $m->click('Update');
+    $m->text_contains('Illegal value for Name');
+    $m->form_name("ModifyCustomField");
+    $m->set_fields(
+        TypeComposite => 'Image-0',
+        LookupType => 'RT::Queue-RT::Ticket',
+        Name => '1',
+        Description => 'img',
+    );
+    $m->click('Update');
+    $m->text_contains('Illegal value for Name');
 }
 
 diag "apply the CF to General queue";

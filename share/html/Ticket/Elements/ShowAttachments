@@ -104,7 +104,7 @@ $Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
 
 my %documents;
 while ( my $attach = $Attachments->Next() ) {
-    next unless ($attach->Filename());
+    next unless defined $attach->Filename && length $attach->Filename;
    unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
 
