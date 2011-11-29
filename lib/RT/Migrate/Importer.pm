@@ -246,7 +246,8 @@ sub Import {
             );
             unless ($id) {
                 require Data::Dumper;
-                warn "Failed to create $uid: $msg\n" . Dumper($data);
+                warn "Failed to create $uid: $msg\n"
+                    . Data::Dumper::Dumper($data);
                 next;
             }
 
