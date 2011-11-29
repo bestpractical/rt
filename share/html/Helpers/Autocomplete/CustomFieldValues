@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $r->content_type('application/json');
-<% JSON::to_json( \@suggestions ) |n %>
+<% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%INIT>
 # Only autocomplete the last value
@@ -89,6 +89,4 @@ while( my $value = $values->Next ) {
         : $value->Name,
       };
 }
-
-require JSON;
 </%INIT>
