@@ -255,7 +255,7 @@ thousand tickets, but optimal values will vary wildly depending on
 database configuration and size.  Values as low as 25 have provided
 speedups with smaller databases; if speed is a factor, experimenting
 with different C<--gc> values may be helpful.  Note that there are
-significant boundry condition changes in serialization rate, as the
+significant boundary condition changes in serialization rate, as the
 queue empties and fills, causing the time estimates to be rather
 imprecise near the start and end of the process.
 
