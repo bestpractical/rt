@@ -4,3 +4,6 @@ UPGRADING FROM RT 4.0.0 and greater
   describes what the log level controls.  Setting $LogToScreen will still work,
   but an informational notice will be issued on server start telling you about
   the rename.  To avoid this you should set $LogToSTDERR instead.
+
+* the @JSFiles config now only keeps additional js filenames, please remove core
+  js there or you will get duplicated js files in page.
