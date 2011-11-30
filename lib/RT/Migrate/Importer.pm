@@ -256,6 +256,7 @@ sub Import {
         return $self->Id;
     };
 
+    local $SIG{  INT  } = sub { $self->{INT} = 1 };
     local $SIG{__DIE__} = sub { print STDERR "\n", @_; $self->SaveState; exit 1 };
 
     while (@{$self->{Files}}) {
@@ -264,6 +265,9 @@ sub Import {
             or die "Can't read $self->{Filename}: $!";
         while (not eof($fh)) {
             $self->{Position} = tell($fh);
+
+            # Stop when we're at a good stopping point
+            die "Caught interrupt, quitting.\n" if $self->{INT};
 
             my $loaded = Storable::fd_retrieve($fh);
             my ($class, $uid, $data) = @{$loaded};
