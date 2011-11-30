@@ -204,6 +204,33 @@ sub MergeBy {
     return 1;
 }
 
+sub Create {
+    my $self = shift;
+    my ($class, $uid, $data) = @_;
+    return unless $class->PreInflate( $self, $uid, $data );
+
+    # Remove the ticket id, unless we specifically want it kept
+    delete $data->{id} if $class eq "RT::Ticket"
+        and not $self->{PreserveTicketIds};
+
+    my $obj = $class->new( RT->SystemUser );
+    my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
+        %{$data}
+    );
+    die "Failed to create $uid: $msg\n" . Data::Dumper::Dumper($data) . "\n"
+        unless $id;
+
+    $self->{ObjectCount}{$class}++;
+    $self->Resolve( $uid => $class, $id );
+
+    # Load it back to get real values into the columns
+    $obj = $class->new( RT->SystemUser );
+    $obj->Load( $id );
+    $obj->PostInflate( $self );
+
+    return $obj;
+}
+
 sub Import {
     my $self = shift;
     my @files = @_;
@@ -234,36 +261,14 @@ sub Import {
             push @{$new{$class}}, $uid
                 if $class eq "RT::Queue";
 
-            next unless $class->PreInflate( $self, $uid, $data );
-
-            # Remove the ticket id, unless we specifically want it kept
-            delete $data->{id} if $class eq "RT::Ticket"
-                and not $self->{PreserveTicketIds};
-
-            my $obj = $class->new( RT->SystemUser );
-            my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
-                %{$data}
-            );
-            unless ($id) {
-                require Data::Dumper;
-                warn "Failed to create $uid: $msg\n"
-                    . Data::Dumper::Dumper($data);
-                next;
-            }
-
-            $self->{ObjectCount}{$class}++;
-            $self->Resolve( $uid => $class, $id );
-
-            # Load it back to get real values into the columns
-            $obj = $class->new( RT->SystemUser );
-            $obj->Load( $id );
-            $obj->PostInflate( $self );
+            my $obj = $self->Create( $class, $uid, $data );
+            next unless $obj;
 
             # If it's a ticket, we might need to create a
             # TicketCustomField for the previous ID
             if ($class eq "RT::Ticket" and $self->{OriginalId}) {
                 my ($org, $origid) = $uid =~ /^RT::Ticket-(.*)-(\d+)$/;
-                ($id, $msg) = $obj->AddCustomFieldValue(
+                my ($id, $msg) = $obj->AddCustomFieldValue(
                     Field             => $self->{OriginalId},
                     Value             => "$org:$origid",
                     RecordTransaction => 0,
