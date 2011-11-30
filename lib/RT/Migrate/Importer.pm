@@ -52,6 +52,7 @@ use strict;
 use warnings;
 
 use Storable qw//;
+use File::Spec;
 
 sub new {
     my $class = shift;
@@ -243,7 +244,7 @@ sub Import {
     my $self = shift;
     my ($dir) = @_;
 
-    my @files = <$dir/*.dat>;
+    $self->{Files} = [ map {File::Spec->rel2abs($_)} <$dir/*.dat> ];
 
     no warnings 'redefine';
     local *RT::Ticket::Load = sub {
@@ -253,9 +254,13 @@ sub Import {
         return $self->Id;
     };
 
-    for my $f (@files) {
-        open(my $fh, "<", $f) or die "Can't read $f: $!";
+    while (@{$self->{Files}}) {
+        $self->{Filename} = shift @{$self->{Files}};
+        open(my $fh, "<", $self->{Filename})
+            or die "Can't read $self->{Filename}: $!";
         while (not eof($fh)) {
+            $self->{Position} = tell($fh);
+
             my $loaded = Storable::fd_retrieve($fh);
             my ($class, $uid, $data) = @{$loaded};
 
