@@ -67,6 +67,7 @@ sub Init {
         PreserveTicketIds => 0,
         OriginalId        => undef,
         Progress          => undef,
+        Statefile         => undef,
         @_,
     );
 
@@ -94,7 +95,8 @@ sub Init {
         }
     }
 
-    $self->{Progress} = $args{Progress};
+    $self->{Progress}  = $args{Progress};
+    $self->{Statefile} = $args{Statefile};
 
     # Objects we've created
     $self->{UIDs} = {};
@@ -254,6 +256,8 @@ sub Import {
         return $self->Id;
     };
 
+    local $SIG{__DIE__} = sub { print STDERR "\n", @_; $self->SaveState; exit 1 };
+
     while (@{$self->{Files}}) {
         $self->{Filename} = shift @{$self->{Files}};
         open(my $fh, "<", $self->{Filename})
@@ -321,6 +325,31 @@ sub Import {
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
+}
+
+sub SaveState {
+    my $self = shift;
+
+    my %data;
+    unshift @{$self->{Files}}, $self->{Filename};
+    $self->{Seek} = $self->{Position};
+    $data{$_} = $self->{$_} for
+        qw/Filename Seek Position Files
+           ObjectCount
+           NewQueues NewCFs
+           SkipTransactions Pending
+           UIDs
+           OriginalId PreserveTicketIds
+          /;
+    Storable::nstore(\%data, $self->{Statefile});
+
+    print STDERR <<EOT;
+
+Importer state has been written to the file:
+    $self->{Statefile}
+
+It may be possible to resume the import by re-running rt-importer.
+EOT
 }
 
 1;

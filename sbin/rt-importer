@@ -39,6 +39,7 @@ $import = RT::Migrate::Importer->new(
     PreserveTicketIds => $OPT{'preserve-tickets'},
     OriginalId        => $OPT{originalid},
     Progress          => $progress,
+    Statefile         => "$dir/partial-import",
 );
 
 my %counts = $import->Import( $dir );
