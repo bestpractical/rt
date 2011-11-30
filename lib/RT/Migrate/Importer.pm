@@ -104,6 +104,10 @@ sub Init {
     # What we created
     $self->{ObjectCount} = {};
 
+    # To know what global CFs need to be unglobal'd and applied to what
+    $self->{NewQueues} = [];
+    $self->{NewCFs} = [];
+
     # Basic facts of life, as a safety net
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
     $self->SkipTransactions( RT->System->UID );
@@ -247,9 +251,6 @@ sub Import {
         return $self->Id;
     };
 
-
-    my %unglobal;
-    my %new;
     for my $f (@files) {
         open(my $fh, "<", $f) or die "Can't read $f: $!";
         while (not eof($fh)) {
@@ -260,7 +261,7 @@ sub Import {
             # it to split global CFs into non-global across those
             # fields.  We do this before inflating, so that queues which
             # got merged still get the CFs applied
-            push @{$new{$class}}, $uid
+            push @{$self->{NewQueues}}, $uid
                 if $class eq "RT::Queue";
 
             my $obj = $self->Create( $class, $uid, $data );
@@ -282,7 +283,7 @@ sub Import {
             # If it's a CF, we don't know yet if it's global (the OCF
             # hasn't been created yet) to store away the CF for later
             # inspection
-            push @{$unglobal{"RT::Queue"}}, $uid
+            push @{$self->{NewCFs}}, $uid
                 if $class eq "RT::CustomField"
                     and $obj->LookupType =~ /^RT::Queue/;
 
@@ -291,16 +292,14 @@ sub Import {
     }
 
     # Take global CFs which we made and make them un-global
-    for my $class (keys %unglobal) {
-        my @objs = grep {$_} map {$self->LookupObj( $_ )} @{$new{$class}};
-
-        for my $uid (@{$unglobal{$class}}) {
-            my $obj = $self->LookupObj( $uid );
-            my $ocf = $obj->IsApplied( 0 ) or next;
-            $ocf->Delete;
-            $obj->AddToObject( $_ ) for @objs;
-        }
+    my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
+    for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
+        my $ocf = $obj->IsApplied( 0 ) or next;
+        $ocf->Delete;
+        $obj->AddToObject( $_ ) for @queues;
     }
+    $self->{NewQueues} = [];
+    $self->{NewCFs} = [];
 
     # Anything we didn't see is an error
     if (keys %{$self->{Pending}}) {
