@@ -83,8 +83,8 @@ sub progress_bar {
     my $max_width = $args{cols} - 30;
     my $bar_width = int($max_width * $fraction);
 
-    return sprintf "%20s |%-" . $max_width . "s|\n",
-        $args{label}, $args{char} x $bar_width;
+    return sprintf "%20s |%-" . $max_width . "s| %3d%%\n",
+        $args{label}, $args{char} x $bar_width, $fraction*100;
 }
 
 sub progress {
