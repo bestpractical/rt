@@ -16,13 +16,16 @@ use Time::HiRes qw//;
 my %OPT;
 GetOptions(
     \%OPT,
+    "help|?",
     "quiet|q!",
 
     "preserve-tickets|t!",
     "originalid|i=s",
-);
+) or Pod::Usage::pod2usage();
 
-die "Usage: rt-importer directory/\n" unless @ARGV == 1;
+Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
+
+Pod::Usage::pod2usage() unless @ARGV == 1;
 my ($dir) = @ARGV;
 $dir =~ s|/$||;
 
