@@ -49,3 +49,38 @@ print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
 }
+
+=head1 NAME
+
+rt-importer - Import a serialized RT database on top of the current one
+
+=head1 SYNOPSIS
+
+    rt-importer path/to/export/directory
+
+This script is used to import the contents of a dump created by
+C<rt-serializer>.  It will create all of the objects in the dump in the
+current database; this may include users, queues, and tickets.
+
+It is possible to stop the import process with ^C; it can be later
+resumed by re-running the importer.
+
+=head2 OPTIONS
+
+=over
+
+=item B<--preserve-tickets>
+
+Attempt to preserve ticket numbers when inserting them into the
+database.  This will most probably fail if there are already tickets in
+the current database.
+
+=item B<--originalid> I<cfname>
+
+Places the original ticket organization and ID into a global custom
+field with the given name.  If no global ticket custom field with that
+name is found in the current database, it will create one.
+
+=back
+
+=cut
