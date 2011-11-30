@@ -104,6 +104,7 @@ sub progress {
     my $last_time;
     my $start;
     my $left;
+    my $offset;
     return sub {
         my $obj = shift;
         my $now = Time::HiRes::time();
@@ -139,6 +140,7 @@ sub progress {
 
         my $total = 0;
         $total += $_ for values %counts;
+        $offset = $total unless defined $offset;
         print "\n", progress_bar(
             label => "Total",
             now   => $total,
@@ -148,7 +150,9 @@ sub progress {
         );
 
         # Time estimates
-        my $fraction = $max_objects ? $total/$max_objects : 0;
+        my $fraction = $max_objects
+            ? ($total - $offset)/($max_objects - $offset)
+            : 0;
         if ($fraction > 0.03) {
             if (defined $left) {
                 $left = 0.75 * $left
