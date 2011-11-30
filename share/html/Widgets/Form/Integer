@@ -57,6 +57,8 @@ see docs/extending/using_forms_widgets.pod
 <span class="hints"><% $Hints %></span>
 </div>
 <%INIT>
+$_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
+$DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
 </%INIT>
 <%ARGS>
 $Name
@@ -68,15 +70,18 @@ $CurrentValue => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue || '' ),
+$DefaultLabel   => undef
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
+<input type="text" name="<% $Name %>" value="<% $CurrentValue %>" />\
 <%ARGS>
 $Name
 $CurrentValue => '',
 </%ARGS>
+<%INIT>
+$CurrentValue = '' unless defined $CurrentValue;
+</%INIT>
 </%METHOD>
 
 <%METHOD Process>
