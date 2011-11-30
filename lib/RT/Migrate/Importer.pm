@@ -248,6 +248,8 @@ sub Import {
 
     $self->{Files} = [ map {File::Spec->rel2abs($_)} <$dir/*.dat> ];
 
+    $self->RestoreState( $self->{Statefile} );
+
     no warnings 'redefine';
     local *RT::Ticket::Load = sub {
         my $self = shift;
@@ -263,6 +265,11 @@ sub Import {
         $self->{Filename} = shift @{$self->{Files}};
         open(my $fh, "<", $self->{Filename})
             or die "Can't read $self->{Filename}: $!";
+        if ($self->{Seek}) {
+            seek($fh, $self->{Seek}, 0)
+                or die "Can't seek to $self->{Seek} in $self->{Filename}";
+            $self->{Seek} = undef;
+        }
         while (not eof($fh)) {
             $self->{Position} = tell($fh);
 
@@ -329,6 +336,20 @@ sub Import {
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
+}
+
+sub RestoreState {
+    my $self = shift;
+    my ($statefile) = @_;
+    return unless $statefile and -f $statefile;
+
+    my $state = Storable::retrieve( $self->{Statefile} );
+    $self->{$_} = $state->{$_} for keys %{$state};
+    unlink $self->{Statefile};
+
+    print STDERR "Resuming partial import...\n";
+    sleep 2;
+    return 1;
 }
 
 sub SaveState {
