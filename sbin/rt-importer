@@ -16,6 +16,8 @@ use Time::HiRes qw//;
 my %OPT;
 GetOptions(
     \%OPT,
+    "quiet|q!",
+
     "preserve-tickets|t!",
     "originalid|i=s",
 );
@@ -27,7 +29,7 @@ $dir =~ s|/$||;
 my $import;
 
 my $progress;
-if (-f "$dir/rt-serialized") {
+if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
     my $ref = Storable::retrieve("$dir/rt-serialized");
     $progress = RT::Migrate::progress(
         counts => sub { $import->ObjectCount },
