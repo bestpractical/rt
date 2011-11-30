@@ -103,6 +103,10 @@ sub Init {
 
     # What we created
     $self->{ObjectCount} = {};
+
+    # Basic facts of life, as a safety net
+    $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
+    $self->SkipTransactions( RT->System->UID );
 }
 
 sub Resolve {
@@ -243,8 +247,6 @@ sub Import {
         return $self->Id;
     };
 
-    $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
-    $self->SkipTransactions( RT->System->UID );
 
     my %unglobal;
     my %new;
