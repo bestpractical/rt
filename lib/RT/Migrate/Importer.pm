@@ -241,7 +241,9 @@ sub Create {
 
 sub Import {
     my $self = shift;
-    my @files = @_;
+    my ($dir) = @_;
+
+    my @files = <$dir/*.dat>;
 
     no warnings 'redefine';
     local *RT::Ticket::Load = sub {

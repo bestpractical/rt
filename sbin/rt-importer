@@ -20,12 +20,15 @@ GetOptions(
     "originalid|i=s",
 );
 
+die "Usage: rt-importer directory/\n" unless @ARGV == 1;
+my ($dir) = @ARGV;
+$dir =~ s|/$||;
+
 my $import;
 
-my $progress,
-my ($summary) = grep {-f $_} map {"$_/rt-serialized"} @ARGV;
-if ($summary) {
-    my $ref = Storable::retrieve($summary);
+my $progress;
+if (-f "$dir/rt-serialized") {
+    my $ref = Storable::retrieve("$dir/rt-serialized");
     $progress = RT::Migrate::progress(
         counts => sub { $import->ObjectCount },
         max    => $ref->{counts},
@@ -37,9 +40,8 @@ $import = RT::Migrate::Importer->new(
     OriginalId        => $OPT{originalid},
     Progress          => $progress,
 );
-my @files = map {-d $_ ? <$_/*.dat> : $_} @ARGV;
-my %counts = $import->Import( @files );
 
+my %counts = $import->Import( $dir );
 print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
