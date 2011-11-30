@@ -169,13 +169,13 @@ sub Postpone {
 sub SkipTransactions {
     my $self = shift;
     my ($uid) = @_;
-    $self->{skiptransactions}{$uid} = 1;
+    $self->{SkipTransactions}{$uid} = 1;
 }
 
 sub ShouldSkipTransaction {
     my $self = shift;
     my ($uid) = @_;
-    return exists $self->{skiptransactions}{$uid};
+    return exists $self->{SkipTransactions}{$uid};
 }
 
 sub MergeValues {
