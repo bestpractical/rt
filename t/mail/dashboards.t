@@ -31,7 +31,7 @@ sub create_dashboard {
     $m->content_contains('Dashboard updated');
 
     $m->follow_link_ok({text => 'Show'});
-    $m->title_is('Dashboard Testing!');
+    $m->title_is('Testing! Dashboard');
     $m->content_contains('My dashboards');
     $m->content_like(qr{<a href="/Dashboards/\d+/Testing!">Testing!</a>});
 
