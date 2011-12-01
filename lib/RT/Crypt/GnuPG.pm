@@ -1065,7 +1065,7 @@ sub FindScatteredParts {
         my $type = $self->_CheckIfProtectedInline( $part );
         next unless $type;
 
-        my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+        my $file = ($part->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
 
         $args{'Skip'}{$part} = 1;
         push @res, {
