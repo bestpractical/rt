@@ -155,7 +155,7 @@ value or a reference.
 =cut
 
 sub EncodeJSON {
-    to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
 }
 
 =head2 WebCanonicalizeInfo();
