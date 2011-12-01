@@ -306,11 +306,13 @@ if ($CloneTicket) {
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
-        my $base_ticket = RT::Ticket->new($session{CurrentUser});
-        my ($ok) = $base_ticket->Load($refer_by->LocalBase);
-        next if !$ok || $base_ticket->Type eq 'reminder';
+        my $uri = $refer_by->BaseURI;
+        next if $uri->IsLocal and
+                $uri->Object and
+                $uri->Object->isa('RT::Ticket') and
+                $uri->Object->Type eq 'reminder';
 
-        push @refers_by, $refer_by->LocalBase;
+        push @refers_by, $uri->Object->Id;
     }
     $clone->{'RefersTo-new'} = join ' ', @refers_by;
     if (0) {    # Temporarily disabled
