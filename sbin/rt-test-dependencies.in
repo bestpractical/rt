@@ -73,6 +73,7 @@ GetOptions(
     'with-GD',
     'with-DASHBOARDS',
     'with-USERLOGO',
+    'with-SSL-MAILGATE',
 
     'download=s',
     'repository=s',
@@ -101,6 +102,7 @@ my %default = (
     'with-GD' => @RT_GD@,
     'with-DASHBOARDS' => 1,
     'with-USERLOGO' => 1,
+    'with-SSL-MAILGATE' => @RT_SSL_MAILGATE@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -248,6 +250,13 @@ HTML::FormatText
 Getopt::Long
 LWP::UserAgent
 Pod::Usage
+.
+
+$deps{'SSL-MAILGATE'} = [ text_to_hash( << '.') ];
+Crypt::SSLeay
+Net::SSL
+LWP::Protocol::https
+Mozilla::CA
 .
 
 $deps{'CLI'} = [ text_to_hash( << '.') ];
