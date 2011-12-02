@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 142;
+use RT::Test tests => 144;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
@@ -120,12 +120,22 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $m->text_contains('hello test reminder subject');
 
             my $id = $ticket->Id;
-            my $type_value = $type;
+            my $type_value = my $link_field = $type;
             if ($c eq 'base') {
                 $type_value = "new-$type_value";
+                $link_field    = "$link_field-$id";
             }
             else {
                 $type_value = "$type_value-new";
+                $link_field = "$id-$link_field";
+            }
+
+            if ($type eq 'RefersTo') {
+                $m->goto_ticket($ticket->Id);
+                $m->follow_link(id => 'page-links');
+                $m->form_name('ModifyLinks');
+                $m->field($link_field => $baseurl);
+                $m->click('SubmitTicket');
             }
 
             my $depends_on_url = sprintf(
@@ -136,6 +146,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $m->form_name('TicketCreate');
             $m->click_button(value => 'Create');
             $m->content_lacks('hello test reminder subject');
+            $m->text_contains("(Create) $baseurl") if $type eq 'RefersTo';
         }
     }
 }

@@ -51,7 +51,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="ModifyLinks.html" method="post">
+<form action="ModifyLinks.html" name="ModifyLinks" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 % my (@extra);

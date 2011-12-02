@@ -299,20 +299,28 @@ if ($CloneTicket) {
     my $members = $CloneTicketObj->Members;
     my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
     my $refers = $CloneTicketObj->RefersTo;
+    my $get_link_value = sub {
+        my ($link, $type) = @_;
+        my $uri_method = $type . 'URI';
+        my $local_method = 'Local' . $type;
+        my $uri = $link->$uri_method;
+        return if $uri->IsLocal and
+                $uri->Object and
+                $uri->Object->isa('RT::Ticket') and
+                $uri->Object->Type eq 'reminder';
+
+        return $link->$local_method || $uri->URI;
+    };
     while ( my $refer = $refers->Next ) {
-        push @refers, $refer->LocalTarget;
+        my $refer_value = $get_link_value->($refer, 'Target');
+        push @refers, $refer_value if defined $refer_value;
     }
     $clone->{'new-RefersTo'} = join ' ', @refers;
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
-        my $uri = $refer_by->BaseURI;
-        next if $uri->IsLocal and
-                $uri->Object and
-                $uri->Object->isa('RT::Ticket') and
-                $uri->Object->Type eq 'reminder';
-
-        push @refers_by, $uri->Object->Id;
+        my $refer_by_value = $get_link_value->($refer_by, 'Base');
+        push @refers_by, $refer_by_value if defined $refer_by_value;
     }
     $clone->{'RefersTo-new'} = join ' ', @refers_by;
     if (0) {    # Temporarily disabled
