@@ -1,0 +1,17 @@
+* fill basics on SMIME in lib/RT/Interface/Email/Auth/Crypt
+
+* port RT::Attachment::{Encrypt,Decrypt} over new API with SMIME support
+
+* continue with share//html/Ticket/Elements/ShowGnuPGStatus
+
+* work harder on re-verification
+
+* handle bad passphrase in decrypt by parsing error
+** there is no way to handle bad passphrase, error just
+   says that decryption failed
+
+* figure out what happened with t/web/gnupg-outgoing.t
+  and restore all changes from SMIME branch that changed
+  this file
+
+* move SMIME upgrade steps from etc/upgrade/3.8.8/content
