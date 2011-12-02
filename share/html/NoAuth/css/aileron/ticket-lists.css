@@ -186,6 +186,8 @@ padding-bottom: 1em;
 .chart-wrapper .collection-as-table {
     width: auto;
     font-size: 1em;
+    /* Firefox needs this to let the table flow below the chart on narrow screens */
+    clear: right;
 }
 
 .chart-wrapper .collection-as-table th.collection-as-table {
