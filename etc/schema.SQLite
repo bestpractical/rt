@@ -285,6 +285,7 @@ CREATE INDEX Users4 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id INTEGER PRIMARY KEY  ,
   EffectiveId integer NULL DEFAULT 0 ,
+  IsMerged int2 NULL DEFAULT NULL,
   Queue integer NULL DEFAULT 0 ,
   Type varchar(16) NULL  ,
   IssueStatement integer NULL DEFAULT 0 ,
