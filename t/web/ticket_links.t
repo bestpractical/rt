@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 144;
+use RT::Test tests => 146;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
@@ -23,6 +23,16 @@ is( $deleted->Status, 'deleted', "deleted $deleted_id" );
 
 $inactive->SetStatus('resolved');
 is( $inactive->Status, 'resolved', 'resolved $inactive_id' );
+
+# reate an article for linking
+require RT::Class;
+my $class = RT::Class->new($RT::SystemUser);
+$class->Create(Name => 'test class');
+
+require RT::Article;
+my $article = RT::Article->new($RT::SystemUser);
+
+$article->Create(Class => $class->Id, Name => 'test article');
 
 for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
     for my $c (qw/base target/) {
@@ -133,8 +143,15 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             if ($type eq 'RefersTo') {
                 $m->goto_ticket($ticket->Id);
                 $m->follow_link(id => 'page-links');
+
+                # add $baseurl as a link
                 $m->form_name('ModifyLinks');
-                $m->field($link_field => $baseurl);
+                $m->field($link_field => "$baseurl/test_ticket_reference");
+                $m->click('SubmitTicket');
+
+                # add an article as a link
+                $m->form_name('ModifyLinks');
+                $m->field($link_field => 'a:' . $article->Id);
                 $m->click('SubmitTicket');
             }
 
@@ -146,7 +163,10 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $m->form_name('TicketCreate');
             $m->click_button(value => 'Create');
             $m->content_lacks('hello test reminder subject');
-            $m->text_contains("(Create) $baseurl") if $type eq 'RefersTo';
+            if ($type eq 'RefersTo') {
+                $m->text_contains("$baseurl/test_ticket_reference");
+                $m->text_contains("Article " . $article->Id . ': test article');
+            }
         }
     }
 }
