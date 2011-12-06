@@ -218,3 +218,30 @@ diag "check illegal values and transitions";
         is $ticket->Status, 'new', 'status is steal the same';
     }
 }
+
+diag "'!inactive -> inactive' actions are shown even if ticket has unresolved dependencies";
+{
+    my $child_ticket = RT::Test->create_ticket(
+        Queue => $general->id,
+        Subject => 'child',
+    );
+    my $cid = $child_ticket->id;
+    my $parent_ticket = RT::Test->create_ticket(
+        Queue => $general->id,
+        Subject => 'parent',
+        DependsOn => $child_ticket->id,
+    );
+    my $pid = $parent_ticket->id;
+
+    ok $m->goto_ticket( $pid ), 'opened a ticket';
+    $m->check_links(
+        has => ['Open It', 'Resolve', 'Reject', 'Delete' ],
+        has_no => ['Stall', 'Re-open', 'Undelete', ],
+    );
+    ok $m->goto_ticket( $cid ), 'opened a ticket';
+    $m->check_links(
+        has => ['Open It', 'Resolve', 'Reject', 'Delete'],
+        has_no => ['Stall', 'Re-open', 'Undelete'],
+    );
+}
+
