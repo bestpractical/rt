@@ -1002,7 +1002,7 @@ sub FindDependencies {
 
     $deps->Add( out => $self->ScripConditionObj );
     $deps->Add( out => $self->ScripActionObj );
-    $deps->Add( out => $self->QueueObj );
+    $deps->Add( out => $self->QueueObj ) if $self->QueueObj->Id;
     $deps->Add( out => $self->TemplateObj );
 }
 

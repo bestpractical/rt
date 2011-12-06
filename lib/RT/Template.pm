@@ -949,7 +949,7 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
 
-    $deps->Add( out => $self->QueueObj );
+    $deps->Add( out => $self->QueueObj ) if $self->QueueObj->Id;
 }
 
 sub PreInflate {
