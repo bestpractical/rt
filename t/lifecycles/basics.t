@@ -102,22 +102,10 @@ my $tid;
 diag "new ->(open it)-> open";
 {
     ok $m->goto_ticket( $tid ), 'opened a ticket';
-
-    {
-        my @links = $m->followable_links;
-        ok scalar @links, 'found links';
-        my $found = 1;
-        foreach my $t ('Open It', 'Resolve', 'Reject', 'Delete') {
-            $found = 0 unless grep {($_->text ||'') eq $t} @links;
-        }
-        ok $found, 'found all transitions';
-
-        $found = 0;
-        foreach my $t ('Stall', 'Re-open', 'Undelete') {
-            $found = 1 if grep {($_->text||'') eq $t} @links;
-        }
-        ok !$found, 'no unwanted transitions';
-    }
+    $m->check_links(
+        has => ['Open It', 'Resolve', 'Reject', 'Delete'],
+        has_no => ['Stall', 'Re-open', 'Undelete'],
+    );
 
     $m->follow_link_ok({text => 'Open It'});
     $m->form_name('TicketUpdate');
@@ -132,21 +120,10 @@ diag "open ->(stall)-> stalled";
 
     ok $m->goto_ticket( $tid ), 'opened a ticket';
 
-    {
-        my @links = $m->followable_links;
-        ok scalar @links, 'found links';
-        my $found = 1;
-        foreach my $t ('Stall', 'Resolve', 'Reject') {
-            $found = 0 unless grep { ($_->text ||'') eq $t} @links;
-        }
-        ok $found, 'found all transitions';
-
-        $found = 0;
-        foreach my $t ('Open It', 'Delete', 'Re-open', 'Undelete') {
-            $found = 1 if grep { ($_->text ||'') eq $t} @links;
-        }
-        ok !$found, 'no unwanted transitions';
-    }
+    $m->check_links(
+        has => ['Stall', 'Resolve', 'Reject'],
+        has_no => ['Open It', 'Delete', 'Re-open', 'Undelete'],
+    );
 
     $m->follow_link_ok({text => 'Stall'});
     $m->form_name('TicketUpdate');
@@ -160,22 +137,10 @@ diag "stall ->(open it)-> open";
     is $tstatus->($tid), 'stalled', 'ticket is stalled';
 
     ok $m->goto_ticket( $tid ), 'opened a ticket';
-
-    {
-        my @links = $m->followable_links;
-        ok scalar @links, 'found links';
-        my $found = 1;
-        foreach my $t ('Open It') {
-            $found = 0 unless grep {($_->text ||'')eq $t} @links;
-        }
-        ok $found, 'found all transitions';
-
-        $found = 0;
-        foreach my $t ('Delete', 'Re-open', 'Undelete', 'Stall', 'Resolve', 'Reject') {
-            $found = 1 if grep { ($_->text ||'') eq $t} @links;
-        }
-        ok !$found, 'no unwanted transitions';
-    }
+    $m->check_links(
+        has => ['Open It'],
+        has_no => ['Delete', 'Re-open', 'Undelete', 'Stall', 'Resolve', 'Reject'],
+    );
 
     $m->follow_link_ok({text => 'Open It'});
 
