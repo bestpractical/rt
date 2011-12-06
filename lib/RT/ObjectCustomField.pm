@@ -415,10 +415,12 @@ sub FindDependencies {
 
     $deps->Add( out => $self->CustomFieldObj );
 
-    my $class = $self->CustomFieldObj->RecordClassFromLookupType;
-    my $obj = $class->new( $self->CurrentUser );
-    $obj->Load( $self->ObjectId );
-    $deps->Add( out => $obj );
+    if ($self->ObjectId) {
+        my $class = $self->CustomFieldObj->RecordClassFromLookupType;
+        my $obj = $class->new( $self->CurrentUser );
+        $obj->Load( $self->ObjectId );
+        $deps->Add( out => $obj );
+    }
 }
 
 sub Serialize {
