@@ -133,6 +133,8 @@ sub QueryToSQL {
 
     my @clauses;
     for my $subclause (sort keys %limits) {
+        next unless @{$limits{$subclause}};
+
         my $op = $AND{lc $subclause} ? "AND" : "OR";
         push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
     }
