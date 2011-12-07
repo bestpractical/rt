@@ -1174,8 +1174,9 @@ the rules here.
 
 sub ApplyGlobally {
     my $self = shift;
+    my $lookup = shift || $self->LookupType;
 
-    return ($self->LookupType =~ /^RT::(?:Group|User)/io);
+    return ($lookup =~ /^RT::(?:Group|User)/io);
 
 }
 

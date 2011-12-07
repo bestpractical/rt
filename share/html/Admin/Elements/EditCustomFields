@@ -133,6 +133,12 @@ if ( $UpdateCFs ) {
             push @results, loc("Couldn't load CustomField #[_1]", $cf_id);
             next;
         }
+
+        if ( $CF->ApplyGlobally ) {
+            my ($status, $msg) = $CF->SetDisabled(0);
+            push @results, $msg;
+        }
+
         my ($status, $msg) = $CF->AddToObject( $Object );
         push @results, $msg;
     }
@@ -145,6 +151,11 @@ if ( $UpdateCFs ) {
         }
         my ($status, $msg) = $CF->RemoveFromObject( $Object );
         push @results, $msg;
+
+        if ( $CF->ApplyGlobally ) {
+            my ($status, $msg) = $CF->SetDisabled(1);
+            push @results, $msg;
+        }
     }
 }
 
@@ -156,6 +167,9 @@ $applied_cfs->LimitToGlobalOrObjectId($id);
 $applied_cfs->ApplySortOrder;
 
 my $not_applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+if ( RT::CustomField->ApplyGlobally($lookup) ) {
+    $not_applied_cfs->FindAllRows();
+}
 $not_applied_cfs->LimitToLookupType($lookup);
 $not_applied_cfs->LimitToNotApplied( $id ? ($id, 0) : (0) );
 
