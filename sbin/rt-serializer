@@ -104,6 +104,7 @@ sub estimate {
         print "Estimating $class count...";
         my $collection = $class . "s";
         my $objs = $collection->new( RT->SystemUser );
+        $objs->FindAllRows;
         $objs->UnLimit;
         $objs->{allow_deleted_search} = 1 if $class eq "RT::Ticket";
         $e{$class} = $objs->Count;
