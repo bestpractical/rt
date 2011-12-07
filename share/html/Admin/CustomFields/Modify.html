@@ -273,7 +273,7 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
-if ( $CustomFieldObj->id && $CustomFieldObj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+if ( $CustomFieldObj->id && $CustomFieldObj->ApplyGlobally ) {
     my ( $ret, $msg );
     my $object = $CustomFieldObj->RecordClassFromLookupType->new( $session{'CurrentUser'} );
 
