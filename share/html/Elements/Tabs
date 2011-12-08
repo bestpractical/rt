@@ -499,6 +499,9 @@ my $build_admin_menu = sub {
                 $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id, );
             }
 
+            my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
+                && $obj->HasUnresolvedDependencies;
+
             my $current   = $obj->Status;
             my $lifecycle = $obj->QueueObj->Lifecycle;
             my $i         = 1;
@@ -509,6 +512,9 @@ my $build_admin_menu = sub {
                 my $check = $lifecycle->CheckRight( $current => $next );
                 next unless $can->($check);
 
+                next if $hide_resolve_with_deps
+                    && $lifecycle->IsInactive($next)
+                    && !$lifecycle->IsInactive($current);
 
                 my $action = $info->{'update'} || '';
 
