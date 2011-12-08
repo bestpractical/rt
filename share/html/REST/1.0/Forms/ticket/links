@@ -100,7 +100,8 @@ if ($changes) {
                     my $tick = RT::Ticket->new($session{CurrentUser});
                     $tick->Load($nkey);
                     if ($tick->Id) {
-                        $nkey = $uri->FromObject($tick);
+                        $uri->FromObject($tick);
+                        $nkey = $uri->URI;
                     }
                     else {
                         $n = 0;
