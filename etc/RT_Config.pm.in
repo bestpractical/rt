@@ -1375,6 +1375,19 @@ detailed breakdown by scrip.
 
 Set($SimplifiedRecipients, 0);
 
+=item C<$HideResolveActionsWithDependencies>
+
+If set to 1, this option will skip ticket menu actions which can't be
+completed successfully because of outstanding active Depends On tickets.
+
+By default, all ticket actions are displayed in the menu even if some of
+them can't be successful until all Depends On links are resolved or
+transitioned to another inactive status.
+
+=cut
+
+Set($HideResolveActionsWithDependencies, 0);
+
 =back
 
 
