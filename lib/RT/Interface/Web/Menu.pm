@@ -310,4 +310,32 @@ sub children {
     return wantarray ? @kids : \@kids;
 }
 
+=head2 add_after
+
+Called on a child, inserts a new menu item after it and shifts any other
+menu items at this level to the right.
+
+L<child> by default would insert at the end of the list of children, unless you
+did manual sort_order calculations.
+
+Takes all the regular arguments to L<child>.
+
+=cut
+
+sub add_after {
+    my $self = shift;
+    my $parent = $self->parent;
+    my $sort_order;
+    for my $contemporary ($parent->children) {
+        if ( $contemporary->key eq $self->key ) {
+            $sort_order = $contemporary->sort_order + 1;
+            next;
+        }
+        if ( $sort_order ) {
+            $contemporary->sort_order( $contemporary->sort_order + 1 );
+        }
+    }
+    $parent->child( @_, sort_order => $sort_order );
+}
+
 1;
