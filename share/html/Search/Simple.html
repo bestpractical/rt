@@ -74,7 +74,7 @@
 % }
 % }
 
-<p><&|/l, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Entering [_1], [_2], [_3], or [_4] limits results to tickets with one of the respective types of statuses.</&>
+<p><&|/l, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Entering [_1], [_2], [_3], or [_4] limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named.</&>
 
 % if (RT->Config->Get('OnlySearchActiveTicketsInSimpleSearch', $session{'CurrentUser'})) {
 % my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
