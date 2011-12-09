@@ -62,7 +62,7 @@ diag q{rfc2231};
 "attachment; filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
     is(
         RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8', 'Content-Disposition' ),
-        'attachment; filename=tést.txt',
+        'attachment; filename="tést.txt"',
         'right decoding'
     );
 }
@@ -80,7 +80,7 @@ inline;
 .
     is(
         RT::I18N::DecodeMIMEWordsToEncoding( $hdr, 'utf-8', 'Content-Disposition' ),
-        'inline; filename*0="新しいテキスト"; filename*1=" "; filename*2="ドキュメント"; filename*3=".txt"',
+        'inline; filename="新しいテキスト ドキュメント.txt"',
         'decoded, but continuations preserved'
     );
 }
