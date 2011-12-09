@@ -82,7 +82,7 @@ my $url = sprintf '%s/Ticket/Attachment/%d/%d/%s',
 % }
 <%init>
 my @quoted_attachments;
-if ($QuoteTransaction) {
+if ($QuoteTransaction and $TicketObj and $TicketObj->id) {
     my $txn = RT::Transaction->new( $session{'CurrentUser'} );
     $txn->Load($QuoteTransaction);
     if ($txn->Id and $txn->CurrentUserCanSee) {
@@ -95,4 +95,5 @@ if ($QuoteTransaction) {
 <%args>
 @AttachExisting => ()
 $QuoteTransaction => ''
+$TicketObj => undef
 </%args>
