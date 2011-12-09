@@ -294,7 +294,8 @@ sub DecodeMIMEWordsToEncoding {
     }
 
     # XXX TODO: use decode('MIME-Header', ...) and Encode::Alias to replace our
-    # custom MIME word decoding and charset canonicalization
+    # custom MIME word decoding and charset canonicalization.  We can't do this
+    # until we parse before decode, instead of the other way around.
     my @list = $str =~ m/(.*?)          # prefix
                          =\?            # =?
                          ([^?]+?)       # charset
