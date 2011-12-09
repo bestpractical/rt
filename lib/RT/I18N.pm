@@ -219,13 +219,6 @@ sub SetMIMEEntityToEncoding {
 
     my $head = $entity->head;
 
-    # convert at least MIME word encoded attachment filename
-    foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
-	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
-	}
-    }
-
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->replace( "X-RT-Original-Encoding" => $charset )
 	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
