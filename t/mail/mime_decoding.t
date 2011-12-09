@@ -59,10 +59,10 @@ diag q{newline and encoded file name};
 diag q{rfc2231};
 {
     my $str =
-"attachment; filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74 filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
+"attachment; filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
     is(
         RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8', 'Content-Disposition' ),
-        'attachment; filename=tést.txt filename=tést.txt',
+        'attachment; filename=tést.txt',
         'right decoding'
     );
 }
