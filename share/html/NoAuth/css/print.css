@@ -48,27 +48,32 @@
 * {
     float: none;
     position: static;
+    background: transparent !important;
+    overflow: visible !important;
 }
 
 body {
-    margin: 1em;
+    margin: 0;
+    padding: 0;
     font-size: 10pt;
+    background: white !important;
 }
 
 div#body {
     margin: 0;
-    margin-top: 1em;
+    margin-top: 0;
+    padding: 0;
     border-style: none;
 }
 
 div#header h1 {
-    margin-bottom: 2em;
-    position: relative;
-    margin-top: 2em;
-    height: 0;
+    margin-bottom: 1em;
+    position: static;
+    height: auto;
     width: auto;
-    left: 0;
     overflow: visible;
+    color: black !important;
+    padding: 0 !important;
 }
 
 #header {
@@ -77,11 +82,12 @@ div#header h1 {
 
 #quickbar,
 #nav,
-#header #page-menu,
-#header #page-navigation,
-.titlebox .titlebox-title .widget,
+#page-menu,
+#main-navigation,
+#page-navigation,
+.titlebox-title .widget,
 .ticket-info-links .titlebox-title .right,
-.ticket-info-links .titlebox-content .labeltop .create,
+.ticket-info-links .titlebox-content .create,
 .history .titlebox .titlebox-title .right,
 .ticket-transaction .metadata .actions,
 .ticket-transaction .content .downloadattachment,
@@ -89,14 +95,126 @@ div#header h1 {
 .search-result-actions,
 #comp-Search-Chart #body div,
 #comp-Search-Chart #body form,
-#footer
+#footer,
+#topactions,
+#logo,
+form,
+div.summary + br
 {
-display: none;
+    display: none;
+}
+
+/* Hide "Click to load" and "Loading" message. Loaded history is #id > .history */
+#deferred_ticket_history > .titlebox, #delayed_ticket_history > .titlebox {
+    display: none;
 }
 
 a:link, a:visited {
-    background: transparent;
     font-weight: bold !important;
+}
+
+div.ticket-transaction .metadata .type {
+    display: none;
+}
+
+div.titlebox-title .left {
+    border: 0 !important;
+    color: black !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+}
+
+.titlebox.rolled-up .titlebox-title .left:after {
+    content: " (<&|/l&>collapsed</&>)";
+    font-weight: normal;
+}
+
+div.titlebox-content {
+    border: 0 !important;
+    padding-top: 0.5em !important;
+}
+
+/* outer Ticket Metadata titlebox gets no padding, but inside ones do below */
+.summary .titlebox-content {
+    padding: 0 !important;
+}
+
+div.summary .ticket-summary div.titlebox-content {
+    padding: 0.5em 1em 1em 1em !important;
+}
+
+div.titlebox-title .left * {
+    color: black !important;
+}
+
+div.messagebody a[href]:after {
     text-decoration: underline !important;
+    content: " (" attr(href) ") ";
+}
+
+.messagebody {
+    orphans: 2;
+    widows: 2;
+}
+
+div.titlebox-title {
+    page-break-after: avoid;
+    border: 0 !important;
+}
+
+#ticket-history, div.ticket-transaction {
+    border: 0 !important;
+}
+
+div.ticket-transaction {
+    page-break-inside: avoid;
+}
+
+/* hide "Ticket metadata" */
+div.summary > div > div.titlebox > div.titlebox-title {
+    display: none !important;
+}
+
+.value {
+    font-weight: bold !important;
+}
+
+.label, .label a, .labeltop, .labeltop a {
+    font-weight: normal !important;
+}
+
+div.titlebox {
+    margin-bottom: 0;
+}
+
+/* for web2 and ballard*/
+
+div.titlebox {
+    border: 0 !important;
+}
+
+div.history .titlebox-title {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* for web2 */
+
+#page-action-menu {
+    display: none;
+}
+
+/* form elements */
+input, select, option {
+    background: white !important;
+    border: 1px solid #666 !important;
+}
+
+option {
+    border: none !important;
+}
+
+option[selected] {
+    font-weight: bold !important;
 }
 

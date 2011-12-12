@@ -426,9 +426,7 @@ sub AddToObject {
 
 =head2 RemoveFromObject OBJECT
 
-Remove this custom field  for a single object, such as a queue or group.
-
-Takes an object
+Remove this class from a single queue object
 
 =cut
 
@@ -443,7 +441,7 @@ sub RemoveFromObject {
 
     my $ocf = $self->IsApplied( $id );
     unless ( $ocf ) {
-        return ( 0, $self->loc("This custom field does not apply to that object") );
+        return ( 0, $self->loc("This class does not apply to that object") );
     }
 
     # XXX: Delete doesn't return anything

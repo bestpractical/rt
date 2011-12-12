@@ -54,7 +54,15 @@
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
 
-<p><&|/l&>Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>.</&></p>
+<div align="center">
+<input name="q" size="60" /><input type="submit" class="button" value="<&|/l&>Search</&>" />
+</div>
+
+% my @strong = qw(<strong> </strong>);
+
+<p><&|/l, @strong &>Search for tickets by entering [_1]id[_2] numbers, subject words [_1]"in quotes"[_2], [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].</&></p>
+
+<p><&|/l&>Any word not recognized by RT is searched for in ticket subjects.</&></p>
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
 % my $fulltext_keyword = 'fulltext:';
@@ -66,18 +74,21 @@
 % }
 % }
 
-<p><&|/l&>RT will look for anything else you enter in ticket subjects.</&></p>
+<p><&|/l, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Entering [_1], [_2], [_3], or [_4] limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named.</&>
 
+% if (RT->Config->Get('OnlySearchActiveTicketsInSimpleSearch', $session{'CurrentUser'})) {
 % my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
+<&|/l, $status_str &>Unless you specify a specific status, only tickets with active statuses ([_1]) are searched.</&>
+% }
+</p>
+
+<p><&|/l, map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com' &>Start the search term with the name of a supported field followed by a colon, as in [_1] and [_2], to explicitly specify the search type.</&></p>
+
+<p><&|/l, '<strong>cf.Name:value</strong>' &>CFs may be searched using a similar syntax as above with [_1].</&></p>
+
 % my $link_start  = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html">';
 % my $link_end    = '</a>';
-<p><&|/l, $status_str, $link_start, $link_end &>Please note that only tickets with one of these statuses( [_1] ) are displayed here. For more powerful searches please visit the [_2]search builder interface[_3].</&></p>
-
-<br />
-<br />
-<div align="center">
-<input name="q" size="60" /><input type="submit" class="button" value="<&|/l&>Search</&>" />
-</div>
+<p><&|/l, $link_start, $link_end &>For the full power of RT's searches, please visit the [_1]search builder interface[_2].</&></p>
 
 </form>
 
