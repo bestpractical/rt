@@ -84,7 +84,7 @@ high port for this user.
 
 =cut
 
-Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
+Set($WebPort, 80);
 
 =item C<$WebPath>
 
