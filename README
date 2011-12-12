@@ -226,6 +226,13 @@ GENERAL INSTALLATION
 
            perldoc /opt/rt4/bin/rt-mailgate
 
+    If your webserver uses SSL, rt-mailgate will require several new
+    Perl libraries. RT can detect and install these for you automatically
+    if you include --enable-ssl-mailgate when running configure and then
+    run make fixdeps as described in step 4.  It is safe to rerun configure
+    and make fixdeps after you have installed RT, you should be sure to include
+    all the arguments you used in step 2 plus --enable-ssl-mailgate.
+
 
 GETTING HELP
 ------------

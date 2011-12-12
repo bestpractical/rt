@@ -349,8 +349,11 @@ is found.
 =item C<--url>
 
 This flag tells the mail gateway where it can find your RT server. You should 
-probably use the same URL that users use to log into RT.
+probably use the same URL that users use to log into RT.  
 
+If your RT server uses SSL, you will need to install additional Perl
+libraries. RT will detect and install these dependencies if you pass the
+C<--enable-ssl-mailgate> flag to configure as documented in RT's README.
 
 =item C<--extension> OPTIONAL
 
