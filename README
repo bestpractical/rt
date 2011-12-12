@@ -78,6 +78,10 @@ GENERAL INSTALLATION
     It is particularly important that you read the warnings at the top of
     UPGRADING-4.0 for some common issues.
 
+    RT stores the arguments given to ./configure at the top of the
+    etc/RT_Config.pm file in case you need to recreate your previous use
+    of ./configure.
+
  3) Make sure that RT has the Perl and system libraries it needs to run.
     Check for missing dependencies by running:
 
