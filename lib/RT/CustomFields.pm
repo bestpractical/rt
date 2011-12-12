@@ -170,28 +170,6 @@ sub LimitToGlobalOrObjectId {
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
 }
 
-sub _LimitToOCFs {
-    my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_OCFAlias( New => 1, Left => 1 );
-    if ( @ids ) {
-        # XXX: we need different EA in join clause, but DBIx::SB
-        # doesn't support them, use IN (X) instead
-        my $dbh = $self->_Handle->dbh;
-        $self->Limit(
-            LEFTJOIN   => $ocfs_alias,
-            ALIAS      => $ocfs_alias,
-            FIELD      => 'ObjectId',
-            OPERATOR   => 'IN',
-            QUOTEVALUE => 0,
-            VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
-        );
-    }
-
-    return $ocfs_alias;
-}
-
 =head2 LimitToNotApplied
 
 Takes either list of object ids or nothing. Limits collection
@@ -202,17 +180,8 @@ zero to mean global.
 
 sub LimitToNotApplied {
     my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_LimitToOCFs(@ids);
-
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'id',
-        OPERATOR => 'IS',
-        VALUE    => 'NULL',
-    );
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->LimitTargetToNotApplied( $self => @_ );
 }
 
 =head2 LimitToApplied
@@ -224,17 +193,8 @@ zero to mean global.
 
 sub LimitToApplied {
     my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_LimitToOCFs(@ids);
-
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'id',
-        OPERATOR => 'IS NOT',
-        VALUE    => 'NULL',
-    );
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->LimitTargetToApplied( $self => @_ );
 }
 
 =head2 LimitToGlobalOrQueue QUEUEID
@@ -344,19 +304,8 @@ sub SetContextObject {
 
 sub _OCFAlias {
     my $self = shift;
-    my %args = ( New => 0, Left => 0, @_ );
-
-    return $self->{'_sql_ocfalias'} if $self->{'_sql_ocfalias'} && !$args{'New'};
-
-    my $alias = $self->Join(
-        $args{'Left'} ? (TYPE => 'LEFT') : (),
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'ObjectCustomFields',
-        FIELD2 => 'CustomField'
-    );
-    return $alias if $args{'New'};
-    return $self->{'_sql_ocfalias'} = $alias;
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self => @_ );
 }
 
 

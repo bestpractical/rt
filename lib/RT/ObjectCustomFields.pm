@@ -45,46 +45,21 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-package RT::ObjectCustomFields;
-
 use strict;
 use warnings;
 
+package RT::ObjectCustomFields;
+use base 'RT::SearchBuilder::ApplyAndSort';
 
+use RT::CustomField;
 use RT::ObjectCustomField;
 
-use base 'RT::SearchBuilder';
-
 sub Table { 'ObjectCustomFields'}
-
-sub _Init {
-    my $self = shift;
-
-  # By default, order by SortOrder
-  $self->OrderByCols(
-	 { ALIAS => 'main',
-	   FIELD => 'SortOrder',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'id',
-	   ORDER => 'ASC' },
-     );
-
-    return ( $self->SUPER::_Init(@_) );
-}
-
 
 sub LimitToCustomField {
     my $self = shift;
     my $id = shift;
     $self->Limit( FIELD => 'CustomField', VALUE => $id );
-}
-
-sub LimitToObjectId {
-    my $self = shift;
-    my $id = shift || 0;
-    $self->Limit( FIELD => 'ObjectId', VALUE => $id );
 }
 
 sub LimitToLookupType {
@@ -139,17 +114,6 @@ sub _DoSearch {
     $self->SUPER::_DoSearch()
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::ObjectCustomField item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ObjectCustomField->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

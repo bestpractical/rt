@@ -1160,9 +1160,7 @@ sub SetLookupType {
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCustomFields->LimitToCustomField($self->Id);
-        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+        RT::ObjectCustomField->new($self->CurrentUser)->DeleteAll( CustomField => $self );
     }
     return $self->_Set(Field => 'LookupType', Value =>$lookup);
 }
@@ -1265,18 +1263,8 @@ Doesn't takes into account if object is applied globally.
 
 sub AppliedTo {
     my $self = shift;
-
-    my ($res, $ocfs_alias) = $self->_AppliedTo;
-    return $res unless $res;
-
-    $res->Limit(
-        ALIAS     => $ocfs_alias,
-        FIELD     => 'id',
-        OPERATOR  => 'IS NOT',
-        VALUE     => 'NULL',
-    );
-
-    return $res;
+    return RT::ObjectCustomField->new( $self->CurrentUser )
+        ->AppliedTo( CustomField => $self );
 }
 
 =head1 NotAppliedTo
@@ -1291,48 +1279,8 @@ Doesn't takes into account if object is applied globally.
 
 sub NotAppliedTo {
     my $self = shift;
-
-    my ($res, $ocfs_alias) = $self->_AppliedTo;
-    return $res unless $res;
-
-    $res->Limit(
-        ALIAS     => $ocfs_alias,
-        FIELD     => 'id',
-        OPERATOR  => 'IS',
-        VALUE     => 'NULL',
-    );
-
-    return $res;
-}
-
-sub _AppliedTo {
-    my $self = shift;
-
-    my ($class) = $self->CollectionClassFromLookupType;
-    return undef unless $class;
-
-    my $res = $class->new( $self->CurrentUser );
-
-    # If CF is a Group CF, only display user-defined groups
-    if ( $class eq 'RT::Groups' ) {
-        $res->LimitToUserDefinedGroups;
-    }
-
-    $res->OrderBy( FIELD => 'Name' );
-    my $ocfs_alias = $res->Join(
-        TYPE   => 'LEFT',
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'ObjectCustomFields',
-        FIELD2 => 'ObjectId',
-    );
-    $res->Limit(
-        LEFTJOIN => $ocfs_alias,
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'CustomField',
-        VALUE    => $self->id,
-    );
-    return ($res, $ocfs_alias);
+    return RT::ObjectCustomField->new( $self->CurrentUser )
+        ->NotAppliedTo( CustomField => $self );
 }
 
 =head2 IsApplied
@@ -1374,26 +1322,9 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( $self->IsApplied( $id ) ) {
-        return ( 0, $self->loc("Custom field is already applied to the object") );
-    }
-
-    if ( $id ) {
-        # applying locally
-        return (0, $self->loc("Couldn't apply custom field to an object as it's global already") )
-            if $self->IsApplied( 0 );
-    }
-    else {
-        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
-        $applied->LimitToCustomField( $self->id );
-        while ( my $record = $applied->Next ) {
-            $record->Delete;
-        }
-    }
-
     my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
-    my ( $oid, $msg ) = $ocf->Create(
-        ObjectId => $id, CustomField => $self->id,
+    my ( $oid, $msg ) = $ocf->Apply(
+        CustomField => $self->id, ObjectId => $id,
     );
     return ( $oid, $msg );
 }
