@@ -49,7 +49,7 @@ use strict;
 use warnings;
 
 package RT::ObjectCustomField;
-use base 'RT::Record::ApplyAndSort';
+use base 'RT::Record::AddAndSort';
 
 use RT::CustomField;
 use RT::ObjectCustomFields;

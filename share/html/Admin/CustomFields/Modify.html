@@ -277,10 +277,10 @@ if ( $CustomFieldObj->id && $CustomFieldObj->LookupType =~ /^RT::(?:User|Group)$
     my ( $ret, $msg );
     my $object = $CustomFieldObj->RecordClassFromLookupType->new( $session{'CurrentUser'} );
 
-    if ( $CustomFieldObj->Disabled && $CustomFieldObj->IsApplied(0) ) {
+    if ( $CustomFieldObj->Disabled && $CustomFieldObj->IsAdded(0) ) {
         ( $ret, $msg ) = $CustomFieldObj->RemoveFromObject($object);
     }
-    elsif ( !$CustomFieldObj->Disabled && !$CustomFieldObj->IsApplied(0) ) {
+    elsif ( !$CustomFieldObj->Disabled && !$CustomFieldObj->IsAdded(0) ) {
         ( $ret, $msg ) = $CustomFieldObj->AddToObject($object);
     }
 

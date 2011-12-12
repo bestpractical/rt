@@ -49,7 +49,7 @@
 use strict;
 use warnings;
 
-package RT::Record::ApplyAndSort;
+package RT::Record::AddAndSort;
 use base 'RT::Record';
 
 sub CollectionClass {
@@ -100,7 +100,7 @@ sub Create {
     );
 }
 
-sub Apply {
+sub Add {
     my $self = shift;
     my %args = (@_);
 
@@ -114,14 +114,14 @@ sub Apply {
     $oid = $oid->id if ref $oid;
     $oid ||= 0;
 
-    if ( $self->IsApplied( $tid => $oid ) ) {
-        return ( 0, $self->loc("Is already applied to the object") );
+    if ( $self->IsAdded( $tid => $oid ) ) {
+        return ( 0, $self->loc("Is already added to the object") );
     }
 
     if ( $oid ) {
-        # applying locally
-        return (0, $self->loc("Couldn't apply as it's global already") )
-            if $self->IsApplied( $tid => 0 );
+        # adding locally
+        return (0, $self->loc("Couldn't add as it's global already") )
+            if $self->IsAdded( $tid => 0 );
     }
     else {
         $self->DeleteAll( $field => $tid );
@@ -132,7 +132,7 @@ sub Apply {
     );
 }
 
-sub IsApplied {
+sub IsAdded {
     my $self = shift;
     my ($tid, $oid) = @_;
     my $record = $self->new( $self->CurrentUser );
@@ -140,19 +140,19 @@ sub IsApplied {
     return $record->id;
 }
 
-=head1 ApplyTo
+=head1 AddedTo
 
-Returns collection with objects this custom field is applied to.  Class of
-the collection depends on L</LookupType>.  See all L</NotAppliedTo> .
+Returns collection with objects this custom field is added to.  Class of
+the collection depends on L</LookupType>.  See all L</NotAddedTo> .
 
-Doesn't take into account if the object is applied globally.
+Doesn't take into account if the object is added globally.
 
 =cut
 
-sub AppliedTo {
+sub AddedTo {
     my $self = shift;
 
-    my ($res, $alias) = $self->_AppliedTo( @_ );
+    my ($res, $alias) = $self->_AddedTo( @_ );
     return $res unless $res;
 
     $res->Limit(
@@ -165,19 +165,19 @@ sub AppliedTo {
     return $res;
 }
 
-=head1 NotAppliedTo
+=head1 NotAddedTo
 
-Returns collection with objects this custom field is not applied to.
-Class of the collection depends on L</LookupType>.  See all L</AppliedTo>.
+Returns collection with objects this custom field is not added to.
+Class of the collection depends on L</LookupType>.  See all L</AddedTo>.
 
-Doesn't take into account if the object is applied globally.
+Doesn't take into account if the object is added globally.
 
 =cut
 
-sub NotAppliedTo {
+sub NotAddedTo {
     my $self = shift;
 
-    my ($res, $alias) = $self->_AppliedTo( @_ );
+    my ($res, $alias) = $self->_AddedTo( @_ );
     return $res unless $res;
 
     $res->Limit(
@@ -190,7 +190,7 @@ sub NotAppliedTo {
     return $res;
 }
 
-sub _AppliedTo {
+sub _AddedTo {
     my $self = shift;
     my %args = (@_);
 
@@ -202,7 +202,7 @@ sub _AppliedTo {
 
     my $res = $class->new( $self->CurrentUser );
 
-    # If target is applied to a Group, only display user-defined groups
+    # If target added to a Group, only display user-defined groups
     $res->LimitToUserDefinedGroups if $class eq 'RT::Groups';
 
     $res->OrderBy( FIELD => 'Name' );

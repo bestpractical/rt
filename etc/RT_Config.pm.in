@@ -2575,7 +2575,7 @@ Set(%AdminSearchResultFormat,
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
+        .q{,__AddedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
         q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}

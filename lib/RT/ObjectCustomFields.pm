@@ -49,7 +49,7 @@ use strict;
 use warnings;
 
 package RT::ObjectCustomFields;
-use base 'RT::SearchBuilder::ApplyAndSort';
+use base 'RT::SearchBuilder::AddAndSort';
 
 use RT::CustomField;
 use RT::ObjectCustomField;

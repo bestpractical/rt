@@ -49,7 +49,7 @@
 use strict;
 use warnings;
 
-package RT::SearchBuilder::ApplyAndSort;
+package RT::SearchBuilder::AddAndSort;
 use base 'RT::SearchBuilder';
 
 sub RecordClass {
@@ -80,7 +80,7 @@ sub LimitToObjectId {
     $self->Limit( FIELD => 'ObjectId', VALUE => $id );
 }
 
-=head2 LimitTargetToNotApplied
+=head2 LimitTargetToNotAdded
 
 Takes either list of object ids or nothing. Limits collection
 to custom fields to listed objects or any corespondingly. Use
@@ -88,12 +88,12 @@ zero to mean global.
 
 =cut
 
-sub LimitTargetToNotApplied {
+sub LimitTargetToNotAdded {
     my $self = shift;
     my $collection = shift;
     my @ids = @_;
 
-    my $alias = $self->JoinTargetToApplied($collection => @ids);
+    my $alias = $self->JoinTargetToAdded($collection => @ids);
 
     $collection->Limit(
         ENTRYAGGREGATOR => 'AND',
@@ -105,19 +105,19 @@ sub LimitTargetToNotApplied {
     return $alias;
 }
 
-=head2 LimitTargetToApplied
+=head2 LimitTargetToAdded
 
 Limits collection to custom fields to listed objects or any corespondingly. Use
 zero to mean global.
 
 =cut
 
-sub LimitTargetToApplied {
+sub LimitTargetToAdded {
     my $self = shift;
     my $collection = shift;
     my @ids = @_;
 
-    my $alias = $self->JoinTargetToApplied($collection => @ids);
+    my $alias = $self->JoinTargetToAdded($collection => @ids);
 
     $collection->Limit(
         ENTRYAGGREGATOR => 'AND',
@@ -129,7 +129,7 @@ sub LimitTargetToApplied {
     return $alias;
 }
 
-sub JoinTargetToApplied {
+sub JoinTargetToAdded {
     my $self = shift;
     my $collection = shift;
     my @ids = @_;
