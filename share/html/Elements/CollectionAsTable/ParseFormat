@@ -77,6 +77,7 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     }
     elsif ( $col =~ /^__(NEWLINE|NBSP)__$/ || $col =~ /^(NEWLINE|NBSP)$/ ) {
         $colref->{'title'} = $1;
+        $colref->{'last_attribute'} = '';
     }
     elsif ( $col =~ /__(.*?)__/io ) {
         my @subcols;
