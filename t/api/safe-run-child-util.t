@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 24;
+use RT::Test tests => 27;
 use Test::Warn;
 
 use RT::Util qw(safe_run_child);
@@ -78,6 +78,25 @@ is_handle_ok();
             'correct file content',
         );
     } qr/System Error: child/;
+    is_handle_ok();
+}
+
+# fork+child exits
+{
+    my $res = safe_run_child {
+        if (fork) { wait; return 'parent' }
+
+        open my $fh, '>', RT::Test->temp_directory .'/tttt';
+        print $fh "child";
+        close $fh;
+
+        exit 0;
+    };
+    is $res, 'parent', "correct return value";
+    is( RT::Test->file_content([RT::Test->temp_directory, 'tttt'], unlink => 1 ),
+        'child',
+        'correct file content',
+    );
     is_handle_ok();
 }
 
