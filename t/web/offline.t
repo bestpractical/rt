@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 20;
 
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
@@ -14,7 +14,7 @@ Queue: General
 Subject: test
 Status: new
 EOF
-    my $ticket = create_ticket_offline( $template );
+    my $ticket = create_ticket_offline( $m, $template );
     ok $ticket->id, 'created a ticket with offline tool';
     is $ticket->QueueObj->Name, 'General', 'correct value';
     is $ticket->Subject, 'test', 'correct value';
@@ -29,7 +29,7 @@ Subject: test
 Status: new
 Requestor: test@example.com
 EOF
-    my $ticket = create_ticket_offline( $template );
+    my $ticket = create_ticket_offline( $m, $template );
     ok $ticket->id, 'created a ticket with offline tool';
     is $ticket->RequestorAddresses, 'test@example.com', 'correct value';
 }
@@ -47,7 +47,7 @@ Status: new
 Requestor: test@example.com
 RequestorGroup: test
 EOF
-    my $ticket = create_ticket_offline( $template );
+    my $ticket = create_ticket_offline( $m, $template );
     ok $ticket->id, 'created a ticket with offline tool';
     ok grep(
         { $_->MemberId eq $group->id }
@@ -57,7 +57,7 @@ EOF
 }
 
 sub create_ticket_offline {
-    my $template = shift;
+    my ($m, $template) = @_;
 
     $m->get_ok( $url . '/Tools/Offline.html' );
 
