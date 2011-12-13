@@ -85,7 +85,7 @@ is_handle_ok();
 {
     my $res = eval { safe_run_child { die 'parent'; } };
     is $res, undef, "correct return value";
-    like $@, qr'parent', "correct return value";
+    like $@, qr'System Error: parent', "correct error message value";
     is_handle_ok();
 }
 
