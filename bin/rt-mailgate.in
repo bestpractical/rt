@@ -57,10 +57,10 @@ use warnings;
 
 use Getopt::Long;
 
-my $opts = { 'ssl-verify' => 1 };
+my $opts = { 'verify-ssl' => 1 };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "jar=s", "help",    "debug",    "extension=s",
-            "timeout=i", "ssl-verify!",
+            "timeout=i", "verify-ssl!",
           );
 
 my $gateway = RT::Client::MailGateway->new();
@@ -150,7 +150,7 @@ sub get_useragent {
     my $opts = shift;
     my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
-    $ua->ssl_opts( verify_hostname => $opts->{'ssl-verify'} );
+    $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
     return $ua;
 }
 
