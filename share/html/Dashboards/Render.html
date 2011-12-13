@@ -116,7 +116,7 @@ unless (defined($rows)) {
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
 
-my $title = loc 'Dashboard [_1]', $Dashboard->Name;
+my $title = loc '[_1] Dashboard', $Dashboard->Name;
 
 my $show_cb = sub {
     my $pane = shift;
