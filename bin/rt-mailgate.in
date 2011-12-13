@@ -57,10 +57,10 @@ use warnings;
 
 use Getopt::Long;
 
-my $opts = {};
+my $opts = { 'ssl-verify' => 1 };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "jar=s", "help",    "debug",    "extension=s",
-            "timeout=i"
+            "timeout=i", "ssl-verify!",
           );
 
 my $gateway = RT::Client::MailGateway->new();
@@ -150,6 +150,7 @@ sub get_useragent {
     my $opts = shift;
     my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
+    $ua->ssl_opts( verify_hostname => $opts->{'ssl-verify'} );
     return $ua;
 }
 
@@ -354,6 +355,17 @@ probably use the same URL that users use to log into RT.
 If your RT server uses SSL, you will need to install additional Perl
 libraries. RT will detect and install these dependencies if you pass the
 C<--enable-ssl-mailgate> flag to configure as documented in RT's README.
+
+If you have a self-signed SSL certificate, you may also need to pass
+C<--no-verify-ssl>, below.
+
+=item C<--no-verify-ssl>
+
+This flag tells the mail gateway to trust all SSL certificates,
+regardless of if their hostname matches the certificate, and regardless
+of CA.  This is required if you have a self-signed certificate, or some
+other certificate which is not traceable back to an certificate your
+system ultimitely trusts.
 
 =item C<--extension> OPTIONAL
 
