@@ -69,6 +69,9 @@ sub safe_run_child (&) {
     $dbh->{'InactiveDestroy'} = 1 if $dbh;
     $RT::Handle->{'DisconnectHandleOnDestroy'} = 0;
 
+    my ($reader, $writer);
+    pipe( $reader, $writer );
+
     my @res;
     my $want = wantarray;
     eval {
@@ -85,19 +88,21 @@ sub safe_run_child (&) {
         1;
     } or do {
         my $err = $@;
-        $RT::Logger->error( $err ) if $our_pid == $$;
         $err =~ s/^Stack:.*$//ms;
         if ( $our_pid == $$ ) {
             $dbh->{'InactiveDestroy'} = 0 if $dbh;
             $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
-            #TODO we need to localize this
-            die 'System Error: ' . $err;
+            die "System Error: $err";
         } else {
-            local $SIG{__WARN__};
-            warn 'System Error: ' . $err;
+            print $writer "System Error: $err";
             exit 1;
         }
     };
+
+    close($writer);
+    my ($response) = <$reader>;
+    warn $response if $response;
+
     $dbh->{'InactiveDestroy'} = 0 if $dbh;
     $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
     return $want? (@res) : $res[0];
