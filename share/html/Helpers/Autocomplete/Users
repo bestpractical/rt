@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $r->content_type('application/json');
-<% JSON::to_json( \@suggestions ) |n %>
+<% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
 $return => ''
@@ -58,8 +58,6 @@ $exclude => ''
 $op => undef
 </%ARGS>
 <%INIT>
-require JSON;
-
 # Only allow certain return fields
 $return = 'EmailAddress'
     unless $return =~ /^(?:EmailAddress|Name|RealName)$/;

@@ -121,7 +121,7 @@ my @sections = (
 );
 </%ONCE>
 <script type="text/javascript">
-var section_css_mapping = <% JSON::to_json(\@sections) |n%>;
+var section_css_mapping = <% JSON(\@sections) |n%>;
 
 jQuery(function($) {
 
@@ -191,7 +191,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperU
     Abort(loc('This feature is only available to system administrators.'));
 }
 
-require JSON;
 use Digest::MD5 'md5_hex';
 
 my $text_threshold = 0.6;
