@@ -70,6 +70,7 @@ use strict;
 use warnings;
 
 use RT::Scrip;
+use RT::ObjectScrips;
 
 use base 'RT::SearchBuilder';
 
@@ -85,14 +86,17 @@ another call to this method
 =cut
 
 sub LimitToQueue  {
-   my $self = shift;
-  my $queue = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => "$queue")
-      if defined $queue;
-  
+    my $self = shift;
+    my $queue = shift;
+    return unless defined $queue;
+
+    my $alias = RT::ObjectScrips->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'ObjectId',
+        VALUE => int $queue,
+    );
 }
 
 
@@ -106,12 +110,20 @@ another call to this method or LimitToQueue
 
 
 sub LimitToGlobal  {
-   my $self = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => 0);
-  
+    my $self = shift;
+    return $self->LimitToQueue(0);
+}
+
+sub LimitToAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToAdded( $self => @_ );
+}
+
+sub LimitToNotAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToNotAdded( $self => @_ );
 }
 
 # {{{ sub Next 

@@ -190,7 +190,7 @@ else {
     return (undef, loc("Couldn't load scrip #[_1]", $id))
         unless $scrip->id;
 
-    my @attribs = qw(Queue ScripAction ScripCondition Template Stage
+    my @attribs = qw(ScripAction ScripCondition Template Stage
         Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
     my @results = UpdateRecordObject(
         AttributesRef   => \@attribs,

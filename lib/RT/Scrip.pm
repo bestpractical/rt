@@ -73,6 +73,9 @@ use RT::Queue;
 use RT::Template;
 use RT::ScripCondition;
 use RT::ScripAction;
+use RT::Scrips;
+use RT::ObjectScrip;
+
 use base 'RT::Record';
 
 sub Table {'Scrips'}
@@ -170,7 +173,6 @@ sub Create {
         unless $condition->Id;
 
     my ( $id, $msg ) = $self->SUPER::Create(
-        Queue                  => $args{'Queue'},
         Template               => $template->Id,
         ScripCondition         => $condition->id,
         Stage                  => $args{'Stage'},
@@ -180,12 +182,15 @@ sub Create {
         CustomCommitCode       => $args{'CustomCommitCode'},
         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
     );
-    if ( $id ) {
-        return ( $id, $self->loc('Scrip Created') );
+    return ( $id, $msg ) unless $id;
+
+    unless ( $args{'Stage'} eq 'Disabled' ) {
+        my ($status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )
+            ->Add( Scrip => $self, ObjectId => $args{'Queue'} );
+        $RT::Logger->error( "Couldn't add scrip: $msg" ) unless $status;
     }
-    else {
-        return ( $id, $msg );
-    }
+
+    return ( $id, $self->loc('Scrip Created') );
 }
 
 
@@ -203,29 +208,48 @@ sub Delete {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    RT::ObjectScrip->new( $self->CurrentUser )->DeleteAll( Scrip => $self );
+
     return ( $self->SUPER::Delete(@_) );
 }
 
-
-
-=head2 QueueObj
-
-Retuns an RT::Queue object with this Scrip's queue
-
-=cut
-
-sub QueueObj {
+sub IsAdded {
     my $self = shift;
-
-    if ( !$self->{'QueueObj'} ) {
-        require RT::Queue;
-        $self->{'QueueObj'} = RT::Queue->new( $self->CurrentUser );
-        $self->{'QueueObj'}->Load( $self->__Value('Queue') );
-    }
-    return ( $self->{'QueueObj'} );
+    my $record = RT::ObjectScrip->new( $self->CurrentUser );
+    $record->LoadByCols( Scrip => $self->id, ObjectId => shift || 0 );
+    return undef unless $record->id;
+    return $record;
 }
 
+sub AddedTo {
+    my $self = shift;
+    return RT::ObjectScrip->new( $self->CurrentUser )
+        ->AddedTo( Scrip => $self );
+}
 
+sub NotAddedTo {
+    my $self = shift;
+    return RT::ObjectScrip->new( $self->CurrentUser )
+        ->NotAddedTo( Scrip => $self );
+}
+
+sub AddToObject {
+    my $self = shift;
+    my $object = shift;
+
+    my $rec = RT::ObjectScrip->new( $self->CurrentUser );
+    return $rec->Add( Scrip => $self, ObjectId => $object );
+}
+
+sub RemoveFromObject {
+    my $self = shift;
+    my $object = shift;
+
+    my $rec = RT::ObjectScrip->new( $self->CurrentUser );
+    $rec->LoadByCols( Scrip => $self->id, ObjectId => $object );
+    return (0, $self->loc('Scrip is not added') ) unless $rec->id;
+    return $rec->Delete;
+}
 
 =head2 ActionObj
 
@@ -504,8 +528,7 @@ sub _Set {
     );
 
     unless ( $self->CurrentUserHasRight('ModifyScrips') ) {
-        $RT::Logger->debug(
-                 "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
+        $RT::Logger->debug( "CurrentUser can't modify Scrips" );
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -550,9 +573,7 @@ sub _Value {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ShowScrips') ) {
-        $RT::Logger->debug( "CurrentUser can't modify Scrips for "
-                            . $self->__Value('Queue')
-                            . "\n" );
+        $RT::Logger->debug( "CurrentUser can't see scrip #". $self->__Value('id') );
         return (undef);
     }
 
@@ -592,18 +613,20 @@ sub HasRight {
                  Principal => undef,
                  @_ );
 
-    if ( $self->SUPER::_Value('Queue') ) {
-        return $args{'Principal'}->HasRight(
+    my $queues = $self->AddedTo;
+    my $found = 0;
+    while ( my $queue = $queues->Next ) {
+        return 1 if $args{'Principal'}->HasRight(
             Right  => $args{'Right'},
-            Object => $self->QueueObj
+            Object => $queue,
         );
+        $found = 1;
     }
-    else {
-        return $args{'Principal'}->HasRight(
-            Object => $RT::System,
-            Right  => $args{'Right'},
-        );
-    }
+    return $args{'Principal'}->HasRight(
+        Object => $RT::System,
+        Right  => $args{'Right'},
+    ) unless $found;
+    return 0;
 }
 
 
@@ -904,24 +927,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Queue
-
-Returns the current value of Queue.
-(In the database, Queue is stored as int(11).)
-
-
-
-=head2 SetQueue VALUE
-
-
-Set Queue to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Queue will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Template
 
 Returns the current value of Template.
@@ -1000,8 +1005,6 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Stage =>
 		{read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => ''},
-        Queue =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Template =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Creator =>
