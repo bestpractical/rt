@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 10;
+use RT::Test tests => 12;
 use_ok('RT');
 
 
@@ -29,6 +29,8 @@ my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
+    "General"              => "( Queue = 'General' ) AND ( $active_statuses )",
+    "General any"          => "( Queue = 'General' )",
     "fulltext:jesse"       => "( Content LIKE 'jesse' ) AND ( $active_statuses )",
     $queue                 => "( Queue = '$queue' ) AND ( $active_statuses )",
     "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",

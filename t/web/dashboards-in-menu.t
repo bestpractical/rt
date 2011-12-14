@@ -36,7 +36,7 @@ ok( $m->login(), "relogged in" );
 
 $m->get_ok( $baseurl . "/Search/Simple.html" );
 $m->follow_link_ok( { text => 'system foo' }, 'follow system foo link' );
-$m->title_is( 'Dashboard system foo', 'got system foo dashboard page' );
+$m->title_is( 'system foo Dashboard', 'got system foo dashboard page' );
 
 diag "setting in admin users";
 my $root = RT::CurrentUser->new( $RT::SystemUser );
@@ -64,7 +64,7 @@ ok( $m->login(), "relogged in" );
 $m->get_ok( $baseurl . "/Search/Simple.html" );
 ok( !$m->find_link( text => 'system foo' ), 'no system foo link' );
 $m->follow_link_ok( { text => 'self foo' }, 'follow self foo link' );
-$m->title_is( 'Dashboard self foo', 'got self foo dashboard page' );
+$m->title_is( 'self foo Dashboard', 'got self foo dashboard page' );
 
 diag "setting in prefs";
 $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
@@ -74,7 +74,7 @@ $m->click_button(name => 'add');
 $m->content_contains( 'Preferences saved for dashboards in menu.',
     'prefs saved' );
 $m->follow_link_ok( { text => 'self bar' }, 'follow self bar link' );
-$m->title_is( 'Dashboard self bar', 'got self bar dashboard page' );
+$m->title_is( 'self bar Dashboard', 'got self bar dashboard page' );
 $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
 $m->form_with_fields('Reset');
 $m->click;

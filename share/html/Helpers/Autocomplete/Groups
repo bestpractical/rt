@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $r->content_type('application/json');
-<% JSON::to_json( \@suggestions ) |n %>
+<% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
 $term => undef
@@ -55,8 +55,6 @@ $exclude => ''
 $op => 'LIKE'
 </%ARGS>
 <%INIT>
-require JSON;
-
 $m->abort unless defined $term
              and length $term;
 

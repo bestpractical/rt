@@ -204,9 +204,9 @@ my (@do_check, %redo_check);
 my @CHECKS;
 foreach my $table ( qw(Users Groups) ) {
     push @CHECKS, "$table -> Principals" => sub {
-        my $msg = "A record in $table refers not existing record in Principals."
-            ." The script can either create missing record in Principals"
-            ." or delete record in $table.";
+        my $msg = "A record in $table refers to a nonexistent record in Principals."
+            ." The script can either create the missing record in Principals"
+            ." or delete the record in $table.";
         my ($type) = ($table =~ /^(.*)s$/);
         check_integrity(
             $table, 'id' => 'Principals', 'id',
@@ -232,9 +232,9 @@ foreach my $table ( qw(Users Groups) ) {
     };
 
     push @CHECKS, "Principals -> $table" => sub {
-        my $msg = "A record in Principals refers not existing record in $table."
-            ." In some cases it's possible to resurrect manually such records,"
-            ." but this utility can only delete";
+        my $msg = "A record in Principals refers to a nonexistent record in $table."
+            ." In some cases it's possible to manually resurrect such records,"
+            ." but this utility can only delete records.";
 
         check_integrity(
             'Principals', 'id' => $table, 'id',
@@ -307,7 +307,7 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found role group of not existant queue."
+                'Delete', "Found a role group of a nonexistent queue."
             );
 
             delete_record( 'Groups', $id );
@@ -332,7 +332,7 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a role group of not existant ticket."
+                'Delete', "Found a role group of a nonexistent ticket."
             );
 
             delete_record( 'Groups', $id );
@@ -384,8 +384,8 @@ push @CHECKS, 'User Defined Group Name uniqueness' => sub {
 
 push @CHECKS, 'GMs -> Groups, Members' => sub {
     my $msg = "A record in GroupMembers references an object that doesn't exist."
-        ." May be you deleted a group or principal directly from DB?"
-        ." Usually it's ok to delete such records.";
+        ." Maybe you deleted a group or principal directly from the database?"
+        ." Usually it's OK to delete such records.";
     check_integrity(
         'GroupMembers', 'GroupId' => 'Groups', 'id',
         action => sub {
@@ -441,7 +441,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
             return unless prompt(
                 'Delete',
                 "Found a record in CachedGroupMembers for a (Group, Member) pair"
-                ." that doesn't exist in GroupMembers table."
+                ." that doesn't exist in the GroupMembers table."
             );
 
             delete_record( 'CachedGroupMembers', $id );
@@ -497,7 +497,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
             my $id = shift;
             return unless prompt(
                 'Delete',
-                "Found a record in CachedGroupMembers with Via referencing not existing record."
+                "Found a record in CachedGroupMembers with Via that references a nonexistent record."
             );
 
             delete_record( 'CachedGroupMembers', $id );
@@ -515,7 +515,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
             my $id = shift;
             return unless prompt(
                 'Delete',
-                "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
+                "Found a record in CachedGroupMembers that references a nonexistent record in CachedGroupMembers table."
             );
 
             delete_record( 'CachedGroupMembers', $id );
@@ -532,7 +532,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
             my $id = shift;
             return unless prompt(
                 'Delete',
-                "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
+                "Found a record in CachedGroupMembers that references a nonexistent record in CachedGroupMembers table."
             );
 
             delete_record( 'CachedGroupMembers', $id );
@@ -588,7 +588,7 @@ push @CHECKS, 'Tickets -> other' => sub {
             my $id = shift;
             return unless prompt(
                 'Delete',
-                "Found a ticket that's been merged into a ticket that don't exist anymore."
+                "Found a ticket that's been merged into a ticket that no longer exists."
             );
 
             delete_record( 'Tickets', $id );
@@ -634,8 +634,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction regarding changes of Owner,"
-                ." but User with id stored in OldValue column doesn't exist anymore."
+                'Delete', "Found a transaction regarding Owner changes,"
+                ." but the User with id stored in OldValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -648,8 +648,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction regarding changes of Owner,"
-                ." but User with id stored in NewValue column doesn't exist anymore."
+                'Delete', "Found a transaction regarding Owner changes,"
+                ." but the User with id stored in NewValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -663,8 +663,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction describing watchers change,"
-                ." but User with id stored in OldValue column doesn't exist anymore."
+                'Delete', "Found a transaction describing watcher changes,"
+                ." but the User with id stored in OldValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -678,8 +678,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction describing watchers change,"
-                ." but User with id stored in NewValue column doesn't exist anymore."
+                'Delete', "Found a transaction describing watcher changes,"
+                ." but the User with id stored in NewValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -708,8 +708,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction describing queue change,"
-                ." but Queue with id stored in NewValue column doesn't exist anymore."
+                'Delete', "Found a transaction describing a queue change,"
+                ." but the Queue with id stored in the NewValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -722,8 +722,8 @@ push @CHECKS, 'Transactions -> other' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found a transaction describing queue change,"
-                ." but Queue with id stored in OldValue column doesn't exist anymore."
+                'Delete', "Found a transaction describing a queue change,"
+                ." but the Queue with id stored in the OldValue column doesn't exist anymore."
             );
 
             delete_record( 'Transactions', $id );
@@ -948,7 +948,7 @@ sub check_integrity {
 
     my $sth = execute_query( $query, @binds );
     while ( my ($sid, @set) = $sth->fetchrow_array ) {
-        print STDERR "Record #$sid in $stable references not existent record in $ttable\n";
+        print STDERR "Record #$sid in $stable references a nonexistent record in $ttable\n";
         for ( my $i = 0; $i < @scols; $i++ ) {
             print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
         }

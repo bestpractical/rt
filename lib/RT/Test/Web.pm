@@ -339,6 +339,33 @@ sub custom_field_input {
     return $res;
 }
 
+sub check_links {
+    my $self = shift;
+    my %args = @_;
+
+    my %has = map {$_ => 1} @{ $args{'has'} };
+    my %has_no = map {$_ => 1} @{ $args{'has_no'} };
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @found;
+
+    my @links = $self->followable_links;
+    foreach my $text ( grep defined && length, map $_->text, @links ) {
+        push @found, $text if $has_no{ $text };
+        delete $has{ $text };
+    }
+    if ( @found || keys %has ) {
+        Test::More::ok( 0, "expected links" );
+        Test::More::diag( "didn't expect, but found: ". join ', ', map "'$_'", @found )
+            if @found;
+        Test::More::diag( "didn't find, but expected: ". join ', ', map "'$_'", keys %has )
+            if keys %has;
+        return 0;
+    }
+    return Test::More::ok( 1, "expected links" );
+}
+
 sub DESTROY {
     my $self = shift;
     if ( !$RT::Test::Web::DESTROY++ ) {

@@ -105,7 +105,8 @@ RT::InitLogging();
 
 require RT::Interface::Web::Session;
 
-if( $opt{'older'} or my $alogoff = int RT->Config->Get('AutoLogoff') ) {
+my $alogoff = int RT->Config->Get('AutoLogoff');
+if ( $opt{'older'} or $alogoff ) {
     my $min;
     foreach ($alogoff*60, $opt{'older'}) {
         next unless $_;

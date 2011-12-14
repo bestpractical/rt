@@ -70,6 +70,7 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 use List::MoreUtils qw();
+use JSON qw();
 
 =head2 SquishedCSS $style
 
@@ -146,7 +147,16 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
+=head2 EncodeJSON SCALAR
 
+Encodes the SCALAR to JSON and returns a JSON string.  SCALAR may be a simple
+value or a reference.
+
+=cut
+
+sub EncodeJSON {
+    JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+}
 
 =head2 WebCanonicalizeInfo();
 
@@ -2868,6 +2878,16 @@ sub _NewScrubber {
     $scrubber->comment(0);
 
     return $scrubber;
+}
+
+=head2 JSON
+
+Redispatches to L<RT::Interface::Web/EncodeJSON>
+
+=cut
+
+sub JSON {
+    RT::Interface::Web::EncodeJSON(@_);
 }
 
 package RT::Interface::Web;

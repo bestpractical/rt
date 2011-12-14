@@ -196,6 +196,9 @@ A complete list of acceptable fields for this beastie:
    +   Requestor       => Email address
    +   Cc              => Email address 
    +   AdminCc         => Email address 
+   +   RequestorGroup  => Group name
+   +   CcGroup         => Group name
+   +   AdminCcGroup    => Group name
        TimeWorked      => 
        TimeEstimated   => 
        TimeLeft        => 
@@ -705,7 +708,11 @@ sub ParseLines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
-                if (($tag =~ /^(requestor|cc|admincc)$/i or grep {lc $_ eq $tag} keys %LINKTYPEMAP) and $args{$tag} =~ /,/) {
+                if (
+                    ($tag =~ /^(requestor|cc|admincc)(group)?$/i
+                        or grep {lc $_ eq $tag} keys %LINKTYPEMAP)
+                    and $args{$tag} =~ /,/
+                ) {
                     $args{$tag} = [ split /,\s*/, $args{$tag} ];
                 }
             }
@@ -726,6 +733,21 @@ sub ParseLines {
             }
         }
         $args{$date} = $dateobj->ISO;
+    }
+
+    foreach my $role (qw(requestor cc admincc)) {
+        next unless my $value = $args{ $role . 'group' };
+
+        my $group = RT::Group->new( $self->CurrentUser );
+        $group->LoadUserDefinedGroup( $value );
+        unless ( $group->id ) {
+            $RT::Logger->error("Couldn't load group '$value'");
+            next;
+        }
+
+        $args{ $role } = $args{ $role } ? [$args{ $role }] : []
+            unless ref $args{ $role };
+        push @{ $args{ $role } }, $group->PrincipalObj->id;
     }
 
     $args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses
