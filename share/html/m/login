@@ -105,7 +105,7 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 <& /Elements/Submit, Label => loc('Login')&>
 
 % foreach my $key (keys %ARGS) {
-%  if (($key ne 'user') and ($key ne 'pass')) {
+%  if ( $key !~ /^(?:user|pass|actions)$/ ) {
 % 	if (ref($ARGS{$key}) =~ /ARRAY/) {
 % 		foreach my $val (@{$ARGS{$key}}) {
 <input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />

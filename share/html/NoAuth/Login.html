@@ -49,4 +49,9 @@
 my ($good, $msg) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
 $ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
+
+% if ( RT::Interface::Web::MobileClient() || $ARGS{mobile} ) {
+<& /m/login, %ARGS &>
+% } else {
 <& /Elements/Login, %ARGS &>
+% }
