@@ -100,7 +100,8 @@ sub safe_run_child (&) {
     };
 
     close($writer);
-    my ($response) = <$reader>;
+    $reader->blocking(0);
+    my ($response) = $reader->getline;
     warn $response if $response;
 
     $dbh->{'InactiveDestroy'} = 0 if $dbh;

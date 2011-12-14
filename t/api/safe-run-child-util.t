@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 27;
+use RT::Test tests => 35;
 use Test::Warn;
 
 use RT::Util qw(safe_run_child);
@@ -130,6 +130,43 @@ END
     };
     is $res, 'parent', "correct return value";
     is( RT::Test->file_content([$script .'.res'], unlink => 1 ),
+        'child',
+        'correct file content',
+    );
+    is_handle_ok();
+}
+
+# fork+parent that doesn't wait()
+{
+    require Time::HiRes;
+    my $start = Time::HiRes::time();
+    my $pid;
+    my $res = safe_run_child {
+        if ($pid = fork) { return 'parent' }
+
+        open my $fh, '>', RT::Test->temp_directory .'/first';
+        print $fh "child";
+        close $fh;
+
+        sleep 5;
+
+        open $fh, '>', RT::Test->temp_directory .'/second';
+        print $fh "child";
+        close $fh;
+
+        exit 0;
+    };
+    ok( Time::HiRes::time() - $start < 5, "Didn't wait until child finished" );
+    is $res, 'parent', "correct return value";
+    is( RT::Test->file_content([RT::Test->temp_directory, 'first'], unlink => 1 ),
+        'child',
+        'correct file content',
+    );
+    ok( not(-f RT::Test->temp_directory.'/second'), "Second file does not exist yet");
+    is_handle_ok();
+
+    ok(waitpid($pid,0), "Waited until child finished to reap");
+    is( RT::Test->file_content([RT::Test->temp_directory, 'second'], unlink => 1 ),
         'child',
         'correct file content',
     );
