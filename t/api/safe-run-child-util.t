@@ -141,12 +141,20 @@ END
     require Time::HiRes;
     my $start = Time::HiRes::time();
     my $pid;
+
+    # Set up a poor man's semaphore
+    my $all_set = 0;
+    $SIG{USR1} = sub {$all_set++};
+
     my $res = safe_run_child {
         if ($pid = fork) { return 'parent' }
 
         open my $fh, '>', RT::Test->temp_directory .'/first';
         print $fh "child";
         close $fh;
+        # Signal that the first file is now all set; we need to do this
+        # to avoid a race condition
+        kill 10, getppid(); # USR1
 
         sleep 5;
 
@@ -157,6 +165,15 @@ END
         exit 0;
     };
     ok( Time::HiRes::time() - $start < 5, "Didn't wait until child finished" );
+
+    # Wait for up to 3 seconds to get signaled that the child has made
+    # the file (the USR1 will break out of the sleep()).  This _should_
+    # be immediate, but there's a race between the parent and child
+    # here, since there's no wait()'ing.  There's still a tiny race
+    # where the signal could come in betwene the $all_set check and the
+    # sleep, but that just means we sleep for 3 seconds uselessly.
+    sleep 3 unless $all_set;
+
     is $res, 'parent', "correct return value";
     is( RT::Test->file_content([RT::Test->temp_directory, 'first'], unlink => 1 ),
         'child',
