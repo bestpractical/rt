@@ -98,6 +98,60 @@ my $COLUMN_MAP = {
 	attribute => 'Stage',
 	value     => sub { return $_[0]->Stage() },
     },
+    RemoveCheckBox => {
+        title => sub {
+            my $name = 'RemoveScrip';
+            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+
+            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
+                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+        },
+        value => sub {
+            my $id = $_[0]->id;
+            return '' if $_[0]->IsAdded;
+
+            my $name = 'RemoveScrip';
+            my $arg = $m->request_args->{ $name };
+
+            my $checked = '';
+            if ( $arg && ref $arg ) {
+                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+            }
+            elsif ( $arg ) {
+                $checked = 'checked="checked"' if $arg == $id;
+            }
+            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+        },
+    },
+    Move => {
+        title => 'Move',
+        value => sub {
+            my $id = $_[0]->id;
+
+            my $context = $_[2] || 0;
+            return '' unless $_[0]->IsAdded( $context );
+
+            my $name = 'MoveScrip';
+            my $args = $m->caller_args( 1 );
+            my @pass = ref $args->{'PassArguments'}
+                ? @{$args->{'PassArguments'}}
+                : ($args->{'PassArguments'});
+            my %pass = map { $_ => $args->{$_} } grep exists $args->{$_}, @pass;
+
+            my $uri = RT->Config->Get('WebPath') . $m->request_path;
+
+            my @res = (
+                \'<a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveScripUp => $id ),
+                \'">', loc('[Up]'), \'</a>',
+                \' <a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveScripDown => $id ),
+                \'">', loc('[Down]'), \'</a>'
+            );
+
+            return @res;
+        },
+    },
 };
 
 </%ONCE>
