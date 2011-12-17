@@ -87,13 +87,12 @@ if ( $id ) {
     }
 }
 
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
 if ($QueueObj->id) {
     $Scrips->LimitToQueue($id);
-    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
 }
 else {
     $Scrips->LimitToGlobal();
-    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'GlobalScrips'};
 }
 
 # deal with modifying and deleting existing scrips
