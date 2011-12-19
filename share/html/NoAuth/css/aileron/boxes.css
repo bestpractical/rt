@@ -91,6 +91,7 @@
 
 .titlebox .titlebox-title {
  position: relative;
+ z-index: 1;
 }
 
 .titlebox .titlebox-title a {
