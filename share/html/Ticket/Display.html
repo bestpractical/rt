@@ -199,7 +199,7 @@ $m->callback(
 # This code does automatic redirection if any updates happen. 
 MaybeRedirectForResults(
     Actions   => \@Actions,
-    $TicketObj->Type eq 'approval' && RT->Config->Get('NoTicketInterfaceForApprovals')
+    $TicketObj->Type eq 'approval' && RT->Config->Get('ForceApprovalsView')
         ? (Path      => "/Approvals/Display.html", Force => 1)
         : (Path      => "/Ticket/Display.html")
     ,
