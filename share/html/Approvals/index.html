@@ -79,11 +79,11 @@ foreach my $arg ( keys %ARGS ) {
     }
 
     my ($val, $msg);
-    if ( $ARGS{$arg} eq 'deny' ) {
-         ( $val, $msg ) = $ticket->SetStatus('rejected');
+    if ( $ARGS{$arg} eq 'deny' && $ticket->Status !~ /^(rejected|deleted)/ ) {
+        ( $val, $msg ) = $ticket->SetStatus('rejected');
     }
-    elsif ( $ARGS{$arg} eq 'approve' ) {
-         ( $val, $msg ) = $ticket->SetStatus('resolved');
+    elsif ( $ARGS{$arg} eq 'approve' && $ticket->Status ne 'resolved') {
+        ( $val, $msg ) = $ticket->SetStatus('resolved');
     }
     push ( @actions, loc("Approval #[_1]: [_2]",$ticket->id, $msg )) if ($msg);
 }
