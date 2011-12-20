@@ -75,6 +75,8 @@ function filter_cascade (id, val) {
         else {
             for (i in complete_children) {
                 if (!complete_children[i].label ||
+                      (complete_children[i].hasAttribute &&
+                            !complete_children[i].hasAttribute('label') ) ||
                         complete_children[i].label.substr(0, val.length) == val ) {
                     if ( complete_children[i].cloneNode ) {
                         new_option = complete_children[i].cloneNode(true);
