@@ -3143,8 +3143,12 @@ sub SetStatus {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( !$args{Force} && $lifecycle->IsInactive( $new ) && $self->HasUnresolvedDependencies) {
-        return (0, $self->loc('That ticket has unresolved dependencies'));
+    if (   !$args{Force}
+        && !$lifecycle->IsInactive($self->Status)
+        && $lifecycle->IsInactive($new)
+        && $self->HasUnresolvedDependencies )
+    {
+        return ( 0, $self->loc('That ticket has unresolved dependencies') );
     }
 
     my $now = RT::Date->new( $self->CurrentUser );
