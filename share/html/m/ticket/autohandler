@@ -1,0 +1,8 @@
+<%init>
+# Redirect to the approvals view if we're trying to get an approvals ticket
+MaybeRedirectToApproval(
+    Whitelist   => qr{/(?:create|select_create_queue)$}i,
+    ARGSRef     => \%ARGS,
+);
+$m->call_next;
+</%init>
