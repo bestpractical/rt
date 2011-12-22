@@ -239,7 +239,7 @@ sub MakeLinks {
         $topic_info .= ": " . $topic->Description() if $topic->Description;
 
         if ($haschild) { # has topics below it
-            $query  = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
+            $query  = "Topics.html?id=" . $topic->Id . "&amp;class=" . $currclass_id;
             $output = qq(<li><a href="$query">$topic_info</a>);
         } else {
             $output = qq(<li>$topic_info);
@@ -250,7 +250,7 @@ sub MakeLinks {
         $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
         if ( $Articles->Count ) {
             my $article_text = " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")";
-            my $query  = "Topics.html?id=" . $topic->Id . "&class=$currclass_id&showall=1";
+            my $query  = "Topics.html?id=" . $topic->Id . "&amp;class=$currclass_id&amp;showall=1";
             $output .= qq(<a href="$query">$article_text</a>);
         }
 
