@@ -165,6 +165,7 @@ if ( $Run ) {
                     );
 
                     my $sth = $dbh->prepare('select * from Users');
+                    $sth->execute();
                 };
 
                 unless ( $@ ) {
