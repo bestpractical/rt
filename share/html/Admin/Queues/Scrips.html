@@ -47,12 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-
-% unless ( $QueueObj->Disabled ) { # Global scrips does not apply to disabled queues
-<h2><&|/l&>Scrips which apply to all queues</&></h2>
-<& /Admin/Elements/ListGlobalScrips &>
-<br />
-% }
 <& /Admin/Elements/EditScrips, title => $title, %ARGS &>
 <%init>
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
