@@ -230,7 +230,7 @@ CREATE TABLE Scrips (
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
-  Stage varchar(32) NULL  ,
+  Disabled integer NOT NULL DEFAULT 0 ,
   Template integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -246,6 +246,7 @@ CREATE SEQUENCE objectscrips_id_seq;
 CREATE TABLE ObjectScrips (
   id INTEGER DEFAULT nextval('objectscrips_id_seq'),
   Scrip integer NOT NULL,
+  Stage varchar(32) NOT NULL DEFAULT 'TransactionCreate' ,
   ObjectId integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 

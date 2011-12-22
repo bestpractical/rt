@@ -107,11 +107,12 @@ $id ||= 0;
 my $find_scrips = sub {
     my %args = (Added => 1, @_);
     my $scrips = RT::Scrips->new($session{'CurrentUser'});
-    $scrips->Limit( FIELD => 'Stage', VALUE => $args{'Stage'} )
+    $scrips->LimitByStage( $args{'Stage'} )
         if $args{'Stage'};
     my $method = $args{'Added'}? 'LimitToAdded' : 'LimitToNotAdded';
     $scrips->$method(0, $id);
     $scrips->ApplySortOrder if $args{'Added'};
+    $scrips->FindAllRows;
     return $scrips;
 };
 

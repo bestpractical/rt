@@ -93,11 +93,6 @@ my $COLUMN_MAP = {
 	attribute => 'Description',
 	value     => sub { return $_[0]->Description() },
     },
-    Stage => {
-        title     => 'Stage', # loc
-	attribute => 'Stage',
-	value     => sub { return $_[0]->Stage() },
-    },
     RemoveCheckBox => {
         title => sub {
             my $name = 'RemoveScrip';

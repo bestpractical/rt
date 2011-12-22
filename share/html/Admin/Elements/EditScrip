@@ -79,11 +79,13 @@
     Queue => $Queue,
 &></td></tr>
 
+% if ( $id eq 'new' ) {
 <tr><td class="label"><&|/l&>Stage</&>:</td><td class="value">\
 <& /Admin/Elements/SelectStage,
     Name => "Scrip-$id-Stage",
-    Default => $ARGS{"Scrip-$id-Stage"} || $scrip->Stage,
+    Default => $ARGS{"Scrip-$id-Stage"},
 &></td></tr>
+% }
 
 </table>
 </&>

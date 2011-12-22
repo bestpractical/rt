@@ -66,8 +66,6 @@ my @stages = 'TransactionCreate';
 push @stages, RT->Config->Get('UseTransactionBatch')
             ? 'TransactionBatch'
             : ['TransactionBatch', 'TransactionBatch (DISABLED)'];
-
-push @stages, 'Disabled';
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'

@@ -77,6 +77,7 @@ sub Neighbors {
     my %args = @_;
 
     my $res = $self->CollectionClass->new( $self->CurrentUser );
+    $res->Limit( FIELD => 'Stage', VALUE => $args{'Stage'} || $self->Stage );
     return $res;
 }
 
@@ -103,9 +104,16 @@ Set Scrip to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Scrip will be stored as a int(11).)
 
+=head2 Stage
 
-=cut
+Returns the current value of Stage.
+(In the database, Stage is stored as varchar(32).)
 
+=head2 SetStage VALUE
+
+Set Stage to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Stage will be stored as a varchar(32).)
 
 =head2 ObjectId
 
@@ -187,6 +195,8 @@ sub _CoreAccessible {
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Scrip =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Stage =>
+		{read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => 'TransactionCreate'},
         ObjectId =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         SortOrder =>

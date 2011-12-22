@@ -37,7 +37,12 @@ my $sid;
     is value_name($form, "Scrip-$sid-ScripCondition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-ScripAction"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
-    is value_name($form, "Scrip-$sid-Stage"), 'TransactionBatch', 'correct stage';
+
+    {
+        my $rec = RT::ObjectScrip->new( RT->SystemUser );
+        $rec->LoadByCols( Scrip => $sid, ObjectId => $queue->id );
+        is $rec->Stage, 'TransactionBatch', "correct stage";
+    }
 
     my $tmp_fn = File::Spec->catfile( RT::Test->temp_directory, 'transactions' );
     open my $tmp_fh, '+>', $tmp_fn or die $!;
