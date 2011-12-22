@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 20;
+use RT::Test tests => 22;
 
 my $ticket = RT::Test->create_ticket(
     Subject => 'test bulk update',
@@ -62,4 +62,22 @@ $m->field('Due_Date' => "2016-01-01 00:00:00");
 $m->click('SubmitTicket');
 $m->text_contains("Due: (Fri Jan 01 00:00:00 2016)", 'due date successfully updated');
 
-# XXX TODO test other parts, i.e. people and links
+$m->get( $url . '/Ticket/ModifyAll.html?id=' . $ticket->id );
+$m->form_name('TicketModifyAll');
+$m->field(WatcherTypeEmail => 'Requestor');
+$m->field(WatcherAddressEmail => 'root@localhost');
+$m->click('SubmitTicket');
+$m->text_contains(
+    "Added principal as a Requestor for this ticket",
+    'watcher is added',
+);
+$m->form_name('TicketModifyAll');
+$m->field(WatcherTypeEmail => 'Requestor');
+$m->field(WatcherAddressEmail => 'root@localhost');
+$m->click('SubmitTicket');
+$m->text_contains(
+    "That principal is already a Requestor for this ticket",
+    'no duplicate watchers',
+);
+
+# XXX TODO test other parts, i.e. links
