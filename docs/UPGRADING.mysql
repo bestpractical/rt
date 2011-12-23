@@ -70,9 +70,9 @@ this issue, the upgrade process will need to modify the schema.
     restore your database from the backup you made at step 1, and send a
     report to the rt-users@lists.bestpractical.com mailing list.
 
- 8) Re-run the rt-setup-database command from step 6b of the README,
-    applying the rest of the upgrades, and follow the README's remaining
-    steps.
+ 8) Re-run the `make upgrade-database` command from step 6b of the
+    README, applying the rest of the upgrades, starting with 3.7.87, and
+    follow the README's remaining steps.
 
  9) Test everything. The most important parts you have to test:
      * binary attachments, like docs, PDFs, and images
