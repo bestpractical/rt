@@ -192,10 +192,6 @@ if ( my $tmp = $ARGS{ $name_prefix ."Articles_Content" } ) {
                              VALUE           => $tmp,
                              ENTRYAGGREGATOR => "OR" );
     $articles_basics->LimitAppliedClasses( Queue => $QueueObj );
-    $articles_basics->OrderByCols(
-        { FIELD => 'SortOrder', ORDER => 'ASC' },
-        { FIELD => 'Name',      ORDER => 'ASC' },
-    );
 }
 
 my $hotlist = RT::Articles->new( $session{'CurrentUser'} );
