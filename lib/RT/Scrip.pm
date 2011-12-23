@@ -243,10 +243,10 @@ sub NotAddedTo {
 
 sub AddToObject {
     my $self = shift;
-    my $object = shift;
+    my %args = @_%2? (ObjectId => @_) : (@_);
 
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
-    return $rec->Add( Scrip => $self, ObjectId => $object );
+    return $rec->Add( %args, Scrip => $self );
 }
 
 sub RemoveFromObject {

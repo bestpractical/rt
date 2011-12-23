@@ -86,6 +86,8 @@
 <p><i><&|/l&>(No scrips)</&></i></p>
 % }
 
+<& SelectStageForAdded &>
+
 <& /Elements/Submit,
     Name => 'AddScrips',
     Caption => loc("Apply selected scrips"),
@@ -152,7 +154,7 @@ if ( $AddScrips ) {
         $scrip->Load( $sid );
         next unless $scrip->id;
 
-        my ($status, $msg) = $scrip->AddToObject( $id );
+        my ($status, $msg) = $scrip->AddToObject( $id, Stage => $Stage );
         push @actions, $msg;
     }
 }
@@ -187,6 +189,7 @@ $RemoveScrips => undef
 
 @AddScrip => ()
 $AddScrips => undef
+$Stage     => 'TransactionCreate'
 
 $MoveScripUp => undef
 $MoveScripDown => undef
