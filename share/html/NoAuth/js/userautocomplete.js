@@ -107,6 +107,20 @@ jQuery(function() {
 
         jQuery(input)
             .addClass('autocompletes-user')
-            .autocomplete(options);
+            .autocomplete(options)
+            .data("autocomplete")
+            ._renderItem = function(ul, item) {
+                var rendered = jQuery("<a/>");
+
+                if (item.html == null)
+                    rendered.text( item.label );
+                else
+                    rendered.html( item.html );
+
+                return jQuery("<li/>")
+                    .data( "item.autocomplete", item )
+                    .append( rendered )
+                    .appendTo( ul );
+            };
     }
 });
