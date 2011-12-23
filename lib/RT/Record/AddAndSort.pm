@@ -89,8 +89,8 @@ sub Create {
 
     unless ( defined $args{'SortOrder'} ) {
         $args{'SortOrder'} = $self->NextSortOrder(
+            %args,
             $tfield  => $target,
-            ObjectId => $args{'ObjectId'},
         );
     }
 
@@ -128,7 +128,7 @@ sub Add {
     }
 
     return $self->Create(
-        $field => $tid, ObjectId => $oid,
+        %args, $field => $tid, ObjectId => $oid,
     );
 }
 
