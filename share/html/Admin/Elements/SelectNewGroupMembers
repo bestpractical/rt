@@ -57,7 +57,7 @@ jQuery(function(){
             jQuery(event.target).val(ui.item.value);
             jQuery(event.target).closest("form").submit();
         }
-    });
+    }).addClass("autocompletes-user");
 });
 </script>
 % }

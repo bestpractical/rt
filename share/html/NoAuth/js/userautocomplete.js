@@ -105,6 +105,8 @@ jQuery(function() {
         if (queryargs.length)
             options.source += "?" + queryargs.join("&");
 
-        jQuery(input).autocomplete(options);
+        jQuery(input)
+            .addClass('autocompletes-user')
+            .autocomplete(options);
     }
 });
