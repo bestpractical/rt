@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => 18;
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
@@ -55,5 +55,31 @@ $m->login;
     $m->submit;
 
     like $m->uri, qr{\QAdmin/Users/Modify.html?id=$root_id\E};
+}
+
+# create a cf for testing
+my $cf;
+{
+    $cf = RT::CustomField->new(RT->SystemUser);
+    my ($id,$msg) = $cf->Create(
+        Name => 'Test',
+        Type => 'Select',
+        MaxValues => '1',
+        Queue => $q->id,
+    );
+    ok($id,$msg);
+
+    ($id,$msg) = $cf->AddValue(Name => 'Enoch', Description => 'Root');
+    ok($id,$msg);
+}
+
+# test custom field values auto completer
+{
+    $m->get_ok('/Helpers/Autocomplete/CustomFieldValues?term=eNo&Object---CustomField-'. $cf->id .'-Value');
+    require JSON;
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [{"value" =>  "Enoch","label" => "Enoch (Root)"}]
+    );
 }
 
