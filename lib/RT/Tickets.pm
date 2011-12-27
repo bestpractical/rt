@@ -658,7 +658,6 @@ sub _TransDateLimit {
             FIELD         => 'Created',
             OPERATOR      => ">=",
             VALUE         => $daystart,
-            CASESENSITIVE => 0,
             @rest
         );
         $sb->_SQLLimit(
@@ -666,7 +665,6 @@ sub _TransDateLimit {
             FIELD         => 'Created',
             OPERATOR      => "<=",
             VALUE         => $dayend,
-            CASESENSITIVE => 0,
             @rest,
             ENTRYAGGREGATOR => 'AND',
         );
@@ -682,7 +680,6 @@ sub _TransDateLimit {
             FIELD         => 'Created',
             OPERATOR      => $op,
             VALUE         => $date->ISO,
-            CASESENSITIVE => 0,
             @rest
         );
     }
