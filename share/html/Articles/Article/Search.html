@@ -82,6 +82,8 @@
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
+    OrderBy => \@OrderBy,
+    Order => \@Order,
     Format => $format,
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
@@ -243,7 +245,7 @@ my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
 my %dates;
 
 $articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
-        OrderBy => \@OrderBy );
+    OrderBy => \@OrderBy, Order => \@Order, );
 
 $m->callback( %ARGS, _Search => $articles );
 
