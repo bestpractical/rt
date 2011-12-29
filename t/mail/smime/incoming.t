@@ -12,9 +12,6 @@ use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
 
-# catch any outgoing emails
-RT::Test->set_mail_catcher;
-
 my $keys = RT::Test::get_abs_relocatable_dir(
     (File::Spec->updir()) x 2,
     qw(data smime keys),
