@@ -78,13 +78,7 @@ my $user;
     ok($user->Load('root'), "Loaded user 'root'");
     is($user->EmailAddress, 'root@localhost');
 
-    open my $fh, '<:raw', File::Spec->catfile($keys, 'root@example.com.crt')
-        or die $!;
-    my ($status, $msg) = $user->AddCustomFieldValue(
-        Field => 'SMIME Key',
-        Value => do { local $/; <$fh> },
-    );
-    ok $status, "added user's key" or diag "error: $msg";
+    RT::Test->import_smime_key( 'root@example.com.crt' => $user );
 }
 
 RT::Test->clean_caught_mails;
