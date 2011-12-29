@@ -97,7 +97,7 @@ END
     my ($status, $id) = RT::Test->send_via_mailgate(
         $mail, queue => $queue->Name,
     );
-    is $status, 0, "successfuly executed mailgate";
+    is $status >> 8, 0, "successfuly executed mailgate";
 
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load( $id );
