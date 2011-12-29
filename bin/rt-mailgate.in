@@ -57,11 +57,16 @@ use warnings;
 
 use Getopt::Long;
 
-my $opts = { 'verify-ssl' => 1 };
+my $opts = { };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "jar=s", "help",    "debug",    "extension=s",
             "timeout=i", "verify-ssl!",
           );
+
+die "Verifying SSL certificates requires LWP::UserAgent 6.0 or higher.\n"
+    if $opts->{"verify-ssl"} and not LWP::UserAgent->can("ssl_opts");
+
+$opts->{"verify-ssl"} = 1 unless defined $opts->{"verify-ssl"};
 
 my $gateway = RT::Client::MailGateway->new();
 
@@ -150,7 +155,8 @@ sub get_useragent {
     my $opts = shift;
     my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
-    $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+    $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} )
+        if $ua->can("ssl_opts");
     return $ua;
 }
 
@@ -366,6 +372,9 @@ regardless of if their hostname matches the certificate, and regardless
 of CA.  This is required if you have a self-signed certificate, or some
 other certificate which is not traceable back to an certificate your
 system ultimitely trusts.
+
+Verifying SSL certificates requires L<LWP::UserAgent> version 6.0 or
+higher; explicitly passing C<--verify-ssl> on prior versions will error.
 
 =item C<--extension> OPTIONAL
 
