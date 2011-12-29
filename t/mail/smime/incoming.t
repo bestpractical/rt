@@ -67,6 +67,13 @@ my $queue = RT::Test->load_or_create_queue(
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
+my $user = RT::Test->load_or_create_user(
+    Name => 'root@example.com',
+    EmailAddress => 'root@example.com',
+);
+RT::Test->import_smime_key('root@example.com.crt', $user);
+RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
+
 my $mail = RT::Test->open_mailgate_ok($url);
 print $mail <<EOF;
 From: root\@localhost
@@ -99,7 +106,7 @@ RT::Test->close_mailgate_ok($mail);
     run3(
         shell_quote(
             qw(openssl smime -encrypt  -des3),
-            -from    => 'root@localhost',
+            -from    => 'root@example.com',
             -to      => 'rt@' . $RT::rtname,
             -subject => "Encrypted message for queue",
             File::Spec->catfile( $keys, 'sender@example.com.crt' ),
@@ -110,7 +117,7 @@ RT::Test->close_mailgate_ok($mail);
     );
 
     my ($status, $tid) = RT::Test->send_via_mailgate( $buf );
-    ok !$status, "executed gate";
+    is ($status >> 8, 0, "The mail gateway exited normally");
 
     my $tick = RT::Ticket->new( $RT::SystemUser );
     $tick->Load( $tid );
@@ -148,7 +155,7 @@ RT::Test->close_mailgate_ok($mail);
             '|',
             shell_quote(
                 qw(openssl smime -encrypt -des3),
-                -from    => 'root@localhost',
+                -from    => 'root@example.com',
                 -to      => 'rt@' . RT->Config->Get('rtname'),
                 -subject => "Encrypted and signed message for queue",
                 File::Spec->catfile( $keys, 'sender@example.com.crt' ),
