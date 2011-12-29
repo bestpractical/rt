@@ -11,6 +11,7 @@
 /lib/RT/Generated.pm
 /Makefile
 /t/data/gnupg/keyrings/random_seed
+/t/data/smime/keys/demoCA/*.old
 /t/data/configs/apache2.2+fastcgi.conf
 /t/data/configs/apache2.2+mod_perl.conf
 /t/security/embargo/
