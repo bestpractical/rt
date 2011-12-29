@@ -1381,22 +1381,32 @@ sub trust_gnupg_key {
 sub import_smime_key {
     my $self = shift;
     my $key  = shift;
+    my $user = shift;
 
     my $path = find_relocatable_path( 'data', 'smime', 'keys' );
     die "can't find the dir where smime keys are stored"
         unless $path;
 
-    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
-    die "SMIME keyring '$keyring' doesn't exist"
-        unless $keyring && -e $keyring;
-
-    $key .= ".pem";
+    $key .= ".pem" unless $key =~ /\.(pem|crt|key)$/;
 
     my $content = RT::Test->file_content( [ $path, $key ] );
-    open my $fh, '>:raw', File::Spec->catfile($keyring, $key)
-        or die "can't open file: $!";
-    print $fh $content;
-    close $fh;
+
+    if ( $user ) {
+        my ($status, $msg) = $user->AddCustomFieldValue(
+            Field => 'SMIME Key',
+            Value => $content,
+        );
+        die "Couldn't set CF: $msg" unless $status;
+    } else {
+        my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+        die "SMIME keyring '$keyring' doesn't exist"
+            unless $keyring && -e $keyring;
+
+        open my $fh, '>:raw', File::Spec->catfile($keyring, $key)
+            or die "can't open file: $!";
+        print $fh $content;
+        close $fh;
+    }
 
     return;
 }
