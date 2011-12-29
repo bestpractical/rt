@@ -255,6 +255,7 @@ Pod::Usage
 $deps{'SSL-MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
 Net::SSL
+LWP::UserAgent 6.0
 LWP::Protocol::https
 Mozilla::CA
 .
