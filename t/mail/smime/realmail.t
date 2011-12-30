@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 89;
+use RT::Test tests => 92;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
@@ -33,6 +33,22 @@ RT->Config->Set( SMIME =>
     Keyring => $keyring,
 );
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
+
+{
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my ($ret, $msg) = $cf->Create(
+        Name       => 'SMIME Key',
+        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
+        Type       => 'TextSingle',
+    );
+    ok($ret, "Custom Field created");
+
+    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
+    $OCF->Create(
+        CustomField => $cf->id,
+        ObjectId    => 0,
+    );
+}
 
 RT::Test->import_smime_key('root@example.com');
 RT::Test->import_smime_key('sender@example.com');
