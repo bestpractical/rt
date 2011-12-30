@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
+use RT::Test tests => 21;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
