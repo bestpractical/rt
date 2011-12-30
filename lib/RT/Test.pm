@@ -112,6 +112,9 @@ sub generate_port {
 BEGIN {
     $port   = generate_port();
     $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
+
+    delete $ENV{$_} for qw/LANGUAGE LC_ALL LC_MESSAGES LANG/;
+    $ENV{LANG} = "C";
 };
 
 sub import {
