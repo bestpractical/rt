@@ -52,7 +52,7 @@ my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
 
-This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
                                          <sales@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)
@@ -105,6 +105,7 @@ File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'etc/upgrade');
+File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'devel/tools');
 tag_makefile ('Makefile.in');
 tag_makefile ('README');
 
