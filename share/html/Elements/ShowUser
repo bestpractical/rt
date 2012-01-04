@@ -51,7 +51,7 @@
 # $Address is Email::Address object
 
 my $comp = '/Elements/ShowUser'. ucfirst lc $style;
-unless ( $m->comp_exists( $comp ) ) {
+unless ( RT::Interface::Web->ComponentPathIsSafe($comp) and $m->comp_exists( $comp ) ) {
     $RT::Logger->error(
         'Either system config or user #'
         . $session{'CurrentUser'}->id

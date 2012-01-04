@@ -822,6 +822,22 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
+=head2 ComponentPathIsSafe PATH
+
+Takes C<PATH> and returns a boolean indicating that the user-specified partial
+component path is safe.
+
+Currently "safe" means that the path does not start with a dot (C<.>) and does
+not contain a slash-dot C</.>.
+
+=cut
+
+sub ComponentPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+    return $path !~ m{(?:^|/)\.};
+}
+
 =head2 PathIsSafe
 
 Takes a C<< Path => path >> and returns a boolean indicating that

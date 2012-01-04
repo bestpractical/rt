@@ -1331,12 +1331,13 @@ sub Stylesheet {
 
     my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
 
+    if (RT::Interface::Web->ComponentPathIsSafe($style)) {
+        my @css_paths = map { $_ . '/NoAuth/css' } RT::Interface::Web->ComponentRoots;
 
-    my @css_paths = map { $_ . '/NoAuth/css' } RT::Interface::Web->ComponentRoots;
-
-    for my $css_path (@css_paths) {
-        if (-d "$css_path/$style") {
-            return $style
+        for my $css_path (@css_paths) {
+            if (-d "$css_path/$style") {
+                return $style
+            }
         }
     }
 
