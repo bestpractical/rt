@@ -226,14 +226,12 @@ sub CheckIntegrity {
     my $self = shift;
     $self = new $self unless ref $self;
 
-    do {
+    unless ($RT::Handle and $RT::Handle->dbh) {
         local $@;
         unless ( eval { RT::ConnectToDatabase(); 1 } ) {
             return (0, 'no connection', "$@");
         }
-    };
-
-    RT::InitLogging();
+    }
 
     require RT::CurrentUser;
     my $test_user = RT::CurrentUser->new;

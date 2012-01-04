@@ -91,6 +91,7 @@ if (grep { m/help/ } @ARGV) {
 
 require RT;
 RT->LoadConfig();
+RT->InitLogging();
 require Module::Refresh if RT->Config->Get('DevelMode');
 
 require RT::Handle;
