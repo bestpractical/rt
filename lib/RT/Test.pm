@@ -409,7 +409,11 @@ sub bootstrap_db {
         $args{$forceopt}=1;
     }
 
-    return if $args{nodb};
+    # Short-circuit the rest of ourselves if we don't want a db
+    if ($args{nodb}) {
+        __drop_database();
+        return;
+    }
 
     my $db_type = RT->Config->Get('DatabaseType');
     __create_database();
