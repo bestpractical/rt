@@ -1298,8 +1298,23 @@ sub test_app {
     my $self = shift;
     my %server_opt = @_;
 
-    require RT::Interface::Web::Handler;
-    my $app = RT::Interface::Web::Handler->PSGIApp;
+    my $app;
+
+    if ($server_opt{variant} and $server_opt{variant} eq 'rt-server') {
+        $app = do {
+            my $file = "$RT::SbinPath/rt-server";
+            my $psgi = do $file;
+            unless ($psgi) {
+                die "Couldn't parse $file: $@" if $@;
+                die "Couldn't do $file: $!"    unless defined $psgi;
+                die "Couldn't run $file"       unless $psgi;
+            }
+            $psgi;
+        };
+    } else {
+        require RT::Interface::Web::Handler;
+        $app = RT::Interface::Web::Handler->PSGIApp;
+    }
 
     require Plack::Middleware::Test::StashWarnings;
     $app = Plack::Middleware::Test::StashWarnings->wrap($app);
