@@ -560,6 +560,13 @@ sub __drop_database {
         RT::Handle->SystemDSN,
         $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
     );
+
+    # We ignore errors intentionally by not checking the return value of
+    # DropDatabase below, so let's also suppress DBI's printing of errors when
+    # we overzealously drop.
+    local $dbh->{PrintError} = 0;
+    local $dbh->{PrintWarn} = 0;
+
     RT::Handle->DropDatabase( $dbh );
     $dbh->disconnect if $my_dbh;
 }
