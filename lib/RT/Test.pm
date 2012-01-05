@@ -1276,8 +1276,10 @@ sub started_ok {
 
     require RT::Test::Web;
 
-    if ($rttest_opt{nodb}) {
-        die "you are trying to use a test web server without db, try use noinitialdata => 1 instead";
+    if ($rttest_opt{nodb} and not $rttest_opt{server_ok}) {
+        die "You are trying to use a test web server without a database. "
+           ."You may want noinitialdata => 1 instead. "
+           ."Pass server_ok => 1 if you know what you're doing.";
     }
 
 
