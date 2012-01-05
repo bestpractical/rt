@@ -1361,7 +1361,8 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, "started plack server ok");
 
-        __reconnect_rt();
+        __reconnect_rt()
+            unless $rttest_opt{nodb};
         return ("http://localhost:$port", RT::Test::Web->new);
     }
 
