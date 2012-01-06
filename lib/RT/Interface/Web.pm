@@ -2803,8 +2803,6 @@ our @SCRUBBER_ALLOWED_TAGS = qw(
 );
 
 our %SCRUBBER_ALLOWED_ATTRIBUTES = (
-    id     => 1,
-    class  => 1,
     # Match http, ftp and relative urls
     # XXX: we also scrub format strings with this module then allow simple config options
     href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
