@@ -104,7 +104,7 @@ EOT
 
 sub gv_escape($) {
     my $value = shift;
-    $value =~ s{(?=")}{\\}g;
+    $value =~ s{(?=["\\])}{\\}g;
     return $value;
 }
 
