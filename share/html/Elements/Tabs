@@ -788,7 +788,7 @@ my $build_main_nav = sub {
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
-        if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
+        if ( $request_path =~ m{^/Articles/Article/} and ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $session{'CurrentUser'} );
             $obj->Load($id);
