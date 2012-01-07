@@ -47,35 +47,32 @@
 %# END BPS TAGGED BLOCK }}}
 <input type="hidden" name="EditTopics" value="1" />
 <select multiple size="10" name="Topics">
-<%perl>
-if (@Classes) {
-  $m->print("<optgroup label=\"Current classes (".join (' ',map {$_->Name} @Classes).")\">")
-    unless $OnlyThisClass;
-  $inTree->traverse(sub {
-    my $tree = shift;
-    my $topic = $tree->getNodeValue;
-    $m->print("<option value=\"".$topic->Id."\""
-      .(exists $topics{$topic->Id} ? " selected" : "").">"
-      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
-  });
-}
-unless ($OnlyThisClass) {
-  my $class = $Classes[-1]->Id;
-  $otherTree->traverse(sub {
-    my $tree = shift;
-    my $topic = $tree->getNodeValue;
-    unless ($topic->ObjectId == $class) {
-      $class = $topic->ObjectId;
-      $m->print("</optgroup>\n");
-      my $c = RT::Class->new($session{'CurrentUser'});
-      $c->Load($topic->ObjectId);
-      $m->print("<optgroup label=\"".$c->Name."\">\n");
-    }
-    $m->print("<option value=\"".$topic->Id."\""
-      .(exists $topics{$topic->Id} ? " selected" : "").">"
-      .("&nbsp;" x ($tree->getDepth*5)).($topic->Name || loc("(no name)"))."</option>\n");
-  });
-</%perl>
+% if (@Classes) {
+%   unless ($OnlyThisClass) {
+<optgroup label="Current classes (<% join(" ", map {$_->Name} @Classes) %>)">
+%   }
+%   $inTree->traverse(sub {
+%     my $tree = shift;
+%     my $topic = $tree->getNodeValue;
+<option value="<% $topic->Id %>" <% exists $topics{$topic->Id} ? "selected" : "" %> >\
+<% "&nbsp;" x ($tree->getDepth*5) |n %><% $topic->Name || loc("(no name)") %></option>
+%   });
+% }
+% unless ($OnlyThisClass) {
+%   my $class = $Classes[-1]->Id;
+%   $otherTree->traverse(sub {
+%     my $tree = shift;
+%     my $topic = $tree->getNodeValue;
+%     unless ($topic->ObjectId == $class) {
+%       $class = $topic->ObjectId;
+</optgroup>
+%       my $c = RT::Class->new($session{'CurrentUser'});
+%       $c->Load($topic->ObjectId);
+<optgroup label="<% $c->Name %>">
+%     }
+<option value="<% $topic->Id %>" <% exists $topics{$topic->Id} ? "selected" : "" %> >\
+<% "&nbsp;" x ($tree->getDepth*5) |n %><% $topic->Name || loc("(no name)") %></option>
+%   });
 </optgroup>
 % }
 </select>
