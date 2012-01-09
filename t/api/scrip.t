@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test tests => 25;
+use RT::Test tests => 61;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -38,7 +38,7 @@ note 'basic scrips functionality test: create+execute';
     isnt ($ticket2->Priority , '87', "Ticket priority is set right");
 }
 
-
+note 'modify properties of a scrip';
 {
     my $scrip = RT::Scrip->new($RT::SystemUser);
     my ( $val, $msg ) = $scrip->Create(
@@ -108,4 +108,64 @@ note 'basic scrips functionality test: create+execute';
     ok( $val, "updated template to 'Forward': $msg" );
 
     ok( $scrip->Delete, 'delete the scrip' );
+}
+
+my $queue_B = RT::Test->load_or_create_queue( Name => 'B' );
+ok $queue_B && $queue_B->id, 'loaded or created queue';
+
+note 'check applications vs. templates';
+{
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($status, $msg) = $template->Create( Queue => $queue->id, Name => 'foo' );
+    ok $status, 'created a template';
+
+    my $scrip = RT::Scrip->new(RT->SystemUser);
+    ($status, $msg) = $scrip->Create(
+        Queue          => $queue->Id,
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 'bar',
+    );
+    ok(!$status, "couldn't create scrip, incorrect template");
+
+    ($status, $msg) = $scrip->Create(
+        Queue          => $queue->Id,
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 'foo',
+        CustomIsApplicableCode  => "1;",
+        CustomPrepareCode       => "1;",
+        CustomCommitCode        => "1;",
+    );
+    ok($status, 'created a scrip') or diag "error: $msg";
+    RT::Test->object_scrips_are($scrip, [$queue], [0, $queue_B]);
+
+    ($status, $msg) = $scrip->AddToObject( $queue_B->id );
+    ok(!$status, $msg);
+    RT::Test->object_scrips_are($scrip, [$queue], [0, $queue_B]);
+
+    $template = RT::Template->new( RT->SystemUser );
+    ($status, $msg) = $template->Create( Queue => $queue_B->id, Name => 'foo' );
+    ok $status, 'created a template';
+
+    ($status, $msg) = $scrip->AddToObject( $queue_B->id );
+    ok($status, 'added scrip to another queue');
+    RT::Test->object_scrips_are($scrip, [$queue, $queue_B], [0]);
+
+    ($status, $msg) = $scrip->RemoveFromObject( $queue_B->id );
+    ok($status, 'removed scrip from queue');
+
+    ($status, $msg) = $template->Delete;
+    ok $status, 'deleted template foo in queue B';
+
+    ($status, $msg) = $scrip->AddToObject( $queue_B->id );
+    ok(!$status, $msg);
+    RT::Test->object_scrips_are($scrip, [$queue], [0, $queue_B]);
+
+    ($status, $msg) = $template->Create( Queue => 0, Name => 'foo' );
+    ok $status, 'created a global template';
+
+    ($status, $msg) = $scrip->AddToObject( $queue_B->id );
+    ok($status, 'added scrip');
+    RT::Test->object_scrips_are($scrip, [$queue, $queue_B], [0]);
 }
