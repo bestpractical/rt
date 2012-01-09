@@ -230,7 +230,7 @@ sub check_scrips_order {
         $list->ApplySortOrder;
         is_deeply(
             [map $_->id, @{ $list->ItemsArrayRef } ],
-            [map $_->id, grep $_->IsAdded( $qid ) || $_->IsAdded( 0 ), @$scrips],
+            [map $_->id, grep $_->IsAdded( $qid ) || $_->IsGlobal, @$scrips],
             'list of scrips match expected'
         )
     }

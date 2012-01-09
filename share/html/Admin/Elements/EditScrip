@@ -89,7 +89,7 @@
 
 % if ( $id ne 'new' && $EnabledChecked ) {
 <tr><td class="label"><&|/l&>Added</&>:</td><td class="value">\
-% if ( $scrip->IsAdded(0) ) {
+% if ( $scrip->IsGlobal ) {
 <% loc('Global') %>
 % } else {
 % my $added_to = $scrip->AddedTo;

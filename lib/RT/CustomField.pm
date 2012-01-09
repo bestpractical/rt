@@ -942,7 +942,7 @@ sub ValidateContextObject {
     my $self = shift;
     my $object = shift;
 
-    return 1 if $self->IsAdded(0);
+    return 1 if $self->IsGlobal;
 
     # global only custom fields don't have objects
     # that should be used as context objects.
@@ -1300,6 +1300,8 @@ sub IsAdded {
     return undef unless $ocf->id;
     return $ocf;
 }
+
+sub IsGlobal { return shift->IsAdded(0) }
 
 =head2 AddToObject OBJECT
 

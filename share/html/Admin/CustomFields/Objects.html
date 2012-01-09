@@ -53,7 +53,7 @@
 <form action="Objects.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-% if ( $is_global ) {
+% if ( $CF->IsGlobal ) {
 <h2><&|/l&>Applies to all objects</&></h2>
 <input type="checkbox" name="RemoveCustomField-<% $CF->id %>" value="0" />
 <&|/l&>check this box to remove this Custom Field from all objects and be able to choose specific objects.</&>
@@ -140,8 +140,6 @@ if ( $UpdateObjs ) {
         }
     }
 }
-
-my $is_global = $CF->IsAdded(0);
 
 my $added = $CF->AddedTo;
 my $not_added = $CF->NotAddedTo;

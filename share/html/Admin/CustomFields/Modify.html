@@ -273,14 +273,14 @@ CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARG
     }
 }
 
-if ( $CustomFieldObj->id && $CustomFieldObj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+if ( $CustomFieldObj->id && $CustomFieldObj->IsOnlyGlobal ) {
     my ( $ret, $msg );
     my $object = $CustomFieldObj->RecordClassFromLookupType->new( $session{'CurrentUser'} );
 
-    if ( $CustomFieldObj->Disabled && $CustomFieldObj->IsAdded(0) ) {
+    if ( $CustomFieldObj->Disabled && $CustomFieldObj->IsGlobal ) {
         ( $ret, $msg ) = $CustomFieldObj->RemoveFromObject($object);
     }
-    elsif ( !$CustomFieldObj->Disabled && !$CustomFieldObj->IsAdded(0) ) {
+    elsif ( !$CustomFieldObj->Disabled && !$CustomFieldObj->IsGlobal ) {
         ( $ret, $msg ) = $CustomFieldObj->AddToObject($object);
     }
 

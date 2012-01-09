@@ -108,7 +108,7 @@ my $COLUMN_MAP = {
         },
         value => sub {
             my $id = $_[0]->id;
-            return '' if $_[0]->IsAdded;
+            return '' if $_[0]->IsGlobal;
 
             my $name = 'RemoveScrip';
             my $arg = $m->request_args->{ $name };
