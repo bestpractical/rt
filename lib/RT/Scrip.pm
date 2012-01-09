@@ -260,6 +260,18 @@ sub AddToObject {
         )
     ;
 
+    my $tname = $self->TemplateObj->Name;
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->LoadQueueTemplate( Queue => $queue? $queue->id : 0, Name => $tname );
+    $template->LoadGlobalTemplate( $tname ) if $queue && !$template->id;
+    unless ( $template->id ) {
+        if ( $queue ) {
+            return (0, $self->loc('No template [_1] in the queue', $tname));
+        } else {
+            return (0, $self->loc('No global template [_1]', $tname));
+        }
+    }
+
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
     return $rec->Add( %args, Scrip => $self );
 }
