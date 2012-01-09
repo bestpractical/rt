@@ -66,6 +66,27 @@ unless ( $AddPrincipal ) {
         $AddPrincipal = 'user'; # loc
     }
 }
+
+my $req_args = $m->request_args;
+my $hash;
+
+if ( $req_args->{'AddPrincipalForRights-group'} ) {
+    my $group = RT::Group->new( $session{CurrentUser} );
+    $group->LoadUserDefinedGroup( $req_args->{'AddPrincipalForRights-group'} );
+    if ( $group->id ) {
+        $hash = "#acl-User_Groups-" . $group->PrincipalObj->id;
+    }
+}
+elsif ( $req_args->{'AddPrincipalForRights-user'} ) {
+    my $user = RT::User->new( $session{CurrentUser} );
+    $user->Load( $req_args->{'AddPrincipalForRights-user'} );
+    if ( $user->id ) {
+        $hash = "#acl-Users-" . $user->PrincipalObj->id;
+    }
+}
+else {
+    $hash = $req_args->{LocationHash};
+}
 </%init>
 %# Principals is an array of arrays, where the inner arrays are like:
 %#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
@@ -74,16 +95,31 @@ unless ( $AddPrincipal ) {
 
 <script type="text/javascript">
   jQuery(function() {
+% if ( $hash ) {
+    if ( jQuery('<% $hash %>').length ) {
+      window.location.hash = "<% $hash %>";
+      jQuery(".rights-editor").find("input[name=LocationHash]").attr(
+"value", "<% $hash %>" );
+    }
+% }
+
       jQuery(".rights-editor").tabs({
           select: function(ev, ui) {
               window.location.hash = ui.tab.hash;
+              if ( ui.tab.hash.match(/\d+/) ) {
+                  jQuery(".rights-editor").find("input[name=LocationHash]").attr(
+"value", ui.tab.hash );
+              }
           }
       });
+
       jQuery(".rights-editor .category-tabs").tabs();
   });
 </script>
 
 <div class="rights-editor clearfix">
+  <input type="hidden" value="" name="LocationHash" />
+
   <ul>
 <%perl>
 for my $category (@$Principals) {
