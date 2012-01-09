@@ -245,16 +245,42 @@ sub AddToObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
 
+    my $queue;
+    if ( $args{'ObjectId'} ) {
+        $queue = RT::Queue->new( $self->CurrentUser );
+        $queue->Load( $args{'ObjectId'} );
+        return (0, $self->loc('Invalid queue'))
+            unless $queue->id;
+    }
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUser->PrincipalObj->HasRight(
+            Object => $queue || $RT::System, Right => 'ModifyScrips',
+        )
+    ;
+
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
     return $rec->Add( %args, Scrip => $self );
 }
 
 sub RemoveFromObject {
     my $self = shift;
-    my $object = shift;
+    my %args = @_%2? (ObjectId => @_) : (@_);
+
+    my $queue;
+    if ( $args{'ObjectId'} ) {
+        $queue = RT::Queue->new( $self->CurrentUser );
+        $queue->Load( $args{'ObjectId'} );
+        return (0, $self->loc('Invalid queue id'))
+            unless $queue->id;
+    }
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUser->PrincipalObj->HasRight(
+            Object => $queue || $RT::System, Right => 'ModifyScrips',
+        )
+    ;
 
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
-    $rec->LoadByCols( Scrip => $self->id, ObjectId => $object );
+    $rec->LoadByCols( Scrip => $self->id, ObjectId => $args{'ObjectId'} );
     return (0, $self->loc('Scrip is not added') ) unless $rec->id;
     return $rec->Delete;
 }
