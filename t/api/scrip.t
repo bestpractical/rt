@@ -1,49 +1,41 @@
 
 use strict;
 use warnings;
-use RT;
 use RT::Test tests => 25;
 
+my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+ok $queue && $queue->id, 'loaded or created queue';
 
+note 'basic scrips functionality test: create+execute';
 {
-
-ok (require RT::Scrip);
-
-
-my $q = RT::Queue->new(RT->SystemUser);
-$q->Create(Name => 'ScripTest');
-ok($q->Id, "Created a scriptest queue");
-
-my $s1 = RT::Scrip->new(RT->SystemUser);
-my ($val, $msg) =$s1->Create( Queue => $q->Id,
-             ScripAction => 'User Defined',
-             ScripCondition => 'User Defined',
-             CustomIsApplicableCode => 'if ($self->TicketObj->Subject =~ /fire/) { return (1);} else { return(0)}',
-             CustomPrepareCode => 'return 1',
-             CustomCommitCode => '$self->TicketObj->SetPriority("87");',
-             Template => 'Blank'
+    my $s1 = RT::Scrip->new(RT->SystemUser);
+    my ($val, $msg) = $s1->Create(
+        Queue => $queue->Id,
+        ScripAction => 'User Defined',
+        ScripCondition => 'User Defined',
+        CustomIsApplicableCode => '$self->TicketObj->Subject =~ /fire/? 1 : 0',
+        CustomPrepareCode => 'return 1',
+        CustomCommitCode => '$self->TicketObj->SetPriority("87");',
+        Template => 'Blank'
     );
-ok($val,$msg);
+    ok($val,$msg);
 
-my $ticket = RT::Ticket->new(RT->SystemUser);
-my ($tv,$ttv,$tm) = $ticket->Create(Queue => $q->Id,
-                                    Subject => "hair on fire",
-                                    );
-ok($tv, $tm);
+    my $ticket = RT::Ticket->new(RT->SystemUser);
+    my ($tv,$ttv,$tm) = $ticket->Create(
+        Queue => $queue->Id,
+        Subject => "hair on fire",
+    );
+    ok($tv, $tm);
 
-is ($ticket->Priority , '87', "Ticket priority is set right");
+    is ($ticket->Priority , '87', "Ticket priority is set right");
 
-
-my $ticket2 = RT::Ticket->new(RT->SystemUser);
-my ($t2v,$t2tv,$t2m) = $ticket2->Create(Queue => $q->Id,
-                                    Subject => "hair in water",
-                                    );
-ok($t2v, $t2m);
-
-isnt ($ticket2->Priority , '87', "Ticket priority is set right");
-
-
-
+    my $ticket2 = RT::Ticket->new(RT->SystemUser);
+    my ($t2v,$t2tv,$t2m) = $ticket2->Create(
+        Queue => $queue->Id,
+        Subject => "hair in water",
+    );
+    ok($t2v, $t2m);
+    isnt ($ticket2->Priority , '87', "Ticket priority is set right");
 }
 
 
