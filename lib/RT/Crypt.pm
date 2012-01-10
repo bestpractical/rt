@@ -203,6 +203,23 @@ sub SignEncrypt {
     return %res;
 }
 
+sub SignEncryptContent {
+    my $self = shift;
+    my %args = (@_);
+
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} = $self->UseKeyForSigning;
+    }
+    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+        $args{'Recipients'} = [ RT->Config->Get('CorrespondAddress') ];
+    }
+
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->SignEncryptContent( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 sub DrySign {
     my $self = shift;
     my %args = ( Protocol => undef, Signer => undef, @_ );
@@ -231,6 +248,16 @@ sub VerifyDecrypt {
         push @res, \%res;
     }
     return @res;
+}
+
+sub DecryptContent {
+    my $self = shift;
+    my %args = (@_);
+
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->DecryptContent( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
 }
 
 sub ParseStatus {

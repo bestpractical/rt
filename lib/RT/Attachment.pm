@@ -788,7 +788,7 @@ sub Decrypt {
     $self->SetHeader( 'Content-Type' => $type );
 
     my $content = $self->Content;
-    my %res = RT::Crypt::GnuPG::DecryptContent( Content => \$content, );
+    my %res = RT::Crypt->DecryptContent( Content => \$content );
     if ( $res{'exit_code'} ) {
         return (0, $self->loc('GnuPG error. Contact with administrator'));
     }
