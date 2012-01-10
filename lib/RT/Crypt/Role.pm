@@ -113,6 +113,16 @@ C<Protocol>.
 
 requires 'SignEncrypt';
 
+=head2 SignEncryptContent Content => STRINGREF, [ Encrypt => 1, Sign => 1, ... ]
+
+Signs and/or encrypts a string, which is passed by reference.  All
+arguments and return values are identical to
+L<RT::Crypt/SignEncryptContent>, with the omission of C<Protocol>.
+
+=cut
+
+requires 'SignEncryptContent';
+
 =head2 VerifyDecrypt Info => HASHREF, [ Passphrase => undef ]
 
 The C<Info> key is a hashref as returned from L</FindScatteredParts> or
@@ -136,6 +146,16 @@ An un-localized error message desribing the problem.
 =cut
 
 requires 'VerifyDecrypt';
+
+=head2 DecryptContent Content => STRINGREF, [ Passphrase => undef ]
+
+Decrypts the content in the string reference in-place.  All arguments
+and return values are identical to L<RT::Crypt/DecryptContent>, with the
+omission of C<Protocol>.
+
+=cut
+
+requires 'DecryptContent';
 
 =head2 ParseStatus STRING
 

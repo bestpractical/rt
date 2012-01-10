@@ -78,7 +78,7 @@ my $encrypted = 0;
 
 my $attachments = $txn->Attachments;
 while ( my $attachment = $attachments->Next ) {
-    next unless $attachment->ContentType =~ m{^x-application-rt/gpg-encrypted\b};
+    next unless $attachment->ContentType =~ m{^x-application-rt/[^-]+-encrypted\b};
     $encrypted = 1;
     last;
 }

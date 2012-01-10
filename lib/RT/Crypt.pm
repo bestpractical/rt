@@ -332,6 +332,36 @@ sub SignEncrypt {
     return %res;
 }
 
+=head2 SignEncryptContent Content => STRINGREF, [Sign => 1], [Encrypt => 1],
+[Recipients => ARRAYREF], [Signer => NAME], [Protocol => NAME],
+[Passphrase => VALUE]
+
+Signs and/or encrypts a string, which is passed by reference.
+C<Recipients> defaults to C</UseKeyForSigning>, and C<Recipients>
+defaults to the global L<RT::Config/CorrespondAddress>.  All other
+arguments and return values are identical to L</SignEncrypt>.
+
+=cut
+
+sub SignEncryptContent {
+    my $self = shift;
+    my %args = (@_);
+
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} = $self->UseKeyForSigning;
+    }
+    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+        $args{'Recipients'} = [ RT->Config->Get('CorrespondAddress') ];
+    }
+
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $class = $self->LoadImplementation( $protocol );
+
+    my %res = $class->SignEncryptContent( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 =head2 DrySign Signer => KEY
 
 Signs a small message with the key, to make sure the key exists and we
@@ -410,6 +440,22 @@ sub VerifyDecrypt {
         if $args{Recursive} and @res and not grep {$_->{'exit_code'}} @res;
 
     return @res;
+}
+
+=head2 DecryptContent Protocol => NAME, Content => STRINGREF, [Passphrase => undef]
+
+Decrypts the content in the string reference in-place.  All other
+arguments and return values are identical to L</VerifyDecrypt>.
+
+=cut
+
+sub DecryptContent {
+    my $self = shift;
+    my %args = (
+        Protocol => undef,
+        @_
+    );
+    return $self->LoadImplementation( $args{'Protocol'} )->DecryptContent( @_ );
 }
 
 =head2 ParseStatus Protocol => NAME, Status => STRING

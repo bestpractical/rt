@@ -2319,6 +2319,9 @@ emails encrypted for key RT doesn't have and can not decrypt.
 Set C<RejectOnBadData> to false if you don't want to reject letters
 with incorrect data.
 
+If you want to allow people to encrypt attachments inside the DB then
+set C<AllowEncryptDataInDB> to 1.
+
 =back
 
 =cut
@@ -2329,6 +2332,8 @@ Set( %Crypt,
 
     RejectOnMissingPrivateKey => 1,
     RejectOnBadData           => 1,
+
+    AllowEncryptDataInDB      => 0,
 );
 
 =head2 GnuPG configuration
@@ -2351,16 +2356,12 @@ function, or a hash (to look up by address).  If the hash is used, the
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
-If you want to allow people to encrypt attachments inside the DB then
-set C<AllowEncryptDataInDB> to 1.
-
 =cut
 
 Set(%GnuPG,
     Enable                 => @RT_GPG@,
     Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
-    AllowEncryptDataInDB   => 0,
 );
 
 =item C<%GnuPGOptions>

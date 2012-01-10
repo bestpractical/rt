@@ -141,13 +141,6 @@ it well.
 
 =back
 
-=head3 Encrypting data in the database
-
-You can allow users to encrypt data in the database using
-option C<AllowEncryptDataInDB>. By default it's disabled.
-Users must have rights to see and modify tickets to use
-this feature.
-
 =head3 Passphrases
 
 Passphrases for keys may be set by passing C<Passphrase>.  It may be set

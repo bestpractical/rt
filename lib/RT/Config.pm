@@ -696,13 +696,13 @@ our %META;
                 return;
             }
 
-            if ( grep exists $gpg->{$_}, qw(RejectOnMissingPrivateKey RejectOnBadData) ) {
+            if ( grep exists $gpg->{$_}, qw(RejectOnMissingPrivateKey RejectOnBadData AllowEncryptDataInDB) ) {
                 $RT::Logger->warning(
-                    "RejectOnMissingPrivateKey and RejectOnBadData GnuPG options"
-                    ." are now properties of the generic Crypt configuration. You"
+                    "The RejectOnMissingPrivateKey, RejectOnBadData and AllowEncryptDataInDB"
+                    ." GnuPG options are now properties of the generic Crypt configuration. You"
                     ." should set them there instead."
                 );
-                delete $gpg->{$_} for qw(RejectOnMissingPrivateKey RejectOnBadData);
+                delete $gpg->{$_} for qw(RejectOnMissingPrivateKey RejectOnBadData AllowEncryptDataInDB);
             }
         }
     },
