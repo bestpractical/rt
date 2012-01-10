@@ -283,6 +283,27 @@ sub LoadImplementation {
     }
 }
 
+=head2 SimpleImplementationCall Protocol => NAME, [...]
+
+Examines the caller of this method, and dispatches to the method of the
+same name on the correct L<RT::Crypt::Role> class based on the provided
+C<Protocol>.
+
+=cut
+
+sub SimpleImplementationCall {
+    my $self = shift;
+    my %args = (@_);
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+
+    my $method = (caller(1))[3];
+    $method =~ s/.*:://;
+
+    my %res = $self->LoadImplementation( $protocol )->$method( %args );
+    $res{'Protocol'} = $protocol if keys %res;
+    return %res;
+}
+
 =head2 FindProtectedParts Entity => MIME::Entity
 
 Looks for encrypted or signed parts of the given C<Entity>, using all
@@ -426,11 +447,7 @@ sub SignEncrypt {
             qw(To Cc Bcc)
         ];
     }
-
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->SignEncrypt( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 =head2 SignEncryptContent Content => STRINGREF, [Sign => 1], [Encrypt => 1],
@@ -455,12 +472,7 @@ sub SignEncryptContent {
         $args{'Recipients'} = [ RT->Config->Get('CorrespondAddress') ];
     }
 
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my $class = $self->LoadImplementation( $protocol );
-
-    my %res = $class->SignEncryptContent( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 =head2 DrySign Signer => KEY
@@ -521,10 +533,9 @@ sub VerifyDecrypt {
 
     my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
     foreach my $protected ( @protected ) {
-        my $protocol = $protected->{'Protocol'};
-        my $class = $self->LoadImplementation( $protocol );
-        my %res = $class->VerifyDecrypt( %args, Info => $protected );
-        $res{'Protocol'} = $protocol;
+        my %res = $self->SimpleImplementationCall(
+            %args, Protocol => $protected->{'Protocol'}, Info => $protected
+        );
 
         # Let the header be modified so continuations are handled
         my $modify = $res{status_on}->head->modify;
@@ -551,12 +562,7 @@ arguments and return values are identical to L</VerifyDecrypt>.
 =cut
 
 sub DecryptContent {
-    my $self = shift;
-    my %args = (
-        Protocol => undef,
-        @_
-    );
-    return $self->LoadImplementation( $args{'Protocol'} )->DecryptContent( @_ );
+    return shift->SimpleImplementationCall( @_ );
 }
 
 =head2 ParseStatus Protocol => NAME, Status => STRING
@@ -719,10 +725,7 @@ sub CheckRecipients {
 sub GetKeysForEncryption {
     my $self = shift;
     my %args = @_%2? (Recipient => @_) : (Protocol => undef, Recipient => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 =head2 GetKeysForSigning Signer => EMAIL, Protocol => NAME
@@ -737,10 +740,7 @@ which keys can be used for signing, as opposed to encryption.
 sub GetKeysForSigning {
     my $self = shift;
     my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 =head2 GetPublicKeyInfo Protocol => NAME, KEY => EMAIL
@@ -821,10 +821,7 @@ C<Created> and C<Expire> keys, which are L<RT::Date> objects.
 sub GetKeysInfo {
     my $self = shift;
     my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 1;
