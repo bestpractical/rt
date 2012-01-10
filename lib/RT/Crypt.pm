@@ -97,6 +97,19 @@ sub LoadImplementation {
     return $class;
 } }
 
+sub SimpleImplementationCall {
+    my $self = shift;
+    my %args = (@_);
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+
+    my $method = (caller(1))[3];
+    $method =~ s/.*:://;
+
+    my %res = $self->LoadImplementation( $protocol )->$method( %args );
+    $res{'Protocol'} = $protocol if keys %res;
+    return %res;
+}
+
 # encryption and signatures can be nested one over another, for example:
 # GPG inline signed text can be signed with SMIME
 
@@ -196,11 +209,7 @@ sub SignEncrypt {
             qw(To Cc Bcc)
         ];
     }
-
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->SignEncrypt( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 sub SignEncryptContent {
@@ -214,10 +223,7 @@ sub SignEncryptContent {
         $args{'Recipients'} = [ RT->Config->Get('CorrespondAddress') ];
     }
 
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->SignEncryptContent( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 sub DrySign {
@@ -241,23 +247,15 @@ sub VerifyDecrypt {
 
     my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
     foreach my $protected ( @protected ) {
-        my $protocol = $protected->{'Protocol'};
-        my $class = $self->LoadImplementation( $protocol );
-        my %res = $class->VerifyDecrypt( %args, Info => $protected );
-        $res{'Protocol'} = $protocol;
-        push @res, \%res;
+        push @res, { $self->SimpleImplementationCall(
+            %args, Protocol => $protected->{'Protocol'}, Info => $protected
+        ) };
     }
     return @res;
 }
 
 sub DecryptContent {
-    my $self = shift;
-    my %args = (@_);
-
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->DecryptContent( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return shift->SimpleImplementationCall( @_ );
 }
 
 sub ParseStatus {
@@ -376,19 +374,13 @@ sub CheckRecipients {
 sub GetKeysForEncryption {
     my $self = shift;
     my %args = @_%2? (Recipient => @_) : (Protocol => undef, For => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 sub GetKeysForSigning {
     my $self = shift;
     my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 sub GetPublicKeyInfo {
@@ -409,10 +401,7 @@ sub GetKeyInfo {
 sub GetKeysInfo {
     my $self = shift;
     my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
-    $res{'Protocol'} = $protocol;
-    return %res;
+    return $self->SimpleImplementationCall( %args );
 }
 
 1;
