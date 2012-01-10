@@ -91,15 +91,17 @@ sub Limit  {
 
     if ( ($args{'FIELD'} eq 'Target') or 
 	 ($args{'FIELD'} eq 'LocalTarget') ) {
-	$self->OrderBy (ALIAS => 'main',
-			FIELD => 'Base',
-			ORDER => 'ASC');
+	$self->OrderByCols(
+            { ALIAS => 'main', FIELD => 'LocalBase', ORDER => 'ASC' },
+            { ALIAS => 'main', FIELD => 'Base', ORDER => 'ASC' },
+        );
     }
     elsif ( ($args{'FIELD'} eq 'Base') or 
 	    ($args{'FIELD'} eq 'LocalBase') ) {
-	$self->OrderBy (ALIAS => 'main',
-			FIELD => 'Target',
-			ORDER => 'ASC');
+	$self->OrderByCols(
+            { ALIAS => 'main', FIELD => 'LocalTarget', ORDER => 'ASC' },
+            { ALIAS => 'main', FIELD => 'Target', ORDER => 'ASC' },
+        );
     }
     
 
