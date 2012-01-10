@@ -76,7 +76,7 @@ sub Protocols {
 
 sub EnabledProtocols {
     my $self = shift;
-    return grep RT->Config->Get($_)->{'Enable'}, $self->Protocols;
+    return grep { (RT->Config->Get($_) || {})->{'Enable'} } $self->Protocols;
 }
 
 sub UseForOutgoing {
