@@ -257,7 +257,6 @@ sub CheckBadData {
 }
 
 sub EmailErrorToSender {
-    my $self = shift;
     my %args = (@_);
 
     $args{'Arguments'} ||= {};
@@ -271,7 +270,7 @@ sub EmailErrorToSender {
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
+        $RT::Logger->error("Couldn't send '$args{'Template'}''");
     }
     return 0;
 }
