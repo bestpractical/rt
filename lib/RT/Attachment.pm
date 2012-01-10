@@ -718,12 +718,10 @@ sub Encrypt {
     require RT::Crypt::GnuPG;
 
     my $type = $self->ContentType;
-    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+    if ( $type =~ /^x-application-rt\/[^-]+-encrypted/i ) {
         return (1, $self->loc('Already encrypted'));
     } elsif ( $type =~ /^multipart\//i ) {
         return (1, $self->loc('No need to encrypt'));
-    } else {
-        $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
     }
 
     my $queue = $txn->TicketObj->QueueObj;
@@ -759,6 +757,8 @@ sub Encrypt {
     unless ( $status ) {
         return ($status, $self->loc("Couldn't replace content with encrypted data: [_1]", $msg));
     }
+
+    $type = qq{x-application-rt\/$res{'Protocol'}-encrypted; original-type="$type"};
     $self->__Set( Field => 'ContentType', Value => $type );
     $self->SetHeader( 'Content-Type' => $type );
 
@@ -778,7 +778,10 @@ sub Decrypt {
     require RT::Crypt::GnuPG;
 
     my $type = $self->ContentType;
-    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+    my $protocol;
+    if ( $type =~ /^x-application-rt\/([^-]+)-encrypted/i ) {
+        $protocol = $1;
+        $protocol =~ s/gpg/gnupg/; # backwards compatibility
         ($type) = ($type =~ /original-type="(.*)"/i);
         $type ||= 'application/octet-stream';
     } else {
@@ -786,7 +789,7 @@ sub Decrypt {
     }
 
     my $content = $self->Content;
-    my %res = RT::Crypt->DecryptContent( Content => \$content );
+    my %res = RT::Crypt->DecryptContent( Protocol => $protocol, Content => \$content );
     if ( $res{'exit_code'} ) {
         return (0, $self->loc('GnuPG error. Contact with administrator'));
     }
