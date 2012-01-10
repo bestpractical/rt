@@ -1,5 +1,3 @@
-* fill basics on SMIME in lib/RT/Interface/Email/Auth/Crypt
-
 * port RT::Attachment::{Encrypt,Decrypt} over new API with SMIME support
 
 * continue with share//html/Ticket/Elements/ShowGnuPGStatus

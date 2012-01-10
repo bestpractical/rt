@@ -69,8 +69,8 @@ You should start from reading L<RT::Crypt>.
 
     Set( %SMIME,
         Enable => 1,
-        OpenSSL => '/opt/local/bin/openssl',
-        Keyring => '/opt/rt3/var/data/smime',
+        OpenSSL => '/usr/bin/openssl',
+        Keyring => '/opt/rt4/var/data/smime',
         Passphrase => {
             'queue.address@exampl.com' => 'passphrase',
         },
@@ -87,7 +87,8 @@ should be stored in a PEM file named F<email.address@example.com.pem>.
 
 =head3 Passphrase
 
-Hash with passphrases for keys in the keyring.
+Either scalar with one passphrase for all keys or hash with address
+and passphrase pairs for keys in the keyring.
 
 =cut
 

@@ -74,10 +74,24 @@ Set up a GnuPG key directory with a pubring containing only the keys
 you care about and specify the following in your SiteConfig.pm
 
     Set(%GnuPGOptions, homedir => '/opt/rt3/var/data/GnuPG');
-    
+
 Read also: L<RT::Crypt> and L<RT::Crypt::GnuPG>.
 
 =head3 SMIME
+
+To use the SMIME-secured mail gateway, you need to do the following:
+
+Set up a SMIME key directory with files containing keys for queues'
+addresses and specify the following in your SiteConfig.pm
+
+    Set(%SMIME,
+        Enable => 1,
+        OpenSSL => '/usr/bin/openssl',
+        Keyring => '/opt/rt4/var/data/smime',
+        Passphrase => {
+            'queue.address@exampl.com' => 'passphrase',
+        },
+    );
 
 Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
 

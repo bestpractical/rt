@@ -2076,8 +2076,8 @@ Set($DefaultTimeUnitsToHours, 0);
 
 Description of cryptography capabilities can be found by running the command
 `perldoc L<RT::Crypt>` (or `perldoc lib/RT/Crypt.pm` from RT install
-directory). At this momement support for GnuPG (PGP) and SMIME security
-protocols are supported.
+directory). At this momement GnuPG (PGP) and SMIME security protocols
+are supported.
 
 =over 4
 
@@ -2126,12 +2126,26 @@ lib/RT/Crypt/SMIME.pm` from your RT install directory).
 
 =item C<%SMIME>
 
+Set C<Enable> to false or true value to disable or enable SMIME interfaces
+for encryptng and signing outgoing messages.
+
+Set C<OpenSSL> to path to F<openssl> executable.
+
+Set C<Keyring> to directory with key files.
+
+Set C<Passphrase> to passphrase(s) for keys in the keyring.
+
+More details in L<RT::Crypt::SMIME>.
+
 =back
 
 =cut
 
 Set( %SMIME,
     Enable => @RT_SMIME@,
+    OpenSSL => '/usr/bin/openssl',
+    Keyring => q{@RT_VAR_PATH@/data/gpg},
+    Passphrase => '',
 );
 
 =head2 GnuPG configuration
