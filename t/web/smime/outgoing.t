@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 494;
+use RT::Test tests => 495;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
@@ -188,7 +188,12 @@ foreach my $queue_set ( @variants ) {
 # ------------------------------------------------------------------------------
 
 unlink $_ foreach glob( $keyring ."/*" );
-RT::Test->import_smime_key('sender@example.com', 'public');
+{
+    my $sender = 'sender@example.com';
+    my $user = RT::Test->load_or_create_user( Name => $sender, EmailAddress => $sender );
+    ok $user && $user->id, 'loaded or created user';
+    RT::Test->import_smime_key($sender, $user);
+}
 RT::Test->import_smime_key($user_email);
 
 $queue = RT::Test->load_or_create_queue(
