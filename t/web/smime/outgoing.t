@@ -11,8 +11,6 @@ plan skip_all => 'openssl executable is required.'
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
 
-RT::Test->set_mail_catcher;
-
 use_ok('RT::Crypt::SMIME');
 
 my $keys = RT::Test::get_abs_relocatable_dir(
