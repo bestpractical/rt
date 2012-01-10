@@ -236,20 +236,11 @@ sub CheckNoPrivateKey {
 
     $RT::Logger->error("Couldn't decrypt a message: have no private key");
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
-        To        => $address,
+    return EmailErrorToSender(
+        %args,
         Template  => 'Error: no private key',
-        Arguments => {
-            Message   => $args{'Message'},
-            TicketObj => $args{'Ticket'},
-        },
-        InReplyTo => $args{'Message'},
+        Arguments => { Message   => $args{'Message'} },
     );
-    unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: no private key'");
-    }
-    return 0;
 }
 
 sub CheckBadData {
@@ -260,18 +251,28 @@ sub CheckBadData {
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
 
+    return EmailErrorToSender(
+        %args,
+        Template  => 'Error: bad encrypted data',
+        Arguments => { Messages  => [ @bad_data_messages ] },
+    );
+}
+
+sub EmailErrorToSender {
+    my %args = (@_);
+
+    $args{'Arguments'} ||= {};
+    $args{'Arguments'}{'TicketObj'} ||= $args{'Ticket'};
+
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
-        Template  => 'Error: bad encrypted data',
-        Arguments => {
-            Messages  => [ @bad_data_messages ],
-            TicketObj => $args{'Ticket'},
-        },
+        Template  => $args{'Template'},
+        Arguments => $args{'Arguments'},
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: bad encrypted data'");
+        $RT::Logger->error("Couldn't send '$args{'Template'}''");
     }
     return 0;
 }
