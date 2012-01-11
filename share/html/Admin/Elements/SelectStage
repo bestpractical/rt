@@ -53,6 +53,7 @@
 
 <option value="<%$value%>"
 <% ($value eq $Default) && qq[ selected="selected"] |n %>
+<% ($value eq 'TransactionBatch' and not RT->Config->Get('UseTransactionBatch')) && qq[ disabled ] %>
 ><% loc($display) %>
 </option>
 
@@ -62,11 +63,11 @@
 if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
-my @stages = 'TransactionCreate';
+my @stages = ['TransactionCreate', loc('Normal')];
 
 push @stages, RT->Config->Get('UseTransactionBatch')
-            ? 'TransactionBatch'
-            : ['TransactionBatch', 'TransactionBatch (DISABLED)'];
+            ? ['TransactionBatch', loc('Batch')]
+            : ['TransactionBatch', loc('Batch (disabled by config)')];
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'
