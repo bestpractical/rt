@@ -137,9 +137,14 @@ if ($ARGS{'id'} eq 'new') {
 
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
+    my $SkipProcessing;
+
     $m->callback( CallbackName => 'BeforeProcessArguments',
         TicketObj => $TicketObj, Tickets => $Tickets,
-        ActionsRef => \@Actions, ARGSRef => \%ARGS );
+        ActionsRef => \@Actions, ARGSRef => \%ARGS,
+        SkipProcessing => \$SkipProcessing );
+
+    if ( !$SkipProcessing ) {
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
             my $action = $1;
@@ -181,6 +186,7 @@ if ($ARGS{'id'} eq 'new') {
             Content => $TicketObj->LastUpdated,
         );
         push @Actions, loc('Marked all messages as seen');
+    }
     }
 }
 
