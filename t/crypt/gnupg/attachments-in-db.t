@@ -9,7 +9,7 @@ use RT::Test::GnuPG
     }
 ;
 
-RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'} = 1;
+RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'} = 1;
 
 RT::Test->import_gnupg_key('general@example.com', 'public');
 RT::Test->import_gnupg_key('general@example.com', 'secret');

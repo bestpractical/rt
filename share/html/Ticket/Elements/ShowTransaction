@@ -223,8 +223,8 @@ else {
               . "</a>]";
         }
         if ( $can_modify
-            && RT->Config->Get('GnuPG')->{'Enable'}
-            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && RT->Config->Get('Crypt')->{'Enable'}
+            && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
             && $ticket->CurrentUserHasRight('ForwardMessage')
         ) {
             $titlebar_commands .=

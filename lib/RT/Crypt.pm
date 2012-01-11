@@ -65,6 +65,11 @@ first one value from above list.
         ...
     );
 
+You can allow users to encrypt data in the database using
+option C<AllowEncryptDataInDB>. By default it's disabled.
+Users must have rights to see and modify tickets to use
+this feature.
+
 =cut
 
 our @PROTOCOLS = ('GnuPG', 'SMIME');

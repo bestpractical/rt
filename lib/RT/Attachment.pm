@@ -710,10 +710,10 @@ sub Encrypt {
     return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
     return (0, $self->loc('Permission Denied'))
         unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
-    return (0, $self->loc('GnuPG integration is disabled'))
-        unless RT->Config->Get('GnuPG')->{'Enable'};
+    return (0, $self->loc('Cryptography is disabled'))
+        unless RT->Config->Get('Crypt')->{'Enable'};
     return (0, $self->loc('Attachments encryption is disabled'))
-        unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
+        unless RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'};
 
     require RT::Crypt::GnuPG;
 
@@ -772,8 +772,8 @@ sub Decrypt {
     return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
     return (0, $self->loc('Permission Denied'))
         unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
-    return (0, $self->loc('GnuPG integration is disabled'))
-        unless RT->Config->Get('GnuPG')->{'Enable'};
+    return (0, $self->loc('Cryptography is disabled'))
+        unless RT->Config->Get('Crypt')->{'Enable'};
 
     require RT::Crypt::GnuPG;
 
