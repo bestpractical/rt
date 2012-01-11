@@ -192,13 +192,73 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
 
+    if ( $args{'Encrypt'} ) {
+        my %seen;
+        $args{'Recipients'} = [
+            grep !$seen{$_}++, map $_->address, map Email::Address->parse($_),
+            grep defined && length, map $entity->head->get($_), qw(To Cc Bcc)
+        ];
+    }
+
+    $entity->make_multipart('mixed', Force => 1);
+    my ($buf, %res) = $self->_SignEncrypt(
+        %args,
+        Content => \$entity->parts(0)->stringify,
+    );
+    unless ( $buf ) {
+        $entity->make_singlepart;
+        return %res;
+    }
+
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $parser = MIME::Parser->new();
+    $parser->output_dir($tmpdir);
+    my $newmime = $parser->parse_data($$buf);
+
+    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
+    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $newmime->parts_DFS) {
+        $part->preamble->[-1] .= "\n"
+            if $part->preamble->[-1] =~ /\r$/;
+    }
+
+    $entity->parts([$newmime]);
+    $entity->make_singlepart;
+
+    return %res;
+}
+
+sub SignEncryptContent {
+    my $self = shift;
+    my %args = (
+        Content => undef,
+        @_
+    );
+
+    my ($buf, %res) = $self->_SignEncrypt(%args);
+    ${ $args{'Content'} } = $$buf if $buf;
+    return %res;
+}
+
+sub _SignEncrypt {
+    my $self = shift;
+    my %args = (
+        Content => undef,
+
+        Sign => 1,
+        Signer => undef,
+        Passphrase => undef,
+
+        Encrypt => 1,
+        Recipients => [],
+
+        @_
+    );
+
     my %res = (exit_code => 0, status => '');
 
     my @keys;
     if ( $args{'Encrypt'} ) {
-        my @addresses =
-            grep !$seen{$_}++, map $_->address, map Email::Address->parse($_),
-            grep defined && length, map $entity->head->get($_), qw(To Cc Bcc);
+        my @addresses = @{ $args{'Recipients'} };
 
         foreach my $address ( @addresses ) {
             $RT::Logger->debug( "Considering encrypting message to " . $address );
@@ -238,7 +298,7 @@ sub SignEncrypt {
             push @keys, $key_info{'info'}[0]{'Content'};
         }
     }
-    return %res if $res{'exit_code'};
+    return (undef, %res) if $res{'exit_code'};
 
     my $opts = RT->Config->Get('SMIME');
 
@@ -280,14 +340,13 @@ sub SignEncrypt {
         );
     }
 
-    $entity->make_multipart('mixed', Force => 1);
     my ($buf, $err) = ('', '');
     {
         local $ENV{'SMIME_PASS'} = $args{'Passphrase'};
         local $SIG{'CHLD'} = 'DEFAULT';
         safe_run_child { run3(
             join( ' | ', @command ),
-            \$entity->parts(0)->stringify,
+            $args{'Content'},
             \$buf, \$err
         ) };
     }
@@ -304,26 +363,7 @@ sub SignEncrypt {
         }) if $args{'Encrypt'};
     }
 
-    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-    my $parser = MIME::Parser->new();
-    $parser->output_dir($tmpdir);
-    my $newmime = $parser->parse_data($buf);
-
-    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
-    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $newmime->parts_DFS) {
-        $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
-    }
-
-    $entity->parts([$newmime]);
-    $entity->make_singlepart;
-
-    return %res;
-}
-
-sub SignEncryptContent {
-    my $self = shift;
-    return ( exit_code => 1 );
+    return (\$buf, %res);
 }
 
 sub VerifyDecrypt {
@@ -452,6 +492,40 @@ sub Decrypt {
         $args{'Queue'}->CommentAddress, RT->Config->Get('CommentAddress')
     ;
 
+    my ($buf, %res) = $self->_Decrypt( %args, Content => \$args{'Data'}->as_string );
+    return %res unless $buf;
+
+    my $res_entity = _extract_msg_from_buf( $buf );
+    $res_entity->make_multipart( 'mixed', Force => 1 );
+
+    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
+    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $res_entity->parts_DFS) {
+        $part->preamble->[-1] .= "\n"
+            if $part->preamble->[-1] =~ /\r$/;
+    }
+
+    $args{'Data'}->make_multipart( 'mixed', Force => 1 );
+    $args{'Data'}->parts([ $res_entity->parts ]);
+    $args{'Data'}->make_singlepart;
+
+    return %res;
+}
+
+sub DecryptContent {
+    my $self = shift;
+    my %args = (
+        Content => undef,
+        @_
+    );
+
+    my ($buf, %res) = $self->_Decrypt( %args );
+    ${ $args{'Content'} } = $$buf if $buf;
+    return %res;
+}
+
+sub _Decrypt {
+    my $self = shift;
+    my %args = (Content => undef, @_ );
 
     my %seen;
     my @addresses =
@@ -478,7 +552,7 @@ sub Decrypt {
                 ? (qw(-passin env:SMIME_PASS))
                 : (),
         ];
-        safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
+        safe_run_child { run3( $cmd, $args{'Content'}, \$buf, \$res{'stderr'} ) };
         unless ( $? ) {
             $encrypted_to = $address;
             $RT::Logger->debug("Message encrypted for $encrypted_to");
@@ -499,7 +573,7 @@ sub Decrypt {
             Message => 'Decryption failed',
             EncryptedTo => $address,
         });
-        return %res;
+        return (undef, %res);
     }
     unless ( $encrypted_to ) {
         $RT::Logger->error("Couldn't find SMIME key for addresses: ". join ', ', @addresses);
@@ -510,21 +584,8 @@ sub Decrypt {
             Message   => "Secret key is not available",
             KeyType   => 'secret',
         });
-        return %res;
+        return (undef, %res);
     }
-
-    my $res_entity = _extract_msg_from_buf( \$buf );
-    $res_entity->make_multipart( 'mixed', Force => 1 );
-
-    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
-    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $res_entity->parts_DFS) {
-        $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
-    }
-
-    $args{'Data'}->make_multipart( 'mixed', Force => 1 );
-    $args{'Data'}->parts([ $res_entity->parts ]);
-    $args{'Data'}->make_singlepart;
 
     $res{'status'} = $self->FormatStatus({
         Operation => 'Decrypt', Status => 'DONE',
@@ -532,12 +593,7 @@ sub Decrypt {
         EncryptedTo => $encrypted_to,
     });
 
-    return %res;
-}
-
-sub DecryptContent {
-    my $self = shift;
-    return ( exit_code => 1 );
+    return (\$buf, %res);
 }
 
 sub FormatStatus {

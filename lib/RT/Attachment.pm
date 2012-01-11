@@ -811,8 +811,20 @@ sub Decrypt {
         return (1, $self->loc('Is not encrypted'));
     }
 
+    my $queue = $txn->TicketObj->QueueObj;
+    my @addresses =
+        $queue->CorrespondAddress,
+        $queue->CommentAddress,
+        RT->Config->Get('CorrespondAddress'),
+        RT->Config->Get('CommentAddress')
+    ;
+
     my $content = $self->Content;
-    my %res = RT::Crypt->DecryptContent( Protocol => $protocol, Content => \$content );
+    my %res = RT::Crypt->DecryptContent(
+        Protocol => $protocol,
+        Content => \$content,
+        Recipients => \@addresses,
+    );
     if ( $res{'exit_code'} ) {
         return (0, $self->loc('Decryption error; contact the administrator'));
     }
