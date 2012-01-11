@@ -137,50 +137,56 @@ if ($ARGS{'id'} eq 'new') {
 
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
+    my $SkipProcessing;
+
     $m->callback( CallbackName => 'BeforeProcessArguments',
         TicketObj => $TicketObj, Tickets => $Tickets,
-        ActionsRef => \@Actions, ARGSRef => \%ARGS );
-    if ( defined $ARGS{'Action'} ) {
-        if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
-            my $action = $1;
-            my ($res, $msg) = $TicketObj->$action();
-            push(@Actions, $msg);
+        ActionsRef => \@Actions, ARGSRef => \%ARGS,
+        SkipProcessing => \$SkipProcessing );
+
+    if ( !$SkipProcessing ) {
+        if ( defined $ARGS{'Action'} ) {
+            if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
+                my $action = $1;
+                my ($res, $msg) = $TicketObj->$action();
+                push(@Actions, $msg);
+            }
         }
-    }
 
-    $m->callback(CallbackName => 'ProcessArguments', 
-            Ticket => $TicketObj, 
-            ARGSRef => \%ARGS, 
-            Actions => \@Actions);
-    
-    $ARGS{UpdateAttachments} = $session{'Attachments'};
-    push @Actions,
-        ProcessUpdateMessage(
-        ARGSRef   => \%ARGS,
-        Actions   => \@Actions,
-        TicketObj => $TicketObj,
-        );
-    delete $session{'Attachments'};
+        $m->callback(CallbackName => 'ProcessArguments', 
+                Ticket => $TicketObj, 
+                ARGSRef => \%ARGS, 
+                Actions => \@Actions);
+        
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+        push @Actions,
+            ProcessUpdateMessage(
+            ARGSRef   => \%ARGS,
+            Actions   => \@Actions,
+            TicketObj => $TicketObj,
+            );
+        delete $session{'Attachments'};
 
-    #Process status updates
-    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        #Process status updates
+        push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 
-    # XXX: we shouldn't block actions here if user has no right to see the ticket,
-    # but we should allow him to see actions he has done
-    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-        Abort("No permission to view ticket");
-    }
-    if ( $ARGS{'MarkAsSeen'} ) {
-        $TicketObj->SetAttribute(
-            Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
-            Content => $TicketObj->LastUpdated,
-        );
-        push @Actions, loc('Marked all messages as seen');
+        # XXX: we shouldn't block actions here if user has no right to see the ticket,
+        # but we should allow him to see actions he has done
+        unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+            Abort("No permission to view ticket");
+        }
+        if ( $ARGS{'MarkAsSeen'} ) {
+            $TicketObj->SetAttribute(
+                Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
+                Content => $TicketObj->LastUpdated,
+            );
+            push @Actions, loc('Marked all messages as seen');
+        }
     }
 }
 
