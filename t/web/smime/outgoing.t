@@ -2,78 +2,23 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 495;
-
-my $openssl = RT::Test->find_executable('openssl');
-plan skip_all => 'openssl executable is required.'
-    unless $openssl;
+use RT::Test::SMIME tests => 497;
+my $test = 'RT::Test::SMIME';
 
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
 
 use_ok('RT::Crypt::SMIME');
 
-my $keys = RT::Test::get_abs_relocatable_dir(
-    (File::Spec->updir()) x 2,
-    qw(data smime keys),
-);
-
-my $keyring = RT::Test->new_temp_dir(
-    crypt => smime => 'smime_keyring'
-);
-
-RT->Config->Set( Crypt =>
-    Enable   => 1,
-    Incoming => ['SMIME'],
-    Outgoing => 'SMIME',
-);
-RT->Config->Set( GnuPG => Enable => 0 );
-RT->Config->Set( SMIME =>
-    Enable => 1,
-    OutgoingMessagesFormat => 'RFC',
-    Passphrase => {
-        'sender@example.com' => '123456',
-        'root@example.com' => '123456',
-    },
-    OpenSSL => $openssl,
-    Keyring => $keyring,
-);
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
-
 RT::Test->import_smime_key('sender@example.com');
-
-{
-    my $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $cf->Create(
-        Name       => 'SMIME Key',
-        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
-        Type       => 'TextSingle',
-    );
-    ok($ret, "Custom Field created");
-
-    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
-    $OCF->Create(
-        CustomField => $cf->id,
-        ObjectId    => 0,
-    );
-}
 
 my $user_email = 'root@example.com';
 {
-    my $user = RT::User->new( $RT::SystemUser );
-    $user->LoadByEmail( $user_email );
-    unless ( $user->id ) {
-        $user->Create(
-            Name         => $user_email,
-            EmailAddress => $user_email,
-            Privileged   => 1,
-        );
-    }
-    my ($status, $msg) = $user->AddCustomFieldValue(
-        Field => 'SMIME Key',
-        Value => RT::Test->file_content([$keys, $user_email .'.crt']),
+    my $user = RT::Test->load_or_create_user(
+        Name => $user_email, EmailAddress => $user_email
     );
-    ok $status, "set key for the user" or diag "error: $msg";
+    ok $user && $user->id, 'loaded or created user';
+    RT::Test->import_smime_key($user_email, $user);
 }
 
 my $queue = RT::Test->load_or_create_queue(
@@ -187,6 +132,7 @@ foreach my $queue_set ( @variants ) {
 # like we are on another side recieving emails
 # ------------------------------------------------------------------------------
 
+my $keyring = $test->keyring_path;
 unlink $_ foreach glob( $keyring ."/*" );
 {
     my $sender = 'sender@example.com';

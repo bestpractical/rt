@@ -2,53 +2,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 92;
-
-my $openssl = RT::Test->find_executable('openssl');
-plan skip_all => 'openssl executable is required.'
-    unless $openssl;
-
+use RT::Test::SMIME tests => 93;
 use Digest::MD5 qw(md5_hex);
 
-my $mails = RT::Test::get_abs_relocatable_dir(
-    (File::Spec->updir()) x 2,
-    qw(data smime mails),
-);
-my $keyring = RT::Test->new_temp_dir(
-    crypt => smime => 'smime_keyring'
-);
-
-RT->Config->Set( Crypt =>
-    Enable   => 1,
-    Incoming => ['SMIME'],
-    Outgoing => 'SMIME',
-);
-RT->Config->Set( GnuPG => Enable => 0 );
-RT->Config->Set( SMIME =>
-    Enable => 1,
-    Passphrase => {
-        'root@example.com' => '123456',
-    },
-    OpenSSL => $openssl,
-    Keyring => $keyring,
-);
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
-
-{
-    my $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $cf->Create(
-        Name       => 'SMIME Key',
-        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
-        Type       => 'TextSingle',
-    );
-    ok($ret, "Custom Field created");
-
-    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
-    $OCF->Create(
-        CustomField => $cf->id,
-        ObjectId    => 0,
-    );
-}
+my $test = 'RT::Test::SMIME';
+my $mails = $test->mail_set_path;
 
 RT::Test->import_smime_key('root@example.com');
 RT::Test->import_smime_key('sender@example.com');

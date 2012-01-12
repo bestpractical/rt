@@ -2,42 +2,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 15;
-
-my $openssl = RT::Test->find_executable('openssl');
-plan skip_all => 'openssl executable is required.'
-    unless $openssl;
-
+use RT::Test::SMIME tests => 16;
+my $test = 'RT::Test::SMIME';
 
 use IPC::Run3 'run3';
 use RT::Interface::Email;
-
-my $keys = RT::Test::get_abs_relocatable_dir(
-    (File::Spec->updir()) x 2,
-    qw(data smime keys),
-);
-
-my $keyring = RT::Test->new_temp_dir(
-    crypt => smime => 'smime_keyring'
-);
-
-RT->Config->Set( Crypt =>
-    Enable   => 1,
-    Incoming => ['SMIME'],
-    Outgoing => 'SMIME',
-);
-RT->Config->Set( GnuPG => Enable => 0 );
-RT->Config->Set( SMIME =>
-    Enable => 1,
-    OutgoingMessagesFormat => 'RFC',
-    Passphrase => {
-        'sender@example.com' => '123456',
-    },
-    OpenSSL => $openssl,
-    Keyring => $keyring,
-);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
@@ -112,9 +81,9 @@ END
     local $@;
     ok(eval {
         run3([
-            $openssl, qw(smime -decrypt -passin pass:123456),
-            '-inkey', File::Spec->catfile($keys, 'root@example.com.key'),
-            '-recip', File::Spec->catfile($keys, 'root@example.com.crt')
+            qw(openssl smime -decrypt -passin pass:123456),
+            '-inkey', $test->key_path('root@example.com.key'),
+            '-recip', $test->key_path('root@example.com.crt')
         ], \$mails[0], \$buf, \$err )
         }, 'can decrypt'
     );

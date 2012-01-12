@@ -2,60 +2,14 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 22;
-
-my $openssl = RT::Test->find_executable('openssl');
-plan skip_all => 'openssl executable is required.'
-    unless $openssl;
+use RT::Test::SMIME tests => 22;
+my $test = 'RT::Test::SMIME';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
 
-my $keys = RT::Test::get_abs_relocatable_dir(
-    (File::Spec->updir()) x 2,
-    qw(data smime keys),
-);
-
-my $keyring = RT::Test->new_temp_dir(
-    crypt => smime => 'smime_keyring'
-);
-
-RT->Config->Set( Crypt =>
-    Enable   => 1,
-    Strict   => 1,
-    Incoming => ['SMIME'],
-    Outgoing => 'SMIME',
-);
-RT->Config->Set( GnuPG => Enable => 0 );
-RT->Config->Set( SMIME =>
-    Enable => 1,
-    Strict => 1,
-    OutgoingMessagesFormat => 'RFC',
-    Passphrase => {
-        'sender@example.com' => '123456',
-    },
-    OpenSSL => $openssl,
-    Keyring => $keyring,
-);
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
-
-{
-    my $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $cf->Create(
-        Name       => 'SMIME Key',
-        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
-        Type       => 'TextSingle',
-    );
-    ok($ret, "Custom Field created");
-
-    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
-    $OCF->Create(
-        CustomField => $cf->id,
-        ObjectId    => 0,
-    );
-}
+RT->Config->Get('Crypt')->{'Strict'} = 1;
 
 {
     my $template = RT::Template->new($RT::SystemUser);
@@ -122,7 +76,7 @@ RT::Test->close_mailgate_ok($mail);
             -from    => 'root@example.com',
             -to      => 'rt@' . $RT::rtname,
             -subject => "Encrypted message for queue",
-            File::Spec->catfile( $keys, 'sender@example.com.crt' ),
+            $test->key_path('sender@example.com.crt' ),
         ),
         \"Subject: test\n\norzzzzzz",
         \$buf,
@@ -162,8 +116,8 @@ RT::Test->close_mailgate_ok($mail);
             shell_quote(
                 RT->Config->Get('SMIME')->{'OpenSSL'},
                 qw( smime -sign -nodetach -passin pass:123456),
-                -signer => File::Spec->catfile( $keys, 'root@example.com.crt' ),
-                -inkey  => File::Spec->catfile( $keys, 'root@example.com.key' ),
+                -signer => $test->key_path('root@example.com.crt' ),
+                -inkey  => $test->key_path('root@example.com.key' ),
             ),
             '|',
             shell_quote(
@@ -171,7 +125,7 @@ RT::Test->close_mailgate_ok($mail);
                 -from    => 'root@example.com',
                 -to      => 'rt@' . RT->Config->Get('rtname'),
                 -subject => "Encrypted and signed message for queue",
-                File::Spec->catfile( $keys, 'sender@example.com.crt' ),
+                $test->key_path('sender@example.com.crt' ),
             )),
             \"Subject: test\n\norzzzzzz",
             \$buf,
