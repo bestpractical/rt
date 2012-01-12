@@ -101,8 +101,8 @@ return unless @protocols;
 
 my $title;
 unless ( $Type eq 'private' ) {
-    $title = loc('Public key(s) for [_2]', $EmailAddress);
+    $title = loc('Public key(s) for [_1]', $EmailAddress);
 } else {
-    $title = loc('Private key(s) for [_2]', $EmailAddress);
+    $title = loc('Private key(s) for [_1]', $EmailAddress);
 }
 </%INIT>
