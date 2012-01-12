@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => 93;
+use RT::Test::SMIME tests => 92;
 use Digest::MD5 qw(md5_hex);
 
 my $test = 'RT::Test::SMIME';
