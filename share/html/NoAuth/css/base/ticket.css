@@ -143,4 +143,11 @@
     display: none;
 }
 
+.dependency-status {
+    font-style: italic;
+}
+.dependency-status .summary {
+    font-weight: bold;
+    font-style: normal;
+}
 

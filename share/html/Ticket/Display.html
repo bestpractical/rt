@@ -54,6 +54,7 @@
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
+<& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
 <div class="summary">
