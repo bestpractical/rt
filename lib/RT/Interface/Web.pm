@@ -1260,8 +1260,8 @@ sub MaybeRedirectToApproval {
 
     my $id = $args{ARGSRef}->{id};
 
-    if (    RT->Config->Get('ForceApprovalsView')
-        and $id
+    if (    $id
+        and RT->Config->Get('ForceApprovalsView')
         and not $args{Path} =~ /$args{Whitelist}/)
     {
         my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
