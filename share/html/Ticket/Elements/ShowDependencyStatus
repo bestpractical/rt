@@ -57,7 +57,7 @@
   <&|/l&>This ticket cannot be resolved until it is approved.</&>
 % } else {
   <span class="summary"><&|/l, $depends &>Pending [quant,_1,ticket,tickets].</&></span>
-  <&|/l&>This ticket cannot be resolved until its dependencies are resolved.</&>
+  <&|/l, $depends &>This ticket cannot be resolved until its [numerate,_1,dependency is,dependencies are] resolved.</&>
 % }
 </div>
 <%args>
