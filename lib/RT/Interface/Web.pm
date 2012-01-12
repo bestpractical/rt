@@ -1258,6 +1258,8 @@ sub MaybeRedirectToApproval {
         @_
     );
 
+    return unless $ENV{REQUEST_METHOD} eq 'GET';
+
     my $id = $args{ARGSRef}->{id};
 
     if (    $id
