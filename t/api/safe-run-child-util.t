@@ -7,6 +7,7 @@ use RT::Test tests => 35;
 use Test::Warn;
 
 use RT::Util qw(safe_run_child);
+use POSIX qw//;
 
 is_handle_ok();
 
@@ -154,7 +155,7 @@ END
         close $fh;
         # Signal that the first file is now all set; we need to do this
         # to avoid a race condition
-        kill 10, getppid(); # USR1
+        kill POSIX::SIGUSR1(), getppid();
 
         sleep 5;
 
