@@ -375,7 +375,7 @@ C<--ca-file> or C<--no-verify-ssl>, below.
 
 =item C<--ca-file> I<path>
 
-Specifies the path to the public SSL certificate fr the certificate
+Specifies the path to the public SSL certificate for the certificate
 authority that should be used to verify the website's SSL certificate.
 If your webserver uses a self-signed certificate, you should
 preferentially use this option over C<--no-verify-ssl>, as it will
