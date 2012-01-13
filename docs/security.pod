@@ -17,8 +17,18 @@ More information is available at L<http://bestpractical.com/security/>.
 
 Protect your RT installation by making it only accessible via SSL.  This
 will protect against users' passwords being sniffed as they go over the
-wire, as well as helping prevent phishing attacks.
+wire, as well as helping prevent phishing attacks.  If you use SSL, you
+will need to install some additional Perl libraries so that C<rt-mailgate>
+can connect.  You can use the C<--enable-ssl-mailgate> command to
+configure to automate the installation of these dependencies.  This is
+documented further in step 10 of the README.
 
+You should use a certificate signed by a reputable authority, or at very
+least a certificate signed by a consistent local CA, which you configure
+your local systems to trust.  If your SSL certificate is self-signed, it
+does little to prevent phishing, as users are trained to accept the
+unauthorized certificate.  See also the C<--no-verify-ssl> flag to
+C<rt-mailgate>.
 
 =item *
 

@@ -78,6 +78,10 @@ GENERAL INSTALLATION
     It is particularly important that you read the warnings at the top of
     UPGRADING-4.0 for some common issues.
 
+    RT stores the arguments given to ./configure at the top of the
+    etc/RT_Config.pm file in case you need to recreate your previous use
+    of ./configure.
+
  3) Make sure that RT has the Perl and system libraries it needs to run.
     Check for missing dependencies by running:
 
@@ -225,6 +229,13 @@ GENERAL INSTALLATION
     gateway, type:
 
            perldoc /opt/rt4/bin/rt-mailgate
+
+    If your webserver uses SSL, rt-mailgate will require several new
+    Perl libraries. RT can detect and install these for you automatically
+    if you include --enable-ssl-mailgate when running configure and then
+    run make fixdeps as described in step 4.  It is safe to rerun configure
+    and make fixdeps after you have installed RT, you should be sure to include
+    all the arguments you used in step 2 plus --enable-ssl-mailgate.
 
 
 GETTING HELP

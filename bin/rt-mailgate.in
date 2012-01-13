@@ -57,10 +57,10 @@ use warnings;
 
 use Getopt::Long;
 
-my $opts = {};
+my $opts = { };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "jar=s", "help",    "debug",    "extension=s",
-            "timeout=i"
+            "timeout=i", "verify-ssl!", "ca-file=s",
           );
 
 my $gateway = RT::Client::MailGateway->new();
@@ -143,6 +143,14 @@ sub validate_cli_flags {
             "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
         return $self->permfail();
     }
+
+    if (($opts->{'ca-file'} or $opts->{"verify-ssl"})
+            and not LWP::UserAgent->can("ssl_opts")) {
+        print STDERR "Verifying SSL certificates requires LWP::UserAgent 6.0 or higher.\n";
+        return $self->tempfail();
+    }
+
+    $opts->{"verify-ssl"} = 1 unless defined $opts->{"verify-ssl"};
 }
 
 sub get_useragent {
@@ -150,6 +158,13 @@ sub get_useragent {
     my $opts = shift;
     my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
+
+    if ( $ua->can("ssl_opts") ) {
+        $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+        $ua->ssl_opts( SSL_ca_file => $opts->{'ca-file'} )
+            if $opts->{'ca-file'};
+    }
+
     return $ua;
 }
 
@@ -349,8 +364,34 @@ is found.
 =item C<--url>
 
 This flag tells the mail gateway where it can find your RT server. You should 
-probably use the same URL that users use to log into RT.
+probably use the same URL that users use to log into RT.  
 
+If your RT server uses SSL, you will need to install additional Perl
+libraries. RT will detect and install these dependencies if you pass the
+C<--enable-ssl-mailgate> flag to configure as documented in RT's README.
+
+If you have a self-signed SSL certificate, you may also need to pass
+C<--ca-file> or C<--no-verify-ssl>, below.
+
+=item C<--ca-file> I<path>
+
+Specifies the path to the public SSL certificate for the certificate
+authority that should be used to verify the website's SSL certificate.
+If your webserver uses a self-signed certificate, you should
+preferentially use this option over C<--no-verify-ssl>, as it will
+ensure that the self-signed certificate that the mailgate is seeing the
+I<right> self-signed certificate.
+
+=item C<--no-verify-ssl>
+
+This flag tells the mail gateway to trust all SSL certificates,
+regardless of if their hostname matches the certificate, and regardless
+of CA.  This is required if you have a self-signed certificate, or some
+other certificate which is not traceable back to an certificate your
+system ultimitely trusts.
+
+Verifying SSL certificates requires L<LWP::UserAgent> version 6.0 or
+higher; explicitly passing C<--verify-ssl> on prior versions will error.
 
 =item C<--extension> OPTIONAL
 
