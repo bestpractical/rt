@@ -63,11 +63,6 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "timeout=i", "verify-ssl!",
           );
 
-die "Verifying SSL certificates requires LWP::UserAgent 6.0 or higher.\n"
-    if $opts->{"verify-ssl"} and not LWP::UserAgent->can("ssl_opts");
-
-$opts->{"verify-ssl"} = 1 unless defined $opts->{"verify-ssl"};
-
 my $gateway = RT::Client::MailGateway->new();
 
 $gateway->run($opts);
@@ -148,6 +143,13 @@ sub validate_cli_flags {
             "$0 invoked improperly\n\nNo 'url' provided to mail gateway!\n";
         return $self->permfail();
     }
+
+    if ($opts->{"verify-ssl"} and not LWP::UserAgent->can("ssl_opts")) {
+        print STDERR "Verifying SSL certificates requires LWP::UserAgent 6.0 or higher.\n";
+        return $self->tempfail();
+    }
+
+    $opts->{"verify-ssl"} = 1 unless defined $opts->{"verify-ssl"};
 }
 
 sub get_useragent {
