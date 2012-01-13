@@ -97,6 +97,16 @@ my $build_admin_menu = sub {
         $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
     }
 
+    if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+        my $scrips = $admin->child( 'scrips' =>
+            title       => loc('Scrips'),
+            description => loc('Manage scrips'),
+            path        => '/Admin/Scrips/',
+        );
+        $scrips->child( select => title => loc('Select'), path => "/Admin/Scrips/" );
+        $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Modify.html?Create=1" );
+    }
+
     my $admin_global = $admin->child( global =>
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
