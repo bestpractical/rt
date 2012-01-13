@@ -60,7 +60,7 @@ use Getopt::Long;
 my $opts = { };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "jar=s", "help",    "debug",    "extension=s",
-            "timeout=i", "verify-ssl!",
+            "timeout=i", "verify-ssl!", "ca-file=s",
           );
 
 my $gateway = RT::Client::MailGateway->new();
@@ -144,7 +144,8 @@ sub validate_cli_flags {
         return $self->permfail();
     }
 
-    if ($opts->{"verify-ssl"} and not LWP::UserAgent->can("ssl_opts")) {
+    if (($opts->{'ca-file'} or $opts->{"verify-ssl"})
+            and not LWP::UserAgent->can("ssl_opts")) {
         print STDERR "Verifying SSL certificates requires LWP::UserAgent 6.0 or higher.\n";
         return $self->tempfail();
     }
@@ -157,8 +158,13 @@ sub get_useragent {
     my $opts = shift;
     my $ua   = LWP::UserAgent->new();
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
-    $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} )
-        if $ua->can("ssl_opts");
+
+    if ( $ua->can("ssl_opts") ) {
+        $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+        $ua->ssl_opts( SSL_ca_file => $opts->{'ca-file'} )
+            if $opts->{'ca-file'};
+    }
+
     return $ua;
 }
 
@@ -365,7 +371,16 @@ libraries. RT will detect and install these dependencies if you pass the
 C<--enable-ssl-mailgate> flag to configure as documented in RT's README.
 
 If you have a self-signed SSL certificate, you may also need to pass
-C<--no-verify-ssl>, below.
+C<--ca-file> or C<--no-verify-ssl>, below.
+
+=item C<--ca-file> I<path>
+
+Specifies the path to the public SSL certificate fr the certificate
+authority that should be used to verify the website's SSL certificate.
+If your webserver uses a self-signed certificate, you should
+preferentially use this option over C<--no-verify-ssl>, as it will
+ensure that the self-signed certificate that the mailgate is seeing the
+I<right> self-signed certificate.
 
 =item C<--no-verify-ssl>
 
