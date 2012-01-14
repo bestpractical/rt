@@ -49,14 +49,14 @@ sub prepare_code_with_value {
         diag "Create Scrip (Cond #$condition)" if $ENV{TEST_VERBOSE};
         $m->follow_link_ok({id => 'tools-config-global-scrips-create'});
         my $prepare_code = prepare_code_with_value($prepare_code_value);
-        $m->form_name('ModifyScrip');
+        $m->form_name('CreateScrip');
         $m->set_fields(
-            'Scrip-new-ScripCondition'    => $condition,
-            'Scrip-new-ScripAction'       => 15, # User Defined
-            'Scrip-new-Template'          => 1,  # Blank
-            'Scrip-new-CustomPrepareCode' => $prepare_code,
+            'ScripCondition'    => $condition,
+            'ScripAction'       => 15, # User Defined
+            'Template'          => 1,  # Blank
+            'CustomPrepareCode' => $prepare_code,
         );
-        $m->submit;
+        $m->click('Create');
     }
 
     my $ticket_obj = RT::Test->create_ticket(

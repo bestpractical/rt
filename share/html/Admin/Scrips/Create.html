@@ -45,90 +45,94 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Modify scrip #[_1]", $id) &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip">
-<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+<form method="post" action="Create.html" id="CreateScrip" name="CreateScrip">
+<input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
 <table>
 
-<& Elements/EditBasics, %ARGS, Scrip => $scrip &>
+<& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $queue_obj &>
 
-% if ( not $disabled ) {
-<tr><td class="label"><&|/l&>Applies to</&>:</td><td class="value">\
-% if ( $scrip->IsGlobal ) {
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
-% } else {
-% my $added_to = $scrip->AddedTo;
-% my $found = 0;
-% while ( my $queue = $added_to->Next ) {
-% $m->out(', ') if $found++;
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Queues/Scrips.html?id=<% $queue->id %>">\
-<% $queue->Name %></a>\
-% last if $found == 10;
-% }
-% $m->out(', ...') if $found == 10;
-% }
-<td></tr>
-% }
+<tr><td class="label"><&|/l&>Stage</&>:</td><td class="value">\
+<& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &></td></tr>
 
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
 <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
 </td></tr>
 
 </table>
 </&>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+<& /Elements/Submit,
+    Label => loc('Create'),
+    Name => 'Create',
+&>
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+<& /Elements/Submit,
+    Label => loc('Create'),
+    Name => 'Create',
+&>
 % }
 
 </form>
 <%ARGS>
-$id     => undef
-$Update => undef
+$Queue => 0
+$Create => undef
 </%ARGS>
 <%INIT>
-my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
-$scrip->Load( $id );
-Abort(loc("Couldn't load scrip #[_1]", $id))
-    unless $scrip->id;
+my @results;
 
-my $disabled = $scrip->Disabled;
+$ARGS{'Enabled'} = 1 unless $ARGS{'SetEnabled'};
 
-if ( $Update ) {
-    my @attribs = qw(
-        Description
-        ScripAction ScripCondition Template
-        CustomPrepareCode CustomCommitCode CustomIsApplicableCode
-    );
-    if ($ARGS{"SetEnabled"}) {
-        push @attribs, "Disabled";
-        $ARGS{"Disabled"} = not $ARGS{"Enabled"};
-    }
-    my @results = UpdateRecordObject(
-        AttributesRef   => \@attribs,
-        Object          => $scrip,
-        ARGSRef         => \%ARGS
-    );
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Arguments => { id => $scrip->id },
-    );
+my $queue_obj;
+if ( $Queue ) {
+    $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
+    $queue_obj->Load( $Queue );
+    Abort( loc("Couldn't load queue [_1]", $Queue) )
+        unless $queue_obj->id;
 }
 
-my $EnabledChecked = qq[checked="checked"];
-$EnabledChecked = '' if $disabled;
+my $title;
+if ( $queue_obj ) {
+    $title = loc('Create a scrip and add to queue [_1]', $queue_obj->Name );
+} else {
+    $title = loc('Create a global scrip');
+}
 
-my @results;
-my ($ok, $msg) = $scrip->CompileCheck;
-push @results, $msg if !$ok;
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+if ( $Create ) {
+    my ($status, $msg) = $scrip->Create(
+        Description            => $ARGS{"Description"},
+
+        Queue                  => $Queue || 0,
+        Stage                  => $ARGS{"Stage"},
+        Disabled               => $ARGS{"Disabled"},
+
+        ScripAction            => $ARGS{"ScripAction"},
+        ScripCondition         => $ARGS{"ScripCondition"},
+        Template               => $ARGS{"Template"},
+
+        CustomPrepareCode      => $ARGS{"CustomPrepareCode"},
+        CustomCommitCode       => $ARGS{"CustomCommitCode"},
+        CustomIsApplicableCode => $ARGS{"CustomIsApplicableCode"},
+    );
+
+    MaybeRedirectForResults(
+        Force     => 1,
+        Actions   => [ $msg ],
+        Path      => 'Admin/Scrips/Modify.html',
+        Arguments => { id => $scrip->id },
+    ) if $status;
+
+    push @results, $msg;
+}
+
 </%INIT>
