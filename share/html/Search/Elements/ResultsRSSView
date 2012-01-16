@@ -103,9 +103,18 @@ $r->content_type('application/rss+xml; charset=utf-8');
         # create an RSS 1.0 file (http://purl.org/rss/1.0/)
         use XML::RSS;
         my $rss = XML::RSS->new(version => '1.0');
+
+        my $url;
+        if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {
+            $url = RT->Config->Get('WebURL');
+        }
+        else {
+            $url = RT::Interface::Web::GetWebURLFromENV();
+        }
+
         $rss->channel(
           title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
-          link         => RT->Config->Get('WebURL'),
+          link         => $url,
           description  => "",
           dc => {
           },
@@ -123,7 +132,7 @@ $r->content_type('application/rss+xml; charset=utf-8');
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->Subject || loc('No Subject'),
-          link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
+          link        => $url . "Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
           dc          => { creator => $creator_str,
                            date => $Ticket->CreatedObj->RFC2822,
