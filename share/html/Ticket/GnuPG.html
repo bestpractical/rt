@@ -51,7 +51,7 @@
 % $m->callback( CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
-<a href="<% RT->Config->Get('WebURL') %>Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
 <% loc('Return back to the ticket') %>
 </a>
 <& /Elements/Submit,
