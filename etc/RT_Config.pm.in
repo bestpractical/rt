@@ -923,7 +923,7 @@ Set($CanonicalizeRedirectURLs, 0);
 =item C<$CanonicalizeURLsInFeeds>
 
 Set C<$CanonicalizeURLsInFeeds> to 1 to use C<$WebURL> in feeds
-rather than the one we get from C<%ENV>.
+rather than the one we get from request.
 
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
