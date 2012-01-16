@@ -893,14 +893,14 @@ sub SendSessionCookie {
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
-=head2 GetWebURLFromENV
+=head2 GetWebURLFromRequest
 
 People may use different web urls instead of C<$WebURL> in config.
 Return the web url current user is using.
 
 =cut
 
-sub GetWebURLFromENV {
+sub GetWebURLFromRequest {
 
     my $uri = URI->new( RT->Config->Get('WebURL') );
 
@@ -947,7 +947,7 @@ sub Redirect {
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
-        my $env_uri = URI->new(GetWebURLFromENV());
+        my $env_uri = URI->new(GetWebURLFromRequest());
         $uri->scheme($env_uri->scheme);
         $uri->host($env_uri->host);
         $uri->port($env_uri->port);

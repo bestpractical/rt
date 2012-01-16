@@ -109,7 +109,7 @@ $r->content_type('application/rss+xml; charset=utf-8');
             $url = RT->Config->Get('WebURL');
         }
         else {
-            $url = RT::Interface::Web::GetWebURLFromENV();
+            $url = RT::Interface::Web::GetWebURLFromRequest();
         }
 
         $rss->channel(

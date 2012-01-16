@@ -95,7 +95,7 @@ while (my $t = $tickets->Next) {
         $url = RT->Config->Get('WebURL');
     }
     else {
-        $url = RT::Interface::Web::GetWebURLFromENV();
+        $url = RT::Interface::Web::GetWebURLFromRequest();
     }
     $url .= "Ticket/Display.html?id=".$t->id,
 
