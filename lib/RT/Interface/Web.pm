@@ -1249,6 +1249,47 @@ sub MaybeRedirectForResults {
     return RT::Interface::Web::Redirect($url);
 }
 
+=head2 MaybeRedirectToApproval Path => 'path', Whitelist => REGEX, ARGSRef => HASHREF
+
+If the ticket specified by C<< $ARGSRef->{id} >> is an approval ticket,
+redirect to the approvals display page, preserving any arguments.
+
+C<Path>s matching C<Whitelist> are let through.
+
+This is a no-op if the C<ForceApprovalsView> option isn't enabled.
+
+=cut
+
+sub MaybeRedirectToApproval {
+    my %args = (
+        Path        => $HTML::Mason::Commands::m->request_comp->path,
+        ARGSRef     => {},
+        Whitelist   => undef,
+        @_
+    );
+
+    return unless $ENV{REQUEST_METHOD} eq 'GET';
+
+    my $id = $args{ARGSRef}->{id};
+
+    if (    $id
+        and RT->Config->Get('ForceApprovalsView')
+        and not $args{Path} =~ /$args{Whitelist}/)
+    {
+        my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+        $ticket->Load($id);
+
+        if ($ticket and $ticket->id and lc($ticket->Type) eq 'approval') {
+            MaybeRedirectForResults(
+                Path      => "/Approvals/Display.html",
+                Force     => 1,
+                Anchor    => $args{ARGSRef}->{Anchor},
+                Arguments => $args{ARGSRef},
+            );
+        }
+    }
+}
+
 =head2 CreateTicket ARGS
 
 Create a new ticket, using Mason's %ARGS.  returns @results.
