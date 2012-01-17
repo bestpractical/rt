@@ -319,12 +319,12 @@ sub bootstrap_config {
     my $self = shift;
     my %args = @_;
 
-    my $config = $self->new_temp_file( config => RT => 'RT_SiteConfig.pm' );
-    open( my $config_fh, '>', $config )
-        or die "Couldn't open $config: $!";
+    my $config_file = $self->new_temp_file( config => RT => 'RT_SiteConfig.pm' );
+    open( my $config, '>', $config_file )
+        or die "Couldn't open $config_file: $!";
 
     my $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
-    print $config_fh qq{
+    print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
@@ -334,37 +334,37 @@ Set( \$LogDir,     '$tmp{directory}');
 Set( \$LogToFile , "debug");
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
-        print $config_fh "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
-        print $config_fh "Set( \$DatabaseUser , '$dbname');\n";
+        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set( \$DatabaseUser , '$dbname');\n";
     } else {
-        print $config_fh "Set( \$DatabaseName , '$dbname');\n";
-        print $config_fh "Set( \$DatabaseUser , 'u${dbname}');\n";
+        print $config "Set( \$DatabaseName , '$dbname');\n";
+        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
 
     if ( $args{'plugins'} ) {
-        print $config_fh "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
+        print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
 
         my $plugin_data = File::Spec->rel2abs("t/data/plugins");
         print $config qq[\$RT::PluginPath = "$plugin_data";\n];
     }
 
     if ( $INC{'Devel/Cover.pm'} ) {
-        print $config_fh "Set( \$DevelMode, 0 );\n";
+        print $config "Set( \$DevelMode, 0 );\n";
     }
     elsif ( $ENV{RT_TEST_DEVEL} ) {
-        print $config_fh "Set( \$DevelMode, 1 );\n";
+        print $config "Set( \$DevelMode, 1 );\n";
     }
     else {
-        print $config_fh "Set( \$DevelMode, 0 );\n";
+        print $config "Set( \$DevelMode, 0 );\n";
     }
 
-    $self->bootstrap_logging( $config_fh );
+    $self->bootstrap_logging( $config );
 
     # set mail catcher
     my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
         $tmp{'directory'}->dirname, 'mailbox.eml'
     );
-    print $config_fh <<END;
+    print $config <<END;
 Set( \$MailCommand, sub {
     my \$MIME = shift;
 
@@ -377,15 +377,15 @@ Set( \$MailCommand, sub {
 } );
 END
 
-    $self->bootstrap_more_config($config_fh, \%args);
+    $self->bootstrap_more_config($config, \%args);
 
-    print $config_fh $args{'config'} if $args{'config'};
+    print $config $args{'config'} if $args{'config'};
 
-    print $config_fh "\n1;\n";
+    print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $config;
-    close $config_fh;
+    close $config;
 
-    return $config;
+    return $config_file;
 }
 
 sub bootstrap_more_config { }
