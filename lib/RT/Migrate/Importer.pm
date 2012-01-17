@@ -129,11 +129,15 @@ sub Resolve {
         $obj->__Set(
             Field => $ref->{column},
             Value => $id,
-        );
+        ) if defined $ref->{column};
         $obj->__Set(
             Field => $ref->{classcolumn},
             Value => $class,
-        ) if $ref->{classcolumn};
+        ) if defined $ref->{classcolumn};
+        $obj->__Set(
+            Field => $ref->{uri},
+            Value => $self->LookupObj($uid)->URI,
+        ) if defined $ref->{uri};
     }
     delete $self->{Pending}{$uid};
 }
@@ -163,6 +167,7 @@ sub Postpone {
         uid         => undef,
         column      => undef,
         classcolumn => undef,
+        uri         => undef,
         @_,
     );
     my $uid = delete $args{for};

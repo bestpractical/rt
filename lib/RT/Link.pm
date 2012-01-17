@@ -473,10 +473,21 @@ sub PreInflate {
         my $uid_ref = delete $data->{$dir};
         next unless $uid_ref and ref $uid_ref;
 
-        my $uid = ${ $uid_ref };
-        my $obj = $importer->LookupObj( $uid );
-        $data->{$dir} = $obj->URI;
-        $data->{"Local$dir"} = $obj->Id if $obj->isa("RT::Ticket");
+        my $to_uid = ${ $uid_ref };
+        my $obj = $importer->LookupObj( $to_uid );
+        if ($obj) {
+            $data->{$dir} = $obj->URI;
+            $data->{"Local$dir"} = $obj->Id if $obj->isa("RT::Ticket");
+        } else {
+            $data->{$dir} = "";
+            $importer->Postpone(
+                for => $to_uid,
+                uid => $uid,
+                uri => $dir,
+                column => ($to_uid =~ /RT::Ticket/ ? "Local$dir" : undef),
+            );
+        }
+
     }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
