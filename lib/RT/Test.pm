@@ -330,8 +330,6 @@ Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
 Set( \@LexiconLanguages, qw(en zh_TW fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
-Set( \$LogDir,     '$tmp{directory}');
-Set( \$LogToFile , "debug");
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
         print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
