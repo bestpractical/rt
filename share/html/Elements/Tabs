@@ -304,7 +304,7 @@ my $build_admin_menu = sub {
             $tabs->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
             $tabs->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
             $tabs->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
-            if ( RT->Config->Get('GnuPG')->{'enable'} ) {
+            if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
                 $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
             }
         }
