@@ -2149,7 +2149,7 @@ More details in L<RT::Crypt::SMIME>.
 Set( %SMIME,
     Enable => @RT_SMIME@,
     OpenSSL => '/usr/bin/openssl',
-    Keyring => q{@RT_VAR_PATH@/data/gpg},
+    Keyring => q{@RT_VAR_PATH@/data/smime},
     Passphrase => '',
 );
 
