@@ -181,6 +181,8 @@ sub import {
     mkpath [ $RT::MasonSessionDir ]
         if RT->Config->Get('DatabaseType');
 
+    RT->Config->LockSetOfOptions;
+
     my $level = 1;
     while ( my ($package) = caller($level-1) ) {
         last unless $package =~ /Test/;

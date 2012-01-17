@@ -996,6 +996,35 @@ sub PostLoadCheck {
     }
 }
 
+=head2 LockSetOfOptions
+
+Locks option names and sub options in HASH options, so accessing
+or setting option that was defined before this call is fatal error.
+This is only enabled in RT's core tests, but not in production
+environment. This may change in future.
+
+=cut
+
+sub LockSetOfOptions {
+    my $self = shift;
+    my $ref = shift;
+
+    my $nest = 0;
+    unless ($ref) {
+        $ref = \%OPTIONS;
+        $OPTIONS{$_} = undef foreach grep !exists $OPTIONS{$_}, keys %META;
+        $nest = 1;
+    }
+
+    require Hash::Util;
+    Hash::Util::lock_ref_keys( $ref );
+    # don't nest more then two levels, so we lock OptionName and if it's a hash
+    # option then we lock first level
+    if ( $nest ) {
+        $self->LockSetOfOptions( $_ ) foreach grep ref($_) eq 'HASH', values %$ref;
+    }
+}
+
 =head2 Configs
 
 Returns list of config files found in local etc, plugins' etc
