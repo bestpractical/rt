@@ -382,10 +382,10 @@ END
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config;
+    $ENV{'RT_SITE_CONFIG'} = $config_file;
     close $config;
 
-    return $config_file;
+    return $config;
 }
 
 sub bootstrap_more_config { }
