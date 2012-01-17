@@ -2174,7 +2174,6 @@ signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 Set(%GnuPG,
     Enable                 => @RT_GPG@,
     OutgoingMessagesFormat => "RFC", # Inline
-    AllowEncryptDataInDB   => 0,
 );
 
 =item C<%GnuPGOptions>
