@@ -306,6 +306,20 @@ else
 fi
 AC_SUBST(RT_GPG)
 
+dnl SSL support for RT's mailgate
+AC_ARG_WITH(ssl-mailgate,[],RT_SSL_MAILGATE=$withval,RT_SSL_MAILGATE="0")
+AC_ARG_ENABLE(ssl-mailgate,
+            AC_HELP_STRING([--enable-ssl-mailgate],
+                           [Turns on support for HTTPS in rt-mailgate]),
+            RT_SSL_MAILGATE=$enableval,
+            RT_SSL_MAILGATE=$RT_SSL_MAILGATE)
+if test "$RT_SSL_MAILGATE" = yes; then
+        RT_SSL_MAILGATE="1"
+else
+        RT_SSL_MAILGATE="0"
+fi
+AC_SUBST(RT_SSL_MAILGATE)
+
 
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in

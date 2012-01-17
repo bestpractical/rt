@@ -1,0 +1,20 @@
+<%init>
+# Redirect to the approvals view if we're trying to get an approvals ticket
+# Exceptions:
+#   - Display handles redirecting for approvals itself after mobile redirect/processing
+#   - Create doesn't have an existing ticket
+#   - Forward and ShowEmailRecord are used by the approvals view
+#   - anything not ending in a .html
+my $whitelist = qr{
+    (?:/(?:Display|Create|Forward|ShowEmailRecord)\.html
+      |(?<!\.html))
+    $
+}ix;
+
+MaybeRedirectToApproval(
+    Whitelist   => $whitelist,
+    ARGSRef     => \%ARGS,
+);
+
+$m->call_next;
+</%init>

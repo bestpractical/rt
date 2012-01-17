@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& "SelectOwner$Widget", %ARGS, Objects => \@objects &>
 <%INIT>
-my $Widget = RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
+my $Widget;
+if ( !$QueueObj && !$TicketObj && RT->Config->Get('AutocompleteOwnersForSearch') ) {
+    $Widget = 'Autocomplete';
+}
+$Widget ||= RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
                 ? 'Autocomplete' : 'Dropdown';
 
 my @objects;

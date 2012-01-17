@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -219,6 +219,13 @@ sub LimitToUnprivileged {
     $self->MemberOfGroup( RT->UnprivilegedUsers->id);
 }
 
+
+sub Limit {
+    my $self = shift;
+    my %args = @_;
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    return $self->SUPER::Limit( %args );
+}
 
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
 
