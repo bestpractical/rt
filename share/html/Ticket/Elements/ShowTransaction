@@ -85,7 +85,7 @@ $DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->i
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
 $UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
 $ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
-$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/GnuPG.html"
+$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/Crypt.html"
 $EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef

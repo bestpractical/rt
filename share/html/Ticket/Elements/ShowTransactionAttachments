@@ -51,7 +51,7 @@
 foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
 
     if (RT->Config->Get('GnuPG')->{'Enable'}) {
-        $m->comp( 'ShowGnuPGStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
+        $m->comp( 'ShowCryptStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
     }
 
     $m->comp( 'ShowMessageHeaders',
