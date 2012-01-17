@@ -160,7 +160,7 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
         UpdatePath      => 'Update.html',
         ForwardPath     => 'Forward.html',
         EmailRecordPath => 'ShowEmailRecord.html',
-        EncryptionPath  => 'GnuPG.html',
+        EncryptionPath  => 'Crypt.html',
     );
 
     while ( my ($arg, $path) = each %tmp ) {

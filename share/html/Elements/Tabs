@@ -329,7 +329,7 @@ my $build_admin_menu = sub {
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
                 if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-                    $tabs->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/GnuPG.html?id=" . $id );
+                    $tabs->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
                 $tabs->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
             }
