@@ -34,36 +34,5 @@
             $prev_type = $lt;
         }
     },
-    sub {
-        my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->LoadByCols(
-            Name       => 'PublicKey',
-            LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
-        );
-        unless ( $cf->id ) {
-            $RT::Logger->info("You don't have PublicKey. Nothing to do.");
-            return 1;
-        }
-        my ($status, $msg) = $cf->SetName('SMIME Key');
-        unless ( $status ) {
-            $RT::Logger->error("Couldn't rename custom field: $msg");
-        } else {
-            $RT::Logger->info("Renamed custom field: $msg");
-        }
-        return 1;
-    },
-    sub {
-        $RT::Logger->info("Going to delete all SMIMEKeyNotAfter attributes");
-        my $attrs = RT::Attributes->new( $RT::SystemUser );
-        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
-        $attrs->Limit( FIELD => 'Name', VALUE => 'SMIMEKeyNotAfter' );
-        while ( my $attr = $attrs->Next ) {
-            my ($status, $msg) = $attr->Delete;
-            unless ( $status ) {
-                $RT::Logger->error("Couldn't delete attribute: $msg");
-            }
-        }
-        return 1;
-    },
 );
 

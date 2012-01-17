@@ -9,5 +9,3 @@
 * figure out what happened with t/web/gnupg-outgoing.t
   and restore all changes from SMIME branch that changed
   this file
-
-* move SMIME upgrade steps from etc/upgrade/3.8.8/content
