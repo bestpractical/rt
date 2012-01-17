@@ -74,6 +74,7 @@ $URI => undef
 my $href = $URI->Resolver->HREF;
 if ( $URI->IsLocal ) {
     my $base = RT->Config->Get('WebBaseURL');
-    $href =~ s!^$base!!;
+    # URI->rel doesn't contain the leading '/'
+    $href = '/' . URI->new($href)->rel($base);
 }
 </%INIT>
