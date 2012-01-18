@@ -471,12 +471,6 @@ license-tag:
 factory: initialize-database
 	cd lib; $(PERL) ../devel/tools/factory  $(DB_DATABASE) RT
 
-reconfigure:
-	aclocal -I m4
-	autoconf
-	chmod 755 ./configure
-	./configure
-
 start-httpd:
 	$(PERL) sbin/standalone_httpd &
 
