@@ -1340,6 +1340,17 @@ sub LoadedConfigs {
     return %config;
 }
 
+=head2 UnloadConfigsFromINC
+
+Unload config files from %INC
+
+=cut
+
+sub UnloadConfigsFromINC {
+    my %config = LoadedConfigs();
+    delete $INC{$_} for keys %config;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

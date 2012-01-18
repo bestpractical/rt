@@ -209,6 +209,14 @@ else {
 push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @args;
 
+if ( RT->Config->Get('DevelMode') ) {
+    my %config = RT->Config->LoadedConfigs();
+    push @args, '-R', join ',', values %config;
+
+    # unload here so we can reload them later
+    RT->Config->UnloadConfigsFromINC();
+}
+
 $r->parse_options(@args);
 
 delete $r->{options} if $is_fastcgi; ### mangle_host_port_socket ruins everything
@@ -222,7 +230,21 @@ unless ($r->{env} eq 'development') {
         print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
     };
 }
-eval { $r->run($app) };
+
+if ( RT->Config->Get('DevelMode') ) {
+    eval {
+        $r->run(
+            sub {
+                RT->LoadConfig;
+                $app->(@_);
+            }
+        );
+    };
+}
+else {
+    eval { $r->run($app) };
+}
+
 if (my $err = $@) {
     handle_startup_error($err);
 }
