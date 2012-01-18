@@ -194,7 +194,7 @@ sub GetCurrentUser {
                 Template  => 'NotEncryptedMessage',
                 Arguments => { Message  => $args{'Message'} },
             );
-            return (-1, 'rejected because the message is unencrypted with Strict mode enabled');
+            return (-1, 'rejected because the message has unencrypted parts with Strict mode enabled');
         }
 
         $part->head->replace(
