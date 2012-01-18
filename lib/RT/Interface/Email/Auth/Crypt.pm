@@ -188,6 +188,15 @@ sub GetCurrentUser {
             }
         }
 
+        if (RT->Config->Get('Crypt')->{'Strict'} and !$decrypted) {
+            EmailErrorToSender(
+                %args,
+                Template  => 'NotEncryptedMessage',
+                Arguments => { Message  => $args{'Message'} },
+            );
+            return (-1, 'rejected because the message is unencrypted with Strict mode enabled');
+        }
+
         $part->head->replace(
             'X-RT-Incoming-Encryption' => 
                 $decrypted ? 'Success' : 'Not encrypted'
