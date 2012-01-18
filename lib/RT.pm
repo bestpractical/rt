@@ -788,6 +788,22 @@ sub StyleSheets {
     return RT->Config->Get('CSSFiles');
 }
 
+=head2 RefreshModules
+
+Refresh modified modules except config.
+
+=cut
+
+sub RefreshModules {
+    require Module::Refresh;
+    my %config = Config->LoadedConfigs();
+
+    for my $mod ( keys %INC ) {
+        next if exists $config{$mod};
+        Module::Refresh->refresh_module_if_modified($mod);
+    }
+}
+
 =head1 BUGS
 
 Please report them to rt-bugs@bestpractical.com, if you know what's

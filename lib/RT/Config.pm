@@ -1326,6 +1326,20 @@ sub UpdateOption {
     return 1;
 }
 
+=head2 LoadedConfigs
+
+Returns a hash of loaded config files, with filename as the key and path as
+the value.
+
+=cut
+
+sub LoadedConfigs {
+
+    my %config =
+      map { $_ => $INC{$_} } grep { /^\w+_(?:Site)?Config\.pm$/ } keys %INC;
+    return %config;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

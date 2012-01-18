@@ -211,9 +211,8 @@ sub WebExternalAutoInfo {
 sub HandleRequest {
     my $ARGS = shift;
 
-    if (RT->Config->Get('DevelMode')) {
-        require Module::Refresh;
-        Module::Refresh->refresh;
+    if ( RT->Config->Get('DevelMode') ) {
+        RT->RefreshModules;
     }
 
     $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
