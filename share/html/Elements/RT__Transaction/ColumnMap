@@ -93,17 +93,14 @@ my $COLUMN_MAP = {
     },
     Description => {
         title     => 'Description', # loc
-        attribute => 'Description',
         value     => sub { return $_[0]->Description() },
     },
     BriefDescription => {
-        title     => 'BriefDescription', # loc
-        attribute => 'BriefDescription',
+        title     => 'Brief Description', # loc
         value     => sub { return $_[0]->BriefDescription() },
     },
     ObjectName => {
         title     => 'Name', # loc
-        attribute => 'ObjectName',
         value     => sub { my $object = $_[0]->Object;
             # this is awful, but can() doesn't work (AUTOLOAD), and we don't
             # have any sort of standard Description field, since not everything
