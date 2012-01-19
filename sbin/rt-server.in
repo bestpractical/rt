@@ -209,7 +209,7 @@ else {
 push @args, '--server', 'Standalone' if RT->InstallMode;
 push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @args;
 
-if ( RT->Config->Get('DevelMode') ) {
+if ( !RT->InstallMode && RT->Config->Get('DevelMode')  ) {
     my %config = RT->Config->LoadedConfigs();
     push @args, '-R', join ',', values %config;
 
@@ -231,7 +231,7 @@ unless ($r->{env} eq 'development') {
     };
 }
 
-if ( RT->Config->Get('DevelMode') ) {
+if ( !RT->InstallMode && RT->Config->Get('DevelMode')  ) {
     eval {
         $r->run(
             sub {
