@@ -111,6 +111,8 @@ sub GetCurrentUser {
         @_
     );
 
+    my $strict = RT->Config->Get('Crypt')->{'Strict'} || {};
+
     # we clean all possible headers
     my @headers =
         qw(
@@ -135,7 +137,7 @@ sub GetCurrentUser {
         AddStatus => 1,
     );
     if ( $status && !@res ) {
-        if (RT->Config->Get('Crypt')->{'Strict'}) {
+        if ($strict->{'Encrypted'}) {
             EmailErrorToSender(
                 %args,
                 Template  => 'NotEncryptedMessage',
@@ -181,7 +183,7 @@ sub GetCurrentUser {
             }
         }
 
-        if (RT->Config->Get('Crypt')->{'Strict'} and !$decrypted) {
+        if ($strict->{'Encrypted'} and !$decrypted) {
             EmailErrorToSender(
                 %args,
                 Template  => 'NotEncryptedMessage',

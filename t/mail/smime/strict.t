@@ -10,7 +10,7 @@ use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
 
-RT->Config->Get('Crypt')->{'Strict'} = 1;
+RT->Config->Get('Crypt')->{'Strict'} = {Encrypted => 1};
 
 {
     my $template = RT::Template->new($RT::SystemUser);
