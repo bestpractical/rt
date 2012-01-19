@@ -158,13 +158,6 @@ sub GetCurrentUser {
             if $reject;
     }
 
-    # attach the original encrypted message
-    $args{'Message'}->attach(
-        Type        => 'application/x-rt-original-message',
-        Disposition => 'inline',
-        Data        => ${ $args{'RawMessageRef'} },
-    );
-
     my @found;
     foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
@@ -202,6 +195,13 @@ sub GetCurrentUser {
                 $decrypted ? 'Success' : 'Not encrypted'
         );
     }
+
+    # attach the original encrypted message
+    $args{'Message'}->attach(
+        Type        => 'application/x-rt-original-message',
+        Disposition => 'inline',
+        Data        => ${ $args{'RawMessageRef'} },
+    );
 
     my %seen;
     $args{'Message'}->head->replace( 'X-RT-Privacy' => $_ )
