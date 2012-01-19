@@ -4,6 +4,7 @@ use warnings;
 
 use RT::Test::SMIME tests => 22;
 my $test = 'RT::Test::SMIME';
+my $mails_dir = 't/data/smime/mails';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
@@ -70,25 +71,19 @@ RT::Test->close_mailgate_ok($mail);
 {
     # test for encrypted mail
     my $buf = '';
-    run3(
-        shell_quote(
-            qw(openssl smime -encrypt  -des3),
-            -from    => 'root@example.com',
-            -to      => 'rt@' . $RT::rtname,
-            -subject => "Encrypted message for queue",
-            $test->key_path('sender@example.com.crt' ),
-        ),
-        \"Subject: test\n\norzzzzzz",
-        \$buf,
-        \*STDERR
-    );
+    {
+        local $/;
+        open my $fh, "<$mails_dir/4-encrypted-plain.eml";
+        $buf = <$fh>;
+        close $fh;
+    }
 
     my ($status, $tid) = RT::Test->send_via_mailgate( $buf );
     is ($status >> 8, 0, "The mail gateway exited normally");
 
     my $tick = RT::Ticket->new( $RT::SystemUser );
     $tick->Load( $tid );
-    is( $tick->Subject, 'Encrypted message for queue',
+    is( $tick->Subject, 'Test Email ID:4',
         "Created the ticket"
     );
 
@@ -102,7 +97,7 @@ RT::Test->close_mailgate_ok($mail);
         'SMIME',
         'recorded incoming mail that is encrypted'
     );
-    like( $attach->Content, qr'orz');
+    like( $attach->Content, qr'This is encrypted message');
 
     is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
 }
