@@ -130,6 +130,7 @@ my @models = qw(
     ScripAction
     ScripCondition
     Scrip
+    ObjectScrip
     Template
     Ticket
     Transaction
@@ -152,6 +153,7 @@ $redo_on{'Delete'} = {
     Queues => [],
 
     Scrips => [],
+    ObjectScrips => [],
     ScripActions => [],
     ScripConditions => [],
     Templates => [],
@@ -781,9 +783,6 @@ push @CHECKS, Templates => sub {
 
 push @CHECKS, Scrips => sub {
     check_integrity(
-        'Scrips', 'Queue' => 'Queues', 'id',
-    );
-    check_integrity(
         'Scrips', 'ScripCondition' => 'ScripConditions', 'id',
     );
     check_integrity(
@@ -791,6 +790,12 @@ push @CHECKS, Scrips => sub {
     );
     check_integrity(
         'Scrips', 'Template' => 'Templates', 'id',
+    );
+    check_integrity(
+        'ObjectScrips', 'Scrip' => 'Scrips', 'id',
+    );
+    check_integrity(
+        'ObjectScrips', 'ObjectId' => 'Queues', 'id',
     );
 };
 
@@ -1072,6 +1077,15 @@ while ( my $check = shift @do_check ) {
         push @do_check, $redo;
     }
 }
+
+=head2 check_integrity
+
+Takes two (table name, column(s)) pairs. First pair
+is reference we check and second is destination that
+must exist. Array reference can be used for multiple
+columns.
+
+=cut
 
 sub check_integrity {
     my ($stable, @scols) = (shift, shift);
