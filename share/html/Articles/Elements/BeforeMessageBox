@@ -198,19 +198,6 @@ my $hotlist = RT::Articles->new( $session{'CurrentUser'} );
 $hotlist->LimitHotlistClasses;
 $hotlist->LimitAppliedClasses( Queue => $QueueObj );
 
-# By default, order by name
-$hotlist->OrderByCols( {
-            ALIAS => 'main',
-            FIELD => 'Name',
-            ORDER => 'ASC'
-    },
-        {   ALIAS => 'main',
-            FIELD => 'SortOrder',
-            ORDER => 'ASC'
-        },
-
-    );
-
 my ( $topic_articles, $topics, $included_topic );
 $topic_articles = RT::Articles->new( $session{CurrentUser} );
 $topics = [];
