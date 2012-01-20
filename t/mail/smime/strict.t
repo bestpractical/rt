@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => 23;
+use RT::Test::SMIME tests => 30;
 my $test = 'RT::Test::SMIME';
 my $mails_dir = 't/data/smime/mails';
 
@@ -24,6 +24,21 @@ EOF
     );
 }
 
+{
+    my $template = RT::Template->new($RT::SystemUser);
+    $template->Create(
+        Name => 'NotSignedMessage',
+        Queue => 0,
+        Content => <<EOF,
+
+Subject: Failed to send unsigned message
+
+This message was not sent since it is unsigned:
+EOF
+    );
+}
+
+
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
@@ -44,11 +59,38 @@ RT::Test->import_smime_key('root@example.com.crt', $user);
 RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
 RT::Test->stop_server;
 
+RT->Config->Get('Crypt')->{'Strict'} = {Signed => 1};
+
+($url, $m) = RT::Test->started_ok;
+my $mail = RT::Test->open_mailgate_ok($url);
+print $mail <<EOF;
+From: root\@localhost
+To: rt\@$RT::rtname
+Subject: This is a test of new ticket creation as root
+
+Blah!
+Foob!
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    ok(!RT::Test->last_ticket, 'A ticket was not created');
+    my ($mail) = RT::Test->fetch_caught_mails;
+    like(
+        $mail,
+        qr/^Subject: Failed to send unsigned message/m,
+        'recorded incoming mail that is not signed'
+    );
+    my ($warning) = $m->get_warnings;
+    like($warning, qr/rejected because the message is unencrypted with Strict mode enabled/);
+}
+RT::Test->stop_server;
+
 RT->Config->Get('Crypt')->{'Strict'} = {Encrypted => 1};
 
 ($url, $m) = RT::Test->started_ok;
 
-my $mail = RT::Test->open_mailgate_ok($url);
+$mail = RT::Test->open_mailgate_ok($url);
 print $mail <<EOF;
 From: root\@localhost
 To: rt\@$RT::rtname

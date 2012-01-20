@@ -137,10 +137,10 @@ sub GetCurrentUser {
         AddStatus => 1,
     );
     if ( $status && !@res ) {
-        if ($strict->{'Encrypted'}) {
+        if ($strict->{'Encrypted'} or $strict->{'Signed'}) {
             EmailErrorToSender(
                 %args,
-                Template  => 'NotEncryptedMessage',
+                Template  => $strict->{'Encrypted'} ? 'NotEncryptedMessage' : 'NotSignedMessage',
                 Arguments => { Message  => $args{'Message'} },
             );
             return (-1, 'rejected because the message is unencrypted with Strict mode enabled');
@@ -162,7 +162,7 @@ sub GetCurrentUser {
 
     my @found;
     foreach my $part ( $args{'Message'}->parts_DFS ) {
-        my $decrypted;
+        my ($decrypted, $signed);
 
         foreach my $protocol ( @check_protocols ) {
             my @status = grep defined && length,
@@ -176,6 +176,7 @@ sub GetCurrentUser {
                     $decrypted = 1;
                 }
                 if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
+                    $signed = 1;
                     $part->head->replace(
                         'X-RT-Incoming-Signature' => $_->{UserString}
                     );
@@ -190,6 +191,14 @@ sub GetCurrentUser {
                 Arguments => { Message  => $args{'Message'} },
             );
             return (-1, 'rejected because the message has unencrypted parts with Strict mode enabled');
+        }
+        if ($strict->{'Signed'} and !$signed) {
+            EmailErrorToSender(
+                %args,
+                Template  => 'NotSignedMessage',
+                Arguments => { Message  => $args{'Message'} },
+            );
+            return (-1, 'rejected because the message has unsigned parts with Strict mode enabled');
         }
 
         $part->head->replace(
