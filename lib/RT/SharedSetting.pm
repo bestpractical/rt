@@ -103,7 +103,8 @@ sub Load {
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
-        $self->{'Attribute'} = $object->Attributes->WithId($id);
+        $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
+        $self->{'Attribute'}->Load( $id );
         if ($self->{'Attribute'}->Id) {
             $self->{'Id'} = $self->{'Attribute'}->Id;
             $self->{'Privacy'} = $privacy;
@@ -207,7 +208,8 @@ sub Save {
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
     if ($att_id) {
-        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
+        $self->{'Attribute'}->Load( $att_id );
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         return ( 1, $self->loc( "Saved [_1] [_2]", $self->ObjectName, $name ) );

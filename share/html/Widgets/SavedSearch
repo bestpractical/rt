@@ -61,7 +61,8 @@ my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
 if ( my ( $container_object, $search_id ) = _parse_saved_search(
             $args->{'SavedSearchLoad'} || $args->{'SavedChartSearchId'} ) ) {
-    my $search = $container_object->Attributes->WithId($search_id);
+    my $search = RT::Attribute->new( $session{'CurrentUser'} );
+    $search->Load($search_id);
     # We have a $search and now; import the others
     $self->{SearchId} = $args->{'SavedSearchLoad'} ||
         $args->{'SavedChartSearchId'};
