@@ -362,6 +362,18 @@ my $build_admin_menu = sub {
         }
     }
 
+    if ( $request_path =~ m{^/Admin/Scrips/} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
+            my $id = $m->request_args->{'id'};
+            my $obj = RT::Scrip->new( $session{'CurrentUser'} );
+            $obj->Load($id);
+
+            my $tabs = PageMenu();
+            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=".$id );
+            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id );
+        }
+    }
+
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
         my $tabs = PageMenu();
         $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );

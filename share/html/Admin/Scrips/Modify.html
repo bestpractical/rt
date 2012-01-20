@@ -58,7 +58,8 @@
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 
 % if ( not $disabled ) {
-<tr><td class="label"><&|/l&>Applies to</&>:</td><td class="value">\
+<tr><td class="label"><a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:</td>
+<td class="value">\
 % if ( $scrip->IsGlobal ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
 % } else {

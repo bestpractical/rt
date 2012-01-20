@@ -89,6 +89,15 @@ my $COLUMN_MAP = {
         attribute => 'Lifecycle',
         value => sub { return $_[0]->Lifecycle->Name },
     },
+    ScripStage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $sid = $_[-1];
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            $os->LoadByCols( Scrip => $_[-1], ObjectId => $_[0]->id );
+            return $os->Stage;
+        },
+    },
 };
 
 foreach my $field (qw(
