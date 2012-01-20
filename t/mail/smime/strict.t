@@ -2,15 +2,13 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => 22;
+use RT::Test::SMIME tests => 23;
 my $test = 'RT::Test::SMIME';
 my $mails_dir = 't/data/smime/mails';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
-
-RT->Config->Get('Crypt')->{'Strict'} = {Encrypted => 1};
 
 {
     my $template = RT::Template->new($RT::SystemUser);
@@ -44,6 +42,11 @@ my $user = RT::Test->load_or_create_user(
 );
 RT::Test->import_smime_key('root@example.com.crt', $user);
 RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
+RT::Test->stop_server;
+
+RT->Config->Get('Crypt')->{'Strict'} = {Encrypted => 1};
+
+($url, $m) = RT::Test->started_ok;
 
 my $mail = RT::Test->open_mailgate_ok($url);
 print $mail <<EOF;
