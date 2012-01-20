@@ -62,12 +62,13 @@
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Template</&>:</td><td class="value">\
-<& /Admin/Elements/SelectTemplate,
-    Default => $ARGS{"Template"} || $Scrip->TemplateObj->Id,
+<& SelectTemplate,
+    Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue,
 &></td></tr>
 
 <%ARGS>
 $Scrip
+$Queue => undef
 </%ARGS>
 <%INIT>
 </%INIT>

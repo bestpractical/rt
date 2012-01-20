@@ -45,33 +45,52 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-<option value="" 
-<% defined($Default) && $Default eq 'none' && qq[ selected="selected"] |n %>>-</option>
-%while  (my $Template = $PrimaryTemplates->Next) {
-<option value="<%$Template->Id%>" <% ($Template->Id == $Default) && qq[ selected="selected"] |n %>><% loc($Template->Name) %></option>
-%}
-%while  (my $Template = $OtherTemplates->Next) {
-<option value="<%$Template->Id%>" <% defined($Default) && ($Template->Id == $Default) && qq[ selected="selected"] |n %>><&|/l, loc($Template->Name) &>Global template: [_1]</&></option>
-%}
+<select name="<% $Name %>">
+<option value=""><% $current || '-' %></option>
+% foreach my $name ( @list ) {
+<option value="<% $name %>" \
+    <% lc($Default||'') eq lc $name ? 'selected="selected"' : '' |n %>
+><% loc($name) %></option>
+% }
 </select>
 
+<%ARGS>
+$Name => 'Template'
+$Queue => undef
+$Scrip => undef
+$Default => undef
+</%ARGS>
 <%INIT>
 
+my $current;
+$current = $Scrip->TemplateObj->Name if $Scrip;
 
-my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
-if ($Queue != 0) {
-$PrimaryTemplates->LimitToQueue($Queue);
-$PrimaryTemplates->OrderBy(FIELD => 'Name');
+my $global = RT::Templates->new($session{'CurrentUser'});
+$global->LimitToGlobal;
+
+my %global;
+$global{ lc $_ } = $_ foreach map $_->Name, @{ $global->ItemsArrayRef };
+
+my @queues;
+push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
+push @queues, $Queue if $Queue && $Queue->id;
+
+my (%names, %counters);
+foreach my $queue ( @queues ) {
+    my $templates = RT::Templates->new($session{'CurrentUser'});
+    $templates->LimitToQueue( $queue->id );
+    foreach my $name ( map $_->Name, @{ $templates->ItemsArrayRef } ) {
+        next if $global{ lc $name };
+        $counters{ lc $name }++;
+        $names{lc $name} = $name;
+    }
 }
+delete $counters{ $_ }
+    foreach grep $counters{$_} != @queues,
+    keys %counters;
 
-my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
-$OtherTemplates->LimitToGlobal;
-$OtherTemplates->OrderBy(FIELD => 'Name');
-
+my @list =
+    sort { lc loc($a) cmp lc loc($b) }
+    map $global{$_} || $names{$_},
+    keys %global, keys %counters;
 </%INIT>
-<%ARGS>
-$Queue => undef
-$Default => 'none'
-$Name => 'Template'
-</%ARGS>

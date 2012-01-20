@@ -108,9 +108,10 @@ my $disabled = $scrip->Disabled;
 if ( $Update ) {
     my @attribs = qw(
         Description
-        ScripAction ScripCondition Template
+        ScripAction ScripCondition
         CustomPrepareCode CustomCommitCode CustomIsApplicableCode
     );
+    push @attribs, "Template" if defined $ARGS{Template} and length $ARGS{Template};
     if ($ARGS{"SetEnabled"}) {
         push @attribs, "Disabled";
         $ARGS{"Disabled"} = not $ARGS{"Enabled"};
