@@ -329,6 +329,7 @@ my $build_admin_menu = sub {
             my $tabs = PageMenu();
             $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
             $tabs->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
+            $tabs->child( memberships    => title => loc('Memberships'),  path => "/Admin/Groups/Memberships.html?id=" . $obj->id );
             $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
             $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
             $tabs->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
