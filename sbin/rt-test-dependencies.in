@@ -159,6 +159,10 @@ sub conclude {
                     0, $module->{error} );
             }
         }
+
+        print "\nPerl library path for @PERL@:\n";
+        print "    $_\n" for @INC;
+
         exit 1;
     }
 }
@@ -438,6 +442,10 @@ sub test_dep {
             $error =~ s/\n(.*)$//s;
             $error =~ s/at \(eval \d+\) line \d+\.$//;
             undef $error if $error =~ /this is only/;
+
+            my $path = $module;
+            $path =~ s{::}{/}g;
+            undef $error if $error =~ /^Can't locate $path\.pm in \@INC/;
 
             return ( 0, $error );
         }
