@@ -197,10 +197,9 @@ if ( $QueueObj->Id ) {
         ARGSRef => \%ARGS,
     );
 
-    $ARGS{'Lifecycle'} = undef if defined $ARGS{'Lifecycle'} and $ARGS{'Lifecycle'} eq "default";
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
-        Object => $QueueObj, 
+        Object => $QueueObj,
         ARGSRef => \%ARGS
     );
 
