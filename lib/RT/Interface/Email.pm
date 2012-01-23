@@ -406,8 +406,10 @@ sub SendEmail {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
 
-        # SetOutgoingMailFrom
-        if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+        # SetOutgoingMailFrom and bounces conflict, since they both want -f
+        if ( $args{'Bounce'} ) {
+            $args .= ' '. RT->Config->Get('SendmailBounceArguments');
+        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
             my $OutgoingMailAddress;
 
             if ($TicketObj) {
@@ -426,9 +428,6 @@ sub SendEmail {
             $args .= " -f $OutgoingMailAddress"
                 if $OutgoingMailAddress;
         }
-
-        # Set Bounce Arguments
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
         # VERP
         if ( $TransactionObj and
