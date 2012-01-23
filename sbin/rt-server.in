@@ -211,7 +211,7 @@ push @args, '--server', 'Starlet' unless $r->{server} || grep { m/--server/ } @a
 
 if ( !RT->InstallMode && RT->Config->Get('DevelMode')  ) {
     my %config = RT->Config->LoadedConfigs();
-    push @args, '-R', join ',', values %config;
+    push @args, '-R', join ',', $INC{'RT/Interface/Web.pm'}, values %config;
 
     # unload here so we can reload them later
     RT->Config->UnloadConfigsFromINC();
