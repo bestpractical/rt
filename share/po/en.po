@@ -13,7 +13,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2011-08-06 01:12+0000\n"
 "X-Generator: Launchpad (build 13613)\n"
 
-#: share/html/Elements/Tabs:63 share/html/m/_elements/header:67
+#: share/html/Elements/Tabs:380 share/html/m/_elements/header:67
 msgid "Homepage"
 msgstr "Home"
 
