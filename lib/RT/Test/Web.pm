@@ -355,6 +355,24 @@ sub custom_field_input {
     return $res;
 }
 
+sub value_name {
+    my $self = shift;
+    my $field = shift;
+
+    my $input = $self->current_form->find_input( $field )
+        or return undef;
+
+    my @names = $input->value_names;
+    return $input->value unless @names;
+
+    my @values = $input->possible_values;
+    for ( my $i = 0; $i < @values; $i++ ) {
+        return $names[ $i ] if $values[ $i ] eq $input->value;
+    }
+    return undef;
+}
+
+
 sub check_links {
     my $self = shift;
     my %args = @_;

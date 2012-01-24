@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => 54;
+
+RT->Config->Set( UseTransactionBatch => 1 );
 
 # TODO:
 # Test the rest of the conditions.
@@ -100,4 +102,86 @@ sub prepare_code_with_value {
     $m->text_contains("#${ticket}: subject|On Forward|On Forward Ticket|On Forward|On Forward Transaction");
 
     RT::Test->clean_caught_mails;
+}
+
+note "check basics in scrip's admin interface";
+{
+    $m->follow_link_ok( { id => 'tools-config-global-scrips-create' } );
+    ok $m->form_name('CreateScrip');
+    is $m->value_name('Description'), '', 'empty value';
+    is $m->value_name('ScripAction'), '-', 'empty value';
+    is $m->value_name('ScripCondition'), '-', 'empty value';
+    is $m->value_name('Template'), '-', 'empty value';
+    $m->field('Description' => 'test');
+    $m->click('Create');
+    $m->content_contains("Action is mandatory argument");
+
+    ok $m->form_name('CreateScrip');
+    is $m->value_name('Description'), 'test', 'value stays on the page';
+    $m->select('ScripAction' => 'Notify Ccs');
+    $m->click('Create');
+    $m->content_contains("Template is mandatory argument");
+
+    ok $m->form_name('CreateScrip');
+    is $m->value_name('Description'), 'test', 'value stays on the page';
+    is $m->value_name('ScripAction'), 'Notify Ccs', 'value stays on the page';
+    $m->select('Template' => 'Blank');
+    $m->click('Create');
+    $m->content_contains("Condition is mandatory argument");
+
+    ok $m->form_name('CreateScrip');
+    is $m->value_name('Description'), 'test', 'value stays on the page';
+    is $m->value_name('ScripAction'), 'Notify Ccs', 'value stays on the page';
+    $m->select('ScripCondition' => 'On Close');
+    $m->click('Create');
+    $m->content_contains("Scrip Created");
+
+    ok $m->form_name('ModifyScrip');
+    is $m->value_name('Description'), 'test', 'correct value';
+    is $m->value_name('ScripCondition'), 'On Close', 'correct value';
+    is $m->value_name('ScripAction'), 'Notify Ccs', 'correct value';
+    is $m->value_name('Template'), 'Blank', 'correct value';
+    $m->field('Description' => 'test test');
+    $m->click('Update');
+    # regression
+    $m->content_lacks("Template is mandatory argument");
+
+    ok $m->form_name('ModifyScrip');
+    is $m->value_name('Description'), 'test test', 'correct value';
+    $m->content_contains("Description changed from", "found action result message");
+}
+
+note "apply scrip in different stage to different queues";
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
+    ok $queue && $queue->id, 'loaded or created queue';
+
+    $m->follow_link_ok( { id => 'tools-config-queues' } );
+    $m->follow_link_ok( { text => 'General' } );
+    $m->follow_link_ok( { id => 'page-scrips-create'});
+
+    ok $m->form_name('CreateScrip');
+    $m->field('Description' => 'test stage');
+    $m->select('ScripCondition' => 'On Close');
+    $m->select('ScripAction' => 'Notify Ccs');
+    $m->select('Template' => 'Blank');
+    $m->click('Create');
+    $m->content_contains("Scrip Created");
+
+    my ($sid) = ($m->content =~ /Modify scrip #(\d+)/);
+    ok $sid, "found scrip id on the page";
+
+    $m->follow_link_ok({ text => 'Applies to' });
+    ok $m->form_name('AddRemoveScrip');
+    $m->select('Stage' => 'Batch');
+    $m->tick( "AddScrip-$sid" => $queue->id );
+    $m->click('Update');
+    $m->content_contains("Object created");
+
+    $m->follow_link_ok({ text => 'General' });
+    $m->follow_link_ok({ id => 'page-scrips' });
+
+    my (@matches) = $m->content =~ /test stage/g;
+    # regression
+    is scalar @matches, 1, 'scrip mentioned only once';
 }
