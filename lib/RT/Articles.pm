@@ -55,6 +55,15 @@ use base 'RT::SearchBuilder';
 
 sub Table {'Articles'}
 
+sub _Init {
+    my $self = shift;
+    $self->OrderByCols(
+        { FIELD => 'SortOrder', ORDER => 'ASC' },
+        { FIELD => 'Name',      ORDER => 'ASC' },
+    );
+    return $self->SUPER::_Init( @_ );
+}
+
 =head2 Next
 
 Returns the next article that this user can see.
