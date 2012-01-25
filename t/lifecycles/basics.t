@@ -177,7 +177,7 @@ diag "deleted -> X via modify, only open is available";
     my @form_values = $input->possible_values;
     ok scalar @form_values, 'some options in the UI';
 
-    is join('-', @form_values), '-open', 'only open and default available';
+    is join('-', @form_values), '-deleted-open', 'only default, current and open available';
 }
 
 diag "check illegal values and transitions";
