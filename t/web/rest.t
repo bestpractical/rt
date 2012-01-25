@@ -1,7 +1,9 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 18;
+use RT::Interface::REST;
+
+use RT::Test tests => 22;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -69,3 +71,82 @@ for ("id: ticket/1",
         $m->content_contains($_);
 }
 
+# Create ticket 2 for testing ticket links
+for (2 .. 3) {
+    $m->post("$baseurl/REST/1.0/ticket/edit", [
+        user    => 'root',
+        pass    => 'password',
+        content => $text,
+    ], Content_Type => 'form-data');
+
+    $m->post(
+        "$baseurl/REST/1.0/ticket/1/links",
+        [
+            user    => 'root',
+            pass    => 'password',
+        ],
+        Content_Type => 'form-data',
+    );
+
+    my $link_data = form_parse($m->content);
+
+    push @{$link_data->[0]->[1]}, 'DependsOn';
+    vpush($link_data->[0]->[2], 'DependsOn', $_);
+
+    $m->post(
+        "$baseurl/REST/1.0/ticket/1/links",
+        [
+            user    => 'root',
+            pass    => 'password',
+            content => form_compose($link_data),
+        ],
+        Content_Type => 'form-data',
+    );
+
+}
+
+# See what links get reported for ticket 1.
+$m->post(
+    "$baseurl/REST/1.0/ticket/1/links/show",
+    [
+        user    => 'root',
+        pass    => 'password',
+    ],
+    Content_Type => 'form-data',
+);
+
+# Verify that the link was added correctly.
+my $content = form_parse($m->content);
+my $depends_on = vsplit($content->[0]->[2]->{DependsOn});
+@$depends_on = sort @$depends_on;
+like(
+    $depends_on->[0], qr{/ticket/2$},
+    "Check ticket link.",
+) or diag("'content' obtained:\n", $m->content);
+
+like(
+    $depends_on->[1], qr{/ticket/3$},
+    "Check ticket link.",
+) or diag("'content' obtained:\n", $m->content);
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/2/links/show",
+    [
+        user    => 'root',
+        pass    => 'password',
+    ],
+    Content_Type => 'form-data',
+);
+my ($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
+is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content);
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/3/links/show",
+    [
+        user    => 'root',
+        pass    => 'password',
+    ],
+    Content_Type => 'form-data',
+);
+($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
+is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content);
