@@ -24,7 +24,7 @@ is( $deleted->Status, 'deleted', "deleted $deleted_id" );
 $inactive->SetStatus('resolved');
 is( $inactive->Status, 'resolved', 'resolved $inactive_id' );
 
-# reate an article for linking
+# Create an article for linking
 require RT::Class;
 my $class = RT::Class->new($RT::SystemUser);
 $class->Create(Name => 'test class');
