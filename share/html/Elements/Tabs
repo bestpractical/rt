@@ -831,14 +831,14 @@ my $build_selfservice_nav = sub {
     }
 
 
+    if ( $queue_count > 1 ) {
+        Menu->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+    } else {
+        Menu->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+    }
     my $tickets = Menu->child( tickets => title => loc('Tickets'));
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
-    if ( $queue_count > 1 ) {
-        $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/CreateTicketInQueue.html' );
-    } else {
-        $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/Create.html?Queue=' . $queue_id );
-    }
 
 
     my $username = '<span class="current-user">'
