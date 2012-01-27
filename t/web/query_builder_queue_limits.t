@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 28;
+use RT::Test tests => 34;
 
 my $lifecycles = RT->Config->Get('Lifecycles');
 $lifecycles->{foo} = {
@@ -13,6 +13,7 @@ $lifecycles->{foo} = {
 
 RT::Lifecycle->FillCache();
 
+my $general = RT::Test->load_or_create_queue( Name => 'General' );
 my $foo = RT::Test->load_or_create_queue( Name => 'foo', Lifecycle => 'foo' );
 
 my $global_cf = RT::Test->load_or_create_custom_field(
@@ -33,12 +34,38 @@ my $foo_cf = RT::Test->load_or_create_custom_field(
     Type  => 'FreeformSingle'
 );
 
+my $root = RT::Test->load_or_create_user( Name => 'root', );
+my $user_a = RT::Test->load_or_create_user(
+    Name     => 'user_a',
+    Password => 'password',
+);
+my $user_b = RT::Test->load_or_create_user(
+    Name     => 'user_b',
+    Password => 'password',
+);
+
+ok(
+    RT::Test->set_rights(
+        {
+            Principal => $user_a,
+            Object    => $general,
+            Right     => ['OwnTicket'],
+        },
+        {
+            Principal => $user_b,
+            Object    => $foo,
+            Right     => ['OwnTicket'],
+        },
+    ),
+    'granted OwnTicket right for user_a and user_b'
+);
+
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
 $m->get_ok( $url . '/Search/Build.html' );
 
-diag "check default statuses and cf";
+diag "check default statuses, cf and owners";
 my $form = $m->form_name('BuildQuery');
 ok( $form,                                     'found BuildQuery form' );
 ok( $form->find_input("ValueOf'CF.{global_cf}'"), 'found global_cf by default' );
@@ -49,6 +76,12 @@ my $status_input = $form->find_input('ValueOfStatus');
 my @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses, [ '', qw/initial new open rejected resolved stalled/], 'found all statuses'
+);
+
+my $owner_input = $form->find_input('ValueOfActor');
+my @owners     = sort $owner_input->possible_values;
+is_deeply(
+    \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users'
 );
 
 diag "limit queue to foo";
@@ -69,6 +102,12 @@ is_deeply(
     'found statuses from foo only'
 );
 
+$owner_input = $form->find_input('ValueOfActor');
+@owners     = sort $owner_input->possible_values;
+is_deeply(
+    \@owners, [ '', qw/Nobody root user_b/], 'no user_a'
+);
+
 diag "limit queue to general too";
 
 $m->submit_form(
@@ -86,6 +125,11 @@ is_deeply(
     \@statuses,
     [ '', qw/initial new open rejected resolved stalled/ ],
     'found all statuses again'
+);
+$owner_input = $form->find_input('ValueOfActor');
+@owners     = sort $owner_input->possible_values;
+is_deeply(
+    \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users again'
 );
 
 diag "limit queue to != foo";
@@ -106,6 +150,11 @@ is_deeply(
     \@statuses, [ '', qw/initial new open rejected resolved stalled/],
     'found all statuses'
 );
+$owner_input = $form->find_input('ValueOfActor');
+@owners     = sort $owner_input->possible_values;
+is_deeply(
+    \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users'
+);
 
 diag "limit queue to General OR foo";
 $m->get_ok( $url . '/Search/Edit.html' );
@@ -123,4 +172,9 @@ is_deeply(
     \@statuses,
     [ '', qw/initial new open rejected resolved stalled/ ],
     'found all statuses'
+);
+$owner_input = $form->find_input('ValueOfActor');
+@owners     = sort $owner_input->possible_values;
+is_deeply(
+    \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users'
 );
