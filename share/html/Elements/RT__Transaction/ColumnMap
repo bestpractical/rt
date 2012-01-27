@@ -118,7 +118,7 @@ my $COLUMN_MAP = {
         title     => 'Time Worked', # loc
         value     => sub {
             return $_[0]->TimeTaken if $_[0]->TimeTaken;
-            if ( $_[0]->Field eq 'TimeWorked' ) {
+            if ( $_[0]->Field && $_[0]->Field eq 'TimeWorked' ) {
                 return ( $_[0]->NewValue - $_[0]->OldValue );
             }
             return;
