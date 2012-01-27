@@ -323,31 +323,6 @@ if ($CloneTicket) {
         push @refers_by, $refer_by_value if defined $refer_by_value;
     }
     $clone->{'RefersTo-new'} = join ' ', @refers_by;
-    if (0) {    # Temporarily disabled
-        my $depends = $CloneTicketObj->DependsOn;
-        while ( my $depend = $depends->Next ) {
-            push @depends, $depend->LocalTarget;
-        }
-        $clone->{'new-DependsOn'} = join ' ', @depends;
-
-        my $depends_by = $CloneTicketObj->DependedOnBy;
-        while ( my $depend_by = $depends_by->Next ) {
-            push @depends_by, $depend_by->LocalBase;
-        }
-        $clone->{'DependsOn-new'} = join ' ', @depends_by;
-
-        while ( my $member = $members->Next ) {
-            push @members, $member->LocalBase;
-        }
-        $clone->{'MemberOf-new'} = join ' ', @members;
-
-        my $members_of = $CloneTicketObj->MemberOf;
-        while ( my $member_of = $members_of->Next ) {
-            push @members_of, $member_of->LocalTarget;
-        }
-        $clone->{'new-MemberOf'} = join ' ', @members_of;
-
-    }
 
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {
