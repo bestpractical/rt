@@ -57,12 +57,12 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->id },
     },
     ObjectType => {
-        title     => 'ObjectType', # loc
+        title     => 'Object Type', # loc
         attribute => 'ObjectType',
         value     => sub { return $_[0]->ObjectType() },
     },
     ObjectId => {
-        title     => 'ObjectId', # loc
+        title     => 'Object Id', # loc
         attribute => 'ObjectId',
         value     => sub { return $_[0]->ObjectId() },
     },
@@ -77,17 +77,17 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->Field() },
     },
     OldValue => {
-        title     => 'OldValue', # loc
+        title     => 'Old Value', # loc
         attribute => 'OldValue',
         value     => sub { return $_[0]->OldValue() },
     },
     NewValue => {
-        title     => 'NewValue', # loc
+        title     => 'New Value', # loc
         attribute => 'NewValue',
         value     => sub { return $_[0]->NewValue() },
     },
     TimeTaken => {
-        title     => 'TimeTaken', # loc
+        title     => 'Time Taken', # loc
         attribute => 'TimeTaken',
         value     => sub { return $_[0]->TimeTaken() },
     },
