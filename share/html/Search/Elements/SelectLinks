@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 % foreach (@fields) {
-<option value="<%$_%>"><% loc($_) %></option>
+<option value="<%$_->[0]%>"><% $_->[1] %></option>
 % }
 </select>
 <%ARGS>
@@ -55,12 +55,13 @@ $Name => 'LinksField'
 </%ARGS>
 
 <%INIT>
-my @fields = ('HasMember',
-              'MemberOf',
-              'DependsOn',
-              'DependedOnBy',
-              'RefersTo',
-              'ReferredToBy',
-              'LinkedTo',
-              );
+my @fields = (
+    [ HasMember    => loc("Child") ],
+    [ MemberOf     => loc("Parent") ],
+    [ DependsOn    => loc("Depends on") ],
+    [ DependedOnBy => loc("Depended on by") ],
+    [ RefersTo     => loc("Refers to") ],
+    [ ReferredToBy => loc("Referred to by") ],
+    [ LinkedTo     => loc("Links to") ],
+);
 </%INIT>
