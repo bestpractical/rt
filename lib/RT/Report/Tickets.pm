@@ -89,12 +89,6 @@ sub Groupings {
         foreach my $id (keys %$queues) {
             my $queue = RT::Queue->new( $self->CurrentUser );
             $queue->Load($id);
-            unless ($queue->id) {
-                # XXX TODO: This ancient code dates from a former developer
-                # we have no idea what it means or why cfqueues are so encoded.
-                $id =~ s/^.'*(.*).'*$/$1/;
-                $queue->Load($id);
-            }
             $CustomFields->LimitToQueue($queue->Id);
         }
         $CustomFields->LimitToGlobal;
