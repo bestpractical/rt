@@ -1816,14 +1816,27 @@ Set($AutoCreate, undef);
 
 =item C<$WebSessionClass>
 
-C<$WebSessionClass> is the class you wish to use for managing
-Sessions.  It defaults to use your SQL database, but if you are using
-MySQL 3.x and plans to use non-ascii Queue names, uncomment and add
-this line to F<RT_SiteConfig.pm> to prevent session corruption.
+C<$WebSessionClass> is the class you wish to use for managing Sessions.
+On mysql and Pg it defaults to use your database, in other cases
+sessions are stored in files using L<Apache::Session::File>. Other
+installed Apache:Session::* modules can be used to store sessions.
+
+    Set($WebSessionClass, "Apache::Session::File");
 
 =cut
 
-# Set($WebSessionClass, "Apache::Session::File");
+Set($WebSessionClass, undef);
+
+=item C<%WebSessionProperties>
+
+C<%WebSessionProperties> is the hash to configure class L</$WebSessionClass>
+in case custom class is used. By default it's empty and values are picked
+depending on the class. Make sure that it's empty if you're using DB as session
+backend.
+
+=cut
+
+Set( %WebSessionProperties );
 
 =item C<$AutoLogoff>
 
