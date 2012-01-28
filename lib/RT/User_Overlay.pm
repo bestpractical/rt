@@ -1090,7 +1090,7 @@ sub IsPassword {
         # crypt() output
         return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
     } else {
-        $RT::Logger->warn("Unknown password form");
+        $RT::Logger->warning("Unknown password form");
         return 0;
     }
 

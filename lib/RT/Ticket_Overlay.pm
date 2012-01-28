@@ -1235,7 +1235,7 @@ sub DeleteWatcher {
             }
         }
         else {
-            $RT::Logger->warn("$self -> DeleteWatcher got passed a bogus type");
+            $RT::Logger->warning("$self -> DeleteWatcher got passed a bogus type");
             return ( 0,
                      $self->loc('Error in parameters to Ticket->DeleteWatcher') );
         }
