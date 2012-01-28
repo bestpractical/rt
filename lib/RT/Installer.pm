@@ -252,7 +252,7 @@ sub CurrentValues {
 
 sub ConfigFile {
     require File::Spec;
-    return File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+    return $ENV{RT_SITE_CONFIG} || File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 }
 
 sub SaveConfig {
