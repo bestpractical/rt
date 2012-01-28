@@ -213,10 +213,10 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
     ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
     ok($agent->form_name('BuildQuery'), "found the form once");
-    $agent->field("ValueOf'CF.{\x{442}}'", "\x{441}");
+    $agent->field("ValueOfCF.{\x{442}}", "\x{441}");
     $agent->submit();
     is( getQueryFromForm($agent),
-        "'CF.{\x{442}}' LIKE '\x{441}'",
+        "CF.{\x{442}} LIKE '\x{441}'",
         "no changes, no duplicate condition with badly encoded text"
     );
 
