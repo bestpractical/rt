@@ -252,7 +252,7 @@ SUMMARY
 
     $content = HTML::RewriteAttributes::Links->rewrite(
         $content,
-        RT->Config->Get('WebURL') . '/Dashboards/Render.html',
+        RT->Config->Get('WebURL') . 'Dashboards/Render.html',
     );
 
     $self->EmailDashboard(

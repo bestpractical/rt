@@ -49,6 +49,6 @@
 $Object => undef
 </%ARGS>
 % my $name = (defined $Object->Filename and length $Object->Filename) ? $Object->Filename : loc("(no value)");
-<a href="<% RT->Config->Get('WebURL') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
 <% loc('Attachment') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Filename') %>: <% $name %>)
 </a>

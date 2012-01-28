@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<%$URI->Resolver->HREF%>">
+<a href="<% $href %>">
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;
 % my $has_name = UNIVERSAL::can($member, 'Name') || (UNIVERSAL::can($member, '_Accessible') && $member->_Accessible('Name', 'read'));
@@ -69,3 +69,12 @@
 <%ARGS>
 $URI => undef
 </%ARGS>
+
+<%INIT>
+my $href = $URI->Resolver->HREF;
+if ( $URI->IsLocal ) {
+    my $base = RT->Config->Get('WebBaseURL');
+    # URI->rel doesn't contain the leading '/'
+    $href = '/' . URI->new($href)->rel($base);
+}
+</%INIT>

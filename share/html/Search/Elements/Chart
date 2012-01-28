@@ -130,10 +130,10 @@ my ($i,$total);
                          );
 </%perl>
 <td class="label collection-as-table">
-<a href=<% RT->Config->Get('WebURL') %>Search/Results.html?<%$QueryString%>><%$key%></a>
+<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$key%></a>
 </td>
 <td class="value collection-as-table">
-<a href=<% RT->Config->Get('WebURL') %>Search/Results.html?<%$QueryString%>><%$value%></a>
+<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$value%></a>
 </td>
 % } else {
 <td class="label collection-as-table"><% $key %></td>

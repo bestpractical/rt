@@ -188,7 +188,7 @@ Otherwise, return its URI
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-        return ( RT->Config->Get('WebURL') . "/Articles/Article/Display.html?id=".$self->Object->Id);
+        return ( RT->Config->Get('WebURL') . "Articles/Article/Display.html?id=".$self->Object->Id);
     }   
     else {
         return ($self->URI);

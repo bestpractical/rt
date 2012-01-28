@@ -79,7 +79,7 @@ if ($SavedSearch) {
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = RT->Config->Get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
+        $query_link_url = RT->Config->Get('WebPath') . "/Search/$SearchArg->{SearchType}.html";
     } elsif ($ShowCustomize) {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
