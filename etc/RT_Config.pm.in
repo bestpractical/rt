@@ -349,12 +349,7 @@ Set($StoreLoops, undef);
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
 stored in the database.
 
-For MySQL and Oracle, we set this size to 10 megabytes.  If you're
-running a PostgreSQL version earlier than 7.1, you will need to drop
-this to 8192. (8k)
-
 =cut
-
 
 Set($MaxAttachmentSize, 10_000_000);
 
@@ -1826,10 +1821,7 @@ Set($AutoCreate, undef);
 
 =item C<$WebSessionClass>
 
-C<$WebSessionClass> is the class you wish to use for managing
-Sessions.  It defaults to use your SQL database, but if you are using
-MySQL 3.x and plans to use non-ascii Queue names, uncomment and add
-this line to F<RT_SiteConfig.pm> to prevent session corruption.
+C<$WebSessionClass> is the class you wish to use for managing sessions.
 
 =cut
 
