@@ -1822,6 +1822,8 @@ Set($AutoCreate, undef);
 =item C<$WebSessionClass>
 
 C<$WebSessionClass> is the class you wish to use for managing sessions.
+It defaults to use your SQL database, except on Oracle, where it
+defaults to files on disk.
 
 =cut
 
