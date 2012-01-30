@@ -1205,12 +1205,37 @@ sub FriendlyLookupType {
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
+=head1 RecordClassFromLookupType
+
+Returns the type of Object referred to by ObjectCustomFields' ObjectId column
+
+=cut
+
 sub RecordClassFromLookupType {
     my $self = shift;
     my ($class) = ($self->LookupType =~ /^([^-]+)/);
     unless ( $class ) {
         $RT::Logger->error(
-            "Custom Field #". $self->id 
+            "Custom Field #". $self->id
+            ." has incorrect LookupType '". $self->LookupType ."'"
+        );
+        return undef;
+    }
+    return $class;
+}
+
+=head1 ObjectTypeFromLookupType
+
+Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
+
+=cut
+
+sub ObjectTypeFromLookupType {
+    my $self = shift;
+    my ($class) = ($self->LookupType =~ /([^-]+)$/);
+    unless ( $class ) {
+        $RT::Logger->error(
+            "Custom Field #". $self->id
             ." has incorrect LookupType '". $self->LookupType ."'"
         );
         return undef;
