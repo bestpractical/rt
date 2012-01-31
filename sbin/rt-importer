@@ -18,6 +18,7 @@ GetOptions(
     \%OPT,
     "help|?",
     "quiet|q!",
+    "list|l!",
 
     "preserve-tickets|t!",
     "originalid|i=s",
@@ -47,7 +48,19 @@ $import = RT::Migrate::Importer->new(
     Statefile         => "$dir/partial-import",
 );
 
-my %counts = $import->Import( $dir );
+my %counts;
+if ($OPT{list}) {
+    %counts = $import->List( $dir );
+
+    my $org = $import->Organization;
+    print "=========== Dump of $org ===========\n\n";
+} else {
+    %counts = $import->Import( $dir );
+
+    my $org = $import->Organization;
+    print "========== Import of $org ==========\n\n";
+}
+
 print "Total object counts:\n";
 for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;

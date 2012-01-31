@@ -350,6 +350,40 @@ sub Import {
     return $self->ObjectCount;
 }
 
+sub List {
+    my $self = shift;
+    my ($dir) = @_;
+
+    my %found = ( "RT::System" => 1 );
+    for my $filename (map {File::Spec->rel2abs($_)} <$dir/*.dat> ) {
+        open(my $fh, "<", $filename)
+            or die "Can't read $filename: $!";
+        while (not eof($fh)) {
+            my $loaded = Storable::fd_retrieve($fh);
+            if (ref $loaded eq "SCALAR") {
+                warn "Dump contains files from Multiple RT instances!\n"
+                    if defined $self->{Organization}
+                        and $self->{Organization} ne $$loaded;
+                $self->{Organization} = $$loaded;
+                next;
+            }
+
+            my ($class, $uid, $data) = @{$loaded};
+            $self->{ObjectCount}{$class}++;
+            $found{$uid} = 1;
+            delete $self->{Pending}{$uid};
+            for (grep {ref $data->{$_}} keys %{$data}) {
+                my $uid_ref = ${ $data->{$_} };
+                next if $found{$uid_ref};
+                next if $uid_ref =~ /^RT::Principal-/;
+                push @{$self->{Pending}{$uid_ref} ||= []}, {uid => $uid};
+            }
+        }
+    }
+
+    return $self->ObjectCount;
+}
+
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
