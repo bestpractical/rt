@@ -64,16 +64,15 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
-        PreserveTicketIds => 0,
-        OriginalId        => undef,
-        Progress          => undef,
-        Statefile         => undef,
+        Overwrite   => 0,
+        OriginalId  => undef,
+        Progress    => undef,
+        Statefile   => undef,
         @_,
     );
 
-    # Should we attempt to preserve ticket IDs as they are created?
-    $self->{PreserveTicketIds} = $args{PreserveTicketIds};
-    if ($self->{PreserveTicketIds}) {
+    # Should we attempt to preserve record IDs as they are created?
+    if ($self->{Overwrite} = $args{Overwrite}) {
         my $tickets = RT::Tickets->new( RT->SystemUser );
         $tickets->UnLimit;
         warn "RT already contains tickets; preserving ticket IDs is unlikely to work"
@@ -81,8 +80,7 @@ sub Init {
     }
 
     # Where to shove the original ticket ID
-    $self->{OriginalId} = $args{OriginalId};
-    if ($self->{OriginalId}) {
+    if ($self->{OriginalId} = $args{OriginalId}) {
         my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
         unless ($cf->Id) {
@@ -234,8 +232,7 @@ sub Create {
     return unless $class->PreInflate( $self, $uid, $data );
 
     # Remove the ticket id, unless we specifically want it kept
-    delete $data->{id} if $class eq "RT::Ticket"
-        and not $self->{PreserveTicketIds};
+    delete $data->{id} unless $self->{Overwrite};
 
     my $obj = $class->new( RT->SystemUser );
     my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
@@ -426,7 +423,7 @@ sub SaveState {
            NewQueues NewCFs
            SkipTransactions Pending
            UIDs
-           OriginalId PreserveTicketIds
+           OriginalId Overwrite
           /;
     Storable::nstore(\%data, $self->{Statefile});
 

@@ -20,7 +20,7 @@ GetOptions(
     "quiet|q!",
     "list|l!",
 
-    "preserve-tickets|t!",
+    "overwrite|W!",
     "originalid|i=s",
 ) or Pod::Usage::pod2usage();
 
@@ -42,10 +42,10 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
 }
 
 $import = RT::Migrate::Importer->new(
-    PreserveTicketIds => $OPT{'preserve-tickets'},
-    OriginalId        => $OPT{originalid},
-    Progress          => $progress,
-    Statefile         => "$dir/partial-import",
+    Overwrite   => $OPT{overwrite},
+    OriginalId  => $OPT{originalid},
+    Progress    => $progress,
+    Statefile   => "$dir/partial-import",
 );
 
 my %counts;
@@ -93,11 +93,11 @@ resumed by re-running the importer.
 
 =over
 
-=item B<--preserve-tickets>
+=item B<--overwrite>
 
-Attempt to preserve ticket numbers when inserting them into the
-database.  This will most probably fail if there are already tickets in
-the current database.
+Attempt to preserve id numbers tickets, queues, and the like when
+inserting them into the database.  This will most probably fail if there
+are already records in the current database.
 
 =item B<--originalid> I<cfname>
 
