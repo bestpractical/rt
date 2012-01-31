@@ -286,8 +286,6 @@ sub Observe {
         } elsif ($grp->Domain eq "SystemInternal") {
             return 0 if $grp->UID eq $from;
         }
-    } elsif ($obj->isa("RT::ObjectCustomField")) {
-        return 0 if $from =~ /^RT::CustomField-/;
     }
 
     return 1;
