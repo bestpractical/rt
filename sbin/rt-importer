@@ -13,13 +13,14 @@ use Getopt::Long;
 use Pod::Usage qw//;
 use Time::HiRes qw//;
 
-my %OPT;
+my %OPT = (resume => 1);
 GetOptions(
     \%OPT,
     "help|?",
     "quiet|q!",
     "list|l!",
 
+    "resume!",
     "overwrite|W!",
     "originalid|i=s",
 ) or Pod::Usage::pod2usage();
@@ -41,11 +42,12 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
     );
 }
 
+my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
     Overwrite   => $OPT{overwrite},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
-    Statefile   => "$dir/partial-import",
+    Statefile   => $statefile,
 );
 
 my %counts;
@@ -55,6 +57,7 @@ if ($OPT{list}) {
     my $org = $import->Organization;
     print "=========== Dump of $org ===========\n\n";
 } else {
+    unlink $statefile if -f $statefile and not $OPT{resume};
     %counts = $import->Import( $dir );
 
     my $org = $import->Organization;
