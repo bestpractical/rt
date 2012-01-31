@@ -283,6 +283,14 @@ sub Import {
             die "Caught interrupt, quitting.\n" if $self->{INT};
 
             my $loaded = Storable::fd_retrieve($fh);
+
+            # Scalar references are the back-compat way we store the
+            # organization value
+            if (ref $loaded eq "SCALAR") {
+                $self->{Organization} = $$loaded;
+                next;
+            }
+
             my ($class, $uid, $data) = @{$loaded};
 
             # If it's a queue, store its ID away, as we'll need to know
@@ -345,6 +353,11 @@ sub Missing {
         : keys %{ $self->{Pending} };
 }
 
+sub Organization {
+    my $self = shift;
+    return $self->{Organization};
+}
+
 sub RestoreState {
     my $self = shift;
     my ($statefile) = @_;
@@ -367,7 +380,7 @@ sub SaveState {
     $self->{Seek} = $self->{Position};
     $data{$_} = $self->{$_} for
         qw/Filename Seek Position Files
-           ObjectCount
+           Organization ObjectCount
            NewQueues NewCFs
            SkipTransactions Pending
            UIDs

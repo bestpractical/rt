@@ -195,6 +195,9 @@ sub Walk {
     # Set up our output file
     open($self->{Filehandle}, ">", $self->Filename)
         or die "Can't write to file @{[$self->Filename]}: $!";
+    $! = 0;
+    Storable::nstore_fd( \$RT::Organization, $self->{Filehandle});
+    die "Failed to write to @{[$self->Filename]}: $!" if $!;
     push @{$self->{Files}}, $self->Filename;
 
     # Walk the objects
@@ -241,6 +244,9 @@ sub RotateFile {
 
     open($self->{Filehandle}, ">", $self->Filename)
         or die "Can't write to file @{[$self->Filename]}: $!";
+    $! = 0;
+    Storable::nstore_fd( \$RT::Organization, $self->{Filehandle});
+    die "Failed to write to @{[$self->Filename]}: $!" if $!;
 
     push @{$self->{Files}}, $self->Filename;
 }
