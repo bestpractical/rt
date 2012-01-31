@@ -632,7 +632,7 @@ sub FindDependencies {
 
     my $objectclasses = RT::ObjectClasses->new( $self->CurrentUser );
     $objectclasses->LimitToClass( $self->Id );
-    $deps->Add( in => $topics );
+    $deps->Add( in => $objectclasses );
 
     # Custom Fields on things _in_ this class (CFs on the class itself
     # have already been dealt with)
