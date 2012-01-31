@@ -2333,6 +2333,7 @@ sub Serialize {
     return (
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,
+        PrincipalId => $self->PrincipalObj->Id,
         $self->SUPER::Serialize,
     );
 }
@@ -2342,6 +2343,7 @@ sub PreInflate {
     my ($importer, $uid, $data) = @_;
 
     my $principal_uid = delete $data->{Principal};
+    my $principal_id  = delete $data->{PrincipalId};
     my $disabled      = delete $data->{Disabled};
 
     my $obj = RT::User->new( RT->SystemUser );
@@ -2367,11 +2369,16 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'User',
         Disabled => $disabled,
-        ObjectId => 0
+        ObjectId => 0,
+        ($data->{id} and $principal_id)
+             ? (Id => $principal_id) : (),
     );
-    $principal->__Set(Field => 'ObjectId', Value => $id);
     $importer->Resolve( $principal_uid => ref($principal), $id );
-    $data->{id} = $id;
+    $importer->Postpone(
+        for => $uid,
+        uid => $principal_uid,
+        column => "ObjectId",
+    );
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }

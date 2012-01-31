@@ -245,10 +245,11 @@ sub Qualify {
 sub Create {
     my $self = shift;
     my ($class, $uid, $data) = @_;
-    return unless $class->PreInflate( $self, $uid, $data );
 
     # Remove the ticket id, unless we specifically want it kept
     delete $data->{id} unless $self->{Overwrite};
+
+    return unless $class->PreInflate( $self, $uid, $data );
 
     my $obj = $class->new( RT->SystemUser );
     if ($self->{Overwrite}) {
