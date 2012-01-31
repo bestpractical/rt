@@ -116,6 +116,8 @@ my $COLUMN_MAP = {
     },
     TimeWorked => {
         title     => 'Time Worked', # loc
+        # this won't sort right all the time, because it doesn't handle the TimeWorked update, but it lets the virtual column be somewhat sortable.
+        attribute => 'TimeTaken',
         value     => sub {
             return $_[0]->TimeTaken if $_[0]->TimeTaken;
             if ( $_[0]->Field && $_[0]->Field eq 'TimeWorked' ) {
