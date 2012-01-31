@@ -188,8 +188,24 @@ sub MergeValues {
     my $self = shift;
     my ($obj, $data) = @_;
     for my $col (keys %{$data}) {
-        next if defined $obj->__Value($col) and length $obj->__Value($col);
+        next if not $self->{Overwrite}
+            and defined $obj->__Value($col) and length $obj->__Value($col);
         next unless defined $data->{$col} and length $data->{$col};
+
+        if (ref $data->{$col}) {
+            my $uid = ${ $data->{$col} };
+            my $ref = $self->Lookup( $uid );
+            if ($ref) {
+                $data->{$col} = $ref->[1];
+            } else {
+                $self->Postpone(
+                    for => $obj->UID,
+                    uid => $uid,
+                    column => $col,
+                );
+                next;
+            }
+        }
         $obj->__Set( Field => $col, Value => $data->{$col} );
     }
 }
@@ -235,6 +251,16 @@ sub Create {
     delete $data->{id} unless $self->{Overwrite};
 
     my $obj = $class->new( RT->SystemUser );
+    if ($self->{Overwrite}) {
+        $obj->Load($data->{id});
+        if ($obj->id) {
+            $self->MergeValues($obj, $data);
+            $self->Resolve( $uid => $class, $obj->id );
+            warn "Filled in values for @{[$obj->id]} $class\n";
+            return;
+        }
+    }
+
     my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
         %{$data}
     );
