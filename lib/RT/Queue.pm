@@ -1589,19 +1589,14 @@ sub FindDependencies {
     $deps->Add( in => $objs );
 }
 
-sub Serialize {
-    my $self = shift;
-    my %store = $self->SUPER::Serialize;
-    $store{Name} = "$RT::Organization: $store{Name}"
-        if $self->Name ne "___Approvals";
-    return %store;
-}
-
 sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;
 
     $class->SUPER::PreInflate( $importer, $uid, $data );
+
+    $data->{Name} = $importer->Qualify($data->{Name})
+        if $data->{Name} ne "___Approvals";
 
     return if $importer->MergeBy( "Name", $class, $uid, $data );
 

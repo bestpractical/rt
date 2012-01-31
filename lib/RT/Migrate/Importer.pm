@@ -220,6 +220,14 @@ sub MergeBy {
     return 1;
 }
 
+sub Qualify {
+    my $self = shift;
+    my ($string) = @_;
+    return $string if $self->{PreserveTicketIds};
+    return $string if not defined $self->{Organization};
+    return $self->{Organization}.": $string";
+}
+
 sub Create {
     my $self = shift;
     my ($class, $uid, $data) = @_;
