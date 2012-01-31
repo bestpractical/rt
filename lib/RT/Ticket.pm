@@ -4218,9 +4218,6 @@ sub Serialize {
     $obj->Load( $store{EffectiveId} );
     $store{EffectiveId} = \($obj->UID);
 
-    # Shove the ID back in, in case we want to preserve it during import
-    $store{id} = $self->id;
-
     return %store;
 }
 

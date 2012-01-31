@@ -2026,9 +2026,6 @@ sub Serialize {
         $store{$col} = \($obj->UID);
     }
 
-    # Never store the ID
-    delete $store{id};
-
     # Anything on an object should get the UID stored instead
     if ($store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
         delete $store{$_} for qw/ObjectType ObjectId/;
