@@ -257,7 +257,6 @@ sub Create {
         if ($obj->id) {
             $self->MergeValues($obj, $data);
             $self->Resolve( $uid => $class, $obj->id );
-            warn "Filled in values for @{[$obj->id]} $class\n";
             return;
         }
     }
