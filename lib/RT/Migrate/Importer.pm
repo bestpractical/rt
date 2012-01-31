@@ -237,7 +237,7 @@ sub MergeBy {
 sub Qualify {
     my $self = shift;
     my ($string) = @_;
-    return $string if $self->{PreserveTicketIds};
+    return $string if $self->{Overwrite};
     return $string if not defined $self->{Organization};
     return $self->{Organization}.": $string";
 }
