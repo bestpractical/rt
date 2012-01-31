@@ -53,6 +53,14 @@ for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
 }
 
+my @missing = $import->Missing;
+if (@missing) {
+    warn "The following UIDs were expected but never observed:\n";
+    warn "    $_\n" for @missing;
+}
+
+exit @missing;
+
 =head1 NAME
 
 rt-importer - Import a serialized RT database on top of the current one

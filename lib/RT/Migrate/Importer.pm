@@ -329,11 +329,6 @@ sub Import {
     $self->{NewQueues} = [];
     $self->{NewCFs} = [];
 
-    # Anything we didn't see is an error
-    if (keys %{$self->{Pending}}) {
-        my @missing = sort keys %{$self->{Pending}};
-        warn "The following UIDs were expected but never observed: @missing";
-    }
 
     # Return creation counts
     return $self->ObjectCount;
@@ -342,6 +337,12 @@ sub Import {
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
+}
+
+sub Missing {
+    my $self = shift;
+    return wantarray ? sort keys %{ $self->{Pending} }
+        : keys %{ $self->{Pending} };
 }
 
 sub RestoreState {
