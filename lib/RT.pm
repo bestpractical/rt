@@ -453,6 +453,8 @@ sub InitClasses {
         RT::Class
         RT::Article
         RT::ObjectTopic
+        RT::ObjectClass
+        RT::ACE
     );
 
     if ( $args{'Heavy'} ) {
