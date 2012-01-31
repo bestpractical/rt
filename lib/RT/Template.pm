@@ -958,13 +958,17 @@ sub PreInflate {
 
     $class->SUPER::PreInflate( $importer, $uid, $data );
 
+    my $obj = RT::Template->new( RT->SystemUser );
     if ($data->{Queue} == 0) {
-        my $obj = RT::Template->new( RT->SystemUser );
         $obj->LoadGlobalTemplate( $data->{Name} );
-        if ($obj->Id) {
-            $importer->Resolve( $uid => ref($obj) => $obj->Id );
-            return;
-        }
+    } else {
+        $obj->LoadQueueTemplate( Queue => $data->{Queue}, Name => $data->{Name} );
+    }
+
+    if ($obj->Id) {
+        $importer->Resolve( $uid => ref($obj) => $obj->Id );
+        $importer->MergeValues( $obj, $data ) if $importer->{Overwrite};
+        return;
     }
 
     return 1;
