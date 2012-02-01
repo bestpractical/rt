@@ -64,7 +64,7 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
-        Overwrite   => 0,
+        Clone       => undef,
         OriginalId  => undef,
         Progress    => undef,
         Statefile   => undef,
@@ -72,15 +72,11 @@ sub Init {
     );
 
     # Should we attempt to preserve record IDs as they are created?
-    if ($self->{Overwrite} = $args{Overwrite}) {
-        my $tickets = RT::Tickets->new( RT->SystemUser );
-        $tickets->UnLimit;
-        warn "RT already contains tickets; preserving ticket IDs is unlikely to work"
-            if $tickets->Count;
-    }
-
-    # Where to shove the original ticket ID
-    if ($self->{OriginalId} = $args{OriginalId}) {
+    if ($self->{Clone} = $args{Clone}) {
+        die "RT already contains data; overwriting will not work\n"
+            if RT->SystemUser->Id;
+    } elsif ($self->{OriginalId} = $args{OriginalId}) {
+        # Where to shove the original ticket ID
         my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
         unless ($cf->Id) {
@@ -111,7 +107,8 @@ sub Init {
 
     # Basic facts of life, as a safety net
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
-    $self->SkipTransactions( RT->System->UID );
+    $self->SkipTransactions( RT->System->UID )
+        unless $self->{Clone};
 }
 
 sub Resolve {
@@ -188,8 +185,7 @@ sub MergeValues {
     my $self = shift;
     my ($obj, $data) = @_;
     for my $col (keys %{$data}) {
-        next if not $self->{Overwrite}
-            and defined $obj->__Value($col) and length $obj->__Value($col);
+        next if defined $obj->__Value($col) and length $obj->__Value($col);
         next unless defined $data->{$col} and length $data->{$col};
 
         if (ref $data->{$col}) {
@@ -237,7 +233,7 @@ sub MergeBy {
 sub Qualify {
     my $self = shift;
     my ($string) = @_;
-    return $string if $self->{Overwrite};
+    return $string if $self->{Clone};
     return $string if not defined $self->{Organization};
     return $self->{Organization}.": $string";
 }
@@ -247,20 +243,11 @@ sub Create {
     my ($class, $uid, $data) = @_;
 
     # Remove the ticket id, unless we specifically want it kept
-    delete $data->{id} unless $self->{Overwrite};
+    delete $data->{id} unless $self->{Clone};
 
     return unless $class->PreInflate( $self, $uid, $data );
 
     my $obj = $class->new( RT->SystemUser );
-    if ($self->{Overwrite}) {
-        $obj->Load($data->{id});
-        if ($obj->id) {
-            $self->MergeValues($obj, $data);
-            $self->Resolve( $uid => $class, $obj->id );
-            return;
-        }
-    }
-
     my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
         %{$data}
     );
@@ -449,7 +436,7 @@ sub SaveState {
            NewQueues NewCFs
            SkipTransactions Pending
            UIDs
-           OriginalId Overwrite
+           OriginalId Clone
           /;
     Storable::nstore(\%data, $self->{Statefile});
 

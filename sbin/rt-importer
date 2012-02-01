@@ -21,7 +21,7 @@ GetOptions(
     "list|l!",
 
     "resume!",
-    "overwrite|W!",
+    "clone|C!",
     "originalid|i=s",
 ) or Pod::Usage::pod2usage();
 
@@ -44,7 +44,7 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
 
 my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
-    Overwrite   => $OPT{overwrite},
+    Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
     Statefile   => $statefile,
@@ -96,11 +96,10 @@ resumed by re-running the importer.
 
 =over
 
-=item B<--overwrite>
+=item B<--clone>
 
-Attempt to preserve id numbers tickets, queues, and the like when
-inserting them into the database.  This will most probably fail if there
-are already records in the current database.
+Insert all of the data as an exact clone of the original RT instance.
+This requires that the database schema be created, but contain no data.
 
 =item B<--originalid> I<cfname>
 

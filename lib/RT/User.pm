@@ -2383,6 +2383,11 @@ sub PreInflate {
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }
 
+sub PostInflate {
+    my $self = shift;
+    RT->InitSystemObjects if $self->Name eq "RT_System";
+}
+
 RT::Base->_ImportOverlays();
 
 
