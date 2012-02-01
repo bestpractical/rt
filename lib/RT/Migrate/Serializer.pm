@@ -149,6 +149,13 @@ sub PushBasics {
     my $attributes = RT::System->new( RT->SystemUser )->Attributes;
     $self->PushObj( $attributes );
 
+    # Global ACLs
+    if ($self->{FollowACL}) {
+        my $acls = RT::ACL->new( RT->SystemUser );
+        $acls->LimitToObject( RT->System );
+        $self->PushObj( $acls );
+    }
+
     # Global scrips
     if ($self->{FollowScrips}) {
         my $scrips = RT::Scrips->new( RT->SystemUser );
