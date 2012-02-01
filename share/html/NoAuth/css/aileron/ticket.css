@@ -103,6 +103,14 @@ div#ticket-history span.type a {
  display: block;
 }
 
+#ticket-history a#lasttrans {
+    display: inline;
+    height: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;
+}
+
 
 div#ticket-history span.date {
  width: 10em;
