@@ -30,6 +30,9 @@ Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
 Pod::Usage::pod2usage() unless @ARGV == 1;
 my ($dir) = @ARGV;
 $dir =~ s|/$||;
+die "No such directory $dir\n" unless -d $dir;
+die "$dir doesn't appear to contain serialized data\n"
+    unless -f "$dir/001.dat";
 
 my $import;
 
