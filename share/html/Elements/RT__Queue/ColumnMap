@@ -84,12 +84,16 @@ my $COLUMN_MAP = {
         title => 'Encrypt', # loc
         value => sub { return $_[0]->Encrypt? $_[0]->loc('yes') : $_[0]->loc('no') },
     },
+    Lifecycle => {
+        title => 'Lifecycle',
+        attribute => 'Lifecycle',
+        value => sub { return $_[0]->Lifecycle->Name },
+    },
 };
 
 foreach my $field (qw(
     Name Description CorrespondAddress CommentAddress
     InitialPriority FinalPriority DefaultDueIn
-    Lifecycle
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,
