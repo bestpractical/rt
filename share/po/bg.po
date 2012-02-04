@@ -29,7 +29,7 @@ msgstr " (ненадежден!)"
 msgid "#"
 msgstr "#"
 
-#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:187 share/html/m/ticket/history:56 share/html/m/ticket/show:205
+#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:194 share/html/m/ticket/history:56 share/html/m/ticket/show:205
 #. ($Ticket->Id, $Ticket->Subject || '')
 #. ($Ticket->id, $Ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject || '')
@@ -49,7 +49,7 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets.pm:2013
+#: lib/RT/Tickets.pm:2011
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
@@ -69,7 +69,7 @@ msgstr "%1 %2 %3 %4:%5 %6"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1723 lib/RT/Transaction.pm:717 lib/RT/Transaction.pm:759
+#: lib/RT/Record.pm:1735 lib/RT/Transaction.pm:720 lib/RT/Transaction.pm:762
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->Field, $principal->Object->Name)
@@ -81,13 +81,13 @@ msgstr "%1 %2 добавен"
 msgid "%1 %2 ago"
 msgstr "преди %1 %2"
 
-#: lib/RT/Record.pm:1730 lib/RT/Transaction.pm:723
+#: lib/RT/Record.pm:1742 lib/RT/Transaction.pm:726
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 променен на %3"
 
-#: lib/RT/Record.pm:1727 lib/RT/Transaction.pm:720 lib/RT/Transaction.pm:765
+#: lib/RT/Record.pm:1739 lib/RT/Transaction.pm:723 lib/RT/Transaction.pm:768
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->Field, $principal->Object->Name)
@@ -125,12 +125,14 @@ msgstr "%1 %2 с шаблон %3"
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) от %3"
 
-#: share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:64 share/html/m/ticket/reply:73
+#: share/html/Approvals/Elements/Approve:72 share/html/Approvals/Elements/Approve:81 share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:64 share/html/m/ticket/reply:73
 #. ($m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj))
 #. ($m->scomp('/Elements/ShowUser', User => $t->OwnerObj))
 #. (loc($Ticket->Status))
 #. (loc($TicketObj->Status))
 #. (loc($t->Status))
+#. (loc('Approve'))
+#. (loc('Deny'))
 #. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
 msgstr "%1 (Непроменен)"
@@ -191,9 +193,9 @@ msgstr "%1 - Укажете модулът за търсене, който ис�
 msgid "%1 DashBoards"
 msgstr "%1 Табла"
 
-#: share/html/Elements/Footer:56 share/html/m/_elements/footer:4
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Авторски права 1996-%3 %4."
 
@@ -201,7 +203,7 @@ msgstr "%1 RT %2 Авторски права 1996-%3 %4."
 msgid "%1 ScripAction loaded"
 msgstr "%1 ScripAction зареден"
 
-#: lib/RT/Record.pm:1758
+#: lib/RT/Record.pm:1770
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 добавен като стойност на %2"
@@ -227,14 +229,14 @@ msgstr "%1 изглежда като локален обект, но не беш
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 изглежда като напълно инициализиран. Не се налага да се създават таблици или да се внасят метаданни, но бихте могли да продължите да персонализирате RT чрез кликване на 'Основна персонализация' по-долу"
 
-#: lib/RT/Transaction.pm:594 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
+#: lib/RT/Transaction.pm:597 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 msgid "%1 by %2"
 msgstr "%1 от %2"
 
-#: lib/RT/Record.pm:497 lib/RT/Transaction.pm:654 lib/RT/Transaction.pm:854 lib/RT/Transaction.pm:859 lib/RT/Transaction.pm:873 lib/RT/Transaction.pm:882 lib/RT/Transaction.pm:920
+#: lib/RT/Record.pm:509 lib/RT/Transaction.pm:657 lib/RT/Transaction.pm:857 lib/RT/Transaction.pm:862 lib/RT/Transaction.pm:876 lib/RT/Transaction.pm:885 lib/RT/Transaction.pm:923
 #. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
@@ -263,7 +265,7 @@ msgstr "%1 копие"
 msgid "%1 core config"
 msgstr "%1 конфигурация на ядрото"
 
-#: lib/RT/Record.pm:939
+#: lib/RT/Record.pm:951
 msgid "%1 could not be set to %2."
 msgstr "%1 не може да получи стойност %2."
 
@@ -271,17 +273,17 @@ msgstr "%1 не може да получи стойност %2."
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 не може да установи състоянието на разрешен. Възможно е базата данни на RT да е несъстоятелна."
 
-#: lib/RT/Transaction.pm:621
+#: lib/RT/Transaction.pm:624
 #. ($obj_type)
 msgid "%1 created"
 msgstr "%1 създаден"
 
-#: lib/RT/Transaction.pm:632
+#: lib/RT/Transaction.pm:635
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "%1 изтрит"
 
-#: lib/RT/Transaction.pm:627
+#: lib/RT/Transaction.pm:630
 #. ($obj_type)
 msgid "%1 disabled"
 msgstr "%1 изключен"
@@ -291,7 +293,7 @@ msgstr "%1 изключен"
 msgid "%1 doesn't exist."
 msgstr "%1 не съществува."
 
-#: lib/RT/Transaction.pm:624
+#: lib/RT/Transaction.pm:627
 #. ($obj_type)
 msgid "%1 enabled"
 msgstr "%1 включен"
@@ -310,7 +312,7 @@ msgstr "%1 е инструмент за действия над билети о�
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 е инструмент, предназначен за изпълнение от cron, който разпраща всички отложени нотификации от RT като по-потребителско резюме."
 
-#: lib/RT/Queue.pm:888 lib/RT/Queue.pm:894 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:229
+#: lib/RT/Queue.pm:899 lib/RT/Queue.pm:905 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:229
 #. ($args{'Email'}, $self->loc($args{'Type'}))
 #. ($email, $self->loc($args{'Type'}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -327,7 +329,7 @@ msgstr "%1 вече не е %2 за тази опашка."
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 вече не е %2 за този билет."
 
-#: lib/RT/Record.pm:1823
+#: lib/RT/Record.pm:1835
 #. ($old_value, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 вече не е стойност за персонализирано поле %2"
@@ -356,7 +358,7 @@ msgstr ""
 msgid "%1 newest unowned tickets"
 msgstr "%1 най-нови безстопанствени билети"
 
-#: lib/RT/CustomField.pm:1093
+#: lib/RT/CustomField.pm:1109
 msgid "%1 objects"
 msgstr "%1 обекта"
 
@@ -383,11 +385,11 @@ msgstr "%1 обновен"
 msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 ще разреши всички членове на разрешения групов билет."
 
-#: lib/RT/CustomField.pm:1094
+#: lib/RT/CustomField.pm:1110
 msgid "%1's %2 objects"
 msgstr "%2 обекта на %1"
 
-#: lib/RT/CustomField.pm:1095
+#: lib/RT/CustomField.pm:1111
 msgid "%1's %2's %3 objects"
 msgstr ""
 
@@ -416,7 +418,7 @@ msgstr "Таблата на %1"
 msgid "%1's saved searches"
 msgstr "Съхранените търсения на %1"
 
-#: lib/RT/Transaction.pm:536
+#: lib/RT/Transaction.pm:539
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1: нищо не е прикрепено"
@@ -472,7 +474,7 @@ msgstr "%quant(%1,час)"
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' е невалидна стойност за състояние"
 
-#: lib/RT/Queue.pm:551
+#: lib/RT/Queue.pm:553
 #. ($name)
 msgid "'%1' is not a valid name."
 msgstr ""
@@ -482,19 +484,19 @@ msgstr ""
 msgid "'%1' isn't a valid class identifier"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2669
+#: lib/RT/Interface/Web.pm:2740
 msgid "'Roles'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2632
+#: lib/RT/Interface/Web.pm:2703
 msgid "'System'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2650
+#: lib/RT/Interface/Web.pm:2721
 msgid "'User Groups'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2701
+#: lib/RT/Interface/Web.pm:2772
 msgid "'Users'"
 msgstr ""
 
@@ -584,7 +586,7 @@ msgstr ""
 msgid "(no pubkey!)"
 msgstr "(няма публичен ключ!)"
 
-#: lib/RT/Transaction.pm:647 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:121 share/html/Search/Elements/Chart:82 share/html/m/ticket/show:262
+#: lib/RT/Transaction.pm:650 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:121 share/html/Search/Elements/Chart:82 share/html/m/ticket/show:262
 msgid "(no value)"
 msgstr "(без стойност)"
 
@@ -674,7 +676,7 @@ msgstr "ACE-ове могат да бъдат само създавани и и�
 msgid "AND"
 msgstr "И"
 
-#: share/html/Elements/Tabs:402
+#: share/html/Elements/Tabs:468
 msgid "About me"
 msgstr "За мен"
 
@@ -708,7 +710,7 @@ msgstr "Действие е задължителен аргумент"
 msgid "Action prepared..."
 msgstr "Действието приготвено..."
 
-#: share/html/Elements/Tabs:446
+#: share/html/Elements/Tabs:514
 msgid "Actions"
 msgstr ""
 
@@ -807,7 +809,7 @@ msgstr "Добави, изтрий или промени стойности на
 msgid "Add, modify and delete custom field values for objects"
 msgstr ""
 
-#: lib/RT/Queue.pm:948
+#: lib/RT/Queue.pm:959
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Added %1 to members of %2 for this queue."
 msgstr ""
@@ -865,7 +867,7 @@ msgstr "АдминВсичкиЛичниГрупи"
 msgid "AdminCCGroup"
 msgstr "АдминКопиеГрупа"
 
-#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
+#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
 msgid "AdminCc"
 msgstr "АдминКопие"
 
@@ -917,7 +919,7 @@ msgstr "Административно копие"
 msgid "Administrative password"
 msgstr "Административна парола"
 
-#: share/html/Elements/Tabs:647
+#: share/html/Elements/Tabs:724
 msgid "Advanced"
 msgstr "Разширени"
 
@@ -941,7 +943,7 @@ msgstr ""
 msgid "All Classes"
 msgstr ""
 
-#: share/html/Elements/Tabs:86
+#: share/html/Elements/Tabs:403
 msgid "All Dashboards"
 msgstr ""
 
@@ -993,11 +995,15 @@ msgstr "И/Или"
 msgid "Any field"
 msgstr ""
 
+#: share/html/Search/Simple.html:65
+msgid "Any word not recognized by RT is searched for in ticket subjects."
+msgstr ""
+
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:329 share/html/Elements/Tabs:369
+#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:339 share/html/Elements/Tabs:369
 msgid "Applies to"
 msgstr "Отнася се до"
 
@@ -1017,7 +1023,7 @@ msgstr ""
 msgid "Apply your changes"
 msgstr "Приложи промените"
 
-#: share/html/Elements/Tabs:122
+#: share/html/Elements/Tabs:443
 msgid "Approval"
 msgstr "Одобрение"
 
@@ -1050,7 +1056,7 @@ msgstr "Одобрението е готово за собственика"
 msgid "Approval Rejected"
 msgstr "Неодобрено"
 
-#: share/html/Approvals/Elements/Approve:71
+#: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
 msgstr "Одобри"
 
@@ -1094,7 +1100,7 @@ msgstr ""
 msgid "Article not found"
 msgstr ""
 
-#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:100 share/html/Elements/Tabs:177 share/html/Elements/Tabs:183
+#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:152 share/html/Elements/Tabs:157 share/html/Elements/Tabs:416
 msgid "Articles"
 msgstr ""
 
@@ -1153,11 +1159,11 @@ msgstr "Прикрепен обект"
 msgid "Attachment '%1' could not be loaded"
 msgstr "Прикрепеният обект '%1' не може да бъде зареден"
 
-#: lib/RT/Transaction.pm:544
+#: lib/RT/Transaction.pm:547
 msgid "Attachment created"
 msgstr "Прикачка създадена"
 
-#: lib/RT/Tickets.pm:2376
+#: lib/RT/Tickets.pm:2374
 msgid "Attachment filename"
 msgstr "Име на прикрепеният файл"
 
@@ -1177,7 +1183,7 @@ msgstr "Атрибут изтрит"
 msgid "Aug"
 msgstr "авг"
 
-#: share/html/Admin/Tools/Theme.html:277
+#: share/html/Admin/Tools/Theme.html:276
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -1207,7 +1213,7 @@ msgstr "Назад"
 msgid "Bad privacy for attribute %1"
 msgstr "Лоша изолация на атрибут %1"
 
-#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:259 share/html/Elements/Tabs:293 share/html/Elements/Tabs:310 share/html/Elements/Tabs:325 share/html/Elements/Tabs:364 share/html/Elements/Tabs:429 share/html/Elements/Tabs:469 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
+#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:272 share/html/Elements/Tabs:303 share/html/Elements/Tabs:321 share/html/Elements/Tabs:336 share/html/Elements/Tabs:364 share/html/Elements/Tabs:498 share/html/Elements/Tabs:533 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Основни"
 
@@ -1235,11 +1241,11 @@ msgstr "Тяло"
 msgid "Bold"
 msgstr "Получер"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "Bookmark"
 msgstr "Отметка"
 
-#: share/html/Articles/Article/Search.html:105
+#: share/html/Articles/Article/Search.html:107
 msgid "Bookmarkable link for this search"
 msgstr ""
 
@@ -1259,11 +1265,11 @@ msgstr "Кратки заглавни части"
 msgid "Browse by topic"
 msgstr ""
 
-#: share/html/Elements/Tabs:212
+#: share/html/Elements/Tabs:224
 msgid "Browse the SQL queries made in this process"
 msgstr ""
 
-#: share/html/Elements/Tabs:653
+#: share/html/Elements/Tabs:730
 msgid "Bulk Update"
 msgstr "Обемни актуализации"
 
@@ -1283,12 +1289,17 @@ msgstr "КопиеГрупа"
 msgid "CF"
 msgstr "CF"
 
+#: share/html/Search/Simple.html:87
+#. ('<strong>cf.Name:value</strong>')
+msgid "CFs may be searched using a similar syntax as above with %1."
+msgstr ""
+
 #: share/html/Search/Elements/EditSearches:175
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
 msgstr ""
 
-#: lib/RT/User.pm:1407
+#: lib/RT/User.pm:1434
 msgid "Can not modify system users"
 msgstr "Не може да променя системни потребители"
 
@@ -1296,7 +1307,7 @@ msgstr "Не може да променя системни потребител�
 msgid "Can this principal see this queue"
 msgstr "Може ли този принсипал да вижда тази опашка"
 
-#: lib/RT/CustomField.pm:548
+#: lib/RT/CustomField.pm:550
 msgid "Can't add a custom field value without a name"
 msgstr "Не може да се добави стойност за персонализирано поле без име"
 
@@ -1321,7 +1332,7 @@ msgstr "Не може да се съхрани %1"
 msgid "Can't save this search"
 msgstr "Не може да се съхрани това търсене"
 
-#: lib/RT/Record.pm:1282 lib/RT/Record.pm:1360
+#: lib/RT/Record.pm:1294 lib/RT/Record.pm:1372
 msgid "Can't specifiy both base and target"
 msgstr "Не може да се укаже база и цел едновременно"
 
@@ -1349,7 +1360,7 @@ msgstr "Категория"
 msgid "Category unset"
 msgstr "Категория неуказана"
 
-#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:314 share/html/m/ticket/show:294
+#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:314 share/html/m/ticket/show:294
 msgid "Cc"
 msgstr "Копие до"
 
@@ -1369,7 +1380,7 @@ msgstr ""
 msgid "Change password"
 msgstr "Смяна на парола"
 
-#: share/html/Elements/Tabs:654
+#: share/html/Elements/Tabs:731
 msgid "Chart"
 msgstr ""
 
@@ -1397,7 +1408,7 @@ msgstr "Маркирайте кутията за изтриване"
 msgid "Check box to revoke right"
 msgstr "Маркирайте кутията за отмяна на право"
 
-#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:430 share/html/m/ticket/show:456
+#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:430 share/html/m/ticket/show:456
 msgid "Children"
 msgstr "Дъщерни"
 
@@ -1440,7 +1451,7 @@ msgstr ""
 msgid "Class is already applied to %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:184 share/html/Elements/Tabs:360
+#: share/html/Elements/Tabs:158 share/html/Elements/Tabs:360
 msgid "Classes"
 msgstr ""
 
@@ -1468,7 +1479,7 @@ msgstr "Затвори прозореца"
 msgid "Closed"
 msgstr "Затворен"
 
-#: share/html/Elements/Tabs:763 share/html/SelfService/Closed.html:48
+#: share/html/Elements/Tabs:836 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "Затворени билети"
 
@@ -1484,7 +1495,7 @@ msgstr "Combobox: Изберете или въведете една стойно
 msgid "Combobox: Select or enter up to %1 values"
 msgstr "Combobox: Изберете или въведете максимум %1 стойности"
 
-#: share/html/Elements/Tabs:495 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
+#: share/html/Elements/Tabs:559 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
 msgid "Comment"
 msgstr "Коментар"
 
@@ -1524,7 +1535,7 @@ msgstr "Коментари (не се изпращат на заявителит
 msgid "Comments about this user"
 msgstr "Коментари за този потребител"
 
-#: lib/RT/Transaction.pm:700
+#: lib/RT/Transaction.pm:703
 msgid "Comments added"
 msgstr "Коментарите добавени"
 
@@ -1559,7 +1570,7 @@ msgstr "Условие, Действие и Шаблон"
 msgid "Config file %1 is locked"
 msgstr "Конфигурационният файл %1 е заключен"
 
-#: share/html/Elements/Tabs:128
+#: share/html/Elements/Tabs:63
 msgid "Configuration"
 msgstr "Конфигурация"
 
@@ -1576,7 +1587,7 @@ msgstr "Потвърждение"
 msgid "Connection succeeded"
 msgstr "Връзката осъществена"
 
-#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:430 share/html/Ticket/ModifyAll.html:113
+#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:499 share/html/Ticket/ModifyAll.html:113
 msgid "Content"
 msgstr "Съдържание"
 
@@ -1608,11 +1619,11 @@ msgstr "АдресКореспонденция"
 msgid "Correspondence"
 msgstr "Кореспонденция"
 
-#: lib/RT/Transaction.pm:696
+#: lib/RT/Transaction.pm:699
 msgid "Correspondence added"
 msgstr "Кореспонденция добавена"
 
-#: lib/RT/Record.pm:1679 lib/RT/Record.pm:1745
+#: lib/RT/Record.pm:1691 lib/RT/Record.pm:1757
 #. ($msg)
 #. ($value_msg)
 msgid "Could not add new custom field value: %1"
@@ -1638,7 +1649,7 @@ msgstr "Не може да се създаде персонализирано п
 msgid "Could not create group"
 msgstr "Не може да се създаде група"
 
-#: share/html/Articles/Article/Search.html:195
+#: share/html/Articles/Article/Search.html:197
 #. ($msg)
 msgid "Could not create search: %1"
 msgstr ""
@@ -1656,16 +1667,16 @@ msgstr "Не може да се създаде билет. Не е указан�
 msgid "Could not create user"
 msgstr "Не може да се създаде потребител"
 
-#: share/html/Articles/Article/Search.html:235
+#: share/html/Articles/Article/Search.html:237
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
 msgstr ""
 
-#: lib/RT/Queue.pm:927 lib/RT/Ticket.pm:1131
+#: lib/RT/Queue.pm:938 lib/RT/Ticket.pm:1131
 msgid "Could not find or create that user"
 msgstr "Не може да бъде открит или да бъде създаден този потребител"
 
-#: lib/RT/Queue.pm:1000 lib/RT/Ticket.pm:1210
+#: lib/RT/Queue.pm:1011 lib/RT/Ticket.pm:1210
 msgid "Could not find that principal"
 msgstr "Не беше намерен този принсипал"
 
@@ -1692,7 +1703,7 @@ msgstr "Не може да се зареди група"
 msgid "Could not load object for %1"
 msgstr "Не може да се зареди обект за %1"
 
-#: lib/RT/Queue.pm:946
+#: lib/RT/Queue.pm:957
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Този принсипал не може да бъде %1 за тази опашка"
@@ -1702,7 +1713,7 @@ msgstr "Този принсипал не може да бъде %1 за тази
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Този принсипал не може да бъде %1 за този билет"
 
-#: lib/RT/Queue.pm:1027
+#: lib/RT/Queue.pm:1038
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Не може да се премахне този принсипал като %1 за тази опашка"
@@ -1720,11 +1731,11 @@ msgstr "Не може да се установи потребителската 
 msgid "Couldn't add attachment"
 msgstr "Не може да се добави прикачен обект"
 
-#: lib/RT/Group.pm:945
+#: lib/RT/Group.pm:948
 msgid "Couldn't add member to group"
 msgstr "Не може да се добави член в групата"
 
-#: lib/RT/CustomField.pm:1293
+#: lib/RT/CustomField.pm:1309
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr ""
 
@@ -1738,7 +1749,7 @@ msgstr ""
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr ""
 
-#: lib/RT/Record.pm:1755 lib/RT/Record.pm:1805
+#: lib/RT/Record.pm:1767 lib/RT/Record.pm:1817
 #. ($Msg)
 #. ($msg)
 msgid "Couldn't create a transaction: %1"
@@ -1748,7 +1759,7 @@ msgstr "Не може да се създаде транзакция: %1"
 msgid "Couldn't create record"
 msgstr "Не може да се създаде запис"
 
-#: lib/RT/CustomField.pm:1423
+#: lib/RT/CustomField.pm:1439
 #. ($msg)
 msgid "Couldn't create record: %1"
 msgstr ""
@@ -1758,7 +1769,7 @@ msgstr ""
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Не може да се изтрие табло %1: %2"
 
-#: lib/RT/Record.pm:948
+#: lib/RT/Record.pm:960
 msgid "Couldn't find row"
 msgstr "Не може да бъде открит ред"
 
@@ -1766,11 +1777,11 @@ msgstr "Не може да бъде открит ред"
 msgid "Couldn't find suitable transaction, skipping"
 msgstr "Не беше намерена подходяща транзакция, пропуснато"
 
-#: lib/RT/Group.pm:919
+#: lib/RT/Group.pm:922
 msgid "Couldn't find that principal"
 msgstr "Не беше открит този принсипал"
 
-#: lib/RT/CustomField.pm:576
+#: lib/RT/CustomField.pm:578
 msgid "Couldn't find that value"
 msgstr "Не беше открита тази стойност"
 
@@ -1851,7 +1862,7 @@ msgstr "Не може да се зареди опашка #%1"
 msgid "Couldn't load queue %1"
 msgstr "Не може да се зареди опашка %1"
 
-#: share/html/Admin/Queues/Modify.html:180
+#: share/html/Admin/Queues/Modify.html:177
 #. ($Name)
 msgid "Couldn't load queue '%1'"
 msgstr "Не може да се зареди опашка '%1'"
@@ -1866,11 +1877,11 @@ msgstr "Не може да се зареди scrip #%1"
 msgid "Couldn't load template #%1"
 msgstr "Не може да се зареди шаблон #%1"
 
-#: lib/RT/Interface/Web.pm:1788
+#: lib/RT/Interface/Web.pm:1857
 msgid "Couldn't load the specified principal"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:447 share/html/SelfService/Display.html:154
+#: lib/RT/Action/CreateTickets.pm:450 share/html/SelfService/Display.html:154
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Не може да се зареди билет '%1'"
@@ -1939,7 +1950,7 @@ msgstr "Не може да се сведе базата '%1' в URI.о"
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "Не може да се сведе целта '%1' в URI."
 
-#: lib/RT/Interface/Email.pm:707 lib/RT/Interface/Email.pm:767
+#: lib/RT/Interface/Email.pm:706 lib/RT/Interface/Email.pm:766
 msgid "Couldn't send email"
 msgstr "Не може да се изпрати имейл"
 
@@ -1948,11 +1959,11 @@ msgstr "Не може да се изпрати имейл"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Наблюдателят на %1 не може да бъде установен: %2"
 
-#: lib/RT/User.pm:1570
+#: lib/RT/User.pm:1597
 msgid "Couldn't set private key"
 msgstr "Не може да се установи частният ключ"
 
-#: lib/RT/User.pm:1554
+#: lib/RT/User.pm:1581
 msgid "Couldn't unset private key"
 msgstr "Не може да се унищожи частният ключ"
 
@@ -1960,7 +1971,7 @@ msgstr "Не може да се унищожи частният ключ"
 msgid "Country"
 msgstr "Държава"
 
-#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:132 share/html/Elements/Tabs:137 share/html/Elements/Tabs:141 share/html/Elements/Tabs:146 share/html/Elements/Tabs:153 share/html/Elements/Tabs:156 share/html/Elements/Tabs:187 share/html/Elements/Tabs:193 share/html/Elements/Tabs:245 share/html/Elements/Tabs:265 share/html/Elements/Tabs:270 share/html/Elements/Tabs:349 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:439
+#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:111 share/html/Elements/Tabs:119 share/html/Elements/Tabs:165 share/html/Elements/Tabs:180 share/html/Elements/Tabs:259 share/html/Elements/Tabs:277 share/html/Elements/Tabs:281 share/html/Elements/Tabs:351 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:439
 msgid "Create"
 msgstr "Създай"
 
@@ -2014,7 +2025,7 @@ msgstr "Създай нов билет"
 msgid "Create a new user"
 msgstr "Създай нов потребител"
 
-#: share/html/Admin/Queues/Modify.html:170
+#: share/html/Admin/Queues/Modify.html:228
 msgid "Create a queue"
 msgstr "Създай опашка"
 
@@ -2075,7 +2086,7 @@ msgstr ""
 msgid "Create tickets in this queue"
 msgstr "Създай билети в тази опашка"
 
-#: share/html/Elements/Tabs:118
+#: share/html/Elements/Tabs:437
 msgid "Create tickets offline"
 msgstr "Създай билети офлайн"
 
@@ -2147,7 +2158,7 @@ msgstr "СъздайСъхраненоТърсене"
 msgid "CreateTicket"
 msgstr "СъздайБилет"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:373
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:373
 msgid "Created"
 msgstr "Създаден"
 
@@ -2169,7 +2180,7 @@ msgstr ""
 msgid "Created in a date range"
 msgstr "Създаден във времеви диапазон"
 
-#: share/html/Articles/Article/Search.html:191
+#: share/html/Articles/Article/Search.html:193
 #. ($search->Name)
 msgid "Created search %1"
 msgstr ""
@@ -2178,11 +2189,11 @@ msgstr ""
 msgid "Created tickets in period, grouped by status"
 msgstr "Създадени билети за периода, групирани по състояние"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
 msgstr "СъздаденОт"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
 msgstr "СъздаденОтносително"
 
@@ -2202,7 +2213,7 @@ msgstr "Текущи връзки"
 msgid "Current Scrips"
 msgstr "Текущи scrips"
 
-#: share/html/Elements/Tabs:639
+#: share/html/Elements/Tabs:715
 msgid "Current Search"
 msgstr ""
 
@@ -2222,7 +2233,7 @@ msgstr "Текущо търсене"
 msgid "Current watchers"
 msgstr "Текущи наблюдатели"
 
-#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:144 share/html/Elements/Tabs:158 share/html/Elements/Tabs:191 share/html/Elements/Tabs:225 share/html/Elements/Tabs:366 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
+#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:122 share/html/Elements/Tabs:172 share/html/Elements/Tabs:242 share/html/Elements/Tabs:366 share/html/Elements/Tabs:91 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
 msgid "Custom Fields"
 msgstr "Персонализирани полета"
 
@@ -2254,27 +2265,27 @@ msgstr "Персонализирано условие"
 msgid "Custom field #%1 is not applied to this object"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2802
+#: lib/RT/Tickets.pm:2800
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "Персонализирано поле %1 %2 %3"
 
-#: lib/RT/Record.pm:1597
+#: lib/RT/Record.pm:1609
 #. ($args{'Field'})
 msgid "Custom field %1 does not apply to this object"
 msgstr "Персонализирано поле %1 не се отнася до този обект"
 
-#: lib/RT/Tickets.pm:2796
+#: lib/RT/Tickets.pm:2794
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Персонализирано поле %1 има указана стойност."
 
-#: lib/RT/Tickets.pm:2792
+#: lib/RT/Tickets.pm:2790
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Персонализирано поле %1 няма указана стойност."
 
-#: lib/RT/Record.pm:1586 lib/RT/Record.pm:1786
+#: lib/RT/Record.pm:1598 lib/RT/Record.pm:1798
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Персонализирано поле %1 не е открито"
@@ -2285,28 +2296,28 @@ msgstr "Персонализирано поле %1 не е открито"
 msgid "Custom field '%1'"
 msgstr "Персонализирано поле '%1'"
 
-#: lib/RT/CustomField.pm:1288
+#: lib/RT/CustomField.pm:1304
 msgid "Custom field is already applied to the object"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1533
+#: lib/RT/CustomField.pm:1549
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Стойността %1 не беше намерена за персонализирано поле %2"
 
-#: lib/RT/CustomField.pm:584
+#: lib/RT/CustomField.pm:586
 msgid "Custom field value could not be deleted"
 msgstr "Стойността на персонализирано поле не може да бъде изтрита"
 
-#: lib/RT/CustomField.pm:1545
+#: lib/RT/CustomField.pm:1561
 msgid "Custom field value could not be found"
 msgstr "Стойността на персонализирано поле не беше открита"
 
-#: lib/RT/CustomField.pm:1547 lib/RT/CustomField.pm:586
+#: lib/RT/CustomField.pm:1563 lib/RT/CustomField.pm:588
 msgid "Custom field value deleted"
 msgstr "Стойността на персонализирано поле беше изтрита"
 
-#: lib/RT/Tickets.pm:146 lib/RT/Transaction.pm:704 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:146 lib/RT/Transaction.pm:707 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "ПерсонализираноПоле"
 
@@ -2330,7 +2341,7 @@ msgstr "Персонализация на имейл адреси"
 msgid "Customize Email Configuration"
 msgstr "Конфигурация на имейл"
 
-#: share/html/Elements/Tabs:208
+#: share/html/Elements/Tabs:217
 msgid "Customize the look of your RT"
 msgstr ""
 
@@ -2346,7 +2357,7 @@ msgstr "Потребителско име за базата данни"
 msgid "Daily"
 msgstr ""
 
-#: lib/RT/Config.pm:467
+#: lib/RT/Config.pm:483
 msgid "Daily digest"
 msgstr "Дневно резюме"
 
@@ -2396,7 +2407,7 @@ msgstr "Тип на базата данни"
 msgid "Database username for RT"
 msgstr "Потребителско име за базата данни на RT"
 
-#: lib/RT/Config.pm:419
+#: lib/RT/Config.pm:435
 msgid "Date format"
 msgstr "Формат на датата"
 
@@ -2408,7 +2419,7 @@ msgstr "DateTime модулът липсва"
 msgid "DateTime::Locale module missing"
 msgstr "DateTime::Locale модулът липсва"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:478 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:408 share/html/m/ticket/show:367
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:542 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:408 share/html/m/ticket/show:367
 msgid "Dates"
 msgstr "Дати"
 
@@ -2452,13 +2463,12 @@ msgstr "Опашка по подразбиране"
 msgid "Default transaction template"
 msgstr "Шаблон за транзакция по подразбиране"
 
-#: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
+#: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
-#. ($DefaultValue || '')
 msgid "Default: %1"
 msgstr "По подразбиране: %1"
 
-#: lib/RT/Transaction.pm:682
+#: lib/RT/Transaction.pm:685
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "По подразбиране: %1/%2 променен от %3 на %4"
@@ -2483,7 +2493,7 @@ msgstr "ДелегиранеПрава"
 msgid "Delegation"
 msgstr "Делегация"
 
-#: etc/RT_Config.pm:2291 etc/RT_Config.pm:2365 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:710 share/html/Elements/Tabs:730 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
+#: etc/RT_Config.pm:2346 etc/RT_Config.pm:2420 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:783 share/html/Elements/Tabs:803 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "Изтриване"
 
@@ -2574,7 +2584,7 @@ msgstr "Заявки изтрити"
 msgid "Deleted saved search"
 msgstr "Съхранено търсене изтрито"
 
-#: share/html/Articles/Article/Search.html:224
+#: share/html/Articles/Article/Search.html:226
 #. ($searchname)
 msgid "Deleted search %1"
 msgstr ""
@@ -2587,7 +2597,7 @@ msgstr "Изтриването на този обект ще наруши инт
 msgid "Deleting this object would violate referential integrity"
 msgstr "Изтриването на този обект ще наруши интегритета на референциите"
 
-#: share/html/Approvals/Elements/Approve:75
+#: share/html/Approvals/Elements/Approve:84
 msgid "Deny"
 msgstr "Отказ"
 
@@ -2595,26 +2605,26 @@ msgstr "Отказ"
 msgid "Depended on by"
 msgstr "Зависещи"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:123 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:123 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
 msgstr "Зависими"
 
-#: lib/RT/Transaction.pm:787
+#: lib/RT/Transaction.pm:790
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "Зависимост от %1 добавена"
 
-#: lib/RT/Transaction.pm:827
+#: lib/RT/Transaction.pm:830
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "Зависимост от %1 изтрита"
 
-#: lib/RT/Transaction.pm:784
+#: lib/RT/Transaction.pm:787
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "Зависимост към %1 добавена"
 
-#: lib/RT/Transaction.pm:824
+#: lib/RT/Transaction.pm:827
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "Зависимост към %1 изтрита"
@@ -2627,7 +2637,7 @@ msgstr "ЗависимОт"
 msgid "Depends on"
 msgstr "Зависи от"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependsOn"
 msgstr "ЗависиОт"
 
@@ -2647,7 +2657,7 @@ msgstr "Опишете проблема по-долу"
 msgid "Description"
 msgstr "Описание"
 
-#: share/html/Elements/Tabs:206
+#: share/html/Elements/Tabs:212
 msgid "Detailed information about your RT setup"
 msgstr ""
 
@@ -2663,7 +2673,7 @@ msgstr "Посока"
 msgid "Disabled"
 msgstr "Изключен"
 
-#: share/html/Elements/Tabs:452 share/html/Elements/Tabs:707 share/html/Elements/Tabs:723 share/html/Search/Elements/EditFormat:71
+#: share/html/Elements/Tabs:517 share/html/Elements/Tabs:780 share/html/Elements/Tabs:796 share/html/Search/Elements/EditFormat:71
 msgid "Display"
 msgstr "Изглед"
 
@@ -2713,11 +2723,11 @@ msgstr "Име на домейн"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Не включвайте http://, просто нещо като 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:307
+#: lib/RT/Config.pm:323
 msgid "Don't refresh home page."
 msgstr "Не опреснявай началната страница."
 
-#: lib/RT/Config.pm:277
+#: lib/RT/Config.pm:293
 msgid "Don't refresh search results."
 msgstr "Не опреснявай резултатите от търсенето."
 
@@ -2725,7 +2735,7 @@ msgstr "Не опреснявай резултатите от търсенето
 msgid "Don't refresh this page."
 msgstr "Не опреснявай тази страница."
 
-#: lib/RT/Crypt/GnuPG.pm:2212
+#: lib/RT/Crypt/GnuPG.pm:2222
 msgid "Don't trust this key at all"
 msgstr "Не се доверявай на този ключ въобще"
 
@@ -2745,11 +2755,11 @@ msgstr "Изтегляне на dump файл"
 msgid "Dropdown"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:415 share/html/m/ticket/show:389
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:415 share/html/m/ticket/show:389
 msgid "Due"
 msgstr "Краен срок"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
 msgstr ""
 
@@ -2758,15 +2768,15 @@ msgstr ""
 msgid "ERROR: %1"
 msgstr "ГРЕШКА: %1"
 
-#: share/html/Elements/Tabs:109
+#: share/html/Elements/Tabs:423
 msgid "Easy updating of your open tickets"
 msgstr "Лесно обновление на вашите отворени билети"
 
-#: share/html/Elements/Tabs:114
+#: share/html/Elements/Tabs:430
 msgid "Easy viewing of your reminders"
 msgstr ""
 
-#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:737 share/html/Ticket/Elements/ShowRequestor:127
+#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:810 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
 msgstr "Редактиране"
 
@@ -2807,7 +2817,7 @@ msgstr "Редакция на връзки"
 msgid "Edit Query"
 msgstr "Редакция на заявката"
 
-#: share/html/Elements/Tabs:645
+#: share/html/Elements/Tabs:722
 msgid "Edit Search"
 msgstr "Редакция на търсенето"
 
@@ -2823,7 +2833,7 @@ msgstr ""
 msgid "Edit saved searches for this group"
 msgstr "Редакция на съхранени търсения за тази група"
 
-#: share/html/Elements/Tabs:154
+#: share/html/Elements/Tabs:115
 msgid "Edit system templates"
 msgstr "Редакция на системни шаблони"
 
@@ -2863,7 +2873,7 @@ msgstr "Редакция на членството за лична група %1
 msgid "EffectiveId"
 msgstr "ЕфективенId"
 
-#: lib/RT/Record.pm:1295 lib/RT/Record.pm:1374 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2507
+#: lib/RT/Record.pm:1307 lib/RT/Record.pm:1386 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2507
 msgid "Either base or target must be specified"
 msgstr "Трябва да бъде определена база или цел"
 
@@ -2888,7 +2898,7 @@ msgstr "Електронно резюме"
 msgid "Email address in use"
 msgstr ""
 
-#: lib/RT/Config.pm:464
+#: lib/RT/Config.pm:480
 msgid "Email delivery"
 msgstr "Доставка на ел. поща"
 
@@ -2954,11 +2964,11 @@ msgstr "Шифриране/дешифриране"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "Шифриране/дешифриране на транзакция #%1 от билет #%2"
 
-#: lib/RT/Queue.pm:610
+#: lib/RT/Queue.pm:621
 msgid "Encrypting disabled"
 msgstr "Шифрирането изключено"
 
-#: lib/RT/Queue.pm:609
+#: lib/RT/Queue.pm:620
 msgid "Encrypting enabled"
 msgstr "Шифрирането включено"
 
@@ -3010,7 +3020,7 @@ msgstr "Въведете опашки или URI-та, с които ще се �
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Въведете билети или URI-та, с които ще се свържат билетите. Разделете множество въведения с шпации."
 
-#: lib/RT/Config.pm:264
+#: lib/RT/Config.pm:280
 msgid "Enter time in hours by default"
 msgstr ""
 
@@ -3029,6 +3039,11 @@ msgstr "Въведете най-много %1 стойности"
 #: lib/RT/CustomField.pm:151
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Въведете най-много %1 стойности с авто-довършване"
+
+#: share/html/Search/Simple.html:77
+#. (map { "<strong>$_</strong>" } qw(initial active inactive any))
+msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
+msgstr ""
 
 #: sbin/rt-email-digest:103 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49 share/html/m/login:85
 msgid "Error"
@@ -3062,11 +3077,11 @@ msgstr "Грешка: Липсващо табло"
 msgid "Error: bad GnuPG data"
 msgstr "Грешка: лоши GnuPG данни"
 
-#: share/html/Articles/Article/Search.html:200
+#: share/html/Articles/Article/Search.html:202
 msgid "Error: cannot change privacy value of existing search"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:163
+#: share/html/Articles/Article/Search.html:165
 #. ($ARGS{'LoadSavedSearch'}, $msg)
 msgid "Error: could not load saved search %1: %2"
 msgstr ""
@@ -3079,7 +3094,7 @@ msgstr "Грешка: няма публичен ключ"
 msgid "Error: public key"
 msgstr "Грешка: публичен ключ"
 
-#: share/html/Articles/Article/Search.html:215
+#: share/html/Articles/Article/Search.html:217
 #. ($search->Name, $msg)
 msgid "Error: search %1 not updated: %2"
 msgstr ""
@@ -3120,7 +3135,7 @@ msgstr ""
 msgid "Expire"
 msgstr "Изтичане"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
 msgstr "РазширеноСъстояние"
 
@@ -3132,7 +3147,7 @@ msgstr ""
 msgid "Extra info"
 msgstr "Допълнителна информация"
 
-#: share/html/Elements/Tabs:543
+#: share/html/Elements/Tabs:618
 msgid "Extract Article"
 msgstr ""
 
@@ -3204,7 +3219,7 @@ msgstr "Неуспех при разбор на шаблон"
 msgid "Feb"
 msgstr "фев"
 
-#: share/html/Elements/Tabs:657
+#: share/html/Elements/Tabs:733
 msgid "Feeds"
 msgstr ""
 
@@ -3260,11 +3275,11 @@ msgstr "Попълване на максимум %1 текстови облас�
 msgid "Fill in up to %1 wikitext areas"
 msgstr "Попълване на максимум %1 wikitext области"
 
-#: lib/RT/Tickets.pm:2282 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:378
+#: lib/RT/Tickets.pm:2280 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:378
 msgid "Final Priority"
 msgstr "Окончателен приоритет"
 
-#: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
 msgstr "ОкончателенПриоритет"
 
@@ -3292,7 +3307,7 @@ msgstr ""
 msgid "Finish"
 msgstr "Край"
 
-#: share/html/Elements/Tabs:559
+#: share/html/Elements/Tabs:636
 msgid "First"
 msgstr "Първо"
 
@@ -3304,6 +3319,11 @@ msgstr "Foo Bar Baz"
 msgid "Foo!"
 msgstr "Foo!"
 
+#: share/html/Search/Simple.html:91
+#. ($link_start, $link_end)
+msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
+msgstr ""
+
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
 msgstr "Наложи промяна"
@@ -3312,7 +3332,7 @@ msgstr "Наложи промяна"
 msgid "Format"
 msgstr "Формат"
 
-#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:499 share/html/Ticket/Elements/ShowTransaction:222
+#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:563 share/html/Ticket/Elements/ShowTransaction:222
 msgid "Forward"
 msgstr "Препращане"
 
@@ -3350,12 +3370,12 @@ msgstr "Препращане на транзакция #%1"
 msgid "ForwardMessage"
 msgstr "ПрепращанеСъобщение"
 
-#: lib/RT/Transaction.pm:665
+#: lib/RT/Transaction.pm:668
 #. ($self->Data)
 msgid "Forwarded Ticket to %1"
 msgstr ""
 
-#: lib/RT/Transaction.pm:662
+#: lib/RT/Transaction.pm:665
 #. ($self->Field, $self->Data)
 msgid "Forwarded Transaction #%1 to %2"
 msgstr ""
@@ -3366,7 +3386,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket)"
 msgstr "Намерени %quant(%1,билет)"
 
-#: lib/RT/Record.pm:950
+#: lib/RT/Record.pm:962
 msgid "Found Object"
 msgstr "Намерен обект"
 
@@ -3394,7 +3414,7 @@ msgstr "Пълни заглавни части"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr ""
 
-#: lib/RT/Config.pm:192 lib/RT/Config.pm:269
+#: lib/RT/Config.pm:192 lib/RT/Config.pm:285
 msgid "General"
 msgstr "Общи"
 
@@ -3410,12 +3430,12 @@ msgstr "Извличане на шаблон от файл"
 msgid "Getting started"
 msgstr "Първи стъпки"
 
-#: lib/RT/Transaction.pm:753 lib/RT/Transaction.pm:895 lib/RT/Transaction.pm:907
+#: lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:898 lib/RT/Transaction.pm:910
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "Даден на %1"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:149
+#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:100
 msgid "Global"
 msgstr "Глобални"
 
@@ -3445,7 +3465,7 @@ msgstr "Глобален portlet %1 съхранен."
 msgid "Global template: %1"
 msgstr "Глобален шаблон: %1"
 
-#: share/html/Elements/Tabs:298
+#: share/html/Elements/Tabs:308
 msgid "GnuPG"
 msgstr "GnuPG"
 
@@ -3511,15 +3531,15 @@ msgstr "Свойства на графиката"
 msgid "Graphical charts are not available."
 msgstr "Графични диаграми не са налични"
 
-#: lib/RT/Record.pm:930 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
+#: lib/RT/Record.pm:942 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
 msgid "Group"
 msgstr "Група"
 
-#: share/html/Elements/Tabs:195 share/html/Elements/Tabs:278 share/html/Elements/Tabs:312 share/html/Elements/Tabs:326 share/html/Elements/Tabs:367
+#: share/html/Elements/Tabs:185 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:337 share/html/Elements/Tabs:367
 msgid "Group Rights"
 msgstr "Права на групи"
 
-#: lib/RT/Group.pm:925
+#: lib/RT/Group.pm:928
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
 msgstr "Групата вече съдържа член: %1"
@@ -3533,24 +3553,24 @@ msgstr "Групата не може да бъде създадена: %1"
 msgid "Group created"
 msgstr "Групата създадена"
 
-#: lib/RT/Group.pm:692
+#: lib/RT/Group.pm:695
 msgid "Group disabled"
 msgstr "Групата изключена"
 
-#: lib/RT/Group.pm:694
+#: lib/RT/Group.pm:697
 msgid "Group enabled"
 msgstr "Групата включена"
 
-#: lib/RT/Group.pm:1081
+#: lib/RT/Group.pm:1084
 msgid "Group has no such member"
 msgstr "Групата няма такъв член"
 
-#: lib/RT/Group.pm:529
+#: lib/RT/Group.pm:532
 #. ($value)
 msgid "Group name '%1' is already in use"
 msgstr ""
 
-#: lib/RT/Group.pm:905 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
+#: lib/RT/Group.pm:908 lib/RT/Queue.pm:1017 lib/RT/Queue.pm:944 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
 msgid "Group not found"
 msgstr "Групата не е намерена"
 
@@ -3558,11 +3578,11 @@ msgstr "Групата не е намерена"
 msgid "Group rights"
 msgstr "Права на групата"
 
-#: lib/RT/CustomField.pm:1585 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:134 share/html/Elements/Tabs:165 share/html/Elements/Tabs:224
+#: lib/RT/CustomField.pm:1601 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:132 share/html/Elements/Tabs:241 share/html/Elements/Tabs:74
 msgid "Groups"
 msgstr "Групи"
 
-#: lib/RT/Group.pm:931
+#: lib/RT/Group.pm:934
 msgid "Groups can't be members of their members"
 msgstr "Групите не могат да бъдат членове на собствените си членове"
 
@@ -3594,7 +3614,7 @@ msgstr "Заглавие на препратен билет"
 msgid "Heading of a forwarded message"
 msgstr "Заглавие на препратено съобщение"
 
-#: lib/RT/Interface/CLI.pm:81 lib/RT/Interface/CLI.pm:81
+#: lib/RT/Interface/CLI.pm:82 lib/RT/Interface/CLI.pm:82
 msgid "Hello!"
 msgstr "Здравейте!"
 
@@ -3614,11 +3634,11 @@ msgstr ""
 msgid "Hide quoted text"
 msgstr ""
 
-#: lib/RT/Config.pm:345
+#: lib/RT/Config.pm:361
 msgid "Hide ticket history by default"
 msgstr ""
 
-#: share/html/Elements/Tabs:295 share/html/Elements/Tabs:314 share/html/Elements/Tabs:454 share/html/Elements/Tabs:708 share/html/Elements/Tabs:724 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/Tabs:305 share/html/Elements/Tabs:325 share/html/Elements/Tabs:518 share/html/Elements/Tabs:781 share/html/Elements/Tabs:797 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "История"
 
@@ -3650,7 +3670,7 @@ msgstr "Начало"
 msgid "Home Phone"
 msgstr ""
 
-#: lib/RT/Config.pm:304
+#: lib/RT/Config.pm:320
 msgid "Home page refresh interval"
 msgstr "Интервал на опресняване на началната страница"
 
@@ -3658,7 +3678,7 @@ msgstr "Интервал на опресняване на началната с�
 msgid "HomePhone"
 msgstr "ДомашенТелефон"
 
-#: share/html/Elements/Tabs:63 share/html/m/_elements/header:67
+#: share/html/Elements/Tabs:380 share/html/m/_elements/header:67
 msgid "Homepage"
 msgstr "Начална страница"
 
@@ -3679,7 +3699,7 @@ msgstr "Имам %quant(%1,бетонобъркачка)."
 msgid "ISO"
 msgstr "ISO"
 
-#: lib/RT/Tickets.pm:2213 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
+#: lib/RT/Tickets.pm:2211 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
 msgid "Id"
 msgstr "Id"
 
@@ -3728,11 +3748,11 @@ msgstr "Ако сте променили нещо по-горе, се увере
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Ако предпочитаната от вас база данни не е в списъка по-долу, това означава, че RT не успя да намери <i>драйвер за базата данни</i> инсталиран локално. Бихте могли да поправите това като използвате %1 за да изтеглите и инсталирате DBD::MySQL, DBD::Oracle или DBD::Pg."
 
-#: lib/RT/Record.pm:942
+#: lib/RT/Record.pm:954
 msgid "Illegal value for %1"
 msgstr "Невалидна стойност за %1"
 
-#: lib/RT/Record.pm:945
+#: lib/RT/Record.pm:957
 msgid "Immutable field"
 msgstr "Непроменяемо поле"
 
@@ -3772,7 +3792,7 @@ msgstr "Включване на страница"
 msgid "Include subtopics"
 msgstr ""
 
-#: lib/RT/Config.pm:466
+#: lib/RT/Config.pm:482
 msgid "Individual messages"
 msgstr "Индивидуални съобщения"
 
@@ -3800,11 +3820,11 @@ msgstr "Информиране на потребител за смяна на п
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Информиране на потребител, че сме получили шифрирана ел. поща, а нямаме частни ключове за дешифриране"
 
-#: lib/RT/Tickets.pm:2259 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets.pm:2257 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "Първоначален приоритет"
 
-#: lib/RT/Ticket.pm:924 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:924 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:100
 msgid "InitialPriority"
 msgstr "ПървоначаленПриоритет"
 
@@ -3824,7 +3844,7 @@ msgstr ""
 msgid "Input error"
 msgstr "Грешка при въвеждането"
 
-#: lib/RT/CustomField.pm:1377 lib/RT/CustomField.pm:1538 share/html/Elements/ValidateCustomFields:112
+#: lib/RT/CustomField.pm:1393 lib/RT/CustomField.pm:1554 share/html/Elements/ValidateCustomFields:112
 #. ($CF->FriendlyPattern)
 #. ($self->FriendlyPattern)
 msgid "Input must match %1"
@@ -3838,7 +3858,7 @@ msgstr "Инсталиране на RT"
 msgid "Internal Error"
 msgstr "Вътрешна грешка"
 
-#: lib/RT/Record.pm:309
+#: lib/RT/Record.pm:321
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Вътрешна грешка: %1"
@@ -3853,7 +3873,7 @@ msgstr ""
 msgid "Invalid %1"
 msgstr ""
 
-#: share/html/Articles/Article/Search.html:166
+#: share/html/Articles/Article/Search.html:168
 #. ('LoadSavedSearch')
 msgid "Invalid %1 argument"
 msgstr ""
@@ -3873,11 +3893,11 @@ msgstr "Невалиден %1: нужно е да е число"
 msgid "Invalid Class"
 msgstr ""
 
-#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:667
+#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:683
 msgid "Invalid Custom Field values source"
 msgstr ""
 
-#: lib/RT/Group.pm:599
+#: lib/RT/Group.pm:602
 msgid "Invalid Group Type"
 msgstr "Невалиден тип на група"
 
@@ -3890,12 +3910,12 @@ msgstr ""
 msgid "Invalid Render Type"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1004
+#: lib/RT/CustomField.pm:1020
 #. ($self->FriendlyType)
 msgid "Invalid Render Type for custom field of type %1"
 msgstr ""
 
-#: lib/RT/Record.pm:947
+#: lib/RT/Record.pm:959
 msgid "Invalid data"
 msgstr "Невалидни данни"
 
@@ -3903,7 +3923,7 @@ msgstr "Невалидни данни"
 msgid "Invalid lifecycle name"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1370
+#: lib/RT/CustomField.pm:1386
 msgid "Invalid object"
 msgstr "Невалиден обект"
 
@@ -3911,7 +3931,7 @@ msgstr "Невалиден обект"
 msgid "Invalid owner object"
 msgstr "Невалиден обект-собственик"
 
-#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:763
+#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:779
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "Невалиден образец: %1"
@@ -3920,7 +3940,7 @@ msgstr "Невалиден образец: %1"
 msgid "Invalid queue"
 msgstr "Невалидна опашка"
 
-#: lib/RT/Queue.pm:820
+#: lib/RT/Queue.pm:831
 #. ($args{Type})
 msgid "Invalid queue role group type %1"
 msgstr ""
@@ -3938,13 +3958,13 @@ msgstr "Невалидно право. Неуспех при канонизац�
 msgid "Invalid syntax for email address"
 msgstr "Невалиден синтаксис на адрес на ел. поща"
 
-#: lib/RT/Record.pm:277 lib/RT/Ticket.pm:397
+#: lib/RT/Record.pm:289 lib/RT/Ticket.pm:397
 #. ($key)
 #. (loc('owner'))
 msgid "Invalid value for %1"
 msgstr "Невалидна стойност за %1"
 
-#: lib/RT/Record.pm:1607
+#: lib/RT/Record.pm:1619
 msgid "Invalid value for custom field"
 msgstr "Невалидна стойност за персонализирано поле"
 
@@ -3988,7 +4008,7 @@ msgstr "Присъединете се или напуснете тази гру�
 msgid "Jul"
 msgstr "юли"
 
-#: share/html/Elements/Tabs:483
+#: share/html/Elements/Tabs:547
 msgid "Jumbo"
 msgstr "Джъмбо"
 
@@ -4013,7 +4033,7 @@ msgstr "Език"
 msgid "Large"
 msgstr "Голям"
 
-#: share/html/Elements/Tabs:568
+#: share/html/Elements/Tabs:645
 msgid "Last"
 msgstr "Последен"
 
@@ -4041,15 +4061,15 @@ msgstr ""
 msgid "Last updated by"
 msgstr "Последно обновяване от"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:130 share/html/Elements/RT__Article/ColumnMap:85 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:130 share/html/Elements/RT__Article/ColumnMap:85 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
 msgstr "ПоследноОбновяване"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:104 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:104 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
 msgstr "ПоследноОбновяванеОт"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
 msgstr "ПоследноОбновяванеОтносително"
 
@@ -4074,7 +4094,7 @@ msgstr ""
 msgid "Legends"
 msgstr "Легенди"
 
-#: lib/RT/Config.pm:327
+#: lib/RT/Config.pm:343
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Дължина в символи; Използвайте '0' за показване на всички съобщения последователно, без значение дължината им"
 
@@ -4098,15 +4118,15 @@ msgstr ""
 msgid "Link"
 msgstr "Връзка"
 
-#: lib/RT/Record.pm:1306
+#: lib/RT/Record.pm:1318
 msgid "Link already exists"
 msgstr "Връзката вече съществува"
 
-#: lib/RT/Record.pm:1320
+#: lib/RT/Record.pm:1332
 msgid "Link could not be created"
 msgstr "Връзката не може да бъде създадена"
 
-#: lib/RT/Record.pm:1399
+#: lib/RT/Record.pm:1411
 msgid "Link not found"
 msgstr "Връзката не е намерена"
 
@@ -4139,7 +4159,7 @@ msgstr ""
 msgid "Linking. Permission denied"
 msgstr "Свързване. Достъпът отказан"
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:479 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:421 share/html/m/ticket/show:409
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:543 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:421 share/html/m/ticket/show:409
 msgid "Links"
 msgstr "Връзки"
 
@@ -4190,7 +4210,7 @@ msgstr "Заредено съхранено търсене \"%1\""
 msgid "Loading..."
 msgstr ""
 
-#: lib/RT/Config.pm:415
+#: lib/RT/Config.pm:431
 msgid "Locale"
 msgstr "Локал"
 
@@ -4202,11 +4222,11 @@ msgstr "ЛокализираноДатаВреме"
 msgid "Location"
 msgstr "Локализация"
 
-#: lib/RT/Interface/Web.pm:682
+#: lib/RT/Interface/Web.pm:692
 msgid "Logged in"
 msgstr ""
 
-#: share/html/Elements/Tabs:392 share/html/Elements/Tabs:775
+#: share/html/Elements/Tabs:458 share/html/Elements/Tabs:848
 #. ($username)
 msgid "Logged in as %1"
 msgstr "Влязохте като %1"
@@ -4215,7 +4235,7 @@ msgstr "Влязохте като %1"
 msgid "Logged out"
 msgstr "Излязохте"
 
-#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:80 share/html/m/login:105 share/html/m/login:92
+#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:89 share/html/m/login:105 share/html/m/login:92
 msgid "Login"
 msgstr "Вход"
 
@@ -4224,11 +4244,11 @@ msgstr "Вход"
 msgid "LogoAltText"
 msgstr ""
 
-#: share/html/Elements/Tabs:421 share/html/Elements/Tabs:787 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: share/html/Elements/Tabs:490 share/html/Elements/Tabs:860 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Изход"
 
-#: lib/RT/CustomField.pm:1280
+#: lib/RT/CustomField.pm:1296
 msgid "Lookup type mismatch"
 msgstr "Грешка в типа на търсене"
 
@@ -4237,7 +4257,7 @@ msgstr "Грешка в типа на търсене"
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:459 lib/RT/Config.pm:474
+#: lib/RT/Config.pm:475 lib/RT/Config.pm:490
 msgid "Mail"
 msgstr "Поща"
 
@@ -4289,19 +4309,19 @@ msgstr "Направи тема"
 msgid "Make this group visible to user"
 msgstr "Направи тази група видима за потребителя"
 
-#: share/html/Elements/Tabs:144
+#: share/html/Elements/Tabs:92
 msgid "Manage custom fields and custom field values"
 msgstr "Управление на персонализирани полета и стойности на такива"
 
-#: share/html/Elements/Tabs:134
+#: share/html/Elements/Tabs:75
 msgid "Manage groups and group membership"
 msgstr "Управление на групи и членство в такива"
 
-#: share/html/Elements/Tabs:149
+#: share/html/Elements/Tabs:101
 msgid "Manage properties and configuration which apply to all queues"
 msgstr "Управление на свойства и конфигурация, които се отнасят до всички опашки"
 
-#: share/html/Elements/Tabs:139
+#: share/html/Elements/Tabs:83
 msgid "Manage queues and queue-specific properties"
 msgstr "Управление на опашки и специфичните им свойства"
 
@@ -4309,7 +4329,7 @@ msgstr "Управление на опашки и специфичните им 
 msgid "Manage saved graphs"
 msgstr "Управление на съхранени графики"
 
-#: share/html/Elements/Tabs:130
+#: share/html/Elements/Tabs:67
 msgid "Manage users and passwords"
 msgstr "Управление на потребители и пароли"
 
@@ -4321,7 +4341,7 @@ msgstr ""
 msgid "Mar"
 msgstr "мар"
 
-#: share/html/Ticket/Display.html:182 share/html/m/ticket/show:125
+#: share/html/Ticket/Display.html:188 share/html/m/ticket/show:125
 msgid "Marked all messages as seen"
 msgstr "Всички съобщения са маркирани като прочетени"
 
@@ -4333,7 +4353,7 @@ msgstr ""
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Config.pm:325
+#: lib/RT/Config.pm:341
 msgid "Maximum inline message length"
 msgstr "Максимална дължина на съобщение инлайн"
 
@@ -4349,26 +4369,26 @@ msgstr ""
 msgid "Member"
 msgstr "Член"
 
-#: lib/RT/Transaction.pm:800
+#: lib/RT/Transaction.pm:803
 #. ($value)
 msgid "Member %1 added"
 msgstr "Член %1 добавен"
 
-#: lib/RT/Transaction.pm:840
+#: lib/RT/Transaction.pm:843
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "Член %1 премахнат"
 
-#: lib/RT/Group.pm:942
+#: lib/RT/Group.pm:945
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
 msgstr "Член добавен: %1"
 
-#: lib/RT/Group.pm:1088
+#: lib/RT/Group.pm:1091
 msgid "Member deleted"
 msgstr "Членът е изтрит"
 
-#: lib/RT/Group.pm:1092
+#: lib/RT/Group.pm:1095
 msgid "Member not deleted"
 msgstr "Членът не е изтрит"
 
@@ -4376,25 +4396,25 @@ msgstr "Членът не е изтрит"
 msgid "Member of"
 msgstr "Член на"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "MemberOf"
 msgstr "ЧленНа"
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:311 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:322 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "Members"
 msgstr "Членове"
 
-#: lib/RT/Transaction.pm:797
+#: lib/RT/Transaction.pm:800
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "Членство в %1 добавено"
 
-#: lib/RT/Transaction.pm:837
+#: lib/RT/Transaction.pm:840
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "Членство в %1 премахнато"
 
-#: share/html/Elements/Tabs:294
+#: share/html/Elements/Tabs:304
 msgid "Memberships"
 msgstr "Членства"
 
@@ -4419,7 +4439,7 @@ msgstr "Сливането неуспешно. Не може да се уста�
 msgid "Merge into"
 msgstr "Сливане в"
 
-#: lib/RT/Transaction.pm:803
+#: lib/RT/Transaction.pm:806
 #. ($value)
 msgid "Merged into %1"
 msgstr "Слято в %1"
@@ -4444,15 +4464,15 @@ msgstr "Тялото на съобщението не е показано, за�
 msgid "Message body not shown because it is too large."
 msgstr "Тялото на съобщението не е показано, защото е прекалено голямо."
 
-#: lib/RT/Config.pm:244
+#: lib/RT/Config.pm:260
 msgid "Message box height"
 msgstr "Височина на кутията със съобщение"
 
-#: lib/RT/Config.pm:235
+#: lib/RT/Config.pm:251
 msgid "Message box width"
 msgstr "Ширина на кутията със съобщение"
 
-#: lib/RT/Config.pm:253
+#: lib/RT/Config.pm:269
 msgid "Message box wrapping"
 msgstr ""
 
@@ -4484,7 +4504,7 @@ msgstr "Минути"
 msgid "Miscellaneous"
 msgstr ""
 
-#: lib/RT/Record.pm:949
+#: lib/RT/Record.pm:961
 msgid "Missing a primary key?: %1"
 msgstr "Липсва първичен ключ?: %1"
 
@@ -4500,7 +4520,7 @@ msgstr ""
 msgid "MobilePhone"
 msgstr "МобиленТелефон"
 
-#: share/html/Elements/Tabs:709 share/html/Elements/Tabs:727 share/html/m/_elements/ticket_menu:67
+#: share/html/Elements/Tabs:782 share/html/Elements/Tabs:800 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr ""
 
@@ -4562,6 +4582,14 @@ msgstr "Редакция на scrip за опашка %1"
 msgid "Modify a scrip that applies to all queues"
 msgstr "Редакция на scrip, който се отнася до всички опашки"
 
+#: share/html/Elements/Tabs:161
+msgid "Modify and Create Classes"
+msgstr ""
+
+#: share/html/Elements/Tabs:166
+msgid "Modify and Create Custom Fields for Articles"
+msgstr ""
+
 #: share/html/Articles/Article/Edit.html:208 share/html/Articles/Article/Edit.html:316
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
@@ -4591,15 +4619,15 @@ msgstr "Редакция на датите за #%1"
 msgid "Modify dates for ticket # %1"
 msgstr "Редакция на датите за билет # %1"
 
-#: share/html/Elements/Tabs:202
+#: share/html/Elements/Tabs:201
 msgid "Modify global article topics"
 msgstr ""
 
-#: share/html/Elements/Tabs:160
+#: share/html/Elements/Tabs:123
 msgid "Modify global custom fields"
 msgstr "Редакция на глобални персонализирани полета"
 
-#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:196
+#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:186
 msgid "Modify global group rights"
 msgstr "Редакция на глобални групови права"
 
@@ -4611,7 +4639,7 @@ msgstr "Редакция на глобални групови права."
 msgid "Modify global topics"
 msgstr ""
 
-#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:198
+#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:191
 msgid "Modify global user rights"
 msgstr "Редакция на глобални потребителски права"
 
@@ -4690,7 +4718,7 @@ msgstr ""
 msgid "Modify scrips for queue %1"
 msgstr "Редакция на scrips за опашка %1"
 
-#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:151
+#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:107
 msgid "Modify scrips which apply to all queues"
 msgstr "Редакция на scrips, които се отнасят до всички опашки"
 
@@ -4727,7 +4755,7 @@ msgstr ""
 msgid "Modify the dashboard %1"
 msgstr "Редакция на табло %1"
 
-#: share/html/Elements/Tabs:200
+#: share/html/Elements/Tabs:196
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "Редакция на \"RT обзор\" изгледът по подразбиране"
 
@@ -4915,15 +4943,15 @@ msgstr "Нужно е да посочите атрибут 'Име'"
 msgid "My %1 tickets"
 msgstr "Моите %1 билети"
 
-#: share/html/Elements/Tabs:123
+#: share/html/Elements/Tabs:444
 msgid "My Approvals"
 msgstr ""
 
-#: share/html/Elements/Tabs:108
+#: share/html/Elements/Tabs:422
 msgid "My Day"
 msgstr "Моят ден"
 
-#: share/html/Elements/Tabs:113
+#: share/html/Elements/Tabs:429
 msgid "My Reminders"
 msgstr ""
 
@@ -4947,7 +4975,11 @@ msgstr "Моите съхранени търсения"
 msgid "MySQL"
 msgstr "MySQL"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
+msgid "NBSP"
+msgstr ""
+
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
 msgstr ""
 
@@ -4979,11 +5011,11 @@ msgstr "Никога"
 msgid "New"
 msgstr "Нов"
 
-#: share/html/Elements/Tabs:717
+#: share/html/Elements/Tabs:790
 msgid "New Article"
 msgstr ""
 
-#: share/html/Elements/Tabs:90
+#: share/html/Elements/Tabs:407
 msgid "New Dashboard"
 msgstr ""
 
@@ -4999,7 +5031,7 @@ msgstr "Нова парола"
 msgid "New Pending Approval"
 msgstr "Нови озчакващи одобрение"
 
-#: share/html/Elements/Tabs:95
+#: share/html/Elements/Tabs:412
 msgid "New Search"
 msgstr "Ново търсене"
 
@@ -5043,7 +5075,7 @@ msgstr "Нов scrip"
 msgid "New template"
 msgstr "Нов шаблон"
 
-#: share/html/Elements/Tabs:765 share/html/Elements/Tabs:767 share/html/m/_elements/menu:70
+#: share/html/Elements/Tabs:838 share/html/Elements/Tabs:840 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "Нов билет"
 
@@ -5064,7 +5096,7 @@ msgstr "Извикан нов потребител"
 msgid "New watchers"
 msgstr "Нови наблюдатели"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:566 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
+#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:643 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "Следващо"
 
@@ -5134,11 +5166,11 @@ msgstr "Няма тема"
 msgid "No Template"
 msgstr "Няма шаблон"
 
-#: share/html/Approvals/Elements/Approve:79
+#: share/html/Approvals/Elements/Approve:90
 msgid "No action"
 msgstr "Няма действие"
 
-#: lib/RT/Record.pm:944
+#: lib/RT/Record.pm:956
 msgid "No column specified"
 msgstr "Не е указана колона"
 
@@ -5179,7 +5211,7 @@ msgstr "Няма ключове за този адрес"
 msgid "No message attached"
 msgstr "Няма прикачено съобщение"
 
-#: lib/RT/CustomField.pm:462
+#: lib/RT/CustomField.pm:464
 msgid "No name provided"
 msgstr "Не е указано име"
 
@@ -5224,7 +5256,7 @@ msgstr ""
 msgid "No permission to view update ticket"
 msgstr "Няма право да преглежда обновения билет"
 
-#: lib/RT/Queue.pm:979 lib/RT/Ticket.pm:1195
+#: lib/RT/Queue.pm:990 lib/RT/Ticket.pm:1195
 msgid "No principal specified"
 msgstr "Не е указан принсипал"
 
@@ -5260,7 +5292,7 @@ msgstr "Няма търсене, на което да се действа."
 msgid "No subject"
 msgstr "Без тема"
 
-#: lib/RT/User.pm:1562
+#: lib/RT/User.pm:1589
 msgid "No such key or it's not suitable for signing"
 msgstr "Няма такъв ключ или е неподходящ за подписване"
 
@@ -5268,7 +5300,7 @@ msgstr "Няма такъв ключ или е неподходящ за под�
 msgid "No tickets found."
 msgstr "Не са намерени билети."
 
-#: lib/RT/Transaction.pm:591 lib/RT/Transaction.pm:615
+#: lib/RT/Transaction.pm:594 lib/RT/Transaction.pm:618
 msgid "No transaction type specified"
 msgstr "Не е указан тип на транзакцията"
 
@@ -5280,7 +5312,7 @@ msgstr "Няма използваеми ключове."
 msgid "No users matching search criteria found."
 msgstr "Няма намерени потребители, които отговарят на критериите за търсене."
 
-#: lib/RT/Record.pm:941
+#: lib/RT/Record.pm:953
 msgid "No value sent to _Set!"
 msgstr ""
 
@@ -5296,7 +5328,7 @@ msgstr "Никой"
 msgid "None"
 msgstr "Няма"
 
-#: lib/RT/Record.pm:946
+#: lib/RT/Record.pm:958
 msgid "Nonexistant field?"
 msgstr "Несъществуващо поле?"
 
@@ -5304,7 +5336,7 @@ msgstr "Несъществуващо поле?"
 msgid "Not Set"
 msgstr "Не е указано"
 
-#: lib/RT/CustomField.pm:496
+#: lib/RT/CustomField.pm:498
 msgid "Not found"
 msgstr "Не е намерен"
 
@@ -5324,7 +5356,7 @@ msgstr ""
 msgid "Not yet implemented."
 msgstr "Неимплементирано"
 
-#: share/html/Approvals/Elements/Approve:83
+#: share/html/Approvals/Elements/Approve:95
 msgid "Notes"
 msgstr "Бележки"
 
@@ -5408,7 +5440,7 @@ msgstr "Нотификация на заявителите и Ccs"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Нотификация на заявителите и Ccs като коментар"
 
-#: lib/RT/Config.pm:354
+#: lib/RT/Config.pm:370
 msgid "Notify me of unread messages"
 msgstr "Съобщавай ми за непрочетени съобщения"
 
@@ -5416,7 +5448,7 @@ msgstr "Съобщавай ми за непрочетени съобщения"
 msgid "Nov"
 msgstr "ное"
 
-#: lib/RT/Config.pm:295
+#: lib/RT/Config.pm:311
 msgid "Number of search results"
 msgstr "Брой на резултатите от търсенето"
 
@@ -5428,7 +5460,7 @@ msgstr "ИЛИ"
 msgid "Object"
 msgstr ""
 
-#: lib/RT/Record.pm:323
+#: lib/RT/Record.pm:335
 msgid "Object could not be created"
 msgstr "Неуспех при създаването на обект"
 
@@ -5436,7 +5468,7 @@ msgstr "Неуспех при създаването на обект"
 msgid "Object could not be deleted"
 msgstr "Неуспех при изтриването на обект"
 
-#: lib/RT/Record.pm:340 share/html/Admin/CustomFields/Modify.html:183
+#: lib/RT/Record.pm:352 share/html/Admin/CustomFields/Modify.html:183
 msgid "Object created"
 msgstr "Обектът създаден"
 
@@ -5448,7 +5480,7 @@ msgstr "Обектът изтрит"
 msgid "Object of type %1 cannot take custom fields"
 msgstr "Обект от тип %1 не приема персонализирани полета"
 
-#: lib/RT/CustomField.pm:1326
+#: lib/RT/CustomField.pm:1342
 msgid "Object type mismatch"
 msgstr "Разминаване в типа на обектите"
 
@@ -5460,7 +5492,7 @@ msgstr "Списъкът с обекти е празен"
 msgid "Oct"
 msgstr "окт"
 
-#: share/html/Elements/Tabs:117
+#: share/html/Elements/Tabs:436
 msgid "Offline"
 msgstr "Офлайн"
 
@@ -5472,7 +5504,7 @@ msgstr "Офлайн редакции"
 msgid "Offline upload"
 msgstr "Офлайн качване"
 
-#: lib/RT/Transaction.pm:381
+#: lib/RT/Transaction.pm:384
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
 msgid "On %1, %2 wrote:"
 msgstr "На %1, %2 написа:"
@@ -5545,7 +5577,7 @@ msgstr "Еднократно сляпо копие"
 msgid "One-time Cc"
 msgstr "Еднократно копие"
 
-#: lib/RT/Config.pm:265
+#: lib/RT/Config.pm:281
 msgid "Only for entry, not display"
 msgstr ""
 
@@ -5563,7 +5595,7 @@ msgstr "Покажи само одобрения на заявки, създад
 msgid "Only show custom fields for:"
 msgstr "Покажи само персонализирани полета за:"
 
-#: etc/RT_Config.pm:2279 etc/RT_Config.pm:2308 etc/RT_Config.pm:2353 etc/RT_Config.pm:2382
+#: etc/RT_Config.pm:2334 etc/RT_Config.pm:2363 etc/RT_Config.pm:2408 etc/RT_Config.pm:2437
 msgid "Open It"
 msgstr ""
 
@@ -5579,7 +5611,7 @@ msgstr "Отваряне на адрес (URL)"
 msgid "Open it"
 msgstr "Отвори го"
 
-#: share/html/Elements/Tabs:762 share/html/SelfService/index.html:48
+#: share/html/Elements/Tabs:835 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "Отворени билети"
 
@@ -5591,7 +5623,7 @@ msgstr "Отваряне на билетите при кореспонденци
 msgid "Option"
 msgstr ""
 
-#: share/html/Elements/Tabs:401 share/html/Prefs/MyRT.html:67
+#: share/html/Elements/Tabs:467 share/html/Prefs/MyRT.html:67
 msgid "Options"
 msgstr "Опции"
 
@@ -5612,15 +5644,15 @@ msgstr "Организация"
 msgid "Originating ticket: #%1"
 msgstr "Билет-произход: #%1"
 
-#: lib/RT/Transaction.pm:688
+#: lib/RT/Transaction.pm:691
 msgid "Outgoing email about a comment recorded"
 msgstr "Записана излизаща ел. поща относно коментар"
 
-#: lib/RT/Transaction.pm:692
+#: lib/RT/Transaction.pm:695
 msgid "Outgoing email recorded"
 msgstr "Записана излизаща ел. поща"
 
-#: lib/RT/Config.pm:479
+#: lib/RT/Config.pm:495
 msgid "Outgoing mail"
 msgstr ""
 
@@ -5628,7 +5660,7 @@ msgstr ""
 msgid "Over time, priority moves toward"
 msgstr "С времето, приоритетът се движи напред"
 
-#: share/html/Elements/Tabs:101
+#: share/html/Elements/Tabs:417
 msgid "Overview"
 msgstr ""
 
@@ -5640,7 +5672,7 @@ msgstr "Собствени билети"
 msgid "OwnTicket"
 msgstr "ПритежаниеНаБилет"
 
-#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2431 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:297 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
+#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2429 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:297 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
 msgid "Owner"
 msgstr "Собственик"
 
@@ -5658,13 +5690,13 @@ msgstr "Собственикът сменен от %1 на %2"
 msgid "Owner could not be set."
 msgstr "Неуспех при промяна на собственика."
 
-#: lib/RT/Transaction.pm:741 lib/RT/Transaction.pm:913
+#: lib/RT/Transaction.pm:744 lib/RT/Transaction.pm:916
 #. ($Old->Name , $New->Name)
 #. ($Old->Name, $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Собственикът насилствено променен от %1 на %2"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
 msgstr "ИмеНаСобственика"
 
@@ -5692,7 +5724,7 @@ msgstr ""
 msgid "PagerPhone"
 msgstr "ПейджърТелефон"
 
-#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:429 share/html/m/ticket/show:452
+#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:429 share/html/m/ticket/show:452
 msgid "Parents"
 msgstr "Родители"
 
@@ -5704,7 +5736,7 @@ msgstr "Парола"
 msgid "Password Reminder"
 msgstr "Напомняне за паролата"
 
-#: lib/RT/Transaction.pm:865 lib/RT/User.pm:826
+#: lib/RT/Transaction.pm:868 lib/RT/User.pm:826
 msgid "Password changed"
 msgstr "Паролата е променена"
 
@@ -5750,7 +5782,7 @@ msgstr "Паролите не съвпадат. Паролата ви не бе�
 msgid "Path to sendmail"
 msgstr "Път до sendmail"
 
-#: share/html/Elements/Tabs:474 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
+#: share/html/Elements/Tabs:538 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
 msgid "People"
 msgstr "Хора"
 
@@ -5779,11 +5811,11 @@ msgstr "Perl конфигурация"
 msgid "Perl library search order"
 msgstr ""
 
-#: share/html/Elements/Tabs:215
+#: share/html/Elements/Tabs:230
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:691 lib/RT/Attachment.pm:692 lib/RT/Attachment.pm:753 lib/RT/Attachment.pm:754 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:441 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1057 lib/RT/Group.pm:1109 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:882 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1201 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:574 lib/RT/Queue.pm:600 lib/RT/Queue.pm:824 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1927 lib/RT/Ticket.pm:2094 lib/RT/Ticket.pm:2142 lib/RT/Ticket.pm:2421 lib/RT/Ticket.pm:2434 lib/RT/Ticket.pm:2513 lib/RT/Ticket.pm:2526 lib/RT/Ticket.pm:2628 lib/RT/Ticket.pm:2642 lib/RT/Ticket.pm:2901 lib/RT/Ticket.pm:2912 lib/RT/Ticket.pm:2918 lib/RT/Ticket.pm:3127 lib/RT/Ticket.pm:3201 lib/RT/Ticket.pm:3396 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:587 lib/RT/Transaction.pm:609 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1410 lib/RT/User.pm:1547 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
+#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:691 lib/RT/Attachment.pm:692 lib/RT/Attachment.pm:753 lib/RT/Attachment.pm:754 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:439 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1300 lib/RT/CustomField.pm:1346 lib/RT/CustomField.pm:1389 lib/RT/CustomField.pm:1530 lib/RT/CustomField.pm:1671 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:545 lib/RT/CustomField.pm:572 lib/RT/CustomField.pm:890 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1060 lib/RT/Group.pm:1112 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:655 lib/RT/Group.pm:885 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1212 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:585 lib/RT/Queue.pm:611 lib/RT/Queue.pm:835 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1927 lib/RT/Ticket.pm:2094 lib/RT/Ticket.pm:2142 lib/RT/Ticket.pm:2421 lib/RT/Ticket.pm:2434 lib/RT/Ticket.pm:2513 lib/RT/Ticket.pm:2526 lib/RT/Ticket.pm:2628 lib/RT/Ticket.pm:2642 lib/RT/Ticket.pm:2901 lib/RT/Ticket.pm:2912 lib/RT/Ticket.pm:2918 lib/RT/Ticket.pm:3127 lib/RT/Ticket.pm:3201 lib/RT/Ticket.pm:3396 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:590 lib/RT/Transaction.pm:612 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1437 lib/RT/User.pm:1574 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
 msgid "Permission Denied"
 msgstr "Достъпът отказан"
 
@@ -5815,11 +5847,6 @@ msgstr ""
 msgid "Please enter your current password."
 msgstr ""
 
-#: share/html/Search/Simple.html:74
-#. ($status_str, $link_start, $link_end)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
-msgstr ""
-
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "Възможни скрити търсения"
@@ -5828,7 +5855,7 @@ msgstr "Възможни скрити търсения"
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
-#: share/html/Elements/Tabs:781 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
+#: share/html/Elements/Tabs:854 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
 msgstr "Предпочитания"
 
@@ -5848,12 +5875,12 @@ msgstr "Предпочитанията запазени за %1."
 msgid "Preferences saved for user %1."
 msgstr "Предпочитанията запазени за потребител %1."
 
-#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:101 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
+#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:102 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."
 msgstr "Предпочитанията запазени."
 
-#: share/html/Prefs/Other.html:86
-#. (loc_fuzzy($msg))
+#: share/html/Prefs/Other.html:87
+#. ($msg)
 msgid "Preferred Key: %1"
 msgstr "Предпочитан ключ: %1"
 
@@ -5865,7 +5892,7 @@ msgstr "Предпочитан ключ"
 msgid "Prepare Stubbed"
 msgstr ""
 
-#: share/html/Elements/Tabs:561
+#: share/html/Elements/Tabs:638
 msgid "Prev"
 msgstr "Предишен"
 
@@ -5886,7 +5913,7 @@ msgstr "Покажи резултатните резюме съобщения н
 msgid "Print this message"
 msgstr "Разпечатване на това съобщение"
 
-#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2235 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:373 share/html/m/ticket/show:241
+#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2233 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:373 share/html/m/ticket/show:241
 msgid "Priority"
 msgstr "Приоритет"
 
@@ -5915,7 +5942,7 @@ msgstr "Привилегирован"
 msgid "Privileged status: %1"
 msgstr "Състояние на привилегированост: %1"
 
-#: share/html/Admin/Users/index.html:134
+#: share/html/Admin/Users/index.html:133
 msgid "Privileged users"
 msgstr "Привилегировани потребители"
 
@@ -5948,7 +5975,7 @@ msgstr "Строител на заявки"
 msgid "Query:"
 msgstr "Заявка:"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:931 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2078 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:943 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2076 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
 msgid "Queue"
 msgstr "Опашка"
 
@@ -5962,7 +5989,7 @@ msgstr "Опашка %1 не е намерена"
 msgid "Queue Name"
 msgstr "Име на опашката"
 
-#: lib/RT/Queue.pm:543
+#: lib/RT/Queue.pm:561
 msgid "Queue already exists"
 msgstr "Опашката вече съществува"
 
@@ -6010,7 +6037,7 @@ msgstr "ОпашкаАдминКопие"
 msgid "QueueCc"
 msgstr "ОпашкаКопие"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
 msgstr "ОпашкаИме"
 
@@ -6018,7 +6045,7 @@ msgstr "ОпашкаИме"
 msgid "QueueWatcher"
 msgstr "ОпашкаНаблюдател"
 
-#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:139 share/html/Elements/Tabs:168 share/html/Elements/Tabs:222
+#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:137 share/html/Elements/Tabs:239 share/html/Elements/Tabs:82
 msgid "Queues"
 msgstr "Опашки"
 
@@ -6030,11 +6057,11 @@ msgstr "Опашки, които администрирам"
 msgid "Queues I'm an AdminCc for"
 msgstr "Опашки, от които получавам административни копия"
 
-#: lib/RT/Config.pm:409
+#: lib/RT/Config.pm:425
 msgid "Quick Create"
 msgstr ""
 
-#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:405 share/html/Prefs/Quicksearch.html:69
+#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:471 share/html/Prefs/Quicksearch.html:69
 msgid "Quick search"
 msgstr "Бързо търсене"
 
@@ -6050,7 +6077,7 @@ msgstr "RFC2616"
 msgid "RFC2822"
 msgstr "RFC2822"
 
-#: share/html/Elements/Tabs:678
+#: share/html/Elements/Tabs:752
 msgid "RSS"
 msgstr "RSS"
 
@@ -6090,7 +6117,7 @@ msgstr "RT размер"
 msgid "RT Variables"
 msgstr "RT променливи"
 
-#: lib/RT/Config.pm:290 lib/RT/Config.pm:299 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:199 share/html/Elements/Tabs:296 share/html/Elements/Tabs:404 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
+#: lib/RT/Config.pm:306 lib/RT/Config.pm:315 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:195 share/html/Elements/Tabs:306 share/html/Elements/Tabs:470 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT обзор"
 
@@ -6140,7 +6167,7 @@ msgstr "RT ще се свърже с базата данни, използвай
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr "RT ще създаде потребител, наречен \"root\" и ще установи това като паролата му"
 
-#: share/html/Search/Simple.html:69
+#: NOT FOUND IN SOURCE
 msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "RT ще гледа за всичко останало, което въведете в темите на билетите."
 
@@ -6165,12 +6192,12 @@ msgstr "RT работи с редица различни бази данни. П
 msgid "RT/Admin/Edit the group %1"
 msgstr "RT/Админ/Редакция на група %1"
 
-#: share/html/Admin/Queues/Modify.html:226
+#: share/html/Admin/Queues/Modify.html:224
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2311 etc/RT_Config.pm:2315 etc/RT_Config.pm:2385 etc/RT_Config.pm:2389
+#: etc/RT_Config.pm:2366 etc/RT_Config.pm:2370 etc/RT_Config.pm:2440 etc/RT_Config.pm:2444
 msgid "Re-open"
 msgstr ""
 
@@ -6206,22 +6233,22 @@ msgstr "Рекурсивен член"
 msgid "Refer to"
 msgstr ""
 
-#: lib/RT/Transaction.pm:794
+#: lib/RT/Transaction.pm:797
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "Референция от %1 добавена"
 
-#: lib/RT/Transaction.pm:834
+#: lib/RT/Transaction.pm:837
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "Референция от %1 изтрита"
 
-#: lib/RT/Transaction.pm:791
+#: lib/RT/Transaction.pm:794
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "Референция към %1 добавена"
 
-#: lib/RT/Transaction.pm:831
+#: lib/RT/Transaction.pm:834
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "Референция към %1 изтрита"
@@ -6230,7 +6257,7 @@ msgstr "Референция към %1 изтрита"
 msgid "Referred to by"
 msgstr "Референции от"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "ReferredToBy"
 msgstr "РеференцииОт"
 
@@ -6238,7 +6265,7 @@ msgstr "РеференцииОт"
 msgid "Refers to"
 msgstr "Отнася се към"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:120 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:120 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "RefersTo"
 msgstr "ОтнасяСеКъм"
 
@@ -6246,51 +6273,51 @@ msgstr "ОтнасяСеКъм"
 msgid "Refresh"
 msgstr "Опресняване"
 
-#: lib/RT/Config.pm:310
+#: lib/RT/Config.pm:326
 msgid "Refresh home page every 10 minutes."
 msgstr "Опресняване на началната страница на всеки 10 минути."
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:329
 msgid "Refresh home page every 120 minutes."
 msgstr "Опресняване на началната страница на всеки 120 минути."
 
-#: lib/RT/Config.pm:308
+#: lib/RT/Config.pm:324
 msgid "Refresh home page every 2 minutes."
 msgstr "Опресняване на началната страница на всеки 2 минути."
 
-#: lib/RT/Config.pm:311
+#: lib/RT/Config.pm:327
 msgid "Refresh home page every 20 minutes."
 msgstr "Опресняване на началната страница на всеки 20 минути."
 
-#: lib/RT/Config.pm:309
+#: lib/RT/Config.pm:325
 msgid "Refresh home page every 5 minutes."
 msgstr "Опресняване на началната страница на всеки 5 минути."
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:328
 msgid "Refresh home page every 60 minutes."
 msgstr "Опресняване на началната страница на всеки 60 минути."
 
-#: lib/RT/Config.pm:280
+#: lib/RT/Config.pm:296
 msgid "Refresh search results every 10 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 10 минути."
 
-#: lib/RT/Config.pm:283
+#: lib/RT/Config.pm:299
 msgid "Refresh search results every 120 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 120 минути."
 
-#: lib/RT/Config.pm:278
+#: lib/RT/Config.pm:294
 msgid "Refresh search results every 2 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 2 минути."
 
-#: lib/RT/Config.pm:281
+#: lib/RT/Config.pm:297
 msgid "Refresh search results every 20 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 20 минути."
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:295
 msgid "Refresh search results every 5 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 5 минути."
 
-#: lib/RT/Config.pm:282
+#: lib/RT/Config.pm:298
 msgid "Refresh search results every 60 minutes."
 msgstr "Опресняване на резултатите от търсенето на всеки 60 минути."
 
@@ -6299,7 +6326,7 @@ msgstr "Опресняване на резултатите от търсенет
 msgid "Refresh this page every %1 minutes."
 msgstr "Опресняване на тази страница на всеки %1 минути."
 
-#: etc/RT_Config.pm:2287 etc/RT_Config.pm:2303 etc/RT_Config.pm:2361 etc/RT_Config.pm:2377
+#: etc/RT_Config.pm:2342 etc/RT_Config.pm:2358 etc/RT_Config.pm:2416 etc/RT_Config.pm:2432
 msgid "Reject"
 msgstr ""
 
@@ -6311,18 +6338,18 @@ msgstr ""
 msgid "Reminder"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2097 lib/RT/Transaction.pm:931
+#: lib/RT/Interface/Web.pm:2168 lib/RT/Transaction.pm:934
 #. ($args->{'NewReminder-Subject'})
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "Напомняне '%1' добавено"
 
-#: lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:947
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "Напомняне '%1' завършено"
 
-#: lib/RT/Transaction.pm:937
+#: lib/RT/Transaction.pm:940
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "Напомняне '%1' отново отворено"
@@ -6331,7 +6358,7 @@ msgstr "Напомняне '%1' отново отворено"
 msgid "Reminder ticket #%1"
 msgstr "Напомнящ билет #%1"
 
-#: share/html/Elements/Tabs:487 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
+#: share/html/Elements/Tabs:551 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
 msgid "Reminders"
 msgstr "Напомняния"
 
@@ -6356,7 +6383,7 @@ msgstr "Премахване на копие"
 msgid "Remove Requestor"
 msgstr "Премахване на заявител"
 
-#: lib/RT/Queue.pm:1030
+#: lib/RT/Queue.pm:1041
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Removed %1 from members of %2 for this queue."
 msgstr ""
@@ -6369,7 +6396,7 @@ msgstr ""
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr ""
 
-#: share/html/Elements/Tabs:491 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
+#: share/html/Elements/Tabs:555 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
 msgstr "Отговор"
 
@@ -6401,7 +6428,7 @@ msgstr "Заявител"
 msgid "RequestorGroup"
 msgstr "ГрупаНаЗаявителя"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:307 share/html/m/ticket/show:290
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:307 share/html/m/ticket/show:290
 msgid "Requestors"
 msgstr "Заявители"
 
@@ -6434,7 +6461,7 @@ msgstr "Връщане стойности по подразбиране"
 msgid "Residence"
 msgstr "Местожителство"
 
-#: etc/RT_Config.pm:2283 etc/RT_Config.pm:2299 etc/RT_Config.pm:2357 etc/RT_Config.pm:2373 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2338 etc/RT_Config.pm:2354 etc/RT_Config.pm:2412 etc/RT_Config.pm:2428 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Разрешаване"
 
@@ -6443,7 +6470,7 @@ msgstr "Разрешаване"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Разрешаване на билет #%1 (%2)"
 
-#: etc/initialdata:321 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:99
+#: etc/initialdata:321 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Разрешен"
 
@@ -6463,7 +6490,7 @@ msgstr "Разрешени билети в период, групирани по
 msgid "Resolved tickets, grouped by owner"
 msgstr "Разрешени билети, групирани по собственик"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
 msgstr "РазрешенОтносително"
 
@@ -6515,7 +6542,7 @@ msgstr "Правото не е заредено"
 msgid "Right revoked"
 msgstr "Правото отнето"
 
-#: lib/RT/Interface/Web.pm:1735 lib/RT/Interface/Web.pm:1846
+#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Неуспех при предоставянето на право за %1"
@@ -6544,7 +6571,7 @@ msgstr "Редове за кутия"
 msgid "Rows per page"
 msgstr "Редове за страница"
 
-#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:211
+#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:223
 msgid "SQL Queries"
 msgstr ""
 
@@ -6598,7 +6625,7 @@ msgstr "Записан %1 %2"
 msgid "Saved Search %1 not found"
 msgstr "Съхранено търсене %1 не е открито"
 
-#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:407
+#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:473
 msgid "Saved Searches"
 msgstr ""
 
@@ -6627,7 +6654,7 @@ msgstr "Scrip полета"
 msgid "Scrip deleted"
 msgstr "Scrip изтрит"
 
-#: share/html/Elements/Tabs:151 share/html/Elements/Tabs:267 share/html/Elements/Tabs:340
+#: share/html/Elements/Tabs:106 share/html/Elements/Tabs:279
 msgid "Scrips"
 msgstr "Scrips"
 
@@ -6639,11 +6666,11 @@ msgstr "Scrips и получатели"
 msgid "Scrips which apply to all queues"
 msgstr "Scrips, които се отнасят до всички опашки"
 
-#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:102 share/html/Elements/Tabs:716 share/html/Search/Simple.html:79 share/html/m/_elements/menu:64
+#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:418 share/html/Elements/Tabs:789 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Търсене"
 
-#: share/html/Articles/Article/Search.html:212
+#: share/html/Articles/Article/Search.html:214
 #. ($search->Name)
 msgid "Search %1 updated"
 msgstr ""
@@ -6668,15 +6695,20 @@ msgstr "Търсене на одобрения"
 msgid "Search for articles"
 msgstr ""
 
-#: share/html/Search/Simple.html:89
+#: share/html/Search/Simple.html:100
 msgid "Search for tickets"
 msgstr "Търсене на билети"
 
-#: share/html/Search/Simple.html:57
+#: share/html/Search/Simple.html:63
+#. (@strong)
+msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
 msgstr "Търсене на билети. Въведете <strong>id</strong> номера, <strong>опашки</strong> по име, собственици по <strong>потребителско име</strong> и заявители по <strong>адрес на ел. поща</strong>."
 
-#: share/html/Elements/Tabs:403
+#: share/html/Elements/Tabs:469
 msgid "Search options"
 msgstr "Опции при търсене"
 
@@ -6689,11 +6721,11 @@ msgstr ""
 msgid "Search results grouped by %1"
 msgstr "Резултатите от търсенето групирани по %1"
 
-#: lib/RT/Config.pm:274
+#: lib/RT/Config.pm:290
 msgid "Search results refresh interval"
 msgstr "Интервал на опреснение на резултатите от търсене"
 
-#: share/html/Search/Simple.html:65
+#: share/html/Search/Simple.html:73
 #. ($fulltext_keyword)
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
@@ -6774,11 +6806,11 @@ msgstr "ВижСобственоТабло"
 msgid "SeeQueue"
 msgstr "ВижОпашка"
 
-#: share/html/Elements/Tabs:131 share/html/Elements/Tabs:136 share/html/Elements/Tabs:140 share/html/Elements/Tabs:145 share/html/Elements/Tabs:152 share/html/Elements/Tabs:155 share/html/Elements/Tabs:185 share/html/Elements/Tabs:192 share/html/Elements/Tabs:243 share/html/Elements/Tabs:264 share/html/Elements/Tabs:269 share/html/Elements/Tabs:347 share/html/Elements/Tabs:361 share/html/Elements/Tabs:371
+#: share/html/Elements/Tabs:110 share/html/Elements/Tabs:118 share/html/Elements/Tabs:160 share/html/Elements/Tabs:176 share/html/Elements/Tabs:258 share/html/Elements/Tabs:276 share/html/Elements/Tabs:280 share/html/Elements/Tabs:350 share/html/Elements/Tabs:361 share/html/Elements/Tabs:371 share/html/Elements/Tabs:70 share/html/Elements/Tabs:78 share/html/Elements/Tabs:86 share/html/Elements/Tabs:95
 msgid "Select"
 msgstr "Избиране"
 
-#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:178
+#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:153
 msgid "Select Custom Fields for Articles in all Classes"
 msgstr ""
 
@@ -6835,23 +6867,23 @@ msgstr "Изберете друг език"
 msgid "Select box"
 msgstr ""
 
-#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:168
+#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:138
 msgid "Select custom fields for all queues"
 msgstr "Изберете персонализирани полета за всички опашки"
 
-#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:165
+#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:133
 msgid "Select custom fields for all user groups"
 msgstr "Изберете персонализирани полета за всички потребителски групи"
 
-#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:162
+#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:128
 msgid "Select custom fields for all users"
 msgstr "Изберете персонализирани полета за всички потребители"
 
-#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:171
+#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:143
 msgid "Select custom fields for tickets in all queues"
 msgstr "Изберете персонализирани полета за билети във всички опашки"
 
-#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:175
+#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:148
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Изберете персонализирани полета за транзакции върху билети във всички опашки"
 
@@ -6920,7 +6952,7 @@ msgstr "Избрани персонализирани полета"
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2022
+#: lib/RT/Crypt/GnuPG.pm:2032
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Избраният ключ е или ненадежден, или вече не съществува."
 
@@ -6980,7 +7012,7 @@ msgstr "Изпраща ел. поща до административните к
 msgid "Sends mail to the owner"
 msgstr "Изпраща ел. поща до собственика"
 
-#: lib/RT/Interface/Email.pm:768
+#: lib/RT/Interface/Email.pm:767
 msgid "Sent email successfully"
 msgstr ""
 
@@ -6992,11 +7024,11 @@ msgstr "сеп"
 msgid "Separate multiple entries with spaces."
 msgstr ""
 
-#: lib/RT/User.pm:1572
+#: lib/RT/User.pm:1599
 msgid "Set private key"
 msgstr ""
 
-#: share/html/Elements/Tabs:400 share/html/Prefs/Other.html:79
+#: share/html/Elements/Tabs:466 share/html/Prefs/Other.html:79
 msgid "Settings"
 msgstr "Настройки"
 
@@ -7004,11 +7036,11 @@ msgstr "Настройки"
 msgid "Short usernames"
 msgstr ""
 
-#: lib/RT/Config.pm:480
+#: lib/RT/Config.pm:496
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
-#: share/html/Elements/Tabs:434 share/html/Ticket/Elements/ShowTransaction:182
+#: share/html/Elements/Tabs:502 share/html/Ticket/Elements/ShowTransaction:182
 msgid "Show"
 msgstr "Показване"
 
@@ -7024,7 +7056,7 @@ msgstr "Показване на колони"
 msgid "Show Configuration tab"
 msgstr ""
 
-#: share/html/Elements/Tabs:649
+#: share/html/Elements/Tabs:726
 msgid "Show Results"
 msgstr "Показване на резултатите"
 
@@ -7073,11 +7105,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Показване на описание на връзката"
 
-#: lib/RT/Config.pm:390
+#: lib/RT/Config.pm:406
 msgid "Show no tickets for the Requestor"
 msgstr ""
 
-#: lib/RT/Config.pm:336
+#: lib/RT/Config.pm:352
 msgid "Show oldest history first"
 msgstr "Показване на най-старата история най-напред"
 
@@ -7093,15 +7125,15 @@ msgstr ""
 msgid "Show requests awaiting other approvals"
 msgstr "Показване на заявки, които очакват други одобрения"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:404
 msgid "Show the Requestor's 10 highest priority closed tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:403
 msgid "Show the Requestor's 10 highest priority open tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:389
+#: lib/RT/Config.pm:405
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr ""
 
@@ -7157,7 +7189,7 @@ msgstr "ПоказБилет"
 msgid "ShowTicketComments"
 msgstr "ПоказКоментариНаБилет"
 
-#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:214 share/html/Elements/Tabs:695
+#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:229 share/html/Elements/Tabs:769
 msgid "Shredder"
 msgstr "Заличител"
 
@@ -7203,11 +7235,11 @@ msgstr ""
 msgid "Signature"
 msgstr "Подпис"
 
-#: lib/RT/Queue.pm:584
+#: lib/RT/Queue.pm:595
 msgid "Signing disabled"
 msgstr "Подписването изключено"
 
-#: lib/RT/Queue.pm:583
+#: lib/RT/Queue.pm:594
 msgid "Signing enabled"
 msgstr "Подписването включено"
 
@@ -7215,7 +7247,7 @@ msgstr "Подписването включено"
 msgid "Simple"
 msgstr ""
 
-#: share/html/Elements/Tabs:94
+#: share/html/Elements/Tabs:411
 msgid "Simple Search"
 msgstr "Опростено търсене"
 
@@ -7267,7 +7299,7 @@ msgstr ""
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Укажете дали това е дневно или седмично изпълнение."
 
-#: share/html/Elements/Tabs:660
+#: share/html/Elements/Tabs:735
 msgid "Spreadsheet"
 msgstr "Електронна таблица"
 
@@ -7275,23 +7307,28 @@ msgstr "Електронна таблица"
 msgid "Stage"
 msgstr "Етап"
 
-#: etc/RT_Config.pm:2295 etc/RT_Config.pm:2369
+#: etc/RT_Config.pm:2350 etc/RT_Config.pm:2424
 msgid "Stall"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
+#: share/html/Search/Simple.html:85
+#. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
+msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
+msgstr ""
+
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
 msgid "Started"
 msgstr "Начало"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "StartedRelative"
 msgstr "НачалоОтносително"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:414 share/html/m/ticket/show:377
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:414 share/html/m/ticket/show:377
 msgid "Starts"
 msgstr "Започва"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "StartsRelative"
 msgstr "ЗапочваОтносително"
 
@@ -7299,7 +7336,7 @@ msgstr "ЗапочваОтносително"
 msgid "State"
 msgstr "Състояние"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2110 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:287 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2108 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:287 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
 msgid "Status"
 msgstr "Състояние"
 
@@ -7313,7 +7350,7 @@ msgstr ""
 msgid "Status Change"
 msgstr "Промяна на състоянието"
 
-#: lib/RT/Transaction.pm:640
+#: lib/RT/Transaction.pm:643
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
 msgstr "Промяна на състоянието от %1 на %2"
@@ -7322,7 +7359,7 @@ msgstr "Промяна на състоянието от %1 на %2"
 msgid "Status changes"
 msgstr ""
 
-#: share/html/Elements/Tabs:538
+#: share/html/Elements/Tabs:612
 msgid "Steal"
 msgstr "Открадни"
 
@@ -7345,7 +7382,7 @@ msgstr "ОткрадванеБилет"
 msgid "Step %1 of %2"
 msgstr "Стъпка %1 от %2"
 
-#: lib/RT/Transaction.pm:747 lib/RT/Transaction.pm:900
+#: lib/RT/Transaction.pm:750 lib/RT/Transaction.pm:903
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "Откраднат от %1"
@@ -7354,7 +7391,7 @@ msgstr "Откраднат от %1"
 msgid "Style"
 msgstr "Стил"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2184 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:95
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2182 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:95
 msgid "Subject"
 msgstr "Тема"
 
@@ -7362,7 +7399,7 @@ msgstr "Тема"
 msgid "Subject Tag"
 msgstr "Маркер за тема"
 
-#: lib/RT/Transaction.pm:769
+#: lib/RT/Transaction.pm:772
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Темата променена на %1"
@@ -7401,7 +7438,7 @@ msgstr "АбониранеТабло"
 msgid "Subscribed to dashboard %1"
 msgstr "Абониран за табло %1"
 
-#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:431
+#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:500
 msgid "Subscription"
 msgstr "Абонамент"
 
@@ -7434,11 +7471,11 @@ msgstr "неделя"
 msgid "SuperUser"
 msgstr "СуперПотребител"
 
-#: lib/RT/Config.pm:469
+#: lib/RT/Config.pm:485
 msgid "Suspended"
 msgstr "Прекъснат"
 
-#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:205
+#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:211
 msgid "System Configuration"
 msgstr "Системна конфигурация"
 
@@ -7450,11 +7487,11 @@ msgstr "Системни табла"
 msgid "System Default"
 msgstr "Системни настройки по подразбиране"
 
-#: lib/RT/Interface/Web.pm:1735 lib/RT/Interface/Web.pm:1846 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
+#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "System Error"
 msgstr "Системна грешка"
 
-#: lib/RT/Transaction.pm:258 lib/RT/Transaction.pm:264
+#: lib/RT/Transaction.pm:261 lib/RT/Transaction.pm:267
 #. ($msg)
 msgid "System Error: %1"
 msgstr "Системна грешка: %1"
@@ -7463,7 +7500,7 @@ msgstr "Системна грешка: %1"
 msgid "System Tools"
 msgstr "Системни инструменти"
 
-#: lib/RT/Transaction.pm:658
+#: lib/RT/Transaction.pm:661
 msgid "System error"
 msgstr ""
 
@@ -7487,7 +7524,7 @@ msgstr "Системни права"
 msgid "SystemRolegroup for internal use"
 msgstr "СистемнаРолеваГрупа за вътрешна употреба"
 
-#: etc/initialdata:587 share/html/Elements/Tabs:532 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:587 share/html/Elements/Tabs:606 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "Вземи"
 
@@ -7499,7 +7536,7 @@ msgstr "Взимане на билети"
 msgid "TakeTicket"
 msgstr "ВзиманеБилет"
 
-#: lib/RT/Transaction.pm:732 lib/RT/Transaction.pm:892
+#: lib/RT/Transaction.pm:735 lib/RT/Transaction.pm:895
 msgid "Taken"
 msgstr "Взет"
 
@@ -7555,7 +7592,7 @@ msgstr "Грешка при разбора на шаблона"
 msgid "Template parsing error: %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:154 share/html/Elements/Tabs:261 share/html/Elements/Tabs:341
+#: share/html/Elements/Tabs:114 share/html/Elements/Tabs:275
 msgid "Templates"
 msgstr "Шаблони"
 
@@ -7572,11 +7609,11 @@ msgstr ""
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Текстовият файл не е показан, защото е изключен в предпочитанията."
 
-#: lib/RT/Record.pm:940
+#: lib/RT/Record.pm:952
 msgid "That is already the current value"
 msgstr "Текущата стойност е същата"
 
-#: lib/RT/CustomField.pm:579
+#: lib/RT/CustomField.pm:581
 msgid "That is not a value for this custom field"
 msgstr "Това не е стойност за това персонализирано поле"
 
@@ -7588,7 +7625,7 @@ msgstr "Това е същата стойност"
 msgid "That principal already has that right"
 msgstr "Този принсипал вече има това право"
 
-#: lib/RT/Queue.pm:938
+#: lib/RT/Queue.pm:949
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Този принсипал вече е %1 за тази опашка"
@@ -7598,7 +7635,7 @@ msgstr "Този принсипал вече е %1 за тази опашка"
 msgid "That principal is already a %1 for this ticket"
 msgstr "Този принсипал вече е %1 за този билет"
 
-#: lib/RT/Queue.pm:1019
+#: lib/RT/Queue.pm:1030
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Този принсипал не е %1 за тази опашка"
@@ -7616,7 +7653,7 @@ msgstr "Тази опашка не съществува"
 msgid "That ticket has unresolved dependencies"
 msgstr "Този билет има неразрешени зависимости"
 
-#: lib/RT/Action/CreateTickets.pm:477 lib/RT/Ticket.pm:2947
+#: lib/RT/Action/CreateTickets.pm:480 lib/RT/Ticket.pm:2947
 msgid "That user already owns that ticket"
 msgstr "Този потребител вече притежава този билет"
 
@@ -7689,27 +7726,27 @@ msgstr "Следните заявки са изтрити и всяка ще б�
 msgid "The following queries may not be visible to all users who can see this dashboard."
 msgstr "Следните заявки може да не са видими за всички потребители, които виждат това табло."
 
-#: lib/RT/Crypt/GnuPG.pm:2196
+#: lib/RT/Crypt/GnuPG.pm:2206
 msgid "The key has been disabled"
 msgstr "Ключът е изключен"
 
-#: lib/RT/Crypt/GnuPG.pm:2202
+#: lib/RT/Crypt/GnuPG.pm:2212
 msgid "The key has been revoked"
 msgstr "Ключът е отменен"
 
-#: lib/RT/Crypt/GnuPG.pm:2207
+#: lib/RT/Crypt/GnuPG.pm:2217
 msgid "The key has expired"
 msgstr "Ключът е просрочен"
 
-#: lib/RT/Crypt/GnuPG.pm:2240
+#: lib/RT/Crypt/GnuPG.pm:2250
 msgid "The key is fully trusted"
 msgstr "Ключът е доверен напълно"
 
-#: lib/RT/Crypt/GnuPG.pm:2245
+#: lib/RT/Crypt/GnuPG.pm:2255
 msgid "The key is ultimately trusted"
 msgstr "Ключът е доверен докрай"
 
-#: lib/RT/Record.pm:943
+#: lib/RT/Record.pm:955
 msgid "The new value has been set."
 msgstr "Новата стойност беше установена."
 
@@ -7734,11 +7771,11 @@ msgstr "Настройките, които избрахте, се пазят в 
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Системата не може да подписва излизащите съобщения по ел. поща. Това обикновено означава, че паролата е неправилна или че GPG агента не работи. Моля, свържете се незабавно със системния си администратор. Проблемните адреси са:"
 
-#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:207
+#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:216
 msgid "Theme"
 msgstr "Визуална схема"
 
-#: lib/RT/Crypt/GnuPG.pm:2049
+#: lib/RT/Crypt/GnuPG.pm:2059
 msgid "There are several keys suitable for encryption."
 msgstr "Има няколко ключа подходящи за шифриране."
 
@@ -7746,7 +7783,7 @@ msgstr "Има няколко ключа подходящи за шифрира�
 msgid "There are unread messages on this ticket."
 msgstr "Има непрочетени съобщения в този билет."
 
-#: lib/RT/Crypt/GnuPG.pm:2235
+#: lib/RT/Crypt/GnuPG.pm:2245
 msgid "There is marginal trust in this key"
 msgstr "Има маргинално доверие в този ключ"
 
@@ -7755,7 +7792,7 @@ msgstr "Има маргинално доверие в този ключ"
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2041
+#: lib/RT/Crypt/GnuPG.pm:2051
 msgid "There is no key suitable for encryption."
 msgstr "Няма ключ подходящ за шифриране."
 
@@ -7763,7 +7800,7 @@ msgstr "Няма ключ подходящ за шифриране."
 msgid "There is no mapping for statuses between these queues. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2045
+#: lib/RT/Crypt/GnuPG.pm:2055
 msgid "There is one suitable key, but trust level is not set."
 msgstr "Има един подходящ ключ, но нивото на доверие не е настроено."
 
@@ -7775,15 +7812,19 @@ msgstr "Тези коментари обикновено не са видими 
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr "Тези конфигурационни опции покриват някои от основните неща, нужни, за да се пусне RT. Нужно е да знаем името на вашата RT инсталация, както и името на домейна, където ще живее RT. Също така е нужно да се настрои парола за административния потребител по подразбиране."
 
-#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:663
+#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:679
 msgid "This Custom Field can not have list of values"
 msgstr ""
 
-#: lib/RT/Class.pm:446 lib/RT/CustomField.pm:1335
+#: lib/RT/Class.pm:444
+msgid "This class does not apply to that object"
+msgstr ""
+
+#: lib/RT/CustomField.pm:1351
 msgid "This custom field does not apply to that object"
 msgstr "Това персонализирано поле не се отнася до този обект"
 
-#: lib/RT/CustomField.pm:356 lib/RT/CustomField.pm:995
+#: lib/RT/CustomField.pm:1011 lib/RT/CustomField.pm:356
 msgid "This custom field has no Render Types"
 msgstr ""
 
@@ -7812,7 +7853,7 @@ msgstr ""
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Този инструмент позволява на потребителя да изпълнява произволни модули за perl от RT."
 
-#: lib/RT/Transaction.pm:359
+#: lib/RT/Transaction.pm:362
 msgid "This transaction appears to have no content"
 msgstr "Тази транзакция изглежда няма съдържание"
 
@@ -7833,7 +7874,7 @@ msgstr "четв"
 msgid "Thursday"
 msgstr "четвъртък"
 
-#: lib/RT/Record.pm:928 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:940 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Билет"
 
@@ -7857,7 +7898,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Билет #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1125 lib/RT/Action/CreateTickets.pm:1134 lib/RT/Action/CreateTickets.pm:373 lib/RT/Action/CreateTickets.pm:496 lib/RT/Action/CreateTickets.pm:508
+#: lib/RT/Action/CreateTickets.pm:1147 lib/RT/Action/CreateTickets.pm:1156 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:499 lib/RT/Action/CreateTickets.pm:511
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7875,7 +7916,7 @@ msgstr "Билет %1 създаден в опашка '%2'"
 msgid "Ticket %1: %2"
 msgstr "Билет %1: %2"
 
-#: share/html/Elements/Tabs:272
+#: share/html/Elements/Tabs:283
 msgid "Ticket Custom Fields"
 msgstr "Персонализирани полета на билет"
 
@@ -7892,7 +7933,7 @@ msgstr "Билетът разрешен"
 msgid "Ticket Search"
 msgstr "Търсене на билет"
 
-#: lib/RT/CustomField.pm:1583 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:174
+#: lib/RT/CustomField.pm:1599 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:147
 msgid "Ticket Transactions"
 msgstr "Транзакции на билет"
 
@@ -7900,15 +7941,15 @@ msgstr "Транзакции на билет"
 msgid "Ticket and Transaction"
 msgstr ""
 
-#: lib/RT/Config.pm:248 lib/RT/Config.pm:259
+#: lib/RT/Config.pm:264 lib/RT/Config.pm:275
 msgid "Ticket composition"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2353
+#: lib/RT/Tickets.pm:2351
 msgid "Ticket content"
 msgstr "Съдържание на билет"
 
-#: lib/RT/Tickets.pm:2398
+#: lib/RT/Tickets.pm:2396
 msgid "Ticket content type"
 msgstr "Тип на съдържанието на билет"
 
@@ -7920,7 +7961,7 @@ msgstr "Неуспех при създаването на билет зарад�
 msgid "Ticket could not be loaded"
 msgstr "Неуспех при зареждането на билета"
 
-#: lib/RT/Config.pm:320 lib/RT/Config.pm:379 lib/RT/Config.pm:395
+#: lib/RT/Config.pm:336 lib/RT/Config.pm:395 lib/RT/Config.pm:411
 msgid "Ticket display"
 msgstr "Показване на билет"
 
@@ -7941,16 +7982,16 @@ msgstr ""
 msgid "TicketSQL search module"
 msgstr "TicketSQL модул за търсене"
 
-#: lib/RT/CustomField.pm:1582 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:171 share/html/Elements/Tabs:761 share/html/Elements/Tabs:93 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
+#: lib/RT/CustomField.pm:1598 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:142 share/html/Elements/Tabs:410 share/html/Elements/Tabs:834 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
 msgid "Tickets"
 msgstr "Билети"
 
-#: lib/RT/Tickets.pm:2555
+#: lib/RT/Tickets.pm:2553
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr "Билети %1 %2"
 
-#: lib/RT/Tickets.pm:2512
+#: lib/RT/Tickets.pm:2510
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "Билети %1 по %2"
@@ -7983,11 +8024,11 @@ msgstr "Билети, които зависят от това одобрение
 msgid "Time Estimated"
 msgstr "Време приблизително"
 
-#: lib/RT/Tickets.pm:2328 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:398
+#: lib/RT/Tickets.pm:2326 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:398
 msgid "Time Left"
 msgstr "Оставащо време"
 
-#: lib/RT/Tickets.pm:2305 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:391
+#: lib/RT/Tickets.pm:2303 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:391
 msgid "Time Worked"
 msgstr "Време работено"
 
@@ -7995,15 +8036,15 @@ msgstr "Време работено"
 msgid "Time to display"
 msgstr "Време за показване"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:113 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:113 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
 msgstr "ВремеПриблизително"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:111 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:111 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
 msgstr "ОставащоВреме"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:928 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:928 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
 msgstr "ВремеРаботено"
 
@@ -8034,15 +8075,15 @@ msgstr ""
 msgid "Toggle stack trace"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:931 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:931 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
 msgstr ""
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ToldRelative"
 msgstr ""
 
-#: share/html/Elements/Tabs:204 share/html/Elements/Tabs:97 share/html/Tools/index.html:48
+#: share/html/Elements/Tabs:206 share/html/Elements/Tabs:415 share/html/Tools/index.html:48
 msgid "Tools"
 msgstr "Инструменти"
 
@@ -8062,7 +8103,7 @@ msgstr ""
 msgid "Topic not found"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:103 share/html/Elements/Tabs:201 share/html/Elements/Tabs:365
+#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:200 share/html/Elements/Tabs:365 share/html/Elements/Tabs:419
 msgid "Topics"
 msgstr ""
 
@@ -8074,16 +8115,16 @@ msgstr "Общо"
 msgid "Transaction"
 msgstr "Транзакция"
 
-#: lib/RT/Transaction.pm:925
+#: lib/RT/Transaction.pm:928
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Транзакция %1 очистена"
 
-#: lib/RT/Transaction.pm:203
+#: lib/RT/Transaction.pm:206
 msgid "Transaction Created"
 msgstr "Транзакция създадена"
 
-#: share/html/Elements/Tabs:275
+#: share/html/Elements/Tabs:286
 msgid "Transaction Custom Fields"
 msgstr "Персонализирани полета на транзакцията"
 
@@ -8095,7 +8136,7 @@ msgstr "Transaction->Create не успя, защото не указахте т
 msgid "TransactionDate"
 msgstr "ДатаНаТранзакция"
 
-#: lib/RT/Transaction.pm:982
+#: lib/RT/Transaction.pm:985
 msgid "Transactions are immutable"
 msgstr "Транзакциите са неотменими"
 
@@ -8111,7 +8152,7 @@ msgstr "вт"
 msgid "Tuesday"
 msgstr "вторник"
 
-#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2160 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2158 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Тип"
 
@@ -8119,7 +8160,7 @@ msgstr "Тип"
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
 msgstr ""
 
-#: lib/RT/CustomField.pm:945
+#: lib/RT/CustomField.pm:961
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr "Типът сменен от '%1' на '%2'"
@@ -8141,12 +8182,12 @@ msgstr "Неуспех при определянето на типа на обе
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:237
+#: share/html/Admin/Tools/Theme.html:236
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:209
+#: share/html/Admin/Tools/Theme.html:208
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -8176,7 +8217,7 @@ msgstr "Неуспех при абонамента за табло %1: Дост�
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2319 etc/RT_Config.pm:2393
+#: etc/RT_Config.pm:2374 etc/RT_Config.pm:2448
 msgid "Undelete"
 msgstr ""
 
@@ -8188,15 +8229,15 @@ msgstr "Неимплементирано"
 msgid "Unix login"
 msgstr "Unix логин"
 
-#: lib/RT/Crypt/GnuPG.pm:2219 lib/RT/Crypt/GnuPG.pm:2224
+#: lib/RT/Crypt/GnuPG.pm:2229 lib/RT/Crypt/GnuPG.pm:2234
 msgid "Unknown (no trust value assigned)"
 msgstr "Непознат (не е възложена стойност за доверие)"
 
-#: lib/RT/Crypt/GnuPG.pm:2229
+#: lib/RT/Crypt/GnuPG.pm:2239
 msgid "Unknown (this value is new to the system)"
 msgstr "Непознат (тази стойност е нова за системата)"
 
-#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:801
+#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:813
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -8207,9 +8248,14 @@ msgstr "Непознато кодиране на съдържанието %1"
 msgid "Unknown field: %1"
 msgstr "Непознато поле: %1"
 
-#: lib/RT/Queue.pm:1009
+#: lib/RT/Queue.pm:1020
 #. ($args{Type})
 msgid "Unknown watcher type %1"
+msgstr ""
+
+#: share/html/Search/Simple.html:81
+#. ($status_str)
+msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
 msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
@@ -8248,11 +8294,11 @@ msgstr ""
 msgid "Unselected objects"
 msgstr "Неизбрани обекти"
 
-#: lib/RT/User.pm:1556
+#: lib/RT/User.pm:1583
 msgid "Unset private key"
 msgstr "Премахване на частния ключ"
 
-#: lib/RT/Transaction.pm:728 lib/RT/Transaction.pm:904
+#: lib/RT/Transaction.pm:731 lib/RT/Transaction.pm:907
 msgid "Untaken"
 msgstr "Отдаден"
 
@@ -8284,7 +8330,7 @@ msgstr "Обновяване на форматът и търсене"
 msgid "Update multiple tickets"
 msgstr "Обновяване на множество билети"
 
-#: lib/RT/Action/CreateTickets.pm:517 lib/RT/Interface/Web.pm:1543
+#: lib/RT/Action/CreateTickets.pm:520 lib/RT/Interface/Web.pm:1612
 msgid "Update not recorded."
 msgstr "Обновяването не е записано."
 
@@ -8304,15 +8350,15 @@ msgstr "Обновяване на билет #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Обновяване на билет #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:515 lib/RT/Interface/Web.pm:1543
+#: lib/RT/Action/CreateTickets.pm:518 lib/RT/Interface/Web.pm:1612
 msgid "Update type was neither correspondence nor comment."
 msgstr "Типът на обновление не е нито кореспонденция, нито коментар."
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
 msgstr "СъстояниеНаОбновлението"
 
-#: lib/RT/CustomField.pm:1658 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
+#: lib/RT/CustomField.pm:1674 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
 msgid "Updated"
 msgstr "Обновен"
 
@@ -8369,7 +8415,7 @@ msgstr "Употреба: "
 msgid "Use SSL?"
 msgstr "Използване на SSL?"
 
-#: lib/RT/Config.pm:208
+#: lib/RT/Config.pm:224
 msgid "Use a two column layout for create and update forms?"
 msgstr ""
 
@@ -8377,7 +8423,7 @@ msgstr ""
 msgid "Use autocomplete to find owners?"
 msgstr ""
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:391
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
 msgstr "Използвайте CSS правила за показване на равноширок текст със запазено форматиране, но превит при нужда. Това не работи добре с IE6 и би трябвало да използвате предишната опция"
 
@@ -8386,7 +8432,7 @@ msgstr "Използвайте CSS правила за показване на �
 msgid "Use default (%1)"
 msgstr "Използване стойността по подразбиране (%1)"
 
-#: share/html/Elements/Tabs:204
+#: share/html/Elements/Tabs:207
 msgid "Use other RT administrative tools"
 msgstr "Използване на други административни инструменти на RT"
 
@@ -8399,11 +8445,11 @@ msgstr "Използване на системната стойност по п�
 msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
 msgstr ""
 
-#: lib/RT/Config.pm:365
+#: lib/RT/Config.pm:381
 msgid "Use this to protect the format of plain text"
 msgstr "Използвайте това за да защитите форматът на правия текст"
 
-#: lib/RT/Record.pm:929 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:941 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Потребител"
 
@@ -8424,11 +8470,11 @@ msgstr "Потребителско зададено"
 msgid "User Defined conditions and actions"
 msgstr "Потребителски-зададени условия и действия"
 
-#: share/html/Elements/Tabs:197 share/html/Elements/Tabs:279 share/html/Elements/Tabs:313 share/html/Elements/Tabs:327 share/html/Elements/Tabs:368
+#: share/html/Elements/Tabs:190 share/html/Elements/Tabs:290 share/html/Elements/Tabs:324 share/html/Elements/Tabs:338 share/html/Elements/Tabs:368
 msgid "User Rights"
 msgstr "Потребителски права"
 
-#: lib/RT/Interface/Web.pm:2309
+#: lib/RT/Interface/Web.pm:2380
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Потребителят поиска непознат тип на обновлението за персонализирано поле %1 за %2 обект #%3"
@@ -8478,7 +8524,7 @@ msgstr "Потребителско име"
 msgid "Username format"
 msgstr "Формат на потребителското име"
 
-#: lib/RT/CustomField.pm:1584 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:130 share/html/Elements/Tabs:162 share/html/Elements/Tabs:223
+#: lib/RT/CustomField.pm:1600 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:127 share/html/Elements/Tabs:240 share/html/Elements/Tabs:66
 msgid "Users"
 msgstr "Потребители"
 
@@ -8579,15 +8625,15 @@ msgstr ""
 msgid "W3CDTF"
 msgstr "W3CDTF"
 
-#: share/html/Articles/Article/Search.html:181
+#: share/html/Articles/Article/Search.html:183
 msgid "WARNING: Saving search to user-level privacy"
 msgstr ""
 
-#: lib/RT/Config.pm:226
+#: lib/RT/Config.pm:242
 msgid "WYSIWYG composer height"
 msgstr "височина на WYSIWYG композитора"
 
-#: lib/RT/Config.pm:217
+#: lib/RT/Config.pm:233
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG композитор на съобщения"
 
@@ -8615,7 +8661,7 @@ msgstr "Наблюдател"
 msgid "WatcherGroup"
 msgstr "Група на наблюдателя"
 
-#: share/html/Elements/Tabs:260
+#: share/html/Elements/Tabs:273
 msgid "Watchers"
 msgstr "Наблюдатели"
 
@@ -8623,7 +8669,7 @@ msgstr "Наблюдатели"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr "Намерихме вашата база данни и успешно се свързваме като администратор. Можете да щракнете на \"Основни персонализации\", за да продължите да персонализирате RT."
 
-#: lib/RT/CustomField.pm:1009 lib/RT/CustomField.pm:1687
+#: lib/RT/CustomField.pm:1025 lib/RT/CustomField.pm:1703
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr ""
 
@@ -8651,7 +8697,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: lib/RT/Config.pm:468
+#: lib/RT/Config.pm:484
 msgid "Weekly digest"
 msgstr "Седмично резюме"
 
@@ -8687,7 +8733,7 @@ msgstr "Когато се създава одобрителен билет, съ
 msgid "When anything happens"
 msgstr "Когато се случи каквото и да било"
 
-#: lib/RT/Config.pm:255
+#: lib/RT/Config.pm:271
 msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
 msgstr ""
 
@@ -8825,7 +8871,7 @@ msgstr "Можете да назначавате само билети, коит
 msgid "You can only take tickets that are unowned"
 msgstr "Можете да взимате само билети, които са безстопанствени"
 
-#: share/html/Search/Simple.html:63
+#: share/html/Search/Simple.html:71
 #. ($fulltext_keyword)
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
@@ -8918,7 +8964,7 @@ msgstr ""
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:657
+#: lib/RT/Interface/Web.pm:667
 msgid "Your username or password is incorrect"
 msgstr "Вашето потребителско име или парола са неправилни"
 
@@ -8938,7 +8984,7 @@ msgstr ""
 msgid "[none]"
 msgstr "[без]"
 
-#: lib/RT/Transaction.pm:710
+#: lib/RT/Transaction.pm:713
 msgid "a custom field"
 msgstr ""
 
@@ -8946,7 +8992,7 @@ msgstr ""
 msgid "active"
 msgstr ""
 
-#: lib/RT/Config.pm:364
+#: lib/RT/Config.pm:380
 msgid "add <pre> tag around plain text attachments"
 msgstr "добавете маркер <pre> около прикачки в прав текст"
 
@@ -9049,7 +9095,7 @@ msgstr "дни"
 msgid "deleted"
 msgstr "изтрит"
 
-#: lib/RT/Config.pm:374
+#: lib/RT/Config.pm:390
 msgid "display wrapped and formatted plain text attachments"
 msgstr "показване на подгънати и форматирани прикачки в прав текст"
 
@@ -9101,7 +9147,7 @@ msgstr "всеки"
 msgid "executed plugin successfuly"
 msgstr "изпълнение на плъгин успешно"
 
-#: lib/RT/Crypt/GnuPG.pm:2241
+#: lib/RT/Crypt/GnuPG.pm:2251
 msgid "full"
 msgstr "пълен"
 
@@ -9122,11 +9168,11 @@ msgstr "група '%1'"
 msgid "hours"
 msgstr "часа"
 
-#: lib/RT/Date.pm:121 share/html/Elements/Tabs:683
+#: lib/RT/Date.pm:121 share/html/Elements/Tabs:757
 msgid "iCal"
 msgstr "iCal"
 
-#: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:56
+#: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
 msgstr "id"
 
@@ -9157,15 +9203,15 @@ msgstr "е"
 msgid "isn't"
 msgstr "не е"
 
-#: lib/RT/Crypt/GnuPG.pm:2197
+#: lib/RT/Crypt/GnuPG.pm:2207
 msgid "key disabled"
 msgstr "ключът изключен"
 
-#: lib/RT/Crypt/GnuPG.pm:2208
+#: lib/RT/Crypt/GnuPG.pm:2218
 msgid "key expired"
 msgstr "ключът просрочен"
 
-#: lib/RT/Crypt/GnuPG.pm:2203
+#: lib/RT/Crypt/GnuPG.pm:2213
 msgid "key revoked"
 msgstr "ключът отменен"
 
@@ -9177,7 +9223,7 @@ msgstr "отляво надясно"
 msgid "less than"
 msgstr "по-малко от"
 
-#: lib/RT/Crypt/GnuPG.pm:2236
+#: lib/RT/Crypt/GnuPG.pm:2246
 msgid "marginal"
 msgstr "маргинален"
 
@@ -9226,7 +9272,7 @@ msgstr "не"
 msgid "no name"
 msgstr "няма име"
 
-#: lib/RT/Crypt/GnuPG.pm:2213 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
+#: lib/RT/Crypt/GnuPG.pm:2223 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "няма"
 
@@ -9366,7 +9412,7 @@ msgstr "билет #%1 %2"
 msgid "top to bottom"
 msgstr "отгоре надолу"
 
-#: lib/RT/Crypt/GnuPG.pm:2246
+#: lib/RT/Crypt/GnuPG.pm:2256
 msgid "ultimate"
 msgstr "докрай"
 
