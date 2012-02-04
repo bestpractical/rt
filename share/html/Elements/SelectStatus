@@ -65,6 +65,8 @@ if ( @Statuses ) {
 }
 elsif ( $TicketObj ) {
     my $current = $TicketObj->Status;
+    push @status, $current;
+
     my $lifecycle = $TicketObj->QueueObj->Lifecycle;
 
     my %has = ();

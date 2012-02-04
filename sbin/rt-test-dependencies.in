@@ -193,6 +193,8 @@ File::ShareDir
 File::Spec 0.8
 HTML::Quoted
 HTML::Scrubber 0.08
+HTML::TreeBuilder
+HTML::FormatText
 Log::Dispatch 2.23
 Sys::Syslog 0.16
 Locale::Maketext 1.06
@@ -250,8 +252,6 @@ CGI::Emulate::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
-HTML::TreeBuilder
-HTML::FormatText
 Getopt::Long
 LWP::UserAgent 6.0
 Pod::Usage

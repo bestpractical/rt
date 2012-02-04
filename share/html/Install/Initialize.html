@@ -125,7 +125,7 @@ if ( $Run ) {
                 $RT::Handle = RT::Handle->new;
                 RT::Init();
                 my $file = $RT::EtcPath . "/initialdata";
-                ($status, $msg) = $RT::Handle->InsertData( $file );
+                ($status, $msg) = $RT::Handle->InsertData( $file, undef, disconnect_after => 0 );
             }
             unless ( $status ) {
                 push @errors, loc('ERROR: [_1]', $msg);

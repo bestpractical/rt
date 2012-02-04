@@ -91,6 +91,10 @@
 
 .titlebox .titlebox-title {
  position: relative;
+ /* This is for [rt3 #19044]. Move it to an IE-specific file if it causes
+  * problems. If we remove CSS3PIE, it can also probably go away, although it
+  * probably won't hurt. */
+ z-index: 1;
 }
 
 .titlebox .titlebox-title a {

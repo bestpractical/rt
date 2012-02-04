@@ -36,7 +36,7 @@ msgstr "#"
 msgid "#%1"
 msgstr "#%1"
 
-#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:187 share/html/m/ticket/history:56 share/html/m/ticket/show:205
+#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:194 share/html/m/ticket/history:56 share/html/m/ticket/show:205
 #. ($Ticket->Id, $Ticket->Subject || '')
 #. ($Ticket->id, $Ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject || '')
@@ -64,7 +64,7 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets.pm:2013
+#: lib/RT/Tickets.pm:2011
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
@@ -84,7 +84,7 @@ msgstr "%1 %2 %3 %4:%5 %6"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%2 %1 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1723 lib/RT/Transaction.pm:717 lib/RT/Transaction.pm:759
+#: lib/RT/Record.pm:1735 lib/RT/Transaction.pm:720 lib/RT/Transaction.pm:762
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->Field, $principal->Object->Name)
@@ -96,13 +96,13 @@ msgstr "%1 %2 tilføjet"
 msgid "%1 %2 ago"
 msgstr "%1 %2 siden"
 
-#: lib/RT/Record.pm:1730 lib/RT/Transaction.pm:723
+#: lib/RT/Record.pm:1742 lib/RT/Transaction.pm:726
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ændret til %3"
 
-#: lib/RT/Record.pm:1727 lib/RT/Transaction.pm:720 lib/RT/Transaction.pm:765
+#: lib/RT/Record.pm:1739 lib/RT/Transaction.pm:723 lib/RT/Transaction.pm:768
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->Field, $principal->Object->Name)
@@ -144,12 +144,14 @@ msgstr "%1 (%2) %3 denne sag\\n"
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) af %3"
 
-#: share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:64 share/html/m/ticket/reply:73
+#: share/html/Approvals/Elements/Approve:72 share/html/Approvals/Elements/Approve:81 share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:64 share/html/m/ticket/reply:73
 #. ($m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj))
 #. ($m->scomp('/Elements/ShowUser', User => $t->OwnerObj))
 #. (loc($Ticket->Status))
 #. (loc($TicketObj->Status))
 #. (loc($t->Status))
+#. (loc('Approve'))
+#. (loc('Deny'))
 #. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
 msgstr "%1 (Uændret)"
@@ -226,9 +228,9 @@ msgstr "%1 - Angiv typen på den transaktion, du vil bruge"
 msgid "%1 DashBoards"
 msgstr "%1 Instrument panel"
 
-#: share/html/Elements/Footer:56 share/html/m/_elements/footer:4
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2011', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
 
@@ -236,7 +238,7 @@ msgstr "%1 RT %2 Copyright 1996-%3 %4."
 msgid "%1 ScripAction loaded"
 msgstr "%1 Scrip-handling indlæst"
 
-#: lib/RT/Record.pm:1758
+#: lib/RT/Record.pm:1770
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 tilføjet som en værdi til %2"
@@ -270,14 +272,14 @@ msgstr "%1 er tilsyneladende et lokalt objekt, men eksisterer ikke i databasen"
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 ser ud til at være fuldt initialiseret. Vi behøver ikke at indsætte nogen tabeller eller metadata, men du kan fortsætte med at tilpasse RT ved at klikke 'Grundlæggende tilpasning' nedenfor"
 
-#: lib/RT/Transaction.pm:594 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
+#: lib/RT/Transaction.pm:597 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 msgid "%1 by %2"
 msgstr "%1 af %2"
 
-#: lib/RT/Record.pm:497 lib/RT/Transaction.pm:654 lib/RT/Transaction.pm:854 lib/RT/Transaction.pm:859 lib/RT/Transaction.pm:873 lib/RT/Transaction.pm:882 lib/RT/Transaction.pm:920
+#: lib/RT/Record.pm:509 lib/RT/Transaction.pm:657 lib/RT/Transaction.pm:857 lib/RT/Transaction.pm:862 lib/RT/Transaction.pm:876 lib/RT/Transaction.pm:885 lib/RT/Transaction.pm:923
 #. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
@@ -306,7 +308,7 @@ msgstr "%1 kopi"
 msgid "%1 core config"
 msgstr "%1 kerne konfiguration"
 
-#: lib/RT/Record.pm:939
+#: lib/RT/Record.pm:951
 msgid "%1 could not be set to %2."
 msgstr "%1 kunne ikke sættes til %2"
 
@@ -318,17 +320,17 @@ msgstr "%1 kunne ikke igangsætte en handling (%2)\\n"
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 kunne ikke sætte status til afsluttet. Der er muligvis inkonsekvens i RT-databasen."
 
-#: lib/RT/Transaction.pm:621
+#: lib/RT/Transaction.pm:624
 #. ($obj_type)
 msgid "%1 created"
 msgstr "%1 oprettet"
 
-#: lib/RT/Transaction.pm:632
+#: lib/RT/Transaction.pm:635
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "%1 slettet"
 
-#: lib/RT/Transaction.pm:627
+#: lib/RT/Transaction.pm:630
 #. ($obj_type)
 msgid "%1 disabled"
 msgstr "%1 deaktiveret"
@@ -338,7 +340,7 @@ msgstr "%1 deaktiveret"
 msgid "%1 doesn't exist."
 msgstr "%1 eksisterer ikke."
 
-#: lib/RT/Transaction.pm:624
+#: lib/RT/Transaction.pm:627
 #. ($obj_type)
 msgid "%1 enabled"
 msgstr "%1 aktiveret"
@@ -365,7 +367,7 @@ msgstr "%1 er et værktøj, der arbejder med sager fra et bestemt planlægningsv
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 er et program, beregnet til kørsel som et cron-job, til visning af alle udskudte RT notifikationer, opsamlet, på brugerniveau."
 
-#: lib/RT/Queue.pm:888 lib/RT/Queue.pm:894 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:229
+#: lib/RT/Queue.pm:899 lib/RT/Queue.pm:905 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:229
 #. ($args{'Email'}, $self->loc($args{'Type'}))
 #. ($email, $self->loc($args{'Type'}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -382,7 +384,7 @@ msgstr "%1 er ikke længere en %2 til denne kø."
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 er ikke længere en %2 til denne sag."
 
-#: lib/RT/Record.pm:1823
+#: lib/RT/Record.pm:1835
 #. ($old_value, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 er ikke længere en værdi til ekstrafelt %2"
@@ -419,7 +421,7 @@ msgstr "%1 nyeste sager uden ejer"
 msgid "%1 not shown"
 msgstr "%1 ikke vist"
 
-#: lib/RT/CustomField.pm:1093
+#: lib/RT/CustomField.pm:1109
 msgid "%1 objects"
 msgstr "%1 objekter"
 
@@ -458,11 +460,11 @@ msgstr "%1 vil løse alle medlemmer af en løst gruppesag."
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "%1 vil sætte en [lokal] BASE i bero, hvis den er afhængig [eller medlem] af en tilknyttet sag."
 
-#: lib/RT/CustomField.pm:1094
+#: lib/RT/CustomField.pm:1110
 msgid "%1's %2 objects"
 msgstr "%1's %2 objekter"
 
-#: lib/RT/CustomField.pm:1095
+#: lib/RT/CustomField.pm:1111
 msgid "%1's %2's %3 objects"
 msgstr "%1's %2's %3 objekter"
 
@@ -491,7 +493,7 @@ msgstr "%1's instrumentpaneler"
 msgid "%1's saved searches"
 msgstr "%1's gemte søgninger"
 
-#: lib/RT/Transaction.pm:536
+#: lib/RT/Transaction.pm:539
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1: ingen vedhæftet fil er angivet"
@@ -547,7 +549,7 @@ msgstr "%quant(%1,time)"
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' er ikke en gyldig statusværdi"
 
-#: lib/RT/Queue.pm:551
+#: lib/RT/Queue.pm:553
 #. ($name)
 msgid "'%1' is not a valid name."
 msgstr ""
@@ -561,19 +563,19 @@ msgstr "'%1' er ikke en valid klasseidentifikator"
 msgid "'%1' not a recognized action. "
 msgstr "'%1' er ikke en anerkendt handling. "
 
-#: lib/RT/Interface/Web.pm:2669
+#: lib/RT/Interface/Web.pm:2740
 msgid "'Roles'"
 msgstr "Roller"
 
-#: lib/RT/Interface/Web.pm:2632
+#: lib/RT/Interface/Web.pm:2703
 msgid "'System'"
 msgstr "'System'"
 
-#: lib/RT/Interface/Web.pm:2650
+#: lib/RT/Interface/Web.pm:2721
 msgid "'User Groups'"
 msgstr "Brugergrupper"
 
-#: lib/RT/Interface/Web.pm:2701
+#: lib/RT/Interface/Web.pm:2772
 msgid "'Users'"
 msgstr "Brugere"
 
@@ -707,7 +709,7 @@ msgstr "(ingen offentlig nøgle!)"
 msgid "(no subject)"
 msgstr "(intet emne)"
 
-#: lib/RT/Transaction.pm:647 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:121 share/html/Search/Elements/Chart:82 share/html/m/ticket/show:262
+#: lib/RT/Transaction.pm:650 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:121 share/html/Search/Elements/Chart:82 share/html/m/ticket/show:262
 msgid "(no value)"
 msgstr "(ingen værdi)"
 
@@ -845,7 +847,7 @@ msgstr "OG"
 msgid "Aborting to avoid unintended ticket modifications.\\n"
 msgstr "Afbryder for at undgå utilsigtede sagsændringer.\\n"
 
-#: share/html/Elements/Tabs:402
+#: share/html/Elements/Tabs:468
 msgid "About me"
 msgstr "Om mig"
 
@@ -883,7 +885,7 @@ msgstr "Handlingen er en obligatorisk parameter"
 msgid "Action prepared..."
 msgstr "Handling forberedt..."
 
-#: share/html/Elements/Tabs:446
+#: share/html/Elements/Tabs:514
 msgid "Actions"
 msgstr "Handlinger"
 
@@ -1010,7 +1012,7 @@ msgstr "Tilføj, tilpas and slet tilpassede feltværdier for objekter"
 msgid "AddNextState"
 msgstr "TilføjNæsteStatus"
 
-#: lib/RT/Queue.pm:948
+#: lib/RT/Queue.pm:959
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Added %1 to members of %2 for this queue."
 msgstr "Føjede %1 til medlemmer af %2 for denne kø."
@@ -1080,7 +1082,7 @@ msgstr "AdminAllePersonligeGrupper"
 msgid "AdminCCGroup"
 msgstr "AdminCCGruppe"
 
-#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
+#: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
 msgid "AdminCc"
 msgstr "AdminCc"
 
@@ -1144,7 +1146,7 @@ msgstr "Administrativ Cc"
 msgid "Administrative password"
 msgstr "Administrativt password"
 
-#: share/html/Elements/Tabs:647
+#: share/html/Elements/Tabs:724
 msgid "Advanced"
 msgstr "Avanceret"
 
@@ -1180,7 +1182,7 @@ msgstr "Alle klasser"
 msgid "All Custom Fields"
 msgstr "Alle ekstrafelter"
 
-#: share/html/Elements/Tabs:86
+#: share/html/Elements/Tabs:403
 msgid "All Dashboards"
 msgstr "Alle instrumentpaneler"
 
@@ -1236,11 +1238,15 @@ msgstr "Og/eller"
 msgid "Any field"
 msgstr "Ethvert felt"
 
+#: share/html/Search/Simple.html:65
+msgid "Any word not recognized by RT is searched for in ticket subjects."
+msgstr ""
+
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
 msgstr "Anvendt"
 
-#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:329 share/html/Elements/Tabs:369
+#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:339 share/html/Elements/Tabs:369
 msgid "Applies to"
 msgstr "Gælder for"
 
@@ -1260,7 +1266,7 @@ msgstr "Anvend globalt"
 msgid "Apply your changes"
 msgstr "Anvend dine ændringer"
 
-#: share/html/Elements/Tabs:122
+#: share/html/Elements/Tabs:443
 msgid "Approval"
 msgstr "Godkendelse"
 
@@ -1301,7 +1307,7 @@ msgstr "Godkendelse afvist"
 msgid "Approval diagram"
 msgstr "Godkendelsesdiagram"
 
-#: share/html/Approvals/Elements/Approve:71
+#: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
 msgstr "Godkend"
 
@@ -1357,7 +1363,7 @@ msgstr "Artikel slettet"
 msgid "Article not found"
 msgstr "Artikel ikke fundet"
 
-#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:100 share/html/Elements/Tabs:177 share/html/Elements/Tabs:183
+#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:152 share/html/Elements/Tabs:157 share/html/Elements/Tabs:416
 msgid "Articles"
 msgstr "Artikler"
 
@@ -1416,11 +1422,11 @@ msgstr "Vedhæftet fil"
 msgid "Attachment '%1' could not be loaded"
 msgstr "Vedhæftede fil '%1' kunne ikke indlæses"
 
-#: lib/RT/Transaction.pm:544
+#: lib/RT/Transaction.pm:547
 msgid "Attachment created"
 msgstr "Vedhæftet fil oprettet"
 
-#: lib/RT/Tickets.pm:2376
+#: lib/RT/Tickets.pm:2374
 msgid "Attachment filename"
 msgstr "Navn på vedhæftet fil"
 
@@ -1452,7 +1458,7 @@ msgstr "August"
 msgid "AuthSystem"
 msgstr "AuthSystem"
 
-#: share/html/Admin/Tools/Theme.html:277
+#: share/html/Admin/Tools/Theme.html:276
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatisk foreslåede tema-farver er ikke tilgængelige for dit billede. Dette kan være på grund af at du overførte en billedtype som din installerede version af GD ikke understøtter. Understøttede typer er: %1. Du kan rekompilere libgd og GD.pm for at inkludere understøttelse af andre billedtyper."
@@ -1502,7 +1508,7 @@ msgstr "Dårlig fortrolighed for attribut %1"
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
 msgstr "Ubrugeligt transaktionsnummer for vedhæftet fil. %1 skulle være %2\\n."
 
-#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:259 share/html/Elements/Tabs:293 share/html/Elements/Tabs:310 share/html/Elements/Tabs:325 share/html/Elements/Tabs:364 share/html/Elements/Tabs:429 share/html/Elements/Tabs:469 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
+#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:272 share/html/Elements/Tabs:303 share/html/Elements/Tabs:321 share/html/Elements/Tabs:336 share/html/Elements/Tabs:364 share/html/Elements/Tabs:498 share/html/Elements/Tabs:533 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Stamdata"
 
@@ -1538,7 +1544,7 @@ msgstr "Brødtekst"
 msgid "Bold"
 msgstr "Fed"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "Bookmark"
 msgstr "Bogmærke"
 
@@ -1550,7 +1556,7 @@ msgstr "URL for denne søgning kan bogmærkes"
 msgid "Bookmarkable link"
 msgstr "Reference kan bogmærkes"
 
-#: share/html/Articles/Article/Search.html:105
+#: share/html/Articles/Article/Search.html:107
 msgid "Bookmarkable link for this search"
 msgstr "Henvisninger som kan gøres til bogmærke for denne søgning"
 
@@ -1570,11 +1576,11 @@ msgstr "Korte overskrifter"
 msgid "Browse by topic"
 msgstr "Gennemse efter emne"
 
-#: share/html/Elements/Tabs:212
+#: share/html/Elements/Tabs:224
 msgid "Browse the SQL queries made in this process"
 msgstr "Gennemse SQL-forespørgsler som er dannet i denne proces"
 
-#: share/html/Elements/Tabs:653
+#: share/html/Elements/Tabs:730
 msgid "Bulk Update"
 msgstr "Masseopdatering"
 
@@ -1598,12 +1604,17 @@ msgstr "CcGruppe"
 msgid "CF"
 msgstr "BF"
 
+#: share/html/Search/Simple.html:87
+#. ('<strong>cf.Name:value</strong>')
+msgid "CFs may be searched using a similar syntax as above with %1."
+msgstr ""
+
 #: share/html/Search/Elements/EditSearches:175
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
 msgstr "Kan ikke indlæse gemte søgning \"%1\""
 
-#: lib/RT/User.pm:1407
+#: lib/RT/User.pm:1434
 msgid "Can not modify system users"
 msgstr "Kan ikke rette systembrugere"
 
@@ -1611,7 +1622,7 @@ msgstr "Kan ikke rette systembrugere"
 msgid "Can this principal see this queue"
 msgstr "Kan denne principal se denne kø"
 
-#: lib/RT/CustomField.pm:548
+#: lib/RT/CustomField.pm:550
 msgid "Can't add a custom field value without a name"
 msgstr "Kan ikke tilføje ekstrafeltværdier uden navn"
 
@@ -1640,7 +1651,7 @@ msgstr "Kan ikke gemme %1"
 msgid "Can't save this search"
 msgstr "Kan ikke gemme denne søgning"
 
-#: lib/RT/Record.pm:1282 lib/RT/Record.pm:1360
+#: lib/RT/Record.pm:1294 lib/RT/Record.pm:1372
 msgid "Can't specifiy both base and target"
 msgstr "Kan ikke angive både kilde og destination"
 
@@ -1668,7 +1679,7 @@ msgstr "Kategori"
 msgid "Category unset"
 msgstr "Af-kategoriseret"
 
-#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:314 share/html/m/ticket/show:294
+#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:314 share/html/m/ticket/show:294
 msgid "Cc"
 msgstr "Cc"
 
@@ -1688,7 +1699,7 @@ msgstr ""
 msgid "Change password"
 msgstr "Skift adgangskode"
 
-#: share/html/Elements/Tabs:654
+#: share/html/Elements/Tabs:731
 msgid "Chart"
 msgstr "Diagram"
 
@@ -1716,7 +1727,7 @@ msgstr "Markér for at slette"
 msgid "Check box to revoke right"
 msgstr "Markér for at inddrage rettighed"
 
-#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:430 share/html/m/ticket/show:456
+#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:430 share/html/m/ticket/show:456
 msgid "Children"
 msgstr "Børn"
 
@@ -1763,7 +1774,7 @@ msgstr "Klasse er allerede anvendt globalt"
 msgid "Class is already applied to %1"
 msgstr "Klasse er allerede anvendt på %1"
 
-#: share/html/Elements/Tabs:184 share/html/Elements/Tabs:360
+#: share/html/Elements/Tabs:158 share/html/Elements/Tabs:360
 msgid "Classes"
 msgstr "Klasser"
 
@@ -1799,7 +1810,7 @@ msgstr "Lukkede sager"
 msgid "Closed requests"
 msgstr "Lukkede sager"
 
-#: share/html/Elements/Tabs:763 share/html/SelfService/Closed.html:48
+#: share/html/Elements/Tabs:836 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "Lukkede sager"
 
@@ -1819,7 +1830,7 @@ msgstr "Combobox: Vælg eller indtast op til %1 værdier"
 msgid "Command not understood!\\n"
 msgstr "Kommando ikke forstået!\\n"
 
-#: share/html/Elements/Tabs:495 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
+#: share/html/Elements/Tabs:559 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -1867,7 +1878,7 @@ msgstr "Kommentarer om %1"
 msgid "Comments about this user"
 msgstr "Kommentarer om denne bruger"
 
-#: lib/RT/Transaction.pm:700
+#: lib/RT/Transaction.pm:703
 msgid "Comments added"
 msgstr "Kommentarer tilføjet"
 
@@ -1910,7 +1921,7 @@ msgstr ""
 msgid "Config file %1 is locked"
 msgstr "Konfigurationsfil %1 er låst"
 
-#: share/html/Elements/Tabs:128
+#: share/html/Elements/Tabs:63
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -1935,7 +1946,7 @@ msgstr "KontaktInfoSystem"
 msgid "Contacted date '%1' could not be parsed"
 msgstr "Dato kontaktet '%1' kunne ikke fortolkes"
 
-#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:430 share/html/Ticket/ModifyAll.html:113
+#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:499 share/html/Ticket/ModifyAll.html:113
 msgid "Content"
 msgstr "Indhold"
 
@@ -1975,7 +1986,7 @@ msgstr "Korrespondance"
 msgid "Correspondence Address"
 msgstr "Korrespondanceadresse"
 
-#: lib/RT/Transaction.pm:696
+#: lib/RT/Transaction.pm:699
 msgid "Correspondence added"
 msgstr "Korrespondance tilføjet"
 
@@ -1995,7 +2006,7 @@ msgstr "Kunne ikke tilføje ny ekstrafeltværdi. "
 msgid "Could not add new custom field value. %1 "
 msgstr "Kunne ikke tilføje ny ekstrafeltværdi. %1 "
 
-#: lib/RT/Record.pm:1679 lib/RT/Record.pm:1745
+#: lib/RT/Record.pm:1691 lib/RT/Record.pm:1757
 #. ($msg)
 #. ($value_msg)
 msgid "Could not add new custom field value: %1"
@@ -2025,7 +2036,7 @@ msgstr "Kunne ikke oprette ekstrafelt: %1"
 msgid "Could not create group"
 msgstr "Kunne ikke oprette gruppe"
 
-#: share/html/Articles/Article/Search.html:195
+#: share/html/Articles/Article/Search.html:197
 #. ($msg)
 msgid "Could not create search: %1"
 msgstr "Kunne ikke oprette søgning: %1"
@@ -2047,7 +2058,7 @@ msgstr "Kunne ikke at oprette sag. Kø ikke sat."
 msgid "Could not create user"
 msgstr "Kunne ikke oprette bruger"
 
-#: share/html/Articles/Article/Search.html:235
+#: share/html/Articles/Article/Search.html:237
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
 msgstr "Kunne ikke slette søgning %1: %2"
@@ -2060,11 +2071,11 @@ msgstr "Kunne ikke finde sag med ID %1"
 msgid "Could not find group %1."
 msgstr "Kunne ikke finde gruppe %1."
 
-#: lib/RT/Queue.pm:927 lib/RT/Ticket.pm:1131
+#: lib/RT/Queue.pm:938 lib/RT/Ticket.pm:1131
 msgid "Could not find or create that user"
 msgstr "Kunne ikke finde eller oprette den bruger"
 
-#: lib/RT/Queue.pm:1000 lib/RT/Ticket.pm:1210
+#: lib/RT/Queue.pm:1011 lib/RT/Ticket.pm:1210
 msgid "Could not find that principal"
 msgstr "Kunne ikke finde den principal"
 
@@ -2099,7 +2110,7 @@ msgstr "Kunne ikke indlæse objekt til %1"
 msgid "Could not load search attribute"
 msgstr "Kunne ikke indlæse søgeegenskab"
 
-#: lib/RT/Queue.pm:946
+#: lib/RT/Queue.pm:957
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Kunne ikke gøre den principal til %1 for denne kø"
@@ -2109,7 +2120,7 @@ msgstr "Kunne ikke gøre den principal til %1 for denne kø"
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Kunne ikke gøre den prinicipal til %1 for denne sag"
 
-#: lib/RT/Queue.pm:1027
+#: lib/RT/Queue.pm:1038
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Kunne ikke slette den principal som %1 for denne kø"
@@ -2127,11 +2138,11 @@ msgstr "Kunne ikke angive brugerinfo"
 msgid "Couldn't add attachment"
 msgstr "Kunne ikke tilføje fil"
 
-#: lib/RT/Group.pm:945
+#: lib/RT/Group.pm:948
 msgid "Couldn't add member to group"
 msgstr "Kunne ikke tilføje medlem til gruppe"
 
-#: lib/RT/CustomField.pm:1293
+#: lib/RT/CustomField.pm:1309
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr "Kunne ikke anvende tilpasset felt på et objekt da det allerede er globalt"
 
@@ -2145,13 +2156,13 @@ msgstr "Kunne ikke kompilere %1 kodeblok '%2': %3"
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr "Kunne ikke kompilere skabelon kodeblok '%1': %2"
 
-#: lib/RT/Record.pm:1755 lib/RT/Record.pm:1805
+#: lib/RT/Record.pm:1767 lib/RT/Record.pm:1817
 #. ($Msg)
 #. ($msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Kunne ikke oprette en transaktion: %1"
 
-#: lib/RT/CustomField.pm:1423
+#: lib/RT/CustomField.pm:1439
 #. ($msg)
 msgid "Couldn't create record: %1"
 msgstr "Kunne ikke oprette post: %1"
@@ -2169,7 +2180,7 @@ msgstr "Kunne ikke afgøre, hvad der skulle foretages ud fra GPG's svar\\n"
 msgid "Couldn't find group\\n"
 msgstr "Kunne ikke finde gruppe\\n"
 
-#: lib/RT/Record.pm:948
+#: lib/RT/Record.pm:960
 msgid "Couldn't find row"
 msgstr "Kunne ikke finde række"
 
@@ -2177,11 +2188,11 @@ msgstr "Kunne ikke finde række"
 msgid "Couldn't find suitable transaction, skipping"
 msgstr "Kunne ikke finde passende transaktion, springer over"
 
-#: lib/RT/Group.pm:919
+#: lib/RT/Group.pm:922
 msgid "Couldn't find that principal"
 msgstr "Kunne ikke finde den principal"
 
-#: lib/RT/CustomField.pm:576
+#: lib/RT/CustomField.pm:578
 msgid "Couldn't find that value"
 msgstr "Kunne ikke finde den værdi"
 
@@ -2274,7 +2285,7 @@ msgstr "Kunne ikke indlæse kø #%1"
 msgid "Couldn't load queue %1"
 msgstr "Kunne ikke indlæse kø %1"
 
-#: share/html/Admin/Queues/Modify.html:180
+#: share/html/Admin/Queues/Modify.html:177
 #. ($Name)
 msgid "Couldn't load queue '%1'"
 msgstr "Kunne ikke indlæse kø '%1'"
@@ -2301,11 +2312,11 @@ msgstr "Kunne ikke indlæse skabelon #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "Kunne ikke indlæse den bruger (%1)"
 
-#: lib/RT/Interface/Web.pm:1788
+#: lib/RT/Interface/Web.pm:1857
 msgid "Couldn't load the specified principal"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:447 share/html/SelfService/Display.html:154
+#: lib/RT/Action/CreateTickets.pm:450 share/html/SelfService/Display.html:154
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Kunne ikke indlæse sag '%1'"
@@ -2374,7 +2385,7 @@ msgstr "Kunne ikke få gjort basen '%1' til en URI."
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "Kunne ikke gøre målet '%1' til en URI."
 
-#: lib/RT/Interface/Email.pm:707 lib/RT/Interface/Email.pm:767
+#: lib/RT/Interface/Email.pm:706 lib/RT/Interface/Email.pm:766
 msgid "Couldn't send email"
 msgstr "Kunne ikke sende email"
 
@@ -2383,11 +2394,11 @@ msgstr "Kunne ikke sende email"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Kunne ikke sætte %1 observatør: %2"
 
-#: lib/RT/User.pm:1570
+#: lib/RT/User.pm:1597
 msgid "Couldn't set private key"
 msgstr "kunne ikke sætte privat nøgle"
 
-#: lib/RT/User.pm:1554
+#: lib/RT/User.pm:1581
 msgid "Couldn't unset private key"
 msgstr "Kunne ikke nulstille private nøgle"
 
@@ -2395,7 +2406,7 @@ msgstr "Kunne ikke nulstille private nøgle"
 msgid "Country"
 msgstr "Land"
 
-#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:132 share/html/Elements/Tabs:137 share/html/Elements/Tabs:141 share/html/Elements/Tabs:146 share/html/Elements/Tabs:153 share/html/Elements/Tabs:156 share/html/Elements/Tabs:187 share/html/Elements/Tabs:193 share/html/Elements/Tabs:245 share/html/Elements/Tabs:265 share/html/Elements/Tabs:270 share/html/Elements/Tabs:349 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:439
+#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:111 share/html/Elements/Tabs:119 share/html/Elements/Tabs:165 share/html/Elements/Tabs:180 share/html/Elements/Tabs:259 share/html/Elements/Tabs:277 share/html/Elements/Tabs:281 share/html/Elements/Tabs:351 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:439
 msgid "Create"
 msgstr "Opret"
 
@@ -2473,7 +2484,7 @@ msgstr "Opret en ny sag"
 msgid "Create a new user"
 msgstr "Opret en ny bruger"
 
-#: share/html/Admin/Queues/Modify.html:170
+#: share/html/Admin/Queues/Modify.html:228
 msgid "Create a queue"
 msgstr "Opret en ny kø"
 
@@ -2542,7 +2553,7 @@ msgstr "Opret sager"
 msgid "Create tickets in this queue"
 msgstr "Opret sager i denne kø"
 
-#: share/html/Elements/Tabs:118
+#: share/html/Elements/Tabs:437
 msgid "Create tickets offline"
 msgstr "Opret sager offline"
 
@@ -2614,7 +2625,7 @@ msgstr "OpretGemtSøgning"
 msgid "CreateTicket"
 msgstr "OpretSag"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:373
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:373
 msgid "Created"
 msgstr "Oprettet"
 
@@ -2636,7 +2647,7 @@ msgstr "Oprettet af"
 msgid "Created in a date range"
 msgstr "Oprettet i et datointerval"
 
-#: share/html/Articles/Article/Search.html:191
+#: share/html/Articles/Article/Search.html:193
 #. ($search->Name)
 msgid "Created search %1"
 msgstr "Oprettede søgning %1"
@@ -2649,11 +2660,11 @@ msgstr "Skabelon %1 oprettet"
 msgid "Created tickets in period, grouped by status"
 msgstr "Sager oprettet i en periode, fordelt pr. status"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
 msgstr "OprettetAf"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
 msgstr "OprettetRelativt"
 
@@ -2673,7 +2684,7 @@ msgstr "Aktuelle referencer"
 msgid "Current Scrips"
 msgstr "Aktuelle scrips"
 
-#: share/html/Elements/Tabs:639
+#: share/html/Elements/Tabs:715
 msgid "Current Search"
 msgstr "Nuværende søgning"
 
@@ -2701,7 +2712,7 @@ msgstr "Aktuelle observatører"
 msgid "Custom Field #%1"
 msgstr "Ekstrafelt #%1"
 
-#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:144 share/html/Elements/Tabs:158 share/html/Elements/Tabs:191 share/html/Elements/Tabs:225 share/html/Elements/Tabs:366 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
+#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:122 share/html/Elements/Tabs:172 share/html/Elements/Tabs:242 share/html/Elements/Tabs:366 share/html/Elements/Tabs:91 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
 msgid "Custom Fields"
 msgstr "Ekstrafelter"
 
@@ -2733,27 +2744,27 @@ msgstr "Ekstra betingelse"
 msgid "Custom field #%1 is not applied to this object"
 msgstr "Tilpasset felt #%1 er ikke anvendt på dette projekt"
 
-#: lib/RT/Tickets.pm:2802
+#: lib/RT/Tickets.pm:2800
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "Ekstrafelt %1 %2 %3"
 
-#: lib/RT/Record.pm:1597
+#: lib/RT/Record.pm:1609
 #. ($args{'Field'})
 msgid "Custom field %1 does not apply to this object"
 msgstr "Brugerdefineret felt %1 er ikke gyldigt for dette element"
 
-#: lib/RT/Tickets.pm:2796
+#: lib/RT/Tickets.pm:2794
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Ekstrafelt %1 har en værdi."
 
-#: lib/RT/Tickets.pm:2792
+#: lib/RT/Tickets.pm:2790
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Ekstrafelt %1 har ingen værdi."
 
-#: lib/RT/Record.pm:1586 lib/RT/Record.pm:1786
+#: lib/RT/Record.pm:1598 lib/RT/Record.pm:1798
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Ekstrafelt %1 ikke fundet"
@@ -2768,7 +2779,7 @@ msgstr "Ekstrafelt  '%1'"
 msgid "Custom field deleted"
 msgstr "Ekstrafelt slettet"
 
-#: lib/RT/CustomField.pm:1288
+#: lib/RT/CustomField.pm:1304
 msgid "Custom field is already applied to the object"
 msgstr ""
 
@@ -2776,7 +2787,7 @@ msgstr ""
 msgid "Custom field not found"
 msgstr "Ekstrafelt ikke fundet"
 
-#: lib/RT/CustomField.pm:1533
+#: lib/RT/CustomField.pm:1549
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Ekstrafeltværdi %1 kunne ikke findes til ekstrafelt %2"
@@ -2785,19 +2796,19 @@ msgstr "Ekstrafeltværdi %1 kunne ikke findes til ekstrafelt %2"
 msgid "Custom field value changed from %1 to %2"
 msgstr "Ekstrafeltværdi ændret fra %1 til %2"
 
-#: lib/RT/CustomField.pm:584
+#: lib/RT/CustomField.pm:586
 msgid "Custom field value could not be deleted"
 msgstr "Ekstrafeltværdi kunne ikke slettes"
 
-#: lib/RT/CustomField.pm:1545
+#: lib/RT/CustomField.pm:1561
 msgid "Custom field value could not be found"
 msgstr "Ekstrafeltværdi kunne ikke findes"
 
-#: lib/RT/CustomField.pm:1547 lib/RT/CustomField.pm:586
+#: lib/RT/CustomField.pm:1563 lib/RT/CustomField.pm:588
 msgid "Custom field value deleted"
 msgstr "Ekstrafeltværdi slettet"
 
-#: lib/RT/Tickets.pm:146 lib/RT/Transaction.pm:704 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:146 lib/RT/Transaction.pm:707 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "Ekstrafelt"
 
@@ -2821,7 +2832,7 @@ msgstr "Tilpas Email Adresser"
 msgid "Customize Email Configuration"
 msgstr "Tilpas Email Konfiguration"
 
-#: share/html/Elements/Tabs:208
+#: share/html/Elements/Tabs:217
 msgid "Customize the look of your RT"
 msgstr ""
 
@@ -2837,7 +2848,7 @@ msgstr "DBA brugernavn"
 msgid "Daily"
 msgstr ""
 
-#: lib/RT/Config.pm:467
+#: lib/RT/Config.pm:483
 msgid "Daily digest"
 msgstr ""
 
@@ -2887,7 +2898,7 @@ msgstr "Database type"
 msgid "Database username for RT"
 msgstr "RT's database brugernavn"
 
-#: lib/RT/Config.pm:419
+#: lib/RT/Config.pm:435
 msgid "Date format"
 msgstr "Dato format"
 
@@ -2899,7 +2910,7 @@ msgstr "Modulet DateTime mangler"
 msgid "DateTime::Locale module missing"
 msgstr "Modulet DateTime::Locale mangler"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:478 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:408 share/html/m/ticket/show:367
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:542 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:408 share/html/m/ticket/show:367
 msgid "Dates"
 msgstr "Datoer"
 
@@ -2955,13 +2966,12 @@ msgstr "Standard kø"
 msgid "Default transaction template"
 msgstr "Standard transaktionsskabelon"
 
-#: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
+#: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
-#. ($DefaultValue || '')
 msgid "Default: %1"
 msgstr "Standard: %1"
 
-#: lib/RT/Transaction.pm:682
+#: lib/RT/Transaction.pm:685
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Standard: %1/%2 ændret fra %3 til %4"
@@ -2990,7 +3000,7 @@ msgstr "OverdragRettigheder"
 msgid "Delegation"
 msgstr "Overdragelse"
 
-#: etc/RT_Config.pm:2291 etc/RT_Config.pm:2365 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:710 share/html/Elements/Tabs:730 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
+#: etc/RT_Config.pm:2346 etc/RT_Config.pm:2420 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:783 share/html/Elements/Tabs:803 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "Slet"
 
@@ -3085,7 +3095,7 @@ msgstr "Slettet gemt søgning"
 msgid "Deleted search"
 msgstr "Søgning slettet"
 
-#: share/html/Articles/Article/Search.html:224
+#: share/html/Articles/Article/Search.html:226
 #. ($searchname)
 msgid "Deleted search %1"
 msgstr ""
@@ -3102,7 +3112,7 @@ msgstr "Sletning af dette objekt vil ødelægge referentiel integritet"
 msgid "Deleting this object would violate referential integrity"
 msgstr "Sletning af dette objekt vil stride mod referentiel integritet"
 
-#: share/html/Approvals/Elements/Approve:75
+#: share/html/Approvals/Elements/Approve:84
 msgid "Deny"
 msgstr "Afvis"
 
@@ -3110,7 +3120,7 @@ msgstr "Afvis"
 msgid "Depended on by"
 msgstr "Afhængighed til"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:123 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:123 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
 msgstr "Afhængighedsforhold til"
 
@@ -3118,22 +3128,22 @@ msgstr "Afhængighedsforhold til"
 msgid "Dependencies: \\n"
 msgstr "Afhængigheder: \\n"
 
-#: lib/RT/Transaction.pm:787
+#: lib/RT/Transaction.pm:790
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "Afhængighed til %1 tilføjet"
 
-#: lib/RT/Transaction.pm:827
+#: lib/RT/Transaction.pm:830
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "Afhængighed til %1 slettet"
 
-#: lib/RT/Transaction.pm:784
+#: lib/RT/Transaction.pm:787
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "Afhængighed af %1 tilføjet"
 
-#: lib/RT/Transaction.pm:824
+#: lib/RT/Transaction.pm:827
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "Afhængighed af %1 slettet"
@@ -3146,7 +3156,7 @@ msgstr "AfhængigAf"
 msgid "Depends on"
 msgstr "Afhængig af"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependsOn"
 msgstr "AfhængigAf"
 
@@ -3166,7 +3176,7 @@ msgstr "Beskriv problemet nedenfor"
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: share/html/Elements/Tabs:206
+#: share/html/Elements/Tabs:212
 msgid "Detailed information about your RT setup"
 msgstr ""
 
@@ -3182,7 +3192,7 @@ msgstr "Retning"
 msgid "Disabled"
 msgstr "Deaktiveret"
 
-#: share/html/Elements/Tabs:452 share/html/Elements/Tabs:707 share/html/Elements/Tabs:723 share/html/Search/Elements/EditFormat:71
+#: share/html/Elements/Tabs:517 share/html/Elements/Tabs:780 share/html/Elements/Tabs:796 share/html/Search/Elements/EditFormat:71
 msgid "Display"
 msgstr "Vis"
 
@@ -3244,11 +3254,11 @@ msgstr "Domæne navn"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Undlad at inkludere 'http://', skriv noget lignende 'localhost' eller 'rt.example.com'"
 
-#: lib/RT/Config.pm:307
+#: lib/RT/Config.pm:323
 msgid "Don't refresh home page."
 msgstr ""
 
-#: lib/RT/Config.pm:277
+#: lib/RT/Config.pm:293
 msgid "Don't refresh search results."
 msgstr ""
 
@@ -3260,7 +3270,7 @@ msgstr "Opdater ikke denne side."
 msgid "Don't show search results"
 msgstr "Vis ikke søgeresultater"
 
-#: lib/RT/Crypt/GnuPG.pm:2212
+#: lib/RT/Crypt/GnuPG.pm:2222
 msgid "Don't trust this key at all"
 msgstr "Undlad helt at stole på denne nøgle"
 
@@ -3280,7 +3290,7 @@ msgstr "Download dumpfil"
 msgid "Dropdown"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:415 share/html/m/ticket/show:389
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:415 share/html/m/ticket/show:389
 msgid "Due"
 msgstr "Forfalden"
 
@@ -3288,7 +3298,7 @@ msgstr "Forfalden"
 msgid "Due date '%1' could not be parsed"
 msgstr "Forfaldsdato '%1' kunne ikke fortolkes"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
 msgstr "ForfaldenRelativt"
 
@@ -3301,15 +3311,15 @@ msgstr "FEJL: %1"
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "FEJL: Kunne ikke indlæse sag '%1': %2.\\n"
 
-#: share/html/Elements/Tabs:109
+#: share/html/Elements/Tabs:423
 msgid "Easy updating of your open tickets"
 msgstr "Nem opdatering af dine åbne sager"
 
-#: share/html/Elements/Tabs:114
+#: share/html/Elements/Tabs:430
 msgid "Easy viewing of your reminders"
 msgstr ""
 
-#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:737 share/html/Ticket/Elements/ShowRequestor:127
+#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:810 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
 msgstr "Rediger"
 
@@ -3350,7 +3360,7 @@ msgstr "Rediger referencer"
 msgid "Edit Query"
 msgstr "Rediger søgning"
 
-#: share/html/Elements/Tabs:645
+#: share/html/Elements/Tabs:722
 msgid "Edit Search"
 msgstr "Rediger søgning"
 
@@ -3370,7 +3380,7 @@ msgstr "Rediger gemte søgninger for denne gruppe"
 msgid "Edit scrips"
 msgstr "Rediger scrips"
 
-#: share/html/Elements/Tabs:154
+#: share/html/Elements/Tabs:115
 msgid "Edit system templates"
 msgstr "Rediger systemskabeloner"
 
@@ -3422,7 +3432,7 @@ msgstr "Redigerer skabelon %1"
 msgid "EffectiveId"
 msgstr "EffektivId"
 
-#: lib/RT/Record.pm:1295 lib/RT/Record.pm:1374 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2507
+#: lib/RT/Record.pm:1307 lib/RT/Record.pm:1386 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2507
 msgid "Either base or target must be specified"
 msgstr "Enten kilde eller destination skal angives"
 
@@ -3447,7 +3457,7 @@ msgstr ""
 msgid "Email address in use"
 msgstr "E-mail-adresse i brug"
 
-#: lib/RT/Config.pm:464
+#: lib/RT/Config.pm:480
 msgid "Email delivery"
 msgstr "Email leverance"
 
@@ -3525,11 +3535,11 @@ msgstr "Kryptér/dekryptér"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "Kryptér/dekryptér transaktion #%1 i sag #%2"
 
-#: lib/RT/Queue.pm:610
+#: lib/RT/Queue.pm:621
 msgid "Encrypting disabled"
 msgstr "Kryptering slået fra"
 
-#: lib/RT/Queue.pm:609
+#: lib/RT/Queue.pm:620
 msgid "Encrypting enabled"
 msgstr "Kryptering slået til"
 
@@ -3581,7 +3591,7 @@ msgstr "Angiv køer eller URL'er til tilknytning af køer. Flere indtastninger a
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Angiv sager eller URL'er til tilknytning af sager. Flere værdier adskilles med mellemrum."
 
-#: lib/RT/Config.pm:264
+#: lib/RT/Config.pm:280
 msgid "Enter time in hours by default"
 msgstr ""
 
@@ -3600,6 +3610,11 @@ msgstr "Angiv op til %1 værdier"
 #: lib/RT/CustomField.pm:151
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Indtast op til %1 værdier med autofuldførelse"
+
+#: share/html/Search/Simple.html:77
+#. (map { "<strong>$_</strong>" } qw(initial active inactive any))
+msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
+msgstr ""
 
 #: sbin/rt-email-digest:103 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49 share/html/m/login:85
 msgid "Error"
@@ -3641,11 +3656,11 @@ msgstr "Fejl: Manglende instrumentpanel"
 msgid "Error: bad GnuPG data"
 msgstr "Fejl: ugyldig GnuPG data"
 
-#: share/html/Articles/Article/Search.html:200
+#: share/html/Articles/Article/Search.html:202
 msgid "Error: cannot change privacy value of existing search"
 msgstr "Fejl: kan ikke ændre værdi for beskyttelse af personlige oplysninger for eksisterende søgning"
 
-#: share/html/Articles/Article/Search.html:163
+#: share/html/Articles/Article/Search.html:165
 #. ($ARGS{'LoadSavedSearch'}, $msg)
 msgid "Error: could not load saved search %1: %2"
 msgstr "Fejl: kan ikke indlæse gemt søgning %1: %2"
@@ -3658,7 +3673,7 @@ msgstr "Fejl: ingen privat nøgle"
 msgid "Error: public key"
 msgstr "Fejl: Offentlig nøgle"
 
-#: share/html/Articles/Article/Search.html:215
+#: share/html/Articles/Article/Search.html:217
 #. ($search->Name, $msg)
 msgid "Error: search %1 not updated: %2"
 msgstr "Fejl: søgning %1 ikke opdateret: %2"
@@ -3699,7 +3714,7 @@ msgstr ""
 msgid "Expire"
 msgstr "Udløber"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
 msgstr "UdvidStatus"
 
@@ -3719,7 +3734,7 @@ msgstr "EksternKontaktInfoID"
 msgid "Extra info"
 msgstr "Ekstra information"
 
-#: share/html/Elements/Tabs:543
+#: share/html/Elements/Tabs:618
 msgid "Extract Article"
 msgstr "Udtræk artikel"
 
@@ -3803,7 +3818,7 @@ msgstr "Feb."
 msgid "February"
 msgstr "Februar"
 
-#: share/html/Elements/Tabs:657
+#: share/html/Elements/Tabs:733
 msgid "Feeds"
 msgstr "Nyhedskilder"
 
@@ -3863,11 +3878,11 @@ msgstr "Udfyld op til %1 wikitekst-områder"
 msgid "Fin"
 msgstr "Slut"
 
-#: lib/RT/Tickets.pm:2282 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:378
+#: lib/RT/Tickets.pm:2280 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:378
 msgid "Final Priority"
 msgstr "Endelig prioritet"
 
-#: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
 msgstr "EndeligPrioritet"
 
@@ -3907,7 +3922,7 @@ msgstr "Udfør"
 msgid "Finish Approval"
 msgstr "Afslut godkendelse"
 
-#: share/html/Elements/Tabs:559
+#: share/html/Elements/Tabs:636
 msgid "First"
 msgstr "Første"
 
@@ -3923,6 +3938,11 @@ msgstr "Foo Bar Baz"
 msgid "Foo!"
 msgstr "Foo!"
 
+#: share/html/Search/Simple.html:91
+#. ($link_start, $link_end)
+msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
+msgstr ""
+
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
 msgstr "Gennemtving ændring"
@@ -3931,7 +3951,7 @@ msgstr "Gennemtving ændring"
 msgid "Format"
 msgstr "Format"
 
-#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:499 share/html/Ticket/Elements/ShowTransaction:222
+#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:563 share/html/Ticket/Elements/ShowTransaction:222
 msgid "Forward"
 msgstr "Videresend"
 
@@ -3973,12 +3993,12 @@ msgstr "Videresend transaktion #%1"
 msgid "ForwardMessage"
 msgstr "VideresendBesked"
 
-#: lib/RT/Transaction.pm:665
+#: lib/RT/Transaction.pm:668
 #. ($self->Data)
 msgid "Forwarded Ticket to %1"
 msgstr "Videresendte sag til %1"
 
-#: lib/RT/Transaction.pm:662
+#: lib/RT/Transaction.pm:665
 #. ($self->Field, $self->Data)
 msgid "Forwarded Transaction #%1 to %2"
 msgstr "Videresendte transaktion #%1 til %2"
@@ -3989,7 +4009,7 @@ msgstr "Videresendte transaktion #%1 til %2"
 msgid "Found %quant(%1,ticket)"
 msgstr "Fandt %quant(%1,ticket)"
 
-#: lib/RT/Record.pm:950
+#: lib/RT/Record.pm:962
 msgid "Found Object"
 msgstr "Object fundet"
 
@@ -4037,7 +4057,7 @@ msgstr "Hele overskrifter"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr "GD er deaktiveret eller er ikke installeret. Du kan overføre et billed, men du vil ikke få automatiske farveforslag."
 
-#: lib/RT/Config.pm:192 lib/RT/Config.pm:269
+#: lib/RT/Config.pm:192 lib/RT/Config.pm:285
 msgid "General"
 msgstr "Generelt"
 
@@ -4057,12 +4077,12 @@ msgstr "Kom godt igang"
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "Henter den aktuelle bruger fra en PGP-signatur\\n"
 
-#: lib/RT/Transaction.pm:753 lib/RT/Transaction.pm:895 lib/RT/Transaction.pm:907
+#: lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:898 lib/RT/Transaction.pm:910
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "Givet til %1"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:149
+#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:100
 msgid "Global"
 msgstr "Global"
 
@@ -4096,7 +4116,7 @@ msgstr "Global portlet %1 gemt."
 msgid "Global template: %1"
 msgstr "Global skabelon: %1"
 
-#: share/html/Elements/Tabs:298
+#: share/html/Elements/Tabs:308
 msgid "GnuPG"
 msgstr "GnuPG"
 
@@ -4170,7 +4190,7 @@ msgstr "Graf egenskaber"
 msgid "Graphical charts are not available."
 msgstr "grafiske diagrammer er ikke tilgænglige"
 
-#: lib/RT/Record.pm:930 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
+#: lib/RT/Record.pm:942 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
 msgid "Group"
 msgstr "Gruppe"
 
@@ -4178,11 +4198,11 @@ msgstr "Gruppe"
 msgid "Group %1 %2: %3"
 msgstr "Gruppe %1 %2: %3"
 
-#: share/html/Elements/Tabs:195 share/html/Elements/Tabs:278 share/html/Elements/Tabs:312 share/html/Elements/Tabs:326 share/html/Elements/Tabs:367
+#: share/html/Elements/Tabs:185 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:337 share/html/Elements/Tabs:367
 msgid "Group Rights"
 msgstr "Grupperettigheder"
 
-#: lib/RT/Group.pm:925
+#: lib/RT/Group.pm:928
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
 msgstr "Gruppe har allerede medlem: %1"
@@ -4196,24 +4216,24 @@ msgstr "Gruppe kunne ikke oprettes: %1"
 msgid "Group created"
 msgstr "Gruppe oprettet"
 
-#: lib/RT/Group.pm:692
+#: lib/RT/Group.pm:695
 msgid "Group disabled"
 msgstr "Gruppe deaktiveret"
 
-#: lib/RT/Group.pm:694
+#: lib/RT/Group.pm:697
 msgid "Group enabled"
 msgstr "Gruppe aktiveret"
 
-#: lib/RT/Group.pm:1081
+#: lib/RT/Group.pm:1084
 msgid "Group has no such member"
 msgstr "Gruppen har ikke et sådant medlem"
 
-#: lib/RT/Group.pm:529
+#: lib/RT/Group.pm:532
 #. ($value)
 msgid "Group name '%1' is already in use"
 msgstr "Gruppenavnet '%1' er allerede i brug"
 
-#: lib/RT/Group.pm:905 lib/RT/Queue.pm:1006 lib/RT/Queue.pm:933 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
+#: lib/RT/Group.pm:908 lib/RT/Queue.pm:1017 lib/RT/Queue.pm:944 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
 msgid "Group not found"
 msgstr "Gruppe ikke fundet"
 
@@ -4229,11 +4249,11 @@ msgstr "Gruppe ikke angivet.\\n"
 msgid "Group rights"
 msgstr "Gruppe rettigheder"
 
-#: lib/RT/CustomField.pm:1585 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:134 share/html/Elements/Tabs:165 share/html/Elements/Tabs:224
+#: lib/RT/CustomField.pm:1601 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:132 share/html/Elements/Tabs:241 share/html/Elements/Tabs:74
 msgid "Groups"
 msgstr "Grupper"
 
-#: lib/RT/Group.pm:931
+#: lib/RT/Group.pm:934
 msgid "Groups can't be members of their members"
 msgstr "Grupper kan ikke være medlem af deres medlemmer"
 
@@ -4265,7 +4285,7 @@ msgstr "Overskrift for en videresendt sag"
 msgid "Heading of a forwarded message"
 msgstr "Overskrift for en videresendt besked"
 
-#: lib/RT/Interface/CLI.pm:81 lib/RT/Interface/CLI.pm:81
+#: lib/RT/Interface/CLI.pm:82 lib/RT/Interface/CLI.pm:82
 msgid "Hello!"
 msgstr "Hej!"
 
@@ -4285,11 +4305,11 @@ msgstr ""
 msgid "Hide quoted text"
 msgstr "Skjul citeret tekst"
 
-#: lib/RT/Config.pm:345
+#: lib/RT/Config.pm:361
 msgid "Hide ticket history by default"
 msgstr "Skjul sagshistorik som standard"
 
-#: share/html/Elements/Tabs:295 share/html/Elements/Tabs:314 share/html/Elements/Tabs:454 share/html/Elements/Tabs:708 share/html/Elements/Tabs:724 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/Tabs:305 share/html/Elements/Tabs:325 share/html/Elements/Tabs:518 share/html/Elements/Tabs:781 share/html/Elements/Tabs:797 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Historik"
 
@@ -4321,7 +4341,7 @@ msgstr "Hjem"
 msgid "Home Phone"
 msgstr "Hjemmetelefon"
 
-#: lib/RT/Config.pm:304
+#: lib/RT/Config.pm:320
 msgid "Home page refresh interval"
 msgstr "Hjemmeside opdateringsinterval"
 
@@ -4329,7 +4349,7 @@ msgstr "Hjemmeside opdateringsinterval"
 msgid "HomePhone"
 msgstr "Telefon hjemme"
 
-#: share/html/Elements/Tabs:63 share/html/m/_elements/header:67
+#: share/html/Elements/Tabs:380 share/html/m/_elements/header:67
 msgid "Homepage"
 msgstr "Forside"
 
@@ -4358,7 +4378,7 @@ msgstr "Jeg er faret vild"
 msgid "ISO"
 msgstr "ISO"
 
-#: lib/RT/Tickets.pm:2213 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
+#: lib/RT/Tickets.pm:2211 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
 msgid "Id"
 msgstr "ID"
 
@@ -4407,7 +4427,7 @@ msgstr "Hvis du har foretaget opdateringer ovenfor, sørg for at..."
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Hvis din foretrukne database ikke er i rullemenuen nedenfor, betyder det at RT ikke kunne finde en <i>database driver</i> installeret lokalt. Du kan muligvis afhjælpe dette ved hjælp af %1 for at downloade og installere DBD::MySQL, DBD::Oracle or DBD::Pg."
 
-#: lib/RT/Record.pm:942
+#: lib/RT/Record.pm:954
 msgid "Illegal value for %1"
 msgstr "Ulovlig værdi for %1"
 
@@ -4415,7 +4435,7 @@ msgstr "Ulovlig værdi for %1"
 msgid "Image"
 msgstr "Billede"
 
-#: lib/RT/Record.pm:945
+#: lib/RT/Record.pm:957
 msgid "Immutable field"
 msgstr "Felt kan ikke ændres"
 
@@ -4463,7 +4483,7 @@ msgstr "Ufuldstændig søgning"
 msgid "Incomplete query"
 msgstr "Ufuldstændig søgning"
 
-#: lib/RT/Config.pm:466
+#: lib/RT/Config.pm:482
 msgid "Individual messages"
 msgstr "individuelle beskeder"
 
@@ -4491,11 +4511,11 @@ msgstr "informer brugeren at hans kodeord er blevet nulstillet"
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Informer brugeren om at vi modtog en krypteret email og ikke havde nogen privat nøgle til at dekryptere"
 
-#: lib/RT/Tickets.pm:2259 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets.pm:2257 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "Første prioritet"
 
-#: lib/RT/Ticket.pm:924 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Ticket.pm:924 lib/RT/Ticket.pm:926 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:136 share/html/Search/Elements/BuildFormatString:100
 msgid "InitialPriority"
 msgstr "FørstePrioritet"
 
@@ -4515,7 +4535,7 @@ msgstr "Input kan ikke fortolkes som et IP-adresseinterval"
 msgid "Input error"
 msgstr "Inputfejl"
 
-#: lib/RT/CustomField.pm:1377 lib/RT/CustomField.pm:1538 share/html/Elements/ValidateCustomFields:112
+#: lib/RT/CustomField.pm:1393 lib/RT/CustomField.pm:1554 share/html/Elements/ValidateCustomFields:112
 #. ($CF->FriendlyPattern)
 #. ($self->FriendlyPattern)
 msgid "Input must match %1"
@@ -4529,7 +4549,7 @@ msgstr "Installér RT"
 msgid "Internal Error"
 msgstr "Intern fejl"
 
-#: lib/RT/Record.pm:309
+#: lib/RT/Record.pm:321
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Intern fejl: %1"
@@ -4544,7 +4564,7 @@ msgstr "Intern fejl: %1"
 msgid "Invalid %1"
 msgstr "Ugyldig %1"
 
-#: share/html/Articles/Article/Search.html:166
+#: share/html/Articles/Article/Search.html:168
 #. ('LoadSavedSearch')
 msgid "Invalid %1 argument"
 msgstr "Ugyldig %1 argument"
@@ -4564,11 +4584,11 @@ msgstr "Ugyldigt %1: burde være et tal"
 msgid "Invalid Class"
 msgstr "Ugyldig klasse"
 
-#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:667
+#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:683
 msgid "Invalid Custom Field values source"
 msgstr ""
 
-#: lib/RT/Group.pm:599
+#: lib/RT/Group.pm:602
 msgid "Invalid Group Type"
 msgstr "Ugyldig gruppetype"
 
@@ -4581,7 +4601,7 @@ msgstr ""
 msgid "Invalid Render Type"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1004
+#: lib/RT/CustomField.pm:1020
 #. ($self->FriendlyType)
 msgid "Invalid Render Type for custom field of type %1"
 msgstr ""
@@ -4590,7 +4610,7 @@ msgstr ""
 msgid "Invalid Right"
 msgstr "Ugyldig rettighed"
 
-#: lib/RT/Record.pm:947
+#: lib/RT/Record.pm:959
 msgid "Invalid data"
 msgstr "Ugyldige data"
 
@@ -4598,7 +4618,7 @@ msgstr "Ugyldige data"
 msgid "Invalid lifecycle name"
 msgstr "Ugyldigt navn for livscyklus"
 
-#: lib/RT/CustomField.pm:1370
+#: lib/RT/CustomField.pm:1386
 msgid "Invalid object"
 msgstr "Ugyldtigt objekt"
 
@@ -4610,7 +4630,7 @@ msgstr "Ugyldig ejer objekt"
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "Ugyldig ejer, sætter standard  til 'ingen'"
 
-#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:763
+#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:779
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "Ugyldigt mønster: %1"
@@ -4619,7 +4639,7 @@ msgstr "Ugyldigt mønster: %1"
 msgid "Invalid queue"
 msgstr "Ugyldig kø"
 
-#: lib/RT/Queue.pm:820
+#: lib/RT/Queue.pm:831
 #. ($args{Type})
 msgid "Invalid queue role group type %1"
 msgstr ""
@@ -4637,13 +4657,13 @@ msgstr ""
 msgid "Invalid syntax for email address"
 msgstr "Ugyld syntax for email adresse"
 
-#: lib/RT/Record.pm:277 lib/RT/Ticket.pm:397
+#: lib/RT/Record.pm:289 lib/RT/Ticket.pm:397
 #. ($key)
 #. (loc('owner'))
 msgid "Invalid value for %1"
 msgstr "Ugyldig værdi for %1"
 
-#: lib/RT/Record.pm:1607
+#: lib/RT/Record.pm:1619
 msgid "Invalid value for custom field"
 msgstr "Ugyldig værdi for ekstrafelt"
 
@@ -4707,7 +4727,7 @@ msgstr "Jul."
 msgid "July"
 msgstr "Juli"
 
-#: share/html/Elements/Tabs:483
+#: share/html/Elements/Tabs:547
 msgid "Jumbo"
 msgstr "Jumbo"
 
@@ -4748,7 +4768,7 @@ msgstr "Sprog"
 msgid "Large"
 msgstr "Stor"
 
-#: share/html/Elements/Tabs:568
+#: share/html/Elements/Tabs:645
 msgid "Last"
 msgstr "Sidste"
 
@@ -4780,15 +4800,15 @@ msgstr "Senest opdateret"
 msgid "Last updated by"
 msgstr "Sidst opdateret af"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:130 share/html/Elements/RT__Article/ColumnMap:85 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:130 share/html/Elements/RT__Article/ColumnMap:85 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
 msgstr "SidstOpdateret"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:104 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:104 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
 msgstr "SidstOpdateretAf"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
 msgstr "SidstOpdateretSlægtning"
 
@@ -4813,7 +4833,7 @@ msgstr "Tilbage"
 msgid "Legends"
 msgstr "Signaturforklaringer"
 
-#: lib/RT/Config.pm:327
+#: lib/RT/Config.pm:343
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Længde talt i bogstaver; Brug '0' for at få vist alle beskeder, uanset længden"
 
@@ -4845,11 +4865,11 @@ msgstr "Begrænser kø til %1 %2"
 msgid "Link"
 msgstr "Reference"
 
-#: lib/RT/Record.pm:1306
+#: lib/RT/Record.pm:1318
 msgid "Link already exists"
 msgstr "Reference eksisterer allerede"
 
-#: lib/RT/Record.pm:1320
+#: lib/RT/Record.pm:1332
 msgid "Link could not be created"
 msgstr "Reference kunne ikke oprettes"
 
@@ -4861,7 +4881,7 @@ msgstr "Reference oprettet (%1)"
 msgid "Link deleted (%1)"
 msgstr "Reference slettet (%1)"
 
-#: lib/RT/Record.pm:1399
+#: lib/RT/Record.pm:1411
 msgid "Link not found"
 msgstr "Reference ikke fundet"
 
@@ -4894,7 +4914,7 @@ msgstr ""
 msgid "Linking. Permission denied"
 msgstr "Reference - adgang nægtet."
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:479 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:421 share/html/m/ticket/show:409
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:543 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:421 share/html/m/ticket/show:409
 msgid "Links"
 msgstr "Referencer"
 
@@ -4949,7 +4969,7 @@ msgstr "Søgning %1 indlæst"
 msgid "Loading..."
 msgstr "Indlæser..."
 
-#: lib/RT/Config.pm:415
+#: lib/RT/Config.pm:431
 msgid "Locale"
 msgstr "Lokalitet"
 
@@ -4961,11 +4981,11 @@ msgstr ""
 msgid "Location"
 msgstr "Lokation"
 
-#: lib/RT/Interface/Web.pm:682
+#: lib/RT/Interface/Web.pm:692
 msgid "Logged in"
 msgstr "Logget på"
 
-#: share/html/Elements/Tabs:392 share/html/Elements/Tabs:775
+#: share/html/Elements/Tabs:458 share/html/Elements/Tabs:848
 #. ($username)
 msgid "Logged in as %1"
 msgstr "Logget ind som %1"
@@ -4978,7 +4998,7 @@ msgstr "Logget på som <span class=\"current-user\">%1</span>"
 msgid "Logged out"
 msgstr "Logget ud"
 
-#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:80 share/html/m/login:105 share/html/m/login:92
+#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:89 share/html/m/login:105 share/html/m/login:92
 msgid "Login"
 msgstr "Log ind"
 
@@ -4987,11 +5007,11 @@ msgstr "Log ind"
 msgid "LogoAltText"
 msgstr ""
 
-#: share/html/Elements/Tabs:421 share/html/Elements/Tabs:787 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: share/html/Elements/Tabs:490 share/html/Elements/Tabs:860 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Log ud"
 
-#: lib/RT/CustomField.pm:1280
+#: lib/RT/CustomField.pm:1296
 msgid "Lookup type mismatch"
 msgstr "Opslagstype mismatch"
 
@@ -5000,7 +5020,7 @@ msgstr "Opslagstype mismatch"
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:459 lib/RT/Config.pm:474
+#: lib/RT/Config.pm:475 lib/RT/Config.pm:490
 msgid "Mail"
 msgstr "Mail"
 
@@ -5052,19 +5072,19 @@ msgstr "Sæt emne"
 msgid "Make this group visible to user"
 msgstr "Gør denne gruppe synlig for bruger"
 
-#: share/html/Elements/Tabs:144
+#: share/html/Elements/Tabs:92
 msgid "Manage custom fields and custom field values"
 msgstr "Administrer ekstrafelter og ekstrafeltværdier"
 
-#: share/html/Elements/Tabs:134
+#: share/html/Elements/Tabs:75
 msgid "Manage groups and group membership"
 msgstr "Administrer grupper og gruppemedlemskab"
 
-#: share/html/Elements/Tabs:149
+#: share/html/Elements/Tabs:101
 msgid "Manage properties and configuration which apply to all queues"
 msgstr "Administrer egenskaber og konfiguration som gælder for alle køer"
 
-#: share/html/Elements/Tabs:139
+#: share/html/Elements/Tabs:83
 msgid "Manage queues and queue-specific properties"
 msgstr "Administrer køer og kø-specifikke egenskaber"
 
@@ -5072,7 +5092,7 @@ msgstr "Administrer køer og kø-specifikke egenskaber"
 msgid "Manage saved graphs"
 msgstr "Håndter gemte grafer"
 
-#: share/html/Elements/Tabs:130
+#: share/html/Elements/Tabs:67
 msgid "Manage users and passwords"
 msgstr "Administrer brugere og adgangskoder"
 
@@ -5092,7 +5112,7 @@ msgstr "Mar."
 msgid "March"
 msgstr "Marts"
 
-#: share/html/Ticket/Display.html:182 share/html/m/ticket/show:125
+#: share/html/Ticket/Display.html:188 share/html/m/ticket/show:125
 msgid "Marked all messages as seen"
 msgstr "Markerede alle beskeder som set"
 
@@ -5104,7 +5124,7 @@ msgstr ""
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Config.pm:325
+#: lib/RT/Config.pm:341
 msgid "Maximum inline message length"
 msgstr "Maksimal længde for integreret besked"
 
@@ -5124,26 +5144,26 @@ msgstr "Mig"
 msgid "Member"
 msgstr "Medlem"
 
-#: lib/RT/Transaction.pm:800
+#: lib/RT/Transaction.pm:803
 #. ($value)
 msgid "Member %1 added"
 msgstr "Medlem %1 tilføjet"
 
-#: lib/RT/Transaction.pm:840
+#: lib/RT/Transaction.pm:843
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "Medlem %1 slettet"
 
-#: lib/RT/Group.pm:942
+#: lib/RT/Group.pm:945
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
 msgstr "Medlem tilføjet: %1"
 
-#: lib/RT/Group.pm:1088
+#: lib/RT/Group.pm:1091
 msgid "Member deleted"
 msgstr "Medlem slettet"
 
-#: lib/RT/Group.pm:1092
+#: lib/RT/Group.pm:1095
 msgid "Member not deleted"
 msgstr "Medlem ikke slettet"
 
@@ -5151,25 +5171,25 @@ msgstr "Medlem ikke slettet"
 msgid "Member of"
 msgstr "Medlem af"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "MemberOf"
 msgstr "MedlemAf"
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:311 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:322 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "Members"
 msgstr "Medlemmer"
 
-#: lib/RT/Transaction.pm:797
+#: lib/RT/Transaction.pm:800
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "Medlemskab af %1 tilføjet"
 
-#: lib/RT/Transaction.pm:837
+#: lib/RT/Transaction.pm:840
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "Medlemskab af %1 slettet"
 
-#: share/html/Elements/Tabs:294
+#: share/html/Elements/Tabs:304
 msgid "Memberships"
 msgstr "Medlemskaber"
 
@@ -5194,7 +5214,7 @@ msgstr "Sammenføjning lykkedes ikke. Kunne ikke sætte status."
 msgid "Merge into"
 msgstr "Føj ind i"
 
-#: lib/RT/Transaction.pm:803
+#: lib/RT/Transaction.pm:806
 #. ($value)
 msgid "Merged into %1"
 msgstr "Føjet ind i %1"
@@ -5223,15 +5243,15 @@ msgstr "Meddelelsens indhold er ikke vist, fordi meddelelsen er for stor, eller 
 msgid "Message body not shown because it is too large."
 msgstr "Beskedens indhold blev ikke vist fordi den er for stor."
 
-#: lib/RT/Config.pm:244
+#: lib/RT/Config.pm:260
 msgid "Message box height"
 msgstr "Besked feltets højde"
 
-#: lib/RT/Config.pm:235
+#: lib/RT/Config.pm:251
 msgid "Message box width"
 msgstr "Besked feltets bredde"
 
-#: lib/RT/Config.pm:253
+#: lib/RT/Config.pm:269
 msgid "Message box wrapping"
 msgstr ""
 
@@ -5267,7 +5287,7 @@ msgstr "Forskelligt"
 msgid "Mismatched parentheses"
 msgstr "Ikke-matchende parenteser"
 
-#: lib/RT/Record.pm:949
+#: lib/RT/Record.pm:961
 msgid "Missing a primary key?: %1"
 msgstr "Mangler en primærnøgle?: %1"
 
@@ -5283,7 +5303,7 @@ msgstr "Mobiltelefon"
 msgid "MobilePhone"
 msgstr "Mobiltelefon"
 
-#: share/html/Elements/Tabs:709 share/html/Elements/Tabs:727 share/html/m/_elements/ticket_menu:67
+#: share/html/Elements/Tabs:782 share/html/Elements/Tabs:800 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr "Tilpas"
 
@@ -5361,6 +5381,14 @@ msgstr "Rediger et scrip for kø %1"
 msgid "Modify a scrip that applies to all queues"
 msgstr "Rediger et scrip, der gælder for alle køer"
 
+#: share/html/Elements/Tabs:161
+msgid "Modify and Create Classes"
+msgstr ""
+
+#: share/html/Elements/Tabs:166
+msgid "Modify and Create Custom Fields for Articles"
+msgstr ""
+
 #: share/html/Articles/Article/Edit.html:208 share/html/Articles/Article/Edit.html:316
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
@@ -5390,15 +5418,15 @@ msgstr "Rediger datoer for #%1"
 msgid "Modify dates for ticket # %1"
 msgstr "Rediger datoer for sag # %1"
 
-#: share/html/Elements/Tabs:202
+#: share/html/Elements/Tabs:201
 msgid "Modify global article topics"
 msgstr ""
 
-#: share/html/Elements/Tabs:160
+#: share/html/Elements/Tabs:123
 msgid "Modify global custom fields"
 msgstr "Rediger globale ekstrafelter"
 
-#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:196
+#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:186
 msgid "Modify global group rights"
 msgstr "Rediger globale grupperettigheder"
 
@@ -5414,7 +5442,7 @@ msgstr "Rediger globale scrips"
 msgid "Modify global topics"
 msgstr ""
 
-#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:198
+#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:191
 msgid "Modify global user rights"
 msgstr "Rediger globale brugerrettigheder"
 
@@ -5493,7 +5521,7 @@ msgstr ""
 msgid "Modify scrips for queue %1"
 msgstr "Rediger scrips for kø %1"
 
-#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:151
+#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:107
 msgid "Modify scrips which apply to all queues"
 msgstr "Rediger scrips, der gælder for alle køer"
 
@@ -5530,7 +5558,7 @@ msgstr "Modificer indholdet af instrumentpanel %1"
 msgid "Modify the dashboard %1"
 msgstr "Modificer instrumentpanelet %1"
 
-#: share/html/Elements/Tabs:200
+#: share/html/Elements/Tabs:196
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "Tilpas standardvisningen af  \"RT set fra oven\""
 
@@ -5726,15 +5754,15 @@ msgstr "Egenskab 'Navn' skal angives"
 msgid "My %1 tickets"
 msgstr "Mine %1 sager"
 
-#: share/html/Elements/Tabs:123
+#: share/html/Elements/Tabs:444
 msgid "My Approvals"
 msgstr "Mine godkendelser"
 
-#: share/html/Elements/Tabs:108
+#: share/html/Elements/Tabs:422
 msgid "My Day"
 msgstr "Min dag"
 
-#: share/html/Elements/Tabs:113
+#: share/html/Elements/Tabs:429
 msgid "My Reminders"
 msgstr ""
 
@@ -5758,7 +5786,11 @@ msgstr "Mine gemte søgninger"
 msgid "MySQL"
 msgstr "MySQL"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
+msgid "NBSP"
+msgstr ""
+
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
 msgstr "NYLINIE"
 
@@ -5790,11 +5822,11 @@ msgstr "Aldrig"
 msgid "New"
 msgstr "Ny"
 
-#: share/html/Elements/Tabs:717
+#: share/html/Elements/Tabs:790
 msgid "New Article"
 msgstr ""
 
-#: share/html/Elements/Tabs:90
+#: share/html/Elements/Tabs:407
 msgid "New Dashboard"
 msgstr "Nyt Instrumentpanel"
 
@@ -5814,7 +5846,7 @@ msgstr "Ny afventende godkendelse"
 msgid "New Query"
 msgstr "Ny søgning"
 
-#: share/html/Elements/Tabs:95
+#: share/html/Elements/Tabs:412
 msgid "New Search"
 msgstr "Ny søgning"
 
@@ -5874,7 +5906,7 @@ msgstr "Ny søgning"
 msgid "New template"
 msgstr "Ny skabelon"
 
-#: share/html/Elements/Tabs:765 share/html/Elements/Tabs:767 share/html/m/_elements/menu:70
+#: share/html/Elements/Tabs:838 share/html/Elements/Tabs:840 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "Ny sag"
 
@@ -5903,7 +5935,7 @@ msgstr "Nye observatører"
 msgid "New window setting"
 msgstr "Ny indstilling for vindue"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:566 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
+#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:643 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "Næste"
 
@@ -5985,11 +6017,11 @@ msgstr "Ingen skabelon"
 msgid "No Ticket specified. Aborting ticket "
 msgstr "Ingen sag angivet. Afbryder sag. "
 
-#: share/html/Approvals/Elements/Approve:79
+#: share/html/Approvals/Elements/Approve:90
 msgid "No action"
 msgstr "Ingen handling"
 
-#: lib/RT/Record.pm:944
+#: lib/RT/Record.pm:956
 msgid "No column specified"
 msgstr "Ingen kolonne angivet"
 
@@ -6038,7 +6070,7 @@ msgstr "Ingen nøgler til denne adresse"
 msgid "No message attached"
 msgstr "Ingen meddelelse vedhæftet"
 
-#: lib/RT/CustomField.pm:462
+#: lib/RT/CustomField.pm:464
 msgid "No name provided"
 msgstr ""
 
@@ -6087,7 +6119,7 @@ msgstr ""
 msgid "No permission to view update ticket"
 msgstr "Ingen adgang til at se opdater sag"
 
-#: lib/RT/Queue.pm:979 lib/RT/Ticket.pm:1195
+#: lib/RT/Queue.pm:990 lib/RT/Ticket.pm:1195
 msgid "No principal specified"
 msgstr "Ingen principal angivet"
 
@@ -6127,7 +6159,7 @@ msgstr "Ingen søgning at arbejde med."
 msgid "No subject"
 msgstr "Intet emne"
 
-#: lib/RT/User.pm:1562
+#: lib/RT/User.pm:1589
 msgid "No such key or it's not suitable for signing"
 msgstr "Angivne nøgle findes ikke eller er ikke egnet til signering"
 
@@ -6139,7 +6171,7 @@ msgstr "Intet sagsnummer angivet"
 msgid "No tickets found."
 msgstr "Ingen sager fundet."
 
-#: lib/RT/Transaction.pm:591 lib/RT/Transaction.pm:615
+#: lib/RT/Transaction.pm:594 lib/RT/Transaction.pm:618
 msgid "No transaction type specified"
 msgstr "Ingen transaktionstype angivet"
 
@@ -6155,7 +6187,7 @@ msgstr "Ingen brugere fundet, der opfylder søgekriterier"
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "Ingen gyldig RT-bruger fundet. RT CVS-administrator frakoblet. Kontakt venligst din RT-administrator.\\n"
 
-#: lib/RT/Record.pm:941
+#: lib/RT/Record.pm:953
 msgid "No value sent to _Set!"
 msgstr ""
 
@@ -6171,7 +6203,7 @@ msgstr "Ingen"
 msgid "None"
 msgstr "Ingen"
 
-#: lib/RT/Record.pm:946
+#: lib/RT/Record.pm:958
 msgid "Nonexistant field?"
 msgstr "Ikke-eksisterende felt?"
 
@@ -6179,7 +6211,7 @@ msgstr "Ikke-eksisterende felt?"
 msgid "Not Set"
 msgstr "Ikke sat"
 
-#: lib/RT/CustomField.pm:496
+#: lib/RT/CustomField.pm:498
 msgid "Not found"
 msgstr "Ikke fundet"
 
@@ -6207,7 +6239,7 @@ msgstr "Endnu ikke implementeret."
 msgid "Not yet implemented...."
 msgstr "Endnu ikke implementeret..."
 
-#: share/html/Approvals/Elements/Approve:83
+#: share/html/Approvals/Elements/Approve:95
 msgid "Notes"
 msgstr "Noter"
 
@@ -6307,7 +6339,7 @@ msgstr "Giv besked til rekvirenter, Cc'ere og AdminCc'ere"
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Giv besked til rekvirenter, Cc'ere og AdminCc'ere som kommentar"
 
-#: lib/RT/Config.pm:354
+#: lib/RT/Config.pm:370
 msgid "Notify me of unread messages"
 msgstr "Gør mig opmærksom på ulæste beskedder"
 
@@ -6323,7 +6355,7 @@ msgstr "Nov."
 msgid "November"
 msgstr "November"
 
-#: lib/RT/Config.pm:295
+#: lib/RT/Config.pm:311
 msgid "Number of search results"
 msgstr "Antal søgeresultater"
 
@@ -6335,7 +6367,7 @@ msgstr "ELLER"
 msgid "Object"
 msgstr ""
 
-#: lib/RT/Record.pm:323
+#: lib/RT/Record.pm:335
 msgid "Object could not be created"
 msgstr "Objekt kunne ikke oprettes"
 
@@ -6343,7 +6375,7 @@ msgstr "Objekt kunne ikke oprettes"
 msgid "Object could not be deleted"
 msgstr "Objekt kunne ikke slettes"
 
-#: lib/RT/Record.pm:340 share/html/Admin/CustomFields/Modify.html:183
+#: lib/RT/Record.pm:352 share/html/Admin/CustomFields/Modify.html:183
 msgid "Object created"
 msgstr "Objekt oprettet"
 
@@ -6355,7 +6387,7 @@ msgstr "Objekt slettet"
 msgid "Object of type %1 cannot take custom fields"
 msgstr "Objekt af typen %1 kan ikke håndtere ekstrafelter"
 
-#: lib/RT/CustomField.pm:1326
+#: lib/RT/CustomField.pm:1342
 msgid "Object type mismatch"
 msgstr "Objekttype mismatch"
 
@@ -6375,7 +6407,7 @@ msgstr "Okt."
 msgid "October"
 msgstr "Oktober"
 
-#: share/html/Elements/Tabs:117
+#: share/html/Elements/Tabs:436
 msgid "Offline"
 msgstr "Off-line"
 
@@ -6387,7 +6419,7 @@ msgstr "Off-line redigeringer"
 msgid "Offline upload"
 msgstr "Off-line dataoverførsel"
 
-#: lib/RT/Transaction.pm:381
+#: lib/RT/Transaction.pm:384
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
 msgid "On %1, %2 wrote:"
 msgstr "På %1, skrev %2:"
@@ -6460,7 +6492,7 @@ msgstr "Engangs Bcc"
 msgid "One-time Cc"
 msgstr "Engangs Cc"
 
-#: lib/RT/Config.pm:265
+#: lib/RT/Config.pm:281
 msgid "Only for entry, not display"
 msgstr ""
 
@@ -6482,7 +6514,7 @@ msgstr "Vis kun ekstrafelter for:"
 msgid "Open"
 msgstr "Åben"
 
-#: etc/RT_Config.pm:2279 etc/RT_Config.pm:2308 etc/RT_Config.pm:2353 etc/RT_Config.pm:2382
+#: etc/RT_Config.pm:2334 etc/RT_Config.pm:2363 etc/RT_Config.pm:2408 etc/RT_Config.pm:2437
 msgid "Open It"
 msgstr ""
 
@@ -6502,7 +6534,7 @@ msgstr "Åbn den"
 msgid "Open requests"
 msgstr "Åbne sager"
 
-#: share/html/Elements/Tabs:762 share/html/SelfService/index.html:48
+#: share/html/Elements/Tabs:835 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "Åbne sager"
 
@@ -6522,7 +6554,7 @@ msgstr "Åbn sager ved korrespondance"
 msgid "Option"
 msgstr ""
 
-#: share/html/Elements/Tabs:401 share/html/Prefs/MyRT.html:67
+#: share/html/Elements/Tabs:467 share/html/Prefs/MyRT.html:67
 msgid "Options"
 msgstr "Valgmuligheder"
 
@@ -6547,15 +6579,15 @@ msgstr "Organisation"
 msgid "Originating ticket: #%1"
 msgstr "Oprindelig sag: #%1"
 
-#: lib/RT/Transaction.pm:688
+#: lib/RT/Transaction.pm:691
 msgid "Outgoing email about a comment recorded"
 msgstr "Udgående e-mail omkring en kommentar er gemt"
 
-#: lib/RT/Transaction.pm:692
+#: lib/RT/Transaction.pm:695
 msgid "Outgoing email recorded"
 msgstr "Udgående e-mail gemt"
 
-#: lib/RT/Config.pm:479
+#: lib/RT/Config.pm:495
 msgid "Outgoing mail"
 msgstr ""
 
@@ -6563,7 +6595,7 @@ msgstr ""
 msgid "Over time, priority moves toward"
 msgstr "Tid overskredet, prioritet går mod"
 
-#: share/html/Elements/Tabs:101
+#: share/html/Elements/Tabs:417
 msgid "Overview"
 msgstr ""
 
@@ -6575,7 +6607,7 @@ msgstr "Egne sager"
 msgid "OwnTicket"
 msgstr "EgenSag"
 
-#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2431 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:297 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
+#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2429 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:297 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
 msgid "Owner"
 msgstr "Ejer"
 
@@ -6593,7 +6625,7 @@ msgstr "Ejer ændret fra %1 til %2"
 msgid "Owner could not be set."
 msgstr "Ejer kunne ikke defineres."
 
-#: lib/RT/Transaction.pm:741 lib/RT/Transaction.pm:913
+#: lib/RT/Transaction.pm:744 lib/RT/Transaction.pm:916
 #. ($Old->Name , $New->Name)
 #. ($Old->Name, $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
@@ -6603,7 +6635,7 @@ msgstr "Ejer tvungent ændret fra %1 til %2"
 msgid "Owner is"
 msgstr "Ejer er"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
 msgstr "EjerNavn"
 
@@ -6639,7 +6671,7 @@ msgstr ""
 msgid "PagerPhone"
 msgstr "Personsøgertelefon"
 
-#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:429 share/html/m/ticket/show:452
+#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:429 share/html/m/ticket/show:452
 msgid "Parents"
 msgstr "Forældre"
 
@@ -6651,7 +6683,7 @@ msgstr "Adgangskode"
 msgid "Password Reminder"
 msgstr "Adgangskodepåmindelse"
 
-#: lib/RT/Transaction.pm:865 lib/RT/User.pm:826
+#: lib/RT/Transaction.pm:868 lib/RT/User.pm:826
 msgid "Password changed"
 msgstr "Adgangskode ændret"
 
@@ -6701,7 +6733,7 @@ msgstr "Adgangskoder stemmer ikke overens. Din adgangskode er ikke blevet ændre
 msgid "Path to sendmail"
 msgstr "Sti til sendmail"
 
-#: share/html/Elements/Tabs:474 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
+#: share/html/Elements/Tabs:538 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
 msgid "People"
 msgstr "Personer"
 
@@ -6730,11 +6762,11 @@ msgstr "Perl-konfiguration"
 msgid "Perl library search order"
 msgstr ""
 
-#: share/html/Elements/Tabs:215
+#: share/html/Elements/Tabs:230
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:691 lib/RT/Attachment.pm:692 lib/RT/Attachment.pm:753 lib/RT/Attachment.pm:754 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:441 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1284 lib/RT/CustomField.pm:1330 lib/RT/CustomField.pm:1373 lib/RT/CustomField.pm:1514 lib/RT/CustomField.pm:1655 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:543 lib/RT/CustomField.pm:570 lib/RT/CustomField.pm:874 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1057 lib/RT/Group.pm:1109 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:652 lib/RT/Group.pm:882 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1201 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:574 lib/RT/Queue.pm:600 lib/RT/Queue.pm:824 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1927 lib/RT/Ticket.pm:2094 lib/RT/Ticket.pm:2142 lib/RT/Ticket.pm:2421 lib/RT/Ticket.pm:2434 lib/RT/Ticket.pm:2513 lib/RT/Ticket.pm:2526 lib/RT/Ticket.pm:2628 lib/RT/Ticket.pm:2642 lib/RT/Ticket.pm:2901 lib/RT/Ticket.pm:2912 lib/RT/Ticket.pm:2918 lib/RT/Ticket.pm:3127 lib/RT/Ticket.pm:3201 lib/RT/Ticket.pm:3396 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:587 lib/RT/Transaction.pm:609 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1410 lib/RT/User.pm:1547 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
+#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:691 lib/RT/Attachment.pm:692 lib/RT/Attachment.pm:753 lib/RT/Attachment.pm:754 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:439 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1300 lib/RT/CustomField.pm:1346 lib/RT/CustomField.pm:1389 lib/RT/CustomField.pm:1530 lib/RT/CustomField.pm:1671 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:545 lib/RT/CustomField.pm:572 lib/RT/CustomField.pm:890 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1060 lib/RT/Group.pm:1112 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:655 lib/RT/Group.pm:885 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1212 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:585 lib/RT/Queue.pm:611 lib/RT/Queue.pm:835 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1927 lib/RT/Ticket.pm:2094 lib/RT/Ticket.pm:2142 lib/RT/Ticket.pm:2421 lib/RT/Ticket.pm:2434 lib/RT/Ticket.pm:2513 lib/RT/Ticket.pm:2526 lib/RT/Ticket.pm:2628 lib/RT/Ticket.pm:2642 lib/RT/Ticket.pm:2901 lib/RT/Ticket.pm:2912 lib/RT/Ticket.pm:2918 lib/RT/Ticket.pm:3127 lib/RT/Ticket.pm:3201 lib/RT/Ticket.pm:3396 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:590 lib/RT/Transaction.pm:612 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1437 lib/RT/User.pm:1574 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
 msgid "Permission Denied"
 msgstr "Adgang afvist"
 
@@ -6782,11 +6814,6 @@ msgstr ""
 msgid "Please enter your current password."
 msgstr ""
 
-#: share/html/Search/Simple.html:74
-#. ($status_str, $link_start, $link_end)
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
-msgstr ""
-
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "Mulige skjulte søgninger"
@@ -6795,7 +6822,7 @@ msgstr "Mulige skjulte søgninger"
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
-#: share/html/Elements/Tabs:781 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
+#: share/html/Elements/Tabs:854 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
 msgstr "Præferencer"
 
@@ -6819,12 +6846,12 @@ msgstr "Præferencer gemt for %1."
 msgid "Preferences saved for user %1."
 msgstr "Præferencer for bruger %1 gemt."
 
-#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:101 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
+#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:102 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."
 msgstr "Indstillinger gemt."
 
-#: share/html/Prefs/Other.html:86
-#. (loc_fuzzy($msg))
+#: share/html/Prefs/Other.html:87
+#. ($msg)
 msgid "Preferred Key: %1"
 msgstr "Foretrukne nøgle: %1"
 
@@ -6840,7 +6867,7 @@ msgstr "Præferencer"
 msgid "Prepare Stubbed"
 msgstr "Forbered tømning"
 
-#: share/html/Elements/Tabs:561
+#: share/html/Elements/Tabs:638
 msgid "Prev"
 msgstr "Forr."
 
@@ -6873,7 +6900,7 @@ msgstr ""
 msgid "Print this message"
 msgstr "Udskriv denne besked"
 
-#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2235 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:373 share/html/m/ticket/show:241
+#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2233 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:373 share/html/m/ticket/show:241
 msgid "Priority"
 msgstr "Prioritet"
 
@@ -6902,7 +6929,7 @@ msgstr "Privilegeret"
 msgid "Privileged status: %1"
 msgstr "Privilegeret status: %1"
 
-#: share/html/Admin/Users/index.html:134
+#: share/html/Admin/Users/index.html:133
 msgid "Privileged users"
 msgstr "Privilegerede brugere"
 
@@ -6939,7 +6966,7 @@ msgstr "Søgedefinition"
 msgid "Query:"
 msgstr "Søgning:"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:931 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2078 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:943 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2076 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
 msgid "Queue"
 msgstr "Kø"
 
@@ -6961,7 +6988,7 @@ msgstr "Navn på kø"
 msgid "Queue Scrips"
 msgstr "Kø-scrips"
 
-#: lib/RT/Queue.pm:543
+#: lib/RT/Queue.pm:561
 msgid "Queue already exists"
 msgstr "Kø eksisterer allerede"
 
@@ -7013,7 +7040,7 @@ msgstr "KøAdminCc"
 msgid "QueueCc"
 msgstr "KøCc"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
 msgstr "KøNavn"
 
@@ -7021,7 +7048,7 @@ msgstr "KøNavn"
 msgid "QueueWatcher"
 msgstr "KøObservatør"
 
-#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:139 share/html/Elements/Tabs:168 share/html/Elements/Tabs:222
+#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:137 share/html/Elements/Tabs:239 share/html/Elements/Tabs:82
 msgid "Queues"
 msgstr "Køer"
 
@@ -7033,11 +7060,11 @@ msgstr "Køer som jeg administrerer"
 msgid "Queues I'm an AdminCc for"
 msgstr "Køer: Jeg er en AdminCc for"
 
-#: lib/RT/Config.pm:409
+#: lib/RT/Config.pm:425
 msgid "Quick Create"
 msgstr ""
 
-#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:405 share/html/Prefs/Quicksearch.html:69
+#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:471 share/html/Prefs/Quicksearch.html:69
 msgid "Quick search"
 msgstr "Hurtigsøgning"
 
@@ -7053,7 +7080,7 @@ msgstr "RFC2616"
 msgid "RFC2822"
 msgstr "RFC2822"
 
-#: share/html/Elements/Tabs:678
+#: share/html/Elements/Tabs:752
 msgid "RSS"
 msgstr "RSS"
 
@@ -7121,7 +7148,7 @@ msgstr "RT størrelse"
 msgid "RT Variables"
 msgstr "RT variable faktorer"
 
-#: lib/RT/Config.pm:290 lib/RT/Config.pm:299 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:199 share/html/Elements/Tabs:296 share/html/Elements/Tabs:404 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
+#: lib/RT/Config.pm:306 lib/RT/Config.pm:315 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:195 share/html/Elements/Tabs:306 share/html/Elements/Tabs:470 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "Request Tracker - hurtigt overblik"
 
@@ -7203,7 +7230,7 @@ msgstr "RT vil oprette forbindelse til databasen ved hjælp af denne bruger. Den
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr "RT vil oprette en bruger kaldet \"root\" og anvende dette som brugerens password"
 
-#: share/html/Search/Simple.html:69
+#: NOT FOUND IN SOURCE
 msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "RT vil kigge efter alt andet, som du indtaster i sagsemnerne."
 
@@ -7232,12 +7259,12 @@ msgstr "RT kan samarbejde med et antal forskellige databaser. <b>MySQL</b>, <b>P
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
 msgstr "RT's e-mail-kommandotilstand kræver PGP-verificering. Enten har du ikke underskrevet din besked, eller også kunne din signatur ikke verificeres."
 
-#: share/html/Admin/Queues/Modify.html:226
+#: share/html/Admin/Queues/Modify.html:224
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2311 etc/RT_Config.pm:2315 etc/RT_Config.pm:2385 etc/RT_Config.pm:2389
+#: etc/RT_Config.pm:2366 etc/RT_Config.pm:2370 etc/RT_Config.pm:2440 etc/RT_Config.pm:2444
 msgid "Re-open"
 msgstr ""
 
@@ -7273,22 +7300,22 @@ msgstr "Rekursivt medlem"
 msgid "Refer to"
 msgstr ""
 
-#: lib/RT/Transaction.pm:794
+#: lib/RT/Transaction.pm:797
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "Reference fra %1 tilføjet"
 
-#: lib/RT/Transaction.pm:834
+#: lib/RT/Transaction.pm:837
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "Reference fra %1 slettet"
 
-#: lib/RT/Transaction.pm:791
+#: lib/RT/Transaction.pm:794
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "Reference til %1 tilføjet"
 
-#: lib/RT/Transaction.pm:831
+#: lib/RT/Transaction.pm:834
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "Reference til %1 slettet"
@@ -7297,7 +7324,7 @@ msgstr "Reference til %1 slettet"
 msgid "Referred to by"
 msgstr "Refereret til af"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "ReferredToBy"
 msgstr "RefereretTilAf"
 
@@ -7305,7 +7332,7 @@ msgstr "RefereretTilAf"
 msgid "Refers to"
 msgstr "Refererer til"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:120 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:120 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "RefersTo"
 msgstr "ReferererTil"
 
@@ -7321,51 +7348,51 @@ msgstr "Præciser søgning"
 msgid "Refresh"
 msgstr "Genopfrisk"
 
-#: lib/RT/Config.pm:310
+#: lib/RT/Config.pm:326
 msgid "Refresh home page every 10 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:329
 msgid "Refresh home page every 120 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:308
+#: lib/RT/Config.pm:324
 msgid "Refresh home page every 2 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:311
+#: lib/RT/Config.pm:327
 msgid "Refresh home page every 20 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:309
+#: lib/RT/Config.pm:325
 msgid "Refresh home page every 5 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:328
 msgid "Refresh home page every 60 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:280
+#: lib/RT/Config.pm:296
 msgid "Refresh search results every 10 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:283
+#: lib/RT/Config.pm:299
 msgid "Refresh search results every 120 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:278
+#: lib/RT/Config.pm:294
 msgid "Refresh search results every 2 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:281
+#: lib/RT/Config.pm:297
 msgid "Refresh search results every 20 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:295
 msgid "Refresh search results every 5 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:282
+#: lib/RT/Config.pm:298
 msgid "Refresh search results every 60 minutes."
 msgstr ""
 
@@ -7374,7 +7401,7 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "Opdater denne side hver %1 minut."
 
-#: etc/RT_Config.pm:2287 etc/RT_Config.pm:2303 etc/RT_Config.pm:2361 etc/RT_Config.pm:2377
+#: etc/RT_Config.pm:2342 etc/RT_Config.pm:2358 etc/RT_Config.pm:2416 etc/RT_Config.pm:2432
 msgid "Reject"
 msgstr ""
 
@@ -7386,18 +7413,18 @@ msgstr ""
 msgid "Reminder"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2097 lib/RT/Transaction.pm:931
+#: lib/RT/Interface/Web.pm:2168 lib/RT/Transaction.pm:934
 #. ($args->{'NewReminder-Subject'})
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "Påmindelse '%1' tilføjet"
 
-#: lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:947
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "Påmindelse '%1' afsluttet"
 
-#: lib/RT/Transaction.pm:937
+#: lib/RT/Transaction.pm:940
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "Påmindelse '%1' genåbnet"
@@ -7406,7 +7433,7 @@ msgstr "Påmindelse '%1' genåbnet"
 msgid "Reminder ticket #%1"
 msgstr "Påmindelse for sag #%1"
 
-#: share/html/Elements/Tabs:487 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
+#: share/html/Elements/Tabs:551 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
 msgid "Reminders"
 msgstr "Påmindelser"
 
@@ -7431,7 +7458,7 @@ msgstr "Fjern Cc"
 msgid "Remove Requestor"
 msgstr "Fjern rekvirent"
 
-#: lib/RT/Queue.pm:1030
+#: lib/RT/Queue.pm:1041
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Removed %1 from members of %2 for this queue."
 msgstr ""
@@ -7444,7 +7471,7 @@ msgstr ""
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr ""
 
-#: share/html/Elements/Tabs:491 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
+#: share/html/Elements/Tabs:555 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
 msgstr "Svar"
 
@@ -7484,7 +7511,7 @@ msgstr "Rekvirent(er)"
 msgid "RequestorGroup"
 msgstr "RekvirentGruppe"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:307 share/html/m/ticket/show:290
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:307 share/html/m/ticket/show:290
 msgid "Requestors"
 msgstr "Rekvirenter"
 
@@ -7517,7 +7544,7 @@ msgstr "Sæt tilbage til standard"
 msgid "Residence"
 msgstr "Hjemme"
 
-#: etc/RT_Config.pm:2283 etc/RT_Config.pm:2299 etc/RT_Config.pm:2357 etc/RT_Config.pm:2373 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2338 etc/RT_Config.pm:2354 etc/RT_Config.pm:2412 etc/RT_Config.pm:2428 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Løs"
 
@@ -7526,7 +7553,7 @@ msgstr "Løs"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Løs sag #%1 (%2)"
 
-#: etc/initialdata:321 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:99
+#: etc/initialdata:321 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Løst"
 
@@ -7546,7 +7573,7 @@ msgstr "Sager løst i en periode, fordelt pr. ejer"
 msgid "Resolved tickets, grouped by owner"
 msgstr "Sager løst, fordelt pr. ejer"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
 msgstr "LøstRelativt"
 
@@ -7614,7 +7641,7 @@ msgstr "Rettighed inddraget"
 msgid "Rights"
 msgstr "Rettigheder"
 
-#: lib/RT/Interface/Web.pm:1735 lib/RT/Interface/Web.pm:1846
+#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Rettigheder kunne ikke tildeles %1"
@@ -7651,7 +7678,7 @@ msgstr "Rækker pr. boks"
 msgid "Rows per page"
 msgstr "Rækker pr. side"
 
-#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:211
+#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:223
 msgid "SQL Queries"
 msgstr ""
 
@@ -7713,7 +7740,7 @@ msgstr "Gemte %1 %2"
 msgid "Saved Search %1 not found"
 msgstr "Gemt søgning %1 kunne ikke findes"
 
-#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:407
+#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:473
 msgid "Saved Searches"
 msgstr ""
 
@@ -7746,7 +7773,7 @@ msgstr "Scrip-felter"
 msgid "Scrip deleted"
 msgstr "Scrip slettet"
 
-#: share/html/Elements/Tabs:151 share/html/Elements/Tabs:267 share/html/Elements/Tabs:340
+#: share/html/Elements/Tabs:106 share/html/Elements/Tabs:279
 msgid "Scrips"
 msgstr "Scrips"
 
@@ -7762,11 +7789,11 @@ msgstr "Scrip for %1\\n"
 msgid "Scrips which apply to all queues"
 msgstr "Scrips der gælder for alle køer"
 
-#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:102 share/html/Elements/Tabs:716 share/html/Search/Simple.html:79 share/html/m/_elements/menu:64
+#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:418 share/html/Elements/Tabs:789 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Søg"
 
-#: share/html/Articles/Article/Search.html:212
+#: share/html/Articles/Article/Search.html:214
 #. ($search->Name)
 msgid "Search %1 updated"
 msgstr ""
@@ -7799,19 +7826,24 @@ msgstr "Søg efter godkendelser"
 msgid "Search for articles"
 msgstr ""
 
-#: share/html/Search/Simple.html:89
+#: share/html/Search/Simple.html:100
 msgid "Search for tickets"
 msgstr "Søg efter sager"
+
+#: share/html/Search/Simple.html:63
+#. (@strong)
+msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name"
 msgstr "Søg efter sager. Indtast <strong>ID</strong>-numre, <strong>køer</strong> inddelt efter navn."
 
-#: share/html/Search/Simple.html:57
+#: NOT FOUND IN SOURCE
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
 msgstr "Søg efter sager. Angiv <strong>id</strong> numre, <strong>køer</strong> ved navn, ejere ved <strong>brugernavn</strong> og rekvirenter ved <strong>email adresser</strong>."
 
-#: share/html/Elements/Tabs:403
+#: share/html/Elements/Tabs:469
 msgid "Search options"
 msgstr "Søgemuligheder"
 
@@ -7824,7 +7856,7 @@ msgstr ""
 msgid "Search results grouped by %1"
 msgstr "Søgeresultater fordelt pr. %1"
 
-#: lib/RT/Config.pm:274
+#: lib/RT/Config.pm:290
 msgid "Search results refresh interval"
 msgstr "Interval mellem genopfriskning af søgeresultater"
 
@@ -7832,7 +7864,7 @@ msgstr "Interval mellem genopfriskning af søgeresultater"
 msgid "Search update: %1"
 msgstr "Søgeopdatering: %1"
 
-#: share/html/Search/Simple.html:65
+#: share/html/Search/Simple.html:73
 #. ($fulltext_keyword)
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
@@ -7913,11 +7945,11 @@ msgstr "SeEgetInstrumentPanel"
 msgid "SeeQueue"
 msgstr "SeKø"
 
-#: share/html/Elements/Tabs:131 share/html/Elements/Tabs:136 share/html/Elements/Tabs:140 share/html/Elements/Tabs:145 share/html/Elements/Tabs:152 share/html/Elements/Tabs:155 share/html/Elements/Tabs:185 share/html/Elements/Tabs:192 share/html/Elements/Tabs:243 share/html/Elements/Tabs:264 share/html/Elements/Tabs:269 share/html/Elements/Tabs:347 share/html/Elements/Tabs:361 share/html/Elements/Tabs:371
+#: share/html/Elements/Tabs:110 share/html/Elements/Tabs:118 share/html/Elements/Tabs:160 share/html/Elements/Tabs:176 share/html/Elements/Tabs:258 share/html/Elements/Tabs:276 share/html/Elements/Tabs:280 share/html/Elements/Tabs:350 share/html/Elements/Tabs:361 share/html/Elements/Tabs:371 share/html/Elements/Tabs:70 share/html/Elements/Tabs:78 share/html/Elements/Tabs:86 share/html/Elements/Tabs:95
 msgid "Select"
 msgstr "Vælg"
 
-#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:178
+#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:153
 msgid "Select Custom Fields for Articles in all Classes"
 msgstr ""
 
@@ -7978,23 +8010,23 @@ msgstr ""
 msgid "Select custom field"
 msgstr "Vælg ekstrafelt"
 
-#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:168
+#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:138
 msgid "Select custom fields for all queues"
 msgstr "Vælg brugerdefinerede feltet til alle køer"
 
-#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:165
+#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:133
 msgid "Select custom fields for all user groups"
 msgstr "Vælg ekstrafelter for alle brugergrupper"
 
-#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:162
+#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:128
 msgid "Select custom fields for all users"
 msgstr "Vælg ekstrafelter for alle brugere"
 
-#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:171
+#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:143
 msgid "Select custom fields for tickets in all queues"
 msgstr "Vælg ekstrafelter for sager i alle køer"
 
-#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:175
+#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:148
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Vælg ekstrafelter for transaktioner på sager i alle køer"
 
@@ -8083,7 +8115,7 @@ msgstr "Valgte ekstrafelter"
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2022
+#: lib/RT/Crypt/GnuPG.pm:2032
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Den valgte nøgle har enten ingen troværdighed eller den eksisterer ikke længere."
 
@@ -8155,7 +8187,7 @@ msgstr "Sender e-mail til de administrative Cc'ere som en kommentar"
 msgid "Sends mail to the owner"
 msgstr "Sender e-mail til ejeren"
 
-#: lib/RT/Interface/Email.pm:768
+#: lib/RT/Interface/Email.pm:767
 msgid "Sent email successfully"
 msgstr ""
 
@@ -8175,11 +8207,11 @@ msgstr ""
 msgid "September"
 msgstr "September"
 
-#: lib/RT/User.pm:1572
+#: lib/RT/User.pm:1599
 msgid "Set private key"
 msgstr ""
 
-#: share/html/Elements/Tabs:400 share/html/Prefs/Other.html:79
+#: share/html/Elements/Tabs:466 share/html/Prefs/Other.html:79
 msgid "Settings"
 msgstr "Indstillinger"
 
@@ -8187,11 +8219,11 @@ msgstr "Indstillinger"
 msgid "Short usernames"
 msgstr ""
 
-#: lib/RT/Config.pm:480
+#: lib/RT/Config.pm:496
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
-#: share/html/Elements/Tabs:434 share/html/Ticket/Elements/ShowTransaction:182
+#: share/html/Elements/Tabs:502 share/html/Ticket/Elements/ShowTransaction:182
 msgid "Show"
 msgstr "Vis"
 
@@ -8211,7 +8243,7 @@ msgstr "Vis kolonner"
 msgid "Show Configuration tab"
 msgstr ""
 
-#: share/html/Elements/Tabs:649
+#: share/html/Elements/Tabs:726
 msgid "Show Results"
 msgstr "Vis resultater"
 
@@ -8260,11 +8292,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Vis henvisningsbeskrivelser"
 
-#: lib/RT/Config.pm:390
+#: lib/RT/Config.pm:406
 msgid "Show no tickets for the Requestor"
 msgstr ""
 
-#: lib/RT/Config.pm:336
+#: lib/RT/Config.pm:352
 msgid "Show oldest history first"
 msgstr "Vis den ældste historie først"
 
@@ -8280,15 +8312,15 @@ msgstr ""
 msgid "Show requests awaiting other approvals"
 msgstr "Vis sager, som afventer andre godkendelser"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:404
 msgid "Show the Requestor's 10 highest priority closed tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:403
 msgid "Show the Requestor's 10 highest priority open tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:389
+#: lib/RT/Config.pm:405
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr ""
 
@@ -8352,7 +8384,7 @@ msgstr "VisSag"
 msgid "ShowTicketComments"
 msgstr "VisSagKommentarer"
 
-#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:214 share/html/Elements/Tabs:695
+#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:229 share/html/Elements/Tabs:769
 msgid "Shredder"
 msgstr "Makulator"
 
@@ -8402,11 +8434,11 @@ msgstr "Signatur"
 msgid "Signed in as %1"
 msgstr "Logget ind som %1"
 
-#: lib/RT/Queue.pm:584
+#: lib/RT/Queue.pm:595
 msgid "Signing disabled"
 msgstr "Underskrivning slået fra"
 
-#: lib/RT/Queue.pm:583
+#: lib/RT/Queue.pm:594
 msgid "Signing enabled"
 msgstr "Underskrivning slået til"
 
@@ -8414,7 +8446,7 @@ msgstr "Underskrivning slået til"
 msgid "Simple"
 msgstr ""
 
-#: share/html/Elements/Tabs:94
+#: share/html/Elements/Tabs:411
 msgid "Simple Search"
 msgstr "Enkel søgning"
 
@@ -8478,7 +8510,7 @@ msgstr ""
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Specificer om dette er en daglig eller ugentlig kørsel."
 
-#: share/html/Elements/Tabs:660
+#: share/html/Elements/Tabs:735
 msgid "Spreadsheet"
 msgstr "Regneark"
 
@@ -8486,7 +8518,7 @@ msgstr "Regneark"
 msgid "Stage"
 msgstr "Trin"
 
-#: etc/RT_Config.pm:2295 etc/RT_Config.pm:2369
+#: etc/RT_Config.pm:2350 etc/RT_Config.pm:2424
 msgid "Stall"
 msgstr ""
 
@@ -8498,7 +8530,12 @@ msgstr "Sat i bero"
 msgid "Start page"
 msgstr "Startside"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
+#: share/html/Search/Simple.html:85
+#. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
+msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
+msgstr ""
+
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
 msgid "Started"
 msgstr "Startet"
 
@@ -8506,11 +8543,11 @@ msgstr "Startet"
 msgid "Started date '%1' could not be parsed"
 msgstr "Startdato '%1' kunne ikke fortolkes"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "StartedRelative"
 msgstr "StartetRelativt"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:414 share/html/m/ticket/show:377
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:414 share/html/m/ticket/show:377
 msgid "Starts"
 msgstr "Starter"
 
@@ -8522,7 +8559,7 @@ msgstr "Starter den"
 msgid "Starts date '%1' could not be parsed"
 msgstr "Startdato '%1' kunne ikke fortolkes"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "StartsRelative"
 msgstr "StarterRelativt"
 
@@ -8530,7 +8567,7 @@ msgstr "StarterRelativt"
 msgid "State"
 msgstr "Stat"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2110 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:287 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2108 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:287 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
 msgid "Status"
 msgstr "Status"
 
@@ -8544,7 +8581,7 @@ msgstr ""
 msgid "Status Change"
 msgstr "Statusændring"
 
-#: lib/RT/Transaction.pm:640
+#: lib/RT/Transaction.pm:643
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
 msgstr "Status ændret fra %1 til %2"
@@ -8557,7 +8594,7 @@ msgstr ""
 msgid "StatusChange"
 msgstr "StatusÆndring"
 
-#: share/html/Elements/Tabs:538
+#: share/html/Elements/Tabs:612
 msgid "Steal"
 msgstr "Stjæl"
 
@@ -8580,7 +8617,7 @@ msgstr "StjælSag"
 msgid "Step %1 of %2"
 msgstr "Trin %1 af %2"
 
-#: lib/RT/Transaction.pm:747 lib/RT/Transaction.pm:900
+#: lib/RT/Transaction.pm:750 lib/RT/Transaction.pm:903
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "Stjålet fra %1"
@@ -8589,7 +8626,7 @@ msgstr "Stjålet fra %1"
 msgid "Style"
 msgstr "Stil"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2184 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:95
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2182 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:95
 msgid "Subject"
 msgstr "Emne"
 
@@ -8597,7 +8634,7 @@ msgstr "Emne"
 msgid "Subject Tag"
 msgstr "Emne mærke"
 
-#: lib/RT/Transaction.pm:769
+#: lib/RT/Transaction.pm:772
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Emne ændret til %1"
@@ -8640,7 +8677,7 @@ msgstr "AbonnerInstrumentPanel"
 msgid "Subscribed to dashboard %1"
 msgstr "Abonner på instrumentpanel %1"
 
-#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:431
+#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:500
 msgid "Subscription"
 msgstr "Abonnement"
 
@@ -8681,7 +8718,7 @@ msgstr "Søndag"
 msgid "SuperUser"
 msgstr "Superbruger"
 
-#: lib/RT/Config.pm:469
+#: lib/RT/Config.pm:485
 msgid "Suspended"
 msgstr "Suspenderet"
 
@@ -8689,7 +8726,7 @@ msgstr "Suspenderet"
 msgid "System"
 msgstr "System"
 
-#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:205
+#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:211
 msgid "System Configuration"
 msgstr "Systemkonfiguration"
 
@@ -8701,11 +8738,11 @@ msgstr "System instrument paneler"
 msgid "System Default"
 msgstr "Systemforvalg"
 
-#: lib/RT/Interface/Web.pm:1735 lib/RT/Interface/Web.pm:1846 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
+#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "System Error"
 msgstr "Systemfejl"
 
-#: lib/RT/Transaction.pm:258 lib/RT/Transaction.pm:264
+#: lib/RT/Transaction.pm:261 lib/RT/Transaction.pm:267
 #. ($msg)
 msgid "System Error: %1"
 msgstr "Systemfejl: %1"
@@ -8714,7 +8751,7 @@ msgstr "Systemfejl: %1"
 msgid "System Tools"
 msgstr "Systemværktøjer"
 
-#: lib/RT/Transaction.pm:658
+#: lib/RT/Transaction.pm:661
 msgid "System error"
 msgstr ""
 
@@ -8742,7 +8779,7 @@ msgstr "SystemRolleGruppe til internt brug"
 msgid "TEST_STRING"
 msgstr "TEST_STRENG"
 
-#: etc/initialdata:587 share/html/Elements/Tabs:532 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:587 share/html/Elements/Tabs:606 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "Tag"
 
@@ -8754,7 +8791,7 @@ msgstr "Tag sager"
 msgid "TakeTicket"
 msgstr "TagSag"
 
-#: lib/RT/Transaction.pm:732 lib/RT/Transaction.pm:892
+#: lib/RT/Transaction.pm:735 lib/RT/Transaction.pm:895
 msgid "Taken"
 msgstr "Taget"
 
@@ -8822,7 +8859,7 @@ msgstr "Skabelonfortolkningsfejl"
 msgid "Template parsing error: %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:154 share/html/Elements/Tabs:261 share/html/Elements/Tabs:341
+#: share/html/Elements/Tabs:114 share/html/Elements/Tabs:275
 msgid "Templates"
 msgstr "Skabeloner"
 
@@ -8843,11 +8880,11 @@ msgstr "Tekst"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Indholdet af tekst filen bliver ikke vist fordi dette er slået fra i præferencer."
 
-#: lib/RT/Record.pm:940
+#: lib/RT/Record.pm:952
 msgid "That is already the current value"
 msgstr "Det er allerede den nuværende værdi"
 
-#: lib/RT/CustomField.pm:579
+#: lib/RT/CustomField.pm:581
 msgid "That is not a value for this custom field"
 msgstr "Det er ikke værdi for dette ekstrafelt"
 
@@ -8859,7 +8896,7 @@ msgstr "Det er den samme værdi"
 msgid "That principal already has that right"
 msgstr "Den principal har allerede den rettighed"
 
-#: lib/RT/Queue.pm:938
+#: lib/RT/Queue.pm:949
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Den principal er allerede en %1 for denne kø"
@@ -8869,7 +8906,7 @@ msgstr "Den principal er allerede en %1 for denne kø"
 msgid "That principal is already a %1 for this ticket"
 msgstr "Den principal er allerede en %1 for denne sag"
 
-#: lib/RT/Queue.pm:1019
+#: lib/RT/Queue.pm:1030
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Den principal er ikke en %1 for denne kø"
@@ -8891,7 +8928,7 @@ msgstr "Denne sag har uløste afhængigheder"
 msgid "That user already has that right"
 msgstr "Den bruger har allerede den rettighed"
 
-#: lib/RT/Action/CreateTickets.pm:477 lib/RT/Ticket.pm:2947
+#: lib/RT/Action/CreateTickets.pm:480 lib/RT/Ticket.pm:2947
 msgid "That user already owns that ticket"
 msgstr "Brugeren ejer allerede den sag"
 
@@ -8968,27 +9005,27 @@ msgstr "Følgende søgninger er blevet slettet og hver enkelt vil blive fjernet 
 msgid "The following queries may not be visible to all users who can see this dashboard."
 msgstr "Følgende søgninger er muligvis ikke synlige, for alle brugere der kan se dette instrumentpanel."
 
-#: lib/RT/Crypt/GnuPG.pm:2196
+#: lib/RT/Crypt/GnuPG.pm:2206
 msgid "The key has been disabled"
 msgstr "Nøglen er slået fra"
 
-#: lib/RT/Crypt/GnuPG.pm:2202
+#: lib/RT/Crypt/GnuPG.pm:2212
 msgid "The key has been revoked"
 msgstr "Nøglen er blevet trukket tilbage"
 
-#: lib/RT/Crypt/GnuPG.pm:2207
+#: lib/RT/Crypt/GnuPG.pm:2217
 msgid "The key has expired"
 msgstr "Nøglen er udløbet"
 
-#: lib/RT/Crypt/GnuPG.pm:2240
+#: lib/RT/Crypt/GnuPG.pm:2250
 msgid "The key is fully trusted"
 msgstr "Nøglen har fuld troværdighed"
 
-#: lib/RT/Crypt/GnuPG.pm:2245
+#: lib/RT/Crypt/GnuPG.pm:2255
 msgid "The key is ultimately trusted"
 msgstr "Nøglen har ultimativ troværdighed"
 
-#: lib/RT/Record.pm:943
+#: lib/RT/Record.pm:955
 msgid "The new value has been set."
 msgstr "Den nye værdi er sat."
 
@@ -9013,11 +9050,11 @@ msgstr "De valgte indstillinger er gemt i %1."
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Systemet er ikek i stand til at signere udgående email beskeder. Dette indikere normalt at løsenet ikke blev sat korrekt eller at GPG Agent er nede. Du bedes venligst informere din system administrator om dette øjeblikkeligt. De problemramte adresser er:"
 
-#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:207
+#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:216
 msgid "Theme"
 msgstr "Tema"
 
-#: lib/RT/Crypt/GnuPG.pm:2049
+#: lib/RT/Crypt/GnuPG.pm:2059
 msgid "There are several keys suitable for encryption."
 msgstr "Adskillige af de tilgængelige nøgler er passende at bruge til kryptering."
 
@@ -9025,7 +9062,7 @@ msgstr "Adskillige af de tilgængelige nøgler er passende at bruge til krypteri
 msgid "There are unread messages on this ticket."
 msgstr "Der er ulæste beskeder i denne sag."
 
-#: lib/RT/Crypt/GnuPG.pm:2235
+#: lib/RT/Crypt/GnuPG.pm:2245
 msgid "There is marginal trust in this key"
 msgstr "Denne nøgle har marginal troværdighed."
 
@@ -9034,7 +9071,7 @@ msgstr "Denne nøgle har marginal troværdighed."
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2041
+#: lib/RT/Crypt/GnuPG.pm:2051
 msgid "There is no key suitable for encryption."
 msgstr "Der er ingen tilgængelige nøgler som er passende at bruge til kryptering."
 
@@ -9042,7 +9079,7 @@ msgstr "Der er ingen tilgængelige nøgler som er passende at bruge til krypteri
 msgid "There is no mapping for statuses between these queues. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2045
+#: lib/RT/Crypt/GnuPG.pm:2055
 msgid "There is one suitable key, but trust level is not set."
 msgstr "Der er en enkelt passende nøgle, men dens troværdighedsniveau er ikke defineret."
 
@@ -9054,15 +9091,19 @@ msgstr "Disse kommentarer er normalt ikke synlige for brugeren"
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr "Disse konfigurationsmuligheder dækker nogle af de grundlæggende informationer RT behøver for at fungere. Vi skal kende navnet på din RT installation og domænenavnet hvor RT bor. Du skal også definere et løsen til din administrative bruger."
 
-#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:663
+#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:679
 msgid "This Custom Field can not have list of values"
 msgstr ""
 
-#: lib/RT/Class.pm:446 lib/RT/CustomField.pm:1335
+#: lib/RT/Class.pm:444
+msgid "This class does not apply to that object"
+msgstr ""
+
+#: lib/RT/CustomField.pm:1351
 msgid "This custom field does not apply to that object"
 msgstr "Dette ekstrafelt gælder ikke for dette objekt"
 
-#: lib/RT/CustomField.pm:356 lib/RT/CustomField.pm:995
+#: lib/RT/CustomField.pm:1011 lib/RT/CustomField.pm:356
 msgid "This custom field has no Render Types"
 msgstr ""
 
@@ -9095,7 +9136,7 @@ msgstr "Denne sag %1 %2 (%3)\\n"
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Dette værktøj tillader brugeren at benytte vilkårlige Perl-moduler inde fra RT."
 
-#: lib/RT/Transaction.pm:359
+#: lib/RT/Transaction.pm:362
 msgid "This transaction appears to have no content"
 msgstr "Denne transaktion har tilsyneladende ikke noget indhold"
 
@@ -9124,7 +9165,7 @@ msgstr "Tors."
 msgid "Thursday"
 msgstr "Torsdag"
 
-#: lib/RT/Record.pm:928 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:940 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Sag"
 
@@ -9152,7 +9193,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Sag #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1125 lib/RT/Action/CreateTickets.pm:1134 lib/RT/Action/CreateTickets.pm:373 lib/RT/Action/CreateTickets.pm:496 lib/RT/Action/CreateTickets.pm:508
+#: lib/RT/Action/CreateTickets.pm:1147 lib/RT/Action/CreateTickets.pm:1156 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:499 lib/RT/Action/CreateTickets.pm:511
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -9174,7 +9215,7 @@ msgstr "Sag %1 indlæst\\n"
 msgid "Ticket %1: %2"
 msgstr "Sag %1 : %2"
 
-#: share/html/Elements/Tabs:272
+#: share/html/Elements/Tabs:283
 msgid "Ticket Custom Fields"
 msgstr "Sagens ekstrafelter"
 
@@ -9195,7 +9236,7 @@ msgstr "Sag løst"
 msgid "Ticket Search"
 msgstr "Søgning efter sager"
 
-#: lib/RT/CustomField.pm:1583 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:174
+#: lib/RT/CustomField.pm:1599 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:147
 msgid "Ticket Transactions"
 msgstr "Sagstransaktioner"
 
@@ -9207,15 +9248,15 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "Vedhæftet fil til sag"
 
-#: lib/RT/Config.pm:248 lib/RT/Config.pm:259
+#: lib/RT/Config.pm:264 lib/RT/Config.pm:275
 msgid "Ticket composition"
 msgstr ""
 
-#: lib/RT/Tickets.pm:2353
+#: lib/RT/Tickets.pm:2351
 msgid "Ticket content"
 msgstr "Sagsindhold"
 
-#: lib/RT/Tickets.pm:2398
+#: lib/RT/Tickets.pm:2396
 msgid "Ticket content type"
 msgstr "Sagsindholdstype"
 
@@ -9239,7 +9280,7 @@ msgstr "Oprettelse af sag mislykkedes"
 msgid "Ticket deleted"
 msgstr "Sag slettet"
 
-#: lib/RT/Config.pm:320 lib/RT/Config.pm:379 lib/RT/Config.pm:395
+#: lib/RT/Config.pm:336 lib/RT/Config.pm:395 lib/RT/Config.pm:411
 msgid "Ticket display"
 msgstr "Sagsvisning"
 
@@ -9272,16 +9313,16 @@ msgstr "Sagsobservatører"
 msgid "TicketSQL search module"
 msgstr "SagSQL søgemodul"
 
-#: lib/RT/CustomField.pm:1582 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:171 share/html/Elements/Tabs:761 share/html/Elements/Tabs:93 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
+#: lib/RT/CustomField.pm:1598 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:142 share/html/Elements/Tabs:410 share/html/Elements/Tabs:834 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
 msgid "Tickets"
 msgstr "Sager"
 
-#: lib/RT/Tickets.pm:2555
+#: lib/RT/Tickets.pm:2553
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr "Sager %1 %2"
 
-#: lib/RT/Tickets.pm:2512
+#: lib/RT/Tickets.pm:2510
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "Sager %1 af %2"
@@ -9318,11 +9359,11 @@ msgstr "Sager som afhænger af denne godkendelse:"
 msgid "Time Estimated"
 msgstr "Anslået tid"
 
-#: lib/RT/Tickets.pm:2328 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:398
+#: lib/RT/Tickets.pm:2326 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:398
 msgid "Time Left"
 msgstr "Resterende tid"
 
-#: lib/RT/Tickets.pm:2305 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:391
+#: lib/RT/Tickets.pm:2303 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:391
 msgid "Time Worked"
 msgstr "Tid brugt"
 
@@ -9338,15 +9379,15 @@ msgstr "Tid for sidevisning"
 msgid "Time worked"
 msgstr "Tid brugt"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:113 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:113 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
 msgstr "EstimeretTidsforbrug"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:111 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:111 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
 msgstr "TidTilbage"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:928 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:928 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
 msgstr "TidBrugt"
 
@@ -9385,15 +9426,15 @@ msgstr ""
 msgid "Toggle stack trace"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:931 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:99
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:931 lib/RT/Tickets.pm:125 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
 msgstr "Meddelt"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "ToldRelative"
 msgstr ""
 
-#: share/html/Elements/Tabs:204 share/html/Elements/Tabs:97 share/html/Tools/index.html:48
+#: share/html/Elements/Tabs:206 share/html/Elements/Tabs:415 share/html/Tools/index.html:48
 msgid "Tools"
 msgstr "Værktøjer"
 
@@ -9413,7 +9454,7 @@ msgstr ""
 msgid "Topic not found"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:103 share/html/Elements/Tabs:201 share/html/Elements/Tabs:365
+#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:200 share/html/Elements/Tabs:365 share/html/Elements/Tabs:419
 msgid "Topics"
 msgstr ""
 
@@ -9425,16 +9466,16 @@ msgstr "Total"
 msgid "Transaction"
 msgstr "Transaktion"
 
-#: lib/RT/Transaction.pm:925
+#: lib/RT/Transaction.pm:928
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Transaktion %1 tømt"
 
-#: lib/RT/Transaction.pm:203
+#: lib/RT/Transaction.pm:206
 msgid "Transaction Created"
 msgstr "Transaktion oprettet"
 
-#: share/html/Elements/Tabs:275
+#: share/html/Elements/Tabs:286
 msgid "Transaction Custom Fields"
 msgstr "Transaktions-ekstrafelter"
 
@@ -9450,7 +9491,7 @@ msgstr "Transaktion->Kunne ikke oprette, fordi ikke angav en objekttype og et ID
 msgid "TransactionDate"
 msgstr "TransaktionsDato"
 
-#: lib/RT/Transaction.pm:982
+#: lib/RT/Transaction.pm:985
 msgid "Transactions are immutable"
 msgstr "Transaktioner kan ikke ændres"
 
@@ -9474,7 +9515,7 @@ msgstr "Tirs."
 msgid "Tuesday"
 msgstr "Tirsdag"
 
-#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2160 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2158 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Type"
 
@@ -9482,7 +9523,7 @@ msgstr "Type"
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
 msgstr ""
 
-#: lib/RT/CustomField.pm:945
+#: lib/RT/CustomField.pm:961
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr "Type ændret fra '%1' til '%2'"
@@ -9504,12 +9545,12 @@ msgstr "Var ikke i stand til at afgøre elementets type eller id"
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:237
+#: share/html/Admin/Tools/Theme.html:236
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:209
+#: share/html/Admin/Tools/Theme.html:208
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -9539,7 +9580,7 @@ msgstr "Det er ikke muligt at abonnere på instrumentpanel %1: Utilstrækkelige 
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2319 etc/RT_Config.pm:2393
+#: etc/RT_Config.pm:2374 etc/RT_Config.pm:2448
 msgid "Undelete"
 msgstr ""
 
@@ -9555,15 +9596,15 @@ msgstr "Unix log-ind"
 msgid "UnixUsername"
 msgstr "UnixBrugernavn"
 
-#: lib/RT/Crypt/GnuPG.pm:2219 lib/RT/Crypt/GnuPG.pm:2224
+#: lib/RT/Crypt/GnuPG.pm:2229 lib/RT/Crypt/GnuPG.pm:2234
 msgid "Unknown (no trust value assigned)"
 msgstr "Ukendt (ingen troværdighedsværdi tildelt)"
 
-#: lib/RT/Crypt/GnuPG.pm:2229
+#: lib/RT/Crypt/GnuPG.pm:2239
 msgid "Unknown (this value is new to the system)"
 msgstr "Ukendt (denne værdi er ny for systemet)"
 
-#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:801
+#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:813
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -9578,9 +9619,14 @@ msgstr "Ukendt felt: $key"
 msgid "Unknown field: %1"
 msgstr "Ukendt felt: %1"
 
-#: lib/RT/Queue.pm:1009
+#: lib/RT/Queue.pm:1020
 #. ($args{Type})
 msgid "Unknown watcher type %1"
+msgstr ""
+
+#: share/html/Search/Simple.html:81
+#. ($status_str)
+msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
 msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
@@ -9619,11 +9665,11 @@ msgstr ""
 msgid "Unselected objects"
 msgstr "Ikke-valgte objekter"
 
-#: lib/RT/User.pm:1556
+#: lib/RT/User.pm:1583
 msgid "Unset private key"
 msgstr "Fjern privat nøgle"
 
-#: lib/RT/Transaction.pm:728 lib/RT/Transaction.pm:904
+#: lib/RT/Transaction.pm:731 lib/RT/Transaction.pm:907
 msgid "Untaken"
 msgstr "Ikke taget"
 
@@ -9675,7 +9721,7 @@ msgstr "Opdater flere sager"
 msgid "Update name"
 msgstr "Opdater navn"
 
-#: lib/RT/Action/CreateTickets.pm:517 lib/RT/Interface/Web.pm:1543
+#: lib/RT/Action/CreateTickets.pm:520 lib/RT/Interface/Web.pm:1612
 msgid "Update not recorded."
 msgstr "Opdatering ikke registreret."
 
@@ -9707,15 +9753,15 @@ msgstr "Opdater sag #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Opdater sag #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:515 lib/RT/Interface/Web.pm:1543
+#: lib/RT/Action/CreateTickets.pm:518 lib/RT/Interface/Web.pm:1612
 msgid "Update type was neither correspondence nor comment."
 msgstr "Opdateringstype var hverken korrespondance eller kommentar"
 
-#: share/html/Search/Elements/BuildFormatString:99
+#: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
 msgstr "OpdaterStatus"
 
-#: lib/RT/CustomField.pm:1658 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
+#: lib/RT/CustomField.pm:1674 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
 msgid "Updated"
 msgstr "Opdateret"
 
@@ -9772,7 +9818,7 @@ msgstr "Brug: "
 msgid "Use SSL?"
 msgstr "Brug SSL?"
 
-#: lib/RT/Config.pm:208
+#: lib/RT/Config.pm:224
 msgid "Use a two column layout for create and update forms?"
 msgstr ""
 
@@ -9780,7 +9826,7 @@ msgstr ""
 msgid "Use autocomplete to find owners?"
 msgstr ""
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:391
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
 msgstr ""
 
@@ -9793,7 +9839,7 @@ msgstr "Brug standard (%1)"
 msgid "Use fixed-width font to display plaintext messages"
 msgstr "Brug en fast-bredde font til at vise beskeder der kun indeholder tekst"
 
-#: share/html/Elements/Tabs:204
+#: share/html/Elements/Tabs:207
 msgid "Use other RT administrative tools"
 msgstr "Brug andre RT-administrative værktøjer"
 
@@ -9806,11 +9852,11 @@ msgstr "Brug systemstandard (%1)"
 msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
 msgstr ""
 
-#: lib/RT/Config.pm:365
+#: lib/RT/Config.pm:381
 msgid "Use this to protect the format of plain text"
 msgstr ""
 
-#: lib/RT/Record.pm:929 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:941 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Bruger"
 
@@ -9855,11 +9901,11 @@ msgstr "Bruger-ID"
 msgid "User Id"
 msgstr "Bruger-ID"
 
-#: share/html/Elements/Tabs:197 share/html/Elements/Tabs:279 share/html/Elements/Tabs:313 share/html/Elements/Tabs:327 share/html/Elements/Tabs:368
+#: share/html/Elements/Tabs:190 share/html/Elements/Tabs:290 share/html/Elements/Tabs:324 share/html/Elements/Tabs:338 share/html/Elements/Tabs:368
 msgid "User Rights"
 msgstr "Brugerrettigheder"
 
-#: lib/RT/Interface/Web.pm:2309
+#: lib/RT/Interface/Web.pm:2380
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Bruger bad om en ukendt opdateringstype for ekstrafelt %1 til %2 objekt #%3"
@@ -9917,7 +9963,7 @@ msgstr "Brugernavn"
 msgid "Username format"
 msgstr "Format på brugernavn"
 
-#: lib/RT/CustomField.pm:1584 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:130 share/html/Elements/Tabs:162 share/html/Elements/Tabs:223
+#: lib/RT/CustomField.pm:1600 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:127 share/html/Elements/Tabs:240 share/html/Elements/Tabs:66
 msgid "Users"
 msgstr "Brugere"
 
@@ -10022,15 +10068,15 @@ msgstr ""
 msgid "W3CDTF"
 msgstr "W3CDTF"
 
-#: share/html/Articles/Article/Search.html:181
+#: share/html/Articles/Article/Search.html:183
 msgid "WARNING: Saving search to user-level privacy"
 msgstr ""
 
-#: lib/RT/Config.pm:226
+#: lib/RT/Config.pm:242
 msgid "WYSIWYG composer height"
 msgstr "Højden på HDSEHDF skriveværktøjet"
 
-#: lib/RT/Config.pm:217
+#: lib/RT/Config.pm:233
 msgid "WYSIWYG message composer"
 msgstr "HDSEHDF skriveværktøj"
 
@@ -10058,7 +10104,7 @@ msgstr "Observatør"
 msgid "WatcherGroup"
 msgstr "ObservatørGruppe"
 
-#: share/html/Elements/Tabs:260
+#: share/html/Elements/Tabs:273
 msgid "Watchers"
 msgstr "Observatører"
 
@@ -10066,7 +10112,7 @@ msgstr "Observatører"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr "Den angivne database kunne findes og der er oprettet forbindelse som database administrator. Du kan klikke på 'Grundlæggende tilpasning' for at fortsætte med at tilpasse RT."
 
-#: lib/RT/CustomField.pm:1009 lib/RT/CustomField.pm:1687
+#: lib/RT/CustomField.pm:1025 lib/RT/CustomField.pm:1703
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr ""
 
@@ -10102,7 +10148,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: lib/RT/Config.pm:468
+#: lib/RT/Config.pm:484
 msgid "Weekly digest"
 msgstr ""
 
@@ -10146,7 +10192,7 @@ msgstr "Når en godkendelsessag oprettes, giv besked til ejeren og AdminCc om de
 msgid "When anything happens"
 msgstr "Når der sker noget som helst"
 
-#: lib/RT/Config.pm:255
+#: lib/RT/Config.pm:271
 msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
 msgstr ""
 
@@ -10288,7 +10334,7 @@ msgstr "Du kan kun videretildele sager, som du ejer, eller som ikke har en ejer"
 msgid "You can only take tickets that are unowned"
 msgstr "Du kan kun tage sager uden ejer"
 
-#: share/html/Search/Simple.html:63
+#: share/html/Search/Simple.html:71
 #. ($fulltext_keyword)
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
@@ -10401,7 +10447,7 @@ msgstr "Din sag blev afvist."
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:657
+#: lib/RT/Interface/Web.pm:667
 msgid "Your username or password is incorrect"
 msgstr "Dit brugernavn eller din adgangskode er forkert."
 
@@ -10421,7 +10467,7 @@ msgstr ""
 msgid "[none]"
 msgstr "[ingen]"
 
-#: lib/RT/Transaction.pm:710
+#: lib/RT/Transaction.pm:713
 msgid "a custom field"
 msgstr ""
 
@@ -10429,7 +10475,7 @@ msgstr ""
 msgid "active"
 msgstr ""
 
-#: lib/RT/Config.pm:364
+#: lib/RT/Config.pm:380
 msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
@@ -10560,7 +10606,7 @@ msgstr "slet"
 msgid "deleted"
 msgstr "slettet"
 
-#: lib/RT/Config.pm:374
+#: lib/RT/Config.pm:390
 msgid "display wrapped and formatted plain text attachments"
 msgstr ""
 
@@ -10628,7 +10674,7 @@ msgstr "afviklede udvidelsesmodul problemfrit"
 msgid "filename"
 msgstr "filnavn"
 
-#: lib/RT/Crypt/GnuPG.pm:2241
+#: lib/RT/Crypt/GnuPG.pm:2251
 msgid "full"
 msgstr "fuld"
 
@@ -10653,11 +10699,11 @@ msgstr "fordelt pr. %1"
 msgid "hours"
 msgstr "timer"
 
-#: lib/RT/Date.pm:121 share/html/Elements/Tabs:683
+#: lib/RT/Date.pm:121 share/html/Elements/Tabs:757
 msgid "iCal"
 msgstr "iCal"
 
-#: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:56
+#: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
 msgstr "ID"
 
@@ -10688,15 +10734,15 @@ msgstr "er"
 msgid "isn't"
 msgstr "er ikke"
 
-#: lib/RT/Crypt/GnuPG.pm:2197
+#: lib/RT/Crypt/GnuPG.pm:2207
 msgid "key disabled"
 msgstr "nøgle deaktiveret"
 
-#: lib/RT/Crypt/GnuPG.pm:2208
+#: lib/RT/Crypt/GnuPG.pm:2218
 msgid "key expired"
 msgstr "nøgle udløbet"
 
-#: lib/RT/Crypt/GnuPG.pm:2203
+#: lib/RT/Crypt/GnuPG.pm:2213
 msgid "key revoked"
 msgstr "nøgle tilbagekaldt"
 
@@ -10708,7 +10754,7 @@ msgstr "venstre til højre"
 msgid "less than"
 msgstr "mindre end"
 
-#: lib/RT/Crypt/GnuPG.pm:2236
+#: lib/RT/Crypt/GnuPG.pm:2246
 msgid "marginal"
 msgstr "marginal"
 
@@ -10761,7 +10807,7 @@ msgstr "intet navn"
 msgid "no value"
 msgstr "ingen værdi"
 
-#: lib/RT/Crypt/GnuPG.pm:2213 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
+#: lib/RT/Crypt/GnuPG.pm:2223 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "ingen"
 
@@ -10917,7 +10963,7 @@ msgstr "sag #%1 %2"
 msgid "top to bottom"
 msgstr "top til bund"
 
-#: lib/RT/Crypt/GnuPG.pm:2246
+#: lib/RT/Crypt/GnuPG.pm:2256
 msgid "ultimate"
 msgstr "ultimativ"
 

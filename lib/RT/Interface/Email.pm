@@ -412,8 +412,10 @@ sub SendEmail {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
 
-        # SetOutgoingMailFrom
-        if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+        # SetOutgoingMailFrom and bounces conflict, since they both want -f
+        if ( $args{'Bounce'} ) {
+            $args .= ' '. RT->Config->Get('SendmailBounceArguments');
+        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
             my $OutgoingMailAddress;
 
             if ($TicketObj) {
@@ -432,9 +434,6 @@ sub SendEmail {
             $args .= " -f $OutgoingMailAddress"
                 if $OutgoingMailAddress;
         }
-
-        # Set Bounce Arguments
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
         # VERP
         if ( $TransactionObj and
@@ -750,16 +749,19 @@ sub SendForward {
     $mail->add_part( $entity );
 
     my $from;
-    my $subject = '';
-    $subject = $txn->Subject if $txn;
-    $subject ||= $ticket->Subject if $ticket;
+    unless (defined $mail->head->get('Subject')) {
+        my $subject = '';
+        $subject = $txn->Subject if $txn;
+        $subject ||= $ticket->Subject if $ticket;
 
-    unless ( RT->Config->Get('ForwardFromUser') ) {
-        # XXX: what if want to forward txn of other object than ticket?
-        $subject = AddSubjectTag( $subject, $ticket );
+        unless ( RT->Config->Get('ForwardFromUser') ) {
+            # XXX: what if want to forward txn of other object than ticket?
+            $subject = AddSubjectTag( $subject, $ticket );
+        }
+
+        $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
     }
 
-    $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
     $mail->head->set(
         From => EncodeToMIME(
             String => GetForwardFrom( Transaction => $txn, Ticket => $ticket )

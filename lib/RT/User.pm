@@ -1325,7 +1325,10 @@ sub SetPreferences {
     my $attr = RT::Attribute->new( $self->CurrentUser );
     $attr->LoadByNameAndObject( Object => $self, Name => $name );
     if ( $attr->Id ) {
-        return $attr->SetContent( $value );
+        my ($ok, $msg) = $attr->SetContent( $value );
+        return (1, "No updates made")
+            if $msg eq "That is already the current value";
+        return ($ok, $msg);
     } else {
         return $self->AddAttribute( Name => $name, Content => $value );
     }

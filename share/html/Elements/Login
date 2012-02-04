@@ -76,6 +76,15 @@
 
 <input type="hidden" name="next" value="<% $next %>" />
 
+<script type="text/javascript">
+jQuery(function(){
+    if (window.location.hash) {
+        var form = jQuery("form[name=login]");
+        form.attr('action', form.attr('action') + '#' + window.location.hash.replace(/^#/, ''));
+    }
+});
+</script>
+
 <div class="button-row">
     <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
 </div>

@@ -313,7 +313,7 @@ my $build_admin_menu = sub {
                 title => loc('Dashboards in menu'),
                 path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
             );
-            if ( RT->Config->Get('GnuPG')->{'enable'} ) {
+            if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
                 $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
             }
         }
@@ -852,7 +852,7 @@ my $build_selfservice_nav = sub {
     $queues->UnLimit;
 
     my $queue_count = 0;
-    my $queue_id    = 1;
+    my $queue_id;
 
     while ( my $queue = $queues->Next ) {
         next unless $queue->CurrentUserHasRight('CreateTicket');
@@ -862,14 +862,14 @@ my $build_selfservice_nav = sub {
     }
 
 
+    if ( $queue_count > 1 ) {
+        Menu->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+    } elsif ( $queue_id ) {
+        Menu->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+    }
     my $tickets = Menu->child( tickets => title => loc('Tickets'));
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
-    if ( $queue_count > 1 ) {
-        $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/CreateTicketInQueue.html' );
-    } else {
-        $tickets->child( new => title => loc('New ticket'),    path => '/SelfService/Create.html?Queue=' . $queue_id );
-    }
 
 
     my $username = '<span class="current-user">'

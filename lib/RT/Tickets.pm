@@ -332,6 +332,7 @@ sub _BookmarkLimit {
             VALUE    => $id,
             $first? (@rest): ( ENTRYAGGREGATOR => $ea )
         );
+        $first = 0 if $first;
     }
     $sb->_CloseParen;
 }

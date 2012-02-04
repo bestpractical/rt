@@ -92,8 +92,7 @@
 my @errors;
 my $locked;
 
-require RT::Installer;
-my $file = RT::Installer->ConfigFile();
+my $file = RT::Installer->ConfigFile;
 
 if ( ! -e $file ) {
     # write a blank RT_SiteConfig.pm

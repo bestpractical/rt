@@ -299,41 +299,30 @@ if ($CloneTicket) {
     my $members = $CloneTicketObj->Members;
     my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
     my $refers = $CloneTicketObj->RefersTo;
+    my $get_link_value = sub {
+        my ($link, $type) = @_;
+        my $uri_method = $type . 'URI';
+        my $local_method = 'Local' . $type;
+        my $uri = $link->$uri_method;
+        return if $uri->IsLocal and
+                $uri->Object and
+                $uri->Object->isa('RT::Ticket') and
+                $uri->Object->Type eq 'reminder';
+
+        return $link->$local_method || $uri->URI;
+    };
     while ( my $refer = $refers->Next ) {
-        push @refers, $refer->LocalTarget;
+        my $refer_value = $get_link_value->($refer, 'Target');
+        push @refers, $refer_value if defined $refer_value;
     }
     $clone->{'new-RefersTo'} = join ' ', @refers;
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
-        push @refers_by, $refer_by->LocalBase;
+        my $refer_by_value = $get_link_value->($refer_by, 'Base');
+        push @refers_by, $refer_by_value if defined $refer_by_value;
     }
     $clone->{'RefersTo-new'} = join ' ', @refers_by;
-    if (0) {    # Temporarily disabled
-        my $depends = $CloneTicketObj->DependsOn;
-        while ( my $depend = $depends->Next ) {
-            push @depends, $depend->LocalTarget;
-        }
-        $clone->{'new-DependsOn'} = join ' ', @depends;
-
-        my $depends_by = $CloneTicketObj->DependedOnBy;
-        while ( my $depend_by = $depends_by->Next ) {
-            push @depends_by, $depend_by->LocalBase;
-        }
-        $clone->{'DependsOn-new'} = join ' ', @depends_by;
-
-        while ( my $member = $members->Next ) {
-            push @members, $member->LocalBase;
-        }
-        $clone->{'MemberOf-new'} = join ' ', @members;
-
-        my $members_of = $CloneTicketObj->MemberOf;
-        while ( my $member_of = $members_of->Next ) {
-            push @members_of, $member_of->LocalTarget;
-        }
-        $clone->{'new-MemberOf'} = join ' ', @members_of;
-
-    }
 
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {

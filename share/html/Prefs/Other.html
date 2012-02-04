@@ -81,9 +81,10 @@ my $title = loc("Settings");
 my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( $RT::System );
 
-if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+if (defined($PreferredKey) and (not $UserObj->FirstAttribute('PreferredKey')
+        or $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')->Content)) {
     my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
-    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
+    push @results, loc('Preferred Key: [_1]', $msg) unless $code;
 }
 
 if ( $Update ) {

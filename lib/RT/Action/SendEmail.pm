@@ -408,11 +408,16 @@ sub AddAttachment {
     my $attach  = shift;
     my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
 
+    # ->attach expects just the disposition type; extract it if we have the header
+    my $disp = ($attach->GetHeader('Content-Disposition') || '')
+                    =~ /^\s*(inline|attachment)/i ? $1 : undef;
+
     $MIMEObj->attach(
-        Type     => $attach->ContentType,
-        Charset  => $attach->OriginalEncoding,
-        Data     => $attach->OriginalContent,
-        Filename => $self->MIMEEncodeString( $attach->Filename ),
+        Type        => $attach->ContentType,
+        Charset     => $attach->OriginalEncoding,
+        Data        => $attach->OriginalContent,
+        Disposition => $disp, # a false value defaults to inline in MIME::Entity
+        Filename    => $self->MIMEEncodeString( $attach->Filename ),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,

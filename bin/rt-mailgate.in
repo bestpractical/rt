@@ -245,20 +245,13 @@ sub check_failure {
     my $r    = shift;
     return if $r->is_success;
 
-    # This ordinarily oughtn't to be able to happen, suggests a bug in RT.
-    # So only load these heavy modules when they're needed.
-    require HTML::TreeBuilder;
-    require HTML::FormatText;
+    # XXX TODO 4.2: Remove the multi-line error strings in favor of something more concise
+    print STDERR <<"    ERROR";
+An Error Occurred
+=================
 
-    my $error = $r->error_as_HTML;
-    my $tree  = HTML::TreeBuilder->new->parse($error);
-    $tree->eof;
-
-    # It'll be a cold day in hell before RT sends out bounces in HTML
-    my $formatter =
-        HTML::FormatText->new( leftmargin  => 0,
-                               rightmargin => 50, );
-    print STDERR $formatter->format($tree);
+@{[ $r->status_line ]}
+    ERROR
     print STDERR "\n$0: undefined server error\n" if $opts->{'debug'};
     return $self->tempfail();
 }
