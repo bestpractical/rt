@@ -112,7 +112,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
     <td class="entry">
-% if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent} && !grep { /Message recorded/ } @results )) {
+% if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
 % } else {
     <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
@@ -213,6 +213,12 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
 }
 
 $Ticket->ApplyTransactionBatch;
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => "/Ticket/ModifyAll.html",
+    Arguments => { id => $Ticket->id },
+);
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
