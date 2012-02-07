@@ -14,7 +14,7 @@ $sphinx{'indexer'} = RT::Test->find_executable('indexer');
 plan skip_all => "No searchd and indexer under PATH"
     unless $sphinx{'searchd'} && $sphinx{'indexer'};
 
-plan tests => 25;
+plan tests => 22;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', MaxMatches => 1000 );
 
