@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 54;
+use RT::Test tests => 70;
 
 my $LogoName    = 'image.png';
 my $ImageName   = 'owls.jpg';
@@ -96,6 +96,38 @@ like $mail, qr/To: owls\@localhost/, 'got To';
 like $mail, qr/RT-Attach: \d+/, "found attachment we expected";
 like $mail, qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header";
 like $mail, qr/filename=.?\Q$ImageName\E.?/, "found filename";
+
+# Reply to first correspondence, including an attachment with an uploaded one
+$m->follow_link_ok({text => 'Reply', n => 3}, "reply to the reply");
+$m->form_name('TicketUpdate');
+$m->current_form->find_input('AttachExisting', 'checkbox', 2)->check; # owls.jpg
+$m->field( 'UpdateContent', 'attachments from both list and upload' );
+$m->field('Attach', $LogoFile);
+$m->click('SubmitTicket');
+is($m->status, 200, "request successful");
+
+# yep, we got it and processed the header!
+$m->content_contains('attachments from both list and upload');
+$m->content_like(qr/(RT-Attach:.+?\Q$ImageName\E).*\1/s, 'found rt attach header');
+$m->content_like(qr/Subject:.+?\Q$LogoName\E/s, 'found rt attach header');
+
+# outgoing looks good
+$m->follow_link_ok({text => 'Show', n => 4}, "found show link");
+$m->content_like(qr/RT-Attach: \d+/, "found RT-Attach header");
+$m->content_like(qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header");
+$m->content_lacks($ImageName);
+$m->content_lacks($LogoName);
+$m->back;
+
+# check that it got into mail
+@mails = RT::Test->fetch_caught_mails;
+is scalar @mails, 1, "got one outgoing email";
+$mail = shift @mails;
+like $mail, qr/To: owls\@localhost/, 'got To';
+like $mail, qr/RT-Attach: \d+/, "found attachment we expected";
+like $mail, qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header";
+like $mail, qr/filename=.?\Q$ImageName\E.?/, "found selected filename";
+like $mail, qr/filename=.?\Q$LogoName\E.?/, "found uploaded filename";
 
 # add header to template, make a normal reply, and see that it worked
 my $link = $m->find_link(text_regex => qr/\Q$LogoName\E/, url_regex => qr/Attachment/);
