@@ -409,7 +409,6 @@ sub AddAttachmentsFromHeaders {
     }
 
     # Take all RT-Attach headers and add the attachments to the outgoing mail
-    my $seen_attachment = 0;
     for my $id (uniq $email->head->get_all('RT-Attach')) {
         $id =~ s/(?:^\s*|\s*$)//g;
 
@@ -418,9 +417,8 @@ sub AddAttachmentsFromHeaders {
         next unless $attach->Id
                 and $attach->TransactionObj->CurrentUserCanSee;
 
-        if ( !$seen_attachment ) {
+        if ( !$email->is_multipart ) {
             $email->make_multipart( 'mixed', Force => 1 );
-            $seen_attachment = 1;
         }
         $self->AddAttachment($attach, $email);
     }
