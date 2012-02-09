@@ -844,12 +844,13 @@ sub _TransContentLimit {
             $value =~ s/;/\\;/g;
 
             my $max = $config->{'MaxMatches'};
+            my $mode = $self->{_sql_sphinx_mode} || 'all';
             $self->_SQLLimit(
                 %rest,
-                ALIAS       => $alias,
-                FIELD       => 'query',
-                OPERATOR    => '=',
-                VALUE       => "$value;limit=$max;maxmatches=$max",
+                ALIAS    => $alias,
+                FIELD    => 'query',
+                OPERATOR => '=',
+                VALUE    => "$value;limit=$max;maxmatches=$max;mode=$mode",
             );
         }
     } else {
