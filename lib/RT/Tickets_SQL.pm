@@ -294,62 +294,8 @@ sub FromSQL {
     return (1, $self->loc("No Query")) unless $query;
     $self->{_sql_query} = $query;
 
-
-    my $config = RT->Config->Get('FullTextSearch') || {};
-    if ( $config->{Indexed} && RT->Config->Get('DatabaseType') eq 'mysql' ) {
-
-# mysql doesn't bother asking sphinx if there are different query clauses.
-# I guess it's because mysql thinks there can't be a field who can meet
-# both "query='foo'' and "query='bar'", so it returns empty set directly.
-# that's why we combine those query into one here.
-# currently only continuous content queries are supported.
-
-        my $re_delim = $RE{delimited}{ -delim => qq{\'\"} };
-        my $re_content = '(?:^|\s+)Content\s+(?:(NOT)\s+)?LIKE\s+(' . $re_delim . ')';
-        my $first_escaped;
-        while ( $query =~ /($re_content\s+(AND|OR)\s*$re_content)/i ) {
-            my $whole      = $1;
-            my $first_neg  = $2;
-            my $first      = $3;
-            my $rel        = $4;
-            my $second_neg = $5;
-            my $second     = $6;
-            $rel = $rel =~ /and/i ? '&' : '|';
-
-            my $first_quote = substr $first, 0, 1;
-            $first =~ s!^$first_quote!!;
-            $first =~ s!$first_quote$!!;
-
-            if ( !$first_escaped ) {
-                $first =~ s/(&|\||!|-|\(|\))/\\$1/g;
-                $first = "!($first)" if $first_neg;
-            }
-
-            # we will quote value with '
-            $first =~ s!'!\\'!g if $first_quote eq '"';
-
-            my $second_quote = substr $second, 0, 1;
-            $second =~ s!^$second_quote!!;
-            $second =~ s!$second_quote$!!;
-            $second =~ s/(&|\||!|-|\(|\))/\\$1/g;
-            $second = "!($second)" if $second_neg;
-
-            # we will quote value with '
-            $second =~ s!'!\\'!g if $second_quote eq '"';
-
-            $query =~ s!\Q$whole!Content LIKE '($first$rel$second)'!;
-
-            $self->{_sql_sphinx_mode} = 'boolean';
-            $first_escaped = 1;
-        }
-
-        if ( $query =~ /$re_content.*$re_content/s ) {
-            return (0, $self->loc("Incontinuous Content queries"));
-        }
-        elsif ( $query =~ /$re_content/ && $1 ) {
-            return (0, $self->loc("Single NOT operator is not supported"));
-        }
-    }
+    ( my $ret, $query ) = $self->PrepareSQL( $query );
+    return ( $ret, $query ) unless $ret;
 
     eval { $self->_parser( $query ); };
     if ( $@ ) {
@@ -396,6 +342,77 @@ sub FromSQL {
     $self->{'RecalcTicketLimits'} = 0;                                           
 
     return (1, $self->loc("Valid Query"));
+}
+
+=head2 PrepareSQL
+
+Prepare the query.
+
+Returns (1, $query ) on success and (0, 'Error Message') on failure.
+
+=cut
+
+sub PrepareSQL {
+    my $self = shift;
+    my $query = shift;
+
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    if ( $config->{Indexed} && RT->Config->Get('DatabaseType') eq 'mysql' ) {
+
+      # mysql doesn't bother asking sphinx if there are different query clauses.
+      # I guess it's because mysql thinks there can't be a field who can meet
+      # both "query='foo'' and "query='bar'", so it returns empty set directly.
+      # that's why we combine those query into one here.
+      # currently only continuous content queries are supported.
+
+        my $re_delim = $RE{delimited}{ -delim => qq{\'\"} };
+        my $re_content =
+          '(?:^|\s+)Content\s+(?:(NOT)\s+)?LIKE\s+(' . $re_delim . ')';
+        my $first_escaped;
+        while ( $query =~ /($re_content\s+(AND|OR)\s*$re_content)/i ) {
+            my $whole      = $1;
+            my $first_neg  = $2;
+            my $first      = $3;
+            my $rel        = $4;
+            my $second_neg = $5;
+            my $second     = $6;
+            $rel = $rel =~ /and/i ? '&' : '|';
+
+            my $first_quote = substr $first, 0, 1;
+            $first =~ s!^$first_quote!!;
+            $first =~ s!$first_quote$!!;
+
+            if ( !$first_escaped ) {
+                $first =~ s/(&|\||!|-|\(|\))/\\$1/g;
+                $first = "!($first)" if $first_neg;
+            }
+
+            # we will quote value with '
+            $first =~ s!'!\\'!g if $first_quote eq '"';
+
+            my $second_quote = substr $second, 0, 1;
+            $second =~ s!^$second_quote!!;
+            $second =~ s!$second_quote$!!;
+            $second =~ s/(&|\||!|-|\(|\))/\\$1/g;
+            $second = "!($second)" if $second_neg;
+
+            # we will quote value with '
+            $second =~ s!'!\\'!g if $second_quote eq '"';
+
+            $query =~ s!\Q$whole!Content LIKE '($first$rel$second)'!;
+
+            $self->{_sql_sphinx_mode} = 'boolean';
+            $first_escaped = 1;
+        }
+
+        if ( $query =~ /$re_content.*$re_content/s ) {
+            return ( 0, $self->loc("Incontinuous Content queries") );
+        }
+        elsif ( $query =~ /$re_content/ && $1 ) {
+            return ( 0, $self->loc("Single NOT operator is not supported") );
+        }
+    }
+    return ( 1, $query );
 }
 
 =head2 Query
