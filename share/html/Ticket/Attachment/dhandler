@@ -79,7 +79,12 @@
      my $enc = $AttachmentObj->OriginalEncoding || 'utf-8';
      my $iana = Encode::find_encoding( $enc );
      $iana = $iana? $iana->mime_name : $enc;
-	 $content_type .= ";charset=$iana";
+
+     require MIME::Types;
+     my $mimetype = MIME::Types->new->type($content_type);
+     unless ( $mimetype && $mimetype->isBinary ) {
+	    $content_type .= ";charset=$iana";
+     }
 
      $r->content_type( $content_type );
      $m->clear_buffer();
