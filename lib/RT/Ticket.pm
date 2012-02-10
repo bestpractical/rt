@@ -2711,13 +2711,14 @@ only be called from _NewTransaction
 sub _UpdateTimeTaken {
     my $self    = shift;
     my $Minutes = shift;
-    my ($Total);
 
-    $Total = $self->SUPER::_Value("TimeWorked");
+    my $Total = $self->__Value("TimeWorked");
     $Total = ( $Total || 0 ) + ( $Minutes || 0 );
-    $self->SUPER::_Set(
+    $self->_Set(
         Field => "TimeWorked",
-        Value => $Total
+        Value => $Total,
+        RecordTransaction => 0,
+        CheckACL => 0,
     );
 
     return ($Total);
