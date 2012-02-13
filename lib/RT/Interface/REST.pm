@@ -58,7 +58,7 @@ sub custom_field_spec {
     my $self    = shift;
     my $capture = shift;
 
-    my $CF_name = '.+';
+    my $CF_name = '[^,]+';
     $CF_name = '(' . $CF_name . ')' if $capture;
 
     my $new_style = 'CF\.\{'.$CF_name.'\}';
