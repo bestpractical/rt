@@ -413,7 +413,7 @@ CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
-  Content BLOB,
+  Content LONGBLOB,
   ContentType varchar(16) CHARACTER SET ascii,
   ObjectType varchar(64) CHARACTER SET ascii,
   ObjectId integer, # foreign key to anything
