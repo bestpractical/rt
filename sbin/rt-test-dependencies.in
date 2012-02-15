@@ -56,6 +56,7 @@ no warnings qw(numeric redefine);
 use Getopt::Long;
 my %args;
 my %deps;
+my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
     'install',                            'with-MYSQL',
@@ -402,7 +403,12 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     $Missing_By_Type{$type} = \%missing if keys %missing;
 }
 
-conclude(%Missing_By_Type);
+if ( $args{'install'} && keys %Missing_By_Type ) {
+    system($0, grep { $_ ne '--install' } @orig_argv );
+}
+else {
+    conclude(%Missing_By_Type);
+}
 
 sub test_deps {
     my @deps = @_;
