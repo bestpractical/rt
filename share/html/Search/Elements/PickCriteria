@@ -68,5 +68,5 @@
 <%ARGS>
 $addquery => 0
 $query => undef
-%queues => undef
+%queues => ()
 </%ARGS>
