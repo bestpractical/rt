@@ -859,6 +859,8 @@ Set($CanonicalizeRedirectURLs, 0);
 A list of JavaScript files to be included in head.  Removing any of
 the default entries is not suggested.
 
+If you're a plugin author, refer to RT->AddJavaScript.
+
 =cut
 
 Set(@JSFiles, qw/
@@ -894,6 +896,8 @@ directory, or from http://www.crockford.com/javascript/jsmin.html
 =item C<@CSSFiles>
 
 A list of additional CSS files to be included in head.
+
+If you're a plugin author, refer to RT->AddStyleSheets.
 
 =cut
 
