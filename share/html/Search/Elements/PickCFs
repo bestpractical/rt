@@ -119,5 +119,5 @@ $m->callback( Conditions => \@lines, Queues => \%queues );
 </%INIT>
 
 <%ARGS>
-%queues => undef
+%queues => ()
 </%ARGS>
