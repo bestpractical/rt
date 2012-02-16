@@ -111,6 +111,6 @@ UPGRADING FROM 4.0.5 and earlier - Changes:
 
 The fix for an attribute truncation bug on MySQL requires a small ALTER TABLE.
 Be sure you run `make upgrade-database` to apply this change automatically.
-The bug primary manifested when uploading large logos in the theme editor on
+The bug primarily manifested when uploading large logos in the theme editor on
 MySQL.  Refer to etc/upgrade/4.0.6/schema.mysql for the actual ALTER TABLE that
 will be run.
