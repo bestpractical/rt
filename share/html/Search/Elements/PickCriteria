@@ -51,8 +51,8 @@
 
 
 
-<& PickBasics &>
-<& PickCFs, cfqueues => \%cfqueues &>
+<& PickBasics, queues => \%queues &>
+<& PickCFs, queues => \%queues &>
 
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
@@ -68,5 +68,5 @@
 <%ARGS>
 $addquery => 0
 $query => undef
-%cfqueues => undef
+%queues => ()
 </%ARGS>

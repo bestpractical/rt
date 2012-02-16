@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
 
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
+% $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
 <div class="summary">
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
@@ -63,7 +63,7 @@
 </div>
 <br />
 
-% $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
+% $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
 
 % if (not $ForceShowHistory and RT->Config->Get( 'DeferTransactionLoading', $session{'CurrentUser'} )) {
     <& /Ticket/Elements/ClickToShowHistory,
@@ -83,6 +83,8 @@
 
 % $m->callback( %ARGS,
 %     Ticket       => $TicketObj,
+%     Transactions => $transactions,
+%     Attachments  => $attachments,
 %     CallbackName => 'AfterShowHistory',
 % );
 

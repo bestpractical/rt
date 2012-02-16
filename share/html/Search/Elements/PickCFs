@@ -50,11 +50,11 @@
 % }
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %cfqueues) {
+foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now.
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
-    $CustomFields->LimitToQueue($queue->Id);
+    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
 }
 $CustomFields->LimitToGlobal;
 $CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
@@ -116,10 +116,10 @@ while ( my $CustomField = $CustomFields->Next ) {
     push @lines, \%line;
 }
 
-$m->callback( Conditions => \@lines, Queues => \%cfqueues );
+$m->callback( Conditions => \@lines, Queues => \%queues );
 
 </%INIT>
 
 <%ARGS>
-%cfqueues => undef
+%queues => ()
 </%ARGS>

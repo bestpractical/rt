@@ -89,7 +89,7 @@ sub Groupings {
         foreach my $id (keys %$queues) {
             my $queue = RT::Queue->new( $self->CurrentUser );
             $queue->Load($id);
-            $CustomFields->LimitToQueue($queue->Id);
+            $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
         }
         $CustomFields->LimitToGlobal;
         while ( my $CustomField = $CustomFields->Next ) {

@@ -106,3 +106,26 @@ with
   database level.
 
 *******
+
+UPGRADING FROM 4.0.5 and earlier - Changes:
+
+The fix for an attribute truncation bug on MySQL requires a small ALTER TABLE.
+Be sure you run `make upgrade-database` to apply this change automatically.
+The bug primarily manifested when uploading large logos in the theme editor on
+MySQL.  Refer to etc/upgrade/4.0.6/schema.mysql for the actual ALTER TABLE that
+will be run.
+
+*******
+The web-based query builder now uses Queue limits to restrict the set of
+displayed statuses and owners.  As part of this change, the %cfqueues
+parameter was renamed to %Queues; if you have local modifications to any
+of the following Mason templates, this feature will not function
+correctly:
+
+    share/html/Elements/SelectOwner
+    share/html/Elements/SelectStatus
+    share/html/Prefs/Search.html
+    share/html/Search/Build.html
+    share/html/Search/Elements/BuildFormatString
+    share/html/Search/Elements/PickCFs
+    share/html/Search/Elements/PickCriteria

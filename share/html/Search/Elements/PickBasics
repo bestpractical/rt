@@ -103,7 +103,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectStatus',
-            Arguments => { SkipDeleted => 1 },
+            Arguments => { SkipDeleted => 1, Queues => \%queues },
         },
     },
     {
@@ -124,7 +124,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'Name' },
+            Arguments => { ValueAttribute => 'Name', Queues => \%queues },
         },
     },
     {
@@ -212,3 +212,6 @@ my @lines = (
 $m->callback( Conditions => \@lines );
 
 </%INIT>
+<%ARGS>
+%queues => ()
+</%ARGS>
