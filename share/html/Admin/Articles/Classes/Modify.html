@@ -91,6 +91,19 @@
 % } }
 </ul>
 
+% if ( @$subject_cfs ) {
+<h3>Change email subject:</h3>
+<p><&|/l&>If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article.</&></p>
+
+<& /Widgets/Form/Select,
+    Name         => 'SubjectOverride',
+    DefaultLabel => 'No Subject Override',
+    Values       => $subject_cfs,
+    ValuesLabel  => $subject_cf_labels,
+    CurrentValue => $ClassObj->SubjectOverride,
+&>
+% }
+
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
 
 % if ( $Create ) {
@@ -132,8 +145,17 @@ if ($Create) {
 }
 
 if ($ClassObj->Id()) {
+
+    if ($ARGS{SubjectOverride}) {
+        $ARGS{SubjectOverride} = $m->comp('/Widgets/Form/Select:Process',
+            Arguments => \%ARGS,
+            Name      => 'SubjectOverride',
+            DefaultValue => (''),
+        );
+    }
+
     $ARGS{HotList} ||= 0 if $Submitted;
-    my @attribs= qw(Description Name HotList);
+    my @attribs= qw(Description Name HotList SubjectOverride);
     $m->callback( CallbackName => 'AttributeList', Attributes => \@attribs, ARGSRef => \%ARGS );
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
@@ -148,11 +170,17 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
 }
 
 my %include = (Name => 1, Summary => 1);
+my $subject_cfs = [];
+my $subject_cf_labels = {};
 
 my $cfs;
 if ( $ClassObj->id ) {
     $cfs = $ClassObj->ArticleCustomFields;
-    $include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
+    while ( my $cf = $cfs->Next ) {
+        $include{"CF-Title-".$cf->Id} = $include{"CF-Value-".$cf->Id} = 1;
+        push @$subject_cfs,$cf->Id;
+        $subject_cf_labels->{$cf->Id} = $cf->Name;
+    }
 }
 
 if  ( $ClassObj->id && $Submitted ) {

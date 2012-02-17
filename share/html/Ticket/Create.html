@@ -351,6 +351,8 @@ $QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue))
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
+$m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
+
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
 my $CFs = $QueueObj->TicketCustomFields();
