@@ -64,8 +64,13 @@ unless ($opt{port}) {
 # Set ssl port if they want it but didn't provide a number
 $opt{ssl} = 4430 if defined $opt{ssl} and not $opt{ssl};
 
+# Parse out the WebPath
+my $path = parseconf( "WebPath" ) || "";
+
 my $template = join("", <DATA>);
 $template =~ s/\$PORT/$opt{port}/g;
+$template =~ s!\$PATH/!$path/!g;
+$template =~ s!\$PATH!$path || "/"!ge;
 $template =~ s/\$SSL/$opt{ssl} || 0/ge;
 $template =~ s/\$RTHOME/$opt{root}/g;
 $template =~ s/\$MODULES/$opt{modules}/g;
@@ -98,8 +103,8 @@ my $log = "$opt{root}/var/log/apache-error.log";
 unlink($log);
 
 # Start 'er up
-warn "Starting apache server on http://localhost:$opt{port}/"
-    . ($opt{ssl} ? " and https://localhost:$opt{ssl}/" : "") . "\n";
+warn "Starting apache server on http://localhost:$opt{port}$path/"
+    . ($opt{ssl} ? " and https://localhost:$opt{ssl}$path/" : "") . "\n";
 !system("apache2", @opts, "-k", "start")
     or die "Can't exec apache2: $@";
 # Ignore the return value, as we expect it to be ^C'd
@@ -194,7 +199,7 @@ DocumentRoot $RTHOME/share/html
     Allow from all
 </Directory>
 
-Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
+Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <Directory $RTHOME/share/html/NoAuth/images>
     Order allow,deny
     Allow from all
@@ -204,7 +209,7 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 ########## 4.0 mod_perl
 <IfDefine PERL>
     PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
-    <Location />
+    <Location $PATH>
         Order allow,deny
         Allow from all
         SetHandler modperl
@@ -221,8 +226,8 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FASTCGI>
     FastCgiIpcDir $RTHOME/var
     FastCgiServer $RTHOME/sbin/rt-server.fcgi -processes 1 -idle-timeout 300
-    ScriptAlias / $RTHOME/sbin/rt-server.fcgi/
-    <Location />
+    ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
+    <Location $PATH>
         Order allow,deny
         Allow from all
         Options +ExecCGI
@@ -234,8 +239,8 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FCGID>
     FcgidProcessTableFile $RTHOME/var/fcgid_shm
     FcgidIPCDir $RTHOME/var
-    ScriptAlias / $RTHOME/sbin/rt-server.fcgi/
-    <Location />
+    ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
+    <Location $PATH>
         Order allow,deny
         Allow from all
         Options +ExecCGI
@@ -250,10 +255,10 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine PERL>
     PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
     PerlRequire "$RTHOME/bin/webmux.pl"
-    <Location /NoAuth/images>
+    <Location $PATH/NoAuth/images>
         SetHandler default
     </Location>
-    <Location />
+    <Location $PATH>
         SetHandler perl-script
         PerlResponseHandler RT::Mason
     </Location>
@@ -263,8 +268,8 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FASTCGI>
     FastCgiIpcDir $RTHOME/var
     FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes 1 -idle-timeout 300
-    ScriptAlias / $RTHOME/bin/mason_handler.fcgi/
-    <Location />
+    ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
+    <Location $PATH>
 	Order allow,deny
 	Allow from all
 	Options +ExecCGI
@@ -276,8 +281,8 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FCGID>
     FcgidProcessTableFile $RTHOME/var/fcgid_shm
     FcgidIPCDir $RTHOME/var
-    ScriptAlias / $RTHOME/bin/mason_handler.fcgi/
-    <Location />
+    ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
+    <Location $PATH>
 	Order allow,deny
 	Allow from all
 	Options +ExecCGI
