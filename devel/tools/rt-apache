@@ -5,6 +5,7 @@ use warnings;
 
 use Getopt::Long;
 use FindBin;
+use Pod::Usage;
 
 my %opt = (
     root => ($ENV{RTHOME} || "/opt/rt4"),
@@ -29,22 +30,29 @@ GetOptions(  \%opt,
     "ssl:i",
 
     "modules=s",
-);
+
+    "help|h|?",
+) or pod2usage( 1 );
+pod2usage( {verbose => 2} ) if $opt{help};
 
 # Determine what module to use
 my $mod;
 if ($opt{fcgid} + $opt{fastcgi} + $opt{perl} > 1) {
-    die "Can only supply one of fcgid, fastcgi, or perl";
+    die "Can only supply one of fcgid, fastcgi, or perl\n";
 } elsif ($opt{fcgid} + $opt{fastcgi} + $opt{perl} == 0) {
     my @guess = qw(fcgid fastcgi perl);
     @guess = grep {-f "$opt{modules}/mod_$_.so"} @guess;
-    die "Neither mod_fcgid, mod_fastcgi, nor mod_perl are installed; aborting"
+    die "Neither mod_fcgid, mod_fastcgi, nor mod_perl are installed; aborting\n"
         unless @guess;
     warn "No deployment given -- assuming mod_$guess[0] deployment\n";
     $mod = $guess[0];
 } else {
     $mod = (grep {$opt{$_}} qw(fcgid fastcgi perl))[0];
 }
+
+# Sanity check that the root contains an RT install
+die "$opt{root} doesn't look like an RT install\n"
+    unless -e "$opt{root}/lib/RT.pm";
 
 # Detect if we are actually rt3
 if (not -e "$opt{root}/bin/rt-server.fcgi"
@@ -130,6 +138,66 @@ sub parseconf {
     return unless $RTCONF =~ /^\s*Set\(\s*\$$optname\s*(?:,|=>)\s*['"]?(.*?)['"]?\s*\)/m;
     return $1;
 }
+
+=head1 NAME
+
+rt-apache - Wrapper to start single-threaded Apache running RT
+
+=head1 DESCRIPTION
+
+This script exists to make it easier to run RT under Apache for testing.
+It is not intended as a way to deploy RT, or to provide example Apache
+configuration for RT.  For instructions on how to deploy RT with Apache,
+please read the provided F<docs/web_deployment.pod> file.
+
+Running this script will start F<apache2> with a custom-built
+configuration file, built based on command-line options and the contents
+of your F<RT_SiteConfig.pm>.  It will work with either RT 3.8.x or RT
+4.0.x.  As it is primarily for simple testing, it only starts one Apache
+process or thread, and runs as the current user.
+
+=head1 OPTIONS
+
+C<rt-apache> will parse your F<RT_SiteConfig.pm> for its C<WebPath> and
+C<WebPort> configuration, and adjust its defaults accordingly.
+
+=over
+
+=item --root B<path>
+
+The path to the RT install to serve.  This defaults to the C<RTHOME>
+environment variable, or C</opt/rt4>.
+
+=item --fcgid, --fastcgi, --perl
+
+Determines the Apache module which is used.  By default, the first one
+of that list which exists will be used.  See also L</--modules>.
+
+=item --port B<number>
+
+Choses the port to listen on.  By default, this is parsed from the
+F<RT_SiteConfig.pm>, and falling back to 8888.
+
+=item --ssl [B<number>]
+
+Also listens on the provided port with HTTPS, using a self-signed
+certificate for C<localhost>.  If the port number is not specified,
+defaults to port 4430.
+
+=item --rt3, -3
+
+Declares that the RT install in question is RT 3.8.x.  C<rt-apache> can
+usually detect this for you, however.
+
+=item --modules B<path>
+
+The path to the Apache2 modules directory, which is expected to contain
+one of F<mod_fcgid.so>, F<mod_fastcgi.so>, or F<mod_perl.so>.  Defaults
+to F</usr/lib/apache2/modules>.
+
+=back
+
+=cut
 
 __DATA__
 <IfModule mpm_prefork_module>
