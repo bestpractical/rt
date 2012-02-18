@@ -28,6 +28,7 @@ GetOptions(  \%opt,
     "perl!",
 
     "port|p=i",
+    "ssl:i",
 
     "modules=s",
 );
@@ -54,8 +55,12 @@ if (not -e "$opt{root}/bin/rt-server.fcgi"
     warn "RT3 install detected!\n";
 }
 
+# Set ssl port if they want it but didn't provide a number
+$opt{ssl} = 4430 if defined $opt{ssl} and not $opt{ssl};
+
 my $template = join("", <DATA>);
 $template =~ s/\$PORT/$opt{port}/g;
+$template =~ s/\$SSL/$opt{ssl} || 0/ge;
 $template =~ s/\$RTHOME/$opt{root}/g;
 $template =~ s/\$MODULES/$opt{modules}/g;
 $template =~ s/\$TOOLS/$FindBin::Bin/g;
@@ -67,6 +72,7 @@ print CONF $template;
 close CONF;
 
 my @opts = ("-f", $conf, "-D" . uc($mod) );
+push @opts, "-DSSL" if $opt{ssl};
 push @opts, "-DRT3" if $opt{rt3};
 
 
@@ -86,7 +92,8 @@ my $log = "$opt{root}/var/log/apache-error.log";
 unlink($log);
 
 # Start 'er up
-warn "Starting apache server on http://localhost:$opt{port}/\n";
+warn "Starting apache server on http://localhost:$opt{port}/"
+    . ($opt{ssl} ? " and https://localhost:$opt{ssl}/" : "") . "\n";
 !system("apache2", @opts, "-k", "start")
     or die "Can't exec apache2: $@";
 # Ignore the return value, as we expect it to be ^C'd
@@ -115,6 +122,9 @@ __DATA__
 </IfModule>
 
 Listen $PORT
+<IfDefine SSL>
+   Listen $SSL
+</IfDefine>
 
 ServerName localhost
 ServerRoot $RTHOME/var
@@ -136,6 +146,9 @@ TypesConfig $TOOLS/mime.types
 </IfDefine>
 <IfDefine FCGID>
     LoadModule fcgid_module   $MODULES/mod_fcgid.so
+</IfDefine>
+<IfDefine SSL>
+    LoadModule ssl_module     $MODULES/mod_ssl.so
 </IfDefine>
 
 ErrorLog    "$RTHOME/var/log/apache-error.log"
@@ -247,4 +260,18 @@ Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 	AddHandler fcgid-script fcgi
     </Location>
 </IfDefine>
+</IfDefine>
+
+<IfDefine SSL>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed startup file:/dev/urandom 512
+    SSLRandomSeed connect builtin
+    SSLRandomSeed connect file:/dev/urandom 512
+    SSLSessionCache shmcb:$RTHOME/var/ssl_scache(512000)
+    SSLMutex file:$RTHOME/var/ssl_mutex
+    <VirtualHost *:$SSL>
+        SSLEngine on
+	SSLCertificateFile    $TOOLS/localhost.crt
+	SSLCertificateKeyFile $TOOLS/localhost.key
+    </VirtualHost>
 </IfDefine>
