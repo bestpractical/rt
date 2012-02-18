@@ -54,15 +54,9 @@ if (not -e "$opt{root}/bin/rt-server.fcgi"
 }
 
 # Parse etc/RT_SiteConfig.pm for the default port
-if ( $opt{port} ) {
-    # We're set
-} elsif ( open(CONF, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
-    # We're going to be evil, and try to parse the config
-    my $conf = join("", <CONF>);
-    $opt{port} = $1
-        if $conf =~ /^\s*Set\(\s*\$WebPort\s*(?:,|=>)\s*['"]?(\d+)['"]?\s*\)/m;
-} else {
-    warn "Can't open $opt{root}/etc/RT_SiteConfig.pm: $!\n";
+my $RTCONF;
+$opt{port} ||= parseconf( "WebPort" );
+unless ($opt{port}) {
     warn "Defaulting to port 8888\n";
     $opt{port} = 8888;
 }
@@ -113,6 +107,24 @@ system("tail", "-f", $log);
 warn "Shutting down apache...\n";
 !system("apache2", @opts, "-k", "stop")
     or die "Can't exec apache2: $@";
+
+
+sub parseconf {
+    my ($optname) = @_;
+    # We're going to be evil, and try to parse the config
+    unless (defined $RTCONF) {
+        unless ( open(CONF, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
+            warn "Can't open $opt{root}/etc/RT_SiteConfig.pm: $!\n";
+            $RTCONF = "";
+            return;
+        }
+        $RTCONF = join("", <CONF>);
+        close CONF;
+    }
+
+    return unless $RTCONF =~ /^\s*Set\(\s*\$$optname\s*(?:,|=>)\s*['"]?(.*?)['"]?\s*\)/m;
+    return $1;
+}
 
 __DATA__
 <IfModule mpm_prefork_module>
