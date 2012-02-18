@@ -1,0 +1,250 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use FindBin;
+
+my %opt = (
+    root => ($ENV{RTHOME} || "/opt/rt4"),
+
+    fcgid   => 0,
+    fastcgi => 0,
+    perl    => 0,
+
+    port => 8888,
+
+    modules => "/usr/lib/apache2/modules",
+);
+
+GetOptions(  \%opt,
+    "root=s",
+
+    "rt3|3!",
+
+    "fcgid!",
+    "fastcgi!",
+    "perl!",
+
+    "port|p=i",
+
+    "modules=s",
+);
+
+# Determine what module to use
+my $mod;
+if ($opt{fcgid} + $opt{fastcgi} + $opt{perl} > 1) {
+    die "Can only supply one of fcgid, fastcgi, or perl";
+} elsif ($opt{fcgid} + $opt{fastcgi} + $opt{perl} == 0) {
+    my @guess = qw(fcgid fastcgi perl);
+    @guess = grep {-f "$opt{modules}/mod_$_.so"} @guess;
+    die "Neither mod_fcgid, mod_fastcgi, nor mod_perl are installed; aborting"
+        unless @guess;
+    warn "No deployment given -- assuming mod_$guess[0] deployment\n";
+    $mod = $guess[0];
+} else {
+    $mod = (grep {$opt{$_}} qw(fcgid fastcgi perl))[0];
+}
+
+# Detect if we are actually rt3
+if (not -e "$opt{root}/bin/rt-server.fcgi"
+        and -e "$opt{root}/bin/mason_handler.fcgi") {
+    $opt{rt3}++;
+    warn "RT3 install detected!\n";
+}
+
+my $template = join("", <DATA>);
+$template =~ s/\$PORT/$opt{port}/g;
+$template =~ s/\$RTHOME/$opt{root}/g;
+$template =~ s/\$MODULES/$opt{modules}/g;
+$template =~ s/\$TOOLS/$FindBin::Bin/g;
+
+my $conf = "$opt{root}/var/apache.conf";
+open(CONF, ">", $conf)
+    or die "Can't write $conf: $!";
+print CONF $template;
+close CONF;
+
+my @opts = ("-f", $conf, "-D" . uc($mod) );
+push @opts, "-DRT3" if $opt{rt3};
+
+
+# Wait for a previous run to terminate
+if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
+    my $pid = <PIDFILE>;
+    chomp $pid;
+    close PIDFILE;
+    if ($pid and kill 0, $pid) {
+        warn "Waiting for previous run (pid $pid) to finish...\n";
+        sleep 1 while kill 0, $pid;
+    }
+}
+
+# Clean out the log in preparation
+my $log = "$opt{root}/var/log/apache-error.log";
+unlink($log);
+
+# Start 'er up
+warn "Starting apache server on http://localhost:$opt{port}/\n";
+!system("apache2", @opts, "-k", "start")
+    or die "Can't exec apache2: $@";
+# Ignore the return value, as we expect it to be ^C'd
+system("tail", "-f", $log);
+warn "Shutting down apache...\n";
+!system("apache2", @opts, "-k", "stop")
+    or die "Can't exec apache2: $@";
+
+__DATA__
+<IfModule mpm_prefork_module>
+    StartServers          1
+    MinSpareServers       1
+    MaxSpareServers       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
+<IfModule mpm_worker_module>
+    StartServers          1
+    MinSpareThreads       1
+    MaxSpareThreads       1
+    ThreadLimit           1
+    ThreadsPerChild       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
+Listen $PORT
+
+ServerName localhost
+ServerRoot $RTHOME/var
+PidFile    $RTHOME/var/apache2.pid
+LockFile   $RTHOME/var/apache2.lock
+ServerAdmin root@localhost
+
+LoadModule authz_host_module  $MODULES/mod_authz_host.so
+LoadModule env_module         $MODULES/mod_env.so
+LoadModule alias_module       $MODULES/mod_alias.so
+LoadModule mime_module        $MODULES/mod_mime.so
+TypesConfig $TOOLS/mime.types
+
+<IfDefine PERL>
+    LoadModule perl_module    $MODULES/mod_perl.so
+</IfDefine>
+<IfDefine FASTCGI>
+    LoadModule fastcgi_module $MODULES/mod_fastcgi.so
+</IfDefine>
+<IfDefine FCGID>
+    LoadModule fcgid_module   $MODULES/mod_fcgid.so
+</IfDefine>
+
+ErrorLog    "$RTHOME/var/log/apache-error.log"
+TransferLog "$RTHOME/var/log/apache-access.log"
+LogLevel notice
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+</Directory>
+
+AddDefaultCharset UTF-8
+
+DocumentRoot $RTHOME/share/html
+<Directory $RTHOME/share/html>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+Alias /NoAuth/images/ $RTHOME/share/html/NoAuth/images/
+<Directory $RTHOME/share/html/NoAuth/images>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<IfDefine !RT3>
+########## 4.0 mod_perl
+<IfDefine PERL>
+    PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
+    <Location />
+        Order allow,deny
+        Allow from all
+        SetHandler modperl
+        PerlResponseHandler Plack::Handler::Apache2
+        PerlSetVar psgi_app $RTHOME/sbin/rt-server
+    </Location>
+    <Perl>
+        use Plack::Handler::Apache2;
+        Plack::Handler::Apache2->preload("$RTHOME/sbin/rt-server");
+    </Perl>
+</IfDefine>
+
+########## 4.0 mod_fastcgi
+<IfDefine FASTCGI>
+    FastCgiIpcDir $RTHOME/var
+    FastCgiServer $RTHOME/sbin/rt-server.fcgi -processes 1 -idle-timeout 300
+    ScriptAlias / $RTHOME/sbin/rt-server.fcgi/
+    <Location />
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fastcgi-script fcgi
+    </Location>
+</IfDefine>
+
+########## 4.0 mod_fcgid
+<IfDefine FCGID>
+    FcgidProcessTableFile $RTHOME/var/fcgid_shm
+    FcgidIPCDir $RTHOME/var
+    ScriptAlias / $RTHOME/sbin/rt-server.fcgi/
+    <Location />
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fcgid-script fcgi
+    </Location>
+</IfDefine>
+</IfDefine>
+
+
+<IfDefine RT3>
+########## 3.8 mod_perl
+<IfDefine PERL>
+    PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
+    PerlRequire "$RTHOME/bin/webmux.pl"
+    <Location /NoAuth/images>
+        SetHandler default
+    </Location>
+    <Location />
+        SetHandler perl-script
+        PerlResponseHandler RT::Mason
+    </Location>
+</IfDefine>
+
+########## 3.8 mod_fastcgi
+<IfDefine FASTCGI>
+    FastCgiIpcDir $RTHOME/var
+    FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes 1 -idle-timeout 300
+    ScriptAlias / $RTHOME/bin/mason_handler.fcgi/
+    <Location />
+	Order allow,deny
+	Allow from all
+	Options +ExecCGI
+	AddHandler fastcgi-script fcgi
+    </Location>
+</IfDefine>
+
+########## 3.8 mod_fcgid
+<IfDefine FCGID>
+    FcgidProcessTableFile $RTHOME/var/fcgid_shm
+    FcgidIPCDir $RTHOME/var
+    ScriptAlias / $RTHOME/bin/mason_handler.fcgi/
+    <Location />
+	Order allow,deny
+	Allow from all
+	Options +ExecCGI
+	AddHandler fcgid-script fcgi
+    </Location>
+</IfDefine>
+</IfDefine>
