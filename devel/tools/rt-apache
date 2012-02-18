@@ -13,8 +13,6 @@ my %opt = (
     fastcgi => 0,
     perl    => 0,
 
-    port => 8888,
-
     modules => "/usr/lib/apache2/modules",
 );
 
@@ -53,6 +51,20 @@ if (not -e "$opt{root}/bin/rt-server.fcgi"
         and -e "$opt{root}/bin/mason_handler.fcgi") {
     $opt{rt3}++;
     warn "RT3 install detected!\n";
+}
+
+# Parse etc/RT_SiteConfig.pm for the default port
+if ( $opt{port} ) {
+    # We're set
+} elsif ( open(CONF, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
+    # We're going to be evil, and try to parse the config
+    my $conf = join("", <CONF>);
+    $opt{port} = $1
+        if $conf =~ /^\s*Set\(\s*\$WebPort\s*(?:,|=>)\s*['"]?(\d+)['"]?\s*\)/m;
+} else {
+    warn "Can't open $opt{root}/etc/RT_SiteConfig.pm: $!\n";
+    warn "Defaulting to port 8888\n";
+    $opt{port} = 8888;
 }
 
 # Set ssl port if they want it but didn't provide a number
