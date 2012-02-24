@@ -125,8 +125,14 @@ resumed by re-running the importer.
 
 =item B<--clone>
 
-Insert all of the data as an exact clone of the original RT instance.
-This requires that the database schema be created, but contain no data.
+Insert all of the data as an exact clone of the original RT instance.  This
+requires that the database schema be created, but contain no data.  You can
+setup the required database state for the receiving RT instance by running:
+
+    sbin/rt-setup-database --action create,schema,acl --prompt-for-dba-password
+
+The normal C<make initdb> step will B<not> work because it also inserts core
+system data.
 
 =item B<--originalid> I<cfname>
 
