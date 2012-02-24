@@ -415,6 +415,7 @@ sub InitClasses {
     require RT::Approval;
     require RT::Lifecycle;
     require RT::Link;
+    require RT::Links;
     require RT::Article;
     require RT::Articles;
     require RT::Class;
