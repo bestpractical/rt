@@ -298,5 +298,11 @@ significant boundary condition changes in serialization rate, as the
 queue empties and fills, causing the time estimates to be rather
 imprecise near the start and end of the process.
 
+Setting C<--gc> to 0 turns off all garbage collection.  Be aware that
+this will bloat the memory usage of the serializer.  Any negative value
+for C<--gc> turns off periodic garbage collection and instead objects
+already serialized or in the queue are checked for at the time they
+would be inserted.
+
 =cut
 
