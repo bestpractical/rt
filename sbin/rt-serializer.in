@@ -56,6 +56,8 @@ GetOptions(
     "tickets!",
     "acls!",
 
+    "clone!",
+
     "gc=i",
 ) or Pod::Usage::pod2usage();
 
@@ -65,6 +67,12 @@ my %args;
 $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
+
+# --no-clone makes no sense, so ignore checking defined
+if ($OPT{clone}) {
+    $args{"All$_"}    = $OPT{clone} for qw(Users Groups);
+    $args{"Follow$_"} = $OPT{clone} for qw(Deleted Tickets Scrips ACL);
+}
 
 $args{AllUsers}      = $OPT{users}    if defined $OPT{users};
 $args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
@@ -240,6 +248,12 @@ serialized.
 =item B<--no-tickets>
 
 Skip serialization of all ticket data.
+
+=item B<--clone>
+
+Turns on serialization all object types.  That is, C<--scrips> and C<--acls> in
+addition to explicitly specifying the defaults.  You can combine this option
+with negative flags, such as C<--clone --no-acls>.
 
 =item B<--gc> I<n>
 
