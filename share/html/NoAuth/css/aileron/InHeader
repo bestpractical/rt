@@ -45,9 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<!--[if (lt IE 9)&(gt IE 6)]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie-pie.css" type="text/css" media="all" />
-<![endif]-->
 <!--[if lt IE 8]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie.css" type="text/css" media="all" />
 <![endif]-->
