@@ -152,7 +152,7 @@ else {
                 my $key = $1 || $2;
 
                 my $cf = RT::CustomField->new( $session{CurrentUser} );
-                $cf->LoadByName( Name => $key, Queue => $data{Queue} );
+                $cf->LoadByName( Name => $key, Queue => $data{Queue} || $v{Queue} );
                 unless ( $cf->id ) {
                     $cf->LoadByName( Name => $key, Queue => 0 );
                 }
