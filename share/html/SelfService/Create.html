@@ -91,16 +91,7 @@
         <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $queue_obj &>
     </td>
 </tr>
-<tr>
-<td class="label">
-%# FIXME: if failed customfields validation, attachement needs to be choosen
-%# again by user.
-<&|/l&>Attach file</&>:
-</td>
-<td class="value">
-<input name="Attach" type="file" />
-</td>
-</tr>
+<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
 </table>
 <table width="100%">
 <tr>
@@ -128,10 +119,12 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
+ProcessAttachments(ARGSRef => \%ARGS);
+
 my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, results => \@results );
 
-if ( defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
+if ( !exists $ARGS{'AddMoreAttach'} and defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
     if ( $ValidCFs && !$skip_create ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
