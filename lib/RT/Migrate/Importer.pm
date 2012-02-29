@@ -68,6 +68,7 @@ sub Init {
         OriginalId  => undef,
         Progress    => undef,
         Statefile   => undef,
+        DumpObjects => undef,
         @_,
     );
 
@@ -94,6 +95,11 @@ sub Init {
 
     $self->{Progress}  = $args{Progress};
     $self->{Statefile} = $args{Statefile};
+
+    if ($args{DumpObjects}) {
+        require Data::Dumper;
+        $self->{DumpObjects} = { map { $_ => 1 } @{$args{DumpObjects}} };
+    }
 
     # Objects we've created
     $self->{UIDs} = {};
@@ -379,6 +385,11 @@ sub List {
                         and $self->{Organization} ne $$loaded;
                 $self->{Organization} = $$loaded;
                 next;
+            }
+
+            if ($self->{DumpObjects}) {
+                print STDERR Data::Dumper::Dumper($loaded), "\n"
+                    if $self->{DumpObjects}{ $loaded->[0] };
             }
 
             my ($class, $uid, $data) = @{$loaded};

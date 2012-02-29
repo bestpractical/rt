@@ -47,6 +47,8 @@ GetOptions(
     "resume!",
     "clone|C!",
     "originalid|i=s",
+
+    "dump=s@",
 ) or Pod::Usage::pod2usage();
 
 Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
@@ -69,12 +71,20 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
     );
 }
 
+if ($OPT{dump}) {
+    die "Dumping objects only works in conjunction with --list\n"
+        unless $OPT{list};
+
+    $OPT{dump} = [ split /,/, join(',', @{$OPT{dump}}) ];
+}
+
 my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
     Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
     Statefile   => $statefile,
+    DumpObjects => $OPT{dump},
 );
 
 my %counts;
@@ -123,6 +133,10 @@ resumed by re-running the importer.
 
 =over
 
+=item B<--list>
+
+Print a summary of the data contained in the dump.
+
 =item B<--clone>
 
 Insert all of the data as an exact clone of the original RT instance.  This
@@ -139,6 +153,13 @@ system data.
 Places the original ticket organization and ID into a global custom
 field with the given name.  If no global ticket custom field with that
 name is found in the current database, it will create one.
+
+=item B<--dump> I<class>[,I<class>]
+
+Prints L<Data::Dumper> representations of the objects of type I<class> in the
+serialized data.  This is mostly useful for debugging.
+
+Works only in conjunction with C<--list>.
 
 =back
 
