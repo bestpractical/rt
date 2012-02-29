@@ -68,12 +68,6 @@ $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
 
-# --no-clone makes no sense, so ignore checking defined
-if ($OPT{clone}) {
-    $args{"All$_"}    = $OPT{clone} for qw(Users Groups);
-    $args{"Follow$_"} = $OPT{clone} for qw(Deleted Tickets Scrips ACL);
-}
-
 $args{AllUsers}      = $OPT{users}    if defined $OPT{users};
 $args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
 $args{FollowDeleted} = $OPT{deleted}  if defined $OPT{deleted};
@@ -82,7 +76,13 @@ $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
 $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
+$args{Clone}         = $OPT{clone}    if $OPT{clone};
+
 $args{GC} = defined $OPT{gc} ? $OPT{gc} : 5000;
+
+if ($OPT{clone} and grep { /^(users|groups|deleted|scrips|tickets|acls)$/ } keys %OPT) {
+    die "You cannot specify object types when cloning.\n\nPlease see $0 --help.\n";
+}
 
 my $walker;
 
@@ -251,9 +251,12 @@ Skip serialization of all ticket data.
 
 =item B<--clone>
 
-Turns on serialization all object types.  That is, C<--scrips> and C<--acls> in
-addition to explicitly specifying the defaults.  You can combine this option
-with negative flags, such as C<--clone --no-acls>.
+Serializes your entire database, creating a clone.  This option should
+be used if you want to migrate your RT database from one database type
+to another (e.g.  MySQL to Postgres).  It is an error to combine
+C<--clone> with any option that limits object types serialized.  No
+dependency walking is performed when cloning, and you can only import
+cloned exports when passing C<--clone> to C<rt-importer>.
 
 =item B<--gc> I<n>
 

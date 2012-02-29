@@ -72,6 +72,8 @@ sub Init {
         FollowTickets       => 1,
         FollowACL           => 0,
 
+        Clone   => 0,
+
         Verbose => 1,
         @_,
     );
@@ -99,6 +101,7 @@ sub Init {
                   FollowScrips
                   FollowTickets
                   FollowACL
+                  Clone
               /;
 
     $self->SUPER::Init(@_, First => "top");
@@ -109,7 +112,39 @@ sub Init {
     # Which file we're writing to
     $self->{FileCount} = 1;
 
-    $self->PushBasics;
+    if ($self->{Clone}) {
+        $self->PushAll;
+    } else {
+        $self->PushBasics;
+    }
+}
+
+sub PushAll {
+    my $self = shift;
+
+    # Ordering _shouldn't_ matter since we don't convert FK references to UIDs
+    # and hence don't have to look them up during import.
+
+    # Users and groups
+    $self->PushCollections(qw(Users Groups GroupMembers));
+
+    # Tickets
+    $self->PushCollections(qw(Queues Tickets Transactions Attachments Links));
+
+    # Articles
+    $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
+
+    # Custom Fields
+    $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+
+    # ACLs
+    $self->PushCollections(qw(ACL));
+
+    # Scrips
+    $self->PushCollections(qw(Scrips ScripActions ScripConditions Templates));
+
+    # Attributes
+    $self->PushCollections(qw(Attributes));
 }
 
 sub PushCollections {
@@ -121,6 +156,17 @@ sub PushCollections {
         $collection->FindAllRows;   # be explicit
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
+
+        if ($self->{Clone}) {
+            if ($collection->isa('RT::Tickets')) {
+                $collection->{allow_deleted_search} = 1;
+                $collection->IgnoreType; # looking_at_type
+            }
+            elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
+                # FindAllRows (find_disabled_rows) isn't used by OCFVs
+                $collection->{find_expired_rows} = 1;
+            }
+        }
 
         $self->PushObj( $collection );
     }
@@ -226,6 +272,23 @@ sub Walk {
     return $self->ObjectCount;
 }
 
+sub Process {
+    my $self = shift;
+    my %args = (
+        object => undef,
+        @_
+    );
+
+    my $uid = $args{object}->UID;
+
+    # Skip all dependency walking if we're cloning.  Marking UIDs as seen
+    # forces them to be visited immediately.
+    $self->{seen}{$uid}++
+        if $self->{Clone} and $uid;
+
+    return $self->SUPER::Process( @_ );
+}
+
 sub Files {
     my $self = shift;
     return @{ $self->{Files} };
@@ -317,7 +380,7 @@ sub Visit {
     my @store = (
         ref($obj),
         $obj->UID,
-        { $obj->Serialize( UIDs => 1 ) },
+        { $obj->Serialize( UIDs => !$self->{Clone} ) },
     );
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have
