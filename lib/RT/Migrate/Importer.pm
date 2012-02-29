@@ -121,7 +121,7 @@ sub Resolve {
     return unless $self->{Pending}{$uid};
 
     for my $ref (@{$self->{Pending}{$uid}}) {
-        my ($pclass, $pid) = @{ $self->{UIDs}{ $ref->{uid} } };
+        my ($pclass, $pid) = @{ $self->Lookup( $ref->{uid} ) };
         my $obj = $pclass->new( RT->SystemUser );
         $obj->LoadByCols( Id => $pid );
         $obj->__Set(
@@ -321,16 +321,16 @@ sub Import {
             push @{$self->{NewQueues}}, $uid
                 if $class eq "RT::Queue";
 
+            my $origid = $data->{id};
             my $obj = $self->Create( $class, $uid, $data );
             next unless $obj;
 
             # If it's a ticket, we might need to create a
             # TicketCustomField for the previous ID
             if ($class eq "RT::Ticket" and $self->{OriginalId}) {
-                my ($org, $origid) = $uid =~ /^RT::Ticket-(.*)-(\d+)$/;
                 my ($id, $msg) = $obj->AddCustomFieldValue(
                     Field             => $self->{OriginalId},
-                    Value             => "$org:$origid",
+                    Value             => $self->Organization . ":$origid",
                     RecordTransaction => 0,
                 );
                 warn "Failed to add custom field to $uid: $msg"
