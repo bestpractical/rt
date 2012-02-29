@@ -163,7 +163,8 @@ sub gnuplot {
                 set term dumb $cols @{[$rows - 12]};
                 set xlabel "Seconds";
                 unset key;
-                set autoscale;
+                set xrange [0:*];
+                set yrange [0:*];
                 set title "Queue length";
                 plot "$file" using 1:2 with lines
             '
