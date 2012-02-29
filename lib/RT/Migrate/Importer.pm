@@ -75,6 +75,9 @@ sub Init {
     if ($self->{Clone} = $args{Clone}) {
         die "RT already contains data; overwriting will not work\n"
             if RT->SystemUser->Id;
+
+        die "Cloning does not support importing the Original Id separately\n"
+            if $args{OriginalId};
     } elsif ($self->{OriginalId} = $args{OriginalId}) {
         # Where to shove the original ticket ID
         my $cf = RT::CustomField->new( RT->SystemUser );
