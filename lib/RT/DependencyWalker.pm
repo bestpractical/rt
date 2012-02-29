@@ -151,6 +151,7 @@ sub Walk {
                 $_->{object}->isa("RT::Record")
                     ? not exists $self->{visited}{$_->{uid} ||= $_->{object}->UID}
                     : ( $_->{has_results} ||= do {
+                        $_->{object}->FindAllRows;
                         $_->{object}->RowsPerPage(1);
                         $_->{object}->Count;
                     } )
