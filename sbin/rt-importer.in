@@ -115,6 +115,21 @@ if (@missing) {
     warn "    $_\n" for @missing;
 }
 
+my @invalid = $import->Invalid;
+if (@invalid) {
+    warn "The following UIDs (serialized => imported) referred to objects missing from the original database:\n";
+    for my $info (@invalid) {
+        my $uid = delete $info->{uid};
+        my $obj = $import->LookupObj($uid);
+        warn sprintf "    %s => %s (%s)\n",
+                $uid,
+                ($obj && $obj->Id ? $obj->UID : '(not imported)'),
+                join(", ", map  { "$_ => $info->{$_}" }
+                           grep { defined $info->{$_} }
+                                sort keys %$info);
+    }
+}
+
 if ($log and -s $log) {
     print STDERR "\n! Some warnings or errors occurred during import."
                 ."\n! Please see $log for details.\n\n";

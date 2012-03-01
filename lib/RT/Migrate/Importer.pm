@@ -53,6 +53,7 @@ use warnings;
 
 use Storable qw//;
 use File::Spec;
+use Carp qw/carp/;
 
 sub new {
     my $class = shift;
@@ -107,6 +108,9 @@ sub Init {
     # Columns we need to update when an object is later created
     $self->{Pending} = {};
 
+    # Objects missing from the source database before serialization
+    $self->{Invalid} = [];
+
     # What we created
     $self->{ObjectCount} = {};
 
@@ -149,6 +153,10 @@ sub Resolve {
 sub Lookup {
     my $self = shift;
     my ($uid) = @_;
+    unless (defined $uid) {
+        carp "Tried to lookup an undefined UID";
+        return;
+    }
     return $self->{UIDs}{$uid};
 }
 
@@ -175,7 +183,12 @@ sub Postpone {
         @_,
     );
     my $uid = delete $args{for};
-    push @{$self->{Pending}{$uid}}, \%args;
+
+    if (defined $uid) {
+        push @{$self->{Pending}{$uid}}, \%args;
+    } else {
+        push @{$self->{Invalid}}, \%args;
+    }
 }
 
 sub SkipTransactions {
@@ -402,6 +415,10 @@ sub List {
             delete $self->{Pending}{$uid};
             for (grep {ref $data->{$_}} keys %{$data}) {
                 my $uid_ref = ${ $data->{$_} };
+                unless (defined $uid_ref) {
+                    push @{ $self->{Invalid} }, { uid => $uid, column => $_ };
+                    next;
+                }
                 next if $found{$uid_ref};
                 next if $uid_ref =~ /^RT::Principal-/;
                 push @{$self->{Pending}{$uid_ref} ||= []}, {uid => $uid};
@@ -421,6 +438,12 @@ sub Missing {
     my $self = shift;
     return wantarray ? sort keys %{ $self->{Pending} }
         : keys %{ $self->{Pending} };
+}
+
+sub Invalid {
+    my $self = shift;
+    return wantarray ? sort { $a->{uid} cmp $b->{uid} } @{ $self->{Invalid} }
+                     : $self->{Invalid};
 }
 
 sub Organization {
@@ -452,7 +475,7 @@ sub SaveState {
         qw/Filename Seek Position Files
            Organization ObjectCount
            NewQueues NewCFs
-           SkipTransactions Pending
+           SkipTransactions Pending Invalid
            UIDs
            OriginalId Clone
           /;
