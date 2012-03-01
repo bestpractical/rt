@@ -64,6 +64,13 @@ foreach my $arg ( keys %ARGS ) {
 
     my $ticket = LoadTicket($1);
 
+    my $skip_update = 0;
+    $m->callback( CallbackName => 'BeforeApproval',
+                  skip_update => \$skip_update,
+                  Ticket  => $ticket,
+                  actions => \@actions);
+    next if $skip_update;
+
     if ( $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ) {
         my $notes = MIME::Entity->build(
 	    Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
