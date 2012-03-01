@@ -168,6 +168,7 @@ sub Walk {
             );
         }
     }
+    $self->{progress}->(undef, 'force') if $self->{progress};
 }
 
 sub Process {

@@ -367,7 +367,7 @@ sub Import {
         $self->{NewQueues} = [];
         $self->{NewCFs} = [];
     }
-
+    $self->{Progress}->(undef, 'force') if $self->{Progress};
 
     # Return creation counts
     return $self->ObjectCount;

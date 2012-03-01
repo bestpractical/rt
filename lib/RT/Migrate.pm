@@ -107,8 +107,9 @@ sub progress {
     my $offset;
     return sub {
         my $obj = shift;
+        my $force = shift;
         my $now = Time::HiRes::time();
-        return if defined $last_time and $now - $last_time <= $args{every};
+        return if defined $last_time and $now - $last_time <= $args{every} and not $force;
 
         $start = $now unless $start;
         $last_time = $now;
