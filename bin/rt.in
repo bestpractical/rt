@@ -420,7 +420,7 @@ sub show {
         }
         elsif (my $spec = is_object_spec($_, $type)) {
             push @objects, $spec;
-            $rawprint = 1 if $_ =~ /\/content$/ or $_ !~ /^ticket/;
+            $rawprint = 1 if $_ =~ /\/content$/ or $_ =~ /\/links/ or $_ !~ /^ticket/;
         }
         else {
             my $datum = /^-/ ? "option" : "argument";
