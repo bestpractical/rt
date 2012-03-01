@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 303, actual_server => 1;
+use RT::Test tests => 315, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
@@ -480,6 +480,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
         expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
         expect_send("show -s ticket/$link1_id/links", "Checking creation of $reln...");
         expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
+        expect_send("show ticket/$link1_id/links", "Checking show links without format");
+        expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Found link $reln");
 
         # delete link
         expect_send("link -d $link1_id $reln $link2_id", "Delete $reln...");
