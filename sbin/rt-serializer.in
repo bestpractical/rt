@@ -105,6 +105,9 @@ $args{Verbose} = 0 if $OPT{quiet};
 
 $walker = RT::Migrate::Serializer->new( %args );
 
+my $log = RT::Migrate::setup_logging( $walker->{Directory} => 'serializer.log' );
+print "Logging warnings and errors to $log\n" if $log;
+
 print "Beginning database serialization...";
 my %counts = $walker->Walk;
 
@@ -118,7 +121,10 @@ for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
     printf "%8d %s\n", $counts{$_}, $_;
 }
 
-
+if ($log and -s $log) {
+    print STDERR "\n! Some warnings or errors occurred during serialization."
+                ."\n! Please see $log for details.\n\n";
+}
 
 sub estimate {
     $| = 1;

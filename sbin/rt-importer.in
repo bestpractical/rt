@@ -87,6 +87,9 @@ $import = RT::Migrate::Importer->new(
     DumpObjects => $OPT{dump},
 );
 
+my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
+print "Logging warnings and errors to $log\n" if $log;
+
 my %counts;
 if ($OPT{list}) {
     %counts = $import->List( $dir );
@@ -110,6 +113,11 @@ my @missing = $import->Missing;
 if (@missing) {
     warn "The following UIDs were expected but never observed:\n";
     warn "    $_\n" for @missing;
+}
+
+if ($log and -s $log) {
+    print STDERR "\n! Some warnings or errors occurred during import."
+                ."\n! Please see $log for details.\n\n";
 }
 
 exit @missing;
