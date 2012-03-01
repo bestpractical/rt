@@ -1710,7 +1710,7 @@ sub prettyshow {
         }
         print "$k->{Content}\n" if exists $k->{Content} and
                                    $k->{Content} !~ /to have no content$/ and
-                                   $k->{Type} ne 'EmailRecord';
+                                   ($k->{Type}||'') ne 'EmailRecord';
         print "$k->{Attachments}\n" if exists $k->{Attachments} and
                                    $k->{Attachments};
     }
