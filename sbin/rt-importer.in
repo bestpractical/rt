@@ -45,7 +45,7 @@ GetOptions(
     "list|l!",
 
     "resume!",
-    "clone|C!",
+    "clone|C",
     "originalid|i=s",
 
     "dump=s@",

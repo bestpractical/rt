@@ -56,7 +56,7 @@ GetOptions(
     "tickets!",
     "acls!",
 
-    "clone!",
+    "clone",
 
     "gc=i",
 ) or Pod::Usage::pod2usage();
