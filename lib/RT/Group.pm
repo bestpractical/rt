@@ -1502,16 +1502,19 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'Group',
         Disabled => $disabled,
-        ObjectId => 0,
-        ($data->{id} and $principal_id)
+        ObjectId => ($importer->{Clone} ? $data->{id} : 0),
+        ($importer->{Clone} and $principal_id)
              ? (Id => $principal_id) : (),
     );
     $importer->Resolve( $principal_uid => ref($principal), $id );
-    $importer->Postpone(
-        for => $uid,
-        uid => $principal_uid,
-        column => "ObjectId",
-    );
+
+    unless ($importer->{Clone}) {
+        $importer->Postpone(
+            for => $uid,
+            uid => $principal_uid,
+            column => "ObjectId",
+        );
+    }
 
     return 1;
 }
