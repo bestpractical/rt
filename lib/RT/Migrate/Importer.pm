@@ -325,7 +325,8 @@ sub Import {
             # fields.  We do this before inflating, so that queues which
             # got merged still get the CFs applied
             push @{$self->{NewQueues}}, $uid
-                if $class eq "RT::Queue";
+                if $class eq "RT::Queue"
+                    and not $self->{Clone};
 
             my $origid = $data->{id};
             my $obj = $self->Create( $class, $uid, $data );
@@ -348,21 +349,24 @@ sub Import {
             # inspection
             push @{$self->{NewCFs}}, $uid
                 if $class eq "RT::CustomField"
-                    and $obj->LookupType =~ /^RT::Queue/;
+                    and $obj->LookupType =~ /^RT::Queue/
+                    and not $self->{Clone};
 
             $self->{Progress}->($obj) if $self->{Progress};
         }
     }
 
-    # Take global CFs which we made and make them un-global
-    my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
-    for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
-        my $ocf = $obj->IsApplied( 0 ) or next;
-        $ocf->Delete;
-        $obj->AddToObject( $_ ) for @queues;
+    unless ($self->{Clone}) {
+        # Take global CFs which we made and make them un-global
+        my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
+        for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
+            my $ocf = $obj->IsApplied( 0 ) or next;
+            $ocf->Delete;
+            $obj->AddToObject( $_ ) for @queues;
+        }
+        $self->{NewQueues} = [];
+        $self->{NewCFs} = [];
     }
-    $self->{NewQueues} = [];
-    $self->{NewCFs} = [];
 
 
     # Return creation counts
