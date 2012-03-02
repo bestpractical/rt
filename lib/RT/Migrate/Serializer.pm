@@ -112,6 +112,19 @@ sub Init {
     $self->PushBasics;
 }
 
+sub PushCollections {
+    my $self  = shift;
+
+    for my $type (@_) {
+        my $class = "RT::\u$type";
+        my $collection = $class->new( RT->SystemUser );
+        $collection->FindAllRows;   # be explicit
+        $collection->UnLimit;
+        $collection->OrderBy( FIELD => 'id' );
+
+        $self->PushObj( $collection );
+    }
+}
 
 sub PushBasics {
     my $self = shift;
@@ -164,12 +177,8 @@ sub PushBasics {
         my $templates = RT::Templates->new( RT->SystemUser );
         $templates->LimitToGlobal;
 
-        my $actions = RT::ScripActions->new( RT->SystemUser );
-        $actions->UnLimit;
-
-        my $conditions = RT::ScripConditions->new( RT->SystemUser );
-        $conditions->UnLimit;
-        $self->PushObj( $scrips, $templates, $actions, $conditions );
+        $self->PushObj( $scrips, $templates );
+        $self->PushCollections(qw(ScripActions ScripConditions));
     }
 
     if ($self->{AllUsers}) {
@@ -184,16 +193,9 @@ sub PushBasics {
         $self->PushObj( $groups );
     }
 
-    my $topics = RT::Topics->new( RT->SystemUser );
-    $topics->UnLimit;
+    $self->PushCollections(qw(Topics Classes));
 
-    my $classes = RT::Classes->new( RT->SystemUser );
-    $classes->UnLimit;
-    $self->PushObj( $topics, $classes );
-
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->UnLimit;
-    $self->PushObj( $queues );
+    $self->PushCollections(qw(Queues));
 }
 
 sub Walk {
