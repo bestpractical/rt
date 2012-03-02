@@ -317,7 +317,7 @@ sub Visit {
     my @store = (
         ref($obj),
         $obj->UID,
-        { $obj->Serialize },
+        { $obj->Serialize( UIDs => 1 ) },
     );
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have

@@ -2334,7 +2334,7 @@ sub Serialize {
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,
         PrincipalId => $self->PrincipalObj->Id,
-        $self->SUPER::Serialize,
+        $self->SUPER::Serialize(@_),
     );
 }
 

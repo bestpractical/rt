@@ -1663,7 +1663,10 @@ sub FindDependencies {
 
 sub Serialize {
     my $self = shift;
-    my %store = $self->SUPER::Serialize;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    return %store unless $args{UIDs};
 
     my $type = $store{Type};
     if ($type eq "CustomField") {
@@ -1715,8 +1718,10 @@ sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;
 
-    my $on_uid = ${ $data->{Object} };
-    return if $importer->ShouldSkipTransaction($on_uid);
+    if ($data->{Object} and ref $data->{Object}) {
+        my $on_uid = ${ $data->{Object} };
+        return if $importer->ShouldSkipTransaction($on_uid);
+    }
 
     if ($data->{Type} eq "DeleteLink" and ref $data->{OldValue}) {
         my $uid = ${ $data->{OldValue} };

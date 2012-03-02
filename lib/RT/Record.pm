@@ -1999,10 +1999,14 @@ sub FindDependencies {
 
 sub Serialize {
     my $self = shift;
+    my %args = (
+        Methods => {},
+        @_,
+    );
     my %methods = (
         Creator       => "CreatorObj",
         LastUpdatedBy => "LastUpdatedByObj",
-        @_,
+        %{ $args{Methods} || {} },
     );
 
     my %values = %{$self->{values}};
@@ -2013,6 +2017,7 @@ sub Serialize {
     for my $col ( @cols ) {
         $store{$col} = $values{lc $col};
         next unless $store{$col};
+        next unless $args{UIDs};
 
         my $method = $methods{$col};
         if (not $method) {
@@ -2028,7 +2033,7 @@ sub Serialize {
     }
 
     # Anything on an object should get the UID stored instead
-    if ($store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
+    if ($args{UIDs} and $store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
         delete $store{$_} for qw/ObjectType ObjectId/;
         $store{Object} = \($self->Object->UID);
     }

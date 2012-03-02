@@ -1437,10 +1437,13 @@ sub FindDependencies {
 
 sub Serialize {
     my $self = shift;
-    my %store = $self->SUPER::Serialize;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
 
-    my $instance = $self->InstanceObj;
-    $store{Instance} = \($instance->UID) if $instance;
+    if ($args{UIDs}) {
+        my $instance = $self->InstanceObj;
+        $store{Instance} = \($instance->UID) if $instance;
+    }
 
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
