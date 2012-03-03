@@ -66,6 +66,7 @@ sub Init {
     my %args = (
         First          => "top",
         GC             => 0,
+        Page           => 100,
         Progress       => undef,
         MessageHandler => \&Carp::carp,
         @_
@@ -73,6 +74,7 @@ sub Init {
 
     $self->{first}    = $args{First};
     $self->{GC}       = $args{GC};
+    $self->{Page}     = $args{Page};
     $self->{progress} = $args{Progress};
     $self->{msg}      = $args{MessageHandler},
     $self->{stack}    = [];
@@ -123,7 +125,7 @@ sub Walk {
         } else {
             unless ($ref->{unrolled}) {
                 $ref->FindAllRows;
-                $ref->RowsPerPage( 100 );
+                $ref->RowsPerPage( $self->{Page} );
                 $ref->FirstPage;
                 $ref->{unrolled}++;
             }

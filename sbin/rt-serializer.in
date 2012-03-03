@@ -59,6 +59,7 @@ GetOptions(
     "clone",
 
     "gc=i",
+    "page=i",
 ) or Pod::Usage::pod2usage();
 
 Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
@@ -78,7 +79,8 @@ $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
 $args{Clone}         = $OPT{clone}    if $OPT{clone};
 
-$args{GC} = defined $OPT{gc} ? $OPT{gc} : 5000;
+$args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
+$args{Page} = defined $OPT{page} ? $OPT{page} : 100;
 
 if ($OPT{clone} and grep { /^(users|groups|deleted|scrips|tickets|acls)$/ } keys %OPT) {
     die "You cannot specify object types when cloning.\n\nPlease see $0 --help.\n";
@@ -269,6 +271,15 @@ cloned exports when passing C<--clone> to C<rt-importer>.
 
 Adjust how often the garbage collection sweep is done; lower numbers are
 more frequent.  See L</GARBAGE COLLECTION>.
+
+=item B<--page> I<n>
+
+Adjust how many rows are pulled from the database in a single query.  Disable
+paging by setting this to 0.  Defaults to 100.
+
+Keep in mind that rows from RT's Attachments table are the limiting factor when
+determining page size.  You should likely be aiming for 60-75% of your total
+memory on an otherwise unloaded box.
 
 =item B<--quiet>
 
