@@ -124,6 +124,7 @@ sub JSFiles {
       jquery.supposition.js
       history-folding.js
       cascaded.js
+      forms.js
       event-registration.js
       late.js
       /, RT->Config->Get('JSFiles');
