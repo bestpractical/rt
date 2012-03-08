@@ -67,6 +67,19 @@ spontaneously logged in as other users in the system.
 
 =head3 mod_fcgid
 
+B<WARNING>: Before mod_fcgid 2.3.6, the maximum request size was 1GB.
+Starting in 2.3.6, this is now 128Kb.  This is unlikely to be large
+enough for any RT install that handles attachments.  You can read more
+about FcgidMaxRequestLen at
+L<http://httpd.apache.org/mod_fcgid/mod/mod_fcgid.html#fcgidmaxrequestlen>
+
+Most distributions will have a mod_fcgid.conf or similar file with
+mod_fcgid configurations and you should add:
+
+    FcgidMaxRequestLen 1073741824
+
+to return to the old default.
+
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
