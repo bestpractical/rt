@@ -186,11 +186,11 @@ which will be significantly faster:
 
     make test-parallel
 
-The C<*-trunk> and C<master> branches are expected to be passing always
-be passing all tests.  While it is acceptable to break tests in an
-intermediate commit, a branch which does not pass tests will not be
-merged.  Ideally, commits which fix a bug should also include a testcase
-which fails before the fix and succeeds after.
+The C<*-trunk> and C<master> branches are expected to always be passing
+all tests.  While it is acceptable to break tests in an intermediate
+commit, a branch which does not pass tests will not be merged.  Ideally,
+commits which fix a bug should also include a testcase which fails
+before the fix and succeeds after.
 
 
 
