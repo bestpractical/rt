@@ -97,6 +97,7 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
             # Fix message stanza nesting for Outlook's quoting styles
             if (     $stanza->{raw}
                  and not $stanza->{_outlooked}
+                 and ( $ContentType ne 'text/html' || $stanza->{raw} !~ m{<\w+.*?>} )
                  and $stanza->{raw} =~ /^               # start of an internal line
                                         \s*             # optional whitespace
                                         (?:
