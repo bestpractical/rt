@@ -2566,7 +2566,7 @@ sub ProcessTicketReminders {
           Format => 'unknown',
           Value => $args->{'NewReminder-Due'}
         );
-        my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
+        my ( $add_id, $msg ) = $Ticket->Reminders->Add(
             Subject => $args->{'NewReminder-Subject'},
             Owner   => $args->{'NewReminder-Owner'},
             Due     => $due_obj->ISO
