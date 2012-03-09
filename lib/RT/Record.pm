@@ -500,19 +500,24 @@ sub _Set {
     # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
     if ($status) {
-        $msg =
-          $self->loc(
-            "[_1] changed from [_2] to [_3]",
-            $self->loc( $args{'Field'} ),
-            ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
-            '"' . $self->__Value( $args{'Field'}) . '"' 
-          );
-      } else {
-
-          $msg = $self->CurrentUser->loc_fuzzy($msg);
+        if ($self->SQLType( $args{'Field'}) =~ /text/) {
+            $msg = $self->loc(
+                "[_1] updated",
+                $self->loc( $args{'Field'} ),
+            );
+        } else {
+            $msg = $self->loc(
+                "[_1] changed from [_2] to [_3]",
+                $self->loc( $args{'Field'} ),
+                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
+                '"' . $self->__Value( $args{'Field'}) . '"',
+            );
+        }
+    } else {
+        $msg = $self->CurrentUser->loc_fuzzy($msg);
     }
-    return wantarray ? ($status, $msg) : $ret;     
 
+    return wantarray ? ($status, $msg) : $ret;
 }
 
 
