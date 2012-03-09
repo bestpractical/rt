@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 39;
+use RT::Test tests => 41;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -34,6 +34,10 @@ $m->form_name('UpdateReminders');
 $m->field( 'NewReminder-Subject' => "link to a deleted ticket" );
 $m->submit;
 $m->content_contains("Can&#39;t link to a deleted ticket");
+$m->get_ok('/Tools/MyReminders.html');
+$m->content_contains( "baby&#39;s first reminder",
+    'got the reminder even the ticket is deleted' );
+$m->goto_ticket( $ticket->id );
 
 $ticket->SetStatus('new');
 is( $ticket->Status, 'new', 'changed back to new' );
