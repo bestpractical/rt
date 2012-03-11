@@ -2160,6 +2160,14 @@ be changed to this value.
 When an approval is denied, the status of depending tickets will
 be changed to this value.
 
+=item reminder_on_open
+
+When a reminder is opened, the status will be changed to this value.
+
+=item reminder_on_resolve
+
+When a reminder is resolved, the status will be changed to this value.
+
 =back
 
 =head2 Transitions between statuses and UI actions
@@ -2306,6 +2314,8 @@ Set(%Lifecycles,
             on_merge  => 'resolved',
             approved  => 'open',
             denied    => 'rejected',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {
@@ -2379,6 +2389,8 @@ Set(%Lifecycles,
         defaults => {
             on_create => 'new',
             on_merge => 'resolved',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {

@@ -54,13 +54,14 @@ $Edit => 0
 <%init>
 
 $Ticket = LoadTicket($id) if ($id);
+my $resolve_status = $Ticket->QueueObj->Lifecycle->ReminderStatusOnResolve;
 
 my $count_reminders = RT::Reminders->new($session{'CurrentUser'});
 $count_reminders->Ticket($Ticket->id);
 my $count_tickets = $count_reminders->Collection;
 if (!$ShowCompleted) {
     # XXX: don't break encapsulation if we can avoid it
-    $count_tickets->FromSQL('Type = "reminder" AND RefersTo = "'.$Ticket->id.'" AND Status != "resolved"');
+    $count_tickets->FromSQL(q{Type = "reminder" AND RefersTo = "} .  $Ticket->id . qq{" AND Status != "$resolve_status" });
 }
 my $has_reminders = $count_tickets->Count;
 
@@ -85,7 +86,7 @@ my $reminder_collection = $count_reminders->Collection;
 % my $visible = 0;
 % while ( my $reminder = $reminder_collection->Next ) {
 % $i++;
-% if ( $reminder->Status eq 'resolved' && !$ShowCompleted ) {
+% if ( $reminder->Status eq $resolve_status && !$ShowCompleted ) {
 <tr class="hidden"><td><input type="hidden" class="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" /></td></tr>
 % $i++;
 % } elsif ($Edit) {
@@ -105,7 +106,7 @@ my $reminder_collection = $count_reminders->Collection;
 %# we must always include resolved reminders due to the browser
 %# checkbox-with-false-value issue
 % while ( my $reminder = $reminder_collection->Next ) {
-% if ( $reminder->Status eq 'resolved' && !$ShowCompleted ) {
+% if ( $reminder->Status eq $resolve_status && !$ShowCompleted ) {
 <input type="hidden" class="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" />
 % }
 % }
@@ -139,7 +140,7 @@ $Ticket
 $Index
 </%args>
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
-<td class="entry"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> /></td>
+<td class="entry"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %> /></td>
 <td class="label"><&|/l&>Subject</&>:</td>
 <td class="entry" colspan="3"><input type="text" size="50" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>" /></td>
 </tr>
@@ -160,7 +161,7 @@ $Index
 % my $dueobj = $Reminder->DueObj;
 % my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
-<td class="collection-as-table"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' |n %> /></td>
+<td class="collection-as-table"><input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %> /></td>
 <td class="collection-as-table"><% $Reminder->Subject %></td>
 <td class="collection-as-table"><% $overdue ? '<span class="overdue">' : '' |n %><% $dueobj->AgeAsString || loc('Not set') %><% $overdue ? '</span>' : '' |n %></td>
 <td class="collection-as-table"><& /Elements/ShowUser, User => $Reminder->OwnerObj &></td>

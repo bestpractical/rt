@@ -137,7 +137,8 @@ sub Open {
     my $self = shift;
     my $reminder = shift;
 
-    my ( $status, $msg ) = $reminder->SetStatus('open');
+    my ( $status, $msg ) =
+      $reminder->SetStatus( $reminder->QueueObj->Lifecycle->ReminderStatusOnOpen );
     $self->TicketObj->_NewTransaction(
         Type => 'OpenReminder',
         Field => 'RT::Ticket',
@@ -149,7 +150,8 @@ sub Open {
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
-    my ( $status, $msg ) = $reminder->SetStatus('resolved');
+    my ( $status, $msg ) =
+      $reminder->SetStatus( $reminder->QueueObj->Lifecycle->ReminderStatusOnResolve );
     $self->TicketObj->_NewTransaction(
         Type => 'ResolveReminder',
         Field => 'RT::Ticket',
