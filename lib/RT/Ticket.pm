@@ -1910,6 +1910,31 @@ sub FirstActiveStatus {
     return $next;
 }
 
+=head2 FirstInactiveStatus
+
+Returns the first inactive status that the ticket could transition to,
+according to its current Queue's lifecycle.  May return undef if there
+is no such possible status to transition to, or we are already in it.
+This is used in resolve action in UnsafeEmailCommands, for instance.
+
+=cut
+
+sub FirstInactiveStatus {
+    my $self = shift;
+
+    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $status = $self->Status;
+    my @inactive = $lifecycle->Inactive;
+    # no change if no inactive statuses in the lifecycle
+    return undef unless @inactive;
+
+    # no change if the ticket is already has first status from the list of inactive
+    return undef if lc $status eq lc $inactive[0];
+
+    my ($next) = grep $lifecycle->IsInactive($_), $lifecycle->Transitions($status);
+    return $next;
+}
+
 =head2 SetStarted
 
 Takes a date in ISO format or undef

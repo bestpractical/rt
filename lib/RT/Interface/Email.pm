@@ -1684,17 +1684,20 @@ sub _RunUnsafeAction {
             return ( 0, "Ticket not taken" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
-        my ( $status, $msg ) = $args{'Ticket'}->SetStatus('resolved');
-        unless ($status) {
+        my $new_status = $args{'Ticket'}->FirstInactiveStatus;
+        if ($new_status) {
+            my ( $status, $msg ) = $args{'Ticket'}->SetStatus($new_status);
+            unless ($status) {
 
-            #Warn the sender that we couldn't actually submit the comment.
-            MailError(
-                To          => $args{'ErrorsTo'},
-                Subject     => "Ticket not resolved",
-                Explanation => $msg,
-                MIMEObj     => $args{'Message'}
-            );
-            return ( 0, "Ticket not resolved" );
+                #Warn the sender that we couldn't actually submit the comment.
+                MailError(
+                    To          => $args{'ErrorsTo'},
+                    Subject     => "Ticket not resolved",
+                    Explanation => $msg,
+                    MIMEObj     => $args{'Message'}
+                );
+                return ( 0, "Ticket not resolved" );
+            }
         }
     } else {
         return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
