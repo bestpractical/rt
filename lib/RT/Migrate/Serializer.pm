@@ -272,6 +272,29 @@ sub Walk {
     return $self->ObjectCount;
 }
 
+sub NextPage {
+    my ($self, $collection, $last) = @_;
+
+    $last ||= 0;
+
+    if ($self->{Clone}) {
+        # Clone provides guaranteed ordering by id and with no other id limits
+        # worry about trampling
+
+        # Use DBIx::SearchBuilder::Limit explicitly to avoid shenanigans in RT::Tickets
+        $collection->DBIx::SearchBuilder::Limit(
+            FIELD           => 'id',
+            OPERATOR        => '>',
+            VALUE           => $last,
+            ENTRYAGGREGATOR => 'none', # replaces last limit on this field
+        );
+    } else {
+        # XXX TODO: this could dig around inside the collection to see how it's
+        # limited and do the faster paging above under other conditions.
+        $self->SUPER::NextPage(@_);
+    }
+}
+
 sub Process {
     my $self = shift;
     my %args = (

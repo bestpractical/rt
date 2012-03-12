@@ -135,7 +135,7 @@ sub Walk {
                 $self->Process(%frame, object => $obj );
             }
             if (defined $last) {
-                $ref->NextPage;
+                $self->NextPage($ref => $last);
                 push @{$self->{replace}}, \%frame;
             }
         }
@@ -171,6 +171,13 @@ sub Walk {
         }
     }
     $self->{progress}->(undef, 'force') if $self->{progress};
+}
+
+sub NextPage {
+    my $self        = shift;
+    my $collection  = shift;
+
+    $collection->NextPage;
 }
 
 sub Process {
