@@ -1201,8 +1201,8 @@ sub SetInReplyTo {
         if @references > 10;
 
     my $mail = $args{'Message'};
-    $mail->head->set( 'In-Reply-To' => join ' ', @rtid? (@rtid) : (@id) ) if @id || @rtid;
-    $mail->head->set( 'References' => join ' ', @references );
+    $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
+    $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
 }
 
 sub ParseTicketId {

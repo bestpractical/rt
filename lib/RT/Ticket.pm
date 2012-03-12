@@ -2235,7 +2235,9 @@ sub _RecordNote {
     my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
         $args{'MIMEObj'}->head->set(
-            'RT-Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $self )
+            'RT-Message-ID' => Encode::encode_utf8(
+                RT::Interface::Email::GenMessageId( Ticket => $self )
+            )
         );
     }
 
