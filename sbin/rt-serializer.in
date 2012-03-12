@@ -177,8 +177,12 @@ sub gnuplot {
                 plot "$file" using 1:2 with lines
             '
         |;
-        $gnuplot =~ s/^(\s*\n)//;
-        print $gnuplot;
+        if ($? == 0 and $gnuplot) {
+            $gnuplot =~ s/^(\s*\n)//;
+            print $gnuplot;
+        } else {
+            warn "Couldn't run gnuplot (\$? == $?): $!\n";
+        }
     } else {
         print "\n" for 1..($rows - 13);
     }
