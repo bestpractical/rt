@@ -70,13 +70,15 @@ sub Init {
         Progress    => undef,
         Statefile   => undef,
         DumpObjects => undef,
+        Resume      => undef,
         @_,
     );
 
     # Should we attempt to preserve record IDs as they are created?
     if ($self->{Clone} = $args{Clone}) {
         die "RT already contains data; overwriting will not work\n"
-            if RT->SystemUser->Id;
+            if RT->SystemUser->Id and
+                not ($args{Resume} and $self->CheckRestoreState($args{Statefile}));
 
         die "Cloning does not support importing the Original Id separately\n"
             if $args{OriginalId};
@@ -451,10 +453,15 @@ sub Organization {
     return $self->{Organization};
 }
 
+sub CheckRestoreState {
+    my ($self, $statefile) = @_;
+    return $statefile && -f $statefile;
+}
+
 sub RestoreState {
     my $self = shift;
     my ($statefile) = @_;
-    return unless $statefile and -f $statefile;
+    return unless $self->CheckRestoreState(@_);
 
     my $state = Storable::retrieve( $self->{Statefile} );
     $self->{$_} = $state->{$_} for keys %{$state};

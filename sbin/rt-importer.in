@@ -85,6 +85,7 @@ $import = RT::Migrate::Importer->new(
     Progress    => $progress,
     Statefile   => $statefile,
     DumpObjects => $OPT{dump},
+    Resume      => $OPT{resume},
 );
 
 my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
