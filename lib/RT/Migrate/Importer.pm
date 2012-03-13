@@ -272,11 +272,15 @@ sub Create {
     return unless $class->PreInflate( $self, $uid, $data );
 
     my $obj = $class->new( RT->SystemUser );
-    my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
-        %{$data}
-    );
-    die "Failed to create $uid: $msg\n" . Data::Dumper::Dumper($data) . "\n"
-        unless $id;
+    my ($id, $msg) = eval {
+        # catch and rethrow on the outside so we can provide more info
+        local $SIG{__DIE__};
+        $obj->DBIx::SearchBuilder::Record::Create(
+            %{$data}
+        );
+    };
+    die "Failed to create $uid: $msg $@\n" . Data::Dumper::Dumper($data) . "\n"
+        if not $id or $@;
 
     $self->{ObjectCount}{$class}++;
     $self->Resolve( $uid => $class, $id );
