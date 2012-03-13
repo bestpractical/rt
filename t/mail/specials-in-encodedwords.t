@@ -31,7 +31,8 @@ here's some content
     my @cc = @{$ticket->Cc->UserMembersObj->ItemsArrayRef};
     is scalar @cc, 3, "three ccs";
     for my $addr (qw(a b c)) {
-        ok (scalar grep { $_->EmailAddress eq "$addr\@example.com" } @cc), "found $addr";
+        ok( (scalar grep { $_->EmailAddress eq "$addr\@example.com" } @cc),
+            "found $addr" );
     }
 }
 
