@@ -2024,7 +2024,8 @@ sub CreateTicket {
         Status          => $ARGS{'Status'},
         Due             => $due ? $due->ISO : undef,
         Starts          => $starts ? $starts->ISO : undef,
-        MIMEObj         => $MIMEObj
+        MIMEObj         => $MIMEObj,
+        TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
     );
 
     if ($ARGS{'DryRun'}) {
@@ -2039,8 +2040,7 @@ sub CreateTicket {
             push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
                 if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
         }
-        $create_args{TransSquelchMailTo} = \@txn_squelch
-            if @txn_squelch;
+        push @{$create_args{TransSquelchMailTo}}, @txn_squelch;
     }
 
     if ( $ARGS{'AttachTickets'} ) {
