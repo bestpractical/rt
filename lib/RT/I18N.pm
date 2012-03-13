@@ -219,13 +219,6 @@ sub SetMIMEEntityToEncoding {
 
     my $head = $entity->head;
 
-    # convert at least MIME word encoded attachment filename
-    foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
-	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
-	}
-    }
-
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->replace( "X-RT-Original-Encoding" => $charset )
 	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
@@ -292,7 +285,28 @@ sub DecodeMIMEWordsToEncoding {
     my $to_charset = _CanonicalizeCharset(shift);
     my $field = shift || '';
 
-    my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
+    # handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, parameter value
+    # continuations, and similar syntax from RFC 2231
+    if ($field =~ /^Content-(Type|Disposition)/i) {
+        # This concatenates continued parameters and normalizes encoded params
+        # to QB encoded-words which we handle below
+        $str = MIME::Field::ParamVal->parse($str)->stringify;
+    }
+
+    # XXX TODO: use decode('MIME-Header', ...) and Encode::Alias to replace our
+    # custom MIME word decoding and charset canonicalization.  We can't do this
+    # until we parse before decode, instead of the other way around.
+    my @list = $str =~ m/(.*?)          # prefix
+                         =\?            # =?
+                         ([^?]+?)       # charset
+                         (?:\*[^?]+)?   # optional '*language'
+                         \?             # ?
+                         ([QqBb])       # encoding
+                         \?             # ?
+                         ([^?]+)        # encoded string
+                         \?=            # ?=
+                         ([^=]*)        # trailing
+                        /xgcs;
 
     if ( @list ) {
         # add everything that hasn't matched to the end of the latest
@@ -349,27 +363,6 @@ sub DecodeMIMEWordsToEncoding {
             $str .= $prefix . $enc_str . $trailing;
         }
     }
-
-# handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, see also rfc 2231
-    @list = $str =~ m/(.*?\*=)([^']*?)'([^']*?)'(\S+)(.*?)(?=(?:\*=|$))/gcs;
-    if (@list) {
-        $str = '';
-        while (@list) {
-            my ( $prefix, $charset, $language, $enc_str, $trailing ) =
-              splice @list, 0, 5;
-            $prefix =~ s/\*=$/=/; # remove the *
-            $charset = _CanonicalizeCharset($charset);
-            $enc_str =~ s/%(\w{2})/chr hex $1/eg;
-            unless ( $charset eq $to_charset ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
-            }
-            $enc_str = qq{"$enc_str"}
-              if $enc_str =~ /[,;]/
-              and $enc_str !~ /^".*"$/
-              and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
-            $str .= $prefix . $enc_str . $trailing;
-        }
-     }
 
     # We might have \n without trailing whitespace, which will result in
     # invalid headers.

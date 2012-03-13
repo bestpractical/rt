@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 8;
+use RT::Test nodb => 1, tests => 9;
 
 use_ok('RT::I18N');
 
@@ -59,11 +59,29 @@ diag q{newline and encoded file name};
 diag q{rfc2231};
 {
     my $str =
-"filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74 filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
+"attachment; filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74";
     is(
-        RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8' ),
-        'filename=tést.txt filename=tést.txt',
-        'right decodig'
+        RT::I18N::DecodeMIMEWordsToEncoding( $str, 'utf-8', 'Content-Disposition' ),
+        'attachment; filename="tést.txt"',
+        'right decoding'
+    );
+}
+
+diag q{rfc2231 param continuations};
+{
+    # XXX TODO: test various forms of the continuation stuff
+    #       quotes around the values
+    my $hdr = <<'.';
+inline;
+ filename*0*=ISO-2022-JP'ja'%1b$B%3f7$7$$%25F%25%2d%259%25H%1b%28B;
+ filename*1*=%20;
+ filename*2*=%1b$B%25I%25%2d%25e%25a%25s%25H%1b%28B;
+ filename*3=.txt
+.
+    is(
+        RT::I18N::DecodeMIMEWordsToEncoding( $hdr, 'utf-8', 'Content-Disposition' ),
+        'inline; filename="新しいテキスト ドキュメント.txt"',
+        'decoded continuations as one string'
     );
 }
 
