@@ -2027,13 +2027,21 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
 
-    my @txn_squelch;
-    foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
-            if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+    if ($ARGS{'DryRun'}) {
+        $create_args{DryRun} = 1;
+        $create_args{Owner}     ||= $RT::Nobody->Id;
+        $create_args{Requestor} ||= $session{CurrentUser}->EmailAddress;
+        $create_args{Subject}   ||= '';
+        $create_args{Status}    ||= $Queue->Lifecycle->DefaultOnCreate,
+    } else {
+        my @txn_squelch;
+        foreach my $type (qw(Requestor Cc AdminCc)) {
+            push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
+                if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+        }
+        $create_args{TransSquelchMailTo} = \@txn_squelch
+            if @txn_squelch;
     }
-    $create_args{TransSquelchMailTo} = \@txn_squelch
-        if @txn_squelch;
 
     if ( $ARGS{'AttachTickets'} ) {
         require RT::Action::SendEmail;
@@ -2051,6 +2059,8 @@ sub CreateTicket {
     my %links = ProcessLinksForCreate( ARGSRef => \%ARGS );
 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %links, %cfs);
+    return $Trans if $ARGS{DryRun};
+
     unless ($id) {
         Abort($ErrMsg);
     }
