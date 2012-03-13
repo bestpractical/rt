@@ -285,7 +285,7 @@ sub Create {
         $self->CurrentUser->HasRight(
             Right  => 'CreateTicket',
             Object => $QueueObj
-        )
+        ) and $QueueObj->Disabled != 1
       )
     {
         return (
@@ -1704,7 +1704,8 @@ sub SetQueue {
     if ( $NewQueueObj->Id == $self->QueueObj->Id ) {
         return ( 0, $self->loc('That is the same value') );
     }
-    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket', Object => $NewQueueObj)) {
+    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket', Object => $NewQueueObj)
+         and $NewQueueObj->Disabled != 1) {
         return ( 0, $self->loc("You may not create requests in that queue.") );
     }
 
