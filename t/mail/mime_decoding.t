@@ -81,7 +81,7 @@ inline;
     is(
         RT::I18N::DecodeMIMEWordsToEncoding( $hdr, 'utf-8', 'Content-Disposition' ),
         'inline; filename="新しいテキスト ドキュメント.txt"',
-        'decoded, but continuations preserved'
+        'decoded continuations as one string'
     );
 }
 
