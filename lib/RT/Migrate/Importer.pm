@@ -322,7 +322,7 @@ sub Import {
     };
 
     local $SIG{  INT  } = sub { $self->{INT} = 1 };
-    local $SIG{__DIE__} = sub { print STDERR "\n", @_; $self->SaveState; exit 1 };
+    local $SIG{__DIE__} = sub { warn "\n", @_; $self->SaveState; exit 1 };
 
     $self->{Progress}->(undef) if $self->{Progress};
     while (@{$self->{Files}}) {
