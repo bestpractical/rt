@@ -71,6 +71,7 @@ sub Init {
         Statefile   => undef,
         DumpObjects => undef,
         Resume      => undef,
+        HandleError => undef,
         @_,
     );
 
@@ -98,6 +99,10 @@ sub Init {
 
     $self->{Progress}  = $args{Progress};
     $self->{Statefile} = $args{Statefile};
+
+    $self->{HandleError} = sub { 0 };
+    $self->{HandleError} = $args{HandleError}
+        if $args{HandleError} and ref $args{HandleError} eq 'CODE';
 
     if ($args{DumpObjects}) {
         require Data::Dumper;
@@ -279,8 +284,15 @@ sub Create {
             %{$data}
         );
     };
-    die "Failed to create $uid: $msg $@\n" . Data::Dumper::Dumper($data) . "\n"
-        if not $id or $@;
+    if (not $id or $@) {
+        $msg ||= ''; # avoid undef
+        my $err = "Failed to create $uid: $msg $@\n" . Data::Dumper::Dumper($data) . "\n";
+        if (not $self->{HandleError}->($self, $err)) {
+            die $err;
+        } else {
+            return;
+        }
+    }
 
     $self->{ObjectCount}{$class}++;
     $self->Resolve( $uid => $class, $id );

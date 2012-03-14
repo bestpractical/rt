@@ -48,6 +48,9 @@ GetOptions(
     "clone|C",
     "originalid|i=s",
 
+    "ask",
+    "ignore-errors",
+
     "dump=s@",
 ) or Pod::Usage::pod2usage();
 
@@ -78,6 +81,29 @@ if ($OPT{dump}) {
     $OPT{dump} = [ split /,/, join(',', @{$OPT{dump}}) ];
 }
 
+my $error_handler;
+if ($OPT{ask}) {
+    die "Interactive mode (--ask) doesn't work when STDERR and STDIN aren't terminals.\n"
+        unless -t STDERR and -t STDIN;
+
+    $error_handler = sub {
+        my $importer = shift;
+        local $| = 1;
+        print STDERR "\n", @_, "\n";
+        print STDERR "Hit any key to abort import, or type 'ignore' to continue anyway.\n";
+        print STDERR "Continuing may leave you with a corrupt database. > ";
+        chomp( my $resp = <STDIN> );
+        return lc($resp) eq 'ignore';
+    };
+}
+elsif ($OPT{'ignore-errors'}) {
+    $error_handler = sub {
+        my $importer = shift;
+        warn "Ignoring error: ", @_;
+        return 1;
+    };
+}
+
 my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
     Clone       => $OPT{clone},
@@ -86,6 +112,7 @@ $import = RT::Migrate::Importer->new(
     Statefile   => $statefile,
     DumpObjects => $OPT{dump},
     Resume      => $OPT{resume},
+    HandleError => $error_handler,
 );
 
 my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
@@ -177,6 +204,27 @@ system data.
 Places the original ticket organization and ID into a global custom
 field with the given name.  If no global ticket custom field with that
 name is found in the current database, it will create one.
+
+=item B<--ask>
+
+Prompt for action when an error occurs inserting a record into the
+database.  This can often happen when importing data from very old RTs
+where some attachments (usually spam) contain invalid UTF-8.
+
+The importer will pause and ask if you want to ignore the error and
+continue on or abort (potentially to restart later).  Ignoring errors
+will result in missing records in the database, which may cause database
+integrity problems later.  If you ignored any errors, you should run
+C<rt-validator> after import.
+
+=item B<--ignore-errors>
+
+Ignore all record creation errors and continue on when importing.  This
+is equivalent to running with C<--ask> and manually typing "ignore" at
+every prompt.  You should always run C<rt-validator> after importing
+with errors ignored.
+
+B<This option can be dangerous and leave you with a broken RT!>
 
 =item B<--dump> I<class>[,I<class>]
 
