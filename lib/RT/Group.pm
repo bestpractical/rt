@@ -465,7 +465,7 @@ sub _Create {
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as 
     # cached members. thankfully, we're creating the group now...so it has no members.
     my $cgm = RT::CachedGroupMember->new($self->CurrentUser);
-    $cgm->Create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
+    $cgm->Create( Group => $self->PrincipalObj, Member => $self->PrincipalObj );
 
 
     if ( $args{'_RecordTransaction'} ) {
@@ -669,24 +669,20 @@ This routine finds all the cached group members that are members of this group  
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-    $cached_submembers->Limit( FIELD    => 'ImmediateParentId', OPERATOR => '=', VALUE    => $self->Id);
+    my $cgm = RT::CachedGroupMember->new( $self->CurrentUser );
+    $cgm->LoadByCols( MemberId => $self->id, GroupId => $self->id );
+    my ($status) = $cgm->SetDisabled($val);
+    unless ( $status ) {
+        $RT::Handle->Rollback;
+        $RT::Logger->warning("Couldn't disable cached group member #". $cgm->Id);
+        return (undef);
+    }
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
     RT::Principal->InvalidateACLCache();
 
 
-
-    while ( my $item = $cached_submembers->Next() ) {
-        my $del_err = $item->SetDisabled($val);
-        unless ($del_err) {
-            $RT::Handle->Rollback();
-            $RT::Logger->warning("Couldn't disable cached group submember ".$item->Id);
-            return (undef);
-        }
-    }
 
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
 
@@ -696,7 +692,6 @@ This routine finds all the cached group members that are members of this group  
     } else {
         return (1, $self->loc("Group enabled"));
     }
-
 }
 
 

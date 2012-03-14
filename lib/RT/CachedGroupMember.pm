@@ -82,14 +82,6 @@ Create takes a hash of values and creates a row in the database:
   'Member' is the RT::Principal  of the user or group we're adding to 
   the cache.
 
-  'ImmediateParent' is the RT::Principal of the group that this 
-  principal belongs to to get here
-
-  int(11) 'Via' is an internal reference to CachedGroupMembers->Id of
-  the "parent" record of this cached group member. It should be empty if 
-  this member is a "direct" member of this group. (In that case, it will 
-  be set to this cached group member's id after creation)
-
   This routine should _only_ be called by GroupMember->Create
 
 =cut
@@ -138,7 +130,7 @@ sub Create {
     unless ($id) {
         $RT::Logger->warning(
             "Couldn't create ". $args{'Member'} ." as a cached member of "
-            . $args{'Group'} ." via ". $args{'Via'}
+            . $args{'Group'}
         );
         return (undef);
     }
@@ -208,7 +200,7 @@ Deletes the current CachedGroupMember from the group it's in and cascades
 the delete to all submembers. This routine could be completely excised if
 mysql supported foreign keys with cascading deletes.
 
-=cut 
+=cut
 
 sub Delete {
     my $self = shift;
@@ -358,12 +350,12 @@ SetDisableds the current CachedGroupMember from the group it's in and cascades
 the SetDisabled to all submembers. This routine could be completely excised if
 mysql supported foreign keys with cascading SetDisableds.
 
-=cut 
+=cut
 
 sub SetDisabled {
     my $self = shift;
     my $val = shift;
- 
+
     # if it's already disabled, we're good.
     return (1) if ( $self->__Value('Disabled') == $val);
     my $err = $self->_Set(Field => 'Disabled', Value => $val);
@@ -372,7 +364,7 @@ sub SetDisabled {
         $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id .": $msg");
         return ($err);
     }
-    
+
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
         my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
@@ -408,22 +400,7 @@ sub GroupObj {
 
 
 
-=head2 ImmediateParentObj  
-
-Returns the RT::Principal object for this group ImmediateParent
-
-=cut
-
-sub ImmediateParentObj {
-    my $self      = shift;
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    $principal->Load( $self->ImmediateParentId );
-    return ($principal);
-}
-
-
-
-=head2 MemberObj  
+=head2 MemberObj
 
 Returns the RT::Principal object for this group member
 
@@ -487,57 +464,16 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-
-=head2 Via
-
-Returns the current value of Via.
-(In the database, Via is stored as int(11).)
-
-
-
-=head2 SetVia VALUE
-
-
-Set Via to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Via will be stored as a int(11).)
-
-
-=cut
-
-
-=head2 ImmediateParentId
-
-Returns the current value of ImmediateParentId.
-(In the database, ImmediateParentId is stored as int(11).)
-
-
-
-=head2 SetImmediateParentId VALUE
-
-
-Set ImmediateParentId to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ImmediateParentId will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Disabled
 
 Returns the current value of Disabled.
 (In the database, Disabled is stored as smallint(6).)
 
-
-
 =head2 SetDisabled VALUE
-
 
 Set Disabled to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Disabled will be stored as a smallint(6).)
-
 
 =cut
 
@@ -908,21 +844,15 @@ per user.
 
 sub _CoreAccessible {
     {
-
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         GroupId =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         MemberId =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
-        Via =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
-        ImmediateParentId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Disabled =>
 		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
-
- }
+    }
 };
 
 RT::Base->_ImportOverlays();

@@ -225,8 +225,6 @@ sub _StashUser {
     my $cached_id     = $cached_member->Create(
         Member          => $args{'Member'},
         Group           => $args{'Group'},
-        ImmediateParent => $args{'Group'},
-        Via             => '0'
     );
 
     unless ($cached_id) {
