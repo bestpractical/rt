@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 187;
+use RT::Test tests => 181;
 use Test::Warn;
 use RT::Dashboard::Mailer;
 
@@ -138,17 +138,6 @@ sub delete_dashboard { # {{{
     ok($ok, $msg);
 } # }}}
 
-sub delete_subscriptions { # {{{
-    my $subscription_id = shift;
-    # delete the dashboard and make sure we get exactly one subscription failure
-    # notice
-    my $user = RT::User->new(RT->SystemUser);
-    $user->Load('root');
-    for my $subscription ($user->Attributes->Named('Subscription')) {
-        $subscription->Delete;
-    }
-} # }}}
-
 my $good_time = 1290423660; # 6:01 EST on a monday
 my $bad_time  = 1290427260; # 7:01 EST on a monday
 
@@ -223,21 +212,9 @@ SKIP: {
 
 delete_dashboard($dashboard_id);
 
-warning_like {
-    RT::Dashboard::Mailer->MailDashboards(All => 1);
-} qr/Unable to load dashboard $dashboard_id of subscription $subscription_id for user root/;
-
-@mails = RT::Test->fetch_caught_mails;
-is(@mails, 1, "one mail for subscription failure");
-$mail = parse_mail($mails[0]);
-is($mail->head->get('Subject'), "[example.com] Missing dashboard!\n");
-is($mail->head->get('From'), "dashboard\@example.com\n");
-is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
-is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
-
 RT::Dashboard::Mailer->MailDashboards(All => 1);
 @mails = RT::Test->fetch_caught_mails;
-is(@mails, 0, "no mail because the subscription notice happens only once");
+is(@mails, 0, "no mail because the subscription is deleted");
 
 RT::Test->stop_server;
 RT::Test->clean_caught_mails;
@@ -277,7 +254,6 @@ RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
 ($baseurl, $m) = RT::Test->started_ok;
 
 delete_dashboard($dashboard_id);
-delete_subscriptions();
 
 RT::Test->clean_caught_mails;
 
@@ -330,7 +306,6 @@ RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
 ($baseurl, $m) = RT::Test->started_ok;
 
 delete_dashboard($dashboard_id);
-delete_subscriptions();
 
 RT::Test->clean_caught_mails;
 
@@ -373,7 +348,6 @@ RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
 ($baseurl, $m) = RT::Test->started_ok;
 
 delete_dashboard($dashboard_id);
-delete_subscriptions();
 
 RT::Test->clean_caught_mails;
 
