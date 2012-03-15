@@ -355,32 +355,75 @@ mysql supported foreign keys with cascading SetDisableds.
 sub SetDisabled {
     my $self = shift;
     my $val = shift;
+    $val = $val ? 1 : 0;
 
     # if it's already disabled, we're good.
-    return (1) if ( $self->__Value('Disabled') == $val);
-    my $err = $self->_Set(Field => 'Disabled', Value => $val);
-    my ($retval, $msg) = $err->as_array();
-    unless ($retval) {
-        $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id .": $msg");
-        return ($err);
-    }
+    return (1) if $self->__Value('Disabled') == $val;
 
-    my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
-        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-        $deletable->Limit( FIELD    => 'Via', OPERATOR => '=', VALUE    => $self->id );
-        $deletable->Limit( FIELD    => 'id', OPERATOR => '!=', VALUE    => $self->id );
-
-        while ( my $kid = $deletable->Next ) {
-            my $kid_err = $kid->SetDisabled($val );
-            unless ($kid_err) {
-                $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $kid->Id );
-                return ($kid_err);
-            }
+    if ( $val ) {
+        unless ( $self->GroupId == $self->MemberId ) {
+            $RT::Logger->error("SetDisabled should only be applied to (G->G) records");
+            return undef;
         }
+
+        my $query = "SELECT main.id FROM CachedGroupMembers main
+            WHERE main.Disabled = 0 AND main.GroupId = ?";
+
+        $RT::Handle->SimpleUpdateFromSelect(
+            $self->Table, { Disabled => 1 }, $query,
+            $self->GroupId,
+        ) or return undef;
+
+        $query = "SELECT main.id FROM CachedGroupMembers main
+            JOIN CachedGroupMembers CGM1 ON main.GroupId = CGM1.GroupId
+                AND CGM1.MemberId = ?
+            JOIN CachedGroupMembers CGM2 ON main.MemberId = CGM2.MemberId
+                AND CGM2.GroupId = ? AND CGM2.GroupId != CGM2.MemberId
+
+            WHERE main.Disabled = 0
+                AND NOT EXISTS (
+                    SELECT CGM3.id
+                    FROM CachedGroupMembers CGM3, CachedGroupMembers CGM4
+                    WHERE CGM3.Disabled = 0 AND CGM4.Disabled = 0
+                        AND CGM3.GroupId = main.GroupId
+                        AND CGM3.MemberId = CGM4.GroupId
+                        AND CGM4.MemberId = main.MemberId
+                        AND CGM3.id != main.id
+                        AND CGM4.id != main.id
+                )
+        ";
+
+
+
+        $RT::Handle->SimpleUpdateFromSelect(
+            $self->Table, { Disabled => 1 }, $query,
+            ($self->GroupId)x2,
+        ) or return undef;
     }
-    return ($err);
+    else {
+        my ($status, $msg) = $self->_Set(Field => 'Disabled', Value => $val);
+        unless ( $status ) {
+            $RT::Logger->error(
+                "Couldn't SetDisabled CachedGroupMember #" . $self->Id .": $msg"
+            );
+            return $status;
+        }
+        REDO:
+        my $query = "SELECT main.id FROM CachedGroupMembers main
+            JOIN CachedGroupMembers CGM1 ON main.GroupId = CGM1.GroupId
+                AND CGM1.MemberId = ?
+            JOIN CachedGroupMembers CGM2 ON main.MemberId = CGM2.MemberId
+                AND CGM2.GroupId = ?
+            WHERE main.Disabled = 1";
+
+        my $res = $RT::Handle->SimpleUpdateFromSelect(
+            $self->Table, { Disabled => 0 }, $query,
+            $self->GroupId, $self->MemberId
+        ) or return undef;
+        goto REDO if $res > 0;
+    }
+    if ( my $m = $self->can('_FlushKeyCache') ) { $m->($self) };
+    return (1);
 }
 
 
