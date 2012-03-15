@@ -937,7 +937,7 @@ sub _AddMember {
         InsideTransaction => $args{'InsideTransaction'}
     );
     if ($id) {
-        return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
+        return ( $id, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
     }
     else {
         return(0, $self->loc("Couldn't add member to group"));
