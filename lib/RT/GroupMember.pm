@@ -153,18 +153,17 @@ sub Create {
     }
 
 
-    my $id = $self->SUPER::Create(
+    my ($id) = $self->SUPER::Create(
         GroupId  => $gid,
         MemberId => $mid
     );
-
     unless ($id) {
         $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         return (undef);
     }
 
     my $cached_member = RT::CachedGroupMember->new( $self->CurrentUser );
-    my $cached_id     = $cached_member->Create(
+    my ($cached_id)     = $cached_member->Create(
         Group           => $args{'Group'},
         Member          => $args{'Member'},
     );
