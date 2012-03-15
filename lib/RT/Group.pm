@@ -1122,11 +1122,11 @@ sub _AddMember {
         }
     }
 
-    return (1, $self->loc("[_1] set to [_2]",
+    return ($id, $self->loc("[_1] set to [_2]",
                           $self->loc($self->Name), $new_member_obj->Object->Name) )
         if $self->SingleMemberRoleGroup;
 
-    return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
+    return ($id, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
 }
 
 
