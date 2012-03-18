@@ -105,10 +105,14 @@ sub JoinTransactions {
         TABLE2 => 'Transactions',
         FIELD2 => 'ObjectId',
     );
+
+    my $item = $self->NewItem;
+    my $object_type = $item->can('ObjectType') ? $item->ObjectType : ref $item;
+
     $self->RT::SearchBuilder::Limit(
         LEFTJOIN => $alias,
         FIELD    => 'ObjectType',
-        VALUE    => ref $self->NewItem,
+        VALUE    => $object_type,
     );
     $self->{'_sql_aliases'}{'transactions'} = $alias
         unless $args{'New'};

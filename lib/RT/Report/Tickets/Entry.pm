@@ -83,6 +83,10 @@ sub LabelValue {
     return $value;
 }
 
+sub ObjectType {
+    return 'RT::Ticket';
+}
+
 RT::Base->_ImportOverlays();
 
 1;
