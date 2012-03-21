@@ -10,6 +10,9 @@ use RT::Test
 
 my ($base, $m) = RT::Test->started_ok;
 
+$m->warning_like(qr/If this is a new installation of RT/,
+                 "Got startup warning");
+
 $m->get_ok($base);
 like $m->uri, qr/Install/, 'at installer';
 
