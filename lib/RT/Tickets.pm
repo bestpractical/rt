@@ -3379,7 +3379,11 @@ sub _RestrictionsToClauses {
         # here is where we store extra data, say if it's a keyword or
         # something.  (I.e. "TYPE SPECIFIC STUFF")
 
-        push @{ $clause{$realfield} }, $data;
+        if (lc $ea eq 'none') {
+            $clause{$realfield} = [ $data ];
+        } else {
+            push @{ $clause{$realfield} }, $data;
+        }
     }
     return \%clause;
 }
