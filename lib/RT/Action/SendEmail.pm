@@ -827,33 +827,66 @@ sub RemoveInappropriateRecipients {
             Email::Address->parse( $address );
     }
 
-    # Cycle through the people we're sending to and pull out anyone on the blacklist
-    foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
-        my @addrs;
-        foreach my $addr ( @{ $self->{$type} } ) {
+    $self->RecipientFilter(
+        Callback => sub {
+            return unless RT::EmailParser->IsRTAddress( $_[0] );
+            return "$_[0] appears to point to this RT instance. Skipping";
+        },
+        All => 1,
+    );
 
-         # Weed out any RT addresses. We really don't want to talk to ourselves!
-         # If we get a reply back, that means it's not an RT address
-            if ( !RT::EmailParser->CullRTAddresses($addr) ) {
-                $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
-                next;
-            }
-            if ( my $reason = $blacklist{ lc $addr } ) {
-                $RT::Logger->info( $msgid . " $addr is blacklisted $squelch_reasons{ $reason }. Skipping" );
-                next;
+    $self->RecipientFilter(
+        Callback => sub {
+            return unless $blacklist{ lc $_[0] };
+            return "$_[0] is blacklisted $squelch_reasons{ $blacklist{ lc $_[0] } }. Skipping";
+        },
+    );
+
+
+    # Cycle through the people we're sending to and pull out anyone that meets any of the callbacks
+    for my $type (@EMAIL_RECIPIENT_HEADERS) {
+        my @addrs;
+
+      ADDRESS:
+        for my $addr ( @{ $self->{$type} } ) {
+            for my $filter ( map {$_->{Callback}} @{$self->{RecipientFilter}} ) {
+                my $skip = $filter->($addr);
+                next unless $skip;
+                $RT::Logger->info( "$msgid $skip" );
+                next ADDRESS;
             }
             push @addrs, $addr;
         }
-        foreach my $addr ( @{ $self->{'NoSquelch'}{$type} || [] } ) {
-            # never send email to itself
-            if ( !RT::EmailParser->CullRTAddresses($addr) ) {
-                $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
-                next;
+
+      NOSQUELCH_ADDRESS:
+        for my $addr ( @{ $self->{NoSquelch}{$type} } ) {
+            for my $filter ( map {$_->{Callback}} grep {$_->{All}} @{$self->{RecipientFilter}} ) {
+                my $skip = $filter->($addr);
+                next unless $skip;
+                $RT::Logger->info( "$msgid $skip" );
+                next NOSQUELCH_ADDRESS;
             }
             push @addrs, $addr;
         }
+
         @{ $self->{$type} } = @addrs;
     }
+}
+
+=head2 RecipientFilter Callback => SUB, [All => 1]
+
+Registers a filter to be applied to addresses by
+L<RemoveInappropriateRecipients>.  The C<Callback> will be called with
+one address at a time, and should return false if the address should
+receive mail, or a message explaining why it should not be.  Passing a
+true value for C<All> will cause the filter to also be applied to
+NoSquelch (one-time Cc and Bcc) recipients as well.
+
+=cut
+
+sub RecipientFilter {
+    my $self = shift;
+    push @{ $self->{RecipientFilter}}, {@_};
 }
 
 =head2 SetReturnAddress is_comment => BOOLEAN
