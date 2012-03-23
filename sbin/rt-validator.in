@@ -423,7 +423,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
     $res *= check_integrity(
         GroupMembers       => ['GroupId', 'MemberId'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
-        join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
         action => sub {
             my $id = shift;
             return unless prompt(
@@ -436,33 +435,14 @@ push @CHECKS, 'CGM vs. GM' => sub {
             die "Couldn't load GM record #$id" unless $gm->id;
             my $cgm = create_record( 'CachedGroupMembers',
                 GroupId => $gm->GroupId, MemberId => $gm->MemberId,
-                ImmediateParentId => $gm->GroupId, Via => undef,
-                Disabled => 0, # XXX: we should check integrity of Disabled field
             );
-            update_records( "CachedGroupMembers", { id => $cgm }, { Via => $cgm } );
         },
     );
-    # all first level CGM records should have a GM record
-    $res *= check_integrity(
-        CachedGroupMembers => ['GroupId', 'MemberId'],
-        GroupMembers       => ['GroupId', 'MemberId'],
-        condition     => 's.ImmediateParentId = s.GroupId AND s.Via = s.id AND s.GroupId != s.MemberId',
-        action => sub {
-            my $id = shift;
-            return unless prompt(
-                'Delete',
-                "Found a record in CachedGroupMembers for a (Group, Member) pair"
-                ." that doesn't exist in the GroupMembers table."
-            );
 
-            delete_record( 'CachedGroupMembers', $id );
-        },
-    );
     # each group should have a CGM record where MemberId == GroupId
     $res *= check_integrity(
         Groups => ['id', 'id'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
-        join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
         action => sub {
             my $id = shift;
             return unless prompt(
@@ -477,13 +457,9 @@ push @CHECKS, 'CGM vs. GM' => sub {
             die "Loaded group by $id has id ". $g->id  unless $g->id == $id;
             my $cgm = create_record( 'CachedGroupMembers',
                 GroupId => $id, MemberId => $id,
-                ImmediateParentId => $id, Via => undef,
-                Disabled => $g->Disabled,
             );
-            update_records( "CachedGroupMembers", { id => $cgm }, { Via => $cgm } );
         },
     );
-
     # and back, each record in CGM with MemberId == GroupId without exceptions
     # should reference a group
     $res *= check_integrity(
@@ -500,97 +476,223 @@ push @CHECKS, 'CGM vs. GM' => sub {
             delete_record( 'CachedGroupMembers', $id );
         },
     );
-    # Via
-    $res *= check_integrity(
-        CachedGroupMembers => 'Via',
-        CachedGroupMembers => 'id',
-        action => sub {
-            my $id = shift;
-            return unless prompt(
-                'Delete',
-                "Found a record in CachedGroupMembers with Via that references a nonexistent record."
-            );
 
-            delete_record( 'CachedGroupMembers', $id );
-        },
-    );
-
-    # for every CGM where ImmediateParentId != GroupId there should be
-    # matching parent record (first level) 
-    $res *= check_integrity(
-        CachedGroupMembers => ['ImmediateParentId', 'MemberId'],
-        CachedGroupMembers => ['GroupId', 'MemberId'],
-        join_condition => 't.Via = t.id',
-        condition => 's.ImmediateParentId != s.GroupId',
-        action => sub {
-            my $id = shift;
-            return unless prompt(
-                'Delete',
-                "Found a record in CachedGroupMembers that references a nonexistent record in CachedGroupMembers table."
-            );
-
-            delete_record( 'CachedGroupMembers', $id );
-        },
-    );
-
-    # for every CGM where ImmediateParentId != GroupId there should be
-    # matching "grand" parent record
-    $res *= check_integrity(
-        CachedGroupMembers => ['GroupId', 'ImmediateParentId', 'Via'],
-        CachedGroupMembers => ['GroupId', 'MemberId', 'id'],
-        condition => 's.ImmediateParentId != s.GroupId',
-        action => sub {
-            my $id = shift;
-            return unless prompt(
-                'Delete',
-                "Found a record in CachedGroupMembers that references a nonexistent record in CachedGroupMembers table."
-            );
-
-            delete_record( 'CachedGroupMembers', $id );
-        },
-    );
-
-    # CHECK recursive records:
-    # if we have CGM1 (G1,M1,V1,IP1) then for every GM2(G2, M2), where G2 == M1,
-    # we should have CGM3 where G3 = G1, M3 = M2, V3 = ID1, IP3 = M1
+    # a CGM record (where MemberId != GroupId) should either match GM record
+    # or two CGM records
     {
         my $query = <<END;
-SELECT cgm1.GroupId, gm2.MemberId, cgm1.id AS Via,
-    cgm1.MemberId AS ImmediateParentId, cgm1.Disabled
+SELECT CGM.id
 FROM
-    CachedGroupMembers cgm1
-    CROSS JOIN GroupMembers gm2
-    LEFT JOIN CachedGroupMembers cgm3 ON (
-            cgm3.GroupId           = cgm1.GroupId
-        AND cgm3.MemberId          = gm2.MemberId
-        AND cgm3.Via               = cgm1.id
-        AND cgm3.ImmediateParentId = cgm1.MemberId )
-WHERE cgm1.GroupId != cgm1.MemberId
-AND gm2.GroupId = cgm1.MemberId
-AND cgm3.id IS NULL
+    CachedGroupMembers CGM
+WHERE
+    CGM.GroupId != CGM.MemberId
+    AND NOT EXISTS (
+        SELECT 1 FROM GroupMembers GM
+        WHERE GM.GroupId = CGM.GroupId
+            AND GM.MemberId = CGM.MemberId
+    )
+    AND NOT EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGML, CachedGroupMembers CGMR
+        WHERE
+                CGML.GroupId = CGM.GroupId
+            AND CGML.MemberId = CGMR.GroupId
+            AND CGMR.MemberId = CGM.MemberId
+
+            AND CGML.GroupId != CGML.MemberId
+            AND CGMR.GroupId != CGMR.MemberId
+    )
 END
 
-        my $action = sub {
-            my %props = @_;
-            return unless prompt(
-                'Create',
-                "Found records in CachedGroupMembers table without recursive duplicates."
-            );
-            my $cgm = create_record( 'CachedGroupMembers', %props );
-        };
-
         my $sth = execute_query( $query );
-        while ( my ($g, $m, $via, $ip, $dis) = $sth->fetchrow_array ) {
+        while ( my ($id) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,";
-            print STDERR " but there is no cached GM record that $m is member of #$g.\n";
-            $action->(
-                GroupId => $g, MemberId => $m, Via => $via,
-                ImmediateParentId => $ip, Disabled => $dis,
+            print STDERR "CGM #$id has no corresponding record in GM or pair in CGM table\n";
+            next unless prompt(
+                'Delete',
+                "Found records in CachedGroupMembers table that have no origin."
+            );
+            delete_record( 'CachedGroupMembers', $id );
+        }
+    }
+
+    # now, when we are sure all CGM records have ground then we can check missing
+    # records based on other CGM records
+    {
+         my $query = <<END;
+SELECT CGML.GroupId, CGMR.MemberId, CGML.Disabled + CGMR.Disabled
+FROM CachedGroupMembers CGML, CachedGroupMembers CGMR
+WHERE
+    CGML.MemberId = CGMR.GroupId
+    AND CGML.GroupId != CGML.MemberId
+    AND CGMR.GroupId != CGMR.MemberId
+    AND NOT EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGM
+        WHERE CGM.GroupId = CGML.GroupId
+            AND CGM.MemberId = CGMR.MemberId
+    )
+END
+        my $sth = execute_query( $query );
+        while ( my ($g, $m, $d) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "CGM table has no record ($g, $m), but ($g -> X -> $m) pair exist in CGM\n";
+            next unless prompt(
+                'Create',
+                "Missing records in CachedGroupMembers."
+            );
+            create_record( 'CachedGroupMembers',
+                GroupId => $g, MemberId => $m, Disabled => $d? 1 : 0,
             );
         }
     }
 
+    return $res;
+};
+
+# Disabled in CGM
+push @CHECKS, 'Disabled in CGM' => sub {
+    my $res = 1;
+    # make sure every disabled group forms only disabled CGM records
+    $res *= check_integrity(
+        Principals         => ['id'],
+        CachedGroupMembers => ['GroupId'],
+        condition          => "s.PrincipalType = ? AND s.Disabled != 0",
+        join_condition     => "t.Disabled != 0",
+        bind_values        => ['Group'],
+        action             => sub {
+            my $id = shift;
+            return unless prompt(
+                'Update',
+                "Found not disabled record in CachedGroupMembers for a disabled group."
+            );
+
+            update_records('CachedGroupMembers', { GroupId => $id }, { Disabled => 1 });
+        },
+    );
+    # make sure every enabled group has enabled (G,G) record in CGM
+    $res *= check_integrity(
+        Principals         => ['id', 'id'],
+        CachedGroupMembers => ['GroupId', 'MemberId'],
+        condition          => "s.PrincipalType = ? AND s.Disabled = 0",
+        join_condition     => "t.Disabled = 0",
+        bind_values        => ['Group'],
+        action             => sub {
+            my $id = shift;
+            return unless prompt(
+                'Update',
+                "Found enabled group when loop record in CachedGroupMembers is disabled."
+            );
+
+            update_records('CachedGroupMembers', { GroupId => $id, MemberId => $id }, { Disabled => 0 });
+        },
+    );
+    # make sure every GM record with enabled group has enabled CGM record
+    {
+         my $query = <<END;
+SELECT GM.GroupId, GM.MemberId
+FROM GroupMembers GM, Principals p
+WHERE   p.id = GM.GroupId
+    AND p.Disabled = 0
+    AND NOT EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGM
+        WHERE CGM.GroupId = GM.GroupId
+            AND CGM.MemberId = GM.MemberId
+            AND CGM.Disabled = 0
+    )
+END
+        my $sth = execute_query( $query );
+        while ( my ($g, $m) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "CGM ($g, $m) is not active while it should be\n";
+            next unless prompt(
+                'Update',
+                "Missing records in CachedGroupMembers."
+            );
+            update_records('CachedGroupMembers',
+                { GroupId => $g, MemberId => $m },
+                { Disabled => 0 }
+            );
+        }
+    }
+
+    # make sure every active CGM that is not real GM has
+    # active joint
+    {
+         my $query = <<END;
+SELECT CGM.GroupId, CGM.MemberId
+FROM CachedGroupMembers CGM
+WHERE   CGM.Disabled = 0
+    AND CGM.GroupId != CGM.MemberId
+    AND NOT EXISTS (
+        SELECT 1 FROM GroupMembers GM
+        WHERE GM.GroupId = CGM.GroupId
+            AND GM.MemberId = CGM.MemberId
+    )
+    AND NOT EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGML, CachedGroupMembers CGMR
+        WHERE
+                CGML.GroupId = CGM.GroupId
+            AND CGML.MemberId = CGMR.GroupId
+            AND CGMR.MemberId = CGM.MemberId
+
+            AND CGML.Disabled = 0
+            AND CGMR.Disabled = 0
+            AND CGML.GroupId != CGML.MemberId
+            AND CGMR.GroupId != CGMR.MemberId
+    )
+END
+        my $sth = execute_query( $query );
+        while ( my ($g, $m) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "CGM ($g, $m) is active while it should not be\n";
+            next unless prompt(
+                'Update',
+                "Active records in CachedGroupMembers."
+            );
+            update_records('CachedGroupMembers',
+                { GroupId => $g, MemberId => $m },
+                { Disabled => 1 }
+            );
+        }
+    }
+
+    # escape if we had problems
+    return $res unless $res;
+
+    # make sure every inactive CGM don't have active joint
+    {
+         my $query = <<END;
+SELECT CGM.GroupId, CGM.MemberId
+FROM CachedGroupMembers CGM
+WHERE   CGM.Disabled != 0
+    AND CGM.GroupId != CGM.MemberId
+    AND EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGML, CachedGroupMembers CGMR
+        WHERE
+                CGML.GroupId = CGM.GroupId
+            AND CGML.MemberId = CGMR.GroupId
+            AND CGMR.MemberId = CGM.MemberId
+
+            AND CGML.Disabled = 0
+            AND CGMR.Disabled = 0
+
+            AND CGML.GroupId != CGML.MemberId
+            AND CGMR.GroupId != CGMR.MemberId
+    )
+END
+        my $sth = execute_query( $query );
+        while ( my ($g, $m) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "CGM ($g, $m) is not active while it should be\n";
+            next unless prompt(
+                'Update',
+                "Inactive records in CachedGroupMembers."
+            );
+            update_records('CachedGroupMembers',
+                { GroupId => $g, MemberId => $m },
+                { Disabled => 0 }
+            );
+        }
+    }
     return $res;
 };
 
