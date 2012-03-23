@@ -404,7 +404,7 @@ foreach my $type (sort grep $args{$_}, keys %args) {
 }
 
 if ( $args{'install'} && keys %Missing_By_Type ) {
-    system($0, grep { $_ ne '--install' } @orig_argv );
+    exec($0, grep { $_ ne '--install' } @orig_argv );
 }
 else {
     conclude(%Missing_By_Type);
