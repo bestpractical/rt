@@ -905,11 +905,6 @@ sub link {
     
     if (@ARGV == 3) {
         my ($from, $rel, $to) = @ARGV;
-        if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
-            my $bad = $from =~ /^\d+$/ ? $to : $from;
-            whine "Invalid $type ID '$bad' specified.";
-            $bad = 1;
-        }
         if (($type eq "ticket") && ( ! exists $ltypes{lc $rel})) {
             whine "Invalid link '$rel' for type $type specified.";
             $bad = 1;
