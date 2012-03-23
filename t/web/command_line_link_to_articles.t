@@ -41,7 +41,7 @@ expect_send(
 expect_like( qr/Created link $ticket_id RefersTo a:$article_id/,
     'created link' );
 expect_send( "show -s ticket/$ticket_id/links", "show ticket links" );
-expect_like( qr/RefersTo: [\w\d\.\-]+:\/\/[\w\d\.]+\/article\/$article_id/,
+expect_like( qr|RefersTo: fsck\.com-article://example\.com/article/$article_id|,
     "found new created link" );
 
 expect_quit();
