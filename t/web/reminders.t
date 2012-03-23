@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 41;
+use RT::Test tests => 45;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -37,10 +37,12 @@ $m->content_contains("Can&#39;t link to a deleted ticket");
 $m->get_ok('/Tools/MyReminders.html');
 $m->content_contains( "baby&#39;s first reminder",
     'got the reminder even the ticket is deleted' );
-$m->goto_ticket( $ticket->id );
 
-$ticket->SetStatus('new');
-is( $ticket->Status, 'new', 'changed back to new' );
+$m->goto_ticket( $ticket->id );
+$m->content_lacks('New reminder:', "can't create a new reminder");
+$m->text_contains('Check box to complete', "we DO display this text when there are reminders");
+$m->content_like(qr{<th[^>]*>Reminders?</th>}, "now we have a reminder titlebar");
+$m->text_contains("baby's first reminder", "display the reminder's subject");
 
 my $reminders = RT::Reminders->new($user);
 $reminders->Ticket($ticket->id);
@@ -51,7 +53,11 @@ is($reminder->Subject, "baby's first reminder");
 my $reminder_id = $reminder->id;
 is($reminder->Status, 'new');
 
-$m->text_contains('New reminder:', 'can create a new reminder');
+$ticket->SetStatus('new');
+is( $ticket->Status, 'new', 'changed back to new' );
+
+$m->goto_ticket($ticket->id);
+$m->text_contains('New reminder:', "can create a new reminder");
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
 $m->content_like(qr{<th[^>]*>Reminders?</th>}, "now we have a reminder titlebar");
 $m->text_contains("baby's first reminder", "display the reminder's subject");
