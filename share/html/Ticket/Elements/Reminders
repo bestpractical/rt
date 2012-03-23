@@ -112,8 +112,10 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % }
 
+% if ($Ticket->Status ne "deleted") {
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
+% }
 <%method NewReminder>
 <%args>
 $Ticket
