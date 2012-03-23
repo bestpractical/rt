@@ -367,6 +367,28 @@ sub DefaultOnMerge {
     return $self->DefaultStatus('on_merge');
 }
 
+=head3 ReminderStatusOnOpen
+
+Returns the status that should be used when reminders are opened.
+
+=cut
+
+sub ReminderStatusOnOpen {
+    my $self = shift;
+    return $self->DefaultStatus('reminder_on_open') || 'open';
+}
+
+=head3 ReminderStatusOnResolve
+
+Returns the status that should be used when reminders are resolved.
+
+=cut
+
+sub ReminderStatusOnResolve {
+    my $self = shift;
+    return $self->DefaultStatus('reminder_on_resolve') || 'resolved';
+}
+
 =head2 Transitions, rights, labels and actions.
 
 =head3 Transitions

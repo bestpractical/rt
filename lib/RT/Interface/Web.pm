@@ -2126,10 +2126,11 @@ sub ProcessTicketReminders {
 
     if ( $args->{'update-reminders'} ) {
         while ( my $reminder = $reminder_collection->Next ) {
-            if (   $reminder->Status ne 'resolved' && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
+            my $resolve_status = $reminder->QueueObj->Lifecycle->ReminderStatusOnResolve;
+            if (   $reminder->Status ne $resolve_status && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
                 $Ticket->Reminders->Resolve($reminder);
             }
-            elsif ( $reminder->Status eq 'resolved' && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
+            elsif ( $reminder->Status eq $resolve_status && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
                 $Ticket->Reminders->Open($reminder);
             }
 
