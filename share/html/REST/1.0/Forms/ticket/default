@@ -161,6 +161,17 @@ else {
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
             }
+            elsif ( lc $k ne 'id' ) {
+                $e = 1;
+                push @$o, $k;
+                push(@comments, "# $k: Unknown field");
+            }
+        }
+
+        if ( $e ) {
+            unshift @comments, "# Could not create ticket.";
+            $k = \%data;
+            goto DONE;
         }
 
         # people fields allow multiple values
