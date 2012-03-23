@@ -98,8 +98,10 @@ RT::Test->db_is_valid;
     isnt($ecode, 0, 'non-zero exit code');
 
     for ( my $i = 1; $i < @groups; $i++ ) {
-        ok $groups[$i]->HasMember( $groups[$i-1]->id ), "has member";
-        ok $groups[$i]->HasMemberRecursively( $groups[$_]->id ), "has member"
+        ok $groups[$i]->HasMember( $groups[$i-1]->id ),
+            "G #". $groups[$i]->id ." has member #". $groups[$i-1]->id;
+        ok $groups[$i]->HasMemberRecursively( $groups[$_]->id ),
+            "G #". $groups[$i]->id ." has member #". $groups[$_]->id
             foreach 0..$i-1;
     }
 
