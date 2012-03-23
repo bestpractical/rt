@@ -131,24 +131,9 @@ sub SetRecipients {
         }
     }
 
-    my $creatorObj = $self->TransactionObj->CreatorObj;
-    my $creator = $creatorObj->EmailAddress() || '';
-
-    #Strip the sender out of the To, Cc and AdminCc and set the 
-    # recipients fields used to build the message by the superclass.
-    # unless a flag is set 
-    my $TransactionCurrentUser = RT::CurrentUser->new;
-    $TransactionCurrentUser->LoadByName($creatorObj->Name);
-    if (RT->Config->Get('NotifyActor',$TransactionCurrentUser)) {
-        @{ $self->{'To'} }  = @To;
-        @{ $self->{'Cc'} }  = @Cc;
-        @{ $self->{'Bcc'} } = @Bcc;
-    }
-    else {
-        @{ $self->{'To'} }  = grep ( lc $_ ne lc $creator, @To );
-        @{ $self->{'Cc'} }  = grep ( lc $_ ne lc $creator, @Cc );
-        @{ $self->{'Bcc'} } = grep ( lc $_ ne lc $creator, @Bcc );
-    }
+    @{ $self->{'To'} }       = @To;
+    @{ $self->{'Cc'} }       = @Cc;
+    @{ $self->{'Bcc'} }      = @Bcc;
     @{ $self->{'PseudoTo'} } = @PseudoTo;
 
     if ( $arg =~ /\bOtherRecipients\b/ ) {
@@ -159,6 +144,24 @@ sub SetRecipients {
                 Email::Address->parse( $attachment->GetHeader('RT-Send-Bcc') );
         }
     }
+}
+
+sub RemoveInappropriateRecipients {
+    my $self = shift;
+
+    my $creatorObj = $self->TransactionObj->CreatorObj;
+    my $creator = $creatorObj->EmailAddress() || '';
+    my $TransactionCurrentUser = RT::CurrentUser->new;
+    $TransactionCurrentUser->LoadByName($creatorObj->Name);
+
+    $self->RecipientFilter(
+        Callback => sub {
+            return unless lc $_[0] eq lc $creator;
+            return "not sending to $creator, creator of the transaction, due to NotifyActor setting";
+        },
+    ) unless RT->Config->Get('NotifyActor',$TransactionCurrentUser);
+
+    $self->SUPER::RemoveInappropriateRecipients();
 }
 
 RT::Base->_ImportOverlays();
