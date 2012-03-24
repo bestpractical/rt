@@ -145,8 +145,6 @@ CREATE TABLE Scrips (
   Description varchar(255),
   ScripCondition integer NULL DEFAULT 0 ,
   ScripAction integer NULL DEFAULT 0 ,
-  ConditionRules text NULL  ,
-  ActionRules text NULL  ,
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,

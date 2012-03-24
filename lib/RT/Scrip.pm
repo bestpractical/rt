@@ -872,42 +872,6 @@ sub ScripActionObj {
         return($ScripAction);
 }
 
-=head2 ConditionRules
-
-Returns the current value of ConditionRules.
-(In the database, ConditionRules is stored as text.)
-
-
-
-=head2 SetConditionRules VALUE
-
-
-Set ConditionRules to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ConditionRules will be stored as a text.)
-
-
-=cut
-
-
-=head2 ActionRules
-
-Returns the current value of ActionRules.
-(In the database, ActionRules is stored as text.)
-
-
-
-=head2 SetActionRules VALUE
-
-
-Set ActionRules to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ActionRules will be stored as a text.)
-
-
-=cut
-
-
 =head2 CustomIsApplicableCode
 
 Returns the current value of CustomIsApplicableCode.
@@ -1046,10 +1010,6 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         ScripAction =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        ConditionRules =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        ActionRules =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomIsApplicableCode =>
                 {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomPrepareCode =>
