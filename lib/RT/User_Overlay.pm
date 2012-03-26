@@ -1538,6 +1538,12 @@ sub WatchedQueues {
                             FIELD => 'MemberId',
                             VALUE => $self->PrincipalId,
                           );
+    $watched_queues->Limit(
+                            ALIAS => $queues_alias,
+                            FIELD => 'Disabled',
+                            VALUE => 0,
+                          );
+
 
     $RT::Logger->debug("WatchedQueues got " . $watched_queues->Count . " queues");
     
