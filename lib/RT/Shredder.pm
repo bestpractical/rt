@@ -609,17 +609,6 @@ sub _Wipeout
     return;
 }
 
-sub ValidateRelations
-{
-    my $self = shift;
-    my %args = ( @_ );
-
-    foreach my $record( values %{ $self->{'cache'} } ) {
-        next if( $record->{'State'} & VALID );
-        $record->{'Object'}->ValidateRelations( Shredder => $self );
-    }
-}
-
 =head3 Data storage and backups
 
 =head4 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )

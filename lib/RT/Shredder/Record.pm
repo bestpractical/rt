@@ -112,9 +112,6 @@ sub Dependencies
     if( $args{'Flags'} & DEPENDS_ON ) {
         $self->__DependsOn( %args, Dependencies => $deps );
     }
-    if( $args{'Flags'} & RELATES ) {
-        $self->__Relates( %args, Dependencies => $deps );
-    }
     return $deps;
 }
 
@@ -170,62 +167,6 @@ sub __DependsOn
     return;
 }
 
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-    if( $self->_Accessible( 'Creator', 'read' ) ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->Load( $self->Creator );
-
-        if( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-            $self = $rec->{'Object'};
-            $rec->{'State'} |= INVALID;
-            push @{ $rec->{'Description'} },
-                "Have no related User(Creator) #". $self->Creator ." object";
-        }
-    }
-
-    if( $self->_Accessible( 'LastUpdatedBy', 'read' ) ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->Load( $self->LastUpdatedBy );
-
-        if( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-            $self = $rec->{'Object'};
-            $rec->{'State'} |= INVALID;
-            push @{ $rec->{'Description'} },
-                "Have no related User(LastUpdatedBy) #". $self->LastUpdatedBy ." object";
-        }
-    }
-
-    $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-
-    # cause of this $self->SUPER::__Relates should be called last
-    # in overridden subs
-    my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-    $rec->{'State'} |= VALID unless( $rec->{'State'} & INVALID );
-
-    return;
-}
-
 # implement proxy method because some RT classes
 # override Delete method
 sub __Wipeout
@@ -234,39 +175,6 @@ sub __Wipeout
     my $msg = $self->_AsString ." wiped out";
     $self->SUPER::Delete;
     $RT::Logger->info( $msg );
-    return;
-}
-
-sub ValidateRelations
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            @_
-           );
-    unless( $args{'Shredder'} ) {
-        $args{'Shredder'} = RT::Shredder->new();
-    }
-
-    my $rec = $args{'Shredder'}->PutObject( Object => $self );
-    return if( $rec->{'State'} & VALID );
-    $self = $rec->{'Object'};
-
-    $self->_ValidateRelations( %args, Flags => RELATES );
-    $rec->{'State'} |= VALID unless( $rec->{'State'} & INVALID );
-
-    return;
-}
-
-sub _ValidateRelations
-{
-    my $self = shift;
-    my %args = ( @_ );
-
-    my $deps = $self->Dependencies( %args );
-
-    $deps->ValidateRelations( %args );
-
     return;
 }
 

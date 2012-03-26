@@ -137,48 +137,6 @@ sub __DependsOn
     return $self->SUPER::__DependsOn( %args );
 }
 
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-# Principal
-    my $obj = $self->PrincipalObj;
-    if( $obj && defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related ACL equivalence Group object";
-    }
-
-    $obj = RT::Group->new( RT->SystemUser );
-    $obj->LoadACLEquivalenceGroup( $self->PrincipalObj );
-    if( $obj && defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related Principal #". $self->id ." object";
-    }
-
-    $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-    return $self->SUPER::__Relates( %args );
-}
-
 sub BeforeWipeout
 {
     my $self = shift;
