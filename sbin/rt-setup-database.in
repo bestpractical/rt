@@ -297,12 +297,21 @@ sub action_insert {
         $content = <$handle>;
     }
 
+    # XXX Reconnecting to insert the history entry
+    # until we can sort out removing
+    # the disconnect at the end of InsertData.
+
+    RT->ConnectToDatabase();
+
     RT->System->AddUpgradeHistory(RT => {
         action   => 'insert',
         filename => $file,
         content  => $content,
         stage    => 'after',
     });
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
 
     return @ret;
 }
@@ -430,6 +439,11 @@ sub action_upgrade {
             ( $ret, $msg ) = action_insert( %tmp );
             return ( $ret, $msg ) unless $ret;
         }
+
+	# XXX: Another connect since the insert called
+	# previous to this step will disconnect.
+
+	RT->ConnectToDatabase();
 
         RT->System->AddUpgradeHistory(RT => {
             action => 'upgrade',
