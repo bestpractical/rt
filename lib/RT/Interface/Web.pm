@@ -235,7 +235,7 @@ sub HandleRequest {
         }
     }
 
-    MaybeDenyCSRF($ARGS);
+    MaybeShowInterstitialCSRFPage($ARGS);
 
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
@@ -1034,25 +1034,70 @@ sub IsPossibleCSRF {
     );
 
     # if there is no Referer header then assume the worst
-    return (1, "No Referer header. Perhaps your web browser is configured to never send the Referer header?") if !$ENV{HTTP_REFERER};
+    return (1,
+            "your browser did not supply a Referrer header", # loc
+        ) if !$ENV{HTTP_REFERER};
 
     my $referer = URI->new($ENV{HTTP_REFERER});
     $referer->host('127.0.0.1') if $referer->host eq 'localhost';
-
     return 0 if IsRefererCSRFWhitelisted($referer);
 
-    return (1, "Referer is unknown site ".$referer->host_port);
+    return (1,
+            "the Referrer header supplied by your browser ([_1]) is not allowed", # loc
+            $referer->host_port);
 }
 
-sub MaybeDenyCSRF {
+sub ExpandCSRFToken {
+    my $ARGS = shift;
+
+    my $token = delete $ARGS->{CSRF_Token};
+    return unless $token;
+
+    my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
+    return unless $data;
+    return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    return unless $user->ValidateAuthString( $data->{auth}, $token );
+
+    %{$ARGS} = %{$data->{args}};
+
+    return 1;
+}
+
+sub MaybeShowInterstitialCSRFPage {
     my $ARGS = shift;
 
     return unless RT->Config->Get('RestrictReferrer');
 
-    my ($is_csrf, $msg) = IsPossibleCSRF($ARGS);
+    # Deal with the form token provided by the interstitial, which lets
+    # browsers which never set referer headers still use RT, if
+    # painfully.  This blows values into ARGS
+    return if ExpandCSRFToken($ARGS);
+
+    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
     return if !$is_csrf;
 
-    HTML::Mason::Commands::Abort( $msg );
+    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
+
+    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data = {
+        auth => $user->GenerateAuthString( $token ),
+        path => $HTML::Mason::Commands::r->path_info,
+        args => $ARGS,
+    };
+
+    $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
+    $HTML::Mason::Commands::session{'i'}++;
+
+    $HTML::Mason::Commands::m->comp(
+        '/Elements/CSRF',
+        OriginalURL => $HTML::Mason::Commands::r->path_info,
+        Reason => HTML::Mason::Commands::loc( $msg, @loc ),
+        Token => $token,
+    );
+    # Calls abort, never gets here
 }
 
 package HTML::Mason::Commands;
