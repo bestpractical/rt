@@ -236,6 +236,7 @@ sub HandleRequest {
     DecodeARGS($ARGS);
     PreprocessTimeUpdates($ARGS);
 
+    InitializeMenu();
     MaybeShowInstallModePage();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
@@ -522,8 +523,6 @@ sub ShowRequestedPage {
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
-
-    InitializeMenu();
 
     SendSessionCookie();
 
