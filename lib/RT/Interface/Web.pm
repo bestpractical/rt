@@ -286,6 +286,8 @@ sub HandleRequest {
         }
     }
 
+    MaybeDenyCSRF($ARGS);
+
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
         if ( $ARGS->{'HomeRefreshInterval'} );
@@ -1118,6 +1120,41 @@ sub ComponentRoots {
     }
     @roots = map { $_->[1] } @roots unless $args{Names};
     return @roots;
+}
+
+sub IsRefererCSRFWhitelisted {
+    my $referer = shift;
+
+    my $site = URI->new(RT->Config->Get('WebBaseURL'));
+    $site->host('127.0.0.1') if $site->host eq 'localhost';
+    return 1 if $referer->host_port eq $site->host_port;
+
+    return 0;
+}
+
+sub IsPossibleCSRF {
+    my $ARGS = shift;
+
+    # if there is no Referer header then assume the worst
+    return (1, "No Referer header. Perhaps your web browser is configured to never send the Referer header?") if !$ENV{HTTP_REFERER};
+
+    my $referer = URI->new($ENV{HTTP_REFERER});
+    $referer->host('127.0.0.1') if $referer->host eq 'localhost';
+
+    return 0 if IsRefererCSRFWhitelisted($referer);
+
+    return (1, "Referer is unknown site ".$referer->host_port);
+}
+
+sub MaybeDenyCSRF {
+    my $ARGS = shift;
+
+    return unless RT->Config->Get('RestrictReferrer');
+
+    my ($is_csrf, $msg) = IsPossibleCSRF($ARGS);
+    return if !$is_csrf;
+
+    HTML::Mason::Commands::Abort( $msg );
 }
 
 package HTML::Mason::Commands;
