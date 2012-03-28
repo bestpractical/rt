@@ -983,9 +983,18 @@ sub LogRecordedSQLStatements {
 
 }
 
+my %is_whitelisted_path = (
+    # The RSS feed embeds an auth token in the path, but query
+    # information for the search.  Because it's a straight-up read, in
+    # addition to embedding its own auth, it's fine.
+    '/NoAuth/rss/dhandler' => 1,
+);
+
 sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
+
+    return 1 if $is_whitelisted_path{$comp};
 
     my %args = %{ $ARGS };
 
