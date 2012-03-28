@@ -1248,6 +1248,17 @@ requirements.
 
 Set($WebHttpOnlyCookies, 1);
 
+=item C<$RestrictReferrer>
+
+If set to a false value, the HTTP C<Referer> (sic) header will not be
+checked to ensure that requests come from RT's own domain.  As RT allows
+for GET requests to alter state, disabling this opens RT up to
+cross-site request forgery (CSRF) attacks.
+
+=cut
+
+Set($RestrictReferrer, 1);
+
 =item C<$WebFlushDbCacheEveryRequest>
 
 By default, RT clears its database cache after every page view.
