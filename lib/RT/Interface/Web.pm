@@ -291,8 +291,6 @@ sub SetNextPage {
 
     $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
     $HTML::Mason::Commands::session{'i'}++;
-    
-    SendSessionCookie();
     return $hash;
 }
 
@@ -409,7 +407,6 @@ sub MaybeShowNoAuthPage {
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
     # If it's a noauth file, don't ask for auth.
-    SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
 }
@@ -457,8 +454,6 @@ sub ShowRequestedPage {
     my $ARGS = shift;
 
     my $m = $HTML::Mason::Commands::m;
-
-    SendSessionCookie();
 
     # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
