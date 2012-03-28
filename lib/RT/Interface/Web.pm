@@ -1042,6 +1042,29 @@ sub IsRefererCSRFWhitelisted {
 sub IsPossibleCSRF {
     my $ARGS = shift;
 
+    # If first request on this session is to a REST endpoint, then
+    # whitelist the REST endpoints -- and explicitly deny non-REST
+    # endpoints.  We do this because using a REST cookie in a browser
+    # would open the user to CSRF attacks to the REST endpoints.
+    my $path = $HTML::Mason::Commands::r->path_info;
+    $HTML::Mason::Commands::session{'REST'} = $path =~ m{^/+REST/\d+\.\d+(/|$)}
+        unless defined $HTML::Mason::Commands::session{'REST'};
+
+    if ($HTML::Mason::Commands::session{'REST'}) {
+        return 0 if $path =~ m{^/+REST/\d+\.\d+(/|$)};
+        my $why = <<EOT;
+This login session belongs to a REST client, and cannot be used to
+access non-REST interfaces of RT for security reasons.
+EOT
+        my $details = <<EOT;
+Please log out and back in to obtain a session for normal browsing.  If
+you understand the security implications, disabling RT's CSRF protection
+will remove this restriction.
+EOT
+        chomp $details;
+        HTML::Mason::Commands::Abort( $why, Details => $details );
+    }
+
     return 0 if IsCompCSRFWhitelisted(
         $HTML::Mason::Commands::m->request_comp->path,
         $ARGS
