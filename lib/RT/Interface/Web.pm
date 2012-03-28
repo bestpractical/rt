@@ -1062,6 +1062,16 @@ sub ExpandCSRFToken {
 
     %{$ARGS} = %{$data->{args}};
 
+    # We explicitly stored file attachments with the request, but not in
+    # the session yet, as that would itself be an attack.  Put them into
+    # the session now, so they'll be visible.
+    if ($data->{attach}) {
+        my $filename = $data->{attach}{filename};
+        my $mime     = $data->{attach}{mime};
+        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+            = $mime;
+    }
+
     return 1;
 }
 
@@ -1087,6 +1097,14 @@ sub MaybeShowInterstitialCSRFPage {
         path => $HTML::Mason::Commands::r->path_info,
         args => $ARGS,
     };
+    if ($ARGS->{Attach}) {
+        my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+        my $file_path = delete $ARGS->{'Attach'};
+        $data->{attach} = {
+            filename => Encode::decode_utf8("$file_path"),
+            mime     => $attachment,
+        };
+    }
 
     $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
     $HTML::Mason::Commands::session{'i'}++;

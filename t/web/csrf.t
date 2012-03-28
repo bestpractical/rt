@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my $ticket = RT::Ticket->new(RT::CurrentUser->new('root'));
 my ($ok, $msg) = $ticket->Create(Queue => 1, Owner => 'nobody', Subject => 'bad music');
@@ -117,6 +118,29 @@ $m->title_is('Create a new ticket');
 $m->text_unlike(qr/Queue:\s*Other queue/);
 $m->text_like(qr/Queue:\s*General/);
 
+# Ensure that file uploads work across the interstitial
+$m->delete_header('Referer');
+$m->get_ok($test_page);
+$m->content_contains("Create a new ticket", 'ticket create page');
+$m->form_name('TicketCreate');
+$m->field('Subject', 'Attachments test');
+
+my $logofile = "$RT::MasonComponentRoot/NoAuth/images/bplogo.gif";
+open LOGO, "<", $logofile or die "Can't open logo file: $!";
+binmode LOGO;
+my $logo_contents = do {local $/; <LOGO>};
+close LOGO;
+$m->field('Attach',  $logofile);
+
+# Lose the referer before the POST
+$m->add_header(Referer => undef);
+$m->submit;
+$m->content_contains("Possible cross-site request forgery");
+$m->content_contains("If you really intended to visit <tt>/Ticket/Create.html</tt>");
+$m->follow_link(text_regex => qr{resume your request});
+$m->content_contains('Download bplogo.gif', 'page has file name');
+$m->follow_link_ok({text => "Download bplogo.gif"});
+is($m->content, $logo_contents, "Binary content matches");
 
 
 # now try self-service with CSRF
