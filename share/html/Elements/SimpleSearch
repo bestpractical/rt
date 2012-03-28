@@ -46,8 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" id="simple-search">
-  <input size="12" name="q" autocomplete="off" accesskey="0" class="field" value="<&|/l&>Search</&>..." onfocus="if (this.value=='<&|/l&>Search</&>...') this.value=''" />
+  <input size="12" name="q" autocomplete="off" accesskey="0" class="field" value="<% $value %>" placeholder="<% loc('Search') %>..." />
 </form>
+<%init>
+my $value = '';
+
+# The current simple search is sticky
+if (defined $m->request_args->{q}) {
+    my %request = ( q => $m->request_args->{q} );
+    RT::Interface::Web::DecodeARGS(\%request);
+    $value = $request{q};
+}
+</%init>
 <%ARGS>
 $SendTo => '/Search/Simple.html'
 </%ARGS>
