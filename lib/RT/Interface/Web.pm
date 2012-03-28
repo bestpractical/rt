@@ -1137,6 +1137,20 @@ sub IsCompCSRFWhitelisted {
 
     my %args = %{ $ARGS };
 
+    # If the user specifies a *correct* user and pass then they are
+    # golden.  This acts on the presumption that external forms may
+    # hardcode a username and password -- if a malicious attacker knew
+    # both already, CSRF is the least of your problems.
+    my $AllowLoginCSRF = not RT->Config->Get('RestrictReferrerLogin');
+    if ($AllowLoginCSRF and defined($args{user}) and defined($args{pass})) {
+        my $user_obj = RT::CurrentUser->new();
+        $user_obj->Load($args{user});
+        return 1 if $user_obj->id && $user_obj->IsPassword($args{pass});
+
+        delete $args{user};
+        delete $args{pass};
+    }
+
     # Eliminate arguments that do not indicate an effectful request.
     # For example, "id" is acceptable because that is how RT retrieves a
     # record.
