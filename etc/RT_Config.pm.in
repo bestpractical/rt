@@ -1259,6 +1259,18 @@ cross-site request forgery (CSRF) attacks.
 
 Set($RestrictReferrer, 1);
 
+=item C<$RestrictLoginReferrer>
+
+If set to a false value, RT will allow the user to log in from any link
+or request, merely by passing in C<user> and C<pass> parameters; setting
+it to a true value forces all logins to come from the login box, so the
+user us aware that they are being logged in.  The default is off, for
+backwards compatability.
+
+=cut
+
+Set($RestrictLoginReferrer, 0);
+
 =item C<$WebFlushDbCacheEveryRequest>
 
 By default, RT clears its database cache after every page view.
