@@ -85,7 +85,21 @@ my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 && $Values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
     # transaction extraction into articles.
-    $Default = ($Values->First ? $Values->First->Content : '') unless $Default;
+    unless ( $Default ) {
+        if ( $Values->First ) {
+            if ( $CustomField->Type eq 'DateTime' ) {
+                my $date = RT::Date->new($session{CurrentUser});
+                $date->Set(Format => 'ISO', Value => $Values->First->Content);
+                $Default = $date->ISO(Timezone => 'user');
+            }
+            else {
+                $Default = $Values->First->Content;
+            }
+        }
+        else {
+            $Default = '';
+        }
+    }
     $Values->GotoFirstItem;
 }
 # The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 

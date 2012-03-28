@@ -3071,7 +3071,14 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value (@values) {
-                if ( my $entry = $cf_values->HasEntry($value) ) {
+                my $value_in_db = $value;
+                if ( $cf->Type eq 'DateTime' ) {
+                    my $date = RT::Date->new($session{CurrentUser});
+                    $date->Set(Format => 'unknown', Value => $value);
+                    $value_in_db = $date->ISO;
+                }
+
+                if ( my $entry = $cf_values->HasEntry($value_in_db) ) {
                     $values_hash{ $entry->id } = 1;
                     next;
                 }
