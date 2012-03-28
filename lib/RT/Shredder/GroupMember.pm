@@ -75,8 +75,6 @@ sub __DependsOn
     $objs->Limit( FIELD => 'ImmediateParentId', VALUE => $self->GroupId );
     push( @$list, $objs );
 
-    # XXX: right delegations should be cleaned here
-
     $deps->_PushDependencies(
             BaseObject => $self,
             Flags => DEPENDS_ON,
