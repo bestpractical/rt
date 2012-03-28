@@ -1122,6 +1122,29 @@ sub ComponentRoots {
     return @roots;
 }
 
+sub IsCompCSRFWhitelisted {
+    my $comp = shift;
+    my $ARGS = shift;
+
+    my %args = %{ $ARGS };
+
+    # Eliminate arguments that do not indicate an effectful request.
+    # For example, "id" is acceptable because that is how RT retrieves a
+    # record.
+    delete $args{id};
+
+    # If they have a valid results= from MaybeRedirectForResults, that's
+    # also fine.
+    delete $args{results} if $args{results}
+        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+
+    # If there are no arguments, then it's likely to be an idempotent
+    # request, which are not susceptible to CSRF
+    return 1 if !%args;
+
+    return 0;
+}
+
 sub IsRefererCSRFWhitelisted {
     my $referer = shift;
 
@@ -1134,6 +1157,11 @@ sub IsRefererCSRFWhitelisted {
 
 sub IsPossibleCSRF {
     my $ARGS = shift;
+
+    return 0 if IsCompCSRFWhitelisted(
+        $HTML::Mason::Commands::m->request_comp->path,
+        $ARGS
+    );
 
     # if there is no Referer header then assume the worst
     return (1, "No Referer header. Perhaps your web browser is configured to never send the Referer header?") if !$ENV{HTTP_REFERER};
