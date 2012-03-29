@@ -129,11 +129,11 @@ foreach my $col ( @Format ) {
             if $OrderBy[0] && $OrderBy[0] eq $attr;
 
         $m->out(
-            '<a href="' . $BaseURL
+            '<a href="' . $m->interp->apply_escapes($BaseURL
             . $m->comp( '/Elements/QueryString',
                 %$generic_query_args,
                 OrderBy => $attr, Order => $new_order
-            )
+            ), 'h')
             . '">'. loc($title) .'</a>'
         );
     }
