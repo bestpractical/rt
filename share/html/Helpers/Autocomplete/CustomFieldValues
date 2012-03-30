@@ -52,6 +52,14 @@
 # Only autocomplete the last value
 my $term = (split /\n/, $ARGS{term} || '')[-1];
 
+my $abort = sub {
+    $r->content_type('application/json');
+    $m->out(JSON::to_json( [] ));
+    $m->abort;
+};
+
+$abort->() unless $ARGS{ContextType} and $ARGS{ContextId};
+
 my $CustomField;
 for my $k ( keys %ARGS ) {
     next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
@@ -59,9 +67,10 @@ for my $k ( keys %ARGS ) {
     last;
 }
 
-$m->abort unless $CustomField;
+$abort->() unless $CustomField;
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 $CustomFieldObj->Load( $CustomField );
+$abort->() unless $CustomFieldObj->Id;
 
 my $values = $CustomFieldObj->Values;
 $values->Limit(
