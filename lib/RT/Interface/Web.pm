@@ -436,7 +436,7 @@ sub MaybeRejectPrivateComponentRequest {
               _elements   | # mobile UI
               Widgets     |
               autohandler | # requesting this directly is suspicious
-              l           ) # loc component
+              l (_unsafe)? ) # loc component
             ( $ | / ) # trailing slash or end of path
         }xi) {
             $m->abort(403);
