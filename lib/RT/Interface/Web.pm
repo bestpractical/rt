@@ -2337,8 +2337,24 @@ sub _NewScrubber {
             face   => 1,
             size   => 1,
             target => 1,
-            style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
-                             (?:text-align:\s*))}ix,
+            style  => qr{
+                ^(?:\s*
+                    (?:(?:background-)?color: \s*
+                            (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
+                               \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
+                               [\w\-]+                                  # green, light-blue, etc.
+                               )                            |
+                       text-align: \s* \w+                  |
+                       font-size: \s* [\w.\-]+              |
+                       font-family: \s* [\w\s"',.\-]+       |
+                       font-weight: \s* [\w\-]+             |
+
+                       # MS Office styles, which are probably fine.  If we don't, then any
+                       # associated styles in the same attribute get stripped.
+                       mso-[\w\-]+?: \s* [\w\s"',.\-]+
+                    )\s* ;? \s*)
+                 +$ # one or more of these allowed properties from here 'till sunset
+            }ix,
         }
     );
     $scrubber->deny(qw[*]);
