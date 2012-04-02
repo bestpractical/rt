@@ -335,15 +335,17 @@ if ($UserObj->Id && $id ne 'new') {
 
 }
 
-
 my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
 if ( $UserObj->Id ) {
-    # Deal with Password field
-    my ($status, $msg) = $UserObj->SafeSetPassword(
-        Current      => $CurrentPass,
-        New          => $Pass1,
-        Confirmation => $Pass2,
+    my $password_results = $m->comp(
+        '/Admin/Elements/SetPassword',
+        User        => $UserObj,
+        CurrentPass => $CurrentPass,
+        Pass1       => $Pass1,
+        Pass2       => $Pass2,
     );
+    my ($status, $msg) = defined($password_results) ? @$password_results : ();
+
     push @results, $msg;
 
     if ( $id eq 'new' && !$status ) {
