@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 14;
+use RT::Test tests => 17;
+$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
@@ -30,6 +31,15 @@ $m->content_like(qr/Attachments test/, 'we have subject on the page');
 $m->content_like(qr/Some content/, 'and content');
 $m->content_like(qr/Download bplogo\.gif/, 'page has file name');
 
+open LOGO, "<", LogoFile or die "Can't open logo file: $!";
+binmode LOGO;
+my $logo_contents = do {local $/; <LOGO>};
+close LOGO;
+$m->follow_link_ok({text => "Download bplogo.gif"});
+is($m->content_type, "image/gif");
+is($m->content, $logo_contents, "Binary content matches");
+
+$m->back;
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
 $m->form_name('TicketUpdate');
 $m->field('Attach',  LogoFile);
