@@ -52,10 +52,10 @@ id="<%$id%>"
 >
   <div class="extra-buttons">
 % if ($CheckAll) {
-  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, <% length $CheckboxName ? qq{'$CheckboxName'} : length $CheckboxNameRegex ? $CheckboxNameRegex : q{''} %>, true);return false;" class="button" />
+  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, <% $match %>, true);return false;" class="button" />
 % }
 % if ($ClearAll) {
-  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, <% length $CheckboxName ? qq{'$CheckboxName'} : length $CheckboxNameRegex ? $CheckboxNameRegex : q{''} %>, false);return false;" class="button" />
+  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, <% $match %>, false);return false;" class="button" />
 % }
 % if ($Reset) {
   <input type="reset" value="<%$ResetLabel%>" class="button" />
@@ -115,3 +115,13 @@ $ResetLabel => loc('Reset')
 $SubmitId => undef
 $id => undef
 </%ARGS>
+<%init>
+my $match;
+if (length $CheckboxName) {
+    $match = $m->interp->apply_escapes($CheckboxName,'j');
+} elsif (length $CheckboxNameRegex) {
+    $match = $CheckboxNameRegex;
+} else {
+    $match = q{''};
+}
+</%init>

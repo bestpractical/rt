@@ -117,6 +117,7 @@ sub NewHandler {
   
     $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
     $handler->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
+    $handler->interp->set_escape( j => \&RT::Interface::Web::EscapeJS   );
     return($handler);
 }
 

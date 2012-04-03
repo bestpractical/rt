@@ -70,7 +70,7 @@ jQuery(function() {
             continue;
 
         var options = {
-            source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users"
+            source: <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/Users"
         };
 
         var queryargs = [];

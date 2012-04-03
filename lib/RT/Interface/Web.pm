@@ -146,7 +146,24 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
+sub _encode_surrogates {
+    my $uni = $_[0] - 0x10000;
+    return ($uni /  0x400 + 0xD800, $uni % 0x400 + 0xDC00);
+}
 
+sub EscapeJS {
+    my $ref = shift;
+    return unless defined $$ref;
+
+    $$ref = "'" . join('',
+                 map {
+                     chr($_) =~ /[a-zA-Z0-9]/ ? chr($_) :
+                     $_  <= 255   ? sprintf("\\x%02X", $_) :
+                     $_  <= 65535 ? sprintf("\\u%04X", $_) :
+                     sprintf("\\u%X\\u%X", _encode_surrogates($_))
+                 } unpack('U*', $$ref))
+        . "'";
+}
 
 =head2 WebCanonicalizeInfo();
 

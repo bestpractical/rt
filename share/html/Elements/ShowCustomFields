@@ -114,12 +114,12 @@ my $print_value = sub {
        my $vid = $value->id;
        $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
        $m->out( loc("See also:") );
-       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
-       $m->out( $value->IncludeContentForValue );
+       $m->out(   '<a href="'. $m->interp->apply_escapes($value->IncludeContentForValue, 'h') .'">' );
+       $m->out( $m->interp->apply_escapes($value->IncludeContentForValue, 'h') );
        $m->out(   qq{</a></div>\n} );
-       $m->out(   qq{<script><!--\njQuery('#object_cf_value_$vid').load('} );
-       $m->out( $value->IncludeContentForValue );
-       $m->out(   qq{');\n--></script>\n} );
+       $m->out(   qq{<script><!--\njQuery('#object_cf_value_$vid').load(} );
+       $m->out(   $m->interp->apply_escapes($value->IncludeContentForValue, 'j') );
+       $m->out(   qq{);\n--></script>\n} );
     }
 };
 

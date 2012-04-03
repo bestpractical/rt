@@ -111,7 +111,7 @@ my $COLUMN_MAP = {
                 }
             }
 
-            return \('<a href="'.$url.'">'.$frequency.'</a>');
+            return \'<a href="', $url, \'">', $frequency, \'</a>';
         },
     },
     ShowURL => {

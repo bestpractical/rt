@@ -79,7 +79,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
           <li>
               <tt><% $request->{Path} %></tt> - <i><&|/l, sprintf('%.4f', $seconds) &>[_1]s</&></i>
-              <a href="#" onclick="return hideshow('queries-<%$r%>');"><&|/l, $count &>Toggle [quant,_1,query,queries]</&></a>
+              <a href="#" onclick="return hideshow(<% "queries-$r" |n,j%>);"><&|/l, $count &>Toggle [quant,_1,query,queries]</&></a>
               <table id="queries-<%$r%>" class="tablesorter hidden">
                   <thead>
                       <tr>
@@ -115,7 +115,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                                        <br><tt>[<% join(", ", @$b) %>]</tt>
 %                                  }
 %                              }
-                               <a class="query-stacktrace-toggle" href="#" onclick="return hideshow('trace-<%$r%>-<%$s%>');"><&|/l &>Toggle stack trace</&></a>
+                               <a class="query-stacktrace-toggle" href="#" onclick="return hideshow(<% "trace-$r-$s" |n,j%>);"><&|/l &>Toggle stack trace</&></a>
                                <pre id="trace-<%$r%>-<%$s%>" class="hidden"><% $trace %></pre>
                            </td>
                        </tr>

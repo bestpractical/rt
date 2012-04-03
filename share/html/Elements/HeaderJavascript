@@ -60,14 +60,14 @@ $onload => undef
 <script type="text/javascript"><!--
 	jQuery( loadTitleBoxStates );
 % if ( $focus ) {
-    jQuery(function () { focusElementById('<% $focus %>') });
+    jQuery(function () { focusElementById(<% $focus |n,j%>) });
 % }
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
 % }
 
 % if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
+    jQuery().ready(function ()  { ReplaceAllTextareas(<%$m->request_args->{'CKeditorEncoded'} || 0 |n,j%>) });
 % }
 --></script>
 <%ARGS>

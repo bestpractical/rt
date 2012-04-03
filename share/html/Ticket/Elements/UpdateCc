@@ -61,8 +61,7 @@
     class="onetime onetimecc"
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
-% $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' );"
+    onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 </td></tr>
@@ -77,8 +76,7 @@
     class="onetime onetimebcc"
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
-% $clean_addr =~ s/'/\\'/g;
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' );"
+    onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
