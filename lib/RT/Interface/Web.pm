@@ -2864,11 +2864,13 @@ sub _NewScrubber {
                     )\s* ;? \s*)
                  +$ # one or more of these allowed properties from here 'till sunset
             }ix,
+            dir    => qr/^(rtl|ltr)$/i,
+            lang   => qr/^\w+(-\w+)?$/,
         }
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE]
+        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO]
     );
     $scrubber->comment(0);
 
