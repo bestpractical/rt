@@ -118,14 +118,16 @@ my $COLUMN_MAP = {
             my $name = $_[1] || 'SelectedTickets';
             my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
 
-            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
-                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+            return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
+                              onclick="setCheckbox(this.form, },
+                              $m->interp->apply_escapes($name,'j'),
+                              \qq{, this.checked)" />};
         },
         value => sub {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTickets';
-            return \qq{<input type="checkbox" name="$name" value="$id" checked="checked" />}
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" checked="checked" />}
                 if $m->request_args->{ $name . 'All'};
 
             my $arg = $m->request_args->{ $name };
@@ -136,7 +138,7 @@ my $COLUMN_MAP = {
             elsif ( $arg ) {
                 $checked = 'checked="checked"' if $arg == $id;
             }
-            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" $checked />}
         },
     },
     RadioButton => {

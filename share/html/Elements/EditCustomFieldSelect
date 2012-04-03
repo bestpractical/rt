@@ -55,7 +55,7 @@
 % if (!$HideCategory and @category and not $CustomField->BasedOnObj->id) {
   <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %# XXX - Hide this select from w3m?
-  <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category" class="CF-<%$CustomField->id%>-Edit">
+  <select onchange="filter_cascade(<% "$id-Values" |n,j%>, this.value)" name="<% $id %>-Category" class="CF-<%$CustomField->id%>-Edit">
     <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
 %   foreach my $cat (@category) {
 %     my ($depth, $name) = @$cat;
@@ -66,12 +66,12 @@
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 <script type="text/javascript"><!--
 doOnLoad(  function () {
-    var basedon = document.getElementById('<% $NamePrefix . $CustomField->BasedOnObj->id %>-Values');
+    var basedon = document.getElementById(<% $NamePrefix . $CustomField->BasedOnObj->id . "-Values" |n,j%>);
     if (basedon != null) {
         var oldchange = basedon.onchange;
         basedon.onchange = function () {
             filter_cascade(
-                '<% $id %>-Values',
+                <% "$id-Values" |n,j%>,
                 basedon.value,
                 1
             );
