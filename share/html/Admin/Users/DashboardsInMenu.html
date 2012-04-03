@@ -48,8 +48,6 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Elements/Tabs &>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
 <& /Elements/ListActions, actions => \@actions &>
 
 <form method="post" action="DashboardsInMenu.html">
@@ -62,7 +60,7 @@
 
 % for my $pane (@panes) {
 <&|/Widgets/TitleBox, title => loc('Dashboards in menu'), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
+<& /Widgets/SelectionBox:show, self => $pane &></&>
 <br />
 % }
 
@@ -111,7 +109,7 @@ my @panes = $m->comp(
 );
 
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
 </%init>
