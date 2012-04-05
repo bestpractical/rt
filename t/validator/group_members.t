@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 60;
+use RT::Test tests => 62;
 
 sub load_or_create_group {
     my $name = shift;
@@ -62,6 +62,7 @@ RT::Test->db_is_valid;
     ok !$group2->HasMemberRecursively( $group1->id ), "has no member, broken DB";
 
     my ($ecode, $res) = RT::Test->run_validator(resolve => 1);
+    isnt($ecode, 0, 'non-zero exit code');
 
     ok $group2->HasMember( $group1->id ), "has member";
     ok $group2->HasMemberRecursively( $group1->id ), "has member";
@@ -94,6 +95,7 @@ RT::Test->db_is_valid;
     ok !$groups[1]->HasMemberRecursively( $groups[0]->id ), "has no member, broken DB";
 
     my ($ecode, $res) = RT::Test->run_validator(resolve => 1);
+    isnt($ecode, 0, 'non-zero exit code');
 
     for ( my $i = 1; $i < @groups; $i++ ) {
         ok $groups[$i]->HasMember( $groups[$i-1]->id ), "has member";
