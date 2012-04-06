@@ -3,20 +3,12 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use File::Spec;
-use Test::More tests => 7;
-use RT::Test ();
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-init_db();
-
+use RT::Test::Shredder tests => 7;
+my $test = "RT::Test::Shredder";
 
 diag 'global template' if $ENV{TEST_VERBOSE};
 {
-	create_savepoint('clean');
+	$test->create_savepoint('clean');
     my $template = RT::Template->new( RT->SystemUser );
     my ($id, $msg) = $template->Create(
         Name => 'my template',
@@ -24,15 +16,15 @@ diag 'global template' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created template') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'local template' if $ENV{TEST_VERBOSE};
 {
-	create_savepoint('clean');
+	$test->create_savepoint('clean');
     my $template = RT::Template->new( RT->SystemUser );
     my ($id, $msg) = $template->Create(
         Name => 'my template',
@@ -41,15 +33,15 @@ diag 'local template' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created template') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'template used in scrip' if $ENV{TEST_VERBOSE};
 {
-	create_savepoint('clean');
+	$test->create_savepoint('clean');
     my $template = RT::Template->new( RT->SystemUser );
     my ($id, $msg) = $template->Create(
         Name => 'my template',
@@ -68,8 +60,8 @@ diag 'template used in scrip' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created scrip') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }

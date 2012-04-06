@@ -3,14 +3,8 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use File::Spec;
-use Test::More tests => 28;
-use RT::Test ();
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
+use RT::Test::Shredder nodb => 1, tests => 28;
+my $test = "RT::Test::Shredder";
 
 my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
 
