@@ -3564,7 +3564,9 @@ sub Transactions {
 
 sub TransactionCustomFields {
     my $self = shift;
-    return $self->QueueObj->TicketTransactionCustomFields;
+    my $cfs = $self->QueueObj->TicketTransactionCustomFields;
+    $cfs->SetContextObject( $self );
+    return $cfs;
 }
 
 # }}}
