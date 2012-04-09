@@ -54,6 +54,9 @@
 </ul>
 % $m->abort;
 <%INIT>
+
+$m->abort unless $ARGS{ContextType} and $ARGS{ContextId};
+
 my ($CustomField, $Value);
 while( my($k, $v) = each %ARGS ) {
     next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
@@ -63,6 +66,8 @@ while( my($k, $v) = each %ARGS ) {
 $m->abort unless $CustomField;
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 $CustomFieldObj->Load( $CustomField );
+$m->abort unless $CustomFieldObj->Id;
+
 my $values = $CustomFieldObj->Values;
 $values->Limit(
     FIELD           => 'Name',
