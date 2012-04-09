@@ -324,10 +324,12 @@ sub LoadByName {
     }
 
     # if we're looking for a queue by name, make it a number
-    if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
+    if ( defined $args{'Queue'} && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} );
         $args{'Queue'} = $QueueObj->Id;
+        $self->SetContextObject( $QueueObj )
+            unless $self->ContextObject;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
