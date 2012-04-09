@@ -1607,11 +1607,8 @@ sub _CustomFieldLimit {
             $self->_CloseParen;
         }
         else {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->Load($field);
-
             # need special treatment for Date
-            if ( $cf->Type eq 'DateTime' && $op eq '=' ) {
+            if ( $cf and $cf->Type eq 'DateTime' and $op eq '=' ) {
 
                 if ( $value =~ /:/ ) {
                     # there is time speccified.
