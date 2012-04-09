@@ -58,7 +58,10 @@ my $abort = sub {
     $m->abort;
 };
 
-$abort->() unless $ARGS{ContextType} and $ARGS{ContextId};
+unless ( exists $ARGS{ContextType} and exists $ARGS{ContextId} ) {
+    RT->Logger->debug("No context provided");
+    $abort->();
+}
 
 my $CustomField;
 for my $k ( keys %ARGS ) {
@@ -67,10 +70,38 @@ for my $k ( keys %ARGS ) {
     last;
 }
 
-$abort->() unless $CustomField;
+unless ( $CustomField ) {
+    RT->Logger->debug("No CustomField provided");
+    $abort->();
+}
+
+my $SystemCustomFieldObj = RT::CustomField->new( RT->SystemUser );
+my ($id, $msg) = $SystemCustomFieldObj->LoadById( $CustomField ) ;
+unless ( $id ) {
+    RT->Logger->debug("Invalid CustomField provided: $msg");
+    $abort->();
+}
+
+my $context_object = $SystemCustomFieldObj->LoadContextObject(
+    $ARGS{ContextType}, $ARGS{ContextId} );
+$abort->() unless $context_object;
+
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
-$abort->() unless $CustomFieldObj->Id;
+if ( $SystemCustomFieldObj->ValidateContextObject($context_object) ) {
+    # drop our privileges that came from calling LoadContextObject as the System User
+    $context_object->new($session{'CurrentUser'});
+    $context_object->LoadById($ARGS{ContextId});
+    $CustomFieldObj->SetContextObject( $context_object );
+} else {
+    RT->Logger->debug("Invalid Context Object ".$context_object->id." for Custom Field ".$SystemCustomFieldObj->id);
+    $abort->();
+}
+
+($id, $msg) = $CustomFieldObj->LoadById( $CustomField );
+unless ( $CustomFieldObj->Name ) {
+    RT->Logger->debug("Current User cannot see this Custom Field, terminating");
+    $abort->();
+}
 
 my $values = $CustomFieldObj->Values;
 $values->Limit(

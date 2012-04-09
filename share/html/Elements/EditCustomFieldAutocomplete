@@ -52,7 +52,7 @@
 var id = '<% $name . '-Values' %>';
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Values' %>",
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $Context |n %><% $name . '-Values' %>",
     focus: function () {
         // prevent value inserted on focus
         return false;
@@ -76,7 +76,7 @@ jQuery('#'+id).autocomplete( {
 var id = '<% $name . '-Value' %>';
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Value' %>",
+    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $Context |n %><% $name . '-Value' %>",
 }
 );
 % }
@@ -91,6 +91,11 @@ if ( $Multiple and $Values ) {
     while (my $value = $Values->Next ) {
         $Default .= $value->Content ."\n";
     }
+}
+my $Context = "";
+if ($CustomField->ContextObject) {
+    $Context .= "ContextId="  . $CustomField->ContextObject->Id  . "&";
+    $Context .= "ContextType=". ref($CustomField->ContextObject) . "&";
 }
 </%INIT>
 <%ARGS>
