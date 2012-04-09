@@ -1355,6 +1355,7 @@ sub CreateTicket {
             my $cfid = $1;
 
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->SetContextObject( $Queue );
             $cf->Load($cfid);
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #" . $cfid );
@@ -2168,6 +2169,7 @@ sub ProcessObjectCustomFieldUpdates {
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
                 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+                $CustomFieldObj->SetContextObject($Object);
                 $CustomFieldObj->LoadById($cf);
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$cf");

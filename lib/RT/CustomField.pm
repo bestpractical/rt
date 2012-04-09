@@ -1767,6 +1767,7 @@ sub SetBasedOn {
         unless defined $value and length $value;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->SetContextObject( $self->ContextObject );
     $cf->Load( ref $value ? $value->id : $value );
 
     return (0, "Permission denied")
@@ -1784,6 +1785,7 @@ sub BasedOnObj {
     my $self = shift;
 
     my $obj = RT::CustomField->new( $self->CurrentUser );
+    $obj->SetContextObject( $self->ContextObject );
     if ( $self->BasedOn ) {
         $obj->Load( $self->BasedOn );
     }

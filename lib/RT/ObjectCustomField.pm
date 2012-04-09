@@ -137,7 +137,19 @@ Returns the CustomField Object which has the id returned by CustomField
 sub CustomFieldObj {
     my $self = shift;
     my $id = shift || $self->CustomField;
+
+    # To find out the proper context object to load the CF with, we need
+    # data from the CF -- namely, the record class.  Go find that as the
+    # system user first.
+    my $system_CF = RT::CustomField->new( RT->SystemUser );
+    $system_CF->Load( $id );
+    my $class = $system_CF->RecordClassFromLookupType;
+
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->ObjectId );
+
     my $CF = RT::CustomField->new( $self->CurrentUser );
+    $CF->SetContextObject( $obj );
     $CF->Load( $id );
     return $CF;
 }
