@@ -133,7 +133,14 @@ SQL commands to re-insert your objects into the RT database.
 
     mysql -u your_rt_user -p your_rt_database < /path/to/rt/var/data/shredder/dump.sql
 
-That's it.i This will restore everything you'd deleted during a
+3) Validate database with the following command. This is required as
+   DB may be inconsistent because of changes since shredding, also some
+   restore operations are hard to implement in pure SQL that will work
+   on any DB RT runs on.
+
+   rt-validator --check
+
+That's it. This will restore everything you'd deleted during a
 shredding session when the file had been created.
 
 =head1 CONFIGURATION
