@@ -69,10 +69,7 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     $shredder->PutObjects( Objects => $child );
     $shredder->WipeoutAll;
 
-    TODO: {
-        local $TODO = "Shredder doesn't delete all links and transactions";
-        cmp_deeply( $test->dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
-    }
+    cmp_deeply( $test->dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
     $shredder->PutObjects( Objects => $parent );
     $shredder->WipeoutAll;
