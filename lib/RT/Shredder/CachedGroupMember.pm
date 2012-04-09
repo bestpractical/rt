@@ -57,45 +57,66 @@ use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 use RT::Shredder::Dependency;
 
-
-sub __DependsOn
+sub _AsInsertQuery
 {
     my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
+    return $self->SUPER::_AsInsertQuery( @_ )
+        if $self->MemberId == $self->GroupId;
 
-# deep memebership
-    my $objs = RT::CachedGroupMembers->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Via', VALUE => $self->Id );
-    $objs->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
-    push( @$list, $objs );
+    my $table = $self->Table;
+    my $dbh = $RT::Handle->dbh;
+    my @quoted = ( map $dbh->quote($self->$_()), qw(GroupId MemberId Disabled) );
 
-# principal lost group membership and lost some rights which he could delegate to
-# some body
+    my $query =
+        "SELECT ". join( ', ', @quoted ) .' WHERE NOT EXISTS ('
+            ."SELECT id FROM $table WHERE GroupId = $quoted[0] AND MemberId = $quoted[1]"
+        .')'
+    ;
+    my $res = $self->BuildInsertFromSelectQuery( $query ) ."\n";
 
-# XXX: Here is problem cause HasMemberRecursively would return true allways
-# cause we didn't delete anything yet. :(
-    # if pricipal is not member anymore(could be via other groups) then proceed
-    if( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
-        my $acl = RT::ACL->new( $self->CurrentUser );
-        $acl->LimitToPrincipal( Id => $self->GroupId );
+    $query = "SELECT CGM1.GroupId, CGM2.MemberId, CASE WHEN CGM1.Disabled + CGM2.Disabled > 0 THEN 1 ELSE 0 END FROM
+        $table CGM1 CROSS JOIN $table CGM2
+        LEFT JOIN $table CGM3
+            ON CGM3.GroupId = CGM1.GroupId AND CGM3.MemberId = CGM2.MemberId
+        WHERE
+            CGM1.MemberId = $quoted[0] AND (CGM1.GroupId != CGM1.MemberId OR CGM1.MemberId = $quoted[1])
+            AND CGM3.id IS NULL
+    ";
 
+    if ( $self->MemberObj->IsGroup ) {
+        $query .= "
+            AND CGM2.GroupId = $quoted[1]
+            AND (CGM2.GroupId != CGM2.MemberId OR CGM2.GroupId = $quoted[1])
+        ";
     }
+    else {
+        $query .= " AND CGM2.GroupId = $quoted[0] AND CGM2.MemberId = $quoted[1]";
+    }
+    $res .= $self->BuildInsertFromSelectQuery( $query ) ."\n";
 
-
-    $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => DEPENDS_ON,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-
-    return $self->SUPER::__DependsOn( %args );
+    return $res;
 }
+
+sub BuildInsertFromSelectQuery {
+    my $self = shift;
+    my $query = shift;
+
+    my $table = $self->Table;
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        $query = "(SELECT ${table}_seq.nextval, insert_from.* FROM ($query) insert_from)";
+    }
+    return "INSERT INTO $table(GroupId, MemberId, Disabled) $query;";
+}
+
+sub __Wipeout {
+    my $self = shift;
+    return $self->SUPER::__Wipeout( @_ )
+        if $self->MemberId == $self->GroupId;
+
+    # GroupMember takes care of wiping other records
+    return 1;
+}
+
+
 
 1;

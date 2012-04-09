@@ -71,8 +71,8 @@ sub __DependsOn
     my $list = [];
 
     my $objs = RT::CachedGroupMembers->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'GroupId', VALUE => $self->GroupId );
     $objs->Limit( FIELD => 'MemberId', VALUE => $self->MemberId );
-    $objs->Limit( FIELD => 'ImmediateParentId', VALUE => $self->GroupId );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
@@ -126,4 +126,12 @@ sub __DependsOn
     return $self->SUPER::__DependsOn( %args );
 }
 
+sub __Wipeout
+{
+    my $self = shift;
+    my $msg = $self->_AsString ." wiped out";
+    $self->Delete;
+    $RT::Logger->info( $msg );
+    return;
+}
 1;
