@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 16;
+use RT::Test::Shredder tests => 21;
 my $test = "RT::Test::Shredder";
 
 diag 'simple queue' if $ENV{TEST_VERBOSE};
@@ -16,6 +16,7 @@ diag 'simple queue' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $queue );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -39,6 +40,7 @@ diag 'queue with scrip' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $queue );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -60,6 +62,7 @@ diag 'queue with template' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $queue );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -83,6 +86,7 @@ diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $queue );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -108,6 +112,7 @@ diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $queue );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
 
 #	$shredder->PutObjects( Objects => $group );

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 22;
+use RT::Test::Shredder tests => 26;
 my $test = "RT::Test::Shredder";
 
 ### nested membership check
@@ -41,14 +41,17 @@ my $test = "RT::Test::Shredder";
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $members );
 	$shredder->WipeoutAll();
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('buadd'), "current DB equal to savepoint");
 	
 	$shredder->PutObjects( Objects => $user );
 	$shredder->WipeoutAll();
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 	
 	$shredder->PutObjects( Objects => [$pgroup, $cgroup] );
 	$shredder->WipeoutAll();
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -85,6 +88,7 @@ my $test = "RT::Test::Shredder";
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $member );
 	$shredder->WipeoutAll();
+	$test->db_is_valid;
 
 	$ticket = RT::Ticket->new( RT->SystemUser );
 	($status, $msg) = $ticket->Load( $id );

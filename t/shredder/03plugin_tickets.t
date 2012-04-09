@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 45;
+use RT::Test::Shredder tests => 49;
 my $test = "RT::Test::Shredder";
 
 use_ok('RT::Shredder');
@@ -56,6 +56,7 @@ use_ok('RT::Tickets');
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -100,6 +101,7 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -138,6 +140,7 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => \@objs );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $cid1 );
@@ -145,5 +148,6 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
 
     $shredder->PutObjects( Objects => $ticket );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");

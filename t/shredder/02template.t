@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 7;
+use RT::Test::Shredder tests => 10;
 my $test = "RT::Test::Shredder";
 
 diag 'global template' if $ENV{TEST_VERBOSE};
@@ -19,6 +19,7 @@ diag 'global template' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -36,6 +37,7 @@ diag 'local template' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -63,5 +65,6 @@ diag 'template used in scrip' if $ENV{TEST_VERBOSE};
 	my $shredder = $test->shredder_new();
 	$shredder->PutObjects( Objects => $template );
 	$shredder->WipeoutAll;
+	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }

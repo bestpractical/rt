@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 8;
+use RT::Test::Shredder tests => 10;
 my $test = "RT::Test::Shredder";
 
 $test->create_savepoint('clean');
@@ -38,6 +38,7 @@ $test->create_savepoint('aucreate'); # after user create
     my $shredder = $test->shredder_new();
     $shredder->PutResolver( BaseClass => 'RT::User', Code => $resolver );
     $shredder->Wipeout( Object => $user );
+    $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 }
 
@@ -49,5 +50,6 @@ $test->create_savepoint('aucreate'); # after user create
     my $shredder = $test->shredder_new();
     eval { $shredder->Wipeout( Object => $user ) };
     ok($@, "wipeout throw exception if no resolvers");
+    $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }
