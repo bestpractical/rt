@@ -132,7 +132,7 @@ sub FromURI {
     # Special case: integers passed in as URIs must be ticket ids
     if ($uri =~ /^(\d+)$/) {
 	$scheme = "fsck.com-rt";
-    } elsif ($uri =~ /^((?:\w|\.|-)+?):/) {
+    } elsif ($uri =~ /^((?!javascript|data)(?:\w|\.|-)+?):/i) {
 	$scheme = $1;
     }
     else {
