@@ -545,6 +545,10 @@ sub Get
     my $self = shift;
     my %args = (Format => 'ISO', @_);
     my $formatter = $args{'Format'};
+    unless ( $self->ValidFormatter($formatter) ) {
+        RT->Logger->warning("Invalid date formatter '$formatter', falling back to ISO");
+        $formatter = 'ISO';
+    }
     $formatter = 'ISO' unless $self->can($formatter);
     return $self->$formatter( %args );
 }
@@ -581,6 +585,20 @@ sub Formatters
     my $self = shift;
 
     return @FORMATTERS;
+}
+
+=head3 ValidFormatter FORMAT
+
+Returns a true value if C<FORMAT> is a known formatter.  Otherwise returns
+false.
+
+=cut
+
+sub ValidFormatter {
+    my $self   = shift;
+    my $format = shift;
+    return (grep { $_ eq $format } $self->Formatters and $self->can($format))
+                ? 1 : 0;
 }
 
 =head3 DefaultFormat
@@ -645,8 +663,8 @@ sub LocalizedDateTime
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
-                 DateFormat => 'date_format_full',
-                 TimeFormat => 'time_format_medium',
+                 DateFormat => '',
+                 TimeFormat => '',
                  AbbrDay => 1,
                  AbbrMonth => 1,
                  @_,
@@ -657,9 +675,12 @@ sub LocalizedDateTime
     return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
         unless can DateTime::('format_cldr');
 
+    # Require valid names for the format methods
+    my $date_format = $args{DateFormat} =~ /^\w+$/
+                    ? $args{DateFormat} : 'date_format_full';
 
-    my $date_format = $args{'DateFormat'};
-    my $time_format = $args{'TimeFormat'};
+    my $time_format = $args{TimeFormat} =~ /^\w+$/
+                    ? $args{TimeFormat} : 'time_format_medium';
 
     my $lang = $self->CurrentUser->UserObj->Lang;
     unless ($lang) {
