@@ -1062,14 +1062,8 @@ sub CurrentUserCanSee {
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
-    #if they ain't got rights to see, don't let em
-    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return 0;
-        }
-    }
-
-    return 1;
+    # Defer to the object in question
+    return $self->Object->CurrentUserCanSee("Transaction");
 }
 
 # }}}
@@ -1094,7 +1088,7 @@ sub OldValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('OldValue');
+        return $self->_Value('OldValue');
     }
 }
 
@@ -1108,7 +1102,7 @@ sub NewValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('NewValue');
+        return $self->_Value('NewValue');
     }
 }
 

@@ -1335,8 +1335,18 @@ sub CurrentUserHasRight {
 
 # }}}
 
+=head2 CurrentUserCanSee
 
+Always returns 1; unfortunately, for historical reasons, users have
+always been able to examine groups they have indirect access to, even if
+they do not have SeeGroup explicitly.
 
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return 1;
+}
 
 # {{{ Principal related routines
 
