@@ -74,7 +74,7 @@ sub DefaultHandlerArgs  { (
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     autoflush            => 0,
-    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'brief'),
+    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'rt_error'),
     request_class        => 'RT::Interface::Web::Request',
     named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
@@ -200,6 +200,13 @@ sub CleanupRequest {
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
 
+}
+
+
+sub HTML::Mason::Exception::as_rt_error {
+    my ($self) = @_;
+    $RT::Logger->error( $self->full_message );
+    return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
 }
 
 
