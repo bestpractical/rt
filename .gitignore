@@ -18,6 +18,7 @@ Makefile
 t/data/gnupg/keyrings/random_seed
 t/data/configs/apache2.2+fastcgi.conf
 t/data/configs/apache2.2+mod_perl.conf
+t/security/embargo/
 t/tmp/
 sbin/rt-attributes-viewer
 sbin/rt-clean-sessions
