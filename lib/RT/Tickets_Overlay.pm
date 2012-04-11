@@ -1032,6 +1032,12 @@ sub _GroupMembersJoin {
         FIELD2          => 'GroupId',
         ENTRYAGGREGATOR => 'AND',
     );
+    $self->SUPER::Limit(
+        LEFTJOIN => $alias,
+        ALIAS => $alias,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
 
     $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
         unless $args{'New'};
@@ -1196,12 +1202,25 @@ sub _WatcherMembershipLimit {
         FIELD2 => 'id'
     );
 
+    $self->Limit(
+        ALIAS => $groupmembers,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
+
     $self->Join(
         ALIAS1 => $memberships,
         FIELD1 => 'MemberId',
         ALIAS2 => $users,
         FIELD2 => 'id'
     );
+
+    $self->Limit(
+        ALIAS => $memberships,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
+
 
     $self->_CloseParen;
 
