@@ -2319,6 +2319,91 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
+=head2 ScrubHTML content
+
+Removes unsafe and undesired HTML from the passed content
+
+=cut
+
+my $SCRUBBER;
+sub ScrubHTML {
+    my $Content = shift;
+    $SCRUBBER = _NewScrubber() unless $SCRUBBER;
+
+    $Content = '' if !defined($Content);
+    return $SCRUBBER->scrub($Content);
+}
+
+=head2 _NewScrubber
+
+Returns a new L<HTML::Scrubber> object.
+
+If you need to be more lax about what HTML tags and attributes are allowed,
+create C</opt/rt4/local/lib/RT/Interface/Web_Local.pm> with something like the
+following:
+
+    package HTML::Mason::Commands;
+    # Let tables through
+    push @SCRUBBER_ALLOWED_TAGS, qw(TABLE THEAD TBODY TFOOT TR TD TH);
+    1;
+
+=cut
+
+our @SCRUBBER_ALLOWED_TAGS = qw(
+    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5
+    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE
+);
+
+our %SCRUBBER_ALLOWED_ATTRIBUTES = (
+    # Match http, ftp and relative urls
+    # XXX: we also scrub format strings with this module then allow simple config options
+    href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
+    face   => 1,
+    size   => 1,
+    target => 1,
+    style  => qr{
+        ^(?:\s*
+            (?:(?:background-)?color: \s*
+                    (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
+                       \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
+                       [\w\-]+                                  # green, light-blue, etc.
+                       )                            |
+               text-align: \s* \w+                  |
+               font-size: \s* [\w.\-]+              |
+               font-family: \s* [\w\s"',.\-]+       |
+               font-weight: \s* [\w\-]+             |
+
+               # MS Office styles, which are probably fine.  If we don't, then any
+               # associated styles in the same attribute get stripped.
+               mso-[\w\-]+?: \s* [\w\s"',.\-]+
+            )\s* ;? \s*)
+         +$ # one or more of these allowed properties from here 'till sunset
+    }ix,
+);
+
+our %SCRUBBER_RULES = ();
+
+sub _NewScrubber {
+    require HTML::Scrubber;
+    my $scrubber = HTML::Scrubber->new();
+    $scrubber->default(
+        0,
+        {
+            %SCRUBBER_ALLOWED_ATTRIBUTES,
+            '*' => 0, # require attributes be explicitly allowed
+        },
+    );
+    $scrubber->deny(qw[*]);
+    $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
+    $scrubber->rules(%SCRUBBER_RULES);
+
+    # Scrubbing comments is vital since IE conditional comments can contain
+    # arbitrary HTML and we'd pass it right on through.
+    $scrubber->comment(0);
+
+    return $scrubber;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
