@@ -2220,7 +2220,7 @@ sub _Links {
     my $links = $self->{ $cache_key }
               = RT::Links->new( $self->CurrentUser );
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $links->Limit( FIELD => 'id', VALUE => 0 );
+        $links->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
         return $links;
     }
 
@@ -3575,7 +3575,9 @@ sub Transactions {
 
 sub TransactionCustomFields {
     my $self = shift;
-    return $self->QueueObj->TicketTransactionCustomFields;
+    my $cfs = $self->QueueObj->TicketTransactionCustomFields;
+    $cfs->SetContextObject( $self );
+    return $cfs;
 }
 
 # }}}
