@@ -45,46 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, error => $error );
-
-% unless ($SuppressHeader) {
-<& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
+<& /Elements/Header, Title => loc('Possible cross-site request forgery') &>
 <& /Elements/Tabs &>
-% }
 
-<div class="error">
-<%$Why%>
-<br />
-<%$Details%>
-</div>
+<h1><&|/l&>Possible cross-site request forgery</&></h1>
 
-<%cleanup>
-$m->comp('/Elements/Footer');
-$m->abort();
-</%cleanup>
+% my $strong_start = "<strong>";
+% my $strong_end   = "</strong>";
+<p><&|/l_unsafe, $strong_start, $strong_end, $Reason &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  This is possibly caused by a malicious attacker trying to perform actions against RT on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
 
-<%args>
-$Code => undef
-$Details => ''
-$Title => loc("RT Error")
-$Why => loc("the calling component did not specify why"),
-$SuppressHeader => 0,
-</%args>
+% my $start = qq|<strong><a href="$url_with_token">|;
+% my $end   = qq|</a></strong>|;
+<p><&|/l_unsafe, $escaped_path, $start, $end &>If you really intended to visit [_1], then [_2]click here to resume your request[_3].</&></p>
 
+<& /Elements/Footer, %ARGS &>
+% $m->abort;
+<%ARGS>
+$OriginalURL => ''
+$Reason => ''
+$Token => ''
+</%ARGS>
 <%INIT>
-my $error = "WebRT: $Why";
-$error .= " ($Details)" if defined $Details && length $Details;
+my $escaped_path = $m->interp->apply_escapes($OriginalURL, 'h');
+$escaped_path = "<tt>$escaped_path</tt>";
 
-# TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
-use Encode ();
-Encode::_utf8_off($error);
-
-$RT::Logger->error($error);
-
-if ( $session{'REST'} ) {
-    $r->content_type('text/plain');
-    $m->out( "Error: " . $Why . "\n" );
-    $m->out( $Details . "\n" ) if defined $Details && length $Details;
-    $m->abort();
-}
+my $url_with_token = URI->new($OriginalURL);
+$url_with_token->query_form([CSRF_Token => $Token]);
 </%INIT>

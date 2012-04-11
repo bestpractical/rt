@@ -255,6 +255,7 @@ sub HandleRequest {
     DecodeARGS($ARGS);
     PreprocessTimeUpdates($ARGS);
 
+    InitializeMenu();
     MaybeShowInstallModePage();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
@@ -303,6 +304,8 @@ sub HandleRequest {
             }
         }
     }
+
+    MaybeShowInterstitialCSRFPage($ARGS);
 
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
@@ -364,8 +367,6 @@ sub SetNextPage {
 
     $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
     $HTML::Mason::Commands::session{'i'}++;
-    
-    SendSessionCookie();
     return $hash;
 }
 
@@ -482,7 +483,6 @@ sub MaybeShowNoAuthPage {
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
     # If it's a noauth file, don't ask for auth.
-    SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
 }
@@ -541,10 +541,6 @@ sub ShowRequestedPage {
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
-
-    InitializeMenu();
-
-    SendSessionCookie();
 
     # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
@@ -1147,6 +1143,178 @@ sub ComponentRoots {
     }
     @roots = map { $_->[1] } @roots unless $args{Names};
     return @roots;
+}
+
+my %is_whitelisted_path = (
+    # The RSS feed embeds an auth token in the path, but query
+    # information for the search.  Because it's a straight-up read, in
+    # addition to embedding its own auth, it's fine.
+    '/NoAuth/rss/dhandler' => 1,
+);
+
+sub IsCompCSRFWhitelisted {
+    my $comp = shift;
+    my $ARGS = shift;
+
+    return 1 if $is_whitelisted_path{$comp};
+
+    my %args = %{ $ARGS };
+
+    # If the user specifies a *correct* user and pass then they are
+    # golden.  This acts on the presumption that external forms may
+    # hardcode a username and password -- if a malicious attacker knew
+    # both already, CSRF is the least of your problems.
+    my $AllowLoginCSRF = not RT->Config->Get('RestrictReferrerLogin');
+    if ($AllowLoginCSRF and defined($args{user}) and defined($args{pass})) {
+        my $user_obj = RT::CurrentUser->new();
+        $user_obj->Load($args{user});
+        return 1 if $user_obj->id && $user_obj->IsPassword($args{pass});
+
+        delete $args{user};
+        delete $args{pass};
+    }
+
+    # Eliminate arguments that do not indicate an effectful request.
+    # For example, "id" is acceptable because that is how RT retrieves a
+    # record.
+    delete $args{id};
+
+    # If they have a valid results= from MaybeRedirectForResults, that's
+    # also fine.
+    delete $args{results} if $args{results}
+        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+
+    # If there are no arguments, then it's likely to be an idempotent
+    # request, which are not susceptible to CSRF
+    return 1 if !%args;
+
+    return 0;
+}
+
+sub IsRefererCSRFWhitelisted {
+    my $referer = shift;
+
+    my $site = URI->new(RT->Config->Get('WebBaseURL'));
+    $site->host('127.0.0.1') if $site->host eq 'localhost';
+    return 1 if $referer->host_port eq $site->host_port;
+
+    return 0;
+}
+
+sub IsPossibleCSRF {
+    my $ARGS = shift;
+
+    # If first request on this session is to a REST endpoint, then
+    # whitelist the REST endpoints -- and explicitly deny non-REST
+    # endpoints.  We do this because using a REST cookie in a browser
+    # would open the user to CSRF attacks to the REST endpoints.
+    my $path = $HTML::Mason::Commands::r->path_info;
+    $HTML::Mason::Commands::session{'REST'} = $path =~ m{^/+REST/\d+\.\d+(/|$)}
+        unless defined $HTML::Mason::Commands::session{'REST'};
+
+    if ($HTML::Mason::Commands::session{'REST'}) {
+        return 0 if $path =~ m{^/+REST/\d+\.\d+(/|$)};
+        my $why = <<EOT;
+This login session belongs to a REST client, and cannot be used to
+access non-REST interfaces of RT for security reasons.
+EOT
+        my $details = <<EOT;
+Please log out and back in to obtain a session for normal browsing.  If
+you understand the security implications, disabling RT's CSRF protection
+will remove this restriction.
+EOT
+        chomp $details;
+        HTML::Mason::Commands::Abort( $why, Details => $details );
+    }
+
+    return 0 if IsCompCSRFWhitelisted(
+        $HTML::Mason::Commands::m->request_comp->path,
+        $ARGS
+    );
+
+    # if there is no Referer header then assume the worst
+    return (1,
+            "your browser did not supply a Referrer header", # loc
+        ) if !$ENV{HTTP_REFERER};
+
+    my $referer = URI->new($ENV{HTTP_REFERER});
+    $referer->host('127.0.0.1') if $referer->host eq 'localhost';
+    return 0 if IsRefererCSRFWhitelisted($referer);
+
+    return (1,
+            "the Referrer header supplied by your browser ([_1]) is not allowed", # loc
+            $referer->host_port);
+}
+
+sub ExpandCSRFToken {
+    my $ARGS = shift;
+
+    my $token = delete $ARGS->{CSRF_Token};
+    return unless $token;
+
+    my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
+    return unless $data;
+    return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    return unless $user->ValidateAuthString( $data->{auth}, $token );
+
+    %{$ARGS} = %{$data->{args}};
+
+    # We explicitly stored file attachments with the request, but not in
+    # the session yet, as that would itself be an attack.  Put them into
+    # the session now, so they'll be visible.
+    if ($data->{attach}) {
+        my $filename = $data->{attach}{filename};
+        my $mime     = $data->{attach}{mime};
+        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+            = $mime;
+    }
+
+    return 1;
+}
+
+sub MaybeShowInterstitialCSRFPage {
+    my $ARGS = shift;
+
+    return unless RT->Config->Get('RestrictReferrer');
+
+    # Deal with the form token provided by the interstitial, which lets
+    # browsers which never set referer headers still use RT, if
+    # painfully.  This blows values into ARGS
+    return if ExpandCSRFToken($ARGS);
+
+    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+    return if !$is_csrf;
+
+    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
+
+    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data = {
+        auth => $user->GenerateAuthString( $token ),
+        path => $HTML::Mason::Commands::r->path_info,
+        args => $ARGS,
+    };
+    if ($ARGS->{Attach}) {
+        my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+        my $file_path = delete $ARGS->{'Attach'};
+        $data->{attach} = {
+            filename => Encode::decode_utf8("$file_path"),
+            mime     => $attachment,
+        };
+    }
+
+    $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
+    $HTML::Mason::Commands::session{'i'}++;
+
+    $HTML::Mason::Commands::m->comp(
+        '/Elements/CSRF',
+        OriginalURL => $HTML::Mason::Commands::r->path_info,
+        Reason => HTML::Mason::Commands::loc( $msg, @loc ),
+        Token => $token,
+    );
+    # Calls abort, never gets here
 }
 
 package HTML::Mason::Commands;
