@@ -506,7 +506,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
-        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0');
+        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0', SUBCLAUSE => 'acl');
         return $self->{'attachments'};
     }
 
@@ -708,6 +708,7 @@ sub BriefDescription {
 
         if ( $self->Field ) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->SetContextObject( $self->Object );
             $cf->Load( $self->Field );
             $field = $cf->Name();
             $field = $self->loc('a custom field') if !defined($field);
@@ -1194,6 +1195,7 @@ sub CustomFieldValues {
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::CustomFields->new( $self->CurrentUser );
+            $CFs->SetContextObject( $self->Object );
             $CFs->Limit( FIELD => 'Name', VALUE => $field );
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
             $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);

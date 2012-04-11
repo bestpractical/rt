@@ -1180,6 +1180,7 @@ sub UpdateCustomFields {
         my $cf = $1;
 
         my $CustomFieldObj = RT::CustomField->new($self->CurrentUser);
+        $CustomFieldObj->SetContextObject( $ticket );
         $CustomFieldObj->LoadById($cf);
 
         my @values;

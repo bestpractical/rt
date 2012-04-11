@@ -128,6 +128,7 @@ if ( $MoveCustomFieldDown ) { {
 if ( $UpdateCFs ) {
     foreach my $cf_id ( @AddCustomField ) {
         my $CF = RT::CustomField->new( $session{'CurrentUser'} );
+        $CF->SetContextObject( $Object );
         $CF->Load( $cf_id );
         unless ( $CF->id ) {
             push @results, loc("Couldn't load CustomField #[_1]", $cf_id);
@@ -138,6 +139,7 @@ if ( $UpdateCFs ) {
     }
     foreach my $cf_id ( @RemoveCustomField ) {
         my $CF = RT::CustomField->new( $session{'CurrentUser'} );
+        $CF->SetContextObject( $Object );
         $CF->Load( $cf_id );
         unless ( $CF->id ) {
             push @results, loc("Couldn't load CustomField #[_1]", $cf_id);
@@ -153,6 +155,7 @@ $m->callback(CallbackName => 'UpdateExtraFields', Results => \@results, Object =
 my $applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
 $applied_cfs->LimitToLookupType($lookup);
 $applied_cfs->LimitToGlobalOrObjectId($id);
+$applied_cfs->SetContextObject( $Object );
 $applied_cfs->ApplySortOrder;
 
 my $not_applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
