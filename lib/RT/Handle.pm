@@ -239,8 +239,9 @@ sub CheckIntegrity {
         return (0, 'no connection', "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
     }
 
-    RT::ConnectToDatabase();
-    RT::InitLogging();
+    unless ($RT::Handle and $RT::Handle->dbh) {
+        RT::ConnectToDatabase();
+    }
 
     require RT::CurrentUser;
     my $test_user = new RT::CurrentUser;
