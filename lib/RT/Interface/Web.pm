@@ -830,6 +830,10 @@ sub StaticFileHeaders {
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
+    # remove any cookie headers -- if it is cached publicly, it
+    # shouldn't include anyone's cookie!
+    delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
+
     # Expire things in a month.
     $date->Set( Value => time + 30 * 24 * 60 * 60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
