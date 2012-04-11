@@ -60,7 +60,7 @@ $onload => undef
 <script type="text/javascript"><!--
     doOnLoad(loadTitleBoxStates);
 % if ( $focus ) {
-    doOnLoad(function () { focusElementById('<% $focus %>') });
+    doOnLoad(function () { focusElementById(<% $focus |n,j%>) });
 % }
 
 % if ( $onload ) {
@@ -112,8 +112,8 @@ $onload => undef
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
-                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
+                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) |n,j%> );
+                oFCKeditor.BasePath = <%RT->Config->Get('WebPath') |n,j%>+"/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
         }

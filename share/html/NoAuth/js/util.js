@@ -192,7 +192,7 @@ function doOnLoad(handler) {
 /* calendar functions */
 
 function openCalWindow(field) {
-    var objWindow = window.open('<%RT->Config->Get('WebPath')%>/Helpers/CalPopup.html?field='+field, 
+    var objWindow = window.open(<%RT->Config->Get('WebPath')|n,j%>+'/Helpers/CalPopup.html?field='+field, 
                                 'RT_Calendar', 
                                 'height=235,width=285,scrollbars=1');
     objWindow.focus();
@@ -206,7 +206,7 @@ function createCalendarLink(input) {
         $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
         //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        var text = document.createTextNode('<% loc("Calendar") %>');
+        var text = document.createTextNode(<% loc("Calendar") |n,j%>);
         link.appendChild(text);
 
         var space = document.createTextNode(' ');

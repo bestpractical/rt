@@ -55,22 +55,24 @@ $URLParams => undef
 </%ARGS>
 
 <%INIT>
+$BaseURL = $m->interp->apply_escapes($BaseURL, 'h');
+
 $m->out(qq{<div class="paging">});
 if ($Pages == 1) {
   $m->out(loc('Page 1 of 1'));
 }
 else{
 $m->out(loc('Page') . ' ');
-my $prev = $m->comp(
+my $prev = $m->interp->apply_escapes($m->comp(
 		    '/Elements/QueryString',
 		    %$URLParams,
 		    Page    => ( $CurrentPage - 1 )
-		   );
-my $next = $m->comp(
+		   ), 'h');
+my $next = $m->interp->apply_escapes($m->comp(
 		    '/Elements/QueryString',
 		    %$URLParams,
 		    Page    => ( $CurrentPage + 1 )
-		   );
+		   ), 'h');
 my %show;
 $show{1} = 1;
 $show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
@@ -81,7 +83,7 @@ for my $number ( 1 .. $Pages ) {
     if ( $show{$number} ) {
         $dots = undef;
         my $qs =
-          $m->comp( '/Elements/QueryString', %$URLParams, Page => $number );
+          $m->interp->apply_escapes($m->comp( '/Elements/QueryString', %$URLParams, Page => $number ), 'h');
 	$m->out(qq{<span class="pagenum">});
         if ( $number == $CurrentPage ) {
             $m->out(qq{<span class="currentpage">$number</span> });

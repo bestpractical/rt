@@ -49,7 +49,7 @@
   <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
     <span class="widget"><a href="#" 
-	onclick="return rollup('<%$tid%>');" 
+	onclick="return rollup(<%$tid|n,j%>);" 
 	title="Toggle visibility"></a>
 	</span>
 % }

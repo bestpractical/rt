@@ -83,7 +83,7 @@ $Toggle => 0
 </%ARGS>
 <span id="toggle-<% $id %>" class="toggle-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
-<a align="right" href="<% $url %>" onclick="toggleTicketBookmark('<% $id|n %>', '<% $url %>'); return false;">
+<a align="right" href="<% $url %>" onclick="toggleTicketBookmark(<% $id|n,j %>, <% $url|n,j %>); return false;">
 % if ( $bookmarked ) {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
