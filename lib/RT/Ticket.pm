@@ -3513,6 +3513,16 @@ sub CurrentUserHasRight {
 }
 
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the ticket, using ShowTicket
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('ShowTicket');
+}
 
 =head2 HasRight
 
