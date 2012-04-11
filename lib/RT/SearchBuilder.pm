@@ -96,6 +96,19 @@ sub OrderByCols {
     return $self->SUPER::OrderByCols( @sort );
 }
 
+# If we're setting RowsPerPage or FirstRow, ensure we get a natural number or undef.
+sub RowsPerPage {
+    my $self = shift;
+    return if @_ and defined $_[0] and $_[0] =~ /\D/;
+    return $self->SUPER::RowsPerPage(@_);
+}
+
+sub FirstRow {
+    my $self = shift;
+    return if @_ and defined $_[0] and $_[0] =~ /\D/;
+    return $self->SUPER::FirstRow(@_);
+}
+
 =head2 LimitToEnabled
 
 Only find items that haven't been disabled
