@@ -51,7 +51,7 @@ $Prefs => '/Prefs/Other.html'
 <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % if ($session{'CurrentUser'}->Name) {
-    <&|/l, "<span>".$session{'CurrentUser'}->Name."</span>" &>Logged in as [_1]</&>
+    <&|/l_unsafe, "<span>".$m->interp->apply_escapes($session{'CurrentUser'}->Name, 'h')."</span>" &>Logged in as [_1]</&>
 %     if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System ) ) {
     | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }
