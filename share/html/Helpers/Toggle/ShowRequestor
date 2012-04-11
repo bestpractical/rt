@@ -47,7 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my $TicketTemplate = "/Ticket/Elements/ShowRequestorTickets$Status";
-$TicketTemplate = "/Ticket/Elements/ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
+$TicketTemplate = "/Ticket/Elements/ShowRequestorTicketsActive"
+    unless RT::Interface::Web->ComponentPathIsSafe($TicketTemplate)
+       and $m->comp_exists($TicketTemplate);
 my $user_obj = RT::User->new($session{CurrentUser});
 my ($val, $msg) = $user_obj->Load($Requestor);
 unless ($val) {
