@@ -352,7 +352,7 @@ test:
 parallel-test: test-parallel
 
 test-parallel: 
-	RT_TEST_PARALLEL=1 $(PERL) "-MApp::Prove" -e 'my $$p = App::Prove->new(); $$p->process_args("-wlrj5","--state=slow,save", "t"); $$p->run()'
+	RT_TEST_PARALLEL=1 $(PERL) "-MApp::Prove" -e 'my $$p = App::Prove->new(); $$p->process_args("-wlrj5","--state=slow,save", "t"); exit( $$p->run() ? 0 : 1 )'
 
 regression-reset-db: force-dropdb
 	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba-password ''
