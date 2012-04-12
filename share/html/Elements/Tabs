@@ -50,6 +50,7 @@
 <%INIT>
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
+$request_path =~ s!/{2,}!/!g;
 
 my $query_string = sub {
     my %args = @_;
