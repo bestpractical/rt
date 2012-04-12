@@ -180,7 +180,7 @@ sub Create {
     $args{'Disabled'} ||= 0;
 
     my ( $id, $msg ) = $self->SUPER::Create(
-        Template               => $template->Id,
+        Template               => $template->Name,
         ScripCondition         => $condition->id,
         ScripAction            => $action->Id,
         Disabled               => $args{'Disabled'},
@@ -269,7 +269,7 @@ sub AddToObject {
         )
     ;
 
-    my $tname = $self->TemplateObj->Name;
+    my $tname = $self->Template;
     my $template = RT::Template->new( $self->CurrentUser );
     $template->LoadQueueTemplate( Queue => $queue? $queue->id : 0, Name => $tname );
     $template->LoadGlobalTemplate( $tname ) if $queue && !$template->id;
@@ -803,7 +803,7 @@ sub SetTemplate {
     return ( 0, $self->loc( "Template '[_1]' not found", $value ) )
       unless $template->Id;
 
-    return $self->_Set( Field => 'Template', Value => $template->Id );
+    return $self->_Set( Field => 'Template', Value => $template->Name );
 }
 
 1;
@@ -1015,7 +1015,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Template
 
 Returns the current value of Template.
-(In the database, Template is stored as int(11).)
+(In the database, Template is stored as varchar(200).)
 
 
 
@@ -1024,7 +1024,7 @@ Returns the current value of Template.
 
 Set Template to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Template will be stored as a int(11).)
+(In the database, Template will be stored as a varchar(200).)
 
 
 =cut
@@ -1091,7 +1091,7 @@ sub _CoreAccessible {
         Disabled =>
                 {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Template =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => 'Blank'},
         Creator =>
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

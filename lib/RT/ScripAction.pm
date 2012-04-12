@@ -197,7 +197,7 @@ sub TemplateObj {
     return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
         $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
-        $self->{'TemplateObj'}->LoadById( $self->{'Template'} );
+        $self->{'TemplateObj'}->Load( $self->{'Template'} );
 
         if ( ( $self->{'TemplateObj'}->__Value('Queue') == 0 )
             && $self->{'_TicketObj'} ) {

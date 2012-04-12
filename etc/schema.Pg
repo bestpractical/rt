@@ -231,7 +231,7 @@ CREATE TABLE Scrips (
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
   Disabled integer NOT NULL DEFAULT 0 ,
-  Template integer NOT NULL DEFAULT 0  ,
+  Template varchar(200) NOT NULL,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,

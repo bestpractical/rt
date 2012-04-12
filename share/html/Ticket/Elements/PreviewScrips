@@ -67,7 +67,7 @@ return unless $Object;
 %                  @{$Object->Scrips->Prepared};
 %     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
-          <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
+          <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template)&>[_1] [_2] with template [_3]</&>
           <br />
 %         for my $type (qw(To Cc Bcc)) {
 %             my @addresses =  $scrip->ActionObj->Action->$type();

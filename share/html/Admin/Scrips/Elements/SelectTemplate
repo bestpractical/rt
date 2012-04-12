@@ -63,7 +63,7 @@ $Default => undef
 <%INIT>
 
 my $current;
-$current = $Scrip->TemplateObj->Name if $Scrip;
+$current = $Scrip->Template if $Scrip;
 
 my $global = RT::Templates->new($session{'CurrentUser'});
 $global->LimitToGlobal;
