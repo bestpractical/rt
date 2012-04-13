@@ -148,7 +148,6 @@ sub Create {
 
     #TODO +++ validate input
 
-    require RT::ScripAction;
     return ( 0, $self->loc("Action is mandatory argument") )
         unless $args{'ScripAction'};
     my $action = RT::ScripAction->new( $self->CurrentUser );
@@ -156,7 +155,6 @@ sub Create {
     return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
         unless $action->Id;
 
-    require RT::Template;
     return ( 0, $self->loc("Template is mandatory argument") )
         unless $args{'Template'};
     my $template = RT::Template->new( $self->CurrentUser );
@@ -164,7 +162,6 @@ sub Create {
     return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
         unless $template->Id;
 
-    require RT::ScripCondition;
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
     my $condition = RT::ScripCondition->new( $self->CurrentUser );
