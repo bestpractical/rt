@@ -292,11 +292,6 @@ sub _JoinGroups
         ALIAS2 => $group_members,
         FIELD2 => 'GroupId'
     );
-    $self->Limit(
-        ALIAS => $groups,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
 
     return $groups;
 }
