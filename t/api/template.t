@@ -2,11 +2,12 @@
 use warnings;
 use strict;
 
-use RT;
-use RT::Test tests => 10;
+use RT::Test tests => 12;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Templates' );
 ok $queue && $queue->id, "loaded or created a queue";
+
+use_ok('RT::Template');
 
 {
     my $template = RT::Template->new( RT->SystemUser );
@@ -31,4 +32,12 @@ ok $queue && $queue->id, "loaded or created a queue";
 
     $template->Load($id);
     ok !$template->id, "can not load template after deletion";
+}
+
+{
+    my $t = RT::Template->new(RT->SystemUser);
+    $t->Create(Name => "Foo", Queue => $queue->id);
+    my $t2 = RT::Template->new(RT->Nobody);
+    $t2->Load($t->Id);
+    ok($t2->QueueObj->id, "Got the template's queue objet");
 }
