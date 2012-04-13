@@ -1208,13 +1208,28 @@ sub IsCompCSRFWhitelisted {
 }
 
 sub IsRefererCSRFWhitelisted {
-    my $referer = shift;
+    my $referer = _NormalizeHost(shift);
+    my $config  = _NormalizeHost(RT->Config->Get('WebBaseURL'));
 
-    my $site = URI->new(RT->Config->Get('WebBaseURL'));
-    $site->host('127.0.0.1') if $site->host eq 'localhost';
-    return 1 if $referer->host_port eq $site->host_port;
+    return (1,$referer,$config) if $referer->host_port eq $config->host_port;
 
-    return 0;
+    return (0,$referer,$config);
+}
+
+=head3 _NormalizeHost
+
+Takes a URI and creates a URI object that's been normalized
+to handle common problems such as localhost vs 127.0.0.1
+
+=cut
+
+sub _NormalizeHost {
+
+    my $uri= URI->new(shift);
+    $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+
+    return $uri;
+
 }
 
 sub IsPossibleCSRF {
@@ -1253,13 +1268,12 @@ EOT
             "your browser did not supply a Referrer header", # loc
         ) if !$ENV{HTTP_REFERER};
 
-    my $referer = URI->new($ENV{HTTP_REFERER});
-    $referer->host('127.0.0.1') if $referer->host eq 'localhost';
-    return 0 if IsRefererCSRFWhitelisted($referer);
+    my ($whitelisted, $browser, $config) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
+    return 0 if $whitelisted;
 
     return (1,
-            "the Referrer header supplied by your browser ([_1]) is not allowed", # loc
-            $referer->host_port);
+            "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
+            $browser->host_port, $config->host_port);
 }
 
 sub ExpandCSRFToken {
