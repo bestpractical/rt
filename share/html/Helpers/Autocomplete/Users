@@ -120,6 +120,8 @@ while ( my $user = $users->Next ) {
     next if $user->id == RT->SystemUser->id
          or $user->id == RT->Nobody->id;
 
+    next unless defined $user->$return && length $user->$return;
+
     my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
     $formatted =~ s/\n//g;
     my $suggestion = { label => $formatted, value => $user->$return };
