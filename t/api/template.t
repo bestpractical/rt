@@ -9,6 +9,9 @@ use_ok('RT::Template');
 my $queue = RT::Test->load_or_create_queue( Name => 'Templates' );
 ok $queue && $queue->id, "loaded or created a queue";
 
+my $alt_queue = RT::Test->load_or_create_queue( Name => 'Alternative' );
+ok $alt_queue && $alt_queue->id, 'loaded or created queue';
+
 {
     my $template = RT::Template->new(RT->SystemUser);
     isa_ok($template, 'RT::Template');
@@ -91,6 +94,17 @@ note "can not change name to duplicate";
 
     ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Some' );
     ok($val,$msg);
+}
+
+note "changing queue of template is not implemented";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    ok($val,$msg);
+
+    ($val,$msg) = $template->SetQueue( $alt_queue->id );
+    ok(!$val,$msg);
 }
 
 {

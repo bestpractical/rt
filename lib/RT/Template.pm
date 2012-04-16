@@ -632,6 +632,17 @@ sub CurrentUserHasQueueRight {
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
 }
 
+=head2 SetQueue
+
+Changing queue is not implemented.
+
+=cut
+
+sub SetQueue {
+    my $self = shift;
+    return ( undef, $self->loc('Changing queue is not implemented') );
+}
+
 =head2 SetName
 
 Change name of the template.
