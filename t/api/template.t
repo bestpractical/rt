@@ -69,6 +69,30 @@ note "change template's name";
     is $template->Name, 'Some';
 }
 
+note "can not change name to empty";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    ok($val,$msg);
+
+    ($val,$msg) = $template->Create( Queue => $queue->id, Name => '' );
+    ok(!$val,$msg);
+    ($val,$msg) = $template->Create( Queue => $queue->id, Name => undef );
+    ok(!$val,$msg);
+}
+
+note "can not change name to duplicate";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    ok($val,$msg);
+
+    ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Some' );
+    ok($val,$msg);
+}
+
 {
     my $t = RT::Template->new(RT->SystemUser);
     $t->Create(Name => "Foo", Queue => $queue->id);

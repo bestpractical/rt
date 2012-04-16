@@ -632,6 +632,30 @@ sub CurrentUserHasQueueRight {
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
 }
 
+=head2 SetName
+
+Change name of the template.
+
+=cut
+
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+
+    return ( undef, $self->loc('Name is required') )
+        unless $value;
+
+    return $self->_Set( Field => 'Name', Value => $value )
+        if lc($self->Name) eq lc($value);
+
+    my $tmp = $self->new( RT->SystemUser );
+    $tmp->LoadByCols( Name => $value, Queue => $self->Queue );
+    return ( undef, $self->loc('Template with that name already exist') )
+        if $tmp->id;
+
+    return $self->_Set( Field => 'Name', Value => $value );
+}
+
 =head2 SetType
 
 If setting Type to Perl, require the ExecuteCode right.
