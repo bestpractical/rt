@@ -57,6 +57,18 @@ note "can not create template with duplicate name";
     ok(!$val,$msg);
 }
 
+note "change template's name";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    ok($val,$msg);
+
+    ($val,$msg) = $template->SetName( 'Some' );
+    ok($val,$msg);
+    is $template->Name, 'Some';
+}
+
 {
     my $t = RT::Template->new(RT->SystemUser);
     $t->Create(Name => "Foo", Queue => $queue->id);
