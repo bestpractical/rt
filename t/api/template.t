@@ -38,6 +38,14 @@ ok $queue && $queue->id, "loaded or created a queue";
     ok !$template->id, "can not load template after deletion";
 }
 
+note "can not create template w/o Name";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id );
+    ok(!$val,$msg);
+}
+
 note "can not create template with duplicate name";
 {
     clean_templates( Queue => $queue->id );
