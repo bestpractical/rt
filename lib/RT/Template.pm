@@ -256,6 +256,16 @@ sub Create {
         $args{'Queue'} = $QueueObj->Id;
     }
 
+    return ( undef, $self->loc('Name is required') )
+        unless $args{Name};
+
+    {
+        my $tmp = $self->new( RT->SystemUser );
+        $tmp->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} );
+        return ( undef, $self->loc('Template with that name already exist') )
+            if $tmp->id;
+    }
+
     my $result = $self->SUPER::Create(
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
