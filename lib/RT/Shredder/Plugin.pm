@@ -167,6 +167,7 @@ sub LoadByName
 {
     my $self = shift;
     my $name = shift or return (0, "Name not specified");
+    $name =~ /^\w+(::\w+)*$/ or return (0, "Invalid plugin name");
 
     local $@;
     my $plugin = "RT::Shredder::Plugin::$name";
