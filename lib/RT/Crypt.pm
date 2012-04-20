@@ -4,9 +4,6 @@ use warnings;
 
 package RT::Crypt;
 
-require RT::Crypt::GnuPG;
-require RT::Crypt::SMIME;
-
 =head1 NAME
 
 RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
