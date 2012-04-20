@@ -391,11 +391,11 @@ sub VerifyRFC3851 {
     $args{'Data'}->parts([ $res_entity->parts ]);
     $args{'Data'}->make_singlepart;
 
-    $res{'status'} =
-        "Operation: Verify\nStatus: DONE\n"
-        ."Message: The signature is good\n"
-        ."UserString: ". $signers[0]{'User'}[0]{'String'} ."\n"
-    ;
+    $res{'status'} = $self->FormatStatus({
+            Operation   => 'Verify', Status => 'DONE',
+            Message     => 'The signature is good',
+            UserString  => $signers[0]{'User'}[0]{'String'},
+        });
 
     return %res;
 }
