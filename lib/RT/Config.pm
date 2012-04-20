@@ -617,6 +617,15 @@ our %META = (
             require RT::Crypt;
             my @enabled = RT::Crypt->EnabledProtocols;
 
+            foreach my $proto (splice @enabled) {
+                local $@;
+                eval "require RT::Crypt::$proto; 1" or do {
+                    $RT::Logger->error("You enabled $proto cryptography, but we couldn't load module RT::Crypt::$proto: $@");
+                    next;
+                };
+                push @enabled, $proto;
+            }
+
             my $opt = $self->Get('Crypt');
             $opt->{'Enable'} = scalar @enabled;;
             unless ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
