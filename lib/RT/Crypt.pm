@@ -52,8 +52,6 @@ use warnings;
 package RT::Crypt;
 use 5.010;
 
-require RT::Crypt::GnuPG;
-
 =head1 NAME
 
 RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
