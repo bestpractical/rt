@@ -59,7 +59,7 @@ my %deps;
 my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
-    'install',                            'with-MYSQL',
+    'install!',                           'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
     'with-ORACLE',                        'with-FASTCGI',
     'with-MODPERL1',                      'with-MODPERL2',
@@ -404,7 +404,7 @@ foreach my $type (sort grep $args{$_}, keys %args) {
 }
 
 if ( $args{'install'} && keys %Missing_By_Type ) {
-    exec($0, grep { $_ ne '--install' } @orig_argv );
+    exec($0, @orig_argv, '--no-install');
 }
 else {
     conclude(%Missing_By_Type);
