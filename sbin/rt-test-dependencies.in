@@ -288,7 +288,7 @@ Test::Builder 0.90 # needed for is_passing
 Test::MockTime
 Log::Dispatch::Perl
 Test::WWW::Mechanize::PSGI
-Plack::Middleware::Test::StashWarnings
+Plack::Middleware::Test::StashWarnings 0.06
 Test::LongString
 .
 
