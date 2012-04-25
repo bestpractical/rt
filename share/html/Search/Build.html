@@ -308,7 +308,7 @@ if ( $ARGS{'DoSearch'} ) {
         SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         SavedSearchId => $saved_search{'Id'},
     );
-    RT::Interface::Web::Redirect(RT->Config->Get('WebPath') . '/Search/Results.html?' . $redir_query_string);
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Search/Results.html?' . $redir_query_string);
     $m->abort;
 }
 
