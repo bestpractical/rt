@@ -123,6 +123,7 @@ EOF
     RT->Config->Set( 'LexiconLanguages' => '*' );
     RT::I18N->Init;
 
+    RT->InitLogging();
     RT->InstallMode(1);
 } else {
     RT->Init();
