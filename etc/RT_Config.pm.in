@@ -1832,6 +1832,21 @@ defaults to files on disk.
 =cut
 
 # Set($WebSessionClass, "Apache::Session::File");
+# Set($WebSessionClass, "Apache::Session::Memcached");
+
+=item C<$WebSessionAttributes>
+
+You can set your own attributes to WebSessionClass.
+
+=cut
+
+# Set($WebSessionAttributes, {
+#    Servers => '127.0.0.1:11211',
+#    NoRehash => 1,
+#    Readonly => 0,
+#    Debug => 0,
+#    CompressThreshold => 10_000
+# });
 
 =item C<$AutoLogoff>
 

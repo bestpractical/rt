@@ -112,15 +112,21 @@ new session objects.
 
 sub Attributes {
     my $class = $_[0]->Class;
-    return !$class->isa('Apache::Session::File') ? {
-            Handle      => $RT::Handle->dbh,
-            LockHandle  => $RT::Handle->dbh,
-            Transaction => 1,
-        } : {
+    if ( defined RT->Config->Get('WebSessionAttributes') ) {
+        return RT->Config->Get('WebSessionAttributes');
+    } elsif ($class->isa('Apache::Session::File')) {
+        return {
             Directory     => $RT::MasonSessionDir,
             LockDirectory => $RT::MasonSessionDir,
             Transaction   => 1,
         };
+    } else {
+        return {
+            Handle      => $RT::Handle->dbh,
+            LockHandle  => $RT::Handle->dbh,
+            Transaction => 1,
+        };
+    }
 }
 
 =head3 Ids
