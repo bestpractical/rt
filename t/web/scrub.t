@@ -30,13 +30,13 @@ use Test::LongString;
 
 {
     my $html = q[<span lang=EN-US style='font-family:"Century Gothic","sans-serif";'>oh hai I'm some text</span>];
-    my $expected = q[<span style="font-family:&quot;Century Gothic&quot;,&quot;sans-serif&quot;;">oh hai I'm some text</span>];
+    my $expected = q[<span lang="EN-US" style="font-family:&quot;Century Gothic&quot;,&quot;sans-serif&quot;;">oh hai I'm some text</span>];
     is_string(scrub_html($html), $expected, "font lists");
 }
 
 {
     my $html = q[<span lang=EN-US style='font-size:7.5pt;font-family:"Century Gothic","sans-serif";color:#666666;mso-fareast-language:IT'>oh hai I'm some text</span>];
-    my $expected = q[<span style="font-size:7.5pt;font-family:&quot;Century Gothic&quot;,&quot;sans-serif&quot;;color:#666666;mso-fareast-language:IT">oh hai I'm some text</span>];
+    my $expected = q[<span lang="EN-US" style="font-size:7.5pt;font-family:&quot;Century Gothic&quot;,&quot;sans-serif&quot;;color:#666666;mso-fareast-language:IT">oh hai I'm some text</span>];
     is_string(scrub_html($html), $expected, "outlook html");
 }
 
