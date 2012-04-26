@@ -417,9 +417,9 @@ sub PreInflate {
 
     $class->SUPER::PreInflate( $importer, $uid, $data );
 
-    return if $importer->SkipBy( "Name", $class, $uid, $data );
+    return 1 if $importer->{Clone};
 
-    return 1;
+    return not $importer->SkipBy( "Name", $class, $uid, $data );
 }
 
 RT::Base->_ImportOverlays();
