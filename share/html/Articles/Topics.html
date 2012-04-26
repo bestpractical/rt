@@ -48,7 +48,6 @@
 <& /Elements/Header, Title => loc('Browse by topic') &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions, actions => \@Actions &>
 <a href="Topics.html"><&|/l&>All topics</&></a>
 % if (defined $class) {
 &gt; <a href="Topics.html?class=<%$currclass_id%>"><% $currclass_name %></a>
@@ -59,42 +58,114 @@
 % }
 <br />
 <h1><&|/l&>Browse by topic</&></h1>
-<%perl>
-if (defined $class) {
-   $m->print('<h2>'.'<a href="'.
-   RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $currclass_id
-   .'">'.$currclass_name."</a></h2>\n");
-   ProduceTree(\@Actions, $currclass, $currclass_id, $currclass_name, 0, $id);
-} else {
-    $m->print("<ul>\n");
-    while (my $c = $Classes->Next) {
-        $m->print('<li><h2>'.'<a href="'.
-        RT->Config->Get('WebPath')."/Articles/Topics.html?class=" . $c->Id
-        .'">'.$c->Name."</a></h2>\n");
-        $m->print("\n</li>\n");
-    }
-    $m->print(qq|<li><h2><a href="|.RT->Config->Get('WebPath').qq|/Articles/Topics.html?class=0">|.loc('Global Topics').qq|</a></h2></li>\n|);
-    $m->print("</ul>\n");
-}
-</%perl>
+% if (defined $class) {
+<h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $currclass_id %>"><% $currclass_name %></a></h2>
+%     my $rtopic = RT::Topic->new( $session{'CurrentUser'} );
+%     $rtopic->Load($id);
+%     unless ( $rtopic->Id()
+%         && $rtopic->ObjectId() == $currclass->Id )
+%     {
+%         # Show all of them
+%         $ProduceTree->( 0 );
+%     } else {
+%         my @showtopics = ( $rtopic );
+%         my $parent = $rtopic->ParentObj;
+%         while ( $parent->Id ) {
+%             unshift @showtopics, $parent;
+%             $parent = $parent->ParentObj;
+%         }
+%         # List the topics.
+%         for my $t ( @showtopics ) {
+<ul><li><& /Articles/Elements/ShowTopicLink, Topic => $t, Class => $currclass_id &>
+%             $ProduceTree->( $id ) if $t->Id == $id;
+%         }
+%         for ( @showtopics ) {
+              </li></ul>
+%         }
+%     }
+% } else {
+<ul>
+%     while (my $c = $Classes->Next) {
+<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $c->Id %>"><% $c->Name %></a></h2></li>
+%     }
+<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=0"><&|/l&>Global Topics</&></a></h2></li>
+</ul>
+% }
 
 <br />
-<%perl>
+
+% if (@articles) {
+%   if ($id) {
+<h2><&|/l, $currtopic->Name&>Articles in [_1]</&></h2>
+%   } elsif ($class) {
+<h2><&|/l&>Articles with no topics</&></h2>
+%   }
+<ul>
+%   for my $a (@articles) {
+<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
+%   }
+</ul>
+% }
+
+<%init>
+my $Classes;
+my $currclass;
+my $currclass_id;
+my $currclass_name;
+my $currtopic;
+
+if ( defined $class ) {
+    if ($class) {
+        $currclass = RT::Class->new( $session{'CurrentUser'} );
+        $currclass->Load($class);
+        $currclass_id   = $currclass->Id;
+        $currclass_name = $currclass->Name;
+    } else {
+        $currclass      = $RT::System;
+        $currclass_id   = 0;
+        $currclass_name = 'Global Topics';
+    }
+} else {
+    $Classes = RT::Classes->new( $session{'CurrentUser'} );
+    $Classes->LimitToEnabled();
+}
+
+if ($id) {
+    $currtopic = RT::Topic->new( $session{'CurrentUser'} );
+    $currtopic->Load($id);
+}
+
+my $ProduceTree;
+$ProduceTree = sub {
+    my ( $parentid ) = @_;
+    my $topics = RT::Topics->new( $session{'CurrentUser'} );
+    $topics->LimitToObject($currclass);
+    $topics->LimitToKids($parentid || 0);
+    $topics->OrderBy( FIELD => 'Name' );
+    return unless $topics->Count;
+    $m->out("<ul>");
+    while ( my $t = $topics->Next ) {
+        $m->out("<li>");
+        $m->comp("/Articles/Elements/ShowTopicLink",
+                 Topic => $t,
+                 Class => $currclass_id,
+             );
+        $ProduceTree->( $t->Id ) if $t->Children->Count;
+        $m->out("</li>");
+    }
+    $m->out("</ul>");
+};
+
 my @articles;
-if ($id or $showall) {
+if ($id) {
     my $Articles = RT::ObjectTopics->new($session{'CurrentUser'});
     $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::Article');
-    if ($id) {
-        $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
-        if ($showall) {
-            my $kids = $currtopic->Children;
-            while (my $k = $kids->Next) {
-                $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
-                                 ENTRYAGGREGATOR => 'OR');
-            }
-        }
+    $Articles->Limit(FIELD => 'Topic', VALUE => $id);
+    while (my $objtopic = $Articles->Next) {
+        my $a = RT::Article->new($session{'CurrentUser'});
+        $a->Load($objtopic->ObjectId);
+        push @articles, $a;
     }
-    @articles = map {$a = RT::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
 } elsif ($class) {
     my $Articles = RT::Articles->new($session{'CurrentUser'});
     my $TopicsAlias = $Articles->Join(
@@ -123,150 +194,6 @@ if ($id or $showall) {
     );
     @articles = @{$Articles->ItemsArrayRef};
 }
-</%perl>
-
-% if (@articles) {
-%   if ($id) {
-<h2><&|/l, $currtopic->Name&>Articles in [_1]</&></h2>
-%   } elsif ($class) {
-<h2><&|/l&>Articles with no topics</&></h2>
-%   }
-<ul>
-%   for my $a (@articles) {
-<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
-%   }
-</ul>
-% }
-
-<%init>
-my @Actions;
-my $Classes;
-my $currclass;
-my $currclass_id;
-my $currclass_name;
-my $currtopic;
-
-if ( defined $class ) {
-    if ($class) {
-        $currclass = RT::Class->new( $session{'CurrentUser'} );
-        $currclass->Load($class);
-        $currclass_id   = $currclass->Id;
-        $currclass_name = $currclass->Name;
-    } else {
-        $currclass      = $RT::System;
-        $currclass_id   = 0;
-        $currclass_name = 'Global Topics';
-    }
-} else {
-    $Classes = RT::Classes->new( $session{'CurrentUser'} );
-    $Classes->LimitToEnabled();
-}
-
-if ($id) {
-    $currtopic = RT::Topic->new( $session{'CurrentUser'} );
-    $currtopic->Load($id);
-}
-
-# A subroutine that iterates through topics and their children, producing
-# the necessary ul, li, and href links for the table of contents.  Thank
-# heaven for query caching.  The $restrict variable is used to display only
-# the branch of the hierarchy which contains that topic ID.
-
-sub ProduceTree {
-    my ( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, $restrictid ) = @_;
-    $parentid = 0 unless $parentid;
-
-    # Deal with tree restriction, if any.
-    if ($restrictid) {
-        my $rtopic = RT::Topic->new( $session{'CurrentUser'} );
-        $rtopic->Load($restrictid);
-        unless ( $rtopic->Id()
-            && $rtopic->ObjectId() == $currclass_id )
-        {
-            push( @{$Actions},"Could not restrict view to topic $restrictid");
-
-            # Start over, without the restriction.
-            &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, undef );
-        } else {
-            my @showtopics;
-            push( @showtopics, $rtopic );
-            my $parent = $rtopic->ParentObj;
-            while ( $parent->Id ) {
-                push( @showtopics, $parent );
-                my $newparent = $parent->ParentObj;
-                $parent = $newparent;
-            }
-
-            # List the topics.
-            my $indents = @showtopics;
-            while ( my $t = pop @showtopics ) {
-                print "<ul>";
-                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, $t->Children->Count );
-                if ( $t->Id == $restrictid ) {
-                    &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $restrictid, undef );
-                }
-            }
-            print "</ul>" x $indents;
-        }
-    } else {
-
-        # No restriction in place.  Build the entire tree.
-        my $topics = RT::Topics->new( $session{'CurrentUser'} );
-        $topics->LimitToObject($currclass);
-        $topics->LimitToKids($parentid);
-        $topics->OrderBy( FIELD => 'Name' );
-        print "<ul>" if $topics->Count;
-        while ( my $t = $topics->Next ) {
-            if ( $t->Children->Count ) {
-                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 1 );
-                &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $t->Id );
-            } else {
-                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 0 );
-            }
-        }
-        print "</ul>\n" if $topics->Count;
-    }
-}
-
-sub MakeLinks {
-    my ( $topic, $currclass, $currclass_id, $currclass_name, $haschild ) = @_;
-    my $query;
-    my $output;
-
-    if ( ref($topic) eq 'RT::Topic' ) {
-
-        my $topic_info = $topic->Name() || loc("(no name)");
-        $topic_info .= ": " . $topic->Description() if $topic->Description;
-
-        if ($haschild) { # has topics below it
-            $query  = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
-            $output = qq(<li><a href="$query">$topic_info</a>);
-        } else {
-            $output = qq(<li>$topic_info);
-        }
-
-        my $Articles = RT::ObjectTopics->new( $session{'CurrentUser'} );
-        $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::Article' );
-        $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
-        if ( $Articles->Count ) {
-            my $article_text = " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")";
-            my $query  = "Topics.html?id=" . $topic->Id . "&class=$currclass_id&showall=1";
-            $output .= qq(<a href="$query">$article_text</a>);
-        }
-
-        $output .= "</li>\n";
-
-    } else {
-
-        # This builds a link for the class specified, with no particular topic.
-        $query  = "Topics.html?class=" . $currclass_id;
-        $output = "<li><a href=\"$query\">" . $currclass_name . "</a>";
-        $output .= ": " . $currclass->Description if $currclass->Description;
-    }
-
-    return $output;
-}
-
 </%init>
 
 <%args>

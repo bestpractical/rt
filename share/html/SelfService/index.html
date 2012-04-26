@@ -48,6 +48,8 @@
 <& /SelfService/Elements/Header, Title => loc('Open tickets') &>
 <& /SelfService/Elements/MyRequests,
     %ARGS,
+    status          => [ RT::Queue->ActiveStatusArray() ],
+    friendly_status => loc('open'),
     BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
     Page    => $Page, 
 &>

@@ -63,9 +63,9 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
+<&|/l_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
 
-<&|/l, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
+<&|/l_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
 </&>
 
 <%init>

@@ -53,6 +53,7 @@ $CloneTicket => undef
 $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
 
+my $escape = sub { $m->interp->apply_escapes(shift, 'h') };
 
 my $showrows = sub {
     my @pairs = @_;
@@ -252,7 +253,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 
 <%perl>
 $showrows->(
-    loc("Subject") => '<input type="text" name="Subject" size="30" maxsize="200" value="'.($ARGS{Subject} || '').'" />');
+    loc("Subject") => '<input type="text" name="Subject" size="30" maxsize="200" value="'.$escape->($ARGS{Subject} || '').'" />');
 </%perl>
     <span class="content-label label"><%loc("Describe the issue below")%></span>
         <& /Elements/MessageBox, exists $ARGS{Content}  ? (Default => $ARGS{Content}, IncludeSignature => 0 ) : ( QuoteTransaction => $QuoteTransaction ), Height => 5  &>
@@ -413,12 +414,12 @@ $showrows->(
 
 <%perl>
 $showrows->(
-    loc("Depends on")     => '<input type="text" size="10" name="new-DependsOn" value="' . ($ARGS{'new-DependsOn'} || '' ). '" />',
-    loc("Depended on by") => '<input type="text" size="10" name="DependsOn-new" value="' . ($ARGS{'DependsOn-new'} || '' ) . '" />',
-    loc("Parents")        => '<input type="text" size="10" name="new-MemberOf" value="' . ($ARGS{'new-MemberOf'} || '') . '" />',
-    loc("Children")       => '<input type="text" size="10" name="MemberOf-new" value="' . ($ARGS{'MemberOf-new'} || '') . '" />',
-    loc("Refers to")      => '<input type="text" size="10" name="new-RefersTo" value="' . ($ARGS{'new-RefersTo'} || '') . '" />',
-    loc("Referred to by") => '<input type="text" size="10" name="RefersTo-new" value="' . ($ARGS{'RefersTo-new'} || ''). '" />'
+    loc("Depends on")     => '<input type="text" size="10" name="new-DependsOn" value="' . $escape->($ARGS{'new-DependsOn'} || '' ). '" />',
+    loc("Depended on by") => '<input type="text" size="10" name="DependsOn-new" value="' . $escape->($ARGS{'DependsOn-new'} || '' ) . '" />',
+    loc("Parents")        => '<input type="text" size="10" name="new-MemberOf" value="' . $escape->($ARGS{'new-MemberOf'} || '') . '" />',
+    loc("Children")       => '<input type="text" size="10" name="MemberOf-new" value="' . $escape->($ARGS{'MemberOf-new'} || '') . '" />',
+    loc("Refers to")      => '<input type="text" size="10" name="new-RefersTo" value="' . $escape->($ARGS{'new-RefersTo'} || '') . '" />',
+    loc("Referred to by") => '<input type="text" size="10" name="RefersTo-new" value="' . $escape->($ARGS{'RefersTo-new'} || ''). '" />'
 );
 </%perl>
 

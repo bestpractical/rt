@@ -1,0 +1,27 @@
+<%args>
+$Topic
+$Class => 0
+</%args>
+% if ($Link) {
+<a href="Topics.html?id=<% $Topic->Id %>&class=<% $Class %>">\
+% }
+<% $Topic->Name() || loc("(no name)") %>\
+% if ($Topic->Description) {
+: <% $Topic->Description %>
+% }
+
+% if ( $Articles->Count ) {
+ (<&|/l, $Articles->Count &>[quant,_1,article]</&>)
+% }
+
+% if ($Link) {
+</a>
+% }
+
+<%init>
+my $Articles = RT::ObjectTopics->new( $session{'CurrentUser'} );
+$Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::Article' );
+$Articles->Limit( FIELD => 'Topic',      VALUE => $Topic->Id );
+
+my $Link = $Topic->Children->Count || $Articles->Count;
+</%init>

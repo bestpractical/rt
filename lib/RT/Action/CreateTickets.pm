@@ -325,9 +325,19 @@ sub Prepare {
 
     }
 
+    my $active = 0;
+    if ( $self->TemplateObj->Type eq 'Perl' ) {
+        $active = 1;
+    } else {
+        RT->Logger->info(sprintf(
+            "Template #%d is type %s.  You most likely want to use a Perl template instead.",
+            $self->TemplateObj->id, $self->TemplateObj->Type
+        ));
+    }
+
     $self->Parse(
         Content        => $self->TemplateObj->Content,
-        _ActiveContent => 1
+        _ActiveContent => $active,
     );
     return 1;
 
@@ -1170,6 +1180,7 @@ sub UpdateCustomFields {
         my $cf = $1;
 
         my $CustomFieldObj = RT::CustomField->new($self->CurrentUser);
+        $CustomFieldObj->SetContextObject( $ticket );
         $CustomFieldObj->LoadById($cf);
 
         my @values;

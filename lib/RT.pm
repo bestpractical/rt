@@ -679,11 +679,21 @@ sub InitPlugins {
 sub InstallMode {
     my $self = shift;
     if (@_) {
-         $_INSTALL_MODE = shift;
-         if($_INSTALL_MODE) {
-             require RT::CurrentUser;
-            $SystemUser = RT::CurrentUser->new();
-         }
+        my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
+        if ($_[0] and $integrity) {
+            # Trying to turn install mode on but we have a good DB!
+            require Carp;
+            $RT::Logger->error(
+                Carp::longmess("Something tried to turn on InstallMode but we have DB integrity!")
+            );
+        }
+        else {
+            $_INSTALL_MODE = shift;
+            if($_INSTALL_MODE) {
+                require RT::CurrentUser;
+               $SystemUser = RT::CurrentUser->new();
+            }
+        }
     }
     return $_INSTALL_MODE;
 }

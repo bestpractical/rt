@@ -172,7 +172,6 @@ sub setup_session {
     my $self = shift;
     my $opts = shift;
     my %post_params;
-    $post_params{SessionType} = 'REST';    # Surpress login box
     foreach (qw(queue action)) {
         $post_params{$_} = $opts->{$_} if defined $opts->{$_};
     }

@@ -49,10 +49,10 @@
 <textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
 
 <script type="text/javascript">
-var id = '<% $name . '-Values' %>';
+var id = <% "$name-Values" |n,j%>;
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Values' %>",
+    source: <%RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Values" |n,u,j%>,
     focus: function () {
         // prevent value inserted on focus
         return false;
@@ -73,10 +73,10 @@ jQuery('#'+id).autocomplete( {
 % } else {
 <input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default || '' %>"/>
 <script type="text/javascript">
-var id = '<% $name . '-Value' %>';
+var id = <% "$name-Value" |n,j%>;
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: "<%RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues?<% $name . '-Value' %>"
+    source: <%RT->Config->Get('WebPath')|n,j%>+"/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Value" |n,u,j%>
 }
 );
 % }
@@ -91,6 +91,11 @@ if ( $Multiple and $Values ) {
     while (my $value = $Values->Next ) {
         $Default .= $value->Content ."\n";
     }
+}
+my $Context = "";
+if ($CustomField->ContextObject) {
+    $Context .= "ContextId="  . $CustomField->ContextObject->Id  . "&";
+    $Context .= "ContextType=". ref($CustomField->ContextObject) . "&";
 }
 </%INIT>
 <%ARGS>

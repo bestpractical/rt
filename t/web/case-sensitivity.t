@@ -75,7 +75,7 @@ my $cf;
 
 # test custom field values auto completer
 {
-    $m->get_ok('/Helpers/Autocomplete/CustomFieldValues?term=eNo&Object---CustomField-'. $cf->id .'-Value');
+    $m->get_ok('/Helpers/Autocomplete/CustomFieldValues?term=eNo&Object---CustomField-'. $cf->id .'-Value&ContextId=1&ContextType=RT::Queue');
     require JSON;
     is_deeply(
         JSON::from_json( $m->content ),

@@ -251,6 +251,8 @@ my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
 sub Content {
     my $self = shift;
 
+    return undef unless $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+
     my $content = $self->_Value('Content');
     if (   $self->CustomFieldObj->Type eq 'IPAddress'
         || $self->CustomFieldObj->Type eq 'IPAddressRange' )
@@ -364,11 +366,11 @@ sub _FillInTemplateURL {
     # special case, whole value should be an URL
     if ( $url =~ /^__CustomField__/ ) {
         my $value = $self->Content;
-        # protect from javascript: URLs
-        if ( $value =~ /^\s*javascript:/i ) {
+        # protect from potentially malicious URLs
+        if ( $value =~ /^\s*(?:javascript|data):/i ) {
             my $object = $self->Object;
             $RT::Logger->error(
-                "Dangerouse value with JavaScript in custom field '". $self->CustomFieldObj->Name ."'"
+                "Potentially dangerous URL type in custom field '". $self->CustomFieldObj->Name ."'"
                 ." on ". ref($object) ." #". $object->id
             );
             return undef;

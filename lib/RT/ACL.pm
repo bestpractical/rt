@@ -182,6 +182,9 @@ sub LimitToPrincipal {
                      ALIAS2 => $cgm,
                      FIELD2 => 'GroupId'
                    );
+        $self->Limit( ALIAS => $cgm,
+                      FIELD => 'Disabled',
+                      VALUE => 0 );
         $self->Limit( ALIAS           => $cgm,
                       FIELD           => 'MemberId',
                       OPERATOR        => '=',

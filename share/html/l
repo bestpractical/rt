@@ -47,6 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
  my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
- $m->print($hand->maketext($m->content,@_));
+ $m->print($hand->maketext($m->content,map { $m->interp->apply_escapes($_, 'h') } @_));
  return(1);
 </%init>

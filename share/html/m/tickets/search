@@ -78,7 +78,7 @@ my $search;
                 if ( $custom->Description eq $name ) { $search = $custom; last }
             }
             unless ( $search && $search->id ) {
-                $m->out("Predefined search $name not found");
+                $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($name, 'h')));
                 return;
             }
         }

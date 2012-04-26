@@ -52,5 +52,5 @@ $Path => ''
 <& /Elements/Tabs &>
 <div class="error">
 % my $path_tag = q{<span class="file-path">} . $m->interp->apply_escapes($Path, 'h') . q{</span>};
-<&|/l, $path_tag &>Shredder needs a directory to write dumps to. Please ensure that the directory [_1] exists and that it is writable by your web server.</&>
+<&|/l_unsafe, $path_tag &>Shredder needs a directory to write dumps to. Please ensure that the directory [_1] exists and that it is writable by your web server.</&>
 </div>
