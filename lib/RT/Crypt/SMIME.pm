@@ -848,12 +848,12 @@ sub ParseCertificateInfo {
         }
         else {
             $put_into->{$key} = {};
-        }
-        delete $prefix{$_} foreach
-            grep length($_) > length($prefix),
-            keys %prefix;
+            delete $prefix{$_} foreach
+                grep length($_) > length($prefix),
+                keys %prefix;
 
-        ($prev_prefix, $prev_key) = ($prefix, $key);
+            ($prev_prefix, $prev_key) = ($prefix, $key);
+        }
     }
 
     my ($filter_out, $wfilter_out);
