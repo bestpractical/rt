@@ -1340,7 +1340,7 @@ sub MaybeShowInterstitialCSRFPage {
 
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
-        OriginalURL => $HTML::Mason::Commands::r->path_info,
+        OriginalURL => RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
         Reason => HTML::Mason::Commands::loc( $msg, @loc ),
         Token => $token,
     );
