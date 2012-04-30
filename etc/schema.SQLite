@@ -270,8 +270,8 @@ CREATE INDEX Users4 ON Users (EmailAddress);
 
 CREATE TABLE Tickets (
   id INTEGER PRIMARY KEY  ,
-  EffectiveId integer NULL  ,
-  Queue integer NULL  ,
+  EffectiveId integer NULL DEFAULT 0 ,
+  Queue integer NULL DEFAULT 0 ,
   Type varchar(16) NULL  ,
   IssueStatement integer NULL DEFAULT 0 ,
   Resolution integer NULL DEFAULT 0 ,
@@ -437,7 +437,7 @@ CREATE TABLE Attributes (
   Content LONGTEXT NULL  ,
   ContentType varchar(16),
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
+  ObjectId INTEGER ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
