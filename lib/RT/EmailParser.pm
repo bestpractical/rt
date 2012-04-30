@@ -548,8 +548,36 @@ sub ParseEmailAddress {
         @addresses = Email::Address->parse($address_string);
     }
 
+    $self->CleanupAddresses(@addresses);
+
     return @addresses;
 
+}
+
+=head2 CleanupAddresses ARRAY
+
+Massages an array of L<Email::Address> objects to make their email addresses
+more palatable.
+
+Currently this strips off surrounding single quotes around C<< ->address >> and
+B<< modifies the L<Email::Address> objects in-place >>.
+
+Returns the list of objects for convienence in C<map>/C<grep> chains.
+
+=cut
+
+sub CleanupAddresses {
+    my $self = shift;
+
+    for my $addr (@_) {
+        next unless defined $addr;
+        # Outlook sometimes sends addresses surrounded by single quotes;
+        # clean them all up
+        if ((my $email = $addr->address) =~ s/^'(.+)'$/$1/) {
+            $addr->address($email);
+        }
+    }
+    return @_;
 }
 
 =head2 RescueOutlook 

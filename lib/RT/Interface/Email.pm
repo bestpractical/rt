@@ -1055,7 +1055,7 @@ sub ParseCcAddressesFromHead {
     return
         grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
         map lc $user->CanonicalizeEmailAddress( $_->address ),
-        map Email::Address->parse( $args{'Head'}->get( $_ ) ),
+        map RT::EmailParser->CleanupAddresses( Email::Address->parse( $args{'Head'}->get( $_ ) ) ),
         qw(To Cc);
 }
 
