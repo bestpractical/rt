@@ -92,7 +92,7 @@ and passphrase pairs for keys in the keyring.
 
 =cut
 
-{ my $cache = shift;
+{ my $cache = '';
 sub OpenSSLPath {
     return $cache ||= RT->Config->Get('SMIME')->{'OpenSSL'};
 } }
