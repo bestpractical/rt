@@ -94,7 +94,7 @@ and passphrase pairs for keys in the keyring.
 
 { my $cache = '';
 sub OpenSSLPath {
-    return $cache ||= RT->Config->Get('SMIME')->{'OpenSSL'};
+    return $cache ||= RT->Config->Get('SMIME')->{'OpenSSL'} || 'openssl';
 } }
 
 sub SignEncrypt {
