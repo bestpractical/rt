@@ -830,7 +830,9 @@ sub ParseCertificateInfo {
         # Validity # no trailing ':'
         # Not After : XXXXXX # space before ':'
         # countryName=RU # '=' as separator
-        my ($prefix, $key, $value) = ($line =~ /^(\s*)(.*?)\s*(?:[:=]\s*(.*?)|)\s*$/);
+        # Serial Number:
+        #     he:xv:al:ue
+        my ($prefix, $key, $value) = ($line =~ /^(\s*)(.*?)\s*(?:(?:=\s*|:\s+)(\S.*?)|:|)\s*$/);
         if ( $first_line ) {
             $prefix{$prefix} = \%res;
             $first_line = 0;
@@ -853,6 +855,26 @@ sub ParseCertificateInfo {
 
         ($prev_prefix, $prev_key) = ($prefix, $key);
     }
+
+    my ($filter_out, $wfilter_out);
+    $filter_out = $wfilter_out = sub {
+        my $h = shift;
+        foreach my $e ( keys %$h ) {
+            next unless ref $h->{$e};
+            if ( 1 == keys %{$h->{$e}} ) {
+                my $sube = (keys %{$h->{$e}})[0];
+                if ( ref $h->{$e}{$sube} && !keys %{ $h->{$e}{$sube} } ) {
+                    $h->{$e} = $sube;
+                    next;
+                }
+            }
+
+            $filter_out->( $h->{$e} );
+        }
+    };
+    Scalar::Util::weaken($wfilter_out);
+
+    $filter_out->(\%res);
 
     return %res;
 }
