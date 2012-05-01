@@ -293,18 +293,24 @@ sub DecodeMIMEWordsToEncoding {
         $str = MIME::Field::ParamVal->parse($str)->stringify;
     }
 
+    # Pre-parse by removing all whitespace between encoded words
+    my $encoded_word = qr/
+                 =\?            # =?
+                 ([^?]+?)       # charset
+                 (?:\*[^?]+)?   # optional '*language'
+                 \?             # ?
+                 ([QqBb])       # encoding
+                 \?             # ?
+                 ([^?]+)        # encoded string
+                 \?=            # ?=
+                 /x;
+    1 while $str =~ s/($encoded_word)\s+($encoded_word)/$1$5/;
+
     # XXX TODO: use decode('MIME-Header', ...) and Encode::Alias to replace our
     # custom MIME word decoding and charset canonicalization.  We can't do this
     # until we parse before decode, instead of the other way around.
     my @list = $str =~ m/(.*?)          # prefix
-                         =\?            # =?
-                         ([^?]+?)       # charset
-                         (?:\*[^?]+)?   # optional '*language'
-                         \?             # ?
-                         ([QqBb])       # encoding
-                         \?             # ?
-                         ([^?]+)        # encoded string
-                         \?=            # ?=
+                         $encoded_word
                          ([^=]*)        # trailing
                         /xgcs;
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 9;
+use RT::Test nodb => 1, tests => 11;
 
 use_ok('RT::I18N');
 
@@ -97,3 +97,20 @@ diag q{canonicalize mime word encodings like gb2312};
     );
 }
 
+
+diag q{Whitespace between encoded words should be removed};
+{
+    my $str = "=?utf-8?Q?=E3=82=AD?=    =?utf-8?Q?=E3=83=A3?=";
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "キャ",
+        "whitespace between encoded words is removed",
+    );
+
+    $str = "=?utf-8?Q?=E3=82=AD?=  \n   =?utf-8?Q?=E3=83=A3?=";
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "キャ",
+        "newlines between encoded words also removed",
+    );
+}
