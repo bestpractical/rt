@@ -306,6 +306,12 @@ sub DecodeMIMEWordsToEncoding {
                  /x;
     1 while $str =~ s/($encoded_word)\s+($encoded_word)/$1$5/;
 
+    # Also merge quoted-printable sections together, in case multiple
+    # octets of a single encoded character were split between chunks.
+    # Though not valid according to RFC 2047, this has been seen in the
+    # wild.
+    1 while $str =~ s/(=\?[^?]+\?[Qq]\?)([^?]+)\?=\1([^?]+)\?=/$1$2$3?=/i;
+
     # XXX TODO: use decode('MIME-Header', ...) and Encode::Alias to replace our
     # custom MIME word decoding and charset canonicalization.  We can't do this
     # until we parse before decode, instead of the other way around.
