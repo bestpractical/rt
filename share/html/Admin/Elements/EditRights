@@ -113,7 +113,19 @@ else {
           }
       });
 
-      jQuery(".rights-editor .category-tabs").tabs();
+      var sync_tab_select = function ( ev, ui ) {
+          jQuery(".rights-editor .category-tabs").each( function () {
+              var item = jQuery(this);
+              var selected = item.tabs('option', 'selected') || 0;
+              if ( selected != ui.index ) {
+                  item.tabs( { select: null } );
+                  item.tabs('select', ui.index);
+                  item.tabs({ select: sync_tab_select });
+              }
+          });
+      };
+
+      jQuery(".rights-editor .category-tabs").tabs({ select: sync_tab_select });
   });
 </script>
 
