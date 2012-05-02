@@ -509,9 +509,9 @@ sub FormatStatus {
 
     my $res = '';
     foreach ( @status ) {
-        $res .= "\n" if $res;
+        $res .= "[SMIME:]\n" if $res;
         while ( my ($k, $v) = each %$_ ) {
-            $res .= $k .": ". $v ."\n";
+            $res .= "[SMIME:]". $k .": ". $v ."\n";
         }
     }
 
@@ -523,10 +523,10 @@ sub ParseStatus {
     my $status = shift;
     return () unless $status;
 
-    my @status = split /\n\n/, $status;
+    my @status = split /\s*(?:\[SMIME:\]\s*){2}/, $status;
     foreach my $block ( grep length, @status ) {
         chomp $block;
-        $block = { map { s/^\s+//; s/\s+$//; $_ } map split(/:/, $_, 2), split /\n+/, $block };
+        $block = { map { s/^\s+//; s/\s+$//; $_ } map split(/:/, $_, 2), split /\s*\[SMIME:\]/, $block };
     }
     foreach my $block ( grep $_->{'EncryptedTo'}, @status ) {
         $block->{'EncryptedTo'} = [{
