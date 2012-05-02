@@ -222,6 +222,12 @@ sub LimitCustomField {
 	OPERATOR   => $args{'OPERATOR'},
 	VALUE      => $args{'VALUE'},
     );
+    $self->Limit(
+	ALIAS => $alias,
+        FIELD => 'Disabled',
+        OPERATOR => '=',
+        VALUE => 0,
+    );
 }
 
 =head2 Limit PARAMHASH
