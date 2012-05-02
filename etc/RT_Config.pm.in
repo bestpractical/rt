@@ -1790,6 +1790,10 @@ redirect back to RT once authentication is complete.
 
  Set(@ReferrerWhitelist, qw(www.example.com:443  www3.example.com:80));
 
+If the "RT has detected a possible cross-site request forgery" error is triggered
+by a host:port sent by your browser that you believe should be valid, you can copy
+the host:port from the error message into this list.
+
 =cut
 
 Set(@ReferrerWhitelist, qw());
