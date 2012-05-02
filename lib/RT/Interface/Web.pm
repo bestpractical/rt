@@ -1161,7 +1161,7 @@ sub ComponentRoots {
     return @roots;
 }
 
-my %is_whitelisted_path = (
+our %is_whitelisted_component = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
     # addition to embedding its own auth, it's fine.
@@ -1172,7 +1172,7 @@ sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
 
-    return 1 if $is_whitelisted_path{$comp};
+    return 1 if $is_whitelisted_component{$comp};
 
     my %args = %{ $ARGS };
 
