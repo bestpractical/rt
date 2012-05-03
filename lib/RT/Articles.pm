@@ -360,6 +360,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => 'AND', #$args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
@@ -369,6 +370,7 @@ sub LimitCustomField {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
     }
     else {
@@ -380,6 +382,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
@@ -389,6 +392,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
     }
 }
