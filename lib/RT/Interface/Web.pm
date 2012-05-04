@@ -253,6 +253,7 @@ sub HandleRequest {
     ValidateWebConfig();
 
     DecodeARGS($ARGS);
+    local $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
     PreprocessTimeUpdates($ARGS);
 
     InitializeMenu();
