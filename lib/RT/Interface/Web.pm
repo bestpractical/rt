@@ -1162,7 +1162,7 @@ sub ComponentRoots {
     return @roots;
 }
 
-my %is_whitelisted_path = (
+our %is_whitelisted_component = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
     # addition to embedding its own auth, it's fine.
@@ -1173,7 +1173,7 @@ sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
 
-    return 1 if $is_whitelisted_path{$comp};
+    return 1 if $is_whitelisted_component{$comp};
 
     my %args = %{ $ARGS };
 
@@ -1215,11 +1215,16 @@ sub IsCompCSRFWhitelisted {
 
 sub IsRefererCSRFWhitelisted {
     my $referer = _NormalizeHost(shift);
-    my $config  = _NormalizeHost(RT->Config->Get('WebBaseURL'));
+    my $base_url = _NormalizeHost(RT->Config->Get('WebBaseURL'));
+    $base_url = $base_url->host_port;
 
-    return (1,$referer,$config) if $referer->host_port eq $config->host_port;
+    my $configs;
+    for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
+        push @$configs,$config;
+        return 1 if $referer->host_port eq $config;
+    }
 
-    return (0,$referer,$config);
+    return (0,$referer,$configs);
 }
 
 =head3 _NormalizeHost
@@ -1274,12 +1279,21 @@ EOT
             "your browser did not supply a Referrer header", # loc
         ) if !$ENV{HTTP_REFERER};
 
-    my ($whitelisted, $browser, $config) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
+    my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
     return 0 if $whitelisted;
+
+    if ( @$configs > 1 ) {
+        return (1,
+                "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
+                $browser->host_port,
+                shift @$configs,
+                join(', ', @$configs) );
+    }
 
     return (1,
             "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
-            $browser->host_port, $config->host_port);
+            $browser->host_port,
+            $configs->[0]);
 }
 
 sub ExpandCSRFToken {
