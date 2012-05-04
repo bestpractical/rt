@@ -1200,6 +1200,11 @@ sub IsCompCSRFWhitelisted {
     delete $args{results} if $args{results}
         and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
 
+    # The homepage refresh, which uses the Refresh header, doesn't send
+    # a referer in most browsers; whitelist the one parameter it reloads
+    # with, HomeRefreshInterval, which is safe
+    delete $args{HomeRefreshInterval};
+
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
     return 1 if !%args;
