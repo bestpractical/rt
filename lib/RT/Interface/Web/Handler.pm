@@ -69,7 +69,7 @@ sub DefaultHandlerArgs  { (
     ],
     default_escape_flags => 'h',
     data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
+    allow_globals        => [qw(%session $DECODED_ARGS)],
     # Turn off static source if we're in developer mode.
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
