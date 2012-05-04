@@ -1200,6 +1200,11 @@ sub IsCompCSRFWhitelisted {
     delete $args{results} if $args{results}
         and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
 
+    # The homepage refresh, which uses the Refresh header, doesn't send
+    # a referer in most browsers; whitelist the one parameter it reloads
+    # with, HomeRefreshInterval, which is safe
+    delete $args{HomeRefreshInterval};
+
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
     return 1 if !%args;
@@ -1304,20 +1309,8 @@ sub ExpandCSRFToken {
     return 1;
 }
 
-sub MaybeShowInterstitialCSRFPage {
+sub StoreRequestToken {
     my $ARGS = shift;
-
-    return unless RT->Config->Get('RestrictReferrer');
-
-    # Deal with the form token provided by the interstitial, which lets
-    # browsers which never set referer headers still use RT, if
-    # painfully.  This blows values into ARGS
-    return if ExpandCSRFToken($ARGS);
-
-    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
-    return if !$is_csrf;
-
-    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
 
     my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
@@ -1337,7 +1330,25 @@ sub MaybeShowInterstitialCSRFPage {
 
     $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
     $HTML::Mason::Commands::session{'i'}++;
+    return $token;
+}
 
+sub MaybeShowInterstitialCSRFPage {
+    my $ARGS = shift;
+
+    return unless RT->Config->Get('RestrictReferrer');
+
+    # Deal with the form token provided by the interstitial, which lets
+    # browsers which never set referer headers still use RT, if
+    # painfully.  This blows values into ARGS
+    return if ExpandCSRFToken($ARGS);
+
+    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+    return if !$is_csrf;
+
+    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
+
+    my $token = StoreRequestToken($ARGS);
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
         OriginalURL => RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
