@@ -1276,11 +1276,18 @@ EOT
     my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
     return 0 if $whitelisted;
 
+    if ( @$configs > 1 ) {
+        return (1,
+                "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
+                $browser->host_port,
+                shift @$configs,
+                join(', ', @$configs) );
+    }
+
     return (1,
-            "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
+            "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
             $browser->host_port,
-            shift @$configs,
-            join(', ', @$configs) );
+            $configs->[0]);
 }
 
 sub ExpandCSRFToken {
