@@ -110,7 +110,7 @@ sub QueryToSQL {
                             (\w+)  # A straight word
                             (?:\.  # With an optional .foo
                                 ($RE{delimited}{-delim=>q['"]}
-                                |\w+
+                                |[\w-]+  # Allow \w + dashes
                                 ) # Which could be ."foo bar", too
                             )?
                         )
