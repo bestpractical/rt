@@ -1291,6 +1291,7 @@ sub ExpandCSRFToken {
     return unless $user->ValidateAuthString( $data->{auth}, $token );
 
     %{$ARGS} = %{$data->{args}};
+    $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
 
     # We explicitly stored file attachments with the request, but not in
     # the session yet, as that would itself be an attack.  Put them into
