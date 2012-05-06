@@ -1100,12 +1100,12 @@ sub IsPossibleCSRF {
     # whitelist the REST endpoints -- and explicitly deny non-REST
     # endpoints.  We do this because using a REST cookie in a browser
     # would open the user to CSRF attacks to the REST endpoints.
-    my $path = $HTML::Mason::Commands::r->path_info;
-    $HTML::Mason::Commands::session{'REST'} = $path =~ m{^/+REST/\d+\.\d+(/|$)}
+    my $comp = $HTML::Mason::Commands::m->request_comp->path;
+    $HTML::Mason::Commands::session{'REST'} = $comp =~ m{^/REST/\d+\.\d+/}
         unless defined $HTML::Mason::Commands::session{'REST'};
 
     if ($HTML::Mason::Commands::session{'REST'}) {
-        return 0 if $path =~ m{^/+REST/\d+\.\d+(/|$)};
+        return 0 if $comp =~ m{^/REST/\d+\.\d+/};
         my $why = <<EOT;
 This login session belongs to a REST client, and cannot be used to
 access non-REST interfaces of RT for security reasons.
@@ -1119,10 +1119,7 @@ EOT
         HTML::Mason::Commands::Abort( $why, Details => $details );
     }
 
-    return 0 if IsCompCSRFWhitelisted(
-        $HTML::Mason::Commands::m->request_comp->path,
-        $ARGS
-    );
+    return 0 if IsCompCSRFWhitelisted( $comp, $ARGS );
 
     # if there is no Referer header then assume the worst
     return (1,
@@ -1145,7 +1142,7 @@ sub ExpandCSRFToken {
 
     my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
     return unless $data;
-    return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+    return unless $data->{uri} eq $HTML::Mason::Commands::r->uri;
 
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
     return unless $user->ValidateAuthString( $data->{auth}, $token );
@@ -1184,7 +1181,7 @@ sub MaybeShowInterstitialCSRFPage {
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
     my $data = {
         auth => $user->GenerateAuthString( $token ),
-        path => $HTML::Mason::Commands::r->path_info,
+        uri => $HTML::Mason::Commands::r->uri,
         args => $ARGS,
     };
     if ($ARGS->{Attach}) {
@@ -1201,7 +1198,7 @@ sub MaybeShowInterstitialCSRFPage {
 
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
-        OriginalURL => $HTML::Mason::Commands::r->path_info,
+        OriginalURL => $HTML::Mason::Commands::r->uri,
         Reason => HTML::Mason::Commands::loc( $msg, @loc ),
         Token => $token,
     );
