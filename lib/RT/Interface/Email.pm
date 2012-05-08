@@ -1212,11 +1212,11 @@ sub ParseTicketId {
     my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;
 
     my $id;
-    if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
+    if ( $Subject =~ s/\[$test_name\s*\#(\d+)\s*\]//i ) {
         $id = $1;
     } else {
         foreach my $tag ( RT->System->SubjectTag ) {
-            next unless $Subject =~ s/\[\Q$tag\E\s+\#(\d+)\s*\]//i;
+            next unless $Subject =~ s/\[\Q$tag\E\s*\#(\d+)\s*\]//i;
             $id = $1;
             last;
         }
@@ -1245,7 +1245,7 @@ sub AddSubjectTag {
     } elsif ( $queue_tag ) {
         $tag_re = qr/$tag_re|\Q$queue_tag\E/;
     }
-    return $subject if $subject =~ /\[$tag_re\s+#$id\]/;
+    return $subject if $subject =~ /\[$tag_re\s*#$id\]/;
 
     $subject =~ s/(\r\n|\n|\s)/ /g;
     chomp $subject;
