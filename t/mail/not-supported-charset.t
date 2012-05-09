@@ -39,4 +39,24 @@ END
     ;
 }
 
+{
+    my $mail = <<'END';
+From: root@localhost
+Subject: =?not-supported?Q?=07test=A9?=
+Content-type: text/plain; charset="ascii"
+
+ho hum just some text
+
+END
+
+    my ($stat, $id) = RT::Test->send_via_mailgate($mail);
+    is( $stat >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "created ticket" );
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($id);
+    ok $ticket->id, "loaded ticket";
+    is $ticket->Subject, '?test?';
+}
+
 done_testing;
