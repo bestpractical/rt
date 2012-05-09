@@ -304,7 +304,7 @@ sub DecodeMIMEWordsToEncoding {
                  ([^?]+)        # encoded string
                  \?=            # ?=
                  /x;
-    1 while $str =~ s/($encoded_word)\s+($encoded_word)/$1$5/;
+    $str =~ s/($encoded_word)\s+(?=$encoded_word)/$1/g;
 
     # Also merge quoted-printable sections together, in case multiple
     # octets of a single encoded character were split between chunks.
