@@ -56,7 +56,7 @@ END
     my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load($id);
     ok $ticket->id, "loaded ticket";
-    is $ticket->Subject, '?test?';
+    is $ticket->Subject, "\x{FFFD}test\x{FFFD}";
 }
 
 done_testing;

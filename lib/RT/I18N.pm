@@ -359,7 +359,14 @@ sub DecodeMIMEWordsToEncoding {
 
             # now we have got a decoded subject, try to convert into the encoding
             unless ( $charset eq $to_charset ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
+                if ( Encode::find_encoding($charset) ) {
+                    Encode::from_to( $enc_str, $charset, $to_charset );
+                } else {
+                    $RT::Logger->warning("Charset '$charset' is not supported");
+                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                        unless $to_charset eq 'utf-8';
+                }
             }
 
             # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
