@@ -537,9 +537,9 @@ sub WipeoutAll
 {
     my $self = $_[0];
 
-    while ( my ($k, $v) = each %{ $self->{'cache'} } ) {
-        next if $v->{'State'} & (WIPED | IN_WIPING);
-        $self->Wipeout( Object => $v->{'Object'} );
+    foreach ( values %{ $self->{'cache'} } ) {
+        next if $_->{'State'} & (WIPED | IN_WIPING);
+        $self->Wipeout( Object => $_->{'Object'} );
     }
 }
 
