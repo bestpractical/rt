@@ -900,6 +900,19 @@ sub FindProtectedParts {
             $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
             return ();
         }
+
+        # Deal with "partitioned" PGP mail, which (contrary to common
+        # sense) unnecessarily applies a base64 transfer encoding to PGP
+        # mail (whose content is already base64-encoded).
+        if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
+            pipe( my ($read_decoded, $write_decoded) );
+            my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
+            if ($decoder) {
+                eval { $decoder->decode($io, $write_decoded) };
+                $io = $read_decoded;
+            }
+        }
+
         while ( defined($_ = $io->getline) ) {
             next unless /^-----BEGIN PGP (SIGNED )?MESSAGE-----/;
             my $type = $1? 'signed': 'encrypted';
