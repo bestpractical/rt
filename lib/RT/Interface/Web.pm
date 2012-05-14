@@ -540,6 +540,10 @@ sub ShowRequestedPage {
 
     my $m = $HTML::Mason::Commands::m;
 
+    # Ensure that the cookie that we send is up-to-date, in case the
+    # session-id has been modified in any way
+    SendSessionCookie();
+
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
 
@@ -691,7 +695,6 @@ sub AttemptPasswordAuthentication {
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
-        SendSessionCookie();
 
         $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 
@@ -746,6 +749,7 @@ sub LoadSessionFromCookie {
 sub InstantiateNewSession {
     tied(%HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
+    SendSessionCookie();
 }
 
 sub SendSessionCookie {
