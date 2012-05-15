@@ -349,7 +349,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Attachments->new( RT::CurrentUser->new($self->TransactionObj->Creator) );
+    my $attachments = RT::Attachments->new($RT::SystemUser);
     $attachments->Limit(
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
