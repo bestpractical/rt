@@ -883,17 +883,31 @@ Set the From: address for outgoing email
 sub SetFrom {
     my $self = shift;
     my %args = @_;
+    my $queue_tag;
 
     if ( RT->Config->Get('UseFriendlyFromLine') ) {
         my $friendly_name = $self->GetFriendlyName(%args);
+        my $friendly_format = RT->Config->Get('FriendlyFromLineFormat');
+        my $friendly_format_queue = RT->Config->Get('FriendlyFromLineFormatWithQueueTag');
+
+        # check queue for SubjectTag
+        $queue_tag = $self->TicketObj->QueueObj->SubjectTag;
+
+        my @sprintf;
+        if (defined $queue_tag && $queue_tag =~ /\S/ && $friendly_format_queue) {
+            $friendly_format = $friendly_format_queue;
+            @sprintf = ($self->MIMEEncodeString($queue_tag, RT->Config->Get('EmailOutputEncoding')));
+        }
+
         $self->SetHeader(
             'From',
             sprintf(
-                RT->Config->Get('FriendlyFromLineFormat'),
+                $friendly_format,
+                @sprintf,
                 $self->MIMEEncodeString(
                     $friendly_name, RT->Config->Get('EmailOutputEncoding')
                 ),
-                $args{From}
+                $args{From},
             ),
         );
     } else {
