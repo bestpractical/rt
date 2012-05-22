@@ -191,9 +191,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   Queue  - Either a Queue object or a Queue Name
-  Requestor -  A reference to a list of  email addresses or RT user Names
-  Cc  - A reference to a list of  email addresses or Names
-  AdminCc  - A reference to a  list of  email addresses or Names
+  Requestor -  A reference to a list of email addresses or RT user Names
+  Cc  - A reference to a list of email addresses or Names
+  AdminCc  - A reference to a  list of email addresses or Names
   SquelchMailTo - A reference to a list of email addresses - 
                   who should this ticket not mail
   Type -- The ticket\'s type. ignore this for now
@@ -441,19 +441,15 @@ sub Create {
         $args{ $type } = [ $args{ $type } ] unless ref $args{ $type };
         foreach my $watcher ( splice @{ $args{$type} } ) {
             next unless $watcher;
-            if ( $watcher =~ /^\d+$/ ) {
-                push @{ $args{$type} }, $watcher;
-            } else {
-                my @addresses = RT::EmailParser->ParseEmailAddress( $watcher );
-                foreach my $address( @addresses ) {
-                    my $user = RT::User->new( RT->SystemUser );
-                    my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
-                    unless ( $uid ) {
-                        push @non_fatal_errors,
-                            $self->loc("Couldn't load or create user: [_1]", $msg);
-                    } else {
-                        push @{ $args{$type} }, $user->id;
-                    }
+            my @addresses = RT::EmailParser->ParseEmailAddress( $watcher );
+            foreach my $address( @addresses ) {
+                my $user = RT::User->new( RT->SystemUser );
+                my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
+                unless ( $uid ) {
+                    push @non_fatal_errors,
+                        $self->loc("Couldn't load or create user: [_1]", $msg);
+                } else {
+                    push @{ $args{$type} }, $user->id;
                 }
             }
         }

@@ -126,8 +126,16 @@ sub SetRecipients {
 
     if ( RT->Config->Get('UseFriendlyToLine') ) {
         unless (@To) {
+            my $friendly_format = RT->Config->Get('FriendlyToLineFormat');
+            my $friendly_format_queue = RT->Config->Get('FriendlyToLineFormatWithQueueTag');
+            my $queue_tag = $ticket->QueueObj->SubjectTag;
+            my @sprintf;
+            if (defined $queue_tag && $queue_tag =~ /\S/ && $friendly_format_queue) {
+                $friendly_format = $friendly_format_queue;
+                @sprintf = ($queue_tag);
+            }
             push @PseudoTo,
-                sprintf RT->Config->Get('FriendlyToLineFormat'), $arg, $ticket->id;
+                sprintf($friendly_format, @sprintf, $arg, $ticket->id);
         }
     }
 
