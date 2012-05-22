@@ -276,7 +276,7 @@ sub ParseSQL {
             $value = "'$value'";
         }
 
-        if ($key =~ s/(['\\])/\\$1/g or $key =~ /\s/) {
+        if ($key =~ s/(['\\])/\\$1/g or $key =~ /[^{}\w\.]/) {
             $key = "'$key'";
         }
 

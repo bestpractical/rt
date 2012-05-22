@@ -45,16 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-.search-result-views,
-.ticket-transaction div.metadata span.actions,
-div#ticket-history div.downloadattachment, 
-.ticket-transaction div.metadata  span.type,
-.titlebox,
-.titlebox .titlebox-title .right,
-.titlebox .titlebox-title .left,
-div#footer,
-#main-navigation,
-#page-navigation,
-div#body {
-    behavior: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/PIE.htc);
-}
+<& /Elements/Header, Title => loc('Possible cross-site request forgery') &>
+<& /Elements/Tabs &>
+
+<h1><&|/l&>Possible cross-site request forgery</&></h1>
+
+% my $strong_start = "<strong>";
+% my $strong_end   = "</strong>";
+<p><&|/l_unsafe, $strong_start, $strong_end, $Reason &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  This is possibly caused by a malicious attacker trying to perform actions against RT on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
+
+% my $start = qq|<strong><a href="$url_with_token">|;
+% my $end   = qq|</a></strong>|;
+<p><&|/l_unsafe, $escaped_path, $start, $end &>If you really intended to visit [_1], then [_2]click here to resume your request[_3].</&></p>
+
+<& /Elements/Footer, %ARGS &>
+% $m->abort;
+<%ARGS>
+$OriginalURL => ''
+$Reason => ''
+$Token => ''
+</%ARGS>
+<%INIT>
+my $escaped_path = $m->interp->apply_escapes($OriginalURL, 'h');
+$escaped_path = "<tt>$escaped_path</tt>";
+
+my $url_with_token = URI->new($OriginalURL);
+$url_with_token->query_form([CSRF_Token => $Token]);
+</%INIT>

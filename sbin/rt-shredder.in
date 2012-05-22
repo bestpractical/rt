@@ -74,7 +74,7 @@ should wipeout.
 
 =head2 --sqldump <filename>
 
-Outputs INSERT queiries into file. This dump can be used to restore data
+Outputs INSERT queries into file. This dump can be used to restore data
 after wiping out.
 
 By default creates files

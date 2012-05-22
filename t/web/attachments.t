@@ -1,6 +1,6 @@
 use strict;
 
-use RT::Test tests => 25;
+use RT::Test tests => 28;
 
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
@@ -29,6 +29,15 @@ $m->content_contains('Attachments test', 'we have subject on the page');
 $m->content_contains('Some content', 'and content');
 $m->content_contains('Download bpslogo.png', 'page has file name');
 
+open LOGO, "<", LogoFile or die "Can't open logo file: $!";
+binmode LOGO;
+my $logo_contents = do {local $/; <LOGO>};
+close LOGO;
+$m->follow_link_ok({text => "Download bpslogo.png"});
+is($m->content_type, "image/png");
+is($m->content, $logo_contents, "Binary content matches");
+
+$m->back;
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
 $m->form_name('TicketUpdate');
 $m->field('Attach',  LogoFile);

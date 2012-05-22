@@ -852,6 +852,8 @@ Set($CanonicalizeRedirectURLs, 0);
 A list of JavaScript files to be included in head.  Removing any of
 the default entries is not suggested.
 
+If you're a plugin author, refer to RT->AddJavaScript.
+
 =cut
 
 Set(@JSFiles, qw/
@@ -887,6 +889,8 @@ directory, or from http://www.crockford.com/javascript/jsmin.html
 =item C<@CSSFiles>
 
 A list of additional CSS files to be included in head.
+
+If you're a plugin author, refer to RT->AddStyleSheets.
 
 =cut
 
@@ -1744,7 +1748,49 @@ This disables RT's clickjacking protection.
 
 Set($Framebusting, 1);
 
+=item C<$RestrictReferrer>
+
+If set to a false value, the HTTP C<Referer> (sic) header will not be
+checked to ensure that requests come from RT's own domain.  As RT allows
+for GET requests to alter state, disabling this opens RT up to
+cross-site request forgery (CSRF) attacks.
+
+=cut
+
+Set($RestrictReferrer, 1);
+
+=item C<$RestrictLoginReferrer>
+
+If set to a false value, RT will allow the user to log in from any link
+or request, merely by passing in C<user> and C<pass> parameters; setting
+it to a true value forces all logins to come from the login box, so the
+user is aware that they are being logged in.  The default is off, for
+backwards compatability.
+
+=cut
+
+Set($RestrictLoginReferrer, 0);
+
+=item C<$ReferrerWhitelist>
+
+This is a list of hostname:port combinations that RT will treat as being
+part of RT's domain. This is particularly useful if you access RT as
+multiple hostnames or have an external auth system that needs to
+redirect back to RT once authentication is complete.
+
+ Set(@ReferrerWhitelist, qw(www.example.com:443  www3.example.com:80));
+
+If the "RT has detected a possible cross-site request forgery" error is triggered
+by a host:port sent by your browser that you believe should be valid, you can copy
+the host:port from the error message into this list.
+
+=cut
+
+Set(@ReferrerWhitelist, qw());
+
 =back
+
+
 
 =head1 Authorization and user configuration
 
@@ -2164,6 +2210,14 @@ be changed to this value.
 When an approval is denied, the status of depending tickets will
 be changed to this value.
 
+=item reminder_on_open
+
+When a reminder is opened, the status will be changed to this value.
+
+=item reminder_on_resolve
+
+When a reminder is resolved, the status will be changed to this value.
+
 =back
 
 =head2 Transitions between statuses and UI actions
@@ -2310,6 +2364,8 @@ Set(%Lifecycles,
             on_merge  => 'resolved',
             approved  => 'open',
             denied    => 'rejected',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {
@@ -2383,6 +2439,8 @@ Set(%Lifecycles,
         defaults => {
             on_create => 'new',
             on_merge => 'resolved',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {

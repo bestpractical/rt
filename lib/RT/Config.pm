@@ -615,6 +615,7 @@ our %META = (
             }
         }
     },
+    ReferrerWhitelist => { Type => 'ARRAY' },
     ResolveDefaultUpdateType => {
         PostLoadCheck => sub {
             my $self  = shift;

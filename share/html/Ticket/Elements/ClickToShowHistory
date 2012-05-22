@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div id="deferred_ticket_history">
     <& /Widgets/TitleBoxStart, title => 'History' &>
-        <a href="<% $display %>" onclick="jQuery('#deferred_ticket_history').text('<% loc('Loading...') %>').load('<% $url |n %>'); return false;" ><% loc('Show ticket history') %></a>
+        <a href="<% $display %>" onclick="jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>).load(<% $url |n,j %>); return false;" ><% loc('Show ticket history') %></a>
     <& /Widgets/TitleBoxEnd &>
 </div>
 <%ARGS>

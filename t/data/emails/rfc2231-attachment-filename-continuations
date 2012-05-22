@@ -1,0 +1,36 @@
+Message-ID: <somemsgid@lucky.nifty.jp>
+Date: Wed, 7 Dec 2011 20:32:40 +0900 (JST)
+From: root@localhost
+Subject: Client =?ISO-2022-JP?B?Pw==?= Japanese Attachment Name issue
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_2017_4220946.1323257560967"
+X-Priority: 3
+X-MSMail-Priority: Normal
+Priority: normal
+X-Mailer: @nifty Webmail
+
+------=_Part_2017_4220946.1323257560967
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: 7bit
+
+Some data in a file
+
+------=_Part_2017_4220946.1323257560967
+Content-Type: text/plain; 
+	name="=?ISO-2022-JP?B?GyRCPzckNyQkJUYlLSU5JUgbKEIgGyRCJUkbKEI=?=
+ =?ISO-2022-JP?B?GyRCJS0lZSVhJXMlSBsoQi50eHQ=?="
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename*0*=ISO-2022-JP'ja'%1b$B%3f7$7$$%25F%25%2d%259%25H%1b%28B;
+ filename*1*=%20;
+ filename*2*=%1b$B%25I%25%2d%25e%25a%25s%25H%1b%28B;
+ filename*3=.txt
+
+=EF=BB=BFSome data in a file with a file name of "=E6=96=B0=E3=81=97=E3=81=
+=84=E3=83=86=E3=82=AD=E3=82=B9=E3=83=88" and "=E3=83=89=E3=82=AD=E3=83=A5=E3=83=
+=A1=E3=83=B3=E3=83=88.txt" joined with a space; for testing in RT with
+
+
+------=_Part_2017_4220946.1323257560967--
+

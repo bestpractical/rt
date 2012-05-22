@@ -105,7 +105,7 @@ $topic
 % }
 % if ($Action) {
 % unless ($Action eq "Move" and grep {$_->getNodeValue->Id == $Modify} $Element->getAllChildren) {
-<li><input type="submit" name="<%$Prefix%>-<%$topic eq "root" ? 0 : $topic->Id%>" value="<&|/l&><%$Action%> here</&>" /></li>
+<li><input type="submit" name="<%$Prefix%>-<%$topic eq "root" ? 0 : $topic->Id%>" value="<% $Action eq 'Move' ? loc('Move here') : loc('Add here') %>" /></li>
 % }
 % }
 </ul>

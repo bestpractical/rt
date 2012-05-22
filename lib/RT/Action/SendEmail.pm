@@ -348,7 +348,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Attachments->new(RT->SystemUser);
+    my $attachments = RT::Attachments->new( RT->SystemUser );
     $attachments->Limit(
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
@@ -407,6 +407,10 @@ sub AddAttachment {
     my $self    = shift;
     my $attach  = shift;
     my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
+
+    # $attach->TransactionObj may not always be $self->TransactionObj
+    return unless $attach->Id
+              and $attach->TransactionObj->CurrentUserCanSee;
 
     # ->attach expects just the disposition type; extract it if we have the header
     my $disp = ($attach->GetHeader('Content-Disposition') || '')
@@ -471,8 +475,7 @@ sub AddTicket {
     my $self = shift;
     my $tid  = shift;
 
-    # XXX: we need a current user here, but who is current user?
-    my $attachs   = RT::Attachments->new(RT->SystemUser);
+    my $attachs   = RT::Attachments->new( $self->TransactionObj->CreatorObj );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(

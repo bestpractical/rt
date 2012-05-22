@@ -1093,6 +1093,12 @@ sub _GroupMembersJoin {
         FIELD2          => 'GroupId',
         ENTRYAGGREGATOR => 'AND',
     );
+    $self->SUPER::Limit(
+        $args{'Left'} ? (LEFTJOIN => $alias) : (),
+        ALIAS => $alias,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
 
     $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
         unless $args{'New'};
@@ -1257,12 +1263,25 @@ sub _WatcherMembershipLimit {
         FIELD2 => 'id'
     );
 
+    $self->Limit(
+        ALIAS => $groupmembers,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
+
     $self->Join(
         ALIAS1 => $memberships,
         FIELD1 => 'MemberId',
         ALIAS2 => $users,
         FIELD2 => 'id'
     );
+
+    $self->Limit(
+        ALIAS => $memberships,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
+
 
     $self->_CloseParen;
 
@@ -1600,11 +1619,8 @@ sub _CustomFieldLimit {
             $self->_CloseParen;
         }
         else {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->Load($field);
-
             # need special treatment for Date
-            if ( $cf->Type eq 'DateTime' && $op eq '=' ) {
+            if ( $cf and $cf->Type eq 'DateTime' and $op eq '=' ) {
 
                 if ( $value =~ /:/ ) {
                     # there is time speccified.
@@ -3410,7 +3426,11 @@ sub _RestrictionsToClauses {
         # here is where we store extra data, say if it's a keyword or
         # something.  (I.e. "TYPE SPECIFIC STUFF")
 
-        push @{ $clause{$realfield} }, $data;
+        if (lc $ea eq 'none') {
+            $clause{$realfield} = [ $data ];
+        } else {
+            push @{ $clause{$realfield} }, $data;
+        }
     }
     return \%clause;
 }

@@ -275,6 +275,7 @@ sub ArticleCustomFields {
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeClass') ) {
+        $cfs->SetContextObject( $self );
         $cfs->LimitToGlobalOrObjectId( $self->Id );
         $cfs->LimitToLookupType( RT::Article->CustomFieldLookupType );
         $cfs->ApplySortOrder;

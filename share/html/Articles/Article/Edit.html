@@ -157,6 +157,7 @@ elsif ( $id eq 'new' ) {
             my $cfid = $1; 
         
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->SetContextObject( $ArticleObj );
             $cf->Load( $cfid );
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #". $cfid );

@@ -415,6 +415,7 @@ sub InitClasses {
     require RT::Approval;
     require RT::Lifecycle;
     require RT::Link;
+    require RT::Links;
     require RT::Article;
     require RT::Articles;
     require RT::Class;
@@ -678,11 +679,21 @@ sub InitPlugins {
 sub InstallMode {
     my $self = shift;
     if (@_) {
-         $_INSTALL_MODE = shift;
-         if($_INSTALL_MODE) {
-             require RT::CurrentUser;
-            $SystemUser = RT::CurrentUser->new();
-         }
+        my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
+        if ($_[0] and $integrity) {
+            # Trying to turn install mode on but we have a good DB!
+            require Carp;
+            $RT::Logger->error(
+                Carp::longmess("Something tried to turn on InstallMode but we have DB integrity!")
+            );
+        }
+        else {
+            $_INSTALL_MODE = shift;
+            if($_INSTALL_MODE) {
+                require RT::CurrentUser;
+               $SystemUser = RT::CurrentUser->new();
+            }
+        }
     }
     return $_INSTALL_MODE;
 }
@@ -735,7 +746,7 @@ sub CanonicalizeGeneratedPaths {
 =head2 AddJavaScript
 
 helper method to add js files to C<JSFiles> config.
-to add extra css files, you can add the following line
+to add extra js files, you can add the following line
 in the plugin's main file:
 
     RT->AddJavaScript( 'foo.js', 'bar.js' ); 

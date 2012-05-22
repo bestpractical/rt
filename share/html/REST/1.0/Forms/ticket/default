@@ -149,10 +149,16 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^$cf_spec/) {
-                my $cf = RT::CustomField->new( RT->SystemUser );
-                my $cfk = $1 || $2;
-                unless($cf->LoadByName( Name => $cfk )) {
-                    push @comments, "# Invalid custom field name ($cfk)";
+                my $key = $1 || $2;
+
+                my $cf = RT::CustomField->new( $session{CurrentUser} );
+                $cf->LoadByName( Name => $key, Queue => $data{Queue} || $v{Queue} );
+                unless ( $cf->id ) {
+                    $cf->LoadByName( Name => $key, Queue => 0 );
+                }
+
+                if (not $cf->id) {
+                    push @comments, "# Invalid custom field name ($key)";
                     delete $data{$k};
                     next;
                 }
@@ -348,9 +354,15 @@ else {
         }
         # Set custom field
         elsif ($key =~ /^$cf_spec/) {
-            my $cf = RT::CustomField->new( RT->SystemUser );
             $key = $1 || $2;
-            if (not $cf->LoadByName( Name => $key )) {
+
+            my $cf = RT::CustomField->new( $session{CurrentUser} );
+            $cf->LoadByName( Name => $key, Queue => $ticket->Queue );
+            unless ( $cf->id ) {
+                $cf->LoadByName( Name => $key, Queue => 0 );
+            }
+
+            if (not $cf->id) {
                 $n = 0;
                 $s = "Unknown custom field.";
             }

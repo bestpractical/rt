@@ -175,7 +175,9 @@ unless ( $DefaultTicketsTab eq 'None' ) {
 }
 
 my $TicketTemplate = "ShowRequestorTickets$DefaultTicketsTab";
-$TicketTemplate = "ShowRequestorTicketsActive" unless $m->comp_exists($TicketTemplate);
+$TicketTemplate = "ShowRequestorTicketsActive"
+    unless RT::Interface::Web->ComponentPathIsSafe($TicketTemplate)
+       and $m->comp_exists($TicketTemplate);
 </%INIT>
 <%ARGS>
 $Ticket=>undef

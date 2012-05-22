@@ -45,14 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-.search-result-views,
-.ticket-transaction div.metadata span.actions,
-div#ticket-history div.downloadattachment, 
-.ticket-transaction div.metadata  span.type,
-.titlebox,
-.titlebox .titlebox-title .right,
-.titlebox .titlebox-title .left,
-div#footer,
-div#body {
-    behavior: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/PIE.htc);
-}
+<%init>
+ my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
+ $m->print($hand->maketext($m->content,@_));
+ return(1);
+</%init>

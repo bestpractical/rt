@@ -506,7 +506,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
-        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0');
+        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0', SUBCLAUSE => 'acl');
         return $self->{'attachments'};
     }
 
@@ -708,6 +708,7 @@ sub BriefDescription {
 
         if ( $self->Field ) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->SetContextObject( $self->Object );
             $cf->Load( $self->Field );
             $field = $cf->Name();
             $field = $self->loc('a custom field') if !defined($field);
@@ -1066,14 +1067,8 @@ sub CurrentUserCanSee {
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
-    #if they ain't got rights to see, don't let em
-    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return 0;
-        }
-    }
-
-    return 1;
+    # Defer to the object in question
+    return $self->Object->CurrentUserCanSee("Transaction");
 }
 
 
@@ -1097,7 +1092,7 @@ sub OldValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('OldValue');
+        return $self->_Value('OldValue');
     }
 }
 
@@ -1111,7 +1106,7 @@ sub NewValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('NewValue');
+        return $self->_Value('NewValue');
     }
 }
 
@@ -1200,6 +1195,7 @@ sub CustomFieldValues {
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::CustomFields->new( $self->CurrentUser );
+            $CFs->SetContextObject( $self->Object );
             $CFs->Limit( FIELD => 'Name', VALUE => $field );
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
             $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);

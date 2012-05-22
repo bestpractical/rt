@@ -66,6 +66,7 @@ $ARGS{'id'} = $id = $ticket->id;
 require RT::Graph::Tickets;
 my $graph = RT::Graph::Tickets->TicketLinks(
     %ARGS,
+    Graph  => undef,
     Ticket => $ticket,
 );
 </%INIT>

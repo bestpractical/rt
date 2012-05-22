@@ -250,7 +250,7 @@ my $build_admin_menu = sub {
         my $section;
         if ( $request_path =~ m|^/Admin/$type/?(?:index.html)?$|
              || (    $request_path =~ m|^/Admin/$type/(?:Modify.html)$|
-                  && $m->request_args->{'Create'} )
+                  && $DECODED_ARGS->{'Create'} )
            )
         {
             $section = $tabs;
@@ -265,11 +265,11 @@ my $build_admin_menu = sub {
     }
 
     if ( $request_path =~ m{^/Admin/Queues} ) {
-        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/
                 ||
-              $m->request_args->{'Queue'} && $m->request_args->{'Queue'} =~ /^\d+$/
+              $DECODED_ARGS->{'Queue'} && $DECODED_ARGS->{'Queue'} =~ /^\d+$/
                 ) {
-            my $id = $m->request_args->{'Queue'} || $m->request_args->{'id'};
+            my $id = $DECODED_ARGS->{'Queue'} || $DECODED_ARGS->{'id'};
             my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
             $queue_obj->Load($id);
 
@@ -299,8 +299,8 @@ my $build_admin_menu = sub {
         }
     }
     if ( $request_path =~ m{^/Admin/Users} ) {
-        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
-            my $id = $m->request_args->{'id'};
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
@@ -321,8 +321,8 @@ my $build_admin_menu = sub {
     }
 
     if ( $request_path =~ m{^/Admin/Groups} ) {
-        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
-            my $id = $m->request_args->{'id'};
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::Group->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
@@ -336,8 +336,8 @@ my $build_admin_menu = sub {
     }
 
     if ( $request_path =~ m{^/Admin/CustomFields/} ) {
-        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
-            my $id = $m->request_args->{'id'};
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
@@ -364,7 +364,7 @@ my $build_admin_menu = sub {
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
         my $tabs = PageMenu();
-        if ( my $id = $m->request_args->{'id'} ) {
+        if ( my $id = $DECODED_ARGS->{'id'} ) {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
@@ -521,7 +521,7 @@ my $build_main_nav = sub {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
-        if ( my $id = ( $1 || $m->request_args->{'id'} ) ) {
+        if ( my $id = ( $1 || $DECODED_ARGS->{'id'} ) ) {
             my $obj = RT::Dashboard->new( $session{'CurrentUser'} );
             $obj->LoadById($id);
             if ( $obj and $obj->id ) {
@@ -537,7 +537,7 @@ my $build_main_nav = sub {
 
 
     if ( $request_path =~ m{^/Ticket/} ) {
-        if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
+        if ( ( $DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Ticket->new( $session{'CurrentUser'} );
             $obj->Load($id);
@@ -685,17 +685,17 @@ my $build_main_nav = sub {
             && $request_path !~ m{^/Search/Simple\.html}
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
-            && $m->request_args->{'q'} )
+            && $DECODED_ARGS->{'q'} )
       )
     {
         my $search = Menu()->child('search');
         my $args      = '';
         my $has_query = '';
         my $current_search = $session{"CurrentSearchHash"} || {};
-        my $search_id = $m->request_args->{'SavedSearchLoad'} || $m->request_args->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
-        my $chart_id = $m->request_args->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
+        my $search_id = $DECODED_ARGS->{'SavedSearchLoad'} || $DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
+        my $chart_id = $DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
 
-        $has_query = 1 if ( $m->request_args->{'Query'} or $current_search->{'Query'} );
+        $has_query = 1 if ( $DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
         my %query_args;
         my %fallback_query_args = (
@@ -704,12 +704,12 @@ my $build_main_nav = sub {
             (
                 map {
                     my $p = $_;
-                    $p => $m->request_args->{$p} || $current_search->{$p}
+                    $p => $DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page)
             ),
             RowsPerPage => (
-                defined $m->request_args->{'RowsPerPage'}
-                ? $m->request_args->{'RowsPerPage'}
+                defined $DECODED_ARGS->{'RowsPerPage'}
+                ? $DECODED_ARGS->{'RowsPerPage'}
                 : $current_search->{'RowsPerPage'}
             ),
         );
@@ -804,8 +804,8 @@ my $build_main_nav = sub {
     }
 
     if ( $request_path =~ m{^/Article/} ) {
-        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
-            my $id = $m->request_args->{'id'};
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $DECODED_ARGS->{'id'};
             my $tabs = PageMenu();
 
             $tabs->child( display => title => loc('Display'), path => "/Articles/Article/Display.html?id=".$id );
@@ -819,7 +819,7 @@ my $build_main_nav = sub {
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
-        if ( ( $m->request_args->{'id'} || '' ) =~ /^(\d+)$/ ) {
+        if ( $request_path =~ m{^/Articles/Article/} and ( $DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $session{'CurrentUser'} );
             $obj->Load($id);

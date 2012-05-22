@@ -294,8 +294,8 @@ function ReplaceAllTextareas(encoded) {
             textArea.parentNode.appendChild(typeField);
 
 
-            CKEDITOR.replace(textArea.name,{width:'100%',height:'<% RT->Config->Get('MessageBoxRichTextHeight') %>'});
-            CKEDITOR.basePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
+            CKEDITOR.replace(textArea.name,{width:'100%',height:<% RT->Config->Get('MessageBoxRichTextHeight') |n,j%>});
+            CKEDITOR.basePath = <%RT->Config->Get('WebPath')|n,j%>+"/NoAuth/RichText/";
 
             jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title,
-    Refresh => $session{'tickets_refresh_interval'} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} ),
+    Refresh => $refresh,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 <& /Elements/CollectionList, 
@@ -146,6 +146,16 @@ my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
+}
+
+my $refresh = $session{'tickets_refresh_interval'}
+    || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
+
+if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
+    my $token = RT::Interface::Web::StoreRequestToken( $session{'CurrentSearchHash'} );
+    $m->notes->{RefreshURL} = RT->Config->Get('WebURL')
+        . "Search/Results.html?CSRF_Token="
+            . $token;
 }
 
 my %link_rel;
