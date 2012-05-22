@@ -81,9 +81,7 @@ unless ( $opts{'url'} ) {
 my $ua = new LWP::UserAgent;
 $ua->cookie_jar( { file => $opts{'jar'} } ) if $opts{'jar'};
 
-my %args = (
-    SessionType => 'REST', # Surpress login box
-);
+my %args;
 foreach ( qw(queue action) ) {
     $args{$_} = $opts{$_} if defined $opts{$_};
 };

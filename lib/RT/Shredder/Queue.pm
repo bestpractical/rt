@@ -91,6 +91,7 @@ sub __DependsOn
 
 # Custom Fields
     $objs = RT::CustomFields->new( $self->CurrentUser );
+    $objs->SetContextObject( $self );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 

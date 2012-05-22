@@ -409,6 +409,10 @@ sub AddAttachment {
     my $attach  = shift;
     my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
 
+    # $attach->TransactionObj may not always be $self->TransactionObj
+    return unless $attach->Id
+              and $attach->TransactionObj->CurrentUserCanSee;
+
     $MIMEObj->attach(
         Type     => $attach->ContentType,
         Charset  => $attach->OriginalEncoding,
@@ -467,8 +471,7 @@ sub AddTicket {
     my $self = shift;
     my $tid  = shift;
 
-    # XXX: we need a current user here, but who is current user?
-    my $attachs   = RT::Attachments->new($RT::SystemUser);
+    my $attachs   = RT::Attachments->new( RT::CurrentUser->new($self->TransactionObj->Creator) );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(

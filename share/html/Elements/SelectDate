@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript"><!--
-    onLoadHook('createCalendarLink("<% $Name %>");');
+    onLoadHook("createCalendarLink(<% $Name |n,j%>);");
 --></script>
 <input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
 <%init>

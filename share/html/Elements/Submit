@@ -52,10 +52,10 @@ id="<%$id%>"
 >
   <div class="extra-buttons">
 % if ($CheckAll) {
-  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', true);return false;" class="button" />
+  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, <% $CheckboxName |n,j%>, true);return false;" class="button" />
 % }
 % if ($ClearAll) {
-  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', false);return false;" class="button" />
+  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, <% $CheckboxName |n,j%>, false);return false;" class="button" />
 % }
 % if ($Reset) {
   <input type="reset" value="<%$ResetLabel%>" class="button" />

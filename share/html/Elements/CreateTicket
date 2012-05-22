@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue">
-<&|/l, $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ) &><input type="submit" class="button" value="New ticket in" />&nbsp;[_1]</&>
+<&|/l_unsafe, $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo ) &><input type="submit" class="button" value="New ticket in" />&nbsp;[_1]</&>
 </form>
 <%ARGS>
 $SendTo => '/Ticket/Create.html',

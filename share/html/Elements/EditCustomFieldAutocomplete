@@ -49,19 +49,19 @@
 <textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
-    "<% $name %>-Values",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    { tokens: [ '\n' ] }
+    <% $name |n,j%>+"-Values",
+    <% $name |n,j%>+"-Choices",
+    <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/CustomFieldValues",
+    { tokens: [ '\n' ], parameters: <% $Context |n,j %> }
 );
 % } else {
 <input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
-    "<% $name %>-Value",
-    "<% $name %>-Choices",
-    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
-    {}
+    <% $name |n,j%>+"-Value",
+    <% $name |n,j%>+"-Choices",
+    <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/CustomFieldValues",
+    { parameters: <% $Context |n,j %> }
 );
 % }
 </script>
@@ -75,6 +75,11 @@ if ( $Multiple and $Values ) {
     while (my $value = $Values->Next ) {
         $Default .= $value->Content ."\n";
     }
+}
+my $Context = "";
+if ($CustomField->ContextObject) {
+    $Context .= "ContextId="  . $CustomField->ContextObject->Id  . "&";
+    $Context .= "ContextType=". ref($CustomField->ContextObject);
 }
 </%INIT>
 <%ARGS>

@@ -263,6 +263,8 @@ sub WithMember {
                 ALIAS2 => $members, FIELD2 => 'GroupId');
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
+    $self->Limit(ALIAS => $members, FIELD => 'Disabled', VALUE => 0)
+        if $args{'Recursively'};
 }
 
 sub WithoutMember {
@@ -287,6 +289,12 @@ sub WithoutMember {
         OPERATOR => '=',
         VALUE    => $args{'PrincipalId'},
     );
+    $self->Limit(
+        LEFTJOIN => $members_alias,
+        ALIAS    => $members_alias,
+        FIELD    => 'Disabled',
+        VALUE    => 0
+    ) if $args{'Recursively'};
     $self->Limit(
         ALIAS    => $members_alias,
         FIELD    => 'MemberId',

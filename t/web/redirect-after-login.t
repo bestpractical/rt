@@ -205,16 +205,17 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
 
 # test REST login response
 {
+    $agent = RT::Test::Web->new;
     my $requested = $url."REST/1.0/?user=root;pass=password";
     $agent->get($requested);
     is($agent->status, 200, "Loaded a page");
     is($agent->uri, $requested, "didn't redirect to /NoAuth/Login.html for REST");
-    $agent->get_ok($url);
-    $agent->logout();
+    $agent->get_ok($url."REST/1.0");
 }
 
 # test REST login response for wrong pass
 {
+    $agent = RT::Test::Web->new;
     my $requested = $url."REST/1.0/?user=root;pass=passwrong";
     $agent->get_ok($requested);
     is($agent->status, 200, "Loaded a page");
@@ -229,6 +230,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
 
 # test REST login response for no creds
 {
+    $agent = RT::Test::Web->new;
     my $requested = $url."REST/1.0/";
     $agent->get_ok($requested);
     is($agent->status, 200, "Loaded a page");

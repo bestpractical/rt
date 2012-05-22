@@ -657,6 +657,7 @@ sub TicketTransactionCustomFields {
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $cfs->SetContextObject( $self );
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
         $cfs->ApplySortOrder;
@@ -1203,6 +1204,18 @@ sub CurrentUserHasRight {
 }
 
 # }}}
+
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the queue, using SeeQueue
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+
+    return $self->CurrentUserHasRight('SeeQueue');
+}
 
 # {{{ sub HasRight
 

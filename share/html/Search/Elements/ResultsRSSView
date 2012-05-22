@@ -102,7 +102,7 @@ $r->content_type('application/rss+xml');
 
         # create an RSS 1.0 file (http://purl.org/rss/1.0/)
         use XML::RSS;
-        my $rss = new XML::RSS (version => '1.0');
+        my $rss = XML::RSS->new(version => '1.0');
         $rss->channel(
           title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
           link         => RT->Config->Get('WebURL'),

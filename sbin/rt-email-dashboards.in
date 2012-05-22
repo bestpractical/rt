@@ -384,6 +384,9 @@ sub get_from {
                 autohandler_name => '', # disable forced login and more
                 data_dir => $data_dir,
             );
+            $mason->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
+            $mason->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
+            $mason->interp->set_escape( j => \&RT::Interface::Web::EscapeJS   );
         }
         return $mason;
     }

@@ -45,53 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox<% $class ? " $class " : '' %>" id="<% $id %>">
-  <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
-% if ($hideable) {
-    <span class="widget"><a href="#" 
-	onclick="return rollup(<%$tid|n,j%>);" 
-	title="Toggle visibility"></a>
-	</span>
-% }
-    <span class="left">
-      	<% $title_href ? qq[<a href="$title_href">] : '' | n 
-        %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
-    <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">
-	<% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>
-	<% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>
-    </span>
-  </div>
-  <div class="titlebox-content <% $bodyclass %>" id="<% $tid %>">
-
-<%ARGS>
-$class => ''
-$bodyclass => ''
-$title_href => ''
-$title => ''
-$title_raw => ''
-$title_class => ''
-$titleright_href => ''
-$titleright => ''
-$titleright_raw => ''
-$id => ''
-$hideable => 1
-</%ARGS>
-
 <%init>
-#
-# This should be pretty bulletproof
-#
-my $page = $m->request_comp->path;
-
-my $title_b64 = MIME::Base64::encode_base64(Encode::encode_utf8($title), '');
-
-my $tid  = "TitleBox--$page--" .
-            join '--', ($class, $bodyclass, $title_b64, $id);
-
-$tid =~ s{[^A-Za-z0-9\-_:\.]+}{_}g;
-
-my $i = 0;
-$i++ while $m->notes("$tid-$i");
-$m->notes("$tid-$i" => 1);
-$tid = "$tid-$i";
+ my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
+ $m->print($hand->maketext($m->content,@_));
+ return(1);
 </%init>
