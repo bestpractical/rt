@@ -1,7 +1,17 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 15;
+BEGIN {
+    require RT::Test;
+
+    if (eval { require GD }) {
+        RT::Test->import(tests => 15);
+    }
+    else {
+        RT::Test->import(skip_all => 'GD required.');
+    }
+}
+
 use utf8;
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
