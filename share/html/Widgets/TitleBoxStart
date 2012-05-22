@@ -48,7 +48,7 @@
 <div class="titlebox<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
   <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
-    <span class="widget"><a href="#" onclick="return rollup('<%$tid%>');" title="Toggle visibility"></a></span>
+    <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="Toggle visibility"></a></span>
 % }
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n

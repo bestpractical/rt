@@ -188,6 +188,9 @@ sub MemberOfGroup {
                  FIELD1 => 'id',
                  ALIAS2 => $groupalias,
                  FIELD2 => 'MemberId' );
+    $self->Limit( ALIAS => $groupalias,
+                  FIELD => 'Disabled',
+                  VALUE => 0 );
 
     $self->Limit( ALIAS    => "$groupalias",
                   FIELD    => 'GroupId',
@@ -266,6 +269,11 @@ sub _JoinGroupMembers
         ALIAS2 => $principals,
         FIELD2 => 'id'
     );
+    $self->Limit(
+        ALIAS => $group_members,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    ) if $args{'IncludeSubgroupMembers'};
 
     return $group_members;
 }

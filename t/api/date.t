@@ -4,7 +4,7 @@ use Test::MockTime qw(set_fixed_time restore_time);
 use DateTime;
 
 use warnings; use strict;
-use RT::Test tests => 172;
+use RT::Test tests => 173;
 use RT::User;
 use Test::Warn;
 
@@ -85,9 +85,11 @@ my $current_user;
     my $date = RT::Date->new(RT->SystemUser);
     is($date->Unix, 0, "new date returns 0 in Unix format");
     is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
-    is($date->Get(Format =>'SomeBadFormat'),
-       '1970-01-01 00:00:00',
-       "don't know format, return ISO format");
+    warning_like {
+        is($date->Get(Format =>'SomeBadFormat'),
+           '1970-01-01 00:00:00',
+           "don't know format, return ISO format");
+    } qr/Invalid date formatter/;
     is($date->Get(Format =>'W3CDTF'),
        '1970-01-01T00:00:00Z',
        "W3CDTF format with defaults");

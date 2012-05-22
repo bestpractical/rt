@@ -158,6 +158,25 @@ sub EncodeJSON {
     JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
 }
 
+sub _encode_surrogates {
+    my $uni = $_[0] - 0x10000;
+    return ($uni /  0x400 + 0xD800, $uni % 0x400 + 0xDC00);
+}
+
+sub EscapeJS {
+    my $ref = shift;
+    return unless defined $$ref;
+
+    $$ref = "'" . join('',
+                 map {
+                     chr($_) =~ /[a-zA-Z0-9]/ ? chr($_) :
+                     $_  <= 255   ? sprintf("\\x%02X", $_) :
+                     $_  <= 65535 ? sprintf("\\u%04X", $_) :
+                     sprintf("\\u%X\\u%X", _encode_surrogates($_))
+                 } unpack('U*', $$ref))
+        . "'";
+}
+
 =head2 WebCanonicalizeInfo();
 
 Different web servers set different environmental varibles. This
@@ -234,8 +253,10 @@ sub HandleRequest {
     ValidateWebConfig();
 
     DecodeARGS($ARGS);
+    local $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
     PreprocessTimeUpdates($ARGS);
 
+    InitializeMenu();
     MaybeShowInstallModePage();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
@@ -284,6 +305,8 @@ sub HandleRequest {
             }
         }
     }
+
+    MaybeShowInterstitialCSRFPage($ARGS);
 
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
@@ -345,8 +368,6 @@ sub SetNextPage {
 
     $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
     $HTML::Mason::Commands::session{'i'}++;
-    
-    SendSessionCookie();
     return $hash;
 }
 
@@ -463,7 +484,6 @@ sub MaybeShowNoAuthPage {
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
     # If it's a noauth file, don't ask for auth.
-    SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
 }
@@ -490,7 +510,7 @@ sub MaybeRejectPrivateComponentRequest {
               _elements   | # mobile UI
               Widgets     |
               autohandler | # requesting this directly is suspicious
-              l           ) # loc component
+              l (_unsafe)? ) # loc component
             ( $ | / ) # trailing slash or end of path
         }xi) {
             $m->abort(403);
@@ -520,12 +540,12 @@ sub ShowRequestedPage {
 
     my $m = $HTML::Mason::Commands::m;
 
+    # Ensure that the cookie that we send is up-to-date, in case the
+    # session-id has been modified in any way
+    SendSessionCookie();
+
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
-
-    InitializeMenu();
-
-    SendSessionCookie();
 
     # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
@@ -675,7 +695,6 @@ sub AttemptPasswordAuthentication {
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
-        SendSessionCookie();
 
         $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 
@@ -730,6 +749,7 @@ sub LoadSessionFromCookie {
 sub InstantiateNewSession {
     tied(%HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
+    SendSessionCookie();
 }
 
 sub SendSessionCookie {
@@ -811,6 +831,10 @@ sub StaticFileHeaders {
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
+    # remove any cookie headers -- if it is cached publicly, it
+    # shouldn't include anyone's cookie!
+    delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
+
     # Expire things in a month.
     $date->Set( Value => time + 30 * 24 * 60 * 60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
@@ -820,6 +844,22 @@ sub StaticFileHeaders {
     # Last modified at server start time
     # $date->Set( Value => $^T );
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+}
+
+=head2 ComponentPathIsSafe PATH
+
+Takes C<PATH> and returns a boolean indicating that the user-specified partial
+component path is safe.
+
+Currently "safe" means that the path does not start with a dot (C<.>) and does
+not contain a slash-dot C</.>.
+
+=cut
+
+sub ComponentPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+    return $path !~ m{(?:^|/)\.};
 }
 
 =head2 PathIsSafe
@@ -1126,6 +1166,218 @@ sub ComponentRoots {
     return @roots;
 }
 
+our %is_whitelisted_component = (
+    # The RSS feed embeds an auth token in the path, but query
+    # information for the search.  Because it's a straight-up read, in
+    # addition to embedding its own auth, it's fine.
+    '/NoAuth/rss/dhandler' => 1,
+);
+
+sub IsCompCSRFWhitelisted {
+    my $comp = shift;
+    my $ARGS = shift;
+
+    return 1 if $is_whitelisted_component{$comp};
+
+    my %args = %{ $ARGS };
+
+    # If the user specifies a *correct* user and pass then they are
+    # golden.  This acts on the presumption that external forms may
+    # hardcode a username and password -- if a malicious attacker knew
+    # both already, CSRF is the least of your problems.
+    my $AllowLoginCSRF = not RT->Config->Get('RestrictReferrerLogin');
+    if ($AllowLoginCSRF and defined($args{user}) and defined($args{pass})) {
+        my $user_obj = RT::CurrentUser->new();
+        $user_obj->Load($args{user});
+        return 1 if $user_obj->id && $user_obj->IsPassword($args{pass});
+
+        delete $args{user};
+        delete $args{pass};
+    }
+
+    # Eliminate arguments that do not indicate an effectful request.
+    # For example, "id" is acceptable because that is how RT retrieves a
+    # record.
+    delete $args{id};
+
+    # If they have a valid results= from MaybeRedirectForResults, that's
+    # also fine.
+    delete $args{results} if $args{results}
+        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+
+    # The homepage refresh, which uses the Refresh header, doesn't send
+    # a referer in most browsers; whitelist the one parameter it reloads
+    # with, HomeRefreshInterval, which is safe
+    delete $args{HomeRefreshInterval};
+
+    # If there are no arguments, then it's likely to be an idempotent
+    # request, which are not susceptible to CSRF
+    return 1 if !%args;
+
+    return 0;
+}
+
+sub IsRefererCSRFWhitelisted {
+    my $referer = _NormalizeHost(shift);
+    my $base_url = _NormalizeHost(RT->Config->Get('WebBaseURL'));
+    $base_url = $base_url->host_port;
+
+    my $configs;
+    for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
+        push @$configs,$config;
+        return 1 if $referer->host_port eq $config;
+    }
+
+    return (0,$referer,$configs);
+}
+
+=head3 _NormalizeHost
+
+Takes a URI and creates a URI object that's been normalized
+to handle common problems such as localhost vs 127.0.0.1
+
+=cut
+
+sub _NormalizeHost {
+
+    my $uri= URI->new(shift);
+    $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+
+    return $uri;
+
+}
+
+sub IsPossibleCSRF {
+    my $ARGS = shift;
+
+    # If first request on this session is to a REST endpoint, then
+    # whitelist the REST endpoints -- and explicitly deny non-REST
+    # endpoints.  We do this because using a REST cookie in a browser
+    # would open the user to CSRF attacks to the REST endpoints.
+    my $path = $HTML::Mason::Commands::r->path_info;
+    $HTML::Mason::Commands::session{'REST'} = $path =~ m{^/+REST/\d+\.\d+(/|$)}
+        unless defined $HTML::Mason::Commands::session{'REST'};
+
+    if ($HTML::Mason::Commands::session{'REST'}) {
+        return 0 if $path =~ m{^/+REST/\d+\.\d+(/|$)};
+        my $why = <<EOT;
+This login session belongs to a REST client, and cannot be used to
+access non-REST interfaces of RT for security reasons.
+EOT
+        my $details = <<EOT;
+Please log out and back in to obtain a session for normal browsing.  If
+you understand the security implications, disabling RT's CSRF protection
+will remove this restriction.
+EOT
+        chomp $details;
+        HTML::Mason::Commands::Abort( $why, Details => $details );
+    }
+
+    return 0 if IsCompCSRFWhitelisted(
+        $HTML::Mason::Commands::m->request_comp->path,
+        $ARGS
+    );
+
+    # if there is no Referer header then assume the worst
+    return (1,
+            "your browser did not supply a Referrer header", # loc
+        ) if !$ENV{HTTP_REFERER};
+
+    my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
+    return 0 if $whitelisted;
+
+    if ( @$configs > 1 ) {
+        return (1,
+                "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
+                $browser->host_port,
+                shift @$configs,
+                join(', ', @$configs) );
+    }
+
+    return (1,
+            "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
+            $browser->host_port,
+            $configs->[0]);
+}
+
+sub ExpandCSRFToken {
+    my $ARGS = shift;
+
+    my $token = delete $ARGS->{CSRF_Token};
+    return unless $token;
+
+    my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
+    return unless $data;
+    return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    return unless $user->ValidateAuthString( $data->{auth}, $token );
+
+    %{$ARGS} = %{$data->{args}};
+    $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
+
+    # We explicitly stored file attachments with the request, but not in
+    # the session yet, as that would itself be an attack.  Put them into
+    # the session now, so they'll be visible.
+    if ($data->{attach}) {
+        my $filename = $data->{attach}{filename};
+        my $mime     = $data->{attach}{mime};
+        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+            = $mime;
+    }
+
+    return 1;
+}
+
+sub StoreRequestToken {
+    my $ARGS = shift;
+
+    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data = {
+        auth => $user->GenerateAuthString( $token ),
+        path => $HTML::Mason::Commands::r->path_info,
+        args => $ARGS,
+    };
+    if ($ARGS->{Attach}) {
+        my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+        my $file_path = delete $ARGS->{'Attach'};
+        $data->{attach} = {
+            filename => Encode::decode_utf8("$file_path"),
+            mime     => $attachment,
+        };
+    }
+
+    $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
+    $HTML::Mason::Commands::session{'i'}++;
+    return $token;
+}
+
+sub MaybeShowInterstitialCSRFPage {
+    my $ARGS = shift;
+
+    return unless RT->Config->Get('RestrictReferrer');
+
+    # Deal with the form token provided by the interstitial, which lets
+    # browsers which never set referer headers still use RT, if
+    # painfully.  This blows values into ARGS
+    return if ExpandCSRFToken($ARGS);
+
+    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+    return if !$is_csrf;
+
+    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
+
+    my $token = StoreRequestToken($ARGS);
+    $HTML::Mason::Commands::m->comp(
+        '/Elements/CSRF',
+        OriginalURL => RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
+        Reason => HTML::Mason::Commands::loc( $msg, @loc ),
+        Token => $token,
+    );
+    # Calls abort, never gets here
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -1406,6 +1658,7 @@ sub CreateTicket {
             my $cfid = $1;
 
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->SetContextObject( $Queue );
             $cf->Load($cfid);
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #" . $cfid );
@@ -2220,6 +2473,7 @@ sub ProcessObjectCustomFieldUpdates {
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
                 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+                $CustomFieldObj->SetContextObject($Object);
                 $CustomFieldObj->LoadById($cf);
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
@@ -2826,10 +3080,54 @@ sub ScrubHTML {
 
 =head2 _NewScrubber
 
-Returns a new L<HTML::Scrubber> object.  Override this if you insist on
-letting more HTML through.
+Returns a new L<HTML::Scrubber> object.
+
+If you need to be more lax about what HTML tags and attributes are allowed,
+create C</opt/rt4/local/lib/RT/Interface/Web_Local.pm> with something like the
+following:
+
+    package HTML::Mason::Commands;
+    # Let tables through
+    push @SCRUBBER_ALLOWED_TAGS, qw(TABLE THEAD TBODY TFOOT TR TD TH);
+    1;
 
 =cut
+
+our @SCRUBBER_ALLOWED_TAGS = qw(
+    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5
+    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO
+);
+
+our %SCRUBBER_ALLOWED_ATTRIBUTES = (
+    # Match http, ftp and relative urls
+    # XXX: we also scrub format strings with this module then allow simple config options
+    href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
+    face   => 1,
+    size   => 1,
+    target => 1,
+    style  => qr{
+        ^(?:\s*
+            (?:(?:background-)?color: \s*
+                    (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
+                       \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
+                       [\w\-]+                                  # green, light-blue, etc.
+                       )                            |
+               text-align: \s* \w+                  |
+               font-size: \s* [\w.\-]+              |
+               font-family: \s* [\w\s"',.\-]+       |
+               font-weight: \s* [\w\-]+             |
+
+               # MS Office styles, which are probably fine.  If we don't, then any
+               # associated styles in the same attribute get stripped.
+               mso-[\w\-]+?: \s* [\w\s"',.\-]+
+            )\s* ;? \s*)
+         +$ # one or more of these allowed properties from here 'till sunset
+    }ix,
+    dir    => qr/^(rtl|ltr)$/i,
+    lang   => qr/^\w+(-\w+)?$/,
+);
+
+our %SCRUBBER_RULES = ();
 
 sub _NewScrubber {
     require HTML::Scrubber;
@@ -2837,41 +3135,16 @@ sub _NewScrubber {
     $scrubber->default(
         0,
         {
-            '*'    => 0,
-            id     => 1,
-            class  => 1,
-            # Match http, ftp and relative urls
-            # XXX: we also scrub format strings with this module then allow simple config options
-            href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
-            face   => 1,
-            size   => 1,
-            target => 1,
-            style  => qr{
-                ^(?:\s*
-                    (?:(?:background-)?color: \s*
-                            (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
-                               \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
-                               [\w\-]+                                  # green, light-blue, etc.
-                               )                            |
-                       text-align: \s* \w+                  |
-                       font-size: \s* [\w.\-]+              |
-                       font-family: \s* [\w\s"',.\-]+       |
-                       font-weight: \s* [\w\-]+             |
-
-                       # MS Office styles, which are probably fine.  If we don't, then any
-                       # associated styles in the same attribute get stripped.
-                       mso-[\w\-]+?: \s* [\w\s"',.\-]+
-                    )\s* ;? \s*)
-                 +$ # one or more of these allowed properties from here 'till sunset
-            }ix,
-            dir    => qr/^(rtl|ltr)$/i,
-            lang   => qr/^\w+(-\w+)?$/,
-        }
+            %SCRUBBER_ALLOWED_ATTRIBUTES,
+            '*' => 0, # require attributes be explicitly allowed
+        },
     );
     $scrubber->deny(qw[*]);
-    $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO]
-    );
+    $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
+    $scrubber->rules(%SCRUBBER_RULES);
+
+    # Scrubbing comments is vital since IE conditional comments can contain
+    # arbitrary HTML and we'd pass it right on through.
     $scrubber->comment(0);
 
     return $scrubber;
