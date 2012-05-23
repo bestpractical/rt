@@ -11,6 +11,9 @@ $lifecycles->{foo} = {
 
 };
 
+# explicitly Set so RT::Test can catch our change
+RT->Config->Set( Lifecycles => %$lifecycles );
+
 RT::Lifecycle->FillCache();
 
 my $general = RT::Test->load_or_create_queue( Name => 'General' );
