@@ -137,7 +137,10 @@ sub SignEncrypt {
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
         $args{'Signer'} =
             $self->UseKeyForSigning
-            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+            || do {
+                my $addr = (Email::Address->parse( $entity->head->get( 'From' ) ))[0];
+                $addr? $addr->address : undef
+            };
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
