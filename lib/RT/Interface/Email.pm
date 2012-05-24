@@ -450,6 +450,14 @@ sub SendEmail {
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
 
+            # Make it look to open2 like STDIN is on FD 0, like it
+            # should be; this is necessary because under mod_perl with
+            # the perl-script handler, it's not.  This causes our
+            # child's "STDIN" (FD 10-ish) to be set to the pipe we want,
+            # but FD 0 (which the exec'd sendmail assumes is STDIN) is
+            # still open to /dev/null; this ends disasterously.
+            local *STDIN = IO::Handle->new_from_fd( 0, "r" );
+
             require IPC::Open2;
             my ($mail, $stdout);
             my $pid = IPC::Open2::open2( $stdout, $mail, $path, @args )
