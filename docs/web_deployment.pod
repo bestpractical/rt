@@ -114,8 +114,9 @@ deployment if your privileged users are in a different timezone than the
 one the server is configured for.
 
 B<NOTE>: RT 3.8 and below suggested use of C<SetHandler perl-script>;
-this is incorrect for RT 4, and will lead to difficulties sending
-outgoing mail from RT.  Ensure that you use C<SetHandler modperl>.
+this is incorrect for RT 4, and (starting in RT 4.0.11) RT will refuse
+to start, to prevent difficulties sending mail from RT.  Change to
+C<SetHandler modperl>, as the example below uses.
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT

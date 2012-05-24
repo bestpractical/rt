@@ -209,6 +209,35 @@ sub HTML::Mason::Exception::as_rt_error {
     return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
 }
 
+=head1 CheckModPerlHandler
+
+Make sure we're not running with SetHandler perl-script.
+
+=cut
+
+sub CheckModPerlHandler{
+    my $self = shift;
+    my $env = shift;
+
+    # Plack::Handler::Apache2 masks MOD_PERL, so use MOD_PERL_API_VERSION
+    return unless( $env->{'MOD_PERL_API_VERSION'}
+                   and $env->{'MOD_PERL_API_VERSION'} == 2);
+
+    my $handler = $env->{'psgi.input'}->handler;
+
+    die <<MODPERL if defined $handler && $handler eq 'perl-script';
+RT has problems when SetHandler is set to perl-script.
+Change SetHandler in your in httpd.conf to:
+
+    SetHandler modperl
+
+For a complete example mod_perl configuration, see:
+
+https://bestpractical.com/rt/docs/@{[$RT::VERSION =~ /^(\d\.\d)/]}/web_deployment.html#mod_perl-2.xx
+MODPERL
+
+    return;
+}
 
 # PSGI App
 
@@ -231,6 +260,9 @@ sub PSGIApp {
 
     return sub {
         my $env = shift;
+
+        $self->CheckModPerlHandler($env);
+
         RT::ConnectToDatabase() unless RT->InstallMode;
 
         my $req = Plack::Request->new($env);
