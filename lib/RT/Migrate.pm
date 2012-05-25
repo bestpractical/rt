@@ -107,8 +107,9 @@ sub progress {
     my $offset;
     return sub {
         my $obj = shift;
+        my $force = shift;
         my $now = Time::HiRes::time();
-        return if defined $last_time and $now - $last_time <= $args{every};
+        return if defined $last_time and $now - $last_time <= $args{every} and not $force;
 
         $start = $now unless $start;
         $last_time = $now;
@@ -170,6 +171,22 @@ sub progress {
         $args{bottom}->($elapsed, $rows, $cols);
     }
 
+}
+
+sub setup_logging {
+    my ($dir, $file) = @_;
+
+    RT->Config->Set( LogToScreen    => 'warning' );
+    RT->Config->Set( LogToFile      => 'warning' );
+    RT->Config->Set( LogDir         => $dir );
+    RT->Config->Set( LogToFileNamed => $file );
+    RT->Config->Set( LogStackTraces => 'error' );
+
+    undef $RT::Logger;
+    RT->InitLogging();
+
+    my $logger = RT->Logger->output('file');
+    return $logger ? $logger->{filename} : undef;
 }
 
 1;

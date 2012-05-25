@@ -2334,7 +2334,7 @@ sub Serialize {
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,
         PrincipalId => $self->PrincipalObj->Id,
-        $self->SUPER::Serialize,
+        $self->SUPER::Serialize(@_),
     );
 }
 
@@ -2375,16 +2375,19 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'User',
         Disabled => $disabled,
-        ObjectId => 0,
-        ($data->{id} and $principal_id)
+        ObjectId => ($importer->{Clone} ? $data->{id} : 0),
+        ($importer->{Clone} and $principal_id)
              ? (Id => $principal_id) : (),
     );
     $importer->Resolve( $principal_uid => ref($principal), $id );
-    $importer->Postpone(
-        for => $uid,
-        uid => $principal_uid,
-        column => "ObjectId",
-    );
+
+    unless ($importer->{Clone}) {
+        $importer->Postpone(
+            for => $uid,
+            uid => $principal_uid,
+            column => "ObjectId",
+        );
+    }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }

@@ -53,6 +53,7 @@ use warnings;
 
 use Storable qw//;
 use File::Spec;
+use Carp qw/carp/;
 
 sub new {
     my $class = shift;
@@ -68,13 +69,20 @@ sub Init {
         OriginalId  => undef,
         Progress    => undef,
         Statefile   => undef,
+        DumpObjects => undef,
+        Resume      => undef,
+        HandleError => undef,
         @_,
     );
 
     # Should we attempt to preserve record IDs as they are created?
     if ($self->{Clone} = $args{Clone}) {
         die "RT already contains data; overwriting will not work\n"
-            if RT->SystemUser->Id;
+            if RT->SystemUser->Id and
+                not ($args{Resume} and $self->CheckRestoreState($args{Statefile}));
+
+        die "Cloning does not support importing the Original Id separately\n"
+            if $args{OriginalId};
     } elsif ($self->{OriginalId} = $args{OriginalId}) {
         # Where to shove the original ticket ID
         my $cf = RT::CustomField->new( RT->SystemUser );
@@ -92,11 +100,23 @@ sub Init {
     $self->{Progress}  = $args{Progress};
     $self->{Statefile} = $args{Statefile};
 
+    $self->{HandleError} = sub { 0 };
+    $self->{HandleError} = $args{HandleError}
+        if $args{HandleError} and ref $args{HandleError} eq 'CODE';
+
+    if ($args{DumpObjects}) {
+        require Data::Dumper;
+        $self->{DumpObjects} = { map { $_ => 1 } @{$args{DumpObjects}} };
+    }
+
     # Objects we've created
     $self->{UIDs} = {};
 
     # Columns we need to update when an object is later created
     $self->{Pending} = {};
+
+    # Objects missing from the source database before serialization
+    $self->{Invalid} = [];
 
     # What we created
     $self->{ObjectCount} = {};
@@ -118,7 +138,7 @@ sub Resolve {
     return unless $self->{Pending}{$uid};
 
     for my $ref (@{$self->{Pending}{$uid}}) {
-        my ($pclass, $pid) = @{ $self->{UIDs}{ $ref->{uid} } };
+        my ($pclass, $pid) = @{ $self->Lookup( $ref->{uid} ) };
         my $obj = $pclass->new( RT->SystemUser );
         $obj->LoadByCols( Id => $pid );
         $obj->__Set(
@@ -140,6 +160,10 @@ sub Resolve {
 sub Lookup {
     my $self = shift;
     my ($uid) = @_;
+    unless (defined $uid) {
+        carp "Tried to lookup an undefined UID";
+        return;
+    }
     return $self->{UIDs}{$uid};
 }
 
@@ -166,7 +190,12 @@ sub Postpone {
         @_,
     );
     my $uid = delete $args{for};
-    push @{$self->{Pending}{$uid}}, \%args;
+
+    if (defined $uid) {
+        push @{$self->{Pending}{$uid}}, \%args;
+    } else {
+        push @{$self->{Invalid}}, \%args;
+    }
 }
 
 sub SkipTransactions {
@@ -248,11 +277,22 @@ sub Create {
     return unless $class->PreInflate( $self, $uid, $data );
 
     my $obj = $class->new( RT->SystemUser );
-    my ($id, $msg) = $obj->DBIx::SearchBuilder::Record::Create(
-        %{$data}
-    );
-    die "Failed to create $uid: $msg\n" . Data::Dumper::Dumper($data) . "\n"
-        unless $id;
+    my ($id, $msg) = eval {
+        # catch and rethrow on the outside so we can provide more info
+        local $SIG{__DIE__};
+        $obj->DBIx::SearchBuilder::Record::Create(
+            %{$data}
+        );
+    };
+    if (not $id or $@) {
+        $msg ||= ''; # avoid undef
+        my $err = "Failed to create $uid: $msg $@\n" . Data::Dumper::Dumper($data) . "\n";
+        if (not $self->{HandleError}->($self, $err)) {
+            die $err;
+        } else {
+            return;
+        }
+    }
 
     $self->{ObjectCount}{$class}++;
     $self->Resolve( $uid => $class, $id );
@@ -282,7 +322,7 @@ sub Import {
     };
 
     local $SIG{  INT  } = sub { $self->{INT} = 1 };
-    local $SIG{__DIE__} = sub { print STDERR "\n", @_; $self->SaveState; exit 1 };
+    local $SIG{__DIE__} = sub { warn "\n", @_; $self->SaveState; exit 1 };
 
     $self->{Progress}->(undef) if $self->{Progress};
     while (@{$self->{Files}}) {
@@ -316,18 +356,19 @@ sub Import {
             # fields.  We do this before inflating, so that queues which
             # got merged still get the CFs applied
             push @{$self->{NewQueues}}, $uid
-                if $class eq "RT::Queue";
+                if $class eq "RT::Queue"
+                    and not $self->{Clone};
 
+            my $origid = $data->{id};
             my $obj = $self->Create( $class, $uid, $data );
             next unless $obj;
 
             # If it's a ticket, we might need to create a
             # TicketCustomField for the previous ID
             if ($class eq "RT::Ticket" and $self->{OriginalId}) {
-                my ($org, $origid) = $uid =~ /^RT::Ticket-(.*)-(\d+)$/;
                 my ($id, $msg) = $obj->AddCustomFieldValue(
                     Field             => $self->{OriginalId},
-                    Value             => "$org:$origid",
+                    Value             => $self->Organization . ":$origid",
                     RecordTransaction => 0,
                 );
                 warn "Failed to add custom field to $uid: $msg"
@@ -339,22 +380,25 @@ sub Import {
             # inspection
             push @{$self->{NewCFs}}, $uid
                 if $class eq "RT::CustomField"
-                    and $obj->LookupType =~ /^RT::Queue/;
+                    and $obj->LookupType =~ /^RT::Queue/
+                    and not $self->{Clone};
 
             $self->{Progress}->($obj) if $self->{Progress};
         }
     }
 
-    # Take global CFs which we made and make them un-global
-    my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
-    for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
-        my $ocf = $obj->IsApplied( 0 ) or next;
-        $ocf->Delete;
-        $obj->AddToObject( $_ ) for @queues;
+    unless ($self->{Clone}) {
+        # Take global CFs which we made and make them un-global
+        my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
+        for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
+            my $ocf = $obj->IsApplied( 0 ) or next;
+            $ocf->Delete;
+            $obj->AddToObject( $_ ) for @queues;
+        }
+        $self->{NewQueues} = [];
+        $self->{NewCFs} = [];
     }
-    $self->{NewQueues} = [];
-    $self->{NewCFs} = [];
-
+    $self->{Progress}->(undef, 'force') if $self->{Progress};
 
     # Return creation counts
     return $self->ObjectCount;
@@ -378,12 +422,21 @@ sub List {
                 next;
             }
 
+            if ($self->{DumpObjects}) {
+                print STDERR Data::Dumper::Dumper($loaded), "\n"
+                    if $self->{DumpObjects}{ $loaded->[0] };
+            }
+
             my ($class, $uid, $data) = @{$loaded};
             $self->{ObjectCount}{$class}++;
             $found{$uid} = 1;
             delete $self->{Pending}{$uid};
             for (grep {ref $data->{$_}} keys %{$data}) {
                 my $uid_ref = ${ $data->{$_} };
+                unless (defined $uid_ref) {
+                    push @{ $self->{Invalid} }, { uid => $uid, column => $_ };
+                    next;
+                }
                 next if $found{$uid_ref};
                 next if $uid_ref =~ /^RT::Principal-/;
                 push @{$self->{Pending}{$uid_ref} ||= []}, {uid => $uid};
@@ -405,15 +458,26 @@ sub Missing {
         : keys %{ $self->{Pending} };
 }
 
+sub Invalid {
+    my $self = shift;
+    return wantarray ? sort { $a->{uid} cmp $b->{uid} } @{ $self->{Invalid} }
+                     : $self->{Invalid};
+}
+
 sub Organization {
     my $self = shift;
     return $self->{Organization};
 }
 
+sub CheckRestoreState {
+    my ($self, $statefile) = @_;
+    return $statefile && -f $statefile;
+}
+
 sub RestoreState {
     my $self = shift;
     my ($statefile) = @_;
-    return unless $statefile and -f $statefile;
+    return unless $self->CheckRestoreState(@_);
 
     my $state = Storable::retrieve( $self->{Statefile} );
     $self->{$_} = $state->{$_} for keys %{$state};
@@ -434,7 +498,7 @@ sub SaveState {
         qw/Filename Seek Position Files
            Organization ObjectCount
            NewQueues NewCFs
-           SkipTransactions Pending
+           SkipTransactions Pending Invalid
            UIDs
            OriginalId Clone
           /;

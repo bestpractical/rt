@@ -1045,7 +1045,7 @@ sub FindDependencies {
 
 sub Serialize {
     my $self = shift;
-    my %store = $self->SUPER::Serialize;
+    my %store = $self->SUPER::Serialize(@_);
 
     $store{Content} = $self->Content;
     delete $store{ContentEncoding};

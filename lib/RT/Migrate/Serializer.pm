@@ -72,6 +72,8 @@ sub Init {
         FollowTickets       => 1,
         FollowACL           => 0,
 
+        Clone   => 0,
+
         Verbose => 1,
         @_,
     );
@@ -99,6 +101,7 @@ sub Init {
                   FollowScrips
                   FollowTickets
                   FollowACL
+                  Clone
               /;
 
     $self->SUPER::Init(@_, First => "top");
@@ -109,9 +112,65 @@ sub Init {
     # Which file we're writing to
     $self->{FileCount} = 1;
 
-    $self->PushBasics;
+    if ($self->{Clone}) {
+        $self->PushAll;
+    } else {
+        $self->PushBasics;
+    }
 }
 
+sub PushAll {
+    my $self = shift;
+
+    # Ordering _shouldn't_ matter since we don't convert FK references to UIDs
+    # and hence don't have to look them up during import.
+
+    # Users and groups
+    $self->PushCollections(qw(Users Groups GroupMembers));
+
+    # Tickets
+    $self->PushCollections(qw(Queues Tickets Transactions Attachments Links));
+
+    # Articles
+    $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
+
+    # Custom Fields
+    $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+
+    # ACLs
+    $self->PushCollections(qw(ACL));
+
+    # Scrips
+    $self->PushCollections(qw(Scrips ScripActions ScripConditions Templates));
+
+    # Attributes
+    $self->PushCollections(qw(Attributes));
+}
+
+sub PushCollections {
+    my $self  = shift;
+
+    for my $type (@_) {
+        my $class = "RT::\u$type";
+        my $collection = $class->new( RT->SystemUser );
+        $collection->FindAllRows;   # be explicit
+        $collection->UnLimit;
+        $collection->OrderBy( FIELD => 'id' );
+
+        if ($self->{Clone}) {
+            if ($collection->isa('RT::Tickets')) {
+                $collection->{allow_deleted_search} = 1;
+                $collection->IgnoreType; # looking_at_type
+            }
+            elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
+                # FindAllRows (find_disabled_rows) isn't used by OCFVs
+                $collection->{find_expired_rows} = 1;
+            }
+        }
+
+        $self->PushObj( $collection );
+    }
+}
 
 sub PushBasics {
     my $self = shift;
@@ -164,12 +223,8 @@ sub PushBasics {
         my $templates = RT::Templates->new( RT->SystemUser );
         $templates->LimitToGlobal;
 
-        my $actions = RT::ScripActions->new( RT->SystemUser );
-        $actions->UnLimit;
-
-        my $conditions = RT::ScripConditions->new( RT->SystemUser );
-        $conditions->UnLimit;
-        $self->PushObj( $scrips, $templates, $actions, $conditions );
+        $self->PushObj( $scrips, $templates );
+        $self->PushCollections(qw(ScripActions ScripConditions));
     }
 
     if ($self->{AllUsers}) {
@@ -184,16 +239,9 @@ sub PushBasics {
         $self->PushObj( $groups );
     }
 
-    my $topics = RT::Topics->new( RT->SystemUser );
-    $topics->UnLimit;
+    $self->PushCollections(qw(Topics Classes));
 
-    my $classes = RT::Classes->new( RT->SystemUser );
-    $classes->UnLimit;
-    $self->PushObj( $topics, $classes );
-
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->UnLimit;
-    $self->PushObj( $queues );
+    $self->PushCollections(qw(Queues));
 }
 
 sub Walk {
@@ -222,6 +270,46 @@ sub Walk {
     }, $self->Directory . "/rt-serialized");
 
     return $self->ObjectCount;
+}
+
+sub NextPage {
+    my ($self, $collection, $last) = @_;
+
+    $last ||= 0;
+
+    if ($self->{Clone}) {
+        # Clone provides guaranteed ordering by id and with no other id limits
+        # worry about trampling
+
+        # Use DBIx::SearchBuilder::Limit explicitly to avoid shenanigans in RT::Tickets
+        $collection->DBIx::SearchBuilder::Limit(
+            FIELD           => 'id',
+            OPERATOR        => '>',
+            VALUE           => $last,
+            ENTRYAGGREGATOR => 'none', # replaces last limit on this field
+        );
+    } else {
+        # XXX TODO: this could dig around inside the collection to see how it's
+        # limited and do the faster paging above under other conditions.
+        $self->SUPER::NextPage(@_);
+    }
+}
+
+sub Process {
+    my $self = shift;
+    my %args = (
+        object => undef,
+        @_
+    );
+
+    my $uid = $args{object}->UID;
+
+    # Skip all dependency walking if we're cloning.  Marking UIDs as seen
+    # forces them to be visited immediately.
+    $self->{seen}{$uid}++
+        if $self->{Clone} and $uid;
+
+    return $self->SUPER::Process( @_ );
 }
 
 sub Files {
@@ -315,7 +403,7 @@ sub Visit {
     my @store = (
         ref($obj),
         $obj->UID,
-        { $obj->Serialize },
+        { $obj->Serialize( UIDs => !$self->{Clone} ) },
     );
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have

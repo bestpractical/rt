@@ -45,8 +45,13 @@ GetOptions(
     "list|l!",
 
     "resume!",
-    "clone|C!",
+    "clone|C",
     "originalid|i=s",
+
+    "ask",
+    "ignore-errors",
+
+    "dump=s@",
 ) or Pod::Usage::pod2usage();
 
 Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
@@ -69,13 +74,49 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
     );
 }
 
+if ($OPT{dump}) {
+    die "Dumping objects only works in conjunction with --list\n"
+        unless $OPT{list};
+
+    $OPT{dump} = [ split /,/, join(',', @{$OPT{dump}}) ];
+}
+
+my $error_handler;
+if ($OPT{ask}) {
+    die "Interactive mode (--ask) doesn't work when STDERR and STDIN aren't terminals.\n"
+        unless -t STDERR and -t STDIN;
+
+    $error_handler = sub {
+        my $importer = shift;
+        local $| = 1;
+        print STDERR "\n", @_, "\n";
+        print STDERR "Hit any key to abort import, or type 'ignore' to continue anyway.\n";
+        print STDERR "Continuing may leave you with a corrupt database. > ";
+        chomp( my $resp = <STDIN> );
+        return lc($resp) eq 'ignore';
+    };
+}
+elsif ($OPT{'ignore-errors'}) {
+    $error_handler = sub {
+        my $importer = shift;
+        warn "Ignoring error: ", @_;
+        return 1;
+    };
+}
+
 my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
     Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
     Statefile   => $statefile,
+    DumpObjects => $OPT{dump},
+    Resume      => $OPT{resume},
+    HandleError => $error_handler,
 );
+
+my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
+print "Logging warnings and errors to $log\n" if $log;
 
 my %counts;
 if ($OPT{list}) {
@@ -102,6 +143,26 @@ if (@missing) {
     warn "    $_\n" for @missing;
 }
 
+my @invalid = $import->Invalid;
+if (@invalid) {
+    warn "The following UIDs (serialized => imported) referred to objects missing from the original database:\n";
+    for my $info (@invalid) {
+        my $uid = delete $info->{uid};
+        my $obj = $import->LookupObj($uid);
+        warn sprintf "    %s => %s (%s)\n",
+                $uid,
+                ($obj && $obj->Id ? $obj->UID : '(not imported)'),
+                join(", ", map  { "$_ => $info->{$_}" }
+                           grep { defined $info->{$_} }
+                                sort keys %$info);
+    }
+}
+
+if ($log and -s $log) {
+    print STDERR "\n! Some warnings or errors occurred during import."
+                ."\n! Please see $log for details.\n\n";
+}
+
 exit @missing;
 
 =head1 NAME
@@ -123,6 +184,10 @@ resumed by re-running the importer.
 
 =over
 
+=item B<--list>
+
+Print a summary of the data contained in the dump.
+
 =item B<--clone>
 
 Insert all of the data as an exact clone of the original RT instance.  This
@@ -139,6 +204,34 @@ system data.
 Places the original ticket organization and ID into a global custom
 field with the given name.  If no global ticket custom field with that
 name is found in the current database, it will create one.
+
+=item B<--ask>
+
+Prompt for action when an error occurs inserting a record into the
+database.  This can often happen when importing data from very old RTs
+where some attachments (usually spam) contain invalid UTF-8.
+
+The importer will pause and ask if you want to ignore the error and
+continue on or abort (potentially to restart later).  Ignoring errors
+will result in missing records in the database, which may cause database
+integrity problems later.  If you ignored any errors, you should run
+C<rt-validator> after import.
+
+=item B<--ignore-errors>
+
+Ignore all record creation errors and continue on when importing.  This
+is equivalent to running with C<--ask> and manually typing "ignore" at
+every prompt.  You should always run C<rt-validator> after importing
+with errors ignored.
+
+B<This option can be dangerous and leave you with a broken RT!>
+
+=item B<--dump> I<class>[,I<class>]
+
+Prints L<Data::Dumper> representations of the objects of type I<class> in the
+serialized data.  This is mostly useful for debugging.
+
+Works only in conjunction with C<--list>.
 
 =back
 
