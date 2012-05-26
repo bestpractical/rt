@@ -104,7 +104,9 @@ sub Init {
     }
 
     $self->{Progress}  = $args{Progress};
-    $self->{Statefile} = $args{Statefile};
+    $self->{Statefile} = $args{Statefile} || "$args{Directory}/partial-import";
+    unlink $self->{Statefile}
+        if -f $self->{Statefile} and not $args{Resume};
 
     $self->{HandleError} = sub { 0 };
     $self->{HandleError} = $args{HandleError}

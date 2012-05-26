@@ -104,13 +104,11 @@ elsif ($OPT{'ignore-errors'}) {
     };
 }
 
-my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
     Directory   => $dir,
     Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
-    Statefile   => $statefile,
     DumpObjects => $OPT{dump},
     Resume      => $OPT{resume},
     HandleError => $error_handler,
@@ -126,7 +124,6 @@ if ($OPT{list}) {
     my $org = $import->Organization;
     print "=========== Dump of $org ===========\n\n";
 } else {
-    unlink $statefile if -f $statefile and not $OPT{resume};
     %counts = $import->Import;
 
     my $org = $import->Organization;
