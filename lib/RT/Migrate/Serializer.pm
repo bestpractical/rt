@@ -248,20 +248,13 @@ sub Walk {
     my $self = shift;
 
     # Set up our output file
-    open($self->{Filehandle}, ">", $self->Filename)
-        or die "Can't write to file @{[$self->Filename]}: $!";
-    $! = 0;
-    Storable::nstore_fd( \$RT::Organization, $self->{Filehandle});
-    die "Failed to write to @{[$self->Filename]}: $!" if $!;
-    push @{$self->{Files}}, $self->Filename;
+    $self->OpenFile;
 
     # Walk the objects
     $self->SUPER::Walk( @_ );
 
     # Close everything back up
-    close($self->{Filehandle})
-        or die "Can't close @{[$self->Filename]}: $!";
-    $self->{FileCount}++;
+    $self->CloseFile;
 
     # Write the summary file
     Storable::nstore( {
@@ -331,12 +324,8 @@ sub Directory {
     return $self->{Directory};
 }
 
-sub RotateFile {
+sub OpenFile {
     my $self = shift;
-    close($self->{Filehandle})
-        or die "Can't close @{[$self->Filename]}: $!";
-    $self->{FileCount}++;
-
     open($self->{Filehandle}, ">", $self->Filename)
         or die "Can't write to file @{[$self->Filename]}: $!";
     $! = 0;
@@ -344,6 +333,19 @@ sub RotateFile {
     die "Failed to write to @{[$self->Filename]}: $!" if $!;
 
     push @{$self->{Files}}, $self->Filename;
+}
+
+sub CloseFile {
+    my $self = shift;
+    close($self->{Filehandle})
+        or die "Can't close @{[$self->Filename]}: $!";
+    $self->{FileCount}++;
+}
+
+sub RotateFile {
+    my $self = shift;
+    $self->CloseFile;
+    $self->OpenFile;
 }
 
 sub StackSize {
