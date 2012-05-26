@@ -543,4 +543,10 @@ It may be possible to resume the import by re-running rt-importer.
 EOT
 }
 
+sub Progress {
+    my $self = shift;
+    return defined $self->{Progress} unless @_;
+    return $self->{Progress} = $_[0];
+}
+
 1;

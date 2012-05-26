@@ -63,17 +63,6 @@ die "No such directory $dir\n" unless -d $dir;
 die "$dir doesn't appear to contain serialized data\n"
     unless -f "$dir/001.dat";
 
-my $import;
-
-my $progress;
-if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
-    my $ref = Storable::retrieve("$dir/rt-serialized");
-    $progress = RT::Migrate::progress(
-        counts => sub { $import->ObjectCount },
-        max    => $ref->{ObjectCount},
-    );
-}
-
 if ($OPT{dump}) {
     die "Dumping objects only works in conjunction with --list\n"
         unless $OPT{list};
@@ -104,15 +93,23 @@ elsif ($OPT{'ignore-errors'}) {
     };
 }
 
-$import = RT::Migrate::Importer->new(
+my $import = RT::Migrate::Importer->new(
     Directory   => $dir,
     Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
-    Progress    => $progress,
     DumpObjects => $OPT{dump},
     Resume      => $OPT{resume},
     HandleError => $error_handler,
 );
+
+if ($import->Metadata and -t STDOUT and not $OPT{quiet}) {
+    $import->Progress(
+        RT::Migrate::progress(
+            counts => sub { $import->ObjectCount },
+            max    => $import->Metadata->{ObjectCount},
+        )
+    );
+}
 
 my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
 print "Logging warnings and errors to $log\n" if $log;
