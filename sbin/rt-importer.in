@@ -106,6 +106,7 @@ elsif ($OPT{'ignore-errors'}) {
 
 my $statefile = "$dir/partial-import";
 $import = RT::Migrate::Importer->new(
+    Directory   => $dir,
     Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     Progress    => $progress,
@@ -120,13 +121,13 @@ print "Logging warnings and errors to $log\n" if $log;
 
 my %counts;
 if ($OPT{list}) {
-    %counts = $import->List( $dir );
+    %counts = $import->List;
 
     my $org = $import->Organization;
     print "=========== Dump of $org ===========\n\n";
 } else {
     unlink $statefile if -f $statefile and not $OPT{resume};
-    %counts = $import->Import( $dir );
+    %counts = $import->Import;
 
     my $org = $import->Organization;
     print "========== Import of $org ==========\n\n";

@@ -65,6 +65,7 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
+        Directory   => undef,
         Clone       => undef,
         OriginalId  => undef,
         Progress    => undef,
@@ -74,6 +75,11 @@ sub Init {
         HandleError => undef,
         @_,
     );
+
+    # Directory is required
+    die "Directory is required" unless $args{Directory};
+    die "Invalid path $args{Directory}" unless -d $args{Directory};
+    $self->{Directory} = $args{Directory};
 
     # Should we attempt to preserve record IDs as they are created?
     if ($self->{Clone} = $args{Clone}) {
@@ -307,7 +313,7 @@ sub Create {
 
 sub Import {
     my $self = shift;
-    my ($dir) = @_;
+    my $dir = $self->{Directory};
 
     $self->{Files} = [ map {File::Spec->rel2abs($_)} <$dir/*.dat> ];
 
@@ -406,7 +412,7 @@ sub Import {
 
 sub List {
     my $self = shift;
-    my ($dir) = @_;
+    my $dir = $self->{Directory};
 
     my %found = ( "RT::System" => 1 );
     for my $filename (map {File::Spec->rel2abs($_)} <$dir/*.dat> ) {
