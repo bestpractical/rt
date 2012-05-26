@@ -119,6 +119,17 @@ sub Init {
     }
 }
 
+sub Metadata {
+    my $self = shift;
+    return {
+        Format       => "0.5",
+        Version      => $RT::VERSION,
+        Organization => $RT::Organization,
+        Files        => [ $self->Files ],
+        ObjectCount  => { $self->ObjectCount },
+    },
+}
+
 sub PushAll {
     my $self = shift;
 
@@ -257,10 +268,10 @@ sub Walk {
     $self->CloseFile;
 
     # Write the summary file
-    Storable::nstore( {
-        files  => [ $self->Files ],
-        counts => { $self->ObjectCount },
-    }, $self->Directory . "/rt-serialized");
+    Storable::nstore(
+        $self->Metadata,
+        $self->Directory . "/rt-serialized"
+    );
 
     return $self->ObjectCount;
 }
@@ -329,7 +340,7 @@ sub OpenFile {
     open($self->{Filehandle}, ">", $self->Filename)
         or die "Can't write to file @{[$self->Filename]}: $!";
     $! = 0;
-    Storable::nstore_fd( \$RT::Organization, $self->{Filehandle});
+    Storable::nstore_fd( $self->Metadata, $self->{Filehandle});
     die "Failed to write to @{[$self->Filename]}: $!" if $!;
 
     push @{$self->{Files}}, $self->Filename;

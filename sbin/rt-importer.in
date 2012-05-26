@@ -70,7 +70,7 @@ if (-f "$dir/rt-serialized" and -t STDOUT and not $OPT{quiet}) {
     my $ref = Storable::retrieve("$dir/rt-serialized");
     $progress = RT::Migrate::progress(
         counts => sub { $import->ObjectCount },
-        max    => $ref->{counts},
+        max    => $ref->{ObjectCount},
     );
 }
 

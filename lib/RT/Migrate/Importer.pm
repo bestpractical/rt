@@ -352,8 +352,8 @@ sub Import {
 
             # Scalar references are the back-compat way we store the
             # organization value
-            if (ref $loaded eq "SCALAR") {
-                $self->{Organization} = $$loaded;
+            if (ref $loaded eq "HASH") {
+                $self->{Organization} = $loaded->{Organization};
                 next;
             }
 
@@ -422,11 +422,11 @@ sub List {
             or die "Can't read $filename: $!";
         while (not eof($fh)) {
             my $loaded = Storable::fd_retrieve($fh);
-            if (ref $loaded eq "SCALAR") {
+            if (ref $loaded eq "HASH") {
                 warn "Dump contains files from Multiple RT instances!\n"
                     if defined $self->{Organization}
-                        and $self->{Organization} ne $$loaded;
-                $self->{Organization} = $$loaded;
+                        and $self->{Organization} ne $loaded->{Organization};
+                $self->{Organization} = $loaded->{Organization};
                 next;
             }
 
