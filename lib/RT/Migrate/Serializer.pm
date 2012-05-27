@@ -102,7 +102,7 @@ sub Init {
 sub Metadata {
     my $self = shift;
     return {
-        Format       => "0.6",
+        Format       => "0.7",
         Version      => $RT::VERSION,
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
@@ -116,6 +116,11 @@ sub PushAll {
 
     # Ordering _shouldn't_ matter since we don't convert FK references to UIDs
     # and hence don't have to look them up during import.
+
+    # Principals first; while we don't serialize these separately during
+    # normal dependency walking (we fold them into users and groups),
+    # having them separate during cloning makes logic simpler.
+    $self->PushCollections(qw(Principals));
 
     # Users and groups
     $self->PushCollections(qw(Users Groups GroupMembers));

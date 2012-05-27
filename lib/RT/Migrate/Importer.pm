@@ -117,7 +117,7 @@ sub LoadMetadata {
     $self->{Metadata} = $data;
 
     die "Incompatible format version: ".$data->{Format}
-        if $data->{Format} ne "0.6";
+        if $data->{Format} ne "0.7";
 
     $self->{Organization} = $data->{Organization};
     $self->{Clone}        = $data->{Clone};
