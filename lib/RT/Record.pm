@@ -2010,15 +2010,23 @@ sub Serialize {
     );
 
     my %values = %{$self->{values}};
+
+    my %ca = %{ $self->_ClassAccessible };
+    my @cols = grep {exists $values{lc $_} and defined $values{lc $_}} keys %ca;
+
     my %store;
+    $store{$_} = $values{lc $_} for @cols;
 
-    my @cols = keys %{$self->_ClassAccessible};
-    @cols = grep {exists $values{lc $_} and defined $values{lc $_}} @cols;
-    for my $col ( @cols ) {
-        $store{$col} = $values{lc $col};
-        next unless $store{$col};
-        next unless $args{UIDs};
+    # Un-encode things with a ContentEncoding for transfer
+    if ($ca{ContentEncoding} and $ca{ContentType}) {
+        my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
+        $store{$content_col} = $self->$content_col;
+        delete $store{ContentEncoding};
+    }
+    return %store unless $args{UIDs};
 
+    # Use FooObj to turn Foo into a reference to the UID
+    for my $col ( grep {$store{$_}} @cols ) {
         my $method = $methods{$col};
         if (not $method) {
             $method = $col;
@@ -2027,13 +2035,12 @@ sub Serialize {
         next unless $self->can($method);
 
         my $obj = $self->$method;
-        next unless $obj;
-        next unless $obj->isa("RT::Record");
+        next unless $obj and $obj->isa("RT::Record");
         $store{$col} = \($obj->UID);
     }
 
     # Anything on an object should get the UID stored instead
-    if ($args{UIDs} and $store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
+    if ($store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
         delete $store{$_} for qw/ObjectType ObjectId/;
         $store{Object} = \($self->Object->UID);
     }
@@ -2047,6 +2054,19 @@ sub PreInflate {
 
     my $ca = $class->_ClassAccessible;
     my %ca = %{ $ca };
+
+    if ($ca{ContentEncoding} and $ca{ContentType}) {
+        my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
+        if (defined $data->{$content_col}) {
+            my ($ContentEncoding, $Content) = $class->_EncodeLOB(
+                $data->{$content_col},
+                $data->{ContentType},
+            );
+            $data->{ContentEncoding} = $ContentEncoding;
+            $data->{$content_col} = $Content;
+        }
+    }
+
     if ($data->{Object} and not $ca{Object}) {
         my $ref_uid = ${ delete $data->{Object} };
         my $ref = $importer->Lookup( $ref_uid );
