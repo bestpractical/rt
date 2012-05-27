@@ -131,14 +131,14 @@ sub import {
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    $class->bootstrap_db( %args );
-
     RT::InitPluginPaths();
+    RT::InitClasses();
+
+    $class->bootstrap_db( %args );
 
     __reconnect_rt()
         unless $args{nodb};
 
-    RT::InitClasses();
     RT::InitLogging();
 
     RT->Plugins;
