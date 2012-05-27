@@ -1666,8 +1666,6 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    return %store unless $args{UIDs};
-
     my $type = $store{Type};
     if ($type eq "CustomField") {
         my $cf = RT::CustomField->new( RT->SystemUser );

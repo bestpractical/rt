@@ -1440,10 +1440,8 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    if ($args{UIDs}) {
-        my $instance = $self->InstanceObj;
-        $store{Instance} = \($instance->UID) if $instance;
-    }
+    my $instance = $self->InstanceObj;
+    $store{Instance} = \($instance->UID) if $instance;
 
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
@@ -1502,19 +1500,15 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'Group',
         Disabled => $disabled,
-        ObjectId => ($importer->{Clone} ? $data->{id} : 0),
-        ($importer->{Clone} and $principal_id)
-             ? (Id => $principal_id) : (),
+        ObjectId => 0,
     );
     $importer->Resolve( $principal_uid => ref($principal), $id );
 
-    unless ($importer->{Clone}) {
-        $importer->Postpone(
-            for => $uid,
-            uid => $principal_uid,
-            column => "ObjectId",
-        );
-    }
+    $importer->Postpone(
+        for => $uid,
+        uid => $principal_uid,
+        column => "ObjectId",
+    );
 
     return 1;
 }

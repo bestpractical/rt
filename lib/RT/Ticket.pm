@@ -4215,8 +4215,6 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    return %store unless $args{UIDs};
-
     my $obj = RT::Ticket->new( RT->SystemUser );
     $obj->Load( $store{EffectiveId} );
     $store{EffectiveId} = \($obj->UID);

@@ -138,8 +138,7 @@ sub InitStream {
 
     # Basic facts of life, as a safety net
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
-    $self->SkipTransactions( RT->System->UID )
-        unless $self->{Clone};
+    $self->SkipTransactions( RT->System->UID );
 
     if ($self->{OriginalId}) {
         # Where to shove the original ticket ID
@@ -226,6 +225,7 @@ sub Postpone {
 sub SkipTransactions {
     my $self = shift;
     my ($uid) = @_;
+    return if $self->{Clone};
     $self->{SkipTransactions}{$uid} = 1;
 }
 
@@ -296,10 +296,14 @@ sub Create {
     my $self = shift;
     my ($class, $uid, $data) = @_;
 
-    # Remove the ticket id, unless we specifically want it kept
-    delete $data->{id} unless $self->{Clone};
-
-    return unless $class->PreInflate( $self, $uid, $data );
+    # Use a simpler pre-inflation if we're cloning
+    if ($self->{Clone}) {
+        $class->RT::Record::PreInflate( $self, $uid, $data );
+    } else {
+        # Non-cloning always wants to make its own id
+        delete $data->{id};
+        return unless $class->PreInflate( $self, $uid, $data );
+    }
 
     my $obj = $class->new( RT->SystemUser );
     my ($id, $msg) = eval {

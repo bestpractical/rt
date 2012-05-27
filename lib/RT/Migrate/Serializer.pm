@@ -335,10 +335,13 @@ sub Visit {
     # Serialize it
     my $obj = $args{object};
     warn "Writing ".$obj->UID."\n" if $self->{Verbose};
+    # Short-circuit and get Just The Basics, Sir if we're cloning
+    my %data = $self->{Clone} ? $obj->RT::Record::Serialize( UIDs => 0 )
+        : $obj->Serialize;
     my @store = (
         ref($obj),
         $obj->UID,
-        { $obj->Serialize( UIDs => !$self->{Clone} ) },
+        \%data,
     );
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have

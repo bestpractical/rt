@@ -2001,6 +2001,7 @@ sub Serialize {
     my $self = shift;
     my %args = (
         Methods => {},
+        UIDs    => 1,
         @_,
     );
     my %methods = (

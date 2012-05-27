@@ -428,8 +428,6 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    return %store unless $args{UIDs};
-
     if ($store{ObjectId}) {
         my $class = $self->CustomFieldObj->RecordClassFromLookupType;
         my $obj = $class->new( RT->SystemUser );

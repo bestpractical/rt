@@ -417,8 +417,6 @@ sub PreInflate {
 
     $class->SUPER::PreInflate( $importer, $uid, $data );
 
-    return 1 if $importer->{Clone};
-
     return not $importer->SkipBy( "Name", $class, $uid, $data );
 }
 
