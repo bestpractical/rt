@@ -262,6 +262,11 @@ sub Walk {
     # Set up our output file
     $self->OpenFile;
 
+    # Write the initial metadata
+    $! = 0;
+    Storable::nstore_fd( $self->Metadata, $self->{Filehandle});
+    die "Failed to write metadata to @{[$self->Filename]}: $!" if $!;
+
     # Walk the objects
     $self->SUPER::Walk( @_ );
 
@@ -340,10 +345,6 @@ sub OpenFile {
     my $self = shift;
     open($self->{Filehandle}, ">", $self->Filename)
         or die "Can't write to file @{[$self->Filename]}: $!";
-    $! = 0;
-    Storable::nstore_fd( $self->Metadata, $self->{Filehandle});
-    die "Failed to write to @{[$self->Filename]}: $!" if $!;
-
     push @{$self->{Files}}, $self->Filename;
 }
 
