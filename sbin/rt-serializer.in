@@ -32,7 +32,7 @@ RT::LoadConfig();
 RT::Init();
 
 use RT::Migrate;
-use RT::Migrate::Serializer;
+use RT::Migrate::Serializer::File;
 use Getopt::Long;
 use Pod::Usage qw//;
 use Time::HiRes qw//;
@@ -105,13 +105,13 @@ if (-t STDOUT and not $OPT{verbose} and not $OPT{quiet}) {
 $args{Verbose} = 0 if $OPT{quiet};
 
 
-$walker = RT::Migrate::Serializer->new( %args );
+$walker = RT::Migrate::Serializer::File->new( %args );
 
 my $log = RT::Migrate::setup_logging( $walker->{Directory} => 'serializer.log' );
 print "Logging warnings and errors to $log\n" if $log;
 
 print "Beginning database serialization...";
-my %counts = $walker->Walk;
+my %counts = $walker->Export;
 
 my @files = $walker->Files;
 print "Wrote @{[scalar @files]} files:\n";

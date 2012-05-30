@@ -60,10 +60,6 @@ sub Init {
     my $self = shift;
 
     my %args = (
-        Directory   => undef,
-        Force       => undef,
-        MaxFileSize => 32,
-
         AllUsers            => 1,
         AllGroups           => 1,
         FollowDeleted       => 1,
@@ -77,19 +73,6 @@ sub Init {
         Verbose => 1,
         @_,
     );
-
-    # Set up the output directory we'll be writing to
-    $args{Directory} = $RT::Organization . ":" . DateTime->now->ymd
-        unless defined $args{Directory};
-    system("rm", "-rf", $args{Directory}) if $args{Force};
-    die "Output directory $args{Directory} already exists"
-        if -d $args{Directory};
-    mkdir $args{Directory}
-        or die "Can't create output directory $args{Directory}: $!\n";
-    $self->{Directory} = delete $args{Directory};
-
-    # How many megabytes each chunk should be, approximitely
-    $self->{MaxFileSize} = delete $args{MaxFileSize};
 
     $self->{Verbose} = delete $args{Verbose};
 
@@ -109,9 +92,6 @@ sub Init {
     # Keep track of the number of each type of object written out
     $self->{ObjectCount} = {};
 
-    # Which file we're writing to
-    $self->{FileCount} = 1;
-
     if ($self->{Clone}) {
         $self->PushAll;
     } else {
@@ -126,7 +106,6 @@ sub Metadata {
         Version      => $RT::VERSION,
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
-        Files        => [ $self->Files ],
         ObjectCount  => { $self->ObjectCount },
         @_,
     },
@@ -257,30 +236,13 @@ sub PushBasics {
     $self->PushCollections(qw(Queues));
 }
 
-sub Walk {
+sub InitStream {
     my $self = shift;
-
-    # Set up our output file
-    $self->OpenFile;
 
     # Write the initial metadata
     $! = 0;
-    Storable::nstore_fd( $self->Metadata, $self->{Filehandle});
-    die "Failed to write metadata to @{[$self->Filename]}: $!" if $!;
-
-    # Walk the objects
-    $self->SUPER::Walk( @_ );
-
-    # Close everything back up
-    $self->CloseFile;
-
-    # Write the summary file
-    Storable::nstore(
-        $self->Metadata( Final => 1 ),
-        $self->Directory . "/rt-serialized"
-    );
-
-    return $self->ObjectCount;
+    Storable::nstore_fd( $self->Metadata, $self->{Filehandle} );
+    die "Failed to write metadata: $!" if $!;
 }
 
 sub NextPage {
@@ -321,45 +283,6 @@ sub Process {
         if $self->{Clone} and $uid;
 
     return $self->SUPER::Process( @_ );
-}
-
-sub Files {
-    my $self = shift;
-    return @{ $self->{Files} };
-}
-
-sub Filename {
-    my $self = shift;
-    return sprintf(
-        "%s/%03d.dat",
-        $self->{Directory},
-        $self->{FileCount}
-    );
-}
-
-sub Directory {
-    my $self = shift;
-    return $self->{Directory};
-}
-
-sub OpenFile {
-    my $self = shift;
-    open($self->{Filehandle}, ">", $self->Filename)
-        or die "Can't write to file @{[$self->Filename]}: $!";
-    push @{$self->{Files}}, $self->Filename;
-}
-
-sub CloseFile {
-    my $self = shift;
-    close($self->{Filehandle})
-        or die "Can't close @{[$self->Filename]}: $!";
-    $self->{FileCount}++;
-}
-
-sub RotateFile {
-    my $self = shift;
-    $self->CloseFile;
-    $self->OpenFile;
 }
 
 sub StackSize {
@@ -405,13 +328,9 @@ sub Observe {
 sub Visit {
     my $self = shift;
     my %args = (
-        object    => undef,
+        object => undef,
         @_
     );
-
-    # Rotate if we get too big
-    my $maxsize = 1024 * 1024 * $self->{MaxFileSize};
-    $self->RotateFile if tell($self->{Filehandle}) > $maxsize;
 
     # Serialize it
     my $obj = $args{object};
@@ -426,7 +345,7 @@ sub Visit {
     # to; by clearing $! and checking it afterwards.
     $! = 0;
     Storable::nstore_fd(\@store, $self->{Filehandle});
-    die "Failed to write to @{[$self->Filename]}: $!" if $!;
+    die "Failed to write: $!" if $!;
 
     $self->{ObjectCount}{ref($obj)}++;
 }

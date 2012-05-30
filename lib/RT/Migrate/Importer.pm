@@ -65,35 +65,18 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
-        Directory   => undef,
         OriginalId  => undef,
         Progress    => undef,
         Statefile   => undef,
         DumpObjects => undef,
-        Resume      => undef,
         HandleError => undef,
         @_,
     );
 
-    # Directory is required
-    die "Directory is required" unless $args{Directory};
-    die "Invalid path $args{Directory}" unless -d $args{Directory};
-    $self->{Directory} = $args{Directory};
-
-    # Load metadata, if present
-    if (-e "$args{Directory}/rt-serialized") {
-        my $dat = eval { Storable::retrieve("$args{Directory}/rt-serialized"); }
-            or die "Failed to load metadata" . ($@ ? ": $@" : "");
-        $self->LoadMetadata($dat);
-    }
-
     # Should we attempt to preserve record IDs as they are created?
     $self->{OriginalId} = $args{OriginalId};
 
-    $self->{Progress}  = $args{Progress};
-    $self->{Statefile} = $args{Statefile} || "$args{Directory}/partial-import";
-    unlink $self->{Statefile}
-        if -f $self->{Statefile} and not $args{Resume};
+    $self->{Progress} = $args{Progress};
 
     $self->{HandleError} = sub { 0 };
     $self->{HandleError} = $args{HandleError}
@@ -347,13 +330,9 @@ sub Create {
     return $obj;
 }
 
-sub Import {
+sub ReadStream {
     my $self = shift;
-    my $dir = $self->{Directory};
-
-    $self->{Files} = [ map {File::Spec->rel2abs($_)} <$dir/*.dat> ];
-
-    $self->RestoreState( $self->{Statefile} );
+    my ($fh) = @_;
 
     no warnings 'redefine';
     local *RT::Ticket::Load = sub {
@@ -363,128 +342,70 @@ sub Import {
         return $self->Id;
     };
 
-    local $SIG{  INT  } = sub { $self->{INT} = 1 };
-    local $SIG{__DIE__} = sub { warn "\n", @_; $self->SaveState; exit 1 };
+    my $loaded = Storable::fd_retrieve($fh);
 
-    $self->{Progress}->(undef) if $self->{Progress};
-    while (@{$self->{Files}}) {
-        $self->{Filename} = shift @{$self->{Files}};
-        open(my $fh, "<", $self->{Filename})
-            or die "Can't read $self->{Filename}: $!";
-        if ($self->{Seek}) {
-            seek($fh, $self->{Seek}, 0)
-                or die "Can't seek to $self->{Seek} in $self->{Filename}";
-            $self->{Seek} = undef;
-        }
-        while (not eof($fh)) {
-            $self->{Position} = tell($fh);
-
-            # Stop when we're at a good stopping point
-            die "Caught interrupt, quitting.\n" if $self->{INT};
-
-            my $loaded = Storable::fd_retrieve($fh);
-
-            # Metadata is stored at the start of the stream as a hashref
-            if (ref $loaded eq "HASH") {
-                $self->LoadMetadata( $loaded );
-                $self->InitStream;
-                next;
-            }
-
-            my ($class, $uid, $data) = @{$loaded};
-
-            # If it's a queue, store its ID away, as we'll need to know
-            # it to split global CFs into non-global across those
-            # fields.  We do this before inflating, so that queues which
-            # got merged still get the CFs applied
-            push @{$self->{NewQueues}}, $uid
-                if $class eq "RT::Queue"
-                    and not $self->{Clone};
-
-            my $origid = $data->{id};
-            my $obj = $self->Create( $class, $uid, $data );
-            next unless $obj;
-
-            # If it's a ticket, we might need to create a
-            # TicketCustomField for the previous ID
-            if ($class eq "RT::Ticket" and $self->{OriginalId}) {
-                my ($id, $msg) = $obj->AddCustomFieldValue(
-                    Field             => $self->{OriginalId},
-                    Value             => $self->Organization . ":$origid",
-                    RecordTransaction => 0,
-                );
-                warn "Failed to add custom field to $uid: $msg"
-                    unless $id;
-            }
-
-            # If it's a CF, we don't know yet if it's global (the OCF
-            # hasn't been created yet) to store away the CF for later
-            # inspection
-            push @{$self->{NewCFs}}, $uid
-                if $class eq "RT::CustomField"
-                    and $obj->LookupType =~ /^RT::Queue/
-                    and not $self->{Clone};
-
-            $self->{Progress}->($obj) if $self->{Progress};
-        }
+    # Metadata is stored at the start of the stream as a hashref
+    if (ref $loaded eq "HASH") {
+        $self->LoadMetadata( $loaded );
+        $self->InitStream;
+        return;
     }
 
-    unless ($self->{Clone}) {
-        # Take global CFs which we made and make them un-global
-        my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
-        for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
-            my $ocf = $obj->IsApplied( 0 ) or next;
-            $ocf->Delete;
-            $obj->AddToObject( $_ ) for @queues;
-        }
-        $self->{NewQueues} = [];
-        $self->{NewCFs} = [];
+    my ($class, $uid, $data) = @{$loaded};
+
+    # If it's a queue, store its ID away, as we'll need to know
+    # it to split global CFs into non-global across those
+    # fields.  We do this before inflating, so that queues which
+    # got merged still get the CFs applied
+    push @{$self->{NewQueues}}, $uid
+        if $class eq "RT::Queue"
+            and not $self->{Clone};
+
+    my $origid = $data->{id};
+    my $obj = $self->Create( $class, $uid, $data );
+    return unless $obj;
+
+    # If it's a ticket, we might need to create a
+    # TicketCustomField for the previous ID
+    if ($class eq "RT::Ticket" and $self->{OriginalId}) {
+        my ($id, $msg) = $obj->AddCustomFieldValue(
+            Field             => $self->{OriginalId},
+            Value             => $self->Organization . ":$origid",
+            RecordTransaction => 0,
+        );
+        warn "Failed to add custom field to $uid: $msg"
+            unless $id;
     }
+
+    # If it's a CF, we don't know yet if it's global (the OCF
+    # hasn't been created yet) to store away the CF for later
+    # inspection
+    push @{$self->{NewCFs}}, $uid
+        if $class eq "RT::CustomField"
+            and $obj->LookupType =~ /^RT::Queue/
+            and not $self->{Clone};
+
+    $self->{Progress}->($obj) if $self->{Progress};
+}
+
+sub CloseStream {
+    my $self = shift;
+
     $self->{Progress}->(undef, 'force') if $self->{Progress};
 
-    # Return creation counts
-    return $self->ObjectCount;
-}
+    return if $self->{Clone};
 
-sub List {
-    my $self = shift;
-    my $dir = $self->{Directory};
-
-    my %found = ( "RT::System" => 1 );
-    for my $filename (map {File::Spec->rel2abs($_)} <$dir/*.dat> ) {
-        open(my $fh, "<", $filename)
-            or die "Can't read $filename: $!";
-        while (not eof($fh)) {
-            my $loaded = Storable::fd_retrieve($fh);
-            if (ref $loaded eq "HASH") {
-                $self->LoadMetadata( $loaded );
-                next;
-            }
-
-            if ($self->{DumpObjects}) {
-                print STDERR Data::Dumper::Dumper($loaded), "\n"
-                    if $self->{DumpObjects}{ $loaded->[0] };
-            }
-
-            my ($class, $uid, $data) = @{$loaded};
-            $self->{ObjectCount}{$class}++;
-            $found{$uid} = 1;
-            delete $self->{Pending}{$uid};
-            for (grep {ref $data->{$_}} keys %{$data}) {
-                my $uid_ref = ${ $data->{$_} };
-                unless (defined $uid_ref) {
-                    push @{ $self->{Invalid} }, { uid => $uid, column => $_ };
-                    next;
-                }
-                next if $found{$uid_ref};
-                next if $uid_ref =~ /^RT::Principal-/;
-                push @{$self->{Pending}{$uid_ref} ||= []}, {uid => $uid};
-            }
-        }
+    # Take global CFs which we made and make them un-global
+    my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
+    for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
+        my $ocf = $obj->IsApplied( 0 ) or next;
+        $ocf->Delete;
+        $obj->AddToObject( $_ ) for @queues;
     }
-
-    return $self->ObjectCount;
+    $self->{NewQueues} = [];
+    $self->{NewCFs} = [];
 }
+
 
 sub ObjectCount {
     my $self = shift;
@@ -506,50 +427,6 @@ sub Invalid {
 sub Organization {
     my $self = shift;
     return $self->{Organization};
-}
-
-sub CheckRestoreState {
-    my ($self, $statefile) = @_;
-    return $statefile && -f $statefile;
-}
-
-sub RestoreState {
-    my $self = shift;
-    my ($statefile) = @_;
-    return unless $self->CheckRestoreState(@_);
-
-    my $state = Storable::retrieve( $self->{Statefile} );
-    $self->{$_} = $state->{$_} for keys %{$state};
-    unlink $self->{Statefile};
-
-    print STDERR "Resuming partial import...\n";
-    sleep 2;
-    return 1;
-}
-
-sub SaveState {
-    my $self = shift;
-
-    my %data;
-    unshift @{$self->{Files}}, $self->{Filename};
-    $self->{Seek} = $self->{Position};
-    $data{$_} = $self->{$_} for
-        qw/Filename Seek Position Files
-           Organization ObjectCount
-           NewQueues NewCFs
-           SkipTransactions Pending Invalid
-           UIDs
-           OriginalId Clone
-          /;
-    Storable::nstore(\%data, $self->{Statefile});
-
-    print STDERR <<EOT;
-
-Importer state has been written to the file:
-    $self->{Statefile}
-
-It may be possible to resume the import by re-running rt-importer.
-EOT
 }
 
 sub Progress {
