@@ -2348,7 +2348,7 @@ sub PreInflate {
 
     my $obj = RT::User->new( RT->SystemUser );
     $obj->LoadByCols( Name => $data->{Name} );
-    $obj->LoadByCols( Email => $data->{Email} ) unless $obj->Id;
+    $obj->LoadByEmail( $data->{EmailAddress} ) unless $obj->Id;
     if ($obj->Id) {
         # User already exists -- merge
 
