@@ -1031,6 +1031,10 @@ our %is_whitelisted_component = (
     # information for the search.  Because it's a straight-up read, in
     # addition to embedding its own auth, it's fine.
     '/NoAuth/rss/dhandler' => 1,
+
+    # IE doesn't send referer in window.open()
+    # besides, as a harmless calendar select page, it's fine
+    '/Helpers/CalPopup.html' => 1,
 );
 
 sub IsCompCSRFWhitelisted {
