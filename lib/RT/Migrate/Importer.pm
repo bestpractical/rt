@@ -81,6 +81,13 @@ sub Init {
     die "Invalid path $args{Directory}" unless -d $args{Directory};
     $self->{Directory} = $args{Directory};
 
+    # Load metadata, if present
+    if (-e "$args{Directory}/rt-serialized") {
+        my $dat = eval { Storable::retrieve("$args{Directory}/rt-serialized"); }
+            or die "Failed to load metadata" . ($@ ? ": $@" : "");
+        $self->LoadMetadata($dat);
+    }
+
     # Should we attempt to preserve record IDs as they are created?
     if ($self->{Clone} = $args{Clone}) {
         die "RT already contains data; overwriting will not work\n"
@@ -137,6 +144,25 @@ sub Init {
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
     $self->SkipTransactions( RT->System->UID )
         unless $self->{Clone};
+}
+
+sub Metadata {
+    my $self = shift;
+    return $self->{Metadata};
+}
+
+sub LoadMetadata {
+    my $self = shift;
+    my ($data) = @_;
+
+    return if $self->{Metadata};
+    $self->{Metadata} = $data;
+
+    die "Incompatible format version: ".$data->{Format}
+        if $data->{Format} ne "0.5";
+
+    $self->{Organization} = $data->{Organization};
+    $self->{Files}        = $data->{Files} if $data->{Final};
 }
 
 sub Resolve {
@@ -350,10 +376,9 @@ sub Import {
 
             my $loaded = Storable::fd_retrieve($fh);
 
-            # Scalar references are the back-compat way we store the
-            # organization value
+            # Metadata is stored at the start of the stream as a hashref
             if (ref $loaded eq "HASH") {
-                $self->{Organization} = $loaded->{Organization};
+                $self->LoadMetadata( $loaded );
                 next;
             }
 
@@ -423,10 +448,7 @@ sub List {
         while (not eof($fh)) {
             my $loaded = Storable::fd_retrieve($fh);
             if (ref $loaded eq "HASH") {
-                warn "Dump contains files from Multiple RT instances!\n"
-                    if defined $self->{Organization}
-                        and $self->{Organization} ne $loaded->{Organization};
-                $self->{Organization} = $loaded->{Organization};
+                $self->LoadMetadata( $loaded );
                 next;
             }
 

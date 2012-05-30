@@ -127,6 +127,7 @@ sub Metadata {
         Organization => $RT::Organization,
         Files        => [ $self->Files ],
         ObjectCount  => { $self->ObjectCount },
+        @_,
     },
 }
 
@@ -269,7 +270,7 @@ sub Walk {
 
     # Write the summary file
     Storable::nstore(
-        $self->Metadata,
+        $self->Metadata( Final => 1 ),
         $self->Directory . "/rt-serialized"
     );
 
