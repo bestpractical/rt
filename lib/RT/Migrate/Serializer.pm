@@ -122,9 +122,10 @@ sub Init {
 sub Metadata {
     my $self = shift;
     return {
-        Format       => "0.5",
+        Format       => "0.6",
         Version      => $RT::VERSION,
         Organization => $RT::Organization,
+        Clone        => $self->{Clone},
         Files        => [ $self->Files ],
         ObjectCount  => { $self->ObjectCount },
         @_,

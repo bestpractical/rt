@@ -45,7 +45,6 @@ GetOptions(
     "list|l!",
 
     "resume!",
-    "clone|C",
     "originalid|i=s",
 
     "ask",
@@ -95,7 +94,6 @@ elsif ($OPT{'ignore-errors'}) {
 
 my $import = RT::Migrate::Importer->new(
     Directory   => $dir,
-    Clone       => $OPT{clone},
     OriginalId  => $OPT{originalid},
     DumpObjects => $OPT{dump},
     Resume      => $OPT{resume},
@@ -183,17 +181,6 @@ resumed by re-running the importer.
 
 Print a summary of the data contained in the dump.
 
-=item B<--clone>
-
-Insert all of the data as an exact clone of the original RT instance.  This
-requires that the database schema be created, but contain no data.  You can
-setup the required database state for the receiving RT instance by running:
-
-    sbin/rt-setup-database --action create,schema,acl --prompt-for-dba-password
-
-The normal C<make initdb> step will B<not> work because it also inserts core
-system data.
-
 =item B<--originalid> I<cfname>
 
 Places the original ticket organization and ID into a global custom
@@ -229,5 +216,19 @@ serialized data.  This is mostly useful for debugging.
 Works only in conjunction with C<--list>.
 
 =back
+
+
+=head1 CLONED DATA
+
+Some dumps may have been taken as complete clones of the RT system,
+which are only suitable for inserting into a schema with no data in it.
+You can setup the required database state for the receiving RT instance
+by running:
+
+    sbin/rt-setup-database --action create,schema,acl --prompt-for-dba-password
+
+The normal C<make initdb> step will B<not> work because it also inserts
+core system data.
+
 
 =cut

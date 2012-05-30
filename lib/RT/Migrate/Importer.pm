@@ -66,7 +66,6 @@ sub Init {
     my $self = shift;
     my %args = (
         Directory   => undef,
-        Clone       => undef,
         OriginalId  => undef,
         Progress    => undef,
         Statefile   => undef,
@@ -89,26 +88,7 @@ sub Init {
     }
 
     # Should we attempt to preserve record IDs as they are created?
-    if ($self->{Clone} = $args{Clone}) {
-        die "RT already contains data; overwriting will not work\n"
-            if RT->SystemUser->Id and
-                not ($args{Resume} and $self->CheckRestoreState($args{Statefile}));
-
-        die "Cloning does not support importing the Original Id separately\n"
-            if $args{OriginalId};
-    } elsif ($self->{OriginalId} = $args{OriginalId}) {
-        # Where to shove the original ticket ID
-        my $cf = RT::CustomField->new( RT->SystemUser );
-        $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
-        unless ($cf->Id) {
-            warn "Failed to find global CF named $self->{OriginalId} -- creating one";
-            $cf->Create(
-                Queue => 0,
-                Name  => $self->{OriginalId},
-                Type  => 'FreeformSingle',
-            );
-        }
-    }
+    $self->{OriginalId} = $args{OriginalId};
 
     $self->{Progress}  = $args{Progress};
     $self->{Statefile} = $args{Statefile} || "$args{Directory}/partial-import";
@@ -139,11 +119,6 @@ sub Init {
     # To know what global CFs need to be unglobal'd and applied to what
     $self->{NewQueues} = [];
     $self->{NewCFs} = [];
-
-    # Basic facts of life, as a safety net
-    $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
-    $self->SkipTransactions( RT->System->UID )
-        unless $self->{Clone};
 }
 
 sub Metadata {
@@ -159,10 +134,43 @@ sub LoadMetadata {
     $self->{Metadata} = $data;
 
     die "Incompatible format version: ".$data->{Format}
-        if $data->{Format} ne "0.5";
+        if $data->{Format} ne "0.6";
 
     $self->{Organization} = $data->{Organization};
+    $self->{Clone}        = $data->{Clone};
     $self->{Files}        = $data->{Files} if $data->{Final};
+}
+
+sub InitStream {
+    my $self = shift;
+
+    die "Stream initialized after objects have been recieved!"
+        if keys %{ $self->{UIDs} };
+
+    die "Cloning does not support importing the Original Id separately\n"
+        if $self->{OriginalId} and $self->{Clone};
+
+    die "RT already contains data; overwriting will not work\n"
+        if $self->{Clone} and RT->SystemUser->Id;
+
+    # Basic facts of life, as a safety net
+    $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
+    $self->SkipTransactions( RT->System->UID )
+        unless $self->{Clone};
+
+    if ($self->{OriginalId}) {
+        # Where to shove the original ticket ID
+        my $cf = RT::CustomField->new( RT->SystemUser );
+        $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
+        unless ($cf->Id) {
+            warn "Failed to find global CF named $self->{OriginalId} -- creating one";
+            $cf->Create(
+                Queue => 0,
+                Name  => $self->{OriginalId},
+                Type  => 'FreeformSingle',
+            );
+        }
+    }
 }
 
 sub Resolve {
@@ -379,6 +387,7 @@ sub Import {
             # Metadata is stored at the start of the stream as a hashref
             if (ref $loaded eq "HASH") {
                 $self->LoadMetadata( $loaded );
+                $self->InitStream;
                 next;
             }
 
