@@ -117,10 +117,11 @@ sub LoadMetadata {
     $self->{Metadata} = $data;
 
     die "Incompatible format version: ".$data->{Format}
-        if $data->{Format} ne "0.7";
+        if $data->{Format} ne "0.8";
 
     $self->{Organization} = $data->{Organization};
     $self->{Clone}        = $data->{Clone};
+    $self->{Incremental}  = $data->{Incremental};
     $self->{Files}        = $data->{Files} if $data->{Final};
 }
 
@@ -134,7 +135,8 @@ sub InitStream {
         if $self->{OriginalId} and $self->{Clone};
 
     die "RT already contains data; overwriting will not work\n"
-        if $self->{Clone} and RT->SystemUser->Id;
+        if ($self->{Clone} and not $self->{Incremental})
+            and RT->SystemUser->Id;
 
     # Basic facts of life, as a safety net
     $self->Resolve( RT->System->UID => ref RT->System, RT->System->Id );
@@ -357,13 +359,37 @@ sub ReadStream {
 
     my ($class, $uid, $data) = @{$loaded};
 
+    if ($self->{Incremental}) {
+        my $obj = $class->new( RT->SystemUser );
+        $obj->Load( $data->{id} );
+        if (not $uid) {
+            # undef $uid means "delete it"
+            $obj->Delete;
+            $self->{ObjectCount}{$class}++;
+        } elsif ( $obj->Id ) {
+            # If it exists, update it
+            $class->RT::Record::PreInflate( $self, $uid, $data );
+            $obj->__Set( Field => $_, Value => $data->{$_} )
+                for keys %{ $data };
+            $self->{ObjectCount}{$class}++;
+        } else {
+            # Otherwise, make it
+            $obj = $self->Create( $class, $uid, $data );
+        }
+        $self->{Progress}->($obj) if $obj and $self->{Progress};
+        return;
+    } elsif ($self->{Clone}) {
+        my $obj = $self->Create( $class, $uid, $data );
+        $self->{Progress}->($obj) if $obj and $self->{Progress};
+        return;
+    }
+
     # If it's a queue, store its ID away, as we'll need to know
     # it to split global CFs into non-global across those
     # fields.  We do this before inflating, so that queues which
     # got merged still get the CFs applied
     push @{$self->{NewQueues}}, $uid
-        if $class eq "RT::Queue"
-            and not $self->{Clone};
+        if $class eq "RT::Queue";
 
     my $origid = $data->{id};
     my $obj = $self->Create( $class, $uid, $data );
@@ -386,8 +412,7 @@ sub ReadStream {
     # inspection
     push @{$self->{NewCFs}}, $uid
         if $class eq "RT::CustomField"
-            and $obj->LookupType =~ /^RT::Queue/
-            and not $self->{Clone};
+            and $obj->LookupType =~ /^RT::Queue/;
 
     $self->{Progress}->($obj) if $self->{Progress};
 }

@@ -55,6 +55,8 @@ use base 'RT::DependencyWalker';
 
 use Storable qw//;
 use DateTime;
+use RT::Migrate::Serializer::IncrementalRecord;
+use RT::Migrate::Serializer::IncrementalRecords;
 
 sub Init {
     my $self = shift;
@@ -68,7 +70,8 @@ sub Init {
         FollowTickets       => 1,
         FollowACL           => 0,
 
-        Clone   => 0,
+        Clone       => 0,
+        Incremental => 0,
 
         Verbose => 1,
         @_,
@@ -85,7 +88,10 @@ sub Init {
                   FollowTickets
                   FollowACL
                   Clone
+                  Incremental
               /;
+
+    $self->{Clone} = 1 if $self->{Incremental};
 
     $self->SUPER::Init(@_, First => "top");
 
@@ -102,10 +108,11 @@ sub Init {
 sub Metadata {
     my $self = shift;
     return {
-        Format       => "0.7",
+        Format       => "0.8",
         Version      => $RT::VERSION,
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
+        Incremental  => $self->{Incremental},
         ObjectCount  => { $self->ObjectCount },
         @_,
     },
@@ -142,6 +149,13 @@ sub PushAll {
 
     # Attributes
     $self->PushCollections(qw(Attributes));
+
+    if ($self->{Incremental}) {
+        my $removed = RT::Migrate::Serializer::IncrementalRecords->new( RT->SystemUser );
+        $removed->Limit( FIELD => "UpdateType", VALUE => 3 );
+        $removed->OrderBy( FIELD => 'id' );
+        $self->PushObj( $removed );
+    }
 }
 
 sub PushCollections {
@@ -162,6 +176,20 @@ sub PushCollections {
             elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
                 # FindAllRows (find_disabled_rows) isn't used by OCFVs
                 $collection->{find_expired_rows} = 1;
+            }
+
+            if ($self->{Incremental}) {
+                my $alias = $collection->Join(
+                    ALIAS1 => "main",
+                    FIELD1 => "id",
+                    TABLE2 => "IncrementalRecords",
+                    FIELD2 => "ObjectId",
+                );
+                $collection->DBIx::SearchBuilder::Limit(
+                    ALIAS => $alias,
+                    FIELD => "ObjectType",
+                    VALUE => ref($collection->NewItem),
+                );
             }
         }
 
@@ -340,14 +368,24 @@ sub Visit {
     # Serialize it
     my $obj = $args{object};
     warn "Writing ".$obj->UID."\n" if $self->{Verbose};
-    # Short-circuit and get Just The Basics, Sir if we're cloning
-    my %data = $self->{Clone} ? $obj->RT::Record::Serialize( UIDs => 0 )
-        : $obj->Serialize;
-    my @store = (
-        ref($obj),
-        $obj->UID,
-        \%data,
-    );
+    my @store;
+    if ($obj->isa("RT::Migrate::Serializer::IncrementalRecord")) {
+        # These are stand-ins for record removals
+        @store = (
+            $obj->ObjectType,
+            undef,
+            { id => $obj->ObjectId },
+        );
+    } else {
+        # Short-circuit and get Just The Basics, Sir if we're cloning
+        my %data = $self->{Clone} ? $obj->RT::Record::Serialize( UIDs => 0 )
+            : $obj->Serialize;
+        @store = (
+            ref($obj),
+            $obj->UID,
+            \%data,
+        );
+    }
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have
     # to; by clearing $! and checking it afterwards.
@@ -355,7 +393,7 @@ sub Visit {
     Storable::nstore_fd(\@store, $self->{Filehandle});
     die "Failed to write: $!" if $!;
 
-    $self->{ObjectCount}{ref($obj)}++;
+    $self->{ObjectCount}{$store[0]}++;
 }
 
 1;
