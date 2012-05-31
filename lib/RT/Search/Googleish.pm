@@ -247,7 +247,14 @@ sub HandleStatus    {
     }
 }
 sub HandleOwner     {
-    return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
+    if (!$_[2] and $_[1] eq "me") {
+        return owner => "Owner.id = '__CurrentUser__'";
+    }
+    elsif (!$_[2] and $_[1] =~ /\w+@\w+/) {
+        return owner => "Owner.EmailAddress = '$_[1]'";
+    } else {
+        return owner => "Owner = '$_[1]'";
+    }
 }
 sub HandleWatcher     {
     return watcher => (!$_[2] and $_[1] eq "me") ? "Watcher.id = '__CurrentUser__'" : "Watcher = '$_[1]'";
