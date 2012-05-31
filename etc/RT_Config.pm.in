@@ -615,6 +615,9 @@ Set($NotifyActor, 0);
 By default, RT records each message it sends out to its own internal
 database.  To change this behavior, set C<$RecordOutgoingEmail> to 0
 
+If this is disabled, user's "Email delivery"(i.e. EmailFrequency) preference
+will be ignored.
+
 =cut
 
 Set($RecordOutgoingEmail, 1);
