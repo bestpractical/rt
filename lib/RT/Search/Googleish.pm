@@ -225,6 +225,11 @@ sub GuessType {
     return "default";
 }
 
+# $_[0] is $self
+# $_[1] is escaped value without surrounding single quotes
+# $_[2] is a boolean of "was quoted by the user?"
+#       ensure this is false before you do smart matching like $_[1] eq "me"
+# $_[3] is escaped subkey, if any (see HandleCf)
 sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
