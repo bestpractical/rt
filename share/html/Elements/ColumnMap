@@ -160,6 +160,8 @@ my $COLUMN_MAP = {
     } qw(WebPath WebBaseURL WebURL)),
     WebRequestPath    => { value => sub { substr( $m->request_path, 1 ) } },
     WebRequestPathDir => { value => sub { substr( $m->request_comp->dir_path, 1 ) } },
+    CurrentUser       => { value => sub { $session{CurrentUser}->id } },
+    CurrentUserName   => { value => sub { $session{CurrentUser}->Name } },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
