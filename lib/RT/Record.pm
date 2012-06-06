@@ -2018,6 +2018,7 @@ sub Serialize {
 
     my %store;
     $store{$_} = $values{lc $_} for @cols;
+    $store{id} = $values{id}; # Explicitly necessary in some cases
 
     # Un-encode things with a ContentEncoding for transfer
     if ($ca{ContentEncoding} and $ca{ContentType}) {
