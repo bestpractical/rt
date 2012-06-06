@@ -140,7 +140,7 @@ sub progress {
         }
 
         my $total = 0;
-        $total += $_ for values %counts;
+        $total += $_ for map {$counts{$_}} grep {exists $args{max}{$_}} keys %counts;
         $offset = $total unless defined $offset;
         print "\n", progress_bar(
             label => "Total",
