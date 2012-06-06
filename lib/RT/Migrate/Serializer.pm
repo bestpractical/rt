@@ -54,6 +54,8 @@ use warnings;
 use base 'RT::DependencyWalker';
 
 use Storable qw//;
+sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
+use RT::Migrate::Incremental;
 use RT::Migrate::Serializer::IncrementalRecord;
 use RT::Migrate::Serializer::IncrementalRecords;
 
@@ -106,9 +108,14 @@ sub Init {
 
 sub Metadata {
     my $self = shift;
+
+    # Determine the highest upgrade step that we run
+    my ($max) = reverse sort cmp_version ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
+
     return {
         Format       => "0.8",
-        Version      => $RT::VERSION,
+        VersionFrom  => $RT::VERSION,
+        Version      => $max,
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
         Incremental  => $self->{Incremental},
@@ -281,9 +288,36 @@ sub InitStream {
     my $self = shift;
 
     # Write the initial metadata
+    my $meta = $self->Metadata;
     $! = 0;
-    Storable::nstore_fd( $self->Metadata, $self->{Filehandle} );
+    Storable::nstore_fd( $meta, $self->{Filehandle} );
     die "Failed to write metadata: $!" if $!;
+
+    return unless cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
+
+    my %transforms;
+    for my $v (sort cmp_version keys %RT::Migrate::Incremental::UPGRADES) {
+        for my $ref (keys %{$RT::Migrate::Incremental::UPGRADES{$v}}) {
+            push @{$transforms{$ref}}, $RT::Migrate::Incremental::UPGRADES{$v}{$ref};
+        }
+    }
+    for my $ref (keys %transforms) {
+        # XXX Does not correctly deal with updates of $classref, which
+        # should technically apply all later transforms of the _new_
+        # class.  This is not relevant in the current upgrades, as
+        # RT::ObjectCustomFieldValues do not have interesting later
+        # upgrades if you start from 3.2 (which does
+        # RT::TicketCustomFieldValues -> RT::ObjectCustomFieldValues)
+        $self->{Transform}{$ref} = sub {
+            my ($dat, $classref) = @_;
+            my @extra;
+            for my $c (@{$transforms{$ref}}) {
+                push @extra, $c->($dat, $classref);
+                return @extra if not $$classref;
+            }
+            return @extra;
+        };
+    }
 }
 
 sub NextPage {
@@ -379,19 +413,53 @@ sub Visit {
     my @store;
     if ($obj->isa("RT::Migrate::Serializer::IncrementalRecord")) {
         # These are stand-ins for record removals
+        my $class = $obj->ObjectType;
+        my %data  = ( id => $obj->ObjectId );
+        # -class is used for transforms when dropping a record
+        if ($self->{Transform}{"-$class"}) {
+            $self->{Transform}{"-$class"}->(\%data,\$class)
+        }
         @store = (
-            $obj->ObjectType,
+            $class,
             undef,
-            { id => $obj->ObjectId },
+            \%data,
+        );
+    } elsif ($self->{Clone}) {
+        # Short-circuit and get Just The Basics, Sir if we're cloning
+        my $class = ref($obj);
+        my $uid   = $obj->UID;
+        my %data  = $obj->RT::Record::Serialize( UIDs => 0 );
+
+        # +class is used when seeing a record of one class might insert
+        # a separate record into the stream
+        if ($self->{Transform}{"+$class"}) {
+            my @extra = $self->{Transform}{"+$class"}->(\%data,\$class);
+            for my $e (@extra) {
+                $! = 0;
+                Storable::nstore_fd($e, $self->{Filehandle});
+                die "Failed to write: $!" if $!;
+                $self->{ObjectCount}{$e->[0]}++;
+            }
+        }
+
+        # Upgrade the record if necessary
+        if ($self->{Transform}{$class}) {
+            $self->{Transform}{$class}->(\%data,\$class);
+        }
+
+        # Transforms set $class to undef to drop the record
+        return unless $class;
+
+        @store = (
+            $class,
+            $uid,
+            \%data,
         );
     } else {
-        # Short-circuit and get Just The Basics, Sir if we're cloning
-        my %data = $self->{Clone} ? $obj->RT::Record::Serialize( UIDs => 0 )
-            : $obj->Serialize;
         @store = (
             ref($obj),
             $obj->UID,
-            \%data,
+            { $obj->Serialize },
         );
     }
 
