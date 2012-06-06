@@ -53,8 +53,6 @@ use warnings;
 
 use base 'RT::Migrate::Serializer';
 
-use DateTime;
-
 sub Init {
     my $self = shift;
 
@@ -67,7 +65,9 @@ sub Init {
     );
 
     # Set up the output directory we'll be writing to
-    $args{Directory} = $RT::Organization . ":" . DateTime->now->ymd
+    my ($y,$m,$d) = (localtime)[5,4,3];
+    $args{Directory} = $RT::Organization .
+        sprintf(":%d-%02d-%02d",$y+1900,$m+1,$d)
         unless defined $args{Directory};
     system("rm", "-rf", $args{Directory}) if $args{Force};
     die "Output directory $args{Directory} already exists"

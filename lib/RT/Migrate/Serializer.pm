@@ -54,7 +54,6 @@ use warnings;
 use base 'RT::DependencyWalker';
 
 use Storable qw//;
-use DateTime;
 use RT::Migrate::Serializer::IncrementalRecord;
 use RT::Migrate::Serializer::IncrementalRecords;
 
@@ -230,13 +229,14 @@ sub PushBasics {
     $self->PushObj( $cfs );
 
     # Global attributes
-    my $attributes = RT::System->new( RT->SystemUser )->Attributes;
+    my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
 
     # Global ACLs
     if ($self->{FollowACL}) {
         my $acls = RT::ACL->new( RT->SystemUser );
-        $acls->LimitToObject( RT->System );
+        $acls->LimitToObject( $RT::System );
         $self->PushObj( $acls );
     }
 

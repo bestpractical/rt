@@ -176,16 +176,16 @@ sub progress {
 sub setup_logging {
     my ($dir, $file) = @_;
 
-    RT->Config->Set( LogToScreen    => 'warning' );
-    RT->Config->Set( LogToFile      => 'warning' );
-    RT->Config->Set( LogDir         => $dir );
-    RT->Config->Set( LogToFileNamed => $file );
-    RT->Config->Set( LogStackTraces => 'error' );
+    $RT::LogToScreen    = 'warning';
+    $RT::LogToFile      = 'warning';
+    $RT::LogDir         = $dir;
+    $RT::LogToFileNamed = $file;
+    $RT::LogStackTraces = 'error';
 
     undef $RT::Logger;
     RT->InitLogging();
 
-    my $logger = RT->Logger->output('file');
+    my $logger = $RT::Logger->output('file') || $RT::Logger->output("rtlog");
     return $logger ? $logger->{filename} : undef;
 }
 

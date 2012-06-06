@@ -130,7 +130,7 @@ sub Walk {
                 $ref->{unrolled}++;
             }
             my $last;
-            while (my $obj = $ref->Next) {
+            while (my $obj = $ref->DBIx::SearchBuilder::Next) {
                 $last = $obj->Id;
                 $self->Process(%frame, object => $obj );
             }
