@@ -110,7 +110,8 @@ sub Metadata {
     my $self = shift;
 
     # Determine the highest upgrade step that we run
-    my ($max) = reverse sort cmp_version ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
+    my @versions = ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
+    my ($max) = reverse sort cmp_version @versions;
 
     return {
         Format       => "0.8",
