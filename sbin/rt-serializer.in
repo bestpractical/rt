@@ -148,11 +148,14 @@ sub estimate {
     for my $class (@types) {
         print "Estimating $class count...";
         my $collection = $class . "s";
-        my $objs = $collection->new( RT->SystemUser );
-        $objs->FindAllRows;
-        $objs->UnLimit;
-        $objs->{allow_deleted_search} = 1 if $class eq "RT::Ticket";
-        $e{$class} = $objs->Count;
+        eval "require $collection";
+        unless ($@) {
+            my $objs = $collection->new( RT->SystemUser );
+            $objs->FindAllRows;
+            $objs->UnLimit;
+            $objs->{allow_deleted_search} = 1 if $class eq "RT::Ticket";
+            $e{$class} = $objs->DBIx::SearchBuilder::Count;
+        }
         print "\r", " "x60, "\r";
     }
 

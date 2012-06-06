@@ -1973,12 +1973,13 @@ sub FindDependencies {
     }
 
     # Object custom field values
-    if (   $self->isa("RT::Transaction")
-        or $self->isa("RT::Ticket")
-        or $self->isa("RT::User")
-        or $self->isa("RT::Group")
-        or $self->isa("RT::Queue")
-        or $self->isa("RT::Article") )
+    if ((   $self->isa("RT::Transaction")
+         or $self->isa("RT::Ticket")
+         or $self->isa("RT::User")
+         or $self->isa("RT::Group")
+         or $self->isa("RT::Queue")
+         or $self->isa("RT::Article") )
+            and $self->can("CustomFieldValues") )
     {
         $objs = $self->CustomFieldValues; # Actually OCFVs
         $objs->{find_expired_rows} = 1;

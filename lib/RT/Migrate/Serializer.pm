@@ -138,7 +138,11 @@ sub PushAll {
     $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
 
     # Custom Fields
-    $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+    if (eval "require RT::ObjectCustomFields; 1") {
+        $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+    } elsif (eval "require RT::TicketCustomFieldValues; 1") {
+        $self->PushCollections(qw(CustomFields CustomFieldValues TicketCustomFieldValues));
+    }
 
     # ACLs
     $self->PushCollections(qw(ACL));
@@ -162,6 +166,8 @@ sub PushCollections {
 
     for my $type (@_) {
         my $class = "RT::\u$type";
+
+        eval "require $class; 1" or next;
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows;   # be explicit
         $collection->UnLimit;
@@ -264,7 +270,9 @@ sub PushBasics {
         $self->PushObj( $groups );
     }
 
-    $self->PushCollections(qw(Topics Classes));
+    if (eval "require RT::Articles; 1") {
+        $self->PushCollections(qw(Topics Classes));
+    }
 
     $self->PushCollections(qw(Queues));
 }
