@@ -334,8 +334,12 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
         },
         'RT::Queue' => sub {
             my ($ref) = @_;
-            my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
-            return unless $attr;
+            my $attr = RT::Attribute->new(
+                ObjectType => "RT::System",
+                ObjectId   => 1,
+                Name       => "BrandedSubjectTag",
+            );;
+            return unless $attr->id;
             my $map = $attr->Content || {};
             return unless $map->{$ref->{id}};
             $ref->{SubjectTag} = $map->{$ref->{id}};
