@@ -60,8 +60,10 @@ div#body {
     padding: 1.8em 1em 1em 1em;
     -moz-border-radius-topleft: 0.5em;
     -webkit-border-top-left-radius: 0.5em;
+    border-top-left-radius: 0.5em;
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
     margin-left: 10em;
     margin-top: 3em;
     margin-right: 0;
@@ -89,8 +91,10 @@ div#footer {
  border-left: 2px solid #aaa;
  -moz-border-radius-topleft: 0.5em;
  -webkit-border-top-left-radius: 0.5em;
+ border-top-left-radius: 0.5em;
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
+ border-bottom-left-radius: 0.5em;
 }
 
 div#footer #time {
