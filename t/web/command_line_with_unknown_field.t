@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 14, actual_server => 1;
+use RT::Test tests => 17, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 my $rt_tool_path = "$RT::BinPath/rt";
 
@@ -19,6 +19,11 @@ expect_run(
     prompt => 'rt> ',
     quit => 'quit',
 );
+
+expect_send( q{create -t ticket set foo=bar}, "create ticket with unknown field" );
+expect_like(qr/foo: Unknown field/, 'foo is unknown field');
+expect_like(qr/Could not create ticket/, 'ticket is not created');
+
 expect_send(q{create -t ticket set subject='new ticket' add cc=foo@example.com}, "Creating a ticket...");
 
 expect_like(qr/Ticket \d+ created/, "Created the ticket");
