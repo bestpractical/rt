@@ -567,7 +567,8 @@ sub Parse {
         $self->_ParseMultilineTemplate(%args);
     } elsif ( $args{'Content'} =~ /(?:\t|,)/i ) {
         $self->_ParseXSVTemplate(%args);
-
+    } else {
+        RT->Logger->error("Invalid Template Content (Couldn't find ===, and is not a csv/tsv template) - unable to parse: $args{Content}");
     }
 }
 
