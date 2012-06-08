@@ -836,7 +836,7 @@ my $build_selfservice_nav = sub {
     } elsif ( $queue_id ) {
         Menu->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
-    my $tickets = Menu->child( tickets => title => loc('Tickets'));
+    my $tickets = Menu->child( tickets => title => loc('Tickets'), path => '/SelfService/' );
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
