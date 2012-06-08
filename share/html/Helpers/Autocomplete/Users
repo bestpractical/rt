@@ -116,6 +116,9 @@ foreach (split /\s*,\s*/, $exclude) {
 
 my @suggestions;
 
+$users->Limit( FIELD => $return, OPERATOR => '!=', VALUE => '' );
+$users->Limit( FIELD => $return, OPERATOR => 'IS NOT', VALUE => 'NULL', ENTRYAGGREGATOR => 'AND'  );
+
 while ( my $user = $users->Next ) {
     next if $user->id == RT->SystemUser->id
          or $user->id == RT->Nobody->id;
