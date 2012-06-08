@@ -454,6 +454,36 @@ sub CurrentUserCanCreateAny {
     return 0;
 }
 
+=head2 Delete
+
+Deletes the dashboard and related subscriptions.
+Returns a tuple of status and message, where status is true upon success.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    my $id = $self->id;
+    my ( $status, $msg ) = $self->SUPER::Delete(@_);
+    if ( $status ) {
+        # delete all the subscriptions
+        my $subscriptions = RT::Attributes->new( RT->SystemUser );
+        $subscriptions->Limit(
+            FIELD => 'Name',
+            VALUE => 'Subscription',
+        );
+        $subscriptions->Limit(
+            FIELD => 'Description',
+            VALUE => "Subscription to dashboard $id",
+        );
+        while ( my $subscription = $subscriptions->Next ) {
+            $subscription->Delete();
+        }
+    }
+
+    return ( $status, $msg );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
