@@ -370,7 +370,6 @@ sub LimitCustomField {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE       => $clause,
-            CASESENSITIVE   => 0,
         );
     }
     else {
