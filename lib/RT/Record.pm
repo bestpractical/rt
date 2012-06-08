@@ -1605,7 +1605,7 @@ sub _AddCustomFieldValue {
             0,
             $self->loc(
                 "Custom field [_1] does not apply to this object",
-                $args{'Field'}
+                ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'}
             )
         );
     }
