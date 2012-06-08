@@ -292,8 +292,10 @@ else {
         elsif (exists $simple{$key}) {
             $key = $simple{$key};
             $set = "Set$key";
+            my $current = $ticket->$key;
+            $current = '' unless defined $current;
 
-            next if (($val eq ($ticket->$key||''))|| ($ticket->$key =~ /^\d+$/ && $val =~ /^\d+$/ && $val == $ticket->$key));
+            next if ($val eq $current) or ($current =~ /^\d+$/ && $val =~ /^\d+$/ && $val == $current);
             ($n, $s) = $ticket->$set("$val");
         }
         elsif (exists $dates{$key}) {
