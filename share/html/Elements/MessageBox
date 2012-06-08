@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
-% $m->comp('/Articles/Elements/IncludeArticle', %ARGS);
+% $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
@@ -89,4 +89,5 @@ $Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} 
 $Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
 $Wrap             => RT->Config->Get('MessageBoxWrap', $session{'CurrentUser'} ) || 'SOFT'
 $IncludeSignature => RT->Config->Get('MessageBoxIncludeSignature');
+$IncludeArticle   => 1;
 </%ARGS>
