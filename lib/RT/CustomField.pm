@@ -1656,7 +1656,6 @@ sub ValuesForObject {
     
     
     $values->LimitToCustomField($self->Id);
-    $values->LimitToEnabled();
     $values->LimitToObject($object);
 
     return ($values);
