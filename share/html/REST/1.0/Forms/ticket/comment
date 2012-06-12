@@ -94,7 +94,11 @@ my $ent = MIME::Entity->build(
     Type => "multipart/mixed",
     'X-RT-Interface' => 'REST',
 );
-$ent->attach(Data => $changes{Text}) if $changes{Text};
+$ent->attach(
+    'Content-Type' => $changes{'Content-Type'} || 'text/plain',
+    Data => $changes{Text},
+) if $changes{Text};
+
 
 my $i = 1;
 foreach my $att (@atts) {
