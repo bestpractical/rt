@@ -1180,37 +1180,31 @@ sub UpdateCustomFields {
     }
 }
 
+=head2 LoadCustomFieldByIdentifier
 
-
-=head2 CustomFieldValues
-
- Do name => id mapping (if needed) before falling back to RT::Record's CustomFieldValues
-
- See L<RT::Record>
+Finds and returns the custom field of the given name for the
+transaction, overriding L<RT::Record/LoadCustomFieldByIdentifier> to
+look for queue-specific CFs before global ones.
 
 =cut
 
-sub CustomFieldValues {
+sub LoadCustomFieldByIdentifier {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        if ref $field or $field =~ /^\d+$/;
 
-        # XXX: $field could be undef when we want fetch values for all CFs
-        #      do we want to cover this situation somehow here?
-        unless ( defined $field && $field =~ /^\d+$/o ) {
-            my $CFs = RT::CustomFields->new( $self->CurrentUser );
-            $CFs->SetContextObject( $self->Object );
-            $CFs->Limit( FIELD => 'Name', VALUE => $field );
-            $CFs->LimitToLookupType($self->CustomFieldLookupType);
-            $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
-            $field = $CFs->First->id if $CFs->First;
-        }
-    }
-    return $self->SUPER::CustomFieldValues($field);
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        unless UNIVERSAL::can( $self->Object, 'QueueObj' );
+
+    my $CFs = RT::CustomFields->new( $self->CurrentUser );
+    $CFs->SetContextObject( $self->Object );
+    $CFs->Limit( FIELD => 'Name', VALUE => $field );
+    $CFs->LimitToLookupType($self->CustomFieldLookupType);
+    $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
+    return $CFs->First || RT::CustomField->new( $self->CurrentUser );
 }
-
-
 
 =head2 CustomFieldLookupType
 

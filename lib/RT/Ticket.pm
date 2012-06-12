@@ -3710,35 +3710,27 @@ sub TransactionCustomFields {
 }
 
 
+=head2 LoadCustomFieldByIdentifier
 
-=head2 CustomFieldValues
-
-# Do name => id mapping (if needed) before falling back to
-# RT::Record's CustomFieldValues
-
-See L<RT::Record>
+Finds and returns the custom field of the given name for the ticket,
+overriding L<RT::Record/LoadCustomFieldByIdentifier> to look for
+queue-specific CFs before global ones.
 
 =cut
 
-sub CustomFieldValues {
+sub LoadCustomFieldByIdentifier {
     my $self  = shift;
     my $field = shift;
 
-    return $self->SUPER::CustomFieldValues( $field ) if !$field || $field =~ /^\d+$/;
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        if ref $field or $field =~ /^\d+$/;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->SetContextObject( $self );
     $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
-    unless ( $cf->id ) {
-        $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
-    }
-
-    # If we didn't find a valid cfid, give up.
-    return RT::ObjectCustomFieldValues->new( $self->CurrentUser ) unless $cf->id;
-
-    return $self->SUPER::CustomFieldValues( $cf->id );
+    $cf->LoadByNameAndQueue( Name => $field, Queue => 0 ) unless $cf->id;
+    return $cf;
 }
-
 
 
 =head2 CustomFieldLookupType
