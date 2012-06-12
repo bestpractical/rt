@@ -65,7 +65,7 @@ if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}{''} };
 }
 
-my $actions_pointer = $m->request_args->{'results'};
+my $actions_pointer = $DECODED_ARGS->{'results'};
 
 if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };

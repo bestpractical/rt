@@ -71,7 +71,7 @@ if ( $Object && $Object->id ) {
 
 # Always fill $Default with submited values if it's empty
 if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
-    my %TOP = $m->request_args;
+    my %TOP = %$DECODED_ARGS;
     $Default = $TOP{ $NamePrefix .$CustomField->Id . '-Values' }
             || $TOP{ $NamePrefix .$CustomField->Id . '-Value' };
 }
