@@ -144,12 +144,28 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
 
 
             if ( $field && $op && defined $value ) {
+                if ( $field eq 'Disabled' ) {
+                    if ($value) {
+                        $objects->FindAllRows;
+                        if ( $type eq 'queue' ) {
 
-                $objects->Limit(
-                    FIELD    => $field,
-                    OPERATOR => uc $op,
-                    VALUE    => $value
-                );
+                            # special case for queue that
+                            # Disabled could be 2(___Approvals)
+                            $objects->Limit(
+                                FIELD    => $field,
+                                OPERATOR => uc $op,
+                                VALUE    => $value
+                            );
+                        }
+                    }
+                }
+                else {
+                    $objects->Limit(
+                        FIELD    => $field,
+                        OPERATOR => uc $op,
+                        VALUE    => $value
+                    );
+                }
             }
             else {
                 $output = "Invalid query specification: $query";
@@ -250,11 +266,13 @@ my %search_whitelist = (
           keys %{ $RT::Record::_TABLE_ATTR->{'RT::Queue'} }
     },
     user => {
+        disabled => 1,
         map { lc $_ => 1 }
           grep { $RT::Record::_TABLE_ATTR->{'RT::User'}{$_}{read} }
           keys %{ $RT::Record::_TABLE_ATTR->{'RT::User'} }
     },
     group => {
+        disabled => 1,
         map { lc $_ => 1 }
           grep { $RT::Record::_TABLE_ATTR->{'RT::Group'}{$_}{read} }
           keys %{ $RT::Record::_TABLE_ATTR->{'RT::Group'} }
