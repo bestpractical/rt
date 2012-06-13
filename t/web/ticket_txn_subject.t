@@ -24,7 +24,8 @@ diag "create a ticket via the API";
 diag "create a ticket via the web";
 {
     $m->submit_form_ok({
-        with_fields => { Queue => 1 },
+        form_name => "CreateTicketInQueue",
+        fields    => { Queue => 1 },
     }, 'create ticket in Queue');
     $m->submit_form_ok({
         with_fields => {
