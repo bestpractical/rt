@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 20;
+use RT::Test tests => 22;
 
 my $queue_foo = RT::Test->load_or_create_queue( Name => 'foo' );
 my $queue_bar = RT::Test->load_or_create_queue( Name => 'bar' );

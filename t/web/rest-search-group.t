@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 18;
+use RT::Test tests => 20;
 
 my $group_foo = RT::Group->new($RT::SystemUser);
 $group_foo->CreateUserDefinedGroup( Name => 'foo' );
