@@ -1617,6 +1617,7 @@ sub _CustomFieldLimit {
                 FIELD      => $column,
                 OPERATOR   => $op,
                 VALUE      => $value,
+                CASESENSITIVE => 0,
                 %rest
             ) );
             $self->_CloseParen;
@@ -1679,6 +1680,7 @@ sub _CustomFieldLimit {
                         FIELD    => 'Content',
                         OPERATOR => $op,
                         VALUE    => $value,
+                        CASESENSITIVE => 0,
                         %rest
                     );
                 }
@@ -1705,6 +1707,7 @@ sub _CustomFieldLimit {
                         OPERATOR        => $op,
                         VALUE           => $value,
                         ENTRYAGGREGATOR => 'AND',
+                        CASESENSITIVE => 0,
                     ) );
                 }
             }
@@ -1714,6 +1717,7 @@ sub _CustomFieldLimit {
                     FIELD    => 'Content',
                     OPERATOR => $op,
                     VALUE    => $value,
+                    CASESENSITIVE => 0,
                     %rest
                 );
 
@@ -1740,6 +1744,7 @@ sub _CustomFieldLimit {
                     OPERATOR        => $op,
                     VALUE           => $value,
                     ENTRYAGGREGATOR => 'AND',
+                    CASESENSITIVE => 0,
                 ) );
                 $self->_CloseParen;
             }
@@ -1796,6 +1801,7 @@ sub _CustomFieldLimit {
                 FIELD      => $column,
                 OPERATOR   => $op,
                 VALUE      => $value,
+                CASESENSITIVE => 0,
             ) );
         }
         else {
@@ -1805,6 +1811,7 @@ sub _CustomFieldLimit {
                 FIELD      => 'Content',
                 OPERATOR   => $op,
                 VALUE      => $value,
+                CASESENSITIVE => 0,
             );
         }
         $self->_SQLLimit(
