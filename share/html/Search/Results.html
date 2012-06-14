@@ -151,6 +151,7 @@ if ($ARGS{'TicketsRefreshInterval'}) {
 my $refresh = $session{'tickets_refresh_interval'}
     || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
 
+# Check $m->request_args, not $DECODED_ARGS, to avoid creating a new CSRF token on each refresh
 if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
     my $token = RT::Interface::Web::StoreRequestToken( $session{'CurrentSearchHash'} );
     $m->notes->{RefreshURL} = RT->Config->Get('WebURL')

@@ -98,14 +98,14 @@ my %query;
 
     for(@session_fields) {
         $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $m->request_args->{$_} unless defined $query{$_};
+        $query{$_} = $DECODED_ARGS->{$_} unless defined $query{$_};
     }
 
-    if ($m->request_args->{'SavedSearchLoadSubmit'}) {
-        $query{'SavedChartSearchId'} = $m->request_args->{'SavedSearchLoad'};
+    if ($DECODED_ARGS->{'SavedSearchLoadSubmit'}) {
+        $query{'SavedChartSearchId'} = $DECODED_ARGS->{'SavedSearchLoad'};
     }
 
-    if ($m->request_args->{'SavedSearchSave'}) {
+    if ($DECODED_ARGS->{'SavedSearchSave'}) {
         $query{'SavedChartSearchId'} = $saved_search->{'SearchId'};
     }
 
