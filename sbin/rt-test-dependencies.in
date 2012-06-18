@@ -345,7 +345,7 @@ URI 1.59
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
-IPC::Run
+IPC::Run 0.90
 .
 
 $deps{'GD'} = [ text_to_hash( << '.') ];
