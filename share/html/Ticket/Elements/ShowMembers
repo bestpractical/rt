@@ -48,7 +48,7 @@
 <ul>
 % while (my $link = $members->Next) {
 <li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
-% next if $checked->{$link->BaseObj->id};
+% next if $link->BaseObj and $checked->{$link->BaseObj->id};
 % if ($depth < 8) {
 <& /Ticket/Elements/ShowMembers, Ticket => $link->BaseObj, depth => ($depth+1), checked => $checked &> 
 % }
