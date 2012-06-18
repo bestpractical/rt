@@ -53,6 +53,7 @@
 % foreach my $section( RT->Config->Sections ) {
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
+% next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
