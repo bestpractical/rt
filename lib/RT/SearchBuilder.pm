@@ -211,29 +211,35 @@ sub LimitCustomField {
                  @_ );
 
     my $alias = $self->Join(
-	TYPE       => 'left',
-	ALIAS1     => 'main',
-	FIELD1     => 'id',
-	TABLE2     => 'ObjectCustomFieldValues',
-	FIELD2     => 'ObjectId'
+        TYPE       => 'left',
+        ALIAS1     => 'main',
+        FIELD1     => 'id',
+        TABLE2     => 'ObjectCustomFieldValues',
+        FIELD2     => 'ObjectId'
     );
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'CustomField',
-	OPERATOR   => '=',
-	VALUE      => $args{'CUSTOMFIELD'},
+        ALIAS      => $alias,
+        FIELD      => 'CustomField',
+        OPERATOR   => '=',
+        VALUE      => $args{'CUSTOMFIELD'},
     ) if ($args{'CUSTOMFIELD'});
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'ObjectType',
-	OPERATOR   => '=',
-	VALUE      => $self->_SingularClass,
+        ALIAS      => $alias,
+        FIELD      => 'ObjectType',
+        OPERATOR   => '=',
+        VALUE      => $self->_SingularClass,
     );
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => $args{'OPERATOR'},
-	VALUE      => $args{'VALUE'},
+        ALIAS      => $alias,
+        FIELD      => 'Content',
+        OPERATOR   => $args{'OPERATOR'},
+        VALUE      => $args{'VALUE'},
+    );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'Disabled',
+        OPERATOR => '=',
+        VALUE => 0,
     );
 }
 
