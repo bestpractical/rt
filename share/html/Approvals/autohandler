@@ -46,8 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-$m->call_next(%ARGS) if $session{'CurrentUser'}->UserObj->HasRight(
+if ( $session{'CurrentUser'}->UserObj->HasRight(
     Right => 'ShowApprovalsTab',
     Object => $RT::System,
-);
+) ) {
+    $m->call_next(%ARGS);
+}
+else {
+    Abort("No permission to view approval");
+}
 </%init>
