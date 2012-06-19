@@ -51,7 +51,7 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
