@@ -130,6 +130,8 @@ li.sfHover > a > .sf-sub-indicator {
 	-moz-border-radius-topright: 17px;
 	-webkit-border-top-right-radius: 17px;
 	-webkit-border-bottom-left-radius: 17px;
+	border-top-right-radius: 17px;
+	border-bottom-left-radius: 17px;
 }
 .sf-shadow ul.sf-shadow-off {
 	background: transparent;
