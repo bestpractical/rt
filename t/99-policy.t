@@ -23,10 +23,11 @@ sub check {
         warnings => 0,
         shebang  => 0,
         exec     => 0,
+        bps_tag  => 0,
         @_,
     );
 
-    if ($check{strict} or $check{warnings} or $check{shebang}) {
+    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag}) {
         local $/;
         open my $fh, '<', $file or die $!;
         my $content = <$fh>;
@@ -48,6 +49,19 @@ sub check {
         } elsif ($check{shebang} == -1) {
             unlike( $content, qr/^#!/, "$file has no shebang" );
         }
+
+        $check{bps_tag} = -1 if $check{bps_tag} == 1
+            and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
+                and $file =~ /(?:FCKEditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
+        $check{bps_tag} = -1 if $check{bps_tag} == 1
+            and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
+                and ($content =~ /\b(copyright|GPL|Public Domain)\b/i
+                  or /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
+        if ($check{bps_tag} == 1) {
+            like( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has BPS license tag");
+        } elsif ($check{bps_tag} == -1) {
+            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag");
+        }
     }
 
     my $executable = ( stat $file )[2] & 0100;
@@ -62,20 +76,23 @@ sub check {
     }
 }
 
-check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1 )
+check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1 )
     for grep {m{^lib/.*\.pm$}} @files;
 
-check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1 )
+check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => -1 )
     for grep {m{^t/.*\.t$}} @files;
 
-check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 )
+check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
     for grep {m{^s?bin/}} @files;
 
-check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 )
+check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
 
+check( $_, exec => -1, bps_tag => not m{\.(png|gif|jpe?g)$} )
+    for grep {m{^share/html/}} @files;
+
 check( $_, exec => -1 )
-    for grep {m{^share/}} @files;
+    for grep {m{^share/(po|fonts)/}} @files;
 
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
