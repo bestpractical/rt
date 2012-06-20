@@ -7,6 +7,14 @@ use File::Find;
 my @files;
 find( sub { push @files, $File::Find::name if -f },
       qw{lib share t bin sbin devel/tools} );
+if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
+    # We're in a git repo, use the ignore list
+    chomp $dir;
+    my %ignores;
+    $ignores{ $_ }++ for grep $_, split /\n/,
+        `git ls-files -o -i --exclude-standard .`;
+    @files = grep {not $ignores{$_}} @files;
+}
 
 sub check {
     my $file = shift;
