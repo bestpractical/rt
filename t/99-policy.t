@@ -73,3 +73,9 @@ check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 )
 
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
+
+check( $_, exec => -1 )
+    for grep {m{^share/}} @files;
+
+check( $_, exec => -1 )
+    for grep {m{^t/data/}} @files;
