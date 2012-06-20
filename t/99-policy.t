@@ -6,49 +6,54 @@ use File::Find;
 
 sub check {
     my $file = shift;
-    my $type = shift;
+    my %check = (
+        strict   => 0,
+        warnings => 0,
+        shebang  => 0,
+        exec     => 0,
+        @_,
+    );
 
-    local $/;
-    open my $fh, '<', $file or die $!;
-    my $content = <$fh>;
-    like(
-        $content,
-        qr/^use strict(?:;|\s+)/m,
-        $File::Find::name . ' has "use strict"'
-    );
-    like(
-        $content,
-        qr/^use warnings(?:;|\s+)/m,
-        $File::Find::name . ' has "use warnings"'
-    );
-    my $executable = ( stat $file )[2] & 0100;
-    if ( $type eq 'script' ) {
-        like( $content, qr/^#!/, $File::Find::name . ' has shebang' );
-        if ( $file =~ /\.in/ ) {
-            ok( !$executable, $File::Find::name . ' permission is not u+x' );
-        }
-        else {
-            ok( $executable, $File::Find::name . ' permission is u+x' );
-        }
-    }
-    elsif ( $type eq 'devel' ) {
+    if ($check{strict} or $check{warnings} or $check{shebang}) {
+        local $/;
+        open my $fh, '<', $file or die $!;
+        my $content = <$fh>;
+
         like(
             $content,
-            qr{^#!/usr/bin/env perl},
-            $File::Find::name . ' has shebang'
-        );
-        ok( $executable, $File::Find::name . ' permission is u+x' );
+            qr/^use strict(?:;|\s+)/m,
+            "$File::Find::name has 'use strict'"
+        ) if $check{strict};
+
+        like(
+            $content,
+            qr/^use warnings(?:;|\s+)/m,
+            "$File::Find::name has 'use warnings'"
+        ) if $check{warnings};
+
+        if ($check{shebang} == 1) {
+            like( $content, qr/^#!/, "$File::Find::name has shebang" );
+        } elsif ($check{shebang} == -1) {
+            unlike( $content, qr/^#!/, "$File::Find::name has no shebang" );
+        }
     }
-    else {
-        unlike( $content, qr/^#!/, $File::Find::name . ' has no shebang' );
-        ok( !$executable, $File::Find::name . ' permission is not u+x' );
+
+    my $executable = ( stat $file )[2] & 0100;
+    if ($check{exec} == 1) {
+        if ( $file =~ /\.in$/ ) {
+            ok( !$executable, "$File::Find::name permission is u-x (.in will add +x)" );
+        } else {
+            ok( $executable, "$File::Find::name permission is u+x" );
+        }
+    } elsif ($check{exec} == -1) {
+        ok( !$executable, "$File::Find::name permission is u-x" );
     }
 }
 
 find(
     sub {
         return unless -f && /\.pm$/;
-        check( $_, 'lib' );
+        check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1 );
     },
     'lib',
 );
@@ -56,7 +61,7 @@ find(
 find(
     sub {
         return unless -f && /\.t$/;
-        check( $_, 'test' );
+        check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1 );
     },
     't',
 );
@@ -64,7 +69,7 @@ find(
 find(
     sub {
         return unless -f;
-        check( $_, 'script' );
+        check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 );
     },
     'bin',
     'sbin',
@@ -73,7 +78,7 @@ find(
 find(
     sub {
         return unless -f && $_ !~ m{/(localhost\.(crt|key)|mime\.types)$};
-        check( $_, 'devel' );
+        check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1 );
     },
     'devel/tools',
 );
