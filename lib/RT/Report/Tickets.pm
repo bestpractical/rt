@@ -57,22 +57,27 @@ use warnings;
 sub Groupings {
     my $self = shift;
     my %args = (@_);
-    my @fields = map {$_, $_} qw(
-        Status
-        Queue
-    );
+    my @fields =
+      map { $self->CurrentUser->loc($_), $_ } qw( Status Queue );    # loc_qw
 
-    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) {
-        push @fields, $type.' '.$_, $type.'.'.$_ foreach qw(
-            Name EmailAddress RealName NickName Organization Lang City Country Timezone
-        );
+    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) { # loc_qw
+        for my $field (
+            qw( Name EmailAddress RealName NickName Organization Lang City Country Timezone ) # loc_qw
+          )
+        {    # loc
+            push @fields,
+              $self->CurrentUser->loc($type) . ' '
+              . $self->CurrentUser->loc($field), $type . '.' . $field;
+        }
     }
 
 
-    for my $field (qw(Due Resolved Created LastUpdated Started Starts Told)) {
-        for my $frequency (qw(Hourly Daily Monthly Annually)) {
-            my $item = $field.$frequency;
-            push @fields,  $item,  $item;
+    for my $field (qw(Due Resolved Created LastUpdated Started Starts Told)) { # loc_qw
+        for my $frequency (qw(Hourly Daily Monthly Annually)) { # loc_qw
+            push @fields,
+              $self->CurrentUser->loc($field)
+              . $self->CurrentUser->loc($frequency),
+              $field . $frequency;
         }
     }
 
@@ -93,7 +98,11 @@ sub Groupings {
         }
         $CustomFields->LimitToGlobal;
         while ( my $CustomField = $CustomFields->Next ) {
-            push @fields, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
+            push @fields, $self->CurrentUser->loc(
+                "Custom field '[_1]'",
+                $CustomField->Name
+              ),
+              "CF.{" . $CustomField->id . "}";
         }
     }
     return @fields;
