@@ -302,15 +302,6 @@ our %META = (
     },
 
     # User overridable options for RT at a glance
-    DefaultSummaryRows => {
-        Section         => 'RT at a glance',    #loc
-        Overridable     => 1,
-        SortOrder       => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Number of search results',    #loc
-        },
-    },
     HomePageRefreshInterval => {
         Section         => 'RT at a glance',                       #loc
         Overridable     => 1,
