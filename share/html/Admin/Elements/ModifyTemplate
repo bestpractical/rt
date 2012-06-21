@@ -69,7 +69,10 @@
 
 <%INIT>
 
-$Type = 'Perl' if !$Type;
+unless ($Type) {
+    $Type = $session{'CurrentUser'}->HasRight(Right => 'ExecuteCode', Object => $RT::System) ?
+        'Perl' : 'Simple';
+}
 
 </%INIT>
 
@@ -77,5 +80,5 @@ $Type = 'Perl' if !$Type;
 $Name => ''
 $Description => ''
 $Content => ''
-$Type => 'Perl'
+$Type => ''
 </%ARGS>
