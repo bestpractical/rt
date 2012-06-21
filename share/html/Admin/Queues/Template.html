@@ -79,7 +79,7 @@ my @results;
 if ( !$Create ) {
     if ( $Template eq 'new' ) {
         my ( $val, $msg )
-            = $TemplateObj->Create( Queue => $Queue, Name => $Name );
+            = $TemplateObj->Create( Queue => $Queue, Name => $Name, Type => $Type );
         Abort( loc( "Could not create template: [_1]", $msg ) ) unless ($val);
         push @results, $msg;
     } else {
@@ -121,4 +121,5 @@ $Queue => ''
 $Template => ''
 $Create => undef
 $Name => undef
+$Type => undef
 </%ARGS>
