@@ -1390,6 +1390,28 @@ sub SetPreferences {
     }
 }
 
+=head2 DeletePreferences NAME/OBJ VALUE
+
+Delete user preferences associated with given object or name.
+
+=cut
+
+sub DeletePreferences {
+    my $self = shift;
+    my $name = _PrefName( shift );
+
+    return (0, $self->loc("No permission to set preferences"))
+        unless $self->CurrentUserCanModify('Preferences');
+
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    $attr->LoadByNameAndObject( Object => $self, Name => $name );
+    if ( $attr->Id ) {
+        return $attr->Delete;
+    }
+
+    return (0, $self->loc("Preferences were not found"));
+}
+
 =head2 Stylesheet
 
 Returns a list of valid stylesheets take from preferences.
