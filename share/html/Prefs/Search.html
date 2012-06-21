@@ -68,6 +68,14 @@
 
 </form>
 
+<&|/Widgets/TitleBox, title => loc("Reset") &>
+<form method="post" name="ResetSearchOptions" action="Search.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
+<input type="submit" class="button" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
+</form>
+</&>
+
 <%INIT>
 my @actions;
 my $title = loc("Customize").' ';
@@ -81,6 +89,13 @@ Abort('No search specified')
 
 my $search = $class->new ($session{'CurrentUser'});
 $search->LoadById ($id);
+
+# If we are resetting prefs, do so before attempting to load them
+if ($ARGS{'Reset'}) {
+    my ($ok, $msg) = $session{'CurrentUser'}->UserObj->DeletePreferences($ARGS{name});
+    push @actions, $ok ? loc('Preferences reset.') : $msg;
+}
+
 $title .= loc (RT::SavedSearch->EscapeDescription($search->Description), loc ('"N"'));
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg = $user->Preferences($search, $search->Content);
