@@ -97,8 +97,12 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
 if ($ARGS{Reset}) {
-    my ($ok, $msg) = $user->SetPreferences('HomepageSettings', {});
-    push @results, $ok ? loc('Preferences saved.') : $msg;
+    for my $pref_name ('HomepageSettings', 'SummaryRows') {
+        next unless $user->Preferences($pref_name);
+        my ($ok, $msg) = $user->DeletePreferences($pref_name);
+        push @results, $msg unless $ok;
+    }
+    push @results, loc('Preferences saved.') unless @results;
     delete $session{'my_rt_portlets'};
 }
 
