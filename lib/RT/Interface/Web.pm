@@ -3322,23 +3322,29 @@ sub ProcessTicketDates {
     #Run through each field in this list. update the value if apropriate
     foreach my $field (@date_fields) {
         next unless exists $ARGSRef->{ $field . '_Date' };
-        next if $ARGSRef->{ $field . '_Date' } eq '';
-
-        my ( $code, $msg );
-
-        my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-        $DateObj->Set(
-            Format => 'unknown',
-            Value  => $ARGSRef->{ $field . '_Date' }
-        );
-
         my $obj = $field . "Obj";
-        if (    ( defined $DateObj->Unix )
-            and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
-        {
-            my $method = "Set$field";
-            my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
-            push @results, "$msg";
+        my $method = "Set$field";
+
+        if ( $ARGSRef->{ $field . '_Date' } eq '' ) {
+            if ( $Ticket->$obj->Unix ) {
+                my ( $code, $msg ) = $Ticket->$method( '1970-01-01 00:00:00' );
+                push @results, $msg;
+            }
+        }
+        else {
+
+            my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value  => $ARGSRef->{ $field . '_Date' }
+            );
+
+            if (    ( defined $DateObj->Unix )
+                and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
+            {
+                my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
+                push @results, $msg;
+            }
         }
     }
 
