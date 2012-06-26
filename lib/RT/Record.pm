@@ -752,7 +752,7 @@ sub _EncodeLOB {
             $MaxSize = $MaxSize * 3 / 4;
         # Some databases (postgres) can't handle non-utf8 data
         } elsif (    !$RT::Handle->BinarySafeBLOBs
-                  && $MIMEType !~ /text\/plain/gi
+                  && $Body =~ /\P{ASCII}/
                   && !Encode::is_utf8( $Body, 1 ) ) {
               $ContentEncoding = 'quoted-printable';
         }
