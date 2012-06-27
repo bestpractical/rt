@@ -670,6 +670,16 @@ sub Create {
         );
     }
 
+    foreach my $type (qw/Cc Bcc/) {
+        if ( defined $args{ 'Update' . $type } ) {
+
+            my $addresses = join ', ', (
+                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
+                    Email::Address->parse( $args{ 'Update' . $type } ) );
+            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
+        }
+    }
+
     if ( $args{'_RecordTransaction'} ) {
 
         # Add a transaction for the create

@@ -1708,6 +1708,8 @@ sub CreateTicket {
 
     }
 
+    $create_args{'UpdateCc'} = $ARGS{'UpdateCc'};
+
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ($id) {
         Abort($ErrMsg);

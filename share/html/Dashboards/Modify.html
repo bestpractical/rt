@@ -66,8 +66,21 @@
     <tr>
     <td class="label"><&|/l&>Privacy</&>:</td>
     <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
+    <tr>
+     <td class="label"><&|/l&>Leiras</&>:</td>
+     <td class="value"><input name="Desc" type="text" size="50" value="<%$Desc%>" /></td>
+    </tr>
+    <tr>
+     <td class="label"><label for="logo-upload"><&|/l&>Upload a new logo</&>:</label></td>
+     <td class="value"><input type="file" name="logo-upload" id="logo-upload" /></td>
+    </tr>
 </tr>
 </table>
+% if ( defined $Pict ) {
+%   
+ <img src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/DashboardPic/<% $id %>-<% $Pict->{'hash'} %>"
+<span class="left"><% $Pict->{'type'} %></span>
+% }
 </&>
 <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
 
@@ -87,12 +100,14 @@ $Create = 1 if !$id;
 my $redirect_to ='/Dashboards/Modify.html';
 
 use RT::Dashboard;
+use Digest::MD5 'md5_hex';
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
 my @privacies = $Dashboard->$method;
 
 Abort(loc("Permission denied")) if @privacies == 0;
+my $basic_plus = undef;
 
 if ($Create) {
     $title = loc("Create a new dashboard");
@@ -101,9 +116,18 @@ else {
     if ($id eq 'new') {
         $tried_create = 1;
 
+        $basic_plus->{'Desc'} = $ARGS{'Desc'}; 
+        if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+          $basic_plus->{'Pict'} = {
+                          type => $file_hash->{ContentType},
+                          data => $file_hash->{LargeContent},
+                          hash => md5_hex($file_hash->{LargeContent}),
+                       };
+        }
         my ($val, $msg) = $Dashboard->Save(
-            Name    => $ARGS{'Name'},
-            Privacy => $ARGS{'Privacy'},
+            Name        => $ARGS{'Name'},
+            Privacy     => $ARGS{'Privacy'},
+            Basic_Plus  => $basic_plus
         );
 
         if (!$val) {
@@ -120,6 +144,9 @@ else {
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
         $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+        $basic_plus = $Dashboard->Basic_Plus;
+        $Pict = $basic_plus->{'Pict'};
+        $Desc = $basic_plus->{'Desc'};
     }
 
     if ($id) {
@@ -133,8 +160,17 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                        Name     => $ARGS{'Name'});
+    $basic_plus->{'Desc'} = $ARGS{'Desc'}; 
+    if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+          $basic_plus->{'Pict'} = {
+                          type => $file_hash->{ContentType},
+                          data => $file_hash->{LargeContent},
+                          hash => md5_hex($file_hash->{LargeContent}),
+                       };
+    }
+    my ($ok, $msg) = $Dashboard->Update(Privacy      => $ARGS{'Privacy'},
+                                        Name         => $ARGS{'Name'},
+                                        Basic_Plus   => $basic_plus );
 
     if ($ok) {
         push @results, loc("Dashboard updated");
@@ -168,6 +204,8 @@ MaybeRedirectForResults(
 </%INIT>
 
 <%ARGS>
+$Desc => ''
+$Pict => undef
 $Create => undef
 $Name => undef
 $id => '' unless defined $id
