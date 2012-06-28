@@ -121,7 +121,7 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 my $name    = '[\w.-]+';
 my $CF_name = '[\sa-z0-9_ :()/-]+';
 my $field   = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-'.$CF_name.'|CF\.\{'.$CF_name.'\})';
-my $label   = '[a-zA-Z0-9@_.+-]+';
+my $label   = '[^,\\/]+';
 my $labels  = "(?:$label,)*$label";
 my $idlist  = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
