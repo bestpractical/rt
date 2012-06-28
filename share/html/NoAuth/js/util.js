@@ -239,7 +239,7 @@ jQuery(function() {
         hourGrid: 6,
         minuteGrid: 15,
         showSecond: false,
-        timeFormat: 'hh:mm:ss',
+        timeFormat: 'hh:mm:ss'
     }) ).each(function(index, el) {
         var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
         if (!tp) return;
