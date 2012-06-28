@@ -12,7 +12,14 @@ my ($val, $msg) =$s1->Create( Queue => $q->Id,
              ScripAction       => 'User Defined',
              CustomIsApplicableCode => 'return ($self->TransactionObj->Field||"") eq "TimeEstimated"',
              CustomPrepareCode => 'return 1',
-             CustomCommitCode  => '$self->TicketObj->SetPriority($self->TicketObj->Priority + 2); return 1;',
+             CustomCommitCode  => '
+if ( $self->TicketObj->CurrentUser->Name ne "RT_System" ) { 
+    warn "Ticket obj has incorrect CurrentUser (should be RT_System) ".$self->TicketObj->CurrentUser->Name
+}
+if ( $self->TicketObj->QueueObj->CurrentUser->Name ne "RT_System" ) { 
+    warn "Queue obj has incorrect CurrentUser (should be RT_System) ".$self->TicketObj->QueueObj->CurrentUser->Name
+}
+$self->TicketObj->SetPriority($self->TicketObj->Priority + 2); return 1;',
              Template          => 'Blank',
              Stage             => 'TransactionBatch',
     );
