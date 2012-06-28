@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,27 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $Object (@Objects) {
-%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
-%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title = $m->interp->apply_escapes($title, 'h');
-<& /Elements/CollectionList,
-    %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__,__Desc__,__Pict__},
-    Collection => $Dashboards,
-&>
-% }
-<%init>
-use RT::Dashboards;
-
-my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(IncludeSuperuserGroups => $IncludeSuperuserGroups);
-</%init>
-<%args>
-$IncludeSuperuserGroups => 1
-</%args>
+<%INIT>
+my @tmpa = split(/-/, $m->dhandler_arg );
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+$Dashboard->LoadById( $tmpa[0] );
+if ( my $Basic_Plus = $Dashboard->Basic_Plus ) {
+    my $content = $Basic_Plus->{'Pict'};
+    RT::Interface::Web::StaticFileHeaders();
+    $r->content_type( $content->{type} );
+    $m->out( $content->{data} );
+}
+else {
+    # 404
+    return $m->decline;
+}
+</%INIT>

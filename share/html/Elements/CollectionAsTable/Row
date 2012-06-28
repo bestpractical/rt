@@ -110,6 +110,7 @@ foreach my $column (@Format) {
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
+    my $want_escape = 1;
         my ($col) = ($subcol =~ /^__(.*?)__$/);
         unless ( $col ) {
             push @out, $subcol;
@@ -125,9 +126,13 @@ foreach my $column (@Format) {
             );
         }
 
+        if( $subcol eq '__Pict__' ) {
+          $want_escape = 0;
+        }
         push @out, ProcessColumnMapValue(
             $ColumnMap->{$col}{'value'},
             Arguments => [$record, $i],
+            Escape => $want_escape,
         );
     }
     s/\n/<br \/>/gs for grep defined $_, @out;

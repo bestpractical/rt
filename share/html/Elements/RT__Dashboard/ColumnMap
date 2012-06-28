@@ -62,6 +62,33 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         value     => sub { return $_[0]->Name()||loc("Unnamed dashboard") },
     },
+    Desc => {
+        title     => 'Leiras', # loc
+        attribute => 'Leiras',
+        value     => sub {
+            my $Desc = loc("Dashboard has no description"); # TODO-ATUS megcsinalni a lokalizalast
+            my $basic_plus = $_[0]->Basic_Plus;
+            if ( defined $basic_plus ) {
+              $Desc = $basic_plus->{'Desc'};
+            }
+            return $Desc||loc("Dashboard has no description") 
+        },
+    },
+    Pict => {
+        title     => 'Kep', # loc
+        attribute => 'Kep',
+        value     => sub {
+            my $Pict = loc("Dashboard has no picture"); # TODO-ATUS megcsinalni a lokalizalast
+            my $basic_plus = $_[0]->Basic_Plus;
+            if ( defined $basic_plus ) {
+              my $pict = $basic_plus->{'Pict'};
+              if ( defined $pict ) {
+                $Pict = '<img src="'. RT->Config->Get('WebPath') .'/NoAuth/Helpers/DashboardPic/'. $_[0]->Id .'-'.  $pict->{'hash'} .'">';
+              }
+            }
+            return $Pict 
+        },
+    },
     Subscription => {
         title     => 'Subscription', # loc
         attribute => 'Subscription',

@@ -119,7 +119,8 @@ sub SaveAttribute {
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
         'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
+        'Content'     => {Panes => $args->{'Panes'},
+                          Basic_Plus => $args->{'Basic_Plus'} },
     );
 }
 
@@ -131,6 +132,11 @@ sub UpdateAttribute {
     if (defined $args->{'Panes'}) {
         ($status, $msg) = $self->{'Attribute'}->SetSubValues(
             Panes => $args->{'Panes'},
+        );
+    }
+    if (defined $args->{'Basic_Plus'}) {
+        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
+            Basic_Plus => $args->{'Basic_Plus'},
         );
     }
 
@@ -179,6 +185,18 @@ sub Panes {
     my $self = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
     return $self->{'Attribute'}->SubValue('Panes') || {};
+}
+
+=head2 Basic_Plus
+
+Returns a hashref of Basic_Plus name to portlets
+
+=cut
+
+sub Basic_Plus {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->SubValue('Basic_Plus') || {};
 }
 
 =head2 Portlets
