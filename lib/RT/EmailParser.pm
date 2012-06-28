@@ -330,6 +330,8 @@ sub IsRTAddress {
     my $self = shift;
     my $address = shift;
 
+    return undef unless defined($address) and $address =~ /\S/;
+
     if ( my $address_re = RT->Config->Get('RTAddressRegexp') ) {
         return $address =~ /$address_re/i ? 1 : undef;
     }
