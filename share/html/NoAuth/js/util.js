@@ -222,35 +222,47 @@ function doOnLoad( js ) {
 }
 
 jQuery(function() {
-    jQuery(".ui-datepicker:not(.withtime)").datepicker( {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false
-    } );
-
-    jQuery(".ui-datepicker.withtime").datepicker( {
+    var opts = {
         dateFormat: 'yy-mm-dd',
         constrainInput: false,
-        onSelect: function( dateText, inst ) {
-            // trigger timepicker to get time
-            var button = document.createElement('input');
-            button.setAttribute('type',  'button');
-            jQuery(button).width('5em');
-            jQuery(button).insertAfter(this);
-            jQuery(button).timepickr({val: '00:00'});
-            var date_input = this;
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    };
+    jQuery(".ui-datepicker:not(.withtime)").datepicker(opts);
+    jQuery(".ui-datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
+        stepHour: 1,
+        // We fake this by snapping below for the minute slider
+        //stepMinute: 5,
+        hourGrid: 6,
+        minuteGrid: 15,
+        showSecond: false,
+        timeFormat: 'hh:mm:ss'
+    }) ).each(function(index, el) {
+        var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
+        if (!tp) return;
 
-            jQuery(button).blur( function() {
-                var time = jQuery(button).val();
-                if ( ! time.match(/\d\d:\d\d/) ) {
-                    time = '00:00';
-                }
-                jQuery(date_input).val(  dateText + ' ' + time + ':00' );
-                jQuery(button).remove();
-            } );
+        // Hook after _injectTimePicker so we can modify the minute_slider
+        // right after it's first created
+        tp._base_injectTimePicker = tp._injectTimePicker;
+        tp._injectTimePicker = function() {
+            this._base_injectTimePicker.apply(this, arguments);
 
-            jQuery(button).focus();
-        }
-    } );
+            // Now that we have minute_slider, modify it to be stepped for mouse movements
+            var slider = jQuery.data(this.minute_slider[0], "slider");
+            slider._base_normValueFromMouse = slider._normValueFromMouse;
+            slider._normValueFromMouse = function() {
+                var value           = this._base_normValueFromMouse.apply(this, arguments);
+                var old_step        = this.options.step;
+                this.options.step   = 5;
+                var aligned         = this._trimAlignValue( value );
+                this.options.step   = old_step;
+                return aligned;
+            };
+        };
+    });
 });
 
 function textToHTML(value) {
