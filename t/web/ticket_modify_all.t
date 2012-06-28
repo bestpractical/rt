@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 15;
+use RT::Test tests => 22;
 
 my $ticket = RT::Test->create_ticket(
     Subject => 'test bulk update',
@@ -40,5 +40,44 @@ $m->click('SubmitTicket');
 $m->form_name('TicketModifyAll');
 is($m->value('Owner'), 'root', 'owner was successfully changed to root');
 
-# XXX TODO test other parts, i.e. basic, dates, people and links
+$m->get_ok($url . "/Ticket/ModifyAll.html?id=" . $ticket->id);
 
+$m->form_name('TicketModifyAll');
+$m->field('Starts_Date' => "2013-01-01 00:00:00");
+$m->click('SubmitTicket');
+$m->text_contains("Starts: (Tue Jan 01 00:00:00 2013)", 'start date successfully updated');
+
+$m->form_name('TicketModifyAll');
+$m->field('Started_Date' => "2014-01-01 00:00:00");
+$m->click('SubmitTicket');
+$m->text_contains("Started: (Wed Jan 01 00:00:00 2014)", 'started date successfully updated');
+
+$m->form_name('TicketModifyAll');
+$m->field('Told_Date' => "2015-01-01 00:00:00");
+$m->click('SubmitTicket');
+$m->text_contains("Last Contact:  (Thu Jan 01 00:00:00 2015)", 'told date successfully updated');
+
+$m->form_name('TicketModifyAll');
+$m->field('Due_Date' => "2016-01-01 00:00:00");
+$m->click('SubmitTicket');
+$m->text_contains("Due: (Fri Jan 01 00:00:00 2016)", 'due date successfully updated');
+
+$m->get( $url . '/Ticket/ModifyAll.html?id=' . $ticket->id );
+$m->form_name('TicketModifyAll');
+$m->field(WatcherTypeEmail => 'Requestor');
+$m->field(WatcherAddressEmail => 'root@localhost');
+$m->click('SubmitTicket');
+$m->text_contains(
+    "Added principal as a Requestor for this ticket",
+    'watcher is added',
+);
+$m->form_name('TicketModifyAll');
+$m->field(WatcherTypeEmail => 'Requestor');
+$m->field(WatcherAddressEmail => 'root@localhost');
+$m->click('SubmitTicket');
+$m->text_contains(
+    "That principal is already a Requestor for this ticket",
+    'no duplicate watchers',
+);
+
+# XXX TODO test other parts, i.e. links
