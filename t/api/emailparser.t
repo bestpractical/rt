@@ -2,12 +2,14 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1, tests => 10;
-
-RT->Config->Set( RTAddressRegexp => qr/^rt\@example.com$/i );
-
+use RT::Test tests => 11;
 
 ok(require RT::EmailParser);
+
+RT->Config->Set( RTAddressRegexp => undef );
+is(RT::EmailParser::IsRTAddress("",""),undef, "Empty emails from users don't match queues without email addresses" );
+
+RT->Config->Set( RTAddressRegexp => qr/^rt\@example.com$/i );
 
 is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
 is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
