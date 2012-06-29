@@ -406,6 +406,7 @@ sub AddAttachment {
         Data        => $attach->OriginalContent,
         Disposition => $disp, # a false value defaults to inline in MIME::Entity
         Filename    => $self->MIMEEncodeString( $attach->Filename ),
+        Id          => $attach->GetHeader('Content-ID'),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
