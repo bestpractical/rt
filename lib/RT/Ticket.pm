@@ -3284,6 +3284,28 @@ sub SeenUpTo {
     return $txns->First;
 }
 
+=head2 RanTransactionBatch
+
+Acts as a guard around running TransactionBatch scrips.
+
+Should be false until you enter the code that runs TransactionBatch scrips
+
+Accepts an optional argument to indicate that TransactionBatch Scrips should no longer be run on this object.
+
+=cut
+
+sub RanTransactionBatch {
+    my $self = shift;
+    my $val = shift;
+
+    if ( defined $val ) {
+        return $self->{_RanTransactionBatch} = $val;
+    } else {
+        return $self->{_RanTransactionBatch};
+    }
+
+}
+
 
 =head2 TransactionBatch
 
@@ -3320,6 +3342,9 @@ sub ApplyTransactionBatch {
 
 sub _ApplyTransactionBatch {
     my $self = shift;
+
+    return if $self->RanTransactionBatch;
+    $self->RanTransactionBatch(1);
     my $batch = $self->TransactionBatch;
 
     my %seen;

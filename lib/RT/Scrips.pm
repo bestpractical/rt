@@ -189,10 +189,6 @@ sub Commit {
                         TransactionObj => $self->{'TransactionObj'} );
     }
 
-    # make sure our cached TicketObj doesn't trigger a DESTROY and
-    # run all the TransactionBatch code again.
-    delete $self->{'TicketObj'}->{'_TransactionBatch'};
-
 }
 
 
@@ -286,12 +282,16 @@ sub _SetupSourceObjects {
         # This loads a clean copy of the Ticket object to ensure that we
         # don't accidentally escalate the privileges of the passed in
         # ticket (this function can be invoked from the UI).
-        # We also need to be careful to copy the TransactionBatch
-        # data to the new ticket and ensure that TransactionBatch will
-        # not be rerun on either ticket.
+        # We copy the TransactionBatch transactions so that Scrips
+        # running against the new Ticket will have access to them. We
+        # use RanTransactionBatch to guard against running
+        # TransactionBatch Scrips more than once.
         $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
         $self->{'TicketObj'}->Load( $args{'TicketObj'}->Id );
         if ( $args{'TicketObj'}->TransactionBatch ) {
+            # try to ensure that we won't infinite loop if something dies, triggering DESTROY while 
+            # we have the _TransactionBatch objects;
+            $self->{'TicketObj'}->RanTransactionBatch(1);
             $self->{'TicketObj'}->{'_TransactionBatch'} = $args{'TicketObj'}->{'_TransactionBatch'};
         }
     }
