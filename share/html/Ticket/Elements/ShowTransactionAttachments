@@ -181,10 +181,10 @@ my $render_attachment = sub {
             || (
                 (
                     RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
+                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$}i )
                 )
                 || ( !RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
+                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$}i )
                 )
             )
         ) {
