@@ -3392,10 +3392,7 @@ sub DESTROY {
         return;
     }
 
-    my $batch = $self->TransactionBatch;
-    return unless $batch && @$batch;
-
-    return $self->_ApplyTransactionBatch;
+    return $self->ApplyTransactionBatch;
 }
 
 
