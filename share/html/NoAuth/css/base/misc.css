@@ -90,6 +90,10 @@ div.edit-custom-field .cflabel {
     padding-right: 0.5em;
 }
 
+div.edit-custom-field .entry {
+    margin-left: 10em;
+}
+
 .cflabel .name { font-weight: bold; }
 .cflabel .type { font-style: italic; }
 
