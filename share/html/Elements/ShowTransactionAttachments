@@ -256,7 +256,7 @@ my $render_attachment = sub {
             return;
         }
         elsif ( $disposition ne 'inline' ) {
-            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
+            $m->out('<p>'. loc( 'Image not shown because sender requested not to inline it.' ) .'</p>');
             return;
         }
 
