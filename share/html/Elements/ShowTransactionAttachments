@@ -246,8 +246,12 @@ my $render_attachment = sub {
     }
 
     # if it's an image, show it as an image
-    elsif ( RT->Config->Get('ShowTransactionImages') and  $content_type =~ m{^image/} ) {
-        if ( $displayed_inline->{$message->Id} ) {
+    elsif ( $content_type =~ m{^image/} ) {
+        if (not RT->Config->Get('ShowTransactionImages')) {
+            $m->out('<p><i>'. loc( 'Image not shown because display is disabled in system configuration.' ) .'</i></p>');
+            return;
+        }
+        elsif ( $displayed_inline->{$message->Id} ) {
             $m->out('<p><i>'. loc( 'Image displayed inline above' ) .'</i></p>');
             return;
         }
