@@ -46,50 +46,48 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
-    my ($ticket, $trans,$attach, $filename);
-    my $arg = $m->dhandler_arg;                # get rest of path
-    if ($arg =~ m{^(\d+)/(\d+)}) {
-        $trans = $1;
-        $attach = $2;
-    }
-    else {
-        Abort("Corrupted attachment URL.");
-    }
-     my $AttachmentObj = RT::Attachment->new($session{'CurrentUser'});
-     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
+my ( $ticket, $trans, $attach, $filename );
+my $arg = $m->dhandler_arg;    # get rest of path
+if ( $arg =~ m{^(\d+)/(\d+)} ) {
+    $trans  = $1;
+    $attach = $2;
+}
+else {
+    Abort("Corrupted attachment URL.");
+}
+my $AttachmentObj = RT::Attachment->new( $session{'CurrentUser'} );
+$AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
 
+unless ( $AttachmentObj->id ) {
+    Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+}
+unless ( $AttachmentObj->TransactionId() == $trans ) {
+    Abort("Bad transaction number for attachment. $trans should be". $AttachmentObj->TransactionId() . "\n");
+}
 
-     unless ($AttachmentObj->id) {
-        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
-    }
-     unless ($AttachmentObj->TransactionId() == $trans ) {
-        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+my $content_type = $AttachmentObj->ContentType || 'text/plain';
 
-     }
+if ( RT->Config->Get('AlwaysDownloadAttachments') ) {
+    $r->headers_out->{'Content-Disposition'} = "attachment; filename=" . $AttachmentObj->Filename;
+}
+elsif ( !RT->Config->Get('TrustHTMLAttachments') ) {
+    $content_type = 'text/plain' if ( $content_type =~ /^text\/html/i );
+}
 
-     my $content_type = $AttachmentObj->ContentType || 'text/plain';
+my $enc  = $AttachmentObj->OriginalEncoding || 'utf-8';
+my $iana = Encode::find_encoding($enc);
+   $iana = $iana ? $iana->mime_name : $enc;
 
-     if (RT->Config->Get('AlwaysDownloadAttachments')) {
-         $r->headers_out->{'Content-Disposition'} = "attachment; filename=" . $AttachmentObj->Filename;
-     }
-     elsif (!RT->Config->Get('TrustHTMLAttachments')) {
-         $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
-     }
+require MIME::Types;
+my $mimetype = MIME::Types->new->type($content_type);
+unless ( $mimetype && $mimetype->isBinary ) {
+    $content_type .= ";charset=$iana";
+}
 
-     my $enc = $AttachmentObj->OriginalEncoding || 'utf-8';
-     my $iana = Encode::find_encoding( $enc );
-     $iana = $iana? $iana->mime_name : $enc;
-
-     require MIME::Types;
-     my $mimetype = MIME::Types->new->type($content_type);
-     unless ( $mimetype && $mimetype->isBinary ) {
-         $content_type .= ";charset=$iana";
-     }
-
-     $r->content_type( $content_type );
-     $m->clear_buffer();
-     $m->out($AttachmentObj->OriginalContent);
-     $m->abort; 
+$r->content_type($content_type);
+$m->clear_buffer();
+$m->out( $AttachmentObj->OriginalContent );
+$m->abort;
 </%perl>
 <%attr>
 AutoFlush => 0
