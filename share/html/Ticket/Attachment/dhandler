@@ -65,6 +65,7 @@ unless ( $AttachmentObj->TransactionId() == $trans ) {
     Abort("Bad transaction number for attachment. $trans should be". $AttachmentObj->TransactionId() . "\n");
 }
 
+my $content = $AttachmentObj->OriginalContent;
 my $content_type = $AttachmentObj->ContentType || 'text/plain';
 
 if ( RT->Config->Get('AlwaysDownloadAttachments') ) {
@@ -72,6 +73,15 @@ if ( RT->Config->Get('AlwaysDownloadAttachments') ) {
 }
 elsif ( !RT->Config->Get('TrustHTMLAttachments') ) {
     $content_type = 'text/plain' if ( $content_type =~ /^text\/html/i );
+}
+elsif (lc $content_type eq 'text/html') {
+    # If we're trusting and serving HTML for display not download, try to do
+    # inline <img> rewriting to be extra helpful.
+    my $count = RT::Interface::Web::RewriteInlineImages(
+        Content     => \$content,
+        Attachment  => $AttachmentObj,
+    );
+    RT->Logger->debug("Rewrote $count CID images when displaying original HTML attachment #$attach");
 }
 
 my $enc  = $AttachmentObj->OriginalEncoding || 'utf-8';
@@ -86,7 +96,7 @@ unless ( $mimetype && $mimetype->isBinary ) {
 
 $r->content_type($content_type);
 $m->clear_buffer();
-$m->out( $AttachmentObj->OriginalContent );
+$m->out($content);
 $m->abort;
 </%perl>
 <%attr>
