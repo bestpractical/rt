@@ -278,6 +278,30 @@ sub Children {
     return($kids);
 }
 
+=head2 Siblings
+
+Returns an L<RT::Attachments> object containing all the attachments sharing
+the same immediate parent as the current object, excluding the current
+attachment itself.
+
+If the current attachment is a top-level part (i.e. Parent == 0) then a
+guaranteed empty L<RT::Attachments> object is returned.
+
+=cut
+
+sub Siblings {
+    my $self = shift;
+    my $siblings = RT::Attachments->new( $self->CurrentUser );
+    if ($self->Parent) {
+        $siblings->ChildrenOf( $self->Parent );
+        $siblings->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
+    } else {
+        # Ensure emptiness
+        $siblings->Limit( FIELD => 'id', VALUE => 0 );
+    }
+    return $siblings;
+}
+
 =head2 Content
 
 Returns the attachment's content. if it's base64 encoded, decode it 
