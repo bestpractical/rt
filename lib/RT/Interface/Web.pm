@@ -1367,6 +1367,8 @@ sub CreateTicket {
         Cc              => $ARGS{'Cc'},
         AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
+        UpdateCc        => $ARGS{'UpdateCc'};
+        UpdateBcc       => $ARGS{'UpdateBcc'};
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
         TimeEstimated   => $ARGS{'TimeEstimated'},
@@ -1454,8 +1456,6 @@ sub CreateTicket {
         $create_args{ $map{$key} } = [ grep $_, split ' ', $ARGS{$key} ];
 
     }
-
-    $create_args{'UpdateCc'} = $ARGS{'UpdateCc'};
 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ($id) {
