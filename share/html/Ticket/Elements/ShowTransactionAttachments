@@ -232,9 +232,8 @@ my $render_attachment = sub {
                 $m->out( $content );
             }
 
-            # if it's a text/plain show the body
-            elsif ( $content_type =~ m{^(text|message)/} ) {
-
+            # It's a text type we don't have special handling for
+            else {
                 unless ( length $name ) {
                     eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
                     if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
