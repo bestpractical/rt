@@ -442,7 +442,7 @@ else {
                             $new{$c}--;
                         }
                         else {
-                            $v->Delete();
+                            $ticket->DeleteCustomFieldValue( Field => $cf, ValueId => $v->id );
                         }
                     }
                     for ( @new ) {
