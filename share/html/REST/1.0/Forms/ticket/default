@@ -382,7 +382,15 @@ else {
             else {
                 my $vals = $ticket->CustomFieldValues($cf->id);
 
-                if ( $cf->SingleValue ) {
+                if ( !defined $val || !length $val ) {
+                    while ( my $val = $vals->Next ) {
+                        ($n, $s) = $ticket->DeleteCustomFieldValue(
+                            Field => $cf, ValueId => $val->id,
+                        );
+                        $s =~ s/^# // if defined $s;
+                    }
+                }
+                elsif ( $cf->SingleValue ) {
                     my $old = $vals->Next;
                     if ( $old ) {
                         if ( $val ne $old->Content ) {
