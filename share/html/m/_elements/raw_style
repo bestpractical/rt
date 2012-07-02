@@ -489,3 +489,12 @@ textarea {
 a#fullsite {
     padding-left: 1em;
 }
+
+div.error .titlebox-title {
+    background-color: #f00;
+    color: #fff;
+}
+
+div.error div.error {
+    background-color: #fcc;
+}

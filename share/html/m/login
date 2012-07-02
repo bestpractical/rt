@@ -81,12 +81,12 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 </style>
 <h1><&|/l, RT->Config->Get('rtname') &>RT for [_1]</&></h1>
 <div id="body" class="login-body">
-% if ($Error) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
-<% $Error %>
-</&>
-% }
 
+<& /Elements/ListActions,
+    title       => loc('Error'),
+    titlebox    => { class => 'error', hideable => 0 },
+    actions     => $actions,
+&>
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), hideable => 0 &>
@@ -127,5 +127,5 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 $user => ""
 $pass => undef
 $goto => undef
-$Error => undef
+$actions => undef
 </%ARGS>
