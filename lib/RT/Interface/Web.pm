@@ -1619,6 +1619,8 @@ sub CreateTicket {
         Cc              => $ARGS{'Cc'},
         AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
+        UpdateCc        => $ARGS{'UpdateCc'};
+        UpdateBcc       => $ARGS{'UpdateBcc'};
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
         TimeEstimated   => $ARGS{'TimeEstimated'},
