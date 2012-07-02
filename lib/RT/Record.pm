@@ -638,6 +638,8 @@ sub __Value {
 
     my $value = $self->SUPER::__Value($field);
 
+    return undef if (!defined $value);
+
     if ( $args{'decode_utf8'} ) {
         if ( !utf8::is_utf8($value) ) {
             utf8::decode($value);
@@ -1602,7 +1604,7 @@ sub _AddCustomFieldValue {
             0,
             $self->loc(
                 "Custom field [_1] does not apply to this object",
-                $args{'Field'}
+                ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'}
             )
         );
     }

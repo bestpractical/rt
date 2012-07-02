@@ -56,9 +56,10 @@ no warnings qw(numeric redefine);
 use Getopt::Long;
 my %args;
 my %deps;
+my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
-    'install',                            'with-MYSQL',
+    'install!',                           'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
     'with-ORACLE',                        'with-FASTCGI',
     'with-MODPERL1',                      'with-MODPERL2',
@@ -349,7 +350,7 @@ URI 1.59
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
-IPC::Run
+IPC::Run 0.90
 .
 
 $deps{'GD'} = [ text_to_hash( << '.') ];
@@ -408,7 +409,12 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     $Missing_By_Type{$type} = \%missing if keys %missing;
 }
 
-conclude(%Missing_By_Type);
+if ( $args{'install'} && keys %Missing_By_Type ) {
+    exec($0, @orig_argv, '--no-install');
+}
+else {
+    conclude(%Missing_By_Type);
+}
 
 sub test_deps {
     my @deps = @_;

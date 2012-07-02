@@ -50,7 +50,7 @@ $title => ''
 $show_home_button => 1
 </%args>
 <%init>
-if ($m->request_args->{'NotMobile'}) {
+if ($DECODED_ARGS->{'NotMobile'}) {
     $session{'NotMobile'} = 1;
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
     $m->abort();

@@ -82,21 +82,17 @@ iframe.richtext-editor {
 .messagebox-container.action-response iframe
 {
     background-color: #fcc !important;
-} 
+}
 
-/*
-% if ( RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ) {
-*/
-
-#ticket-create-metadata,
-#ticket-update-metadata {
+.sidebyside #ticket-create-metadata,
+.sidebyside #ticket-update-metadata {
     float: right;
     width: 40%;
     clear: right;
 }
 
-#ticket-create-message,
-#ticket-update-message {
+.sidebyside #ticket-create-message,
+.sidebyside #ticket-update-message {
     float: left;
     width: 58%;
     clear: left;
@@ -104,10 +100,10 @@ iframe.richtext-editor {
 
 @media (max-width: 950px) {
     /* Revert to a single column when we're less than 1000px wide */
-    #ticket-create-metadata,
-    #ticket-update-metadata,
-    #ticket-create-message,
-    #ticket-update-message
+    .sidebyside #ticket-create-metadata,
+    .sidebyside #ticket-update-metadata,
+    .sidebyside #ticket-create-message,
+    .sidebyside #ticket-update-message
     {
         float: none;
         width: auto;
@@ -115,15 +111,12 @@ iframe.richtext-editor {
     }
 }
 
-#comp-Ticket-Update #body {
+.sidebyside #comp-Ticket-Update #body {
     padding-top: 3em;
 }
 
-#ticket-create-message .button[name="AddMoreAttach"],
-#ticket-update-message .button[name="AddMoreAttach"] {
+.sidebyside #ticket-create-message .button[name="AddMoreAttach"],
+.sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
     float: right;
 }
 
-/*
-% }
-*/

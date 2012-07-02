@@ -110,7 +110,7 @@ sub QueryToSQL {
                             (\w+)  # A straight word
                             (?:\.  # With an optional .foo
                                 ($RE{delimited}{-delim=>q['"]}
-                                |\w+
+                                |[\w-]+  # Allow \w + dashes
                                 ) # Which could be ."foo bar", too
                             )?
                         )
@@ -225,6 +225,11 @@ sub GuessType {
     return "default";
 }
 
+# $_[0] is $self
+# $_[1] is escaped value without surrounding single quotes
+# $_[2] is a boolean of "was quoted by the user?"
+#       ensure this is false before you do smart matching like $_[1] eq "me"
+# $_[3] is escaped subkey, if any (see HandleCf)
 sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
@@ -242,7 +247,14 @@ sub HandleStatus    {
     }
 }
 sub HandleOwner     {
-    return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
+    if (!$_[2] and $_[1] eq "me") {
+        return owner => "Owner.id = '__CurrentUser__'";
+    }
+    elsif (!$_[2] and $_[1] =~ /\w+@\w+/) {
+        return owner => "Owner.EmailAddress = '$_[1]'";
+    } else {
+        return owner => "Owner = '$_[1]'";
+    }
 }
 sub HandleWatcher     {
     return watcher => (!$_[2] and $_[1] eq "me") ? "Watcher.id = '__CurrentUser__'" : "Watcher = '$_[1]'";

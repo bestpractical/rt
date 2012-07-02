@@ -144,6 +144,8 @@ my $render_attachment = sub {
     my $message = shift;
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
 
+    my $content_type = lc $message->ContentType;
+
     # if it has a content-disposition: attachment, don't show inline
     my $disposition = $message->GetHeader('Content-Disposition');
 
@@ -154,7 +156,7 @@ my $render_attachment = sub {
     }
 
     # If it's text
-    if ( $message->ContentType =~ m{^(text|message)}i ) {
+    if ( $content_type =~ m{^(text|message)/} ) {
         my $max_size = RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} );
         if ( $disposition ne 'inline' ) {
             $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
@@ -175,16 +177,16 @@ my $render_attachment = sub {
             !$ParentObj
 
             # or its parent isn't a multipart alternative
-            || ( $ParentObj->ContentType !~ m{^multipart/alternative$}i )
+            || ( $ParentObj->ContentType !~ m{^multipart/(?:alternative|related)$}i )
 
             # or it's of our prefered alterative type
             || (
                 (
                     RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
+                    && ( $content_type =~ m{^text/(?:html|enriched)$} )
                 )
                 || ( !RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
+                    && ( $content_type !~ m{^text/(?:html|enriched)$} )
                 )
             )
         ) {
@@ -198,7 +200,6 @@ my $render_attachment = sub {
                 $content = $message->Content;
             }
 
-            my $content_type = lc $message->ContentType;
             $RT::Logger->debug(
                 "Rendering attachment #". $message->id
                 ." of '$content_type' type"
@@ -231,9 +232,8 @@ my $render_attachment = sub {
                 $m->out( $content );
             }
 
-            # if it's a text/plain show the body
-            elsif ( $message->ContentType =~ m{^(text|message)}i ) {
-
+            # It's a text type we don't have special handling for
+            else {
                 unless ( length $name ) {
                     eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
                     if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
@@ -250,7 +250,7 @@ my $render_attachment = sub {
     }
 
     # if it's an image, show it as an image
-    elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
+    elsif ( RT->Config->Get('ShowTransactionImages') and  $content_type =~ m{^image/} ) {
         if ( $disposition ne 'inline' ) {
             $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
             return;

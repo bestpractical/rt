@@ -118,7 +118,7 @@ my $COLUMN_MAP = {
     RemoveCheckBox => {
         title => sub {
             my $name = 'RemoveCustomField';
-            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+            my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
                               onclick="setCheckbox(this.form, },
@@ -130,7 +130,7 @@ my $COLUMN_MAP = {
             return '' if $_[0]->IsApplied;
 
             my $name = 'RemoveCustomField';
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
 
             my $checked = '';
             if ( $arg && ref $arg ) {

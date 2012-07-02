@@ -67,7 +67,7 @@ $onload => undef
 % }
 
 % if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas(<%$m->request_args->{'CKeditorEncoded'} || 0 |n,j%>) });
+    jQuery().ready(function ()  { ReplaceAllTextareas(<%$DECODED_ARGS->{'CKeditorEncoded'} || 0 |n,j%>) });
 % }
 --></script>
 <%ARGS>

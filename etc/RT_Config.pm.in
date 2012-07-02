@@ -608,6 +608,9 @@ Set($NotifyActor, 0);
 By default, RT records each message it sends out to its own internal
 database.  To change this behavior, set C<$RecordOutgoingEmail> to 0
 
+If this is disabled, users' digest mail delivery preferences
+(i.e. EmailFrequency) will also be ignored.
+
 =cut
 
 Set($RecordOutgoingEmail, 1);
@@ -860,8 +863,8 @@ Set(@JSFiles, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
+    jquery-ui-timepicker-addon.js
     jquery-ui-patch-datepicker.js
-    ui.timepickr.js
     titlebox-state.js
     util.js
     userautocomplete.js

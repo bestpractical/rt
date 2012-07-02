@@ -957,7 +957,7 @@ sub MobileClient {
     my $self = shift;
 
 
-if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
+if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60|Mobile)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
     return 1;
 } else {
     return undef;
@@ -1934,7 +1934,7 @@ sub MakeMIMEEntity {
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        "Message-Id" => RT::Interface::Email::GenMessageId,
+        "Message-Id" => Encode::encode_utf8( RT::Interface::Email::GenMessageId ),
         map { $_ => Encode::encode_utf8( $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc)
     );

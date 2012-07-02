@@ -12,6 +12,7 @@ Group @WEB_GROUP@
 </IfModule>
 </IfModule>
 
+ServerName localhost
 Listen %%LISTEN%%
 
 ErrorLog "%%LOG_FILE%%"

@@ -3,7 +3,7 @@
 CREATE TABLE Attachments (
   id INTEGER PRIMARY KEY  ,
   TransactionId INTEGER  ,
-  Parent integer NULL  ,
+  Parent integer NULL DEFAULT 0 ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -11,7 +11,7 @@ CREATE TABLE Attachments (
   ContentEncoding varchar(80) NULL  ,
   Content LONGTEXT NULL  ,
   Headers LONGTEXT NULL  ,
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL 
   
 ) ;
@@ -30,12 +30,12 @@ CREATE TABLE Queues (
   CommentAddress varchar(120) NULL  ,
   Lifecycle varchar(32) NULL  ,
   SubjectTag varchar(120) NULL  ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  DefaultDueIn integer NULL  ,
-  Creator integer NULL  ,
+  InitialPriority integer NULL DEFAULT 0 ,
+  FinalPriority integer NULL DEFAULT 0 ,
+  DefaultDueIn integer NULL DEFAULT 0 ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 
  
@@ -51,11 +51,11 @@ CREATE TABLE Links (
   Base varchar(240) NULL  ,
   Target varchar(240) NULL  ,
   Type varchar(20) NOT NULL  ,
-  LocalTarget integer NULL  ,
-  LocalBase integer NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LocalTarget integer NULL DEFAULT 0 ,
+  LocalBase integer NULL DEFAULT 0 ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  
   
 ) ;
@@ -106,9 +106,9 @@ CREATE TABLE ScripConditions (
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
 
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  
   
 ) ;
@@ -119,8 +119,8 @@ CREATE TABLE ScripConditions (
 CREATE TABLE Transactions (
   id INTEGER PRIMARY KEY  ,
   ObjectType varchar(255) NULL  ,
-  ObjectId integer NULL  ,
-  TimeTaken integer NULL  ,
+  ObjectId integer NULL DEFAULT 0 ,
+  TimeTaken integer NULL DEFAULT 0 ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
@@ -130,7 +130,7 @@ CREATE TABLE Transactions (
   NewReference integer NULL  ,
   Data varchar(255) NULL  ,
 
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  
   
 ) ;
@@ -143,19 +143,19 @@ CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 CREATE TABLE Scrips (
   id INTEGER PRIMARY KEY  ,
   Description varchar(255),
-  ScripCondition integer NULL  ,
-  ScripAction integer NULL  ,
+  ScripCondition integer NULL DEFAULT 0 ,
+  ScripAction integer NULL DEFAULT 0 ,
   ConditionRules text NULL  ,
   ActionRules text NULL  ,
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
   Stage varchar(32) NULL  ,
-  Queue integer NULL  ,
-  Template integer NULL  ,
-  Creator integer NULL  ,
+  Queue integer NULL DEFAULT 0 ,
+  Template integer NULL DEFAULT 0 ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  
   
 ) ;
@@ -167,7 +167,7 @@ CREATE TABLE ACL (
   id INTEGER PRIMARY KEY  ,
   PrincipalType varchar(25) NOT NULL,
 
-  PrincipalId INTEGER,
+  PrincipalId INTEGER DEFAULT 0,
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId INTEGER default 0,
@@ -185,8 +185,8 @@ CREATE TABLE ACL (
 
 CREATE TABLE GroupMembers (
   id INTEGER PRIMARY KEY  ,
-  GroupId integer NULL,
-  MemberId integer NULL,
+  GroupId integer NULL DEFAULT 0,
+  MemberId integer NULL DEFAULT 0,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -250,9 +250,9 @@ CREATE TABLE Users (
   Timezone char(50) NULL  ,
   PGPKey text NULL,
 
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  
   
 ) ;
@@ -270,20 +270,20 @@ CREATE INDEX Users4 ON Users (EmailAddress);
 
 CREATE TABLE Tickets (
   id INTEGER PRIMARY KEY  ,
-  EffectiveId integer NULL  ,
-  Queue integer NULL  ,
+  EffectiveId integer NULL DEFAULT 0 ,
+  Queue integer NULL DEFAULT 0 ,
   Type varchar(16) NULL  ,
-  IssueStatement integer NULL  ,
-  Resolution integer NULL  ,
-  Owner integer NULL  ,
+  IssueStatement integer NULL DEFAULT 0 ,
+  Resolution integer NULL DEFAULT 0 ,
+  Owner integer NULL DEFAULT 0 ,
   Subject varchar(200) NULL DEFAULT '[no subject]' ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  Priority integer NULL  ,
-  TimeEstimated integer NULL  ,
-  TimeWorked integer NULL  ,
+  InitialPriority integer NULL DEFAULT 0 ,
+  FinalPriority integer NULL DEFAULt 0 ,
+  Priority integer NULL DEFAULT 0 ,
+  TimeEstimated integer NULL DEFAULT 0 ,
+  TimeWorked integer NULL DEFAULT 0 ,
   Status varchar(64) NULL  ,
-  TimeLeft integer NULL  ,
+  TimeLeft integer NULL DEFAULT 0 ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
   Started DATETIME NULL  ,
@@ -291,9 +291,9 @@ CREATE TABLE Tickets (
   Resolved DATETIME NULL  ,
 
 
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0
   
@@ -315,9 +315,9 @@ CREATE TABLE ScripActions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
-  Creator integer NULL  ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  
   
 ) ;
@@ -333,11 +333,11 @@ CREATE TABLE Templates (
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
-  TranslationOf integer NULL  ,
+  TranslationOf integer NULL DEFAULT 0 ,
   Content blob NULL  ,
   LastUpdated DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  Creator integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  
   
 ) ;
@@ -437,10 +437,10 @@ CREATE TABLE Attributes (
   Content LONGTEXT NULL  ,
   ContentType varchar(16),
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
-  Creator integer NULL  ,
+  ObjectId INTEGER ,
+  Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  
  
 ) ;
@@ -483,22 +483,22 @@ Parent integer NOT NULL DEFAULT 0,
 Name varchar(255) NOT NULL DEFAULT '',
 Description varchar(255) NOT NULL DEFAULT '',
 ObjectType varchar(64) NOT NULL DEFAULT '',
-ObjectId integer NOT NULL
+ObjectId integer NOT NULL DEFAULT 0
 );
 
 
 CREATE TABLE ObjectTopics (
 id INTEGER PRIMARY KEY,
-Topic integer NOT NULL,
+Topic integer NOT NULL DEFAULT 0,
 ObjectType varchar(64) NOT NULL DEFAULT '',
-ObjectId integer NOT NULL
+ObjectId integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ObjectClasses (
 id INTEGER PRIMARY KEY,
-Class integer NOT NULL,
+Class integer NOT NULL DEFAULT 0,
 ObjectType varchar(64) NOT NULL DEFAULT '',
-ObjectId integer NOT NULL,
+ObjectId integer NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,

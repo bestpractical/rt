@@ -96,7 +96,7 @@
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
-  <body class="<% lc $style %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% lc $style %><% RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ? ' sidebyside' : '' %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>

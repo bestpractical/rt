@@ -116,7 +116,7 @@ my $COLUMN_MAP = {
     CheckBox => {
         title => sub {
             my $name = $_[1] || 'SelectedTickets';
-            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+            my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
                               onclick="setCheckbox(this.form, },
@@ -128,9 +128,9 @@ my $COLUMN_MAP = {
 
             my $name = $_[2] || 'SelectedTickets';
             return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" checked="checked" />}
-                if $m->request_args->{ $name . 'All'};
+                if $DECODED_ARGS->{ $name . 'All'};
 
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             if ( $arg && ref $arg ) {
                 $checked = 'checked="checked"' if grep $_ == $id, @$arg;
@@ -147,7 +147,7 @@ my $COLUMN_MAP = {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTicket';
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             $checked = 'checked="checked"' if $arg && $arg == $id;
             return \qq{<input type="radio" name="}, $name, \qq{" value="$id" $checked />};

@@ -22,6 +22,10 @@ jquery.tablesorter.js
 http://tablesorter.com/jquery.tablesorter.js
 jQuery tablesorter plugin version 2.05b
 
+jquery-ui-timepicker-addon.js 2050b7b6
+https://github.com/trentrichardson/jQuery-Timepicker-Addon
+Timepicker integrated with the jQuery UI datepicker
+
 eyedropper.svg
 The Noun Project
 http://thenounproject.com/noun/eye-dropper/

@@ -163,6 +163,7 @@
  border-bottom: 1px solid #999;
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
+ border-bottom-left-radius: 0.5em;
 }
 
 
