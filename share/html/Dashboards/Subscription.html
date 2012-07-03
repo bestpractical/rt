@@ -171,7 +171,7 @@
 <&|/l&>Recipient</&>:
 </td><td class="value">
 <input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
-<div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->UserObj->EmailAddress) %></div>
+<div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->EmailAddress) %></div>
 </td></tr>
 </table>
 </&>
