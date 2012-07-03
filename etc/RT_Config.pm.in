@@ -1558,14 +1558,14 @@ Set($AttachmentUnits, undef);
 
 =item C<$PreferRichText>
 
-If C<$PreferRichText> is set to 1, RT will show HTML/Rich text messages
-in preference to their plain-text alternatives. RT "scrubs" the HTML to
-show only a minimal subset of HTML to avoid possible contamination by
-cross-site-scripting attacks.
+By default, RT shows rich text (HTML) messages if possible.
+
+If C<$PreferRichText> is set to 0, RT will show plain text messages
+in preference to any rich text alternatives.
 
 =cut
 
-Set($PreferRichText, undef);
+Set($PreferRichText, 1);
 
 =item C<$MaxInlineBody>
 
