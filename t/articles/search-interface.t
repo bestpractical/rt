@@ -135,8 +135,11 @@ $m->text_contains('hoi polloi 4');
 # Case insensitive search on large field.
 DoArticleSearch($m, $class->Name, 'lorem');
 $m->text_contains('Search results'); # Did we do a search?
-$m->text_contains('hoi polloi 4');
-
+TODO:{
+    local $TODO = 'Case insensitive search on LONGBLOB not available in MySQL'
+      if RT->Config->Get('DatabaseType') eq 'mysql';
+    $m->text_contains('hoi polloi 4');
+}
 
 # When you send $m to this sub, it must be on a page with
 # a Search link.
