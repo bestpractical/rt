@@ -182,10 +182,10 @@ my $render_attachment = sub {
             # or it's of our prefered alterative type
             || (
                 (
-                    RT->Config->Get('PreferRichText')
+                    RT->Config->Get('PreferRichText', $session{CurrentUser})
                     && ( $content_type =~ m{^text/(?:html|enriched)$} )
                 )
-                || ( !RT->Config->Get('PreferRichText')
+                || ( !RT->Config->Get('PreferRichText', $session{CurrentUser})
                     && ( $content_type !~ m{^text/(?:html|enriched)$} )
                 )
             )

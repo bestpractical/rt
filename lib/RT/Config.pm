@@ -337,6 +337,16 @@ our %META = (
     },
 
     # User overridable options for Ticket displays
+    PreferRichText => {
+        Section         => 'Ticket display', # loc
+        Overridable     => 1,
+        SortOrder       => 0.9,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Display messages in rich text if available', # loc
+            Hints       => 'Rich text (HTML) shows formatting such as colored text, bold, italics, and more', # loc
+        },
+    },
     MaxInlineBody => {
         Section         => 'Ticket display',              #loc
         Overridable     => 1,
