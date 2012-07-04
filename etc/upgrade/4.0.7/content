@@ -10,6 +10,18 @@
             VALUE    => 'NULL',
         );
 
+        $queues->Limit(
+            FIELD           => 'Lifecycle',
+            VALUE           => '',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        $queues->Limit(
+            FIELD           => 'Lifecycle',
+            VALUE           => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
+
         while ( my $q = $queues->Next ) {
             $q->SetLifecycle('default');
         }
