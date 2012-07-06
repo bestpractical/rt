@@ -2259,7 +2259,7 @@ sub _RecordNote {
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->replace(
-            "X-RT-$argument" => Encode::encode_utf8( $args{ $argument } )
+            "X-RT-$argument" => $args{ $argument } ? 1 : 0
         ) if defined $args{ $argument };
     }
 
