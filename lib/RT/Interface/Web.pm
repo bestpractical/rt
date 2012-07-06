@@ -2231,8 +2231,8 @@ sub ProcessUpdateMessage {
     }
 
     my %message_args = (
-        Sign         => ( $args{ARGSRef}->{'Sign'} ? 1 : 0 ),
-        Encrypt      => ( $args{ARGSRef}->{'Encrypt'} ? 1 : 0 ),
+        Sign         => $args{ARGSRef}->{'Sign'},
+        Encrypt      => $args{ARGSRef}->{'Encrypt'},
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
