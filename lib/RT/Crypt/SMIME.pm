@@ -183,12 +183,13 @@ sub _SignEncrypt {
             unless ( defined $key_info{'info'} ) {
                 $res{'exit_code'} = 1;
                 my $reason = 'Key not found';
-                $res{'status'} .=
-                    "Operation: RecipientsCheck\nStatus: ERROR\n"
-                    ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
-                    ."Recipient: $address\n"
-                    ."Reason: $reason\n\n",
-                ;
+                $res{'status'} .= $self->FormatStatus({
+                    Operation => 'RecipientsCheck',
+                    Status => 'ERROR',
+                    Message => "Recipient '$address' is unusable, the reason is '$reason'",
+                    Recipient => $address,
+                    Reason => $reason,
+                } );
                 next;
             }
 
@@ -203,12 +204,12 @@ sub _SignEncrypt {
             elsif ( $key_info{'info'}[0]{'Expire'}->Diff( time ) < 0 ) {
                 $res{'exit_code'} = 1;
                 my $reason = 'Key expired';
-                $res{'status'} .=
-                    "Operation: RecipientsCheck\nStatus: ERROR\n"
-                    ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
-                    ."Recipient: $address\n"
-                    ."Reason: $reason\n\n",
-                ;
+                $res{'status'} .= $self->FormatStatus({
+                    Operation => 'RecipientsCheck', Status => 'ERROR',
+                    Message => "Recipient '$address' is unusable, the reason is '$reason'",
+                    Recipient => $address,
+                    Reason => $reason,
+                });
                 next;
             }
             push @keys, $key_info{'info'}[0]{'Content'};
