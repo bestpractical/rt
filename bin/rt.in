@@ -967,12 +967,8 @@ sub take {
 sub grant {
     my ($cmd) = @_;
 
-    my $revoke = 0;
-    while (@ARGV) {
-    }
-
-    $revoke = 1 if $cmd->{action} eq 'revoke';
-    return 0;
+    whine "$cmd is unimplemented.";
+    return 1;
 }
 
 # Client <-> Server communication.
