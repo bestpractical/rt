@@ -509,10 +509,10 @@ sub FormatStatus {
 
     my $res = '';
     foreach ( @status ) {
-        $res .= "[SMIME:]\n" if $res;
         while ( my ($k, $v) = each %$_ ) {
             $res .= "[SMIME:]". $k .": ". $v ."\n";
         }
+        $res .= "[SMIME:]\n";
     }
 
     return $res;
