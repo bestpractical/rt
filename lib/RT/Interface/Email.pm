@@ -149,6 +149,9 @@ sub CheckForSuspiciousSender {
 
     my ( $From, $junk ) = ParseSenderAddressFromHead($head);
 
+    # If unparseable (non-ASCII), $From can come back undef
+    return undef if not defined $From;
+
     if (   ( $From =~ /^mailer-daemon\@/i )
         or ( $From =~ /^postmaster\@/i )
         or ( $From eq "" ))
