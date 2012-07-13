@@ -66,9 +66,11 @@ sub GetCurrentUser {
 
 
     # We don't need to do any external lookups
-    my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    my ( $Address, $Name, $Error_msg ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    $RT::Logger->warning($Error_msg) if $Error_msg;
+
     unless ( $Address ) {
-        $RT::Logger->error("Couldn't find sender's address");
+        $RT::Logger->error("Couldn't parse or find sender's address");
         return ( $args{'CurrentUser'}, -1 );
     }
 

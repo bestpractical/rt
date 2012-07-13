@@ -1071,23 +1071,37 @@ sub ParseCcAddressesFromHead {
 
 =head2 ParseSenderAddressFromHead HEAD
 
-Takes a MIME::Header object. Returns a tuple: (user@host, friendly name)
-of the From (evaluated in order of Reply-To:, From:, Sender)
+Takes a MIME::Header object. Returns (user@host, friendly name, error msg)
+where the first two values are the From (evaluated in order of
+Reply-To:, From:, Sender).
+
+An error msg may be returned even when a Sender value is found, since it
+could be a parse error for another sender field. In this case, the
+error isn't fatal, but may be useful to investigate the parse failure.
 
 =cut
 
 sub ParseSenderAddressFromHead {
     my $head = shift;
+    my @sender_headers = ('Reply-To', 'From', 'Sender');
+    my $error_msg;  # Accumulate any errors
 
     #Figure out who's sending this message.
-    foreach my $header ('Reply-To', 'From', 'Sender') {
+    foreach my $header ( @sender_headers ) {
         my $addr_line = $head->get($header) || next;
         my ($addr, $name) = ParseAddressFromHeader( $addr_line );
         # only return if the address is not empty
-        return ($addr, $name) if $addr;
+        return ($addr, $name, $error_msg) if $addr;
+
+        chomp $addr_line;
+        $error_msg = "Failed to parse sender using " if not $error_msg;
+        $error_msg .= "$header: $addr_line";
     }
 
-    return (undef, undef);
+    $RT::Logger->warning("Couldn't find a sender in "
+                      . join(', ', @sender_headers) );
+
+    return (undef, undef, $error_msg);
 }
 
 =head2 ParseErrorsToAddressFromHead HEAD
