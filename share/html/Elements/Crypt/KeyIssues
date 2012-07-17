@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( @$Issues || @$SignAddresses ) {
+<div class="results">
 <&| /Widgets/TitleBox, title => loc('[_1] issues', RT->Config->Get('Crypt')->{'Outgoing'}) &>
 
 % if ( @$SignAddresses ) {
@@ -83,6 +84,7 @@ Select a key/certificate you want to use for encryption:
 % }
 </ul>
 </&>
+</div>
 % }
 
 <%ARGS>
