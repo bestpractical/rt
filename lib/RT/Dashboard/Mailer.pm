@@ -352,6 +352,7 @@ sub EmailDashboard {
     $RT::Logger->debug('Mailing dashboard "'.$dashboard->Name.'" to user '.$currentuser->Name." <$email>");
 
     my $ok = RT::Interface::Email::SendEmail(
+        %{ RT->Config->Get('Crypt')->{'Dashboards'} || {} },
         Entity => $entity,
     );
 
