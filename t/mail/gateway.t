@@ -636,7 +636,6 @@ EOF
 
     $m->no_warnings_ok;
 }
-exit;
 
 diag "check that mailgate doesn't suffer from empty Reply-To:";
 {
