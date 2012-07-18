@@ -457,7 +457,7 @@ sub _ParseContentPerl {
     foreach my $key ( keys %{ $args{TemplateArgs} } ) {
         my $val = $args{TemplateArgs}{ $key };
         next unless ref $val;
-        next if ref $val =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        next if ref($val) =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
         $args{TemplateArgs}{ $key } = \$val;
     }
 
