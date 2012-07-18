@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 245;
+use RT::Test tests => 266;
 use Test::Warn;
 
 my $queue = RT::Queue->new(RT->SystemUser);
@@ -182,6 +182,22 @@ note "test arguments passing";
         Content   => "\ntest { \$Nonexistent }",
         Arguments => { Nonexistent => 'foo' },
         Output    => "test foo",
+    );
+
+    PerlTemplateTest(
+        Content   => "\n".'array: { join ", ", @array }',
+        Arguments => { array => [qw(foo bar)] },
+        Output    => "array: foo, bar",
+    );
+    PerlTemplateTest(
+        Content   => "\n".'hash: { join ", ", map "$_ => $hash{$_}", sort keys %hash }',
+        Arguments => { hash => {1 => 2, a => 'b'} },
+        Output    => "hash: 1 => 2, a => b",
+    );
+    PerlTemplateTest(
+        Content   => "\n".'code: { code() }',
+        Arguments => { code => sub { "baz" } },
+        Output    => "code: baz",
     );
 }
 
