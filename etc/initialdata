@@ -104,6 +104,9 @@
     { Name        => 'Extract Subject Tag',                               # loc
       Description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
       ExecModule  => 'ExtractSubjectTag' },
+    { Name        => 'Send Forward',                 # loc
+      Description => 'Send forwarded message',       # loc
+      ExecModule  => 'SendForward', },
 );
 
 @ScripConditions = (
@@ -604,17 +607,21 @@ Content-Type: text/html
     },
     {  Queue       => 0,
        Name        => "Forward",    # loc
-       Description => "Heading of a forwarded message", # loc
+       Description => "Forwarded message", # loc
        Content => q{
 This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
+
+{ $ForwardTransaction->Content }
 }
     },
     {  Queue       => 0,
        Name        => "Forward Ticket",    # loc
-       Description => "Heading of a forwarded Ticket", # loc
+       Description => "Forwarded ticket message", # loc
        Content => q{
 
 This is a forward of ticket #{ $Ticket->id }
+
+{ $ForwardTransaction->Content }
 }
     },
     {  Queue       => 0,
@@ -767,6 +774,14 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Transaction',
        ScripAction    => 'Extract Subject Tag',
        Template       => 'Blank' },
+    {  Description    => 'On Forward Transaction Send forwarded message',
+       ScripCondition => 'On Forward Transaction',
+       ScripAction    => 'Send Forward',
+       Template       => 'Forward' },
+    {  Description    => 'On Forward Ticket Send forwarded message',
+       ScripCondition => 'On Forward Ticket',
+       ScripAction    => 'Send Forward',
+       Template       => 'Forward Ticket' },
 );
 
 @ACL = (
