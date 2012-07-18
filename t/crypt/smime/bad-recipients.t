@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => 10;
+use RT::Test::SMIME tests => 13;
 
 use RT::Tickets;
 
@@ -63,4 +63,9 @@ RT::Test->clean_caught_mails;
 
     my @mails = RT::Test->fetch_caught_mails;
     is scalar @mails, 3, "autoreply, to bad user, to RT owner";
+
+    like $mails[0], qr{To: baduser\@example\.com}, "notification to bad user";
+    like $mails[1], qr{To: root}, "notification to RT owner";
+    like $mails[1], qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'},
+        "notification to owner has error";
 }
