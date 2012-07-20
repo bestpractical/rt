@@ -1,0 +1,251 @@
+=head1 Summary of initialdata files
+
+It's often useful to be able to test configuration/database changes and then
+apply the same changes in production without manually clicking around.  It's
+also helpful if you're developing customizations or extensions to be able to
+get a fresh database back to the state you want for testing/development.
+
+This documentation applies to careful and thorough sysadmins as well as
+extension authors who need to make database changes easily and repeatably for
+new installs or upgrades.
+
+=head1 Examples
+
+RT ships with many initialdata files, some of which are used for upgrades and
+named differently (but function the same).
+
+    etc/initialdata
+    etc/upgrade/*/content
+
+The upgrade "content" files are meant to be incremental changes applied on top
+of one another while the top level initialdata file is for fresh RT installs.
+
+Extensions may also ship with database changes in such files.  You may find
+some in your install with:
+
+    find local/plugins -name initialdata -or -name content
+
+=head1 What can be in an initialdata file?
+
+initialdata files are Perl, but often consist primarily of a bunch of data
+structures defining the new records you want and not much extra code.  There's
+nothing stopping you from writing a bunch of code, however!
+
+The basic template of a new initialdata file should look something like this:
+
+    use strict;
+    use warnings;
+
+    our @Queues = (
+        # some definitions here
+    );
+
+    our @Groups = (
+        # some other definitions here
+    );
+
+    1;
+
+The C<@Queues> and C<@Groups> arrays are expected by RT and should contain
+hashref definitions.  There are many other arrays RT will look for and act on,
+described below.  None are required, all may be used.  Keep in mind that since
+they're just normal Perl arrays, you can C<push> onto them from a loop or
+C<grep> out definitions based on conditionals or generate their content with
+C<map>, etc.
+
+=head2 C<@Users>
+
+    push @Users, {
+        Name        => 'john.doe',
+        Password    => 'changethis',
+        Language    => 'fr',
+        Timezone    => 'America/Vancouver',
+        Privileged  => 1,
+        Disabled    => 0,
+    };
+
+Each hashref in C<@Users> is treated as a new user to create and passed
+straight into C<< RT::User->Create >>.  All of the normal user fields are
+available, as well as C<Privileged> and C<Disabled> (both booleans) which will
+do the appropriate internal group/flag handling.
+
+For a full list of fields, look at C<_CoreAccessible> near the bottom of
+C<lib/RT/User.pm> or run:
+
+    perl -I/opt/rt4/lib -MRT -e 'RT->LoadConfig; RT->Init; print "$_\n" for sort keys RT::User->_CoreAccessible;'
+
+Or look at the schema of the C<Users> in your database.
+
+=head2 C<@Groups>
+
+=head2 C<@Queues>
+
+=head2 C<@CustomFields>
+
+=head2 C<@ACL>
+
+C<@ACL> is very useful for granting rights on your newly created records or
+setting up a standard system configuration.  It is one of the most complex
+initialdata structures.
+
+=head3 Pick a Right
+
+All ACL definitions expect a key named C<Right> with the internal right name
+you want to grant.  The internal right names are visible in RT's admin
+interface in grey next to the longer descriptions.
+
+=head3 Pick a level: on a queue, on a CF, or globally
+
+After picking a C<Right>, you need to specify on what object the right is
+granted.  This is B<different> than the user/group/role receiving the right.
+
+=over 4
+
+=item Granted on a custom field by name (or ID), potentially a global or queue
+
+    CF => 'Name',
+
+=item Granted on a queue
+
+    Queue => 'Name',
+
+=item Granted on a custom field applied to a specific queue
+
+    CF      => 'Name',
+    Queue   => 'Name',
+
+=item Granted globally
+
+Specifying none of the above will get you a global right.
+
+=back
+
+There is currently no way to grant rights on a group or article class level.
+Note that you can grant rights B<to> a group; see below.
+
+=head3 Pick a Principal: User or Group or Role
+
+Finally you need to specify to what system group, system/queue role,
+user defined group, or user you want to grant the right B<to>.
+
+=over 4
+
+=item An internal user group
+
+    GroupDomain => 'SystemInternal',
+      GroupType => 'Everyone, Privileged, or Unprivileged'
+
+=item A system-level role
+
+    GroupDomain => 'RT::System-Role',
+      GroupType => 'Requestor, Owner, AdminCc, or Cc'
+
+=item A queue-level role
+
+    GroupDomain => 'RT::Queue-Role',
+      Queue     => 'Name',
+      GroupType => 'Requestor, Owner, AdminCc, or Cc',
+
+=item A group you created
+
+    GroupDomain => 'UserDefined',
+      GroupId   => 'Name'
+
+=item Individual user
+
+    UserId => 'Name or email or ID'
+
+=back
+
+=head3 Common cases
+
+You're probably looking for definitions like these most of the time.
+
+=over 4
+
+=item Grant a global right to a group you created
+
+    { Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=item Grant a queue-level right to a group you created
+
+    { Queue       => 'Name',
+      Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=item Grant a CF-level right to a group you created
+
+    { CF          => 'Name',
+      Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=back
+
+Since you often want to grant a list of rights on the same object/level to the
+same role/group/user, we generally use Perl loops and operators to aid in the
+generation of C<@ACL> without repeating ourselves.
+
+    # Give Requestors globally the right to see tickets, reply, and see the
+    # queue their ticket is in
+    push @ACL, map {
+        {
+            Right       => $_,
+            GroupDomain => 'RT::System-Role',
+            GroupType   => 'Requestor',
+        }
+    } qw(ShowTicket ReplyToTicket SeeQueue);
+
+=head3 Troubleshooting
+
+The best troubleshooting is often to see how the rights you define in C<@ACL>
+show up in the RT admin interface.
+
+=head2 C<@Scrips>
+
+=head2 C<@ScripActions>
+
+=head2 C<@ScripConditions>
+
+=head2 C<@Templates>
+
+=head2 C<@Attributes>
+
+An array of L<RT::Attributes> to create.  You likely don't need to mess with
+this.  If you do, know that the key C<Object> is expected to be an
+L<RT::Record> object on which to call C<AddAttribute>.  If you don't provide
+C<Object> or it's undefined, C<< RT->System >> will be used.
+
+=head2 C<@Initial>
+
+=head2 C<@Final>
+
+C<@Initial> and C<@Final> are special and let you write your own processing
+code that runs before anything else or after everything else.  They are
+expected to be arrays of subrefs (usually anonymous) like so:
+
+    our @Final = (sub {
+        RT->Logger->info("Finishing up!");
+    });
+
+You have the full power of RT's Perl libraries at your disposal.  Be sure to do
+error checking and log any errors with C<< RT->Logger->error("...") >>!
+
+=head1 Running an initialdata file
+
+    sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
+
+This may prompt you for a database password.
+
+=head1 Implementation details
+
+All the handling of initialdata files is done in C<< RT::Handle->InsertData >>.
+If you want to know B<exactly> what's happening with each array, your best bet
+is to start reading the code there.
+
+RT takes care of the ordering so that your new queues are created before it
+processes the new ACLs for those queues.  This lets you refer to new queues you
+just created by Name.
