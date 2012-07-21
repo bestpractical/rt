@@ -69,18 +69,173 @@ straight into C<< RT::User->Create >>.  All of the normal user fields are
 available, as well as C<Privileged> and C<Disabled> (both booleans) which will
 do the appropriate internal group/flag handling.
 
-For a full list of fields, look at C<_CoreAccessible> near the bottom of
-C<lib/RT/User.pm> or run:
-
-    perl -I/opt/rt4/lib -MRT -e 'RT->LoadConfig; RT->Init; print "$_\n" for sort keys RT::User->_CoreAccessible;'
-
-Or look at the schema of the C<Users> in your database.
+For a full list of fields, read the documentation for L<RT::User/Create>.
 
 =head2 C<@Groups>
 
+    push @Groups, {
+        Domain      => 'UserDefined',
+        Name        => 'Example Employees',
+        Description => 'All of the employees of my company',
+    };
+
+Creates a new L<RT::Group> for each hashref.  In almost all cases you'll want
+to follow the example above to create a group just as if you had done it from
+the admin interface.  B<Do not> omit the C<< Domain => 'UserDefined' >> line.
+
+Additionally, the C<MemberOf> field is specially handled to make it easier to
+add the new group to other groups.  C<MemberOf> may be a single value or an
+array ref.  Each value should be a user-defined group name or hashref to pass
+into L<< RT::Group->LoadByCols >>.  Each group found will have the new group
+added as a member.
+
 =head2 C<@Queues>
 
+    push @Queues, {
+        Name                => 'Helpdesk',
+        CorrespondAddress   => 'help@example.com',
+        CommentAddress      => 'help-comment@example.com',
+    };
+
+Creates a new L<RT::Queue> for each hashref.  Refer to the documentation of
+L<RT::Queue/Create> for the fields you can use.
+
 =head2 C<@CustomFields>
+
+    push @CustomFields, {
+        Queue       => 0,
+        Name        => 'Favorite color',
+        Type        => 'FreeformSingle',
+        LookupType  => 'RT::Queue-RT::Ticket',
+    };
+
+Creates a new L<RT::CustomField> for each hashref.  It is the most complex of
+the initialdata structures.  The most commonly used fields are:
+
+=over 4
+
+=item C<Name>
+
+The name of this CF as displayed in RT.
+
+=item C<Description>
+
+A short summary of what this CF is for.
+
+=item C<Queue>
+
+May be a Name or ID.  The single queue or array ref of queues to apply this CF
+to.  This does not apply when C<LookupType> does not start with C<RT::Queue>.
+
+=item C<Type>
+
+One of the following on the left hand side:
+
+    SelectSingle            # Select one value
+    SelectMultiple          # Select multiple values
+
+    FreeformSingle          # Enter one value
+    FreeformMultiple        # Enter multiple values
+
+    Text                    # Fill in one text area
+    Wikitext                # Fill in one wikitext area
+
+    BinarySingle            # Upload one file
+    BinaryMultiple          # Upload multiple files
+
+    ImageSingle             # Upload one image
+    ImageMultiple           # Upload multiple images
+
+    Combobox                # Combobox: Select or enter one value
+
+    AutocompleteSingle      # Enter one value with autocompletion
+    AutocompleteMultiple    # Enter multiple values with autocompletion
+
+    Date                    # Select date
+    DateTime                # Select datetime
+
+    IPAddressSingle         # Enter one IP address
+    IPAddressMultiple       # Enter multiple IP addresses
+
+    IPAddressRangeSingle    # Enter one IP address range
+    IPAddressRangeMultiple  # Enter multiple IP address ranges
+
+If you don't specify "Single" or "Multiple" in the type, you must specify
+C<MaxValues>.
+
+=item C<LookupType>
+
+Labeled in the CF admin page as "Applies to".  This determines whether your CF
+is for Tickets, Transactions, Users, Groups, or Queues.  Possible values:
+
+    RT::Queue-RT::Ticket                    # Tickets
+    RT::Queue-RT::Ticket-RT::Transaction    # Transactions
+    RT::User                                # Users
+    RT::Group                               # Groups
+    RT::Queue                               # Queues
+
+Ticket CFs are the most common, meaning C<RT::Queue-RT::Ticket> is the most
+common C<LookupType>.
+
+=item C<RenderType>
+
+Only valid when C<Type> is "Select".  Controls how the CF is displayed when
+editing it.  Valid values are: C<Select box>, C<List>, and C<Dropdown>.
+
+C<List> is either a list of radio buttons or a list of checkboxes depending on
+C<MaxValues>.
+
+=item C<MaxValues>
+
+Determines whether this CF is a Single or Multiple type.  0 means multiple.  1
+means single.
+
+Make sure to set the C<MaxValues> field appropriately, otherwise you can end up
+with unsupported CF types like a "Select multiple dates" (it doesn't Just
+Work).
+
+You can also use old-style C<Type>s which end with "Single" or "Multiple", for
+example: SelectSingle, SelectMultiple, FreeformSingle, etc.
+
+=item C<Values>
+
+C<Values> should be an array ref (never a single value!) of hashrefs
+representing new L<RT::CustomFieldValue> objects to create for the new custom
+field.  This only makes sense for "Select" CFs.  An example:
+
+    my $i = 1;
+    push @CustomFields, {
+        Queue       => 0,                       # Globally applied
+        LookupType  => 'RT::Queue-RT::Ticket',  # for Tickets
+        Name        => 'Type of food',
+        Type        => 'SelectSingle',  # SelectSingle is the same as: Type => 'Select', MaxValues => 1
+        RenderType  => 'Dropdown',
+        Values      => [
+            { Name => 'Fruit',      Description => 'Berries, peaches, tomatos, etc', SortOrder => $i++ },
+            { Name => 'Vegetable',  Description => 'Asparagus, peas, lettuce, etc',  SortOrder => $i++ },
+            # more values as such...
+        ],
+    };
+
+In order to ensure the same sorting of C<Values>, set C<SortOrder> inside each
+value.  A clever way to do this easily is with a simple variable you increment
+each time (as above with C<$i>).  You can use the same variable throughout the
+whole file, and don't need one per CF.
+
+=item C<BasedOn>
+
+Name or ID of another Select Custom Field.  This makes the named CF the source
+of categories for your values.
+
+=item C<Pattern>
+
+The regular expression text (not C<qr//>!) used to validate values.
+
+=back
+
+Refer to the documentation and implementation of L<RT::CustomField/Create> and
+L<RT::CustomFieldValue/Create> for the full list of available fields and
+allowed values.
 
 =head2 C<@ACL>
 
@@ -206,15 +361,46 @@ show up in the RT admin interface.
 
 =head2 C<@Scrips>
 
+Creates a new L<RT::Scrip> for each hashref.  Refer to the documentation of
+L<RT::Scrip/Create> for the fields you can use.
+
+Additionally, the C<Queue> field is specially handled to make it easier to
+setup the same Scrip on multiple queues:
+
+=over 4
+
+=item Globally
+
+    Queue => 0,
+
+=item Single queue
+
+    Queue => 'General', # Name or ID
+
+=item Multiple queues
+
+    Queue => ['General', 'Helpdesk', 13],   # Array ref of Name or ID
+
+=back
+
 =head2 C<@ScripActions>
+
+Creates a new L<RT::ScripAction> for each hashref.  Refer to the documentation
+of L<RT::ScripAction/Create> for the fields you can use.
 
 =head2 C<@ScripConditions>
 
+Creates a new L<RT::ScripCondition> for each hashref.  Refer to the
+documentation of L<RT::ScripCondition/Create> for the fields you can use.
+
 =head2 C<@Templates>
+
+Creates a new L<RT::Template> for each hashref.  Refer to the documentation of
+L<RT::Template/Create> for the fields you can use.
 
 =head2 C<@Attributes>
 
-An array of L<RT::Attributes> to create.  You likely don't need to mess with
+An array of L<RT::Attribute>s to create.  You likely don't need to mess with
 this.  If you do, know that the key C<Object> is expected to be an
 L<RT::Record> object on which to call C<AddAttribute>.  If you don't provide
 C<Object> or it's undefined, C<< RT->System >> will be used.
