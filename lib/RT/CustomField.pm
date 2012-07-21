@@ -1673,6 +1673,7 @@ Examples:
     'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",    # loc
     'RT::User'                             => "Users",                  # loc
     'RT::Group'                            => "Groups",                 # loc
+    'RT::Queue'                            => "Queues",                 # loc
 
 This is a class method. 
 
