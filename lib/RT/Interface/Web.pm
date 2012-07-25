@@ -633,6 +633,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
+            $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
             # if the external auth allows lack of auth through with no
@@ -651,8 +652,12 @@ sub AttemptExternalAuth {
             AbortExternalAuth() unless RT->Config->Get('WebFallbackToInternalAuth');
         }
     }
-    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
-        # No REMOTE_USER and we don't want to fallback internally.
+    elsif (not RT->Config->Get('WebFallbackToInternalAuth')
+            or (_UserLoggedIn() and $HTML::Mason::Commands::session{'WebExternallyAuthed'})) {
+        # No REMOTE_USER and...
+        #
+        # a) We don't want to fallback internally, or
+        # b) The logged in external user was deauthed and we should kick them out
         AbortExternalAuth();
     }
 }
