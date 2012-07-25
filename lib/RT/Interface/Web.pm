@@ -623,14 +623,11 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-
-                # we failed to successfully create the user. abort abort abort.
-                delete $HTML::Mason::Commands::session{'CurrentUser'};
+                # we failed to successfully create the user!
+                _ForceLogout();
 
                 if (RT->Config->Get('WebFallbackToInternalAuth')) {
                     TangentForLoginWithError('Cannot create user: [_1]', $msg);
-                } else {
-                    $m->abort();
                 }
             }
         }
@@ -647,22 +644,24 @@ sub AttemptExternalAuth {
             # straight-up external auth would always redirect to /
             # when you first hit it.
         } else {
-            delete $HTML::Mason::Commands::session{'CurrentUser'};
+            # Couldn't auth with the REMOTE_USER provided, either because an RT
+            # user doesn't exist or we can't create one.  Bail unless we
+            # fallback to internal auth.
             $user = $orig_user;
+            AbortExternalAuth() unless RT->Config->Get('WebFallbackToInternalAuth');
         }
-    } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
-        unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
-            # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            TangentForLoginWithError('You are not an authorized user');
-        }
-    } else {
-
-        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
-        # XXX: we must return AUTH_REQUIRED status or we fallback to
-        # internal auth here too.
-        delete $HTML::Mason::Commands::session{'CurrentUser'}
-            if defined $HTML::Mason::Commands::session{'CurrentUser'};
     }
+    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+        # No REMOTE_USER and we don't want to fallback internally.
+        AbortExternalAuth();
+    }
+}
+
+sub AbortExternalAuth {
+    _ForceLogout();
+
+    # Return a 403 Forbidden or we may fallback to a login page with no form
+    $HTML::Mason::Commands::m->abort(403);
 }
 
 sub AttemptPasswordAuthentication {
