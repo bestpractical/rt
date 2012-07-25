@@ -221,7 +221,7 @@ sub Prepare {
             'Success';
     }
 
-    return $result;
+    return 1;
 }
 
 =head2 To
