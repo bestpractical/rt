@@ -260,7 +260,7 @@ sub QueueCacheNeedsUpdate {
 
 =head2 AddUpgradeHistory realm, data
 
-Adds an entry to the upgrade history database. The realm can be either C<RT>
+Adds an entry to the upgrade history database. The component can be either C<RT>
 for core RT upgrades, or the fully qualified name of a plugin. The data must be
 a hash reference.
 
@@ -268,7 +268,7 @@ a hash reference.
 
 sub AddUpgradeHistory {
     my $self  = shift;
-    my $realm = shift;
+    my $component = shift;
     my $data  = shift;
 
     $data->{timestamp}  ||= time;
@@ -277,7 +277,7 @@ sub AddUpgradeHistory {
     my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
     my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
 
-    push @{ $upgrade_history->{$realm} }, $data;
+    push @{ $upgrade_history->{$component} }, $data;
 
     $self->SetAttribute(
         Name    => 'UpgradeHistory',
@@ -285,23 +285,23 @@ sub AddUpgradeHistory {
     );
 }
 
-=head2 UpgradeHistory [realm]
+=head2 UpgradeHistory [component]
 
-Returns the entries of RT's upgrade history. If a realm is specified, the list
-of upgrades for that realm will be returned. Otherwise a hash reference of
-C<< realm => [upgrades] >> will be returned.
+Returns the entries of RT's upgrade history. If a component is specified, the list
+of upgrades for that component will be returned. Otherwise a hash reference of
+C<< component => [upgrades] >> will be returned.
 
 =cut
 
 sub UpgradeHistory {
     my $self  = shift;
-    my $realm = shift;
+    my $component = shift;
 
     my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
     my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
 
-    if ($realm) {
-        return @{ $upgrade_history->{$realm} || [] };
+    if ($component) {
+        return @{ $upgrade_history->{$component} || [] };
     }
 
     return $upgrade_history;

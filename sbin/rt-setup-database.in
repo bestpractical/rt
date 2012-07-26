@@ -82,6 +82,7 @@ GetOptions(
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
+    'component=s', 'ext-version=s',
     'help|h',
 );
 
@@ -184,6 +185,9 @@ if ($args{'skip-create'}) {
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
+
+my $component = $args{'component'} || 'RT';
+my $ext_version = $args{'ext-version'};
 
 foreach my $action ( @actions ) {
     no strict 'refs';
@@ -303,12 +307,15 @@ sub action_insert {
 
     RT->ConnectToDatabase();
 
-    RT->System->AddUpgradeHistory(RT => {
+    my %upgrade_data = (
         action   => 'insert',
         filename => $file,
         content  => $content,
-        stage    => 'after',
-    });
+        stage    => 'after',);
+
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+
+    RT->System->AddUpgradeHistory($component => \%upgrade_data);
 
     my $db_type = RT->Config->Get('DatabaseType');
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
@@ -401,7 +408,7 @@ sub action_upgrade {
     RT->InitLogging();
     RT->InitSystemObjects();
 
-    RT->System->AddUpgradeHistory(RT => {
+    RT->System->AddUpgradeHistory($component => {
         type      => 'full upgrade',
         action    => 'upgrade',
         stage     => 'before',
@@ -417,7 +424,7 @@ sub action_upgrade {
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
 
-        RT->System->AddUpgradeHistory(RT => {
+        RT->System->AddUpgradeHistory($component => {
             action => 'upgrade',
             type   => 'individual upgrade',
             stage  => 'before',
@@ -445,7 +452,7 @@ sub action_upgrade {
 
 	RT->ConnectToDatabase();
 
-        RT->System->AddUpgradeHistory(RT => {
+        RT->System->AddUpgradeHistory($component => {
             action => 'upgrade',
             type   => 'individual upgrade',
             stage  => 'after',
@@ -456,7 +463,7 @@ sub action_upgrade {
         $previous = $v;
     }
 
-    RT->System->AddUpgradeHistory(RT => {
+    RT->System->AddUpgradeHistory($component => {
         type      => 'full upgrade',
         action    => 'upgrade',
         stage     => 'after',
@@ -650,4 +657,17 @@ administrator privileges
 for 'init' and 'insert': rather than using the default administrative password
 for RT's "root" user, use the password in this file.
 
+=item component
+
+the name of the entity performing a create or upgrade. Used for logging changes
+in the DB. Defaults to RT, but can be the name of an extension or plugin making
+changes to the DB.
+
+=item ext-version
+
+current version of extension making a change. Not needed for RT since RT has a
+more elaborate system to track upgrades across multiple versions.
+
 =back
+
+=cut
