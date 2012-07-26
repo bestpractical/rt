@@ -83,6 +83,23 @@ sub basic_auth {
 EOT
 }
 
+sub basic_auth_anon {
+    my $self = shift;
+
+    return <<"EOT";
+    AuthType Basic
+    AuthName "restricted area"
+    AuthBasicProvider anon
+
+    Anonymous *
+    Anonymous_NoUserID On
+    Anonymous_MustGiveEmail Off
+    Anonymous_VerifyEmail Off
+
+    Require valid-user
+EOT
+}
+
 sub start_server {
     my ($self, %config) = @_;
     my %tmp = %{$config{tmp}};
@@ -108,8 +125,14 @@ sub start_server {
         rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
         load_modules   => $info{load_modules},
-        basic_auth     => $config{basic_auth} ? $self->basic_auth : "",
     );
+    if ($config{basic_auth}) {
+        if ($config{basic_auth} eq 'anon') {
+            $opt{basic_auth} = $self->basic_auth_anon;
+        } else {
+            $opt{basic_auth} = $self->basic_auth;
+        }
+    }
     foreach (qw(log pid lock)) {
         $opt{$_ .'_file'} = File::Spec->catfile(
             "$tmp{'directory'}", "apache.$_"
@@ -193,7 +216,10 @@ sub apache_server_info {
     ) unless exists $MODULES{$res{version}}{$res{variant}};
 
     my @mlist = @{$MODULES{$res{version}}{$res{variant}}};
-    push @mlist, "authn_file", "auth_basic", "authz_user" if $res{basic_auth};
+    if ($res{basic_auth}) {
+        push @mlist, "auth_basic", "authz_user";
+        push @mlist, $res{basic_auth} eq 'anon' ? "authn_anon" : "authn_file";
+    }
 
     $res{'load_modules'} = '';
     foreach my $mod ( @mlist ) {
