@@ -2695,11 +2695,4 @@ only one of the link transactions to have scrips run.
 
 Set($LinkTransactionsRun1Scrip, 0);
 
-=item C<$ResolveDefaultUpdateType>
-
-This option has been deprecated.  You can configure this site-wide
-with L</Lifecycles> (see L</Labeling and defining actions>).
-
-=cut
-
 1;
