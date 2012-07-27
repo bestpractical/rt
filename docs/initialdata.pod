@@ -89,6 +89,44 @@ array ref.  Each value should be a user-defined group name or hashref to pass
 into L<< RT::Group->LoadByCols >>.  Each group found will have the new group
 added as a member.
 
+Unfortunately you can't specify the I<members> of a group at this time.  As a
+workaround, you can push a subref into C<@Final> which adds members to your new
+groups.  An example, using a convenience function to avoid repeating yourself:
+
+    push @Final, sub {
+        add_members('My New Group Name' => qw(trs alex ruslan));
+        add_members('My Second Group'   => qw(jesse kevin sunnavy jim));
+    };
+
+    sub add_members {
+        my $group_name = shift;
+        my @members    = @_;
+
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup($group_name);
+
+        if ($group->id) {
+            for my $name (@members) {
+                my $member = RT::User->new( RT->SystemUser );
+                $member->LoadByCols( Name => $name );
+
+                unless ($member->Id) {
+                    RT->Logger->error("Unable to find user '$name'");
+                    next;
+                }
+
+                my ($ok, $msg) = $group->AddMember( $member->PrincipalObj->Id );
+                if ($ok) {
+                    RT->Logger->info("Added member $name to $group_name");
+                } else {
+                    RT->Logger->error("Unable to AddMember $name to $group_name: $msg");
+                }
+            }
+        } else {
+            RT->Logger->error("Unable to find group '$group_name'!");
+        }
+    }
+
 =head2 C<@Queues>
 
     push @Queues, {
@@ -276,7 +314,9 @@ Specifying none of the above will get you a global right.
 =back
 
 There is currently no way to grant rights on a group or article class level.
-Note that you can grant rights B<to> a group; see below.
+Note that you can grant rights B<to> a group; see below.  If you need to grants
+rights on a group or article class level, you'll need to write an C<@Final>
+subref to handle it using the RT Perl API.
 
 =head3 Pick a Principal: User or Group or Role
 
@@ -419,6 +459,11 @@ expected to be arrays of subrefs (usually anonymous) like so:
 
 You have the full power of RT's Perl libraries at your disposal.  Be sure to do
 error checking and log any errors with C<< RT->Logger->error("...") >>!
+
+=head1 What's missing?
+
+There is currently no way, short of writing code in C<@Final> or C<@Initial>,
+to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
 
 =head1 Running an initialdata file
 
