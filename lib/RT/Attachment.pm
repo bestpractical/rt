@@ -222,22 +222,6 @@ sub Create {
     }
 }
 
-=head2 Import
-
-Create an attachment exactly as specified in the named parameters.
-
-=cut
-
-sub Import {
-    my $self = shift;
-    my %args = ( ContentEncoding => 'none', @_ );
-
-    ( $args{'ContentEncoding'}, $args{'Content'} ) =
-        $self->_EncodeLOB( $args{'Content'}, $args{'MimeType'} );
-
-    return ( $self->SUPER::Create(%args) );
-}
-
 =head2 TransactionObj
 
 Returns the transaction object asscoiated with this attachment.
