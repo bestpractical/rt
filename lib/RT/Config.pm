@@ -755,6 +755,7 @@ our %META = (
         },
         PostLoadCheck => sub {
             my $self = shift;
+            # XXX: deprecated, remove in 4.4
             $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
                 if $self->Meta('LogToScreen')->{'Source'}{'Package'};
         },
