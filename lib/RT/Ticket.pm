@@ -683,7 +683,7 @@ sub Create {
 
         if ( $self->Id && $Trans ) {
 
-            $TransObj->UpdateCustomFields(ARGSRef => \%args);
+            $TransObj->UpdateCustomFields( %args );
 
             $RT::Logger->info( "Ticket " . $self->Id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
@@ -1859,12 +1859,16 @@ sub DueObj {
 
 =head2 DueAsString
 
-Returns this ticket's due date as a human readable string
+Returns this ticket's due date as a human readable string.
+
+B<DEPRECATED> and will be removed in 4.4; use C<<
+$ticket->DueObj->AsString >> instead.
 
 =cut
 
 sub DueAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Ticket->DueAsString is deprecated and will be removed in RT 4.4; use ->DueObj->AsString instead");
     return $self->DueObj->AsString();
 }
 
@@ -2032,12 +2036,14 @@ sub ToldObj {
 
 A convenience method that returns ToldObj->AsString
 
-TODO: This should be deprecated
+B<DEPRECATED> and will be removed in 4.4; use C<<
+$ticket->ToldObj->AsString >> instead.
 
 =cut
 
 sub ToldAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Ticket->ToldAsString is deprecated and will be removed in RT 4.4; use ->ToldObj->AsString instead");
     if ( $self->Told ) {
         return $self->ToldObj->AsString();
     }
@@ -2048,39 +2054,45 @@ sub ToldAsString {
 
 
 
-=head2 TimeWorkedAsString
-
-Returns the amount of time worked on this ticket as a Text String
-
-=cut
-
-sub TimeWorkedAsString {
+sub _DurationAsString {
     my $self = shift;
-    my $value = $self->TimeWorked;
-
-    # return the # of minutes worked turned into seconds and written as
-    # a simple text string, this is not really a date object, but if we
-    # diff a number of seconds vs the epoch, we'll get a nice description
-    # of time worked.
+    my $value = shift;
     return "" unless $value;
     return RT::Date->new( $self->CurrentUser )
         ->DurationAsString( $value * 60 );
 }
 
+=head2 TimeWorkedAsString
 
+Returns the amount of time worked on this ticket as a text string.
+
+=cut
+
+sub TimeWorkedAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TimeWorked );
+}
 
 =head2  TimeLeftAsString
 
-Returns the amount of time left on this ticket as a Text String
+Returns the amount of time left on this ticket as a text string.
 
 =cut
 
 sub TimeLeftAsString {
     my $self = shift;
-    my $value = $self->TimeLeft;
-    return "" unless $value;
-    return RT::Date->new( $self->CurrentUser )
-        ->DurationAsString( $value * 60 );
+    return $self->_DurationAsString( $self->TimeLeft );
+}
+
+=head2  TimeEstimatedAsString
+
+Returns the amount of time estimated on this ticket as a text string.
+
+=cut
+
+sub TimeEstimatedAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TimeEstimated );
 }
 
 

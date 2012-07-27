@@ -1848,11 +1848,11 @@ sub ProcessUpdateMessage {
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } else {
         push( @results,
             loc("Update type was neither correspondence nor comment.") . " " . loc("Update not recorded.") );

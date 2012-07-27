@@ -1125,14 +1125,16 @@ sub FriendlyObjectType {
 }
 
 =head2 UpdateCustomFields
-    
-    Takes a hash of 
 
-    CustomField-<<Id>> => Value
-        or 
+Takes a hash of:
 
-    Object-RT::Transaction-CustomField-<<Id>> => Value parameters to update
-    this transaction's custom fields
+    CustomField-C<Id> => Value
+
+or:
+
+    Object-RT::Transaction-CustomField-C<Id> => Value
+
+parameters to update this transaction's custom fields.
 
 =cut
 
@@ -1144,12 +1146,10 @@ sub UpdateCustomFields {
     # value "ARGSRef", which was a reference to a hash of arguments.
     # This was insane. The next few lines of code preserve that API
     # while giving us something saner.
-
-    # TODO: 3.6: DEPRECATE OLD API
-
-    my $args; 
-
-    if ($args{'ARGSRef'}) { 
+    my $args;
+    if ($args{'ARGSRef'}) {
+        # XXX: deprecated, remove in 4.4
+        $RT::Logger->warning("Passing an ARGSRef to UpdateCustomFields is deprecated, and will be removed in RT 4.4; pass its contents instead");
         $args = $args{ARGSRef};
     } else {
         $args = \%args;

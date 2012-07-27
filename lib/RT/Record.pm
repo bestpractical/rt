@@ -418,57 +418,39 @@ sub CreatedObj {
 }
 
 
-#
-# TODO: This should be deprecated
-#
+# B<DEPRECATED> and will be removed in 4.4
 sub AgeAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Record->AgeAsString is deprecated and will be removed in RT 4.4; use ->CreatedObj->AgeAsString instead");
     return ( $self->CreatedObj->AgeAsString() );
 }
 
+# B<DEPRECATED> and will be removed in 4.4
+sub LongSinceUpdateAsString {
+    my $self = shift;
+    $RT::Logger->warning("RT::Record->LongSinceUpdateAsString is deprecated and will be removed in RT 4.4; use ->LastUpdatedObj->AgeAsString instead");
 
-
-# TODO this should be deprecated
+    if ( $self->LastUpdated ) {
+        return ( $self->LastUpdatedObj->AgeAsString() );
+    } else {
+        return "never";
+    }
+}
 
 sub LastUpdatedAsString {
     my $self = shift;
     if ( $self->LastUpdated ) {
         return ( $self->LastUpdatedObj->AsString() );
-
-    }
-    else {
+    } else {
         return "never";
     }
 }
 
-
-#
-# TODO This should be deprecated 
-#
 sub CreatedAsString {
     my $self = shift;
     return ( $self->CreatedObj->AsString() );
 }
 
-
-#
-# TODO This should be deprecated
-#
-sub LongSinceUpdateAsString {
-    my $self = shift;
-    if ( $self->LastUpdated ) {
-
-        return ( $self->LastUpdatedObj->AgeAsString() );
-
-    }
-    else {
-        return "never";
-    }
-}
-
-
-
-#
 sub _Set {
     my $self = shift;
 
