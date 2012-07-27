@@ -330,13 +330,6 @@ sub SendEmail {
     my $TicketObj = $args{'Ticket'};
     my $TransactionObj = $args{'Transaction'};
 
-    foreach my $arg( qw(Entity Bounce) ) {
-        next unless defined $args{ lc $arg };
-
-        $RT::Logger->warning("'". lc($arg) ."' argument is deprecated, use '$arg' instead");
-        $args{ $arg } = delete $args{ lc $arg };
-    }
-
     unless ( $args{'Entity'} ) {
         $RT::Logger->crit( "Could not send mail without 'Entity' object" );
         return 0;
