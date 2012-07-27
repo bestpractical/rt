@@ -239,9 +239,10 @@ sub LimitToApplied {
 
 =head2 LimitToGlobalOrQueue QUEUEID
 
-DEPRECATED since CFs are applicable not only to tickets these days.
+Limits the set of custom fields found to global custom fields or those
+tied to the queue C<QUEUEID>, similar to L</LimitToGlobalOrObjectId>.
 
-Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID
+Note that this will cause the collection to only return ticket CFs.
 
 =cut
 
@@ -255,34 +256,33 @@ sub LimitToGlobalOrQueue {
 
 =head2 LimitToQueue QUEUEID
 
-DEPRECATED since CFs are applicable not only to tickets these days.
+Takes a numeric C<QUEUEID>, and limits the Custom Field collection to
+those only applied directly to it; this limit is OR'd with other
+L</LimitToQueue> and L</LimitToGlobal> limits.
 
-Takes a queue id (numerical) as its only argument. Makes sure that
-Scopes it pulls out apply to this queue (or another that you've selected with
-another call to this method
+Note that this will cause the collection to only return ticket CFs.
 
 =cut
 
 sub LimitToQueue  {
    my $self = shift;
-  my $queue = shift;
+   my $queue = shift;
 
-  $self->Limit (ALIAS => $self->_OCFAlias,
-                ENTRYAGGREGATOR => 'OR',
-		FIELD => 'ObjectId',
-		VALUE => "$queue")
-      if defined $queue;
-  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+   $self->Limit (ALIAS => $self->_OCFAlias,
+                 ENTRYAGGREGATOR => 'OR',
+                 FIELD => 'ObjectId',
+                 VALUE => "$queue")
+       if defined $queue;
+   $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 
 =head2 LimitToGlobal
 
-DEPRECATED since CFs are applicable not only to tickets these days.
+Limits the Custom Field collection to global ticket CFs; this limit is
+OR'd with L</LimitToQueue> limits.
 
-Makes sure that Scopes it pulls out apply to all queues
-(or another that you've selected with
-another call to this method or LimitToQueue)
+Note that this will cause the collection to only return ticket CFs.
 
 =cut
 
