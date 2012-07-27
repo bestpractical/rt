@@ -108,15 +108,6 @@ sub LimitToPrivacy {
     }
 }
 
-### Internal methods
-
-sub _PrivacyObjects {
-    my $self = shift;
-    Carp::carp("RT::SavedSearches->_PrivacyObjects is deprecated. Please use RT::SavedSearch->_PrivacyObjects");
-    my $search = RT::SavedSearch->new($self->CurrentUser);
-    return $search->_PrivacyObjects(@_);
-}
-
 RT::Base->_ImportOverlays();
 
 1;
