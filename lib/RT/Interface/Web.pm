@@ -1233,7 +1233,19 @@ sub IsRefererCSRFWhitelisted {
     my $configs;
     for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
         push @$configs,$config;
-        return 1 if $referer->host_port eq $config;
+
+        my $host_port = $referer->host_port;
+        if ($config =~ /\*/) {
+            # Turn a literal * into a domain component or partial component match.
+            # Refer to http://tools.ietf.org/html/rfc2818#page-5
+            my $regex = join "[a-zA-Z0-9\-]*",
+                         map { quotemeta($_) }
+                       split /\*/, $config;
+
+            return 1 if $host_port =~ /^$regex$/i;
+        } else {
+            return 1 if $host_port eq $config;
+        }
     }
 
     return (0,$referer,$configs);
