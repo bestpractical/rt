@@ -244,13 +244,8 @@ sub check_failure {
     my $r    = shift;
     return if $r->is_success;
 
-    # XXX TODO 4.2: Remove the multi-line error strings in favor of something more concise
-    print STDERR <<"    ERROR";
-An Error Occurred
-=================
-
-@{[ $r->status_line ]}
-    ERROR
+    print STDERR "HTTP request failed: @{[ $r->status_line ]}. "
+                ."Your webserver logs may have more information or there may be a network problem.\n";
     print STDERR "\n$0: undefined server error\n" if $opts->{'debug'};
     return $self->tempfail();
 }
