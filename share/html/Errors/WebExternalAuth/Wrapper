@@ -1,0 +1,34 @@
+<%args>
+$Title => loc("An error occurred")
+$Error => ''
+</%args>
+<%init>
+my $next = RT::Interface::Web::SetNextPage();
+my $login_url = RT->Config->Get('WebPath') . "/NoAuth/Login.html?next=$next";
+</%init>
+<html>
+  <head>
+    <title><% $Title %></title>
+  </head>
+  <body>
+    <h1><% $Title %></h1>
+    <!-- WebExternalAuth error: <% $Error %> -->
+    <% $m->content |n%>
+
+    <p id="contact-admin">
+% if (my $owner = RT->Config->Get('OwnerEmail')) {
+%     $owner = $m->interp->apply_escapes($owner, 'h');
+      <&|/l_unsafe, qq[<a href="mailto:$owner">], $owner, '</a>' &>Contact your RT administrator via [_1]email to [_2][_3].</&>
+% } else {
+      <&|/l&>Contact your RT administrator.</&>
+% }
+    </p>
+
+% if (RT->Config->Get('WebExternalAuth') and RT->Config->Get('WebFallbackToInternalAuth')) {
+    <p id="internal-auth">
+      <&|/l_unsafe, qq[<a href="$login_url">], '</a>' &>If you have an internal RT login, you may [_1]try it instead[_2].</&>
+    </p>
+% }
+    </p>
+  </body>
+</html>

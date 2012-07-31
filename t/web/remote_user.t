@@ -96,14 +96,64 @@ diag "Continuous + Fallback";
         # ...see if RT notices
         $m->get($url);
         is $m->status, 403, "403 Forbidden from RT";
-        is $m->content, '', "No content returned";
-        # XXX should this be a 403?
 
         # Next request gets us the login form
         $m->get_ok($url);
         $m->content_like(qr/Login/, "Login form");
     }
 
+    diag "External auth with invalid user, login internally";
+    {
+        # REMOTE_USER of invalid
+        $m->default_header( auth("invalid") );
+
+        # Login internally via the login link
+        $m->get("$url/Search/Build.html");
+        is $m->status, 403, "403 Forbidden";
+        $m->follow_link_ok({ url_regex => qr'NoAuth/Login\.html' }, "follow logout link");
+        $m->content_like(qr/Login/, "Login form");
+
+        # Log in using RT's form
+        $m->submit_form_ok({
+            with_fields => {
+                user => 'root',
+                pass => 'password',
+            },
+        }, "Submitted login form");
+        ok logged_in_as($m, "root"), "Logged in as root";
+        like $m->uri, qr'Search/Build\.html', "at our originally requested page";
+
+        # Still logged in on another request
+        $m->follow_link_ok({ text => 'Tools' });
+        ok logged_in_as($m, "root"), "Logged in as root";
+
+        ok $m->logout, "Logged out";
+
+        $m->next_warning_like(qr/Couldn't find internal user for 'invalid'/, "found warning for first request");
+        $m->next_warning_like(qr/Couldn't find internal user for 'invalid'/, "found warning for second request");
+    }
+
     stop_server(\$m);
 }
 
+diag "Fallback OFF";
+{
+    RT->Config->Set( DevelMode => 0 );
+    RT->Config->Set( WebExternalAuth => 1 );
+    RT->Config->Set( WebExternalAuthContinuous => 0 );
+    RT->Config->Set( WebFallbackToInternalAuth => 0 );
+    RT->Config->Set( WebExternalAuto => 0 );
+
+    my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "No remote user";
+    {
+        $m->default_header( auth("") );
+        $m->get($url);
+        is $m->status, 403, "Forbidden";
+    }
+
+    stop_server(\$m);
+}
+
+# XXX TODO: test WebExternalAuto and AutoCreate

@@ -1,0 +1,3 @@
+<&| Wrapper, %ARGS, Title => loc("Unauthorized") &>
+<p><&|/l&>You are not authorized to use RT.</&></p>
+</&>

@@ -579,8 +579,6 @@ sub AttemptExternalAuth {
 
     # do we actually have a REMOTE_USER equivlent?
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
-        my $orig_user = $user;
-
         $user = RT::Interface::Web::WebCanonicalizeInfo();
         my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
@@ -623,12 +621,8 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-                # we failed to successfully create the user!
-                _ForceLogout();
-
-                if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
-                }
+                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebExternalAuth: $msg");
+                AbortExternalAuth( Error => "AutoCreate" );
             }
         }
 
@@ -645,28 +639,43 @@ sub AttemptExternalAuth {
             # straight-up external auth would always redirect to /
             # when you first hit it.
         } else {
-            # Couldn't auth with the REMOTE_USER provided, either because an RT
-            # user doesn't exist or we can't create one.  Bail unless we
-            # fallback to internal auth.
-            $user = $orig_user;
-            AbortExternalAuth() unless RT->Config->Get('WebFallbackToInternalAuth');
+            # Couldn't auth with the REMOTE_USER provided because an RT
+            # user doesn't exist and we're configured not to create one.
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation.");
+            AbortExternalAuth(
+                Error => "NoInternalUser",
+                User  => $user,
+            );
         }
     }
-    elsif (not RT->Config->Get('WebFallbackToInternalAuth')
-            or (_UserLoggedIn() and $HTML::Mason::Commands::session{'WebExternallyAuthed'})) {
-        # No REMOTE_USER and...
-        #
-        # a) We don't want to fallback internally, or
-        # b) The logged in external user was deauthed and we should kick them out
-        AbortExternalAuth();
+    elsif (_UserLoggedIn() and $HTML::Mason::Commands::session{'WebExternallyAuthed'}) {
+        # The logged in external user was deauthed by the auth system and we
+        # should kick them out.
+        AbortExternalAuth( Error => "Deauthorized" );
+    }
+    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+        # Abort if we don't want to fallback internally
+        AbortExternalAuth( Error => "NoRemoteUser" );
     }
 }
 
 sub AbortExternalAuth {
+    my %args  = @_;
+    my $error = $args{Error} ? "/Errors/WebExternalAuth/$args{Error}" : undef;
+    my $m     = $HTML::Mason::Commands::m;
+    my $r     = $HTML::Mason::Commands::r;
+
     _ForceLogout();
 
+    # Clear the decks, not that we should have partial content.
+    $m->clear_buffer;
+
+    $r->status(403);
+    $m->comp($error, %args)
+        if $error and $m->comp_exists($error);
+
     # Return a 403 Forbidden or we may fallback to a login page with no form
-    $HTML::Mason::Commands::m->abort(403);
+    $m->abort(403);
 }
 
 sub AttemptPasswordAuthentication {
