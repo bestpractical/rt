@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 42;
+use RT::Test tests => 48;
 
 # make an initial queue, so we have more than 1
 my $original_test_queue = new_queue("Test$$");
@@ -28,6 +28,12 @@ diag("Disable an existing queue, it should stop appearing in the list");
 diag("Bring back a disabled queue");
 {
     ok($original_test_queue->SetDisabled(0));
+    check_queues($m);
+}
+
+diag("Rename the original queue, make sure the name change is uncached");
+{
+    ok($original_test_queue->SetName("Name Change $$"));
     check_queues($m);
 }
 
