@@ -91,7 +91,26 @@ sub new {
     return ($self);
 }
 
+=head2 CanonicalizeURI <URI>
 
+Returns the canonical form of the given URI by calling L</FromURI> and then L</URI>.
+
+If the URI is unparseable by FromURI the passed in URI is simply returned untouched.
+
+=cut
+
+sub CanonicalizeURI {
+    my $self = shift;
+    my $uri  = shift;
+    if ($self->FromURI($uri)) {
+        my $canonical = $self->URI;
+        if ($canonical and $uri ne $canonical) {
+            RT->Logger->debug("Canonicalizing URI '$uri' to '$canonical'");
+            $uri = $canonical;
+        }
+    }
+    return $uri;
+}
 
 
 =head2 FromObject <Object>
