@@ -806,6 +806,7 @@ EOT
     },
 );
 my %OPTIONS = ();
+my @LOADED_CONFIGS = ();
 
 =head1 METHODS
 
@@ -972,6 +973,14 @@ EOF
         my $errormessage = sprintf( $message,
             $file_path, $fileusername, $filegroup, $filegroup );
         die "$errormessage\n$@";
+    } else {
+        # Loaded successfully
+        push @LOADED_CONFIGS, {
+            as          => $args{'File'},
+            filename    => $INC{ $args{'File'} },
+            extension   => $is_ext,
+            site        => $is_site,
+        };
     }
     return 1;
 }
@@ -1006,6 +1015,40 @@ sub Configs {
     my %seen;
     @configs = grep !$seen{$_}++, @configs;
     return @configs;
+}
+
+=head2 LoadedConfigs
+
+Returns a list of hashrefs, one for each config file loaded.  The keys of the
+hashes are:
+
+=over 4
+
+=item as
+
+Name this config file was loaded as (relative filename usually).
+
+=item filename
+
+The full path and filename.
+
+=item extension
+
+The "extension" part of the filename.  For example, the file C<RTIR_Config.pm>
+will have an C<extension> value of C<RTIR>.
+
+=item site
+
+True if the file is considered a site-level override.  For example, C<site>
+will be false for C<RT_Config.pm> and true for C<RT_SiteConfig.pm>.
+
+=back
+
+=cut
+
+sub LoadedConfigs {
+    # Copy to avoid the caller changing our internal data
+    return map { \%$_ } @LOADED_CONFIGS
 }
 
 =head2 Get
