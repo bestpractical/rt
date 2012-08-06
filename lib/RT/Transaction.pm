@@ -363,24 +363,9 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
+        $content = $self->ApplyQuoteWrap(content => $content,
+                                         cols    => $args{'Wrap'} );
 
-        # What's the longest line like?
-        my $max = 0;
-        foreach ( split ( /\n/, $content ) ) {
-            $max = length if length > $max;
-        }
-
-        if ( $max > 76 ) {
-            require Text::Wrapper;
-            my $wrapper = Text::Wrapper->new(
-                columns    => $args{'Wrap'},
-                body_start => ( $max > 70 * 3 ? '   ' : '' ),
-                par_start  => ''
-            );
-            $content = $wrapper->wrap($content);
-        }
-
-        $content =~ s/^/> /gm;
         $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
           . "\n$content\n\n";
     }
@@ -388,6 +373,79 @@ sub Content {
     return ($content);
 }
 
+=head2 ApplyQuoteWrap PARAMHASH
+
+Wrapper to calculate wrap criteria and apply quote wrapping if needed.
+
+=cut
+
+sub ApplyQuoteWrap {
+    my $self = shift;
+    my %args = @_;
+    my $content = $args{content};
+
+    # What's the longest line like?
+    my $max = 0;
+    foreach ( split ( /\n/, $args{content} ) ) {
+        $max = length if length > $max;
+    }
+
+    if ( $max > 76 ) {
+        require Text::Quoted;
+        require Text::Wrapper;
+
+        my $structure = Text::Quoted::extract($args{content});
+        $content = $self->QuoteWrap(content_ref => $structure,
+                                    cols        => $args{cols},
+                                    max         => $max );
+    }
+
+    $content =~ s/^/> /gm;  # use regex since string might be multi-line
+    return $content;
+}
+
+=head2 QuoteWrap PARAMHASH
+
+Wrap the contents of transactions based on Wrap settings, maintaining
+the quote character from the original.
+
+=cut
+
+sub QuoteWrap {
+    my $self = shift;
+    my %args = @_;
+    my $ref = $args{content_ref};
+    my $final_string;
+
+    if ( ref $ref eq 'ARRAY' ){
+        foreach my $array (@$ref){
+            $final_string .= $self->QuoteWrap(content_ref => $array,
+                                              cols        => $args{cols},
+                                              max         => $args{max} );
+        }
+    }
+    elsif ( ref $ref eq 'HASH' ){
+        return $ref->{quoter} . "\n" if $ref->{empty}; # Blank line
+
+        my $col = $args{cols} - (length $ref->{quoter});
+        my $wrapper = Text::Wrapper->new( columns => $col );
+
+        my $tmp = join ' ', split /\n/, $ref->{text};
+        my $wrap = $wrapper->wrap($tmp);
+        my $quoter = $ref->{quoter};
+
+        # Only add the space if actually quoting
+        $quoter .= ' ' if length $quoter;
+        $wrap =~ s/^/$quoter/mg;  # use regex since string might be multi-line
+
+        return $wrap;
+    }
+    else{
+        $RT::Logger->warning("Can't apply quoting with $ref");
+        return;
+    }
+    return $final_string;
+}
 
 
 =head2 Addresses
