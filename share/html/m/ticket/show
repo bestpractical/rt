@@ -112,10 +112,12 @@ if ($ARGS{'id'} eq 'new') {
     push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $Ticket );
     push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $Ticket );
 
-    # XXX: we shouldn't block actions here if user has no right to see the ticket,
-    # but we should allow him to see actions he has done
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-        Abort("No permission to view ticket");
+        if (@Actions) {
+            Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions);
+        } else {
+            Abort("No permission to view ticket");
+        }
     }
     if ( $ARGS{'MarkAsSeen'} ) {
         $Ticket->SetAttribute(
