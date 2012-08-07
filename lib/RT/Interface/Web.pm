@@ -575,10 +575,17 @@ sub AttemptExternalAuth {
     my $user = $ARGS->{user};
     my $m    = $HTML::Mason::Commands::m;
 
+    my $logged_in_external_user = _UserLoggedIn() && $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
     # If RT is configured for external auth, let's go through and get REMOTE_USER
 
-    # do we actually have a REMOTE_USER equivlent?
-    if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
+    # Do we actually have a REMOTE_USER or equivalent?  We only check auth if
+    # 1) we have no logged in user, or 2) we have a user who is externally
+    # authed.  If we have a logged in user who is internally authed, don't
+    # check remote user otherwise we may log them out.
+    if (RT::Interface::Web::WebCanonicalizeInfo()
+        and (not _UserLoggedIn() or $logged_in_external_user) )
+    {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
         my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
@@ -648,7 +655,7 @@ sub AttemptExternalAuth {
             );
         }
     }
-    elsif (_UserLoggedIn() and $HTML::Mason::Commands::session{'WebExternallyAuthed'}) {
+    elsif ($logged_in_external_user) {
         # The logged in external user was deauthed by the auth system and we
         # should kick them out.
         AbortExternalAuth( Error => "Deauthorized" );
