@@ -3345,6 +3345,19 @@ sub _ApplyTransactionBatch {
 
     return if $self->RanTransactionBatch;
     $self->RanTransactionBatch(1);
+
+    my $still_exists = RT::Ticket->new( RT->SystemUser );
+    $still_exists->Load( $self->Id );
+    if (not $still_exists->Id) {
+        # The ticket has been removed from the database, but we still
+        # have pending TransactionBatch txns for it.  Unfortunately,
+        # because it isn't in the DB anymore, attempting to run scrips
+        # on it may produce unpredictable results; simply drop the
+        # batched transactions.
+        $RT::Logger->warning("TransactionBatch was fired on a ticket that no longer exists; unable to run scrips!  Call ->ApplyTransactionBatch before shredding the ticket, for consistent results.");
+        return;
+    }
+
     my $batch = $self->TransactionBatch;
 
     my %seen;
