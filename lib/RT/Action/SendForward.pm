@@ -107,18 +107,6 @@ sub Prepare {
 
     $mime->add_part($entity);
 
-    unless ( $mime->head->get('Subject') ) {
-        my $subject = '';
-        $subject = $self->ForwardedTransactionObj->Subject
-          if $self->ForwardedTransactionObj;
-        $subject ||= $self->TicketObj->Subject;
-        unless ( RT->Config->Get('ForwardFromUser') ) {
-            $subject =
-              RT::Interface::Email::AddSubjectTag( $subject, $self->TicketObj );
-        }
-        $mime->head->set( Subject => $self->MIMEEncodeString("Fwd: $subject") );
-    }
-
     my $txn_attachment = $self->TransactionObj->Attachments->First;
     for my $header (qw/From To Cc Bcc/) {
         if ( $txn_attachment->GetHeader( $header ) ) {
@@ -134,8 +122,9 @@ sub Prepare {
 }
 
 sub SetSubjectToken {
-
-    # we already take care of this in Prepare.
+    my $self = shift;
+    return if RT->Config->Get('ForwardFromUser');
+    $self->SUPER::SetSubjectToken(@_);
 }
 
 sub ForwardedTransactionObj {

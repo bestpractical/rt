@@ -61,7 +61,7 @@
 <td><% $from %></td></tr>
 
 <tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><% $subject %></td></tr>
+<td><input name="Subject" size="60" value="<% $ARGS{'Subject'} || $subject %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>To</&>:</td>
 <td><input name="To" size="60" value="<% $ARGS{'To'} || '' %>" /></td></tr>
@@ -125,9 +125,7 @@ my $Title = $txn
 my $from = RT::Interface::Email::GetForwardFrom(
     $txn ? ( Transaction => $txn ) : ( Ticket => $TicketObj ) );
 
-my $subject = $TicketObj->Subject;
-$subject = RT::Interface::Email::AddSubjectTag( $subject, $TicketObj )
-    unless RT->Config->Get('ForwardFromUser');
+my $subject = "Fwd: ".($txn || $TicketObj)->Subject;
 
 my $attachments = RT::Interface::Email::GetForwardAttachments(
     Ticket => $TicketObj,

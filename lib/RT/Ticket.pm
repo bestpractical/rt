@@ -2990,6 +2990,7 @@ sub Forward {
     my $self = shift;
     my %args = (
         Transaction    => undef,
+        Subject        => '',
         To             => '',
         Cc             => '',
         Bcc            => '',
@@ -3007,13 +3008,14 @@ sub Forward {
     $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress( $args{$_} || '' ) for qw(To Cc Bcc);
 
     my $mime = MIME::Entity->build(
-        Type => $args{'ContentType'},
-        Data => $args{Content},
+        Subject => $args{Subject},
+        Type    => $args{ContentType},
+        Data    => $args{Content},
     );
 
     $mime->head->set(
         $_ => RT::Interface::Email::EncodeToMIME( String => $args{$_} ) )
-      for grep defined $args{$_}, qw(To Cc Bcc);
+      for grep defined $args{$_}, qw(Subject To Cc Bcc);
     $mime->head->set(
         From => RT::Interface::Email::EncodeToMIME(
             String => RT::Interface::Email::GetForwardFrom(
