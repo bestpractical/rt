@@ -836,7 +836,7 @@ sub RFC2822 {
 
     my ($date, $time) = ('','');
     $date .= "$DAYS_OF_WEEK[$wday], " if $args{'DayOfWeek'} && $args{'Date'};
-    $date .= "$mday $MONTHS[$mon] $year" if $args{'Date'};
+    $date .= sprintf("%02d %s %04d", $mday, $MONTHS[$mon], $year) if $args{'Date'};
 
     if ( $args{'Time'} ) {
         $time .= sprintf("%02d:%02d", $hour, $min);
