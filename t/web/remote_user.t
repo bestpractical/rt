@@ -156,4 +156,67 @@ diag "Fallback OFF";
     stop_server(\$m);
 }
 
-# XXX TODO: test WebExternalAuto and AutoCreate
+diag "AutoCreate";
+{
+    RT->Config->Set( DevelMode => 0 );
+    RT->Config->Set( WebExternalAuth => 1 );
+    RT->Config->Set( WebExternalAuthContinuous => 1 );
+    RT->Config->Set( WebFallbackToInternalAuth => 0 );
+    RT->Config->Set( WebExternalAuto => 1 );
+    RT->Config->Set( AutoCreate => { Organization => "BPS" } );
+
+    my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "New user";
+    {
+        $m->default_header( auth("anewuser") );
+        $m->get_ok($url);
+        ok logged_in_as($m, "anewuser"), "Logged in as anewuser";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("anewuser");
+        ok $user->id, "Found newly created user";
+        is $user->Organization, "BPS", "Found Organization from AutoCreate hash";
+        {
+            local $TODO = 'A bug from 2009 prevents Privileged from being set by WebExternalAutoInfo';
+            ok $user->Privileged, "Privileged by default";
+        }
+    }
+
+    stop_server(\$m);
+    RT->Config->Set(
+        AutoCreate => {
+            Privileged   => 0,
+            EmailAddress => 'foo@example.com',
+        },
+    );
+    ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "Create unprivileged users";
+    {
+        $m->default_header( auth("unpriv") );
+        $m->get_ok($url);
+        ok logged_in_as($m, "unpriv"), "Logged in as an unpriv user";
+        like $m->uri->path, RT->Config->Get('SelfServiceRegex'), "SelfService URL";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("unpriv");
+        ok $user->id, "Found newly created user";
+        ok !$user->Privileged, "Unprivileged per config";
+        is $user->EmailAddress, 'foo@example.com', "Email address per config";
+    }
+
+    diag "User creation failure";
+    {
+        $m->default_header( auth("conflicting") );
+        $m->get($url);
+        is $m->status, 403, "Forbidden";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("conflicting");
+        ok !$user->id, "Couldn't find conflicting user";
+    }
+
+    stop_server(\$m);
+}
+
