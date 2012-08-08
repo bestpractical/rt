@@ -177,10 +177,7 @@ diag "AutoCreate";
         $user->Load("anewuser");
         ok $user->id, "Found newly created user";
         is $user->Organization, "BPS", "Found Organization from AutoCreate hash";
-        {
-            local $TODO = 'A bug from 2009 prevents Privileged from being set by WebExternalAutoInfo';
-            ok $user->Privileged, "Privileged by default";
-        }
+        ok $user->Privileged, "Privileged by default";
     }
 
     stop_server(\$m);
