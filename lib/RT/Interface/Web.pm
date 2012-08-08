@@ -377,11 +377,23 @@ the next page.  Optionally takes a hash which is dumped into query params.
 =cut
 
 sub TangentForLogin {
+    my $login = TangentForLoginURL(@_);
+    Redirect( RT->Config->Get('WebBaseURL') . $login );
+}
+
+=head2 TangentForLoginURL [HASH]
+
+Returns a URL suitable for tangenting for login.  Optionally takes a hash which
+is dumped into query params.
+
+=cut
+
+sub TangentForLoginURL {
     my $hash  = SetNextPage();
     my %query = (@_, next => $hash);
-    my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
+    my $login = RT->Config->Get('WebPath') . '/NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
-    Redirect($login);
+    return $login;
 }
 
 =head2 TangentForLoginWithError ERROR

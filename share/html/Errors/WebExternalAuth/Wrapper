@@ -3,8 +3,7 @@ $Title => loc("An error occurred")
 $Error => ''
 </%args>
 <%init>
-my $next = RT::Interface::Web::SetNextPage();
-my $login_url = RT->Config->Get('WebPath') . "/NoAuth/Login.html?next=$next";
+my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL(), 'h');
 </%init>
 <html>
   <head>
