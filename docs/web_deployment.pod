@@ -23,7 +23,7 @@ to use L<Starman>, a high performance preforking server:
     /opt/rt4/sbin/rt-server --server Starman --port 8080
 
 B<NOTICE>: After you run the standalone server as root, you will need to
-remove your C<var/mason> directory, or the non-standalone servers
+remove your C<var/mason_data> directory, or the non-standalone servers
 (Apache, etc), which run as a non-privileged user, will not be able to
 write to it and will not work.
 
