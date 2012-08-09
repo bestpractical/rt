@@ -378,61 +378,6 @@ sub ContentLength {
     return $len;
 }
 
-=head2 Quote
-
-=cut
-
-sub Quote {
-    my $self=shift;
-    my %args=(Reply=>undef, # Prefilled reply (i.e. from the KB/FAQ system)
-	      @_);
-
-    my ($quoted_content, $body, $headers);
-    my $max=0;
-
-    # TODO: Handle Multipart/Mixed (eventually fix the link in the
-    # ShowHistory web template?)
-    if (RT::I18N::IsTextualContentType($self->ContentType)) {
-	$body=$self->Content;
-
-	# Do we need any preformatting (wrapping, that is) of the message?
-
-	# Remove quoted signature.
-	$body =~ s/\n-- \n(.*)$//s;
-
-	# What's the longest line like?
-	foreach (split (/\n/,$body)) {
-	    $max=length if ( length > $max);
-	}
-
-	if ($max>76) {
-	    require Text::Wrapper;
-	    my $wrapper = Text::Wrapper->new
-		(
-		 columns => 70, 
-		 body_start => ($max > 70*3 ? '   ' : ''),
-		 par_start => ''
-		 );
-	    $body=$wrapper->wrap($body);
-	}
-
-	$body =~ s/^/> /gm;
-
-	$body = '[' . $self->TransactionObj->CreatorObj->Name() . ' - ' . $self->TransactionObj->CreatedAsString()
-	            . "]:\n\n"
-   	        . $body . "\n\n";
-
-    } else {
-	$body = "[Non-text message not quoted]\n\n";
-    }
-    
-    $max=60 if $max<60;
-    $max=70 if $max>78;
-    $max+=2;
-
-    return (\$body, $max);
-}
-
 =head2 ContentAsMIME [Children => 1]
 
 Returns MIME entity built from this attachment.
