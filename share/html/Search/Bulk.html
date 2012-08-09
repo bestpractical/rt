@@ -297,7 +297,6 @@ while ( my $ticket = $Tickets->Next ) {
 
 #Iterate through each ticket we've been handed
 my @linkresults;
-my %queues;
 
 $Tickets->RedoSearch();
 
@@ -317,7 +316,6 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
         #Update the links
         $ARGS{'id'} = $Ticket->id;
-        $queues{ $Ticket->QueueObj->Id }++;
 
         my @updateresults = ProcessUpdateMessage(
                 TicketObj => $Ticket,
@@ -421,7 +419,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
 $TxnCFs->LimitToLookupType( RT::Transaction->CustomFieldLookupType );
-$TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
+$TxnCFs->LimitToGlobalOrObjectId( keys %$seen_queues );
 
 </%INIT>
 <%args>
