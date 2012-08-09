@@ -256,6 +256,25 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </pre>
 </&>
 
+<&|/Widgets/TitleBox, title => loc("Operating System") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<%perl>
+my %os = (
+    "Distribution"   => 'lsb_release --all',
+    "uname -a"       => 'uname -a',
+    "SELinux status" => 'getenforce',
+);
+my $row = 0;
+</%perl>
+% while (my ($name, $cmd) = each %os) {
+<tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
+<td class="collection-as-table"><% $name %></td>
+<td class="collection-as-table" style="white-space: pre; font-family: monospace"><% `$cmd </dev/null 2>/dev/null` || '' %></td>
+</tr>
+% }
+</table>
+</&>
+
 <%INIT>
 use Data::Dumper;
 local $Data::Dumper::Terse = 1;
