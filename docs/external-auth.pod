@@ -1,0 +1,112 @@
+=head1 External Authentication
+
+There are two primary types of external authentication: in one you type your
+username and password into RT's login form, and in the other your web server
+(such as Apache) handles authentication, often seamlessly, and tells RT the
+user logged in.
+
+The second is supported by RT out of the box under the configuration option
+C<$WebExternalAuth> and other related options.  The first is supported by an RT
+extension named L</RT::Authen::ExternalAuth>.  These two types may be used
+independently or together, and both can fallback to RT's internal
+authentication.
+
+No matter what type of external authentication you use, RT still maintains User
+records in it's database that correspond to your external source.  This is
+necessary so RT can link tickets, groups, rights, dashboards, etc. to users.
+Do not be concerned if you observe such behaviour.
+
+Another extension, L</RT::Extension::LDAPImport>, can be used to keep users,
+user data, and groups in sync (via cron) with an external LDAP source (such as
+an OpenLDAP or Active Directory server).  This can be used in tandem with any
+of the external authentication options as it does not provide any
+authentication itself.
+
+=head1 C<$WebExternalAuth>
+
+This type of external authentication is built-in to RT and bypasses the RT
+login form.  Instead, RT defers authentication to the web server which is
+expected to set a C<REMOTE_USER> environment variable.  Upon a request, RT
+checks C<REMOTE_USER> against its internal database and logs in the matched
+user.
+
+It is often used to provide single sign-on (SSO) support via Apache modules
+such as C<mod_auth_kerb> (to talk to Active Directory).  C<$WebExternalAuth> is
+widely used by organizations with existing authentication standards for web
+services that leverge web server modules for central authentication services.
+The flexibility of RT's C<$WebExternalAuth> support means that it can be setup
+with almost any authentication system.
+
+In order to keep user data in sync, this type of external auth is almost always
+used in combination with one or both of L</RT::Authen::ExternalAuth> and
+L</RT::Extension::LDAPImport>.
+
+=head2 Configuration options
+
+All of the following options control the behaviour of RT's built-in external
+authentication which relies on the web server.  They are documented in detail
+under the "Authorization and user configuration" section of C<etc/RT_Config.pm>
+and you can read the documentation by running C<perldoc /opt/rt4/etc/RT_Config.pm>.
+
+The list below is meant to make you aware of what's available.  You should read
+the full documentation as described above.
+
+=head3 C<$WebExternalAuth>
+
+Enables or disables RT's expectation that the web server will provide
+authentication using the C<REMOTE_USER> environment variable.
+
+=head3 C<$WebExternalAuthContinuous>
+
+Check C<REMOTE_USER> on every request rather than the initial request.
+
+=head3 C<$WebFallbackToInternalAuth>
+
+If true, allows internal logins as well as C<REMOTE_USER> by providing a login
+form if external authentication fails.
+
+=head3 C<$WebExternalAuto>
+
+Enables or disables auto-creation of RT users when a new C<REMOTE_USER> is
+encountered.
+
+=head3 C<$AutoCreate>
+
+Specifies the default properties of auto-created users.
+
+=head3 C<$WebExternalGecos>
+
+Tells RT to compare C<REMOTE_USER> to the C<Gecos> field of RT users instead of
+the C<Name> field.
+
+=head1 RT::Authen::ExternalAuth
+
+L<RT::Authen::ExternalAuth> is an RT extension which provides authentication
+B<using> RT's login form.  It can be configured to talk to an LDAP source (such
+as Active Directory), an external database, or an SSO cookie.
+
+The key difference between C<$WebExternalAuth> and L<RT::Authen::ExternalAuth>
+is the use of the RT login form and what part of the system talks to your
+authentication source (your web server vs. RT itself).
+
+=head2 Info mode and Authentication mode
+
+There are two modes of operation in L<RT::Authen::ExternalAuth>: info and auth.
+Usually you want to configure both so that successfully authenticated users
+also get their information pulled and updated from your external source.
+
+Auth-only configurations are rare, and generally not as useful.
+
+Info-only configurations are commonly setup in tandem with C<$WebExternalAuth>.
+This lets your web server handle authentication (usually for SSO) and
+C<RT::Authen::ExternalAuth> ensures user data is updated every time someone
+logs in.
+
+=head1 RT::Extension::LDAPImport
+
+L<RT::Extension::LDAPImport> provides no authentication, but is worth
+mentioning because it provides user data and group member synchronization from
+any LDAP source into RT.  It provides a similar but more complete sync solution
+than L<RT::Authen::ExternalAuth> (which only updates upon login and doesn't
+handle groups).  It may be used with either of RT's external authentication
+sources, or on it's own.
