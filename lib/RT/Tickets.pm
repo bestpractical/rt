@@ -454,7 +454,7 @@ sub _LinkLimit {
 
     my $is_local = 1;
     if ( $is_null ) {
-        $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
+        $op = ($op =~ /^(=|IS)$/i)? 'IS': 'IS NOT';
     }
     elsif ( $value =~ /\D/ ) {
         $is_local = 0;
@@ -934,7 +934,7 @@ sub _WatcherLimit {
     my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
 
     $self->_OpenParen;
-    if ( $op =~ /^IS(?: NOT)?$/ ) {
+    if ( $op =~ /^IS(?: NOT)?$/i ) {
         # is [not] empty case
 
         my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
