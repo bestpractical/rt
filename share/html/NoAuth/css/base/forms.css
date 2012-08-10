@@ -269,3 +269,10 @@ form div.submit div.buttons div.next {
 #formatbuttons {
     clear: both;
 }
+
+#ResetAuthTokenPrompt {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    text-decoration: underline;
+}

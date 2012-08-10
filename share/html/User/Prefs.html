@@ -171,7 +171,21 @@
 
 <&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&>
 
-<& /Elements/Submit, Label => loc('Reset secret authentication token'), Name => "ResetAuthToken" &>
+<a href="#" id="ResetAuthTokenPrompt" style="display: none">
+  <&|/l&>I want to reset my secret token.</&>
+</a>
+<& /Elements/Submit,
+    Label       => loc('Reset secret authentication token'),
+    Name        => "ResetAuthToken",
+    id          => "ResetAuthTokenContainer" &>
+<script>
+    jQuery("#ResetAuthTokenContainer").hide();
+    jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
+        jQuery(this).slideUp();
+        jQuery("#ResetAuthTokenContainer").slideDown();
+        ev.preventDefault();
+    });
+</script>
 </&>
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
