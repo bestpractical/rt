@@ -53,6 +53,7 @@ use warnings;
 
 use base qw(Test::WWW::Mechanize);
 use Scalar::Util qw(weaken);
+use MIME::Base64 qw//;
 
 BEGIN { require RT::Test; }
 require Test::More;
@@ -369,6 +370,17 @@ sub check_links {
         return 0;
     }
     return Test::More::ok( 1, "expected links" );
+}
+
+sub auth {
+    my $self = shift;
+    $self->default_header( $self->auth_header(@_) );
+}
+
+sub auth_header {
+    my $self = shift;
+    return Authorization => "Basic " .
+        MIME::Base64::encode( join(":", @_) );
 }
 
 sub DESTROY {

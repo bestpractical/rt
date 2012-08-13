@@ -2,12 +2,6 @@ use strict;
 use warnings;
 use RT;
 use RT::Test plan => 'no_plan';
-use MIME::Base64 qw//;
-
-sub auth {
-    return Authorization => "Basic " .
-        MIME::Base64::encode( join(":", @_) );
-}
 
 sub logged_in_as {
     my $mech = shift;
@@ -30,7 +24,7 @@ sub stop_server {
     my $mech = shift;
 
     # Ensure we're logged in for the final warnings check
-    $$mech->default_header( auth("root") );
+    $$mech->auth("root");
 
     # Force the warnings check before we stop the server
     undef $$mech;
@@ -51,7 +45,7 @@ diag "Continuous + Fallback";
     diag "Internal auth";
     {
         # Empty REMOTE_USER
-        $m->default_header( auth("") );
+        $m->auth("");
 
         # First request gets the login form
         $m->get_ok($url, "No basic auth is OK");
@@ -80,7 +74,7 @@ diag "Continuous + Fallback";
     diag "External auth";
     {
         # REMOTE_USER of root
-        $m->default_header( auth("root") );
+        $m->auth("root");
 
         # Automatically logged in as root without Login page
         $m->get_ok($url);
@@ -91,7 +85,7 @@ diag "Continuous + Fallback";
         ok logged_in_as($m, "root"), "Still logged in as root";
 
         # Drop credentials and...
-        $m->default_header( auth("") );
+        $m->auth("");
 
         # ...see if RT notices
         $m->get($url);
@@ -105,7 +99,7 @@ diag "Continuous + Fallback";
     diag "External auth with invalid user, login internally";
     {
         # REMOTE_USER of invalid
-        $m->default_header( auth("invalid") );
+        $m->auth("invalid");
 
         # Login internally via the login link
         $m->get("$url/Search/Build.html");
@@ -148,7 +142,7 @@ diag "Fallback OFF";
 
     diag "No remote user";
     {
-        $m->default_header( auth("") );
+        $m->auth("");
         $m->get($url);
         is $m->status, 403, "Forbidden";
     }
@@ -169,7 +163,7 @@ diag "AutoCreate";
 
     diag "New user";
     {
-        $m->default_header( auth("anewuser") );
+        $m->auth("anewuser");
         $m->get_ok($url);
         ok logged_in_as($m, "anewuser"), "Logged in as anewuser";
 
@@ -191,7 +185,7 @@ diag "AutoCreate";
 
     diag "Create unprivileged users";
     {
-        $m->default_header( auth("unpriv") );
+        $m->auth("unpriv");
         $m->get_ok($url);
         ok logged_in_as($m, "unpriv"), "Logged in as an unpriv user";
         like $m->uri->path, RT->Config->Get('SelfServiceRegex'), "SelfService URL";
@@ -205,7 +199,7 @@ diag "AutoCreate";
 
     diag "User creation failure";
     {
-        $m->default_header( auth("conflicting") );
+        $m->auth("conflicting");
         $m->get($url);
         is $m->status, 403, "Forbidden";
 
