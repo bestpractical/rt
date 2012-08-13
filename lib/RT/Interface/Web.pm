@@ -660,7 +660,7 @@ sub AttemptExternalAuth {
         } else {
             # Couldn't auth with the REMOTE_USER provided because an RT
             # user doesn't exist and we're configured not to create one.
-            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation.");
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/external-auth.pod` if you want to allow auto-creation.");
             AbortExternalAuth(
                 Error => "NoInternalUser",
                 User  => $user,
