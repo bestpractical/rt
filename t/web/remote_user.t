@@ -3,23 +3,6 @@ use warnings;
 use RT;
 use RT::Test plan => 'no_plan';
 
-sub logged_in_as {
-    my $mech = shift;
-    my $user = shift || '';
-
-    unless ($mech->status == 200) {
-        diag "Error: status is ". $mech->status;
-        return 0;
-    }
-
-    RT::Interface::Web::EscapeUTF8(\$user);
-    unless ($mech->content =~ m{<span class="current-user">\Q$user\E</span>}i) {
-        diag "Error: page has no user name";
-        return 0;
-    }
-    return 1;
-}
-
 sub stop_server {
     my $mech = shift;
 
@@ -58,11 +41,11 @@ diag "Continuous + Fallback";
                 pass => 'password',
             },
         }, "Submitted login form");
-        ok logged_in_as($m, "root"), "Logged in as root";
+        ok $m->logged_in_as("root"), "Logged in as root";
 
         # Still logged in on another request without REMOTE_USER
         $m->follow_link_ok({ text => 'My Tickets' });
-        ok logged_in_as($m, "root"), "Logged in as root";
+        ok $m->logged_in_as("root"), "Logged in as root";
 
         ok $m->logout, "Logged out";
 
@@ -78,11 +61,11 @@ diag "Continuous + Fallback";
 
         # Automatically logged in as root without Login page
         $m->get_ok($url);
-        ok logged_in_as($m, "root"), "Logged in as root";
+        ok $m->logged_in_as("root"), "Logged in as root";
 
         # Still logged in on another request
         $m->follow_link_ok({ text => 'My Tickets' });
-        ok logged_in_as($m, "root"), "Still logged in as root";
+        ok $m->logged_in_as("root"), "Still logged in as root";
 
         # Drop credentials and...
         $m->auth("");
@@ -114,12 +97,12 @@ diag "Continuous + Fallback";
                 pass => 'password',
             },
         }, "Submitted login form");
-        ok logged_in_as($m, "root"), "Logged in as root";
+        ok $m->logged_in_as("root"), "Logged in as root";
         like $m->uri, qr'Search/Build\.html', "at our originally requested page";
 
         # Still logged in on another request
         $m->follow_link_ok({ text => 'Tools' });
-        ok logged_in_as($m, "root"), "Logged in as root";
+        ok $m->logged_in_as("root"), "Logged in as root";
 
         ok $m->logout, "Logged out";
 
@@ -165,7 +148,7 @@ diag "AutoCreate";
     {
         $m->auth("anewuser");
         $m->get_ok($url);
-        ok logged_in_as($m, "anewuser"), "Logged in as anewuser";
+        ok $m->logged_in_as("anewuser"), "Logged in as anewuser";
 
         my $user = RT::User->new( RT->SystemUser );
         $user->Load("anewuser");
@@ -187,7 +170,7 @@ diag "AutoCreate";
     {
         $m->auth("unpriv");
         $m->get_ok($url);
-        ok logged_in_as($m, "unpriv"), "Logged in as an unpriv user";
+        ok $m->logged_in_as("unpriv"), "Logged in as an unpriv user";
         like $m->uri->path, RT->Config->Get('SelfServiceRegex'), "SelfService URL";
 
         my $user = RT::User->new( RT->SystemUser );

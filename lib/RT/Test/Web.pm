@@ -97,12 +97,22 @@ sub login {
 
     my $url = $self->rt_base_url;
     $self->get($url . "?user=$user;pass=$pass");
-    unless ( $self->status == 200 ) {
-        Test::More::diag( "error: status is ". $self->status );
-        return 0;
-    }
+
+    return 0 unless $self->logged_in_as($user);
+
     unless ( $self->content =~ m/Logout/i ) {
         Test::More::diag("error: page has no Logout");
+        return 0;
+    }
+    return 1;
+}
+
+sub logged_in_as {
+    my $self = shift;
+    my $user = shift || '';
+
+    unless ( $self->status == 200 ) {
+        Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
     RT::Interface::Web::EscapeUTF8(\$user);
