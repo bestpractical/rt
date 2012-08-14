@@ -1,15 +1,17 @@
 =head1 RT Authentication
 
-RT allows for several different ways to authenticate users including a native
-account management system and a number of ways to integrate with existing
+RT allows for several different ways to authenticate users including an
+internal user management system and a number of ways to integrate with existing
 authentication systems.
 
-=head1 Native Authentication
+=head1 Internal Authentication
 
-RT's native authentication system provides administration tools to manage
-usernames and passwords.  If you plan to run your RT as a stand-alone system
-and don't need to use accounts associated with any other system, this may be
-all you need.
+RT's native internal authentication system provides administration tools to
+manage usernames and passwords.  If you plan to run your RT as a stand-alone
+system and don't need to use accounts associated with any other system, this
+may be all you need.  The administration pages under Configuration → Users
+provide new user creation as well as password setting and control of RT's
+privileged flag for existing users.
 
 =head1 External Authentication
 
