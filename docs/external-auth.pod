@@ -1,3 +1,16 @@
+=head1 RT Authentication
+
+RT allows for several different ways to authenticate users including a native
+account management system and a number of ways to integrate with existing
+authentication systems.
+
+=head1 Native authentication
+
+RT's native authentication system provides administration tools to manage
+usernames and passwords.  If you plan to run your RT as a stand-alone system
+and don't need to use accounts associated with any other system, this may be
+all you need.
+
 =head1 External Authentication
 
 There are two primary types of external authentication: in one you type your
@@ -11,24 +24,26 @@ extension named L</RT::Authen::ExternalAuth>.  These two types may be used
 independently or together, and both can fallback to RT's internal
 authentication.
 
-No matter what type of external authentication you use, RT still maintains User
-records in it's database that correspond to your external source.  This is
+No matter what type of external authentication you use, RT still maintains user
+records in its database that correspond to your external source.  This is
 necessary so RT can link tickets, groups, rights, dashboards, etc. to users.
-Do not be concerned if you observe such behaviour.
 
-Another extension, L</RT::Extension::LDAPImport>, can be used to keep users,
-user data, and groups in sync (via cron) with an external LDAP source (such as
-an OpenLDAP or Active Directory server).  This can be used in tandem with any
-of the external authentication options as it does not provide any
-authentication itself.
+All that is necessary for integration with external authentication systems is a
+shared username or email address.  However, in RT you may want to leverage
+additional information from your external source.  Synchronization of users,
+user data, and groups is provided by an extension named
+L</RT::Extension::LDAPImport>.  It uses an external LDAP source, such an
+OpenLDAP or Active Directory server, as the authoritative repository and keeps
+RT up to date accordingly.  This can be used in tandem with any of the external
+authentication options as it does not provide any authentication itself.
 
 =head1 C<$WebExternalAuth>
 
 This type of external authentication is built-in to RT and bypasses the RT
 login form.  Instead, RT defers authentication to the web server which is
 expected to set a C<REMOTE_USER> environment variable.  Upon a request, RT
-checks C<REMOTE_USER> against its internal database and logs in the matched
-user.
+checks the value of C<REMOTE_USER> against its internal database and logs in
+the matched user.
 
 It is often used to provide single sign-on (SSO) support via Apache modules
 such as C<mod_auth_kerb> (to talk to Active Directory).  C<$WebExternalAuth> is
@@ -60,10 +75,18 @@ authentication using the C<REMOTE_USER> environment variable.
 
 Check C<REMOTE_USER> on every request rather than the initial request.
 
+When this is off, users will remain logged into RT even after C<REMOTE_USER> is
+no longer provided.  This provides a separation of sessions, but it may not be
+desirable in all cases.  For example, if a user logs out of the external
+authentication system their RT session will remain active unless
+C<$WebExternalAuthContinuous> is on.
+
 =head3 C<$WebFallbackToInternalAuth>
 
 If true, allows internal logins as well as C<REMOTE_USER> by providing a login
-form if external authentication fails.
+form if external authentication fails. This is useful to provide local admin
+access (usually as root) or self service access for people without external
+user accounts.
 
 =head3 C<$WebExternalAuto>
 
