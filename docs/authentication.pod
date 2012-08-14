@@ -4,7 +4,7 @@ RT allows for several different ways to authenticate users including a native
 account management system and a number of ways to integrate with existing
 authentication systems.
 
-=head1 Native authentication
+=head1 Native Authentication
 
 RT's native authentication system provides administration tools to manage
 usernames and passwords.  If you plan to run your RT as a stand-alone system
@@ -37,7 +37,7 @@ OpenLDAP or Active Directory server, as the authoritative repository and keeps
 RT up to date accordingly.  This can be used in tandem with any of the external
 authentication options as it does not provide any authentication itself.
 
-=head1 C<$WebExternalAuth>
+=head2 Via your web server, aka C<$WebExternalAuth>, aka C<REMOTE_USER>
 
 This type of external authentication is built-in to RT and bypasses the RT
 login form.  Instead, RT defers authentication to the web server which is
@@ -56,7 +56,7 @@ In order to keep user data in sync, this type of external auth is almost always
 used in combination with one or both of L</RT::Authen::ExternalAuth> and
 L</RT::Extension::LDAPImport>.
 
-=head2 Configuration options
+=head3 Configuration options
 
 All of the following options control the behaviour of RT's built-in external
 authentication which relies on the web server.  They are documented in detail
@@ -66,12 +66,12 @@ and you can read the documentation by running C<perldoc /opt/rt4/etc/RT_Config.p
 The list below is meant to make you aware of what's available.  You should read
 the full documentation as described above.
 
-=head3 C<$WebExternalAuth>
+=head4 C<$WebExternalAuth>
 
 Enables or disables RT's expectation that the web server will provide
 authentication using the C<REMOTE_USER> environment variable.
 
-=head3 C<$WebExternalAuthContinuous>
+=head4 C<$WebExternalAuthContinuous>
 
 Check C<REMOTE_USER> on every request rather than the initial request.
 
@@ -81,28 +81,28 @@ desirable in all cases.  For example, if a user logs out of the external
 authentication system their RT session will remain active unless
 C<$WebExternalAuthContinuous> is on.
 
-=head3 C<$WebFallbackToInternalAuth>
+=head4 C<$WebFallbackToInternalAuth>
 
 If true, allows internal logins as well as C<REMOTE_USER> by providing a login
 form if external authentication fails. This is useful to provide local admin
 access (usually as root) or self service access for people without external
 user accounts.
 
-=head3 C<$WebExternalAuto>
+=head4 C<$WebExternalAuto>
 
 Enables or disables auto-creation of RT users when a new C<REMOTE_USER> is
 encountered.
 
-=head3 C<$AutoCreate>
+=head4 C<$AutoCreate>
 
 Specifies the default properties of auto-created users.
 
-=head3 C<$WebExternalGecos>
+=head4 C<$WebExternalGecos>
 
 Tells RT to compare C<REMOTE_USER> to the C<Gecos> field of RT users instead of
 the C<Name> field.
 
-=head1 RT::Authen::ExternalAuth
+=head2 Via RT's login form, aka RT::Authen::ExternalAuth
 
 L<RT::Authen::ExternalAuth> is an RT extension which provides authentication
 B<using> RT's login form.  It can be configured to talk to an LDAP source (such
@@ -112,7 +112,7 @@ The key difference between C<$WebExternalAuth> and L<RT::Authen::ExternalAuth>
 is the use of the RT login form and what part of the system talks to your
 authentication source (your web server vs. RT itself).
 
-=head2 Info mode and Authentication mode
+=head3 Info mode and Authentication mode
 
 There are two modes of operation in L<RT::Authen::ExternalAuth>: info and auth.
 Usually you want to configure both so that successfully authenticated users
@@ -125,7 +125,7 @@ This lets your web server handle authentication (usually for SSO) and
 C<RT::Authen::ExternalAuth> ensures user data is updated every time someone
 logs in.
 
-=head1 RT::Extension::LDAPImport
+=head2 RT::Extension::LDAPImport
 
 L<RT::Extension::LDAPImport> provides no authentication, but is worth
 mentioning because it provides user data and group member synchronization from
