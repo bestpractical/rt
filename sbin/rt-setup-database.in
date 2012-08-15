@@ -82,6 +82,7 @@ GetOptions(
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
+    'package=s', 'ext-version=s',
     'help|h',
 );
 
@@ -184,6 +185,9 @@ if ($args{'skip-create'}) {
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
+
+my $package = $args{'package'} || 'RT';
+my $ext_version = $args{'ext-version'};
 
 foreach my $action ( @actions ) {
     no strict 'refs';
@@ -289,6 +293,33 @@ sub action_insert {
         $RT::Record::_TABLE_ATTR->{$class}{$_} = $removed{$class}{$_}
             for keys %{$removed{$class}};
     }
+
+    my $content;
+    open my $handle, '<', $file or warn "Unable to open $file: $!";
+    if ($handle) {
+        local $/; # slurp
+        $content = <$handle>;
+    }
+
+    # XXX Reconnecting to insert the history entry
+    # until we can sort out removing
+    # the disconnect at the end of InsertData.
+
+    RT->ConnectToDatabase();
+
+    my %upgrade_data = (
+        action   => 'insert',
+        filename => $file,
+        content  => $content,
+        stage    => 'after',);
+
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
+
     return @ret;
 }
 
@@ -373,12 +404,36 @@ sub action_upgrade {
     print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
+    RT->ConnectToDatabase();
+    RT->InitLogging();
+    RT->InitSystemObjects();
+
+    RT->System->AddUpgradeHistory($package => {
+        type      => 'full upgrade',
+        action    => 'upgrade',
+        stage     => 'before',
+        from      => $upgrading_from,
+        to        => $upgrading_to,
+        versions  => [@versions],
+    });
+
+    my $previous = $upgrading_from;
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
+
+        RT->System->AddUpgradeHistory($package => {
+            action => 'upgrade',
+            type   => 'individual upgrade',
+            stage  => 'before',
+            from   => $previous,
+            to     => $v,
+        });
+
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
+
         if ( -e "$base_dir/$v/schema.$db_type" ) {
             ( $ret, $msg ) = action_schema( %tmp );
             return ( $ret, $msg ) unless $ret;
@@ -391,7 +446,32 @@ sub action_upgrade {
             ( $ret, $msg ) = action_insert( %tmp );
             return ( $ret, $msg ) unless $ret;
         }
+
+	# XXX: Another connect since the insert called
+	# previous to this step will disconnect.
+
+	RT->ConnectToDatabase();
+
+        RT->System->AddUpgradeHistory($package => {
+            action => 'upgrade',
+            type   => 'individual upgrade',
+            stage  => 'after',
+            from   => $previous,
+            to     => $v,
+        });
+
+        $previous = $v;
     }
+
+    RT->System->AddUpgradeHistory($package => {
+        type      => 'full upgrade',
+        action    => 'upgrade',
+        stage     => 'after',
+        from      => $upgrading_from,
+        to        => $upgrading_to,
+        versions  => [@versions],
+    });
+
     return 1;
 }
 
@@ -577,4 +657,17 @@ administrator privileges
 for 'init' and 'insert': rather than using the default administrative password
 for RT's "root" user, use the password in this file.
 
+=item package 
+
+the name of the entity performing a create or upgrade. Used for logging changes
+in the DB. Defaults to RT, otherwise it should be the fully qualified package name
+of the extension or plugin making changes to the DB.
+
+=item ext-version
+
+current version of extension making a change. Not needed for RT since RT has a
+more elaborate system to track upgrades across multiple versions.
+
 =back
+
+=cut

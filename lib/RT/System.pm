@@ -258,6 +258,55 @@ sub QueueCacheNeedsUpdate {
     }
 }
 
+=head2 AddUpgradeHistory package, data
+
+Adds an entry to the upgrade history database. The package can be either C<RT>
+for core RT upgrades, or the fully qualified name of a plugin. The data must be
+a hash reference.
+
+=cut
+
+sub AddUpgradeHistory {
+    my $self  = shift;
+    my $package = shift;
+    my $data  = shift;
+
+    $data->{timestamp}  ||= time;
+    $data->{rt_version} ||= $RT::VERSION;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    push @{ $upgrade_history->{$package} }, $data;
+
+    $self->SetAttribute(
+        Name    => 'UpgradeHistory',
+        Content => $upgrade_history,
+    );
+}
+
+=head2 UpgradeHistory [package]
+
+Returns the entries of RT's upgrade history. If a package is specified, the list
+of upgrades for that package will be returned. Otherwise a hash reference of
+C<< package => [upgrades] >> will be returned.
+
+=cut
+
+sub UpgradeHistory {
+    my $self  = shift;
+    my $package = shift;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    if ($package) {
+        return @{ $upgrade_history->{$package} || [] };
+    }
+
+    return $upgrade_history;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
