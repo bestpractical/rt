@@ -73,6 +73,7 @@ use warnings;
 use base qw/RT::Record/;
 
 use RT::ACL;
+use RT::ACE;
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
@@ -118,29 +119,46 @@ those rights globally.
 
 =cut
 
-
-use RT::CustomField;
-use RT::Queue;
-use RT::Group; 
-use RT::Class;
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Queue->new(RT->SystemUser);
-    my $group = RT::Group->new(RT->SystemUser);
-    my $cf    = RT::CustomField->new(RT->SystemUser);
-    my $class = RT::Class->new(RT->SystemUser);
-
-    my $qr = $queue->AvailableRights();
-    my $gr = $group->AvailableRights();
-    my $cr = $cf->AvailableRights();
-    my $clr = $class->AvailableRights();
-
-    # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
+    # Build a merged list of all system wide rights, queue rights, group rights, etc.
+    my %rights = (
+        %{ $RIGHTS },
+        %{ $self->_ForAllACEObjectTypes('AvailableRights') },
+    );
     delete $rights{ExecuteCode} if RT->Config->Get('DisallowExecuteCode');
 
     return(\%rights);
+}
+
+sub _ForAllACEObjectTypes {
+    my $self = shift;
+    my $method = shift;
+    return {} unless $method;
+
+    my %data;
+    for my $class (keys %RT::ACE::OBJECT_TYPES) {
+        next unless $RT::ACE::OBJECT_TYPES{$class};
+
+        # Skip ourselves otherwise we'd loop infinitely
+        next if $class eq 'RT::System';
+
+        my $object = $class->new(RT->SystemUser);
+
+        unless ($object->can($method)) {
+            RT->Logger->error("RT::ACE object type $class doesn't support the $method method! Skipping.");
+            next;
+        }
+
+        # embrace and extend
+        %data = (
+            %data,
+            %{ $object->$method || {} },
+        );
+    }
+
+    return \%data;
 }
 
 =head2 RightCategories
@@ -153,20 +171,13 @@ values are the category (General, Staff, Admin) the right falls into.
 sub RightCategories {
     my $self = shift;
 
-    my $queue = RT::Queue->new(RT->SystemUser);
-    my $group = RT::Group->new(RT->SystemUser);
-    my $cf    = RT::CustomField->new(RT->SystemUser);
-    my $class = RT::Class->new(RT->SystemUser);
+    # Build a merged list of all right categories system wide, per-queue, per-group, etc.
+    my %categories = (
+        %{ $RIGHT_CATEGORIES },
+        %{ $self->_ForAllACEObjectTypes('RightCategories') },
+    );
 
-    my $qr = $queue->RightCategories();
-    my $gr = $group->RightCategories();
-    my $cr = $cf->RightCategories();
-    my $clr = $class->RightCategories();
-
-    # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
-
-    return(\%rights);
+    return \%categories;
 }
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
