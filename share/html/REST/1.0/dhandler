@@ -242,7 +242,7 @@ foreach $object (@objects) {
         $handler = "Forms/$type/$attr";
 
         unless ($m->comp_exists($handler)) {
-            $args = "$attr/$args";
+            $args = defined $args ? "$attr/$args" : $attr;
             $handler = "Forms/$type/default";
 
             unless ($m->comp_exists($handler)) {
