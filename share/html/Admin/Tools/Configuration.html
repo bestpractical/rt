@@ -280,7 +280,9 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
         <% $upgrade->{rt_version} %>
     </td>
     <td class="collection-as-table">
-        <% scalar gmtime($upgrade->{timestamp}) %>
+%          my $timestamp = RT::Date->new($session{CurrentUser});
+%          $timestamp->Set(Value => $upgrade->{timestamp});
+           <% $timestamp->AsString %>
     </td>
     <td class="collection-as-table">
 % if ($upgrade->{action} eq 'upgrade') {
