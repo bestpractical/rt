@@ -283,7 +283,7 @@ sub dump_sqlite
     my $old_fhkn = $dbh->{'FetchHashKeyName'};
     $dbh->{'FetchHashKeyName'} = 'NAME_lc';
 
-    my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
+    my $sth = $dbh->table_info( '', '%', '%', 'TABLE' ) || die $DBI::err;
     my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
 
     my $res = {};
