@@ -1,0 +1,3 @@
+<&| Wrapper, %ARGS, Title => loc("Automatic account setup failed") &>
+<p><&|/l&>Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs.</&></p>
+</&>

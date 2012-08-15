@@ -1,0 +1,3 @@
+<&| Wrapper, %ARGS, Title => loc("No longer authorized") &>
+<p><&|/l&>You were logged out of RT by your authentication system.  This may be a temporary hiccup, in which case refreshing this page may help.</&></p>
+</&>

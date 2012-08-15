@@ -1342,7 +1342,7 @@ sub test_app {
         require Plack::Middleware::Auth::Basic;
         $app = Plack::Middleware::Auth::Basic->wrap(
             $app,
-            authenticator => sub {
+            authenticator => $server_opt{basic_auth} eq 'anon' ? sub { 1 } : sub {
                 my ($username, $password) = @_;
                 return $username eq 'root' && $password eq 'password';
             }

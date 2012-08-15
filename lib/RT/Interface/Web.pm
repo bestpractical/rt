@@ -377,11 +377,23 @@ the next page.  Optionally takes a hash which is dumped into query params.
 =cut
 
 sub TangentForLogin {
+    my $login = TangentForLoginURL(@_);
+    Redirect( RT->Config->Get('WebBaseURL') . $login );
+}
+
+=head2 TangentForLoginURL [HASH]
+
+Returns a URL suitable for tangenting for login.  Optionally takes a hash which
+is dumped into query params.
+
+=cut
+
+sub TangentForLoginURL {
     my $hash  = SetNextPage();
     my %query = (@_, next => $hash);
-    my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
+    my $login = RT->Config->Get('WebPath') . '/NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
-    Redirect($login);
+    return $login;
 }
 
 =head2 TangentForLoginWithError ERROR
@@ -575,12 +587,17 @@ sub AttemptExternalAuth {
     my $user = $ARGS->{user};
     my $m    = $HTML::Mason::Commands::m;
 
+    my $logged_in_external_user = _UserLoggedIn() && $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
     # If RT is configured for external auth, let's go through and get REMOTE_USER
 
-    # do we actually have a REMOTE_USER equivlent?
-    if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
-        my $orig_user = $user;
-
+    # Do we actually have a REMOTE_USER or equivalent?  We only check auth if
+    # 1) we have no logged in user, or 2) we have a user who is externally
+    # authed.  If we have a logged in user who is internally authed, don't
+    # check remote user otherwise we may log them out.
+    if (RT::Interface::Web::WebCanonicalizeInfo()
+        and (not _UserLoggedIn() or $logged_in_external_user) )
+    {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
         my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
@@ -610,7 +627,7 @@ sub AttemptExternalAuth {
                 my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
 
                 # set the attributes that have been defined.
-                foreach my $attribute ( $UserObj->WritableAttributes ) {
+                foreach my $attribute ( $UserObj->WritableAttributes, qw(Privileged Disabled) ) {
                     $m->callback(
                         Attribute    => $attribute,
                         User         => $user,
@@ -623,19 +640,13 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-
-                # we failed to successfully create the user. abort abort abort.
-                delete $HTML::Mason::Commands::session{'CurrentUser'};
-
-                if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
-                } else {
-                    $m->abort();
-                }
+                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebExternalAuth: $msg");
+                AbortExternalAuth( Error => "AutoCreate" );
             }
         }
 
         if ( _UserLoggedIn() ) {
+            $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
             # if the external auth allows lack of auth through with no
@@ -647,22 +658,43 @@ sub AttemptExternalAuth {
             # straight-up external auth would always redirect to /
             # when you first hit it.
         } else {
-            delete $HTML::Mason::Commands::session{'CurrentUser'};
-            $user = $orig_user;
+            # Couldn't auth with the REMOTE_USER provided because an RT
+            # user doesn't exist and we're configured not to create one.
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
+            AbortExternalAuth(
+                Error => "NoInternalUser",
+                User  => $user,
+            );
         }
-    } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
-        unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
-            # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            TangentForLoginWithError('You are not an authorized user');
-        }
-    } else {
-
-        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
-        # XXX: we must return AUTH_REQUIRED status or we fallback to
-        # internal auth here too.
-        delete $HTML::Mason::Commands::session{'CurrentUser'}
-            if defined $HTML::Mason::Commands::session{'CurrentUser'};
     }
+    elsif ($logged_in_external_user) {
+        # The logged in external user was deauthed by the auth system and we
+        # should kick them out.
+        AbortExternalAuth( Error => "Deauthorized" );
+    }
+    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+        # Abort if we don't want to fallback internally
+        AbortExternalAuth( Error => "NoRemoteUser" );
+    }
+}
+
+sub AbortExternalAuth {
+    my %args  = @_;
+    my $error = $args{Error} ? "/Errors/WebExternalAuth/$args{Error}" : undef;
+    my $m     = $HTML::Mason::Commands::m;
+    my $r     = $HTML::Mason::Commands::r;
+
+    _ForceLogout();
+
+    # Clear the decks, not that we should have partial content.
+    $m->clear_buffer;
+
+    $r->status(403);
+    $m->comp($error, %args)
+        if $error and $m->comp_exists($error);
+
+    # Return a 403 Forbidden or we may fallback to a login page with no form
+    $m->abort(403);
 }
 
 sub AttemptPasswordAuthentication {

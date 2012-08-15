@@ -53,6 +53,7 @@ use warnings;
 
 use base qw(Test::WWW::Mechanize);
 use Scalar::Util qw(weaken);
+use MIME::Base64 qw//;
 
 BEGIN { require RT::Test; }
 require Test::More;
@@ -96,12 +97,22 @@ sub login {
 
     my $url = $self->rt_base_url;
     $self->get($url . "?user=$user;pass=$pass");
-    unless ( $self->status == 200 ) {
-        Test::More::diag( "error: status is ". $self->status );
-        return 0;
-    }
+
+    return 0 unless $self->logged_in_as($user);
+
     unless ( $self->content =~ m/Logout/i ) {
         Test::More::diag("error: page has no Logout");
+        return 0;
+    }
+    return 1;
+}
+
+sub logged_in_as {
+    my $self = shift;
+    my $user = shift || '';
+
+    unless ( $self->status == 200 ) {
+        Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
     RT::Interface::Web::EscapeUTF8(\$user);
@@ -369,6 +380,17 @@ sub check_links {
         return 0;
     }
     return Test::More::ok( 1, "expected links" );
+}
+
+sub auth {
+    my $self = shift;
+    $self->default_header( $self->auth_header(@_) );
+}
+
+sub auth_header {
+    my $self = shift;
+    return Authorization => "Basic " .
+        MIME::Base64::encode( join(":", @_) );
 }
 
 sub DESTROY {

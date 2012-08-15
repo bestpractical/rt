@@ -1,0 +1,3 @@
+<&| Wrapper, %ARGS, Title => loc("Unauthorized") &>
+<p><&|/l, $ARGS{User} &>You ([_1]) are not authorized to use RT.</&></p>
+</&>

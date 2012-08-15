@@ -1,36 +1,196 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 9;
-use MIME::Base64 qw//;
+use RT::Test plan => 'no_plan';
 
-RT->Config->Set( DevelMode => 0 );
-RT->Config->Set( WebExternalAuth => 1 );
+sub stop_server {
+    my $mech = shift;
 
-sub auth {
-    return Authorization => "Basic " .
-        MIME::Base64::encode( join(":", @_) );
+    # Ensure we're logged in for the final warnings check
+    $$mech->auth("root");
+
+    # Force the warnings check before we stop the server
+    undef $$mech;
+
+    RT::Test->stop_server;
 }
 
-my ( $url, $m ) = RT::Test->started_ok( basic_auth => 1 );
-$m->get($url);
-is($m->status, 401, "Initial request with no creds gets 401");
+diag "Continuous + Fallback";
+{
+    RT->Config->Set( DevelMode => 0 );
+    RT->Config->Set( WebExternalAuth => 1 );
+    RT->Config->Set( WebExternalAuthContinuous => 1 );
+    RT->Config->Set( WebFallbackToInternalAuth => 1 );
+    RT->Config->Set( WebExternalAuto => 0 );
 
-$m->get($url, auth( root => "wrong" ));
-is($m->status, 401, "Request with wrong creds gets 401");
+    my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
 
-$m->get($url, auth( root => "password" ));
-is($m->status, 200, "Request with right creds gets 200");
+    diag "Internal auth";
+    {
+        # Empty REMOTE_USER
+        $m->auth("");
 
-$m->content_like(
-    qr{<span class="current-user">\Qroot\E</span>}i,
-    "Has user on the page"
-);
-$m->content_unlike(qr/Logout/i, "Has no logout button, no WebFallbackToInternalAuth");
+        # First request gets the login form
+        $m->get_ok($url, "No basic auth is OK");
+        $m->content_like(qr/Login/, "Login form");
 
-$m->get($url);
-is($m->status, 401, "Subsequent requests without credentials aren't still logged in");
+        # Log in using RT's form
+        $m->submit_form_ok({
+            with_fields => {
+                user => 'root',
+                pass => 'password',
+            },
+        }, "Submitted login form");
+        ok $m->logged_in_as("root"), "Logged in as root";
 
+        # Still logged in on another request without REMOTE_USER
+        $m->follow_link_ok({ text => 'My Tickets' });
+        ok $m->logged_in_as("root"), "Logged in as root";
 
-# Put the credentials back for the warnings check at the end
-$m->default_header( auth( root => "password" ));
+        ok $m->logout, "Logged out";
+
+        # We're definitely logged out?
+        $m->get_ok($url);
+        $m->content_like(qr/Login/, "Login form");
+    }
+
+    diag "External auth";
+    {
+        # REMOTE_USER of root
+        $m->auth("root");
+
+        # Automatically logged in as root without Login page
+        $m->get_ok($url);
+        ok $m->logged_in_as("root"), "Logged in as root";
+
+        # Still logged in on another request
+        $m->follow_link_ok({ text => 'My Tickets' });
+        ok $m->logged_in_as("root"), "Still logged in as root";
+
+        # Drop credentials and...
+        $m->auth("");
+
+        # ...see if RT notices
+        $m->get($url);
+        is $m->status, 403, "403 Forbidden from RT";
+
+        # Next request gets us the login form
+        $m->get_ok($url);
+        $m->content_like(qr/Login/, "Login form");
+    }
+
+    diag "External auth with invalid user, login internally";
+    {
+        # REMOTE_USER of invalid
+        $m->auth("invalid");
+
+        # Login internally via the login link
+        $m->get("$url/Search/Build.html");
+        is $m->status, 403, "403 Forbidden";
+        $m->follow_link_ok({ url_regex => qr'NoAuth/Login\.html' }, "follow logout link");
+        $m->content_like(qr/Login/, "Login form");
+
+        # Log in using RT's form
+        $m->submit_form_ok({
+            with_fields => {
+                user => 'root',
+                pass => 'password',
+            },
+        }, "Submitted login form");
+        ok $m->logged_in_as("root"), "Logged in as root";
+        like $m->uri, qr'Search/Build\.html', "at our originally requested page";
+
+        # Still logged in on another request
+        $m->follow_link_ok({ text => 'Tools' });
+        ok $m->logged_in_as("root"), "Logged in as root";
+
+        ok $m->logout, "Logged out";
+
+        $m->next_warning_like(qr/Couldn't find internal user for 'invalid'/, "found warning for first request");
+        $m->next_warning_like(qr/Couldn't find internal user for 'invalid'/, "found warning for second request");
+    }
+
+    stop_server(\$m);
+}
+
+diag "Fallback OFF";
+{
+    RT->Config->Set( DevelMode => 0 );
+    RT->Config->Set( WebExternalAuth => 1 );
+    RT->Config->Set( WebExternalAuthContinuous => 0 );
+    RT->Config->Set( WebFallbackToInternalAuth => 0 );
+    RT->Config->Set( WebExternalAuto => 0 );
+
+    my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "No remote user";
+    {
+        $m->auth("");
+        $m->get($url);
+        is $m->status, 403, "Forbidden";
+    }
+
+    stop_server(\$m);
+}
+
+diag "AutoCreate";
+{
+    RT->Config->Set( DevelMode => 0 );
+    RT->Config->Set( WebExternalAuth => 1 );
+    RT->Config->Set( WebExternalAuthContinuous => 1 );
+    RT->Config->Set( WebFallbackToInternalAuth => 0 );
+    RT->Config->Set( WebExternalAuto => 1 );
+    RT->Config->Set( AutoCreate => { Organization => "BPS" } );
+
+    my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "New user";
+    {
+        $m->auth("anewuser");
+        $m->get_ok($url);
+        ok $m->logged_in_as("anewuser"), "Logged in as anewuser";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("anewuser");
+        ok $user->id, "Found newly created user";
+        is $user->Organization, "BPS", "Found Organization from AutoCreate hash";
+        ok $user->Privileged, "Privileged by default";
+    }
+
+    stop_server(\$m);
+    RT->Config->Set(
+        AutoCreate => {
+            Privileged   => 0,
+            EmailAddress => 'foo@example.com',
+        },
+    );
+    ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "Create unprivileged users";
+    {
+        $m->auth("unpriv");
+        $m->get_ok($url);
+        ok $m->logged_in_as("unpriv"), "Logged in as an unpriv user";
+        like $m->uri->path, RT->Config->Get('SelfServiceRegex'), "SelfService URL";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("unpriv");
+        ok $user->id, "Found newly created user";
+        ok !$user->Privileged, "Unprivileged per config";
+        is $user->EmailAddress, 'foo@example.com', "Email address per config";
+    }
+
+    diag "User creation failure";
+    {
+        $m->auth("conflicting");
+        $m->get($url);
+        is $m->status, 403, "Forbidden";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("conflicting");
+        ok !$user->id, "Couldn't find conflicting user";
+    }
+
+    stop_server(\$m);
+}
+
