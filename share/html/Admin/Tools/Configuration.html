@@ -252,9 +252,9 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 <&|/Widgets/TitleBox, title => loc("RT upgrade history")&>
 
 % my $upgrade_history = RT->System->UpgradeHistory;
-% my @realms = ('RT', sort grep { $_ ne 'RT' } keys %$upgrade_history);
-% for my $realm (@realms) {
-<h4><% $realm %></h4>
+% my @packages = ('RT', sort grep { $_ ne 'RT' } keys %$upgrade_history);
+% for my $package (@packages) {
+<h4><% $package %></h4>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
 <th class="collection-as-table"><&|/l&>Action</&></th>
@@ -264,7 +264,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 
 <%perl>
     my $i = 0;
-    for my $upgrade (@{ $upgrade_history->{$realm} }) {
+    for my $upgrade (@{ $upgrade_history->{$package} }) {
         # only list completed upgrades
         next unless $upgrade->{stage} eq 'after';
 </%perl>
