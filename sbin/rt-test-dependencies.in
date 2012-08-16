@@ -294,7 +294,7 @@ Test::LongString
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-FCGI
+FCGI 0.74
 FCGI::ProcManager
 .
 
