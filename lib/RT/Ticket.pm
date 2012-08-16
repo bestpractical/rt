@@ -2314,7 +2314,6 @@ sub DeleteLink {
             Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
                                             : $LINKDIRMAP{$args{'Type'}}->{Target},
             OldValue       => $self->URI,
-            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
         $RT::Logger->error("Couldn't create transaction: $Msg") unless $val;
@@ -2446,7 +2445,6 @@ sub _AddLink {
             Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
                                             : $LINKDIRMAP{$args{'Type'}}->{Target},
             NewValue       => $self->URI,
-            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
         $RT::Logger->error("Couldn't create transaction: $msg") unless $val;

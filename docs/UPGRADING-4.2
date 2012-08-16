@@ -4,3 +4,7 @@ UPGRADING FROM RT 4.0.0 and greater
   describes what the log level controls.  Setting $LogToScreen will still work,
   but an informational notice will be issued on server start telling you about
   the rename.  To avoid this you should set $LogToSTDERR instead.
+
+* $LinkTransactionsRun1Scrip is removed.  If you were relying on this behaviour
+  (by setting it to 1), you should adjust your scrips to ignore one of the link
+  transactions.

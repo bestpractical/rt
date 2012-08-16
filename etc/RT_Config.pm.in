@@ -2678,21 +2678,4 @@ Set($StatementLog, undef);
 
 =back
 
-
-
-
-=head1 Deprecated options
-
-=over 4
-
-=item C<$LinkTransactionsRun1Scrip>
-
-RT-3.4 backward compatibility setting. Add/Delete Link used to record
-one transaction and run one scrip. Set this value to 1 if you want
-only one of the link transactions to have scrips run.
-
-=cut
-
-Set($LinkTransactionsRun1Scrip, 0);
-
 1;
