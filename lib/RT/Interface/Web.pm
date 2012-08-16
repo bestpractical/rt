@@ -1032,6 +1032,10 @@ our %is_whitelisted_component = (
     # addition to embedding its own auth, it's fine.
     '/NoAuth/rss/dhandler' => 1,
 
+    # IE doesn't send referer in window.open()
+    # besides, as a harmless calendar select page, it's fine
+    '/Helpers/CalPopup.html' => 1,
+
     # While both of these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
