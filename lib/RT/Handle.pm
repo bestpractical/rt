@@ -220,7 +220,6 @@ sub SystemDSN {
 
 sub CheckIntegrity {
     my $self = shift;
-    $self = new $self unless ref $self;
 
     unless ($RT::Handle and $RT::Handle->dbh) {
         local $@;
@@ -233,13 +232,13 @@ sub CheckIntegrity {
     my $test_user = RT::CurrentUser->new;
     $test_user->Load('RT_System');
     unless ( $test_user->id ) {
-        return (0, 'no system user', "Couldn't find RT_System user in the DB '". $self->DSN ."'");
+        return (0, 'no system user', "Couldn't find RT_System user in the DB '". $RT::Handle->DSN ."'");
     }
 
     $test_user = RT::CurrentUser->new;
     $test_user->Load('Nobody');
     unless ( $test_user->id ) {
-        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $self->DSN ."'");
+        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $RT::Handle->DSN ."'");
     }
 
     return $RT::Handle->dbh;
