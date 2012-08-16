@@ -142,8 +142,8 @@ sub run_auto_tests {
 @conditions = (
     'Cc = "not@exist"'       => sub { 0 },
     'Cc != "not@exist"'      => sub { 1 },
-    'Cc IS NULL'             => sub { $_[0] =~ 'c:-;' },
-    'Cc IS NOT NULL'         => sub { $_[0] !~ 'c:-;' },
+    'Cc IS NULL'             => sub { $_[0] =~ /c:-;/ },
+    'Cc IS NOT NULL'         => sub { $_[0] !~ /c:-;/ },
     'Cc = "x@foo.com"'       => sub { $_[0] =~ /c:[^;]*x/ },
     'Cc != "x@foo.com"'      => sub { $_[0] !~ /c:[^;]*x/ },
     'Cc LIKE "@bar.com"'     => sub { $_[0] =~ /c:[^;]*(?:y|z)/ },
@@ -152,8 +152,8 @@ sub run_auto_tests {
 
     'Requestor = "not@exist"'   => sub { 0 },
     'Requestor != "not@exist"'  => sub { 1 },
-    'Requestor IS NULL'         => sub { $_[0] =~ 'r:-;' },
-    'Requestor IS NOT NULL'     => sub { $_[0] !~ 'r:-;' },
+    'Requestor IS NULL'         => sub { $_[0] =~ /r:-;/ },
+    'Requestor IS NOT NULL'     => sub { $_[0] !~ /r:-;/ },
     'Requestor = "x@foo.com"'   => sub { $_[0] =~ /r:[^;]*x/ },
     'Requestor != "x@foo.com"'  => sub { $_[0] !~ /r:[^;]*x/ },
     'Requestor LIKE "@bar.com"' => sub { $_[0] =~ /r:[^;]*(?:y|z)/ },
@@ -174,7 +174,7 @@ sub run_auto_tests {
     'Subject LIKE "ne"'      => sub { 0 },
     'Subject NOT LIKE "ne"'  => sub { 1 },
     'Subject = "r:x;c:y;"'   => sub { $_[0] eq 'r:x;c:y;' },
-    'Subject LIKE "x"'       => sub { $_[0] =~ 'x' },
+    'Subject LIKE "x"'       => sub { $_[0] =~ /x/ },
 );
 
 @tickets = generate_tix();

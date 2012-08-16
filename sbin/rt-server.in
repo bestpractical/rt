@@ -172,7 +172,7 @@ if (caller) {
 require Plack::Runner;
 
 my $is_fastcgi = $0 =~ m/fcgi$/;
-my $r = Plack::Runner->new( $0 =~ 'standalone' ? ( server => 'Standalone' ) :
+my $r = Plack::Runner->new( $0 =~ /standalone/ ? ( server => 'Standalone' ) :
                             $is_fastcgi        ? ( server => 'FCGI' )
                                                : (),
                             env => 'deployment' );
