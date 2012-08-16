@@ -374,7 +374,7 @@ sub _EnumLimit {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
-        $value = $o->Id;
+        $value = $o->Id || 0;
     }
     $sb->_SQLLimit(
         FIELD    => $field,
