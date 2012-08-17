@@ -2250,10 +2250,11 @@ all possible transitions in each lifecycle using the following format:
 
 =head3 Statuses available during ticket creation
 
-By default users can create tickets with any status, except
-deleted. If you want to restrict statuses available during creation
-then describe transition from '' (empty string), like in the example
-above.
+By default users can create tickets with a status of new,
+open, or resolved, but cannot create tickets with a status of
+rejected, stalled, or deleted. If you want to change the statuses
+available during creation, update the transition from '' (empty
+string), like in the example above.
 
 =head3 Protecting status changes with rights
 
